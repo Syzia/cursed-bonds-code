@@ -264,10 +264,4 @@ label chapter_one:
     scene bg black
     with fade_slow
 
-    "It takes four days to sort out the paperwork, which is somehow the most unbelievable part of the entire experience."
-
-    "Your parents sign something a man in a black suit hands them, and are perfectly happy about it, and you are almost certain they will stay perfectly happy about it."
-
-    "On the fifth day, a car comes."
-
     return

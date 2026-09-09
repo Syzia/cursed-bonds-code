@@ -20,6 +20,13 @@ define ijichi  = Character("Ijichi",  color="#9aa0b0")
 define shoko   = Character("Shoko",   color="#e0c8b0")
 define utahime = Character("Utahime", color="#c9a0d8")
 
+## Pre-campus cast
+define sana    = Character("Sana",        color="#ffd27a")
+define mother  = Character("Mom",         color="#d8c8b8")
+define father  = Character("Dad",         color="#b8c0c8")
+define oda     = Character("Oda-sensei",  color="#a9a2b8")
+define kurose  = Character("Kurose",      color="#8f8aa0")
+
 define curse   = Character("???",     color="#6cff9e")
 define curse2  = Character("???",     color="#ff5f8a")
 define teacher = Character("Teacher", color="#a9a2b8")
@@ -63,6 +70,11 @@ image bg town_street   = "images/bg/town_street.png"
 image bg festival      = "images/bg/festival.png"
 image bg station       = "images/bg/station.png"
 image bg car           = "images/bg/car.png"
+image bg sana_room       = "images/bg/sana_room.png"
+image bg sana_room_night = "images/bg/sana_room_night.png"
+image bg konbini         = "images/bg/konbini.png"
+image bg street_morning  = "images/bg/street_morning.png"
+image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 
 
 ## Sprites #####################################################################
@@ -79,7 +91,16 @@ image yaga        = "images/char/yaga.png"
 image ijichi      = "images/char/ijichi.png"
 image shoko       = "images/char/shoko.png"
 image utahime     = "images/char/utahime.png"
+
+## Pre-campus cast — placeholder art until the sprite set lands.
+image sana = Transform("images/char/nobara.png", matrixcolor=TintMatrix("#dbd6eb"))
+image sana tired = Transform("images/char/nobara.png", matrixcolor=TintMatrix("#b3b3cc"))
+image mother = Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6db"))
+image father = Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff"))
+image oda = Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb"))
+image kurose = Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#9e9eb3"))
 image curse small = "images/char/curse_small.png"
+image curse sitter = Transform("images/char/curse_small.png", zoom=0.72)
 image curse big   = "images/char/curse_big.png"
 
 
@@ -156,3 +177,8 @@ init 1 python:
         "panda": panda, "toge": toge, "shoko": shoko, "gojo": gojo,
         "yaga": yaga, "utahime": utahime,
     }
+
+
+## Pre-campus state ############################################################
+
+default sana_trust = 0

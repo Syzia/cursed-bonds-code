@@ -31,6 +31,13 @@ label start:
     ## --- Prologue: how you got here -----------------------------------------
     call chapter_one
 
+    ## The four days between the corridor and the car.
+    call chapter_one_b
+
+    call chapter_one_c
+
+    call chapter_one_d
+
     call chapter_two
 
     ## --- The campus opens up ------------------------------------------------
