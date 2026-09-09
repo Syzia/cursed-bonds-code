@@ -174,3 +174,49 @@ class Img(object):
             f.write(chunk(b'IHDR', ihdr))
             f.write(chunk(b'IDAT', comp))
             f.write(chunk(b'IEND', b''))
+
+
+# --- compositing helpers (added for the sprite pipeline) --------------------
+
+def crop(im, x0, y0, x1, y1):
+    """Return a new Img holding the rectangle [x0,x1) x [y0,y1) of `im`."""
+    x0, y0 = max(0, int(x0)), max(0, int(y0))
+    x1, y1 = min(im.w, int(x1)), min(im.h, int(y1))
+    out = Img(x1 - x0, y1 - y0, alpha=(im.ch == 4))
+    ch = im.ch
+    for y in range(y0, y1):
+        src = (y * im.w + x0) * ch
+        dst = ((y - y0) * out.w) * ch
+        out.buf[dst:dst + (x1 - x0) * ch] = im.buf[src:src + (x1 - x0) * ch]
+    return out
+
+
+def paste(dst, src, x, y):
+    """Alpha-composite `src` (RGBA) onto `dst` at (x, y)."""
+    for sy in range(src.h):
+        dy = y + sy
+        if dy < 0 or dy >= dst.h:
+            continue
+        for sx in range(src.w):
+            dx = x + sx
+            if dx < 0 or dx >= dst.w:
+                continue
+            i = (sy * src.w + sx) * src.ch
+            a = src.buf[i + 3] / 255.0 if src.ch == 4 else 1.0
+            if a <= 0:
+                continue
+            dst.blend(dx, dy, (src.buf[i], src.buf[i + 1], src.buf[i + 2]), a)
+
+
+def scale(im, factor):
+    """Nearest-neighbour resample (fast, adequate for thumbnails)."""
+    w2, h2 = max(1, int(im.w * factor)), max(1, int(im.h * factor))
+    out = Img(w2, h2, alpha=(im.ch == 4))
+    ch = im.ch
+    for y in range(h2):
+        sy = min(im.h - 1, int(y / factor))
+        for x in range(w2):
+            sx = min(im.w - 1, int(x / factor))
+            i, j = (sy * im.w + sx) * ch, (y * w2 + x) * ch
+            out.buf[j:j + ch] = im.buf[i:i + ch]
+    return out

@@ -54,6 +54,16 @@ image bg storehouse  = "images/bg/storehouse.png"
 image bg office      = "images/bg/office.png"
 image bg map_campus  = "images/bg/map_campus.png"
 
+## Pre-campus (prologue) locations
+image bg home_living   = "images/bg/home_living.png"
+image bg home_bedroom  = "images/bg/home_bedroom.png"
+image bg yotsuka_hall  = "images/bg/yotsuka_hall.png"
+image bg yotsuka_class = "images/bg/yotsuka_class.png"
+image bg town_street   = "images/bg/town_street.png"
+image bg festival      = "images/bg/festival.png"
+image bg station       = "images/bg/station.png"
+image bg car           = "images/bg/car.png"
+
 
 ## Sprites #####################################################################
 

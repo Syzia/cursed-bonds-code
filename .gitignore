@@ -24,3 +24,12 @@
 /dialogue.tab
 /dialogue.txt
 /strings.json
+
+# macOS
+.DS_Store
+
+# Session scratch: smoke harnesses, screenshot dumps, renderer test renders
+/game/zz_*.rpy
+/shots
+/game/shots
+/game/images/char/_test_*
