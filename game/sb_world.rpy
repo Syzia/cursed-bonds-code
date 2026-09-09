@@ -133,6 +133,8 @@ init -2 python:
     def bg_name(loc=None, per=None):
         loc = loc or store.here
         per = per or store.period
+        if loc not in LOCATIONS:
+            return "bg black"          # story scenes may sit outside the campus
         base = LOCATIONS[loc]["bg"]
         if loc in NIGHT_VARIANT and per in ("Evening", "Night"):
             base += " night"
@@ -150,11 +152,13 @@ init -2 python:
         if key in _BG_CACHE:
             return _BG_CACHE[key]
         img = bg_name(loc, per)
+        if loc not in LOCATIONS:
+            return img
         if loc in NIGHT_VARIANT and per in ("Evening", "Night"):
             ## The image is already authored dark; grading it again crushes it.
             tint, bright = (("#ffd8b8", -0.04) if per == "Evening" else ("#ffffff", 0.0))
         else:
-            table = INDOOR_GRADE if LOCATIONS[loc].get("indoor") else OUTDOOR_GRADE
+            table = INDOOR_GRADE if LOCATIONS.get(loc, {}).get("indoor") else OUTDOOR_GRADE
             tint, bright = table.get(per, ("#ffffff", 0.0))
         if tint == "#ffffff" and abs(bright) < 0.001:
             _BG_CACHE[key] = img

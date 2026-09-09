@@ -139,6 +139,33 @@ past 100 are Certain / Devoted / Inseparable / Unconditional.
 Everything above the confession is *hidden* until it happens, rather than shown
 as a lock, so the ceiling is a surprise rather than a checklist.
 
+### Combat — `sb_combat.rpy`
+Turn-based, and the loop is **read the enemy, then answer it**. Each round the
+curse telegraphs ("It comes apart and reassembles closer"); each telegraph has
+one correct answer (Brace / Step aside / Break the grip / Close the distance).
+
+Answering correctly defends *and* staggers, but deals little damage. Using a
+technique deals real damage but leaves the telegraph unanswered, so it lands.
+That trade is the whole fight. A wrong answer is punished at 1.5x.
+
+`Insight >= 45` reads telegraphs for free; below that you spend a turn on
+"Read it", or fight blind. Simulated at 200 trials per matchup: reading tells
+takes a fight from **47% to 100%**, and a grade 2 kills an under-levelled
+first-year **~97%** of the time.
+
+Enemies live in `ENEMIES`, moves in `MOVES` (three per technique, unlocked by
+tier). `call combat("key", ally, flee_ok, bg)` returns "win" / "down" / "fled".
+
+### Antagonists
+See `docs/ANTAGONISTS.md`. One through-line villain — **Sadao Wakuri, "the
+Cartographer"**, a Grading Office assessor who files curses one grade low near
+students he has chosen, because sorcerers who nearly die young get stronger —
+with an arc-level antagonist in front of him each time. Arc 1 is **Ryōsuke
+Nade**, the man who signed the Sun Mall as a grade 3; he is not a mastermind,
+he is complicit, which is worse. `missions_arc1.rpy` runs that thread across
+three office missions ending on a map with the player's home town circled,
+dated four years before the East Wing.
+
 ### Planned: binding vows
 Not built yet. The canon mechanic — trade a restriction for power — is a good
 fit for the *combat* progression rather than the relationship one, e.g. a vow

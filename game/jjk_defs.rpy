@@ -26,6 +26,7 @@ define mother  = Character("Mom",         color="#d8c8b8")
 define father  = Character("Dad",         color="#b8c0c8")
 define oda     = Character("Oda-sensei",  color="#a9a2b8")
 define kurose  = Character("Kurose",      color="#8f8aa0")
+define nade    = Character("Nade",        color="#9a8f7a")
 
 define curse   = Character("???",     color="#6cff9e")
 define curse2  = Character("???",     color="#ff5f8a")
@@ -99,6 +100,7 @@ image mother = Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6d
 image father = Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff"))
 image oda = Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb"))
 image kurose = Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#9e9eb3"))
+image nade = Transform("images/char/yaga.png", matrixcolor=TintMatrix("#b0a894"))
 image curse small = "images/char/curse_small.png"
 image curse sitter = Transform("images/char/curse_small.png", zoom=0.72)
 image curse big   = "images/char/curse_big.png"
