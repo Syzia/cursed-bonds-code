@@ -1,5 +1,10 @@
 ################################################################################
 ## Cursed Bonds — sandbox interface: HUD, campus map, location view, status.
+##
+## Screens return tuples to sb_loop.rpy:
+##   ("map",) ("char", who) ("act", id) ("go", loc) ("cancel",)
+##   ("talk", who) ("hang", who) ("spar", who)
+## Nothing here mutates game state.
 ################################################################################
 
 init python:
@@ -36,80 +41,193 @@ init python:
         a.append(("wait", "Wait", "Let the period pass.", 1))
         return a
 
+    def hud_date():
+        """'DAY 6 · SAT' — the period is drawn as pips next to it."""
+        return "DAY %d · %s" % (store.day, weekday().upper())
+
+
+## Sandbox-only styles #########################################################
+
+style sb_place_text is text:
+    font gui.display_font
+    color gui.paper
+    size 30
+
+style sb_hud_button is button:
+    padding (6, 4)
+
+style sb_hud_button_text is text:
+    font gui.body_medium_font
+    color gui.dim
+    hover_color gui.paper
+    selected_color gui.violet2
+    size 17
+    kerning gui.track
+
+style sb_action_button is button:
+    background Frame("gui/panel.png", 4, 4)
+    hover_background Frame("gui/rail_violet.png", 10, 4)
+    insensitive_background Frame("gui/panel_ghost.png", 4, 4)
+    padding (22, 14, 22, 14)
+    xsize 250
+
+style sb_action_travel is sb_action_button:
+    background Frame("gui/panel_active.png", 4, 4)
+    hover_background Frame("gui/panel_active.png", 4, 4)
+
+style sb_action_title is text:
+    font gui.display_font
+    color gui.paper
+    size 24
+
+style sb_action_hint is text:
+    color gui.dim
+    size 16
+
+style sb_node_button is button:
+    background Frame("gui/panel_dark.png", 4, 4)
+    hover_background Frame("gui/panel_hover.png", 4, 4)
+    insensitive_background Frame("gui/panel_ghost.png", 4, 4)
+    padding (18, 9, 18, 9)
+
+style sb_node_here is sb_node_button:
+    background Frame("gui/panel_active.png", 4, 4)
+    insensitive_background Frame("gui/panel_active.png", 4, 4)
+
+style sb_node_name is text:
+    font gui.display_font
+    color gui.paper
+    size 21
+    text_align 0.5
+    layout "subtitle"
+
+
+## The period tracker: five diamonds, one per period. ##########################
+
+screen period_pips():
+    $ _pi = period_index()
+    hbox:
+        spacing 5
+        yalign 0.5
+        for _i, _p in enumerate(PERIODS):
+            if _i < _pi:
+                add "gui/pip_past.png" yalign 0.5
+            elif _i == _pi:
+                add "gui/pip_on.png" yalign 0.5
+            else:
+                add "gui/pip_off.png" yalign 0.5
+
 
 ## HUD ##########################################################################
+##
+## A 92px rail across the top. Left to right: where and when, the two things
+## you spend, what you are, and the deadline. Navigation lives at the far right.
 
 screen sb_hud(on_map=False):
 
     $ _tiername = tech_tier()[1]
-    $ _loc = LOCATIONS[here]["name"]
-    $ _datestr = date_line()
+    $ _tname = tech()["name"]
+    $ _loc = _("Campus") if on_map else LOCATIONS[here]["name"]
+    $ _date = hud_date()
+    $ _per = store.period.upper()
     $ _left = days_left()
 
     frame:
-        background Frame(Solid("#0b0913ee"), 6, 6)
+        background Frame("gui/panel_dark.png", 4, 4)
         yalign 0.0
         xfill True
-        ypadding 10
-        xpadding 26
+        ysize 92
+        xpadding 40
+        ypadding 0
 
         fixed:
             xfill True
-            ysize 56
+            ysize 92
 
             hbox:
-                spacing 34
-                xalign 0.0
+                spacing 26
                 yalign 0.5
+                xalign 0.0
 
+                ## Where / when ---------------------------------------------------
                 vbox:
-                    spacing 1
-                    text "[_loc]":
-                        color "#ffffff"
-                        size 26
-                    text "[_datestr]":
-                        color "#9d95ae"
-                        size 18
-                    text "[_left] days to Kyoto":
-                        color "#8b7fa8"
-                        size 16
+                    spacing 4
+                    yalign 0.5
+                    text "[_loc]" style "sb_place_text"
+                    hbox:
+                        spacing 12
+                        text "[_date]" style "jjk_label"
+                        use period_pips
+                        text "[_per]" style "jjk_label"
+                        text "·" style "jjk_label"
+                        text "[_left]":
+                            color gui.gold
+                            size 15
+                            yalign 0.5
+                        text _("TO KYOTO") style "jjk_label"
 
+                ## Cursed energy -------------------------------------------------
+                vbox:
+                    spacing 7
+                    yalign 0.5
+                    hbox:
+                        spacing 10
+                        text _("CURSED ENERGY") style "jjk_label" yalign 1.0
+                        text "[ce] / [ce_max]" style "jjk_value" size 17 yalign 1.0
+                    use meter(ce, ce_max, width=200, height=6, fill=gui.violet)
+
+                ## Stamina --------------------------------------------------------
+                vbox:
+                    spacing 7
+                    yalign 0.5
+                    hbox:
+                        spacing 10
+                        text _("STAMINA") style "jjk_label" yalign 1.0
+                        text "[stamina]" style "jjk_value" size 17 yalign 1.0
+                    use meter(stamina, stamina_max, width=150, height=6, fill=gui.stamina)
+
+                ## Technique ------------------------------------------------------
                 vbox:
                     spacing 3
                     yalign 0.5
-                    text "Cursed energy  [ce]/[ce_max]":
-                        color "#cfc8dd"
-                        size 17
-                    use meter(ce, ce_max, width=180, height=9, fill="#a259ff")
-
-                vbox:
-                    spacing 3
-                    yalign 0.5
-                    text "Stamina  [stamina]":
-                        color "#cfc8dd"
-                        size 17
-                    use meter(stamina, stamina_max, width=140, height=9, fill="#77e0a0")
-
-                vbox:
-                    spacing 1
-                    yalign 0.5
-                    text "[_tiername]":
+                    text "[_tname]":
+                        font gui.display_font
                         color "#8ed6ff"
-                        size 19
-                    text "C [control] · O [output] · I [insight]":
-                        color "#9d95ae"
-                        size 17
+                        size 22
+                    text "[_tiername!u]" style "jjk_label" size 15
 
+                hbox:
+                    spacing 16
+                    yalign 0.5
+                    hbox:
+                        spacing 6
+                        text _("CTRL") style "jjk_label"
+                        text "[control]" style "jjk_value" size 17
+                    hbox:
+                        spacing 6
+                        text _("OUT") style "jjk_label"
+                        text "[output]" style "jjk_value" size 17
+                    hbox:
+                        spacing 6
+                        text _("INS") style "jjk_label"
+                        text "[insight]" style "jjk_value" size 17
+
+            ## Deadline + navigation, pushed to the right -------------------
             hbox:
                 xalign 1.0
                 yalign 0.5
-                spacing 14
-                if not on_map:
-                    textbutton "Map" action Return(("map",)) text_size 22
-                textbutton "Journal" action ShowMenu("jjk_journal") text_size 22
-                textbutton "Status" action ShowMenu("jjk_status") text_size 22
-                textbutton "Save" action ShowMenu("save") text_size 22
-                textbutton "Menu" action ShowMenu("preferences") text_size 22
+                spacing 34
+
+                hbox:
+                    spacing 8
+                    yalign 0.5
+                    style_prefix "sb_hud"
+                    if not on_map:
+                        textbutton _("MAP") action Return(("map",))
+                    textbutton _("JOURNAL") action ShowMenu("jjk_journal")
+                    textbutton _("STATUS") action ShowMenu("jjk_status")
+                    textbutton _("SAVE") action ShowMenu("save")
+                    textbutton _("MENU") action ShowMenu("preferences")
 
 
 ## Location view ################################################################
@@ -124,112 +242,123 @@ screen sb_place():
     $ _desc = _here["desc"]
 
     add graded_bg()
-    add Solid("#000000") alpha 0.12
+    add Solid(gui.ink) alpha 0.14
+
+    ## Flavour line for the place, just under the rail.
+    ## Sits over sky or stone depending on the location, so it carries its own
+    ## backing rather than relying on the scene behind it.
+    frame:
+        xalign 0.5
+        ypos 112
+        background Frame("gui/panel_ghost.png", 4, 4)
+        padding (26, 8)
+        text "[_desc]":
+            font gui.display_font
+            color gui.paper
+            size 24
+            text_align 0.5
+            layout "subtitle"
+            xmaximum 1050
 
     ## Everyone standing around, clickable.
     hbox:
         yalign 1.0
         xalign 0.5
-        yoffset -150
-        spacing 30
+        yoffset -170
+        spacing 80
 
         for _i, _who in enumerate(_folk[:4]):
 
             $ _c = CAST[_who]
             $ _nm = _c["short"]
             $ _col = _c["color"]
-            $ _mark = "!" if has_event("hangout", _who, here) else ""
+            $ _new = has_event("hangout", _who, here)
 
             button:
                 style "empty"
                 action Return(("char", _who))
-                xysize (330, 640)
+                xysize (300, 620)
 
                 fixed:
                     add _who:
                         xalign 0.5
                         yalign 1.0
-                        zoom 0.50
+                        yoffset -48
+                        zoom 0.46
 
                     frame:
                         xalign 0.5
                         yalign 1.0
-                        background Frame(Solid("#0b0913cc"), 6, 6)
-                        padding (16, 6)
+                        background Frame("gui/panel_gold.png" if _new else "gui/panel_dark.png", 4, 4)
+                        padding (20, 8)
                         hbox:
-                            spacing 8
+                            spacing 12
                             text "[_nm]":
+                                font gui.display_font
                                 color _col
                                 size 24
-                            if _mark:
-                                text "!":
-                                    color "#ffd166"
-                                    size 24
+                                yalign 0.5
+                            if _new:
+                                frame:
+                                    background Solid(gui.gold)
+                                    padding (6, 2)
+                                    yalign 0.5
+                                    text _("NEW"):
+                                        font gui.body_bold_font
+                                        color gui.ink
+                                        size 11
+                                        kerning 2
 
     ## Nobody home.
     if not _folk:
         frame:
             xalign 0.5
-            ypos 300
-            background Frame(Solid("#0b0913bb"), 6, 6)
-            padding (30, 18)
+            yalign 1.0
+            yoffset -300
+            background Frame("gui/panel_ghost.png", 4, 4)
+            padding (28, 14)
             text _("There's nobody here right now."):
-                color "#9d95ae"
-                size 24
-
-    ## Flavour line for the place.
-    frame:
-        xalign 0.5
-        ypos 108
-        background Frame(Solid("#0b0913aa"), 6, 6)
-        padding (26, 12)
-        text "[_desc]":
-            color "#cfc8dd"
-            size 21
-            xsize 900
-            text_align 0.5
+                color gui.dim
+                size 22
 
     ## Action bar.
     frame:
-        background Frame(Solid("#0b0913e6"), 6, 6)
+        background Frame("gui/panel_dark.png", 4, 4)
         yalign 1.0
         xfill True
-        ypadding 14
-        xpadding 26
+        padding (40, 22, 40, 22)
 
         hbox:
-            xalign 0.5
+            xalign 0.0
             spacing 14
 
             button:
-                background Frame(Solid("#3a2168ee"), 6, 6)
-                hover_background Frame(Solid("#5b32a8ee"), 6, 6)
-                padding (20, 10)
+                style "sb_action_travel"
                 action Return(("map",))
                 vbox:
-                    spacing 2
-                    text _("Travel"):
-                        color "#ffffff"
-                        size 23
-                    text _("Go somewhere else on campus."):
-                        color "#b6a8d8"
-                        size 17
+                    spacing 4
+                    text _("Travel") style "sb_action_title"
+                    text _("Go somewhere else on campus.") style "sb_action_hint"
 
             for _a in _acts:
                 $ _aid, _alabel, _ahint, _acost = _a
                 button:
-                    background Frame(Solid("#1b1528dd"), 6, 6)
-                    hover_background Frame(Solid("#33234fee"), 6, 6)
-                    padding (20, 10)
+                    style "sb_action_button"
                     action Return(("act", _aid))
-                    vbox:
-                        spacing 2
-                        text "[_alabel]":
-                            color "#e8e2f2"
-                            size 23
-                        text "[_ahint]":
-                            color "#8b8399"
-                            size 17
+                    fixed:
+                        fit_first True
+                        vbox:
+                            spacing 4
+                            text "[_alabel]" style "sb_action_title"
+                            text "[_ahint]" style "sb_action_hint"
+                        ## One diamond per period this costs.
+                        if _acost:
+                            hbox:
+                                xalign 1.0
+                                ypos 6
+                                spacing 3
+                                for _k in range(_acost):
+                                    add "gui/pip_small.png"
 
     use sb_hud
 
@@ -243,20 +372,33 @@ screen sb_map():
     $ _sense = (technique == "filament" and control >= 20)
 
     add "bg map_campus"
-    add Solid("#05040a") alpha 0.25
+    add Solid(gui.ink) alpha 0.32
 
-    text _("CAMPUS"):
+    ## Title.
+    vbox:
         xalign 0.5
-        ypos 96
-        color "#a259ff"
-        size 34
-
-    if _sense:
-        text _("Filament — you can feel where everyone is."):
+        ypos 118
+        spacing 8
+        hbox:
             xalign 0.5
-            ypos 152
-            color "#8b8399"
-            size 19
+            spacing 16
+            use seal("図", 44)
+            text _("TOKYO JUJUTSU HIGH"):
+                font gui.display_font
+                color gui.paper
+                size 30
+                kerning 8
+                yalign 0.5
+        if _sense:
+            text _("Filament — you can feel where everyone is."):
+                xalign 0.5
+                color gui.dim
+                size 19
+        else:
+            text _("Pick somewhere to go. Most trips are free; being there costs the period."):
+                xalign 0.5
+                color gui.dim
+                size 19
 
     for _key in LOC_ORDER:
 
@@ -267,44 +409,87 @@ screen sb_map():
         $ _nm = _L["name"]
         $ _people = ", ".join(CAST[c]["short"] for c in _folk)
 
-        button:
+        vbox:
             xpos _L["x"]
             ypos _L["y"]
             xanchor 0.5
             yanchor 0.5
-            padding (14, 7)
-            background Frame(Solid("#0b0913d8" if not _cur else "#4a2b8ce8"), 6, 6)
-            hover_background Frame(Solid("#6a3fc0ee"), 6, 6)
-            action Return(("go", _key))
-            sensitive (_ok and not _cur)
+            spacing 4
 
-            vbox:
-                spacing 1
-                text "[_nm]":
-                    color ("#ffffff" if _ok else "#6a6478")
-                    size 21
-                    xalign 0.5
-                if _people:
-                    text "[_people]":
-                        color "#ffd166"
-                        size 16
-                        xalign 0.5
-                elif not _ok:
-                    text _("locked"):
-                        color "#6a6478"
-                        size 15
-                        xalign 0.5
+            button:
+                style ("sb_node_here" if _cur else "sb_node_button")
+                xalign 0.5
+                action Return(("go", _key))
+                sensitive (_ok and not _cur)
 
+                vbox:
+                    spacing 2
+                    text "[_nm]":
+                        style "sb_node_name"
+                        color (gui.paper if _ok else gui.mute)
+                    if _cur:
+                        text _("YOU ARE HERE"):
+                            style "jjk_label"
+                            size 12
+                            color gui.violet2
+                            xalign 0.5
+                    elif _people:
+                        text "[_people]":
+                            color gui.gold
+                            size 15
+                            xalign 0.5
+                    elif not _ok:
+                        text _("LOCKED"):
+                            style "jjk_label"
+                            size 12
+                            color gui.seal
+                            xalign 0.5
+
+            add ("gui/pin_here.png" if _cur else "gui/pin.png") xalign 0.5
+
+    ## Legend, bottom right.
     frame:
-        background Frame(Solid("#0b0913e6"), 6, 6)
+        background Frame("gui/panel_dark.png", 4, 4)
+        xalign 1.0
         yalign 1.0
-        xfill True
-        ypadding 14
+        xoffset -40
+        yoffset -110
+        padding (20, 14)
+        vbox:
+            spacing 8
+            hbox:
+                spacing 10
+                add "gui/pin_here.png" yalign 0.5
+                text _("You are here") style "jjk_small" size 16
+            hbox:
+                spacing 10
+                add "gui/pip_gold.png" yalign 0.5
+                text _("Someone's there") style "jjk_small" size 16
+            hbox:
+                spacing 10
+                add "gui/pip_seal.png" yalign 0.5
+                text _("Locked this period") style "jjk_small" size 16
+
+    ## Stay / status, bottom left — clear of the gate node at the bottom centre.
+    frame:
+        background Frame("gui/panel_dark.png", 4, 4)
+        xalign 0.0
+        yalign 1.0
+        xoffset 40
+        yoffset -40
+        padding (18, 14, 18, 14)
         hbox:
-            xalign 0.5
-            spacing 20
-            textbutton _("Stay here") action Return(("cancel",)) text_size 24
-            textbutton _("Status") action ShowMenu("jjk_status") text_size 24
+            spacing 14
+            textbutton _("Stay here"):
+                style "jjk_button"
+                text_style "jjk_button_text"
+                xfill False
+                action Return(("cancel",))
+            textbutton _("Status"):
+                style "jjk_button"
+                text_style "jjk_button_text"
+                xfill False
+                action ShowMenu("jjk_status")
 
     use sb_hud(on_map=True)
 
@@ -328,65 +513,91 @@ screen sb_char(who):
     $ _year = _c["year"]
     $ _has = has_event("hangout", who, here)
     $ _spent = (who in spent_today)
+    $ _can_spar = (who in ("maki", "yuji", "panda") and here in ("dojo", "training", "ridge"))
 
     add graded_bg()
-    add Solid("#05040a") alpha 0.55
+    add Solid(gui.ink) alpha 0.62
 
     add who:
-        xalign 0.14
+        xalign 0.16
         yalign 1.0
         zoom 0.66
 
     frame:
-        style "jjk_panel"
-        xalign 0.86
+        style "jjk_panel_solid"
+        xalign 0.88
         yalign 0.5
-        xsize 760
+        xsize 780
+        padding (40, 36)
 
         vbox:
-            spacing 14
+            spacing 16
 
-            text "[_nm]":
-                color _col
-                size 38
-            text "[_year] — [_blurb]":
-                color "#9d95ae"
-                size 20
-                xsize 700
+            hbox:
+                spacing 16
+                use seal("縁", 44)
+                text "[_nm]":
+                    font gui.display_font
+                    color _col
+                    size 38
+                    yalign 0.5
+            text "[_year!u]" style "jjk_label"
+            text "[_blurb]" style "jjk_small" xsize 700
 
-            null height 8
+            use rule()
 
-            text "Bond — [_brank]  ([_b]/100)":
-                color "#cfc8dd"
-                size 21
-            use meter(_b, width=680, height=12, fill=_col)
+            ## Bond.
+            vbox:
+                spacing 8
+                hbox:
+                    spacing 12
+                    text _("BOND") style "jjk_label" yalign 1.0
+                    text "[_brank]" style "jjk_value" size 20 yalign 1.0
+                    text "[_b] / 100" style "jjk_small" size 17 yalign 1.0
+                use meter(_b, width=700, height=8, fill=_col)
 
+            ## Affection, capped by bond. The marker shows the ceiling.
             if _rom:
-                text "Affection — [_arank]  ([_a]/[_cap])":
-                    color "#cfc8dd"
-                    size 21
-                use meter(_a, 100, width=680, height=12, fill="#ff8fb0")
-                if _a >= _cap:
-                    text _("You'd have to know them better before this goes further."):
-                        color "#8b8399"
-                        size 18
+                vbox:
+                    spacing 8
+                    hbox:
+                        spacing 12
+                        text _("AFFECTION") style "jjk_label" yalign 1.0
+                        text "[_arank]" style "jjk_value" size 20 yalign 1.0
+                        text "[_a] / [_cap]" style "jjk_small" size 17 yalign 1.0
+                    use meter(_a, 100, width=700, height=8, fill=gui.romance, marker=_cap)
+                    if _a >= _cap:
+                        text _("You'd have to know them better before this goes further."):
+                            color gui.dim
+                            size 17
 
-            null height 14
+            null height 4
 
-            textbutton _("Talk") action Return(("talk", who)) text_size 25
+            ## Actions.
+            vbox:
+                spacing 8
+                style_prefix "jjk"
 
-            if _has and not _spent:
-                textbutton _("Spend time together  (1 period)") action Return(("hang", who)) text_size 25
-            elif _spent:
-                textbutton _("Spend time together") action NullAction() sensitive False text_size 25
-            else:
-                textbutton _("Nothing new to do together today") action NullAction() sensitive False text_size 25
+                textbutton _("Talk") action Return(("talk", who))
 
-            if who in ("maki", "yuji", "panda") and here in ("dojo", "training", "ridge"):
-                textbutton _("Train together  (1 period)") action Return(("spar", who)) text_size 25
+                if _has and not _spent:
+                    textbutton _("Spend time together") action Return(("hang", who))
+                elif _spent:
+                    textbutton _("Spend time together — already today") action NullAction() sensitive False
+                else:
+                    textbutton _("Nothing new to do together today") action NullAction() sensitive False
 
-            null height 10
-            textbutton _("Back") action Return(("cancel",)) text_size 24
+                if _can_spar:
+                    textbutton _("Train together") action Return(("spar", who))
+
+            null height 4
+
+            textbutton _("Back"):
+                style "sb_hud_button"
+                text_style "sb_hud_button_text"
+                xalign 1.0
+                text_size 17
+                action Return(("cancel",))
 
     use sb_hud(on_map=True)
 
@@ -400,7 +611,8 @@ screen jjk_status():
     $ _t = tech()
     $ _ti, _tname, _tdesc = tech_tier()
     $ _nx = next_tier()
-    $ _tline = "%s  (%s)" % (_t["name"], _t["jp"])
+    $ _tline = _t["name"]
+    $ _tjp = _t["jp"]
     $ _grade = grade_name()
     $ _tblurb = _t["blurb"]
     $ _tverb = _t["verb"]
@@ -412,52 +624,95 @@ screen jjk_status():
     use game_menu(_("Status"), scroll="viewport"):
 
         vbox:
-            spacing 24
+            spacing 26
 
+            ## Who you are.
             frame:
                 style "jjk_panel"
                 xfill True
                 vbox:
                     spacing 10
-                    text "[mc_surname] [mc_name]" style "jjk_head"
-                    text "First-year · [_grade] · Day [day]" style "jjk_small"
+                    text "[mc_surname] [mc_name]":
+                        font gui.display_font
+                        color gui.paper
+                        size 40
+                    text "FIRST-YEAR · [_grade!u] · DAY [day]" style "jjk_label"
+
+            ## Technique.
+            frame:
+                style "jjk_panel"
+                xfill True
+                vbox:
+                    spacing 12
+
+                    use section(_("Technique"), k="術")
+
+                    hbox:
+                        spacing 16
+                        text "[_tline]":
+                            font gui.display_font
+                            color "#8ed6ff"
+                            size 30
+                        text "[_tjp]" style "jjk_small" yalign 1.0
+                    text "[_tblurb]" style "jjk_small" xsize 1100 size 21
+
+                    null height 4
+
+                    hbox:
+                        spacing 60
+                        vbox:
+                            spacing 4
+                            text _("CURRENT TIER") style "jjk_label"
+                            text "[_tname]" style "jjk_value"
+                            text "[_tdesc]" style "jjk_small" size 18 xsize 480
+                        if _nx:
+                            vbox:
+                                spacing 4
+                                text _("NEXT") style "jjk_label"
+                                text "[_nxname]" style "jjk_value"
+                                text "at [_ttag] [_nxreq]" style "jjk_small" size 18
+
+                    null height 4
+
+                    hbox:
+                        spacing 12
+                        text "[_tverb!u]" style "jjk_label" color gui.violet2 yalign 1.0
+                        text "[_tverbd]" style "jjk_small" size 19 xsize 900 yalign 1.0
 
                     null height 8
-                    text "[_tline]":
-                        color "#8ed6ff"
-                        size 27
-                    text "[_tblurb]" style "jjk_small" xsize 900
 
-                    null height 6
-                    text "Current tier — [_tname]":
-                        color "#ffffff"
-                        size 23
-                    text "[_tdesc]" style "jjk_small"
-                    if _nx:
-                        text "Next — [_nxname] at [_ttag] [_nxreq]" style "jjk_small"
-
-                    null height 6
-                    text "[_tverb] — [_tverbd]" style "jjk_small" xsize 900
-
-                    null height 12
                     hbox:
-                        spacing 26
+                        spacing 40
                         vbox:
-                            text _("Control") style "jjk_label"
-                            use meter(control, width=260, height=12, fill="#a259ff")
+                            spacing 8
+                            hbox:
+                                spacing 10
+                                text _("CONTROL") style "jjk_label"
+                                text "[control]" style "jjk_value" size 18
+                            use meter(control, width=300, height=8, fill=gui.violet)
                         vbox:
-                            text _("Output") style "jjk_label"
-                            use meter(output, width=260, height=12, fill="#ff8f6a")
+                            spacing 8
+                            hbox:
+                                spacing 10
+                                text _("OUTPUT") style "jjk_label"
+                                text "[output]" style "jjk_value" size 18
+                            use meter(output, width=300, height=8, fill="#ff8f6a")
                         vbox:
-                            text _("Insight") style "jjk_label"
-                            use meter(insight, width=260, height=12, fill="#8ed6ff")
+                            spacing 8
+                            hbox:
+                                spacing 10
+                                text _("INSIGHT") style "jjk_label"
+                                text "[insight]" style "jjk_value" size 18
+                            use meter(insight, width=300, height=8, fill="#8ed6ff")
 
+            ## Bonds.
             frame:
                 style "jjk_panel"
                 xfill True
                 vbox:
                     spacing 18
-                    text _("Bonds") style "jjk_head"
+
+                    use section(_("Bonds"), k="縁")
 
                     for _key in ROSTER_ORDER:
                         if _key in roster:
@@ -468,24 +723,32 @@ screen jjk_status():
                             $ _r = bond_rank(_v)[1]
                             $ _av = affection.get(_key, 0)
                             $ _ar = aff_rank(_av)[1]
+                            $ _cap2 = aff_cap(_key)
 
-                            vbox:
-                                spacing 6
-                                hbox:
-                                    spacing 14
+                            hbox:
+                                spacing 24
+                                fixed:
+                                    xysize (260, 30)
                                     text "[_nm2]":
+                                        font gui.display_font
                                         color _col2
-                                        size 25
-                                    text "— [_r]" style "jjk_small" yalign 1.0
-                                use meter(_v, width=520, height=11, fill=_col2)
-                                if is_romanceable(_key):
+                                        size 24
+                                        yalign 0.5
+                                vbox:
+                                    spacing 6
+                                    yalign 0.5
                                     hbox:
                                         spacing 12
-                                        text "♡ [_ar]":
-                                            color "#ff8fb0"
-                                            size 18
-                                        use meter(_av, width=380, height=8, fill="#ff8fb0") 
-                                null height 4
+                                        use meter(_v, width=520, height=8, fill=_col2)
+                                        text "[_r]" style "jjk_small" size 17 yalign 0.5
+                                    if is_romanceable(_key):
+                                        hbox:
+                                            spacing 12
+                                            use meter(_av, width=520, height=5, fill=gui.romance, marker=_cap2)
+                                            text "♡ [_ar]":
+                                                color gui.romance
+                                                size 15
+                                                yalign 0.5
 
 
 default spent_today = set()
@@ -508,10 +771,15 @@ screen jjk_journal():
             frame:
                 style "jjk_panel"
                 xfill True
-                vbox:
-                    spacing 6
-                    text _("Arc One — Tokyo Jujutsu High") style "jjk_head"
-                    text "Day [day] · [_left2] days until the Kyoto exchange" style "jjk_small"
+                hbox:
+                    spacing 24
+                    vbox:
+                        spacing 8
+                        text _("Arc One — Tokyo Jujutsu High"):
+                            font gui.display_font
+                            color gui.paper
+                            size 32
+                        text "DAY [day] · [_left2] DAYS UNTIL THE KYOTO EXCHANGE" style "jjk_label"
 
             if not _open:
                 frame:
@@ -533,32 +801,45 @@ screen jjk_journal():
                     $ _total = len(_T["stages"])
                     $ _shown = _T["stages"][:_st + 1]
                     $ _fin = thread_done(_tid)
+                    $ _stn = _st + 1
 
                     frame:
                         style "jjk_panel"
                         xfill True
 
                         vbox:
-                            spacing 10
+                            spacing 12
 
                             hbox:
-                                spacing 14
+                                spacing 16
                                 text "[_title]":
+                                    font gui.display_font
                                     color _col
                                     size 28
-                                text "[_owner]" style "jjk_small" yalign 1.0
+                                text "[_owner!u]" style "jjk_label" yalign 1.0
                                 if _fin:
-                                    text _("· resolved"):
-                                        color "#77e0a0"
-                                        size 19
+                                    frame:
+                                        background Solid(gui.stamina)
+                                        padding (6, 2)
                                         yalign 1.0
+                                        text _("RESOLVED"):
+                                            font gui.body_bold_font
+                                            color gui.ink
+                                            size 11
+                                            kerning 2
 
-                            use meter(_st + 1, _total, width=420, height=8, fill=_col)
+                            hbox:
+                                spacing 12
+                                use meter(_st + 1, _total, width=420, height=6, fill=_col)
+                                text "[_stn] / [_total]" style "jjk_small" size 15 yalign 0.5
 
-                            null height 4
+                            null height 2
 
                             for _line in _shown:
-                                text "— [_line]":
-                                    color "#cfc8dd"
-                                    size 20
-                                    xsize 900
+                                hbox:
+                                    spacing 12
+                                    add "gui/pip_small.png" ypos 8
+                                    text "[_line]":
+                                        color gui.paper
+                                        size 20
+                                        xsize 1000
