@@ -83,6 +83,8 @@ label sb_activity(aid, who):
     ## Everything else is a scene, then the clock.
     $ spent_today.add(who)
     call expression "act_" + aid pass (who)
+    if _a.get("once"):
+        $ flag("did_%s_%s" % (aid, who))
     if _a["cost"]:
         $ advance_period(_a["cost"])
     return

@@ -120,6 +120,14 @@ bond 30 → affection cap  20        bond 70 → cap  70
 So romance can't be ground out ahead of friendship — the UI tells you plainly
 when you've hit the ceiling. Romance content is written PG-13.
 
+### The friendship track — `sb_activities.rpy`
+Tops out at **bond 80** with *"They asked you for something"*, gated behind
+having already told them something true at 65. Every other scene in the game
+has the player needing something; this one reverses it, once per character.
+Yuji asks you to be the one who tells the others. Megumi asks you to come and
+sit with Tsumiki. Shoko asks you to be her emergency contact, a line that has
+been blank for eleven years. Nine unique scenes, several with choices.
+
 ### Affection, and the ceiling — `sb_relations.rpy`
 Bond gates affection up to **100**. At 100 there is nowhere left for it to go,
 and one activity appears: **Say it**. That scene is written per character, and

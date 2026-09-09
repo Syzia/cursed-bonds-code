@@ -48,7 +48,14 @@ init -1 python:
              per=("Evening", "Night")),
 
         dict(id="confide",  label="Tell them something true", hint="Something you haven't said to anyone here.",
-             kind="friend", min_bond=65, cost=1),
+             kind="friend", min_bond=65, cost=1, once=True),
+
+        ## The top of the friendship track. You have spent the whole game being
+        ## the one who needs things; here it goes the other way.
+        dict(id="stand",    label="They asked you for something",
+             hint="It took them a while to work up to it.",
+             kind="friend", min_bond=80, cost=2, once=True,
+             requires_flag="confided_"),
 
         ## ---- romance ------------------------------------------------------
         dict(id="rom_town", label="Ask them into town", hint="A whole afternoon, off the mountain.",
@@ -118,6 +125,8 @@ init -1 python:
             a["cost"] = 1
         if a.get("once") and has_flag("did_%s_%s" % (a["id"], who)):
             return False, "Done"
+        if a.get("requires_flag") and not has_flag(a["requires_flag"] + who):
+            return False, "Not yet"
         if not _act_place_ok(a, loc):
             names = ", ".join(LOCATIONS[l]["name"] for l in a["loc"][:2])
             return False, names
