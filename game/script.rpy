@@ -60,7 +60,7 @@ label arc_one_open:
 
     $ day = 1
     $ period = "Morning"
-    $ here = "dorm"
+    $ here = "courtyard"
     $ roll_gojo()
     $ flag("settled_in")
 
@@ -82,5 +82,7 @@ label arc_one_open:
     "Three weeks until the exchange event with Kyoto. Until then the campus is open, the clock runs whether you use it or not, and everyone here has somewhere they'll be."
 
     mcthink "So. Find them."
+
+    "You go out into the courtyard, because it is the middle of everything and somebody is always crossing it."
 
     return

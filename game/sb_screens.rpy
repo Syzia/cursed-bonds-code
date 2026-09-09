@@ -317,7 +317,7 @@ screen sb_place():
             yoffset -300
             background Frame("gui/panel_ghost.png", 4, 4)
             padding (28, 14)
-            text _("There's nobody here right now."):
+            text _("Nobody here right now. Check the map — it shows where people are."):
                 color gui.dim
                 size 22
 
@@ -369,7 +369,7 @@ screen sb_map():
 
     tag sandbox
 
-    $ _sense = (technique == "filament" and control >= 20)
+    $ _sense = (technique == "filament")   # names, not just presence
 
     add "bg map_campus"
     add Solid(gui.ink) alpha 0.32
@@ -395,7 +395,7 @@ screen sb_map():
                 color gui.dim
                 size 19
         else:
-            text _("Pick somewhere to go. Most trips are free; being there costs the period."):
+            text _("Travel is free. Doing something there costs the period."):
                 xalign 0.5
                 color gui.dim
                 size 19
@@ -405,9 +405,10 @@ screen sb_map():
         $ _L = LOCATIONS[_key]
         $ _ok, _why = can_enter(_key)
         $ _cur = (_key == here)
-        $ _folk = who_is_here(_key) if _sense else []
+        $ _folk = who_is_here(_key)
         $ _nm = _L["name"]
-        $ _people = ", ".join(CAST[c]["short"] for c in _folk)
+        $ _people = (", ".join(CAST[c]["short"] for c in _folk) if _sense
+                     else ("%d here" % len(_folk) if _folk else ""))
 
         vbox:
             xpos _L["x"]
