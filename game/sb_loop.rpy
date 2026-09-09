@@ -51,10 +51,22 @@ label sb_person(who):
     call screen sb_char(who)
     $ _p = _return
 
-    if _p[0] == "talk":
-        call sb_smalltalk(who)
+    if _p[0] == "do":
+        call sb_activity(_p[1], _p[2])
 
-    elif _p[0] == "hang":
+    return
+
+
+label sb_activity(aid, who):
+    """Run one activity, then charge the clock for it."""
+
+    $ _a = ACT_BY_ID[aid]
+
+    if aid == "talk":
+        call sb_smalltalk(who)
+        return
+
+    if aid == "hang":
         $ _e = pick_event("hangout", who, here)
         if _e:
             $ spent_today.add(who)
@@ -62,10 +74,17 @@ label sb_person(who):
             $ advance_period()
         else:
             "Nothing comes of it today."
+        return
 
-    elif _p[0] == "spar":
-        call sb_spar(who)
+    if aid == "invite":
+        call act_invite(who)
+        return
 
+    ## Everything else is a scene, then the clock.
+    $ spent_today.add(who)
+    call expression "act_" + aid pass (who)
+    if _a["cost"]:
+        $ advance_period(_a["cost"])
     return
 
 

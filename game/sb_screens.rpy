@@ -511,93 +511,136 @@ screen sb_char(who):
     $ _cap = aff_cap(who)
     $ _blurb = _c["blurb"]
     $ _year = _c["year"]
-    $ _has = has_event("hangout", who, here)
-    $ _spent = (who in spent_today)
-    $ _can_spar = (who in ("maki", "yuji", "panda") and here in ("dojo", "training", "ridge"))
+    $ _acts = activities_for(who)
+    $ _next = next_unlock(who)
+    $ _nextline = ("Next: %s at %s" % (_next[1], _next[2])) if _next else ""
+    $ _tid = next((t for t in THREAD_ORDER if THREADS[t]["who"] == who), None)
+    $ _tstage = thread_stage(_tid) if _tid else -1
+    $ _ttitle = THREADS[_tid]["title"] if _tid else ""
+    $ _ttotal = len(THREADS[_tid]["stages"]) if _tid else 1
 
     add graded_bg()
     add Solid(gui.ink) alpha 0.62
 
     add who:
-        xalign 0.16
+        xalign 0.12
         yalign 1.0
         zoom 0.66
 
     frame:
-        style "jjk_panel_solid"
-        xalign 0.88
-        yalign 0.5
-        xsize 780
-        padding (40, 36)
+        style "jjk_panel"
+        xalign 0.90
+        ypos 96
+        xsize 820
+        ymaximum 950
 
         vbox:
-            spacing 16
+            spacing 10
 
+            text "[_nm]":
+                color _col
+                size 38
+            text "[_year] — [_blurb]":
+                color gui.dim
+                size 20
+                xsize 760
+
+            null height 4
+
+            ## --- relationship meters ---------------------------------------
             hbox:
-                spacing 16
-                use seal("縁", 44)
-                text "[_nm]":
-                    font gui.display_font
-                    color _col
-                    size 38
+                spacing 12
+                text _("BOND") style "jjk_label" yalign 0.5
+                text "[_brank]":
+                    color gui.paper
+                    size 20
                     yalign 0.5
-            text "[_year!u]" style "jjk_label"
-            text "[_blurb]" style "jjk_small" xsize 700
+                text "([_b]/100)" style "jjk_label" yalign 0.5
+            use meter(_b, width=740, height=10, fill=_col)
 
-            use rule()
-
-            ## Bond.
-            vbox:
-                spacing 8
+            if _rom:
                 hbox:
                     spacing 12
-                    text _("BOND") style "jjk_label" yalign 1.0
-                    text "[_brank]" style "jjk_value" size 20 yalign 1.0
-                    text "[_b] / 100" style "jjk_small" size 17 yalign 1.0
-                use meter(_b, width=700, height=8, fill=_col)
+                    text _("AFFECTION") style "jjk_label" yalign 0.5
+                    text "[_arank]":
+                        color gui.romance
+                        size 20
+                        yalign 0.5
+                    text "([_a]/[_cap])" style "jjk_label" yalign 0.5
+                use meter(_a, 100, width=740, height=10, fill=gui.romance)
+                if _a >= _cap and _cap < 100:
+                    text _("You'd have to know them better before this goes further.") style "jjk_label"
 
-            ## Affection, capped by bond. The marker shows the ceiling.
-            if _rom:
+            if _tid and _tstage >= 0:
+                null height 2
+                hbox:
+                    spacing 10
+                    text "[_ttitle]":
+                        color gui.gold
+                        size 18
+                        yalign 0.5
+                    use meter(_tstage + 1, _ttotal, width=180, height=6, fill=gui.gold)
+
+            null height 10
+
+            ## --- what you can do -------------------------------------------
+            viewport:
+                ymaximum 470
+                scrollbars "vertical"
+                mousewheel True
+                draggable True
+
                 vbox:
-                    spacing 8
-                    hbox:
-                        spacing 12
-                        text _("AFFECTION") style "jjk_label" yalign 1.0
-                        text "[_arank]" style "jjk_value" size 20 yalign 1.0
-                        text "[_a] / [_cap]" style "jjk_small" size 17 yalign 1.0
-                    use meter(_a, 100, width=700, height=8, fill=gui.romance, marker=_cap)
-                    if _a >= _cap:
-                        text _("You'd have to know them better before this goes further."):
-                            color gui.dim
-                            size 17
+                    spacing 4
+                    xsize 740
 
-            null height 4
+                    for _a, _ok, _why in _acts:
 
-            ## Actions.
-            vbox:
-                spacing 8
-                style_prefix "jjk"
+                        $ _alabel = _a["label"]
+                        $ _ahint = _a["hint"]
+                        $ _acost = _a["cost"]
+                        $ _arom = (_a["kind"] == "romance")
+                        $ _acol = (gui.romance if _arom else gui.paper) if _ok else gui.mute
 
-                textbutton _("Talk") action Return(("talk", who))
+                        button:
+                            xfill True
+                            padding (14, 7)
+                            background None
+                            hover_background Frame(Solid(gui.panel2), 4, 4)
+                            action Return(("do", _a["id"], who))
+                            sensitive _ok
 
-                if _has and not _spent:
-                    textbutton _("Spend time together") action Return(("hang", who))
-                elif _spent:
-                    textbutton _("Spend time together — already today") action NullAction() sensitive False
-                else:
-                    textbutton _("Nothing new to do together today") action NullAction() sensitive False
+                            hbox:
+                                spacing 12
+                                xfill True
 
-                if _can_spar:
-                    textbutton _("Train together") action Return(("spar", who))
+                                vbox:
+                                    spacing 1
+                                    text "[_alabel]":
+                                        color _acol
+                                        size 23
+                                    if _ok:
+                                        text "[_ahint]" style "jjk_label"
 
-            null height 4
+                                null width 20
 
-            textbutton _("Back"):
-                style "sb_hud_button"
-                text_style "sb_hud_button_text"
-                xalign 1.0
-                text_size 17
-                action Return(("cancel",))
+                                if _ok and _acost:
+                                    text "[_acost]p" style "jjk_label" yalign 0.5 xalign 1.0
+                                elif not _ok:
+                                    text "[_why]":
+                                        color gui.mute
+                                        size 18
+                                        yalign 0.5
+                                        xalign 1.0
+
+            if _nextline:
+                null height 6
+                text "[_nextline]":
+                    color gui.gold
+                    size 18
+
+            null height 8
+            textbutton _("Back") action Return(("cancel",)) text_size 23
 
     use sb_hud(on_map=True)
 

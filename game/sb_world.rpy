@@ -203,6 +203,7 @@ init -2 python:
         store.period = PERIODS[0]
         store.talked_today = set()
         store.spent_today = set()
+        store.companion = None
         store.stamina = store.stamina_max
         store.ce = store.ce_max
         roll_gojo()
@@ -230,9 +231,13 @@ init -2 python:
         return loc
 
     def who_is_here(loc=None, per=None):
+        """Everyone at a location — including whoever is currently tagging along."""
         loc = loc or store.here
-        return [c for c in ROSTER_ORDER
-                if c in store.roster and char_location(c, per) == loc]
+        out = [c for c in ROSTER_ORDER
+               if c in store.roster and char_location(c, per) == loc]
+        if store.companion and loc == store.here and store.companion not in out:
+            out.append(store.companion)
+        return out
 
     def pin(who, loc, day=None, per=None):
         """Force a character somewhere — used by story events."""
