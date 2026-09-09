@@ -41,8 +41,15 @@ init -2 python:
     BOND_RANKS = [(0, "Stranger"), (20, "Acquaintance"), (40, "Comrade"),
                   (60, "Trusted"), (80, "Sworn"), (100, "Unbreakable")]
 
+    ## Affection past 100 only exists after the confession scene, which is why
+    ## the second half of this table is unreachable until then.
     AFF_RANKS = [(0, "—"), (20, "Warm"), (40, "Close"),
-                 (60, "Something There"), (80, "Falling"), (100, "Yours")]
+                 (60, "Something There"), (80, "Falling"), (100, "Yours"),
+                 (125, "Certain"), (150, "Devoted"), (175, "Inseparable"),
+                 (200, "Unconditional")]
+
+    AFF_BASE_MAX = 100      # ceiling before the confession
+    AFF_TRUE_MAX = 200      # ceiling after it
 
     ## Affection cannot outrun friendship. This is the gate that makes romance
     ## something you earn rather than something you grind.
@@ -64,13 +71,30 @@ init -2 python:
     def is_romanceable(who):
         return CAST.get(who, {}).get("romance", False)
 
+    def is_together(who):
+        """True once the confession scene has been played with this person."""
+        return who in store.together
+
     def aff_cap(who):
+        """Bond gates affection up to 100. The confession lifts the lid to 200."""
+        if is_together(who):
+            return AFF_TRUE_MAX
         b = store.bonds.get(who, 0)
         cap = 0
         for need_bond, allowed in AFF_CAP_BY_BOND:
             if b >= need_bond:
                 cap = allowed
         return cap
+
+    def confession_ready(who):
+        """Affection is maxed out and there is nowhere left for it to go."""
+        return (is_romanceable(who) and not is_together(who)
+                and store.affection.get(who, 0) >= AFF_BASE_MAX)
+
+    def begin_together(who):
+        store.together.append(who)
+        flag("together_" + who)
+        renpy.notify("%s — together" % CAST[who]["short"])
 
     def add_bond(who, amount, quiet=False):
         before = store.bonds.get(who, 0)
@@ -143,4 +167,5 @@ default roster    = ["yuji", "megumi", "nobara", "maki", "panda", "toge", "shoko
 default bonds     = {}
 default affection = {}
 default flags     = set()
+default together  = []
 default arc       = 1

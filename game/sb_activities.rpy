@@ -59,8 +59,23 @@ init -1 python:
              kind="romance", min_bond=60, min_aff=45, cost=1,
              per=("Evening", "Night")),
 
+        ## The ceiling scene: appears only when affection has nowhere left to go,
+        ## and lifts the lid so it can keep going.
         dict(id="rom_say",  label="Say it",             hint="Out loud. Badly, probably.",
-             kind="romance", min_bond=70, min_aff=70, cost=1, once=True),
+             kind="confession", min_bond=85, min_aff=100, cost=2, once=True),
+
+        ## ---- after the confession ----------------------------------------
+        dict(id="int_night", label="Stay the night",    hint="Neither of you suggests you go.",
+             kind="intimate", min_aff=110, cost=1, per=("Evening", "Night")),
+
+        dict(id="int_morning", label="Wake up with them", hint="The first hour, before anyone needs anything.",
+             kind="intimate", min_aff=130, cost=1, per=("Morning",)),
+
+        dict(id="int_day",  label="A day off. Just you two.", hint="No training, no missions, no map.",
+             kind="intimate", min_aff=150, cost=3),
+
+        dict(id="int_after", label="Talk about after",  hint="What happens when all this is over.",
+             kind="intimate", min_aff=175, cost=1),
     ]
 
     ACT_BY_ID = {a["id"]: a for a in ACTIVITIES}
@@ -75,8 +90,18 @@ init -1 python:
         """(available, reason) — reason explains the lock, in the player's words."""
         loc = loc or store.here
 
-        if a["kind"] == "romance" and not is_romanceable(who):
+        if a["kind"] in ("romance", "confession", "intimate") and not is_romanceable(who):
             return False, None                      # hidden entirely
+
+        ## The confession only exists at the ceiling, and only once.
+        if a["kind"] == "confession":
+            if not confession_ready(who):
+                return False, None
+            return (store.stamina >= 10), (None if store.stamina >= 10 else "Too tired")
+
+        ## Everything above the confession is hidden until it has happened.
+        if a["kind"] == "intimate" and not is_together(who):
+            return False, None
 
         if a.get("who") and who not in a["who"]:
             return False, None                      # hidden entirely
@@ -85,10 +110,12 @@ init -1 python:
         af = store.affection.get(who, 0)
         short = CAST[who]["short"]
 
-        if b < a["min_bond"]:
+        if b < a.get("min_bond", 0):
             return False, "Bond %d" % a["min_bond"]
         if af < a.get("min_aff", 0):
             return False, "♡ %d" % a["min_aff"]
+        if a.get("cost") is None:
+            a["cost"] = 1
         if a.get("once") and has_flag("did_%s_%s" % (a["id"], who)):
             return False, "Done"
         if not _act_place_ok(a, loc):

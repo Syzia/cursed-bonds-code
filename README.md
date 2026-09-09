@@ -120,6 +120,24 @@ bond 30 → affection cap  20        bond 70 → cap  70
 So romance can't be ground out ahead of friendship — the UI tells you plainly
 when you've hit the ceiling. Romance content is written PG-13.
 
+### Affection, and the ceiling — `sb_relations.rpy`
+Bond gates affection up to **100**. At 100 there is nowhere left for it to go,
+and one activity appears: **Say it**. That scene is written per character, and
+playing it calls `begin_together()`, which lifts the ceiling to **200** and
+opens four tiers of quieter, more intimate activities above it — staying the
+night, waking up together, a whole day off, and talking about after. Ranks
+past 100 are Certain / Devoted / Inseparable / Unconditional.
+
+Everything above the confession is *hidden* until it happens, rather than shown
+as a lock, so the ceiling is a surprise rather than a checklist.
+
+### Planned: binding vows
+Not built yet. The canon mechanic — trade a restriction for power — is a good
+fit for the *combat* progression rather than the relationship one, e.g. a vow
+with Maki that raises Output as long as you train with her every week, and
+lapses if you don't. Deliberately kept separate from affection so romance stays
+a side system with no stat pressure attached to it.
+
 ### Events — `sb_events.rpy`
 Content is data. `ev()` registers a label with conditions; the engine picks the
 most advanced unlocked event and fires it. Scenes never test conditions themselves.

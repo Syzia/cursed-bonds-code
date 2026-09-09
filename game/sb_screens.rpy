@@ -567,8 +567,8 @@ screen sb_char(who):
                         size 20
                         yalign 0.5
                     text "([_a]/[_cap])" style "jjk_label" yalign 0.5
-                use meter(_a, 100, width=740, height=10, fill=gui.romance)
-                if _a >= _cap and _cap < 100:
+                use meter(_a, _cap, width=740, height=10, fill=gui.romance)
+                if _a >= _cap and _cap < AFF_TRUE_MAX:
                     text _("You'd have to know them better before this goes further.") style "jjk_label"
 
             if _tid and _tstage >= 0:

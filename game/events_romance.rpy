@@ -148,12 +148,10 @@ label act_rom_say(who):
         "You pass her the form. Her hand is not entirely steady."
 
     $ add_bond(who, 10)
-    $ add_aff(who, 15)
     $ flag("did_rom_say_" + who)
-    $ flag("together_" + who)
-    $ partner_of_record = who
-    $ renpy.notify("%s — together" % CAST[who]["short"])
+    $ begin_together(who)
+    $ add_aff(who, 10)
+
+    "Something that had been at its limit for weeks has quietly stopped having one."
+
     return
-
-
-default partner_of_record = None
