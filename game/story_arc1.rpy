@@ -8,7 +8,10 @@
 init 1 python:
 
     ev("st_roll_call",   kind="story", min_day=2,  periods=["Morning"],        priority=100)
-    ev("st_board_open",  kind="story", min_day=4,  periods=["Morning", "Noon"], priority=90,
+    ## 92, not 90: if this is still pending late it must beat st_roster, which
+    ## shares the Noon slot — otherwise the Kyoto list can go up before the
+    ## mission board has ever opened.
+    ev("st_board_open",  kind="story", min_day=4,  periods=["Morning", "Noon"], priority=92,
        requires=("roll_call",))
     ev("st_noise",       kind="story", min_day=6,  periods=["Evening"],        priority=90,
        requires=("roll_call",))

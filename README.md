@@ -156,6 +156,20 @@ first-year **~97%** of the time.
 Enemies live in `ENEMIES`, moves in `MOVES` (three per technique, unlocked by
 tier). `call combat("key", ally, flee_ok, bg)` returns "win" / "down" / "fled".
 
+### The road home — `story_oda.rpy`
+Every sandbox location is on the mountain, Sana is dead and the parents are
+edited, so after Chapter 2 the outside world is closed. Oda-sensei is the one
+line still running off it: not family, so the veil never took — it is filed on
+households. She writes to a school whose name the player's own mother cannot
+hold in her head, having worked out on her own that something is wrong.
+
+Two beats. Day 9: the letter, and whether to answer it honestly, carefully, or
+at all. Day 15 (only if answered): she has counted nine short-notice transfers
+in four years, three of them dead inside eighteen months, and the countersigned
+notice she encloses carries the signature Kurose leaked. She is the counterweight
+to him — he files, she notices — and answering her turns a civilian into an
+asset nine days after being told what that costs.
+
 ### Antagonists
 See `docs/ANTAGONISTS.md`. One through-line villain — **Sadao Wakuri, "the
 Cartographer"**, a Grading Office assessor who files curses one grade low near
