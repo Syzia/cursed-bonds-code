@@ -12,6 +12,23 @@ canon Jujutsu Kaisen characters plus two originals (the player and Sana), and
 the under-eye marks that Krea-2 dropped are canon. So the Danbooru-tag argument
 for a local anime checkpoint is real, not hypothetical — see tools/chars/CANON.md.
 
+## Running step 1
+
+The face mask is generated, not hand-drawn:
+
+```bash
+python3 tools/facemask.py "~/Desktop/JJK Game images/<render>.png" <character>
+```
+
+It finds the face by colour — green being at least a quarter of the way from
+blue to red, which separates facial skin (0.39-0.46 on the first render) from
+salmon-pink hair (0.08-0.11) and the red hoodie (0.01-0.04) with a wide margin
+either side — insets from there, and draws a superellipse rather than a plain
+ellipse so the eyebrows are inside the mask. It prints the exact ImageCrop
+x/y/width/height to reuse in ImageCompositeMasked.
+
+Then `python3 tools/keysprite.py --batch <folder>` ingests whatever comes back.
+
 ---
 
 # RECOMMENDATION: Do not install local ComfyUI now. Stay on Comfy Cloud.
