@@ -23,13 +23,27 @@ their sides, entire figure visible from head to feet with space around them
 Aspect ratio **9:16**. LoRAs off. Keep the seed when you find one that works —
 reuse it across expressions so the body stays stable.
 
+### What Krea-2 Turbo actually honours (measured on yuji, 2026-09-14)
+
+Landed correctly: hair colour and the undercut, brown eyes, the red hoodie with
+its drawstrings sitting behind the jacket collar, dark navy jacket, white
+sneakers, the flat green backdrop, and the full-body framing. The line art came
+out near-black rather than dark navy, which is fine.
+
+Dropped: the small under-eye marks. Small facial details are where this model
+stops reading the prompt, so anything of that kind — Toge's cheek seals, Gojo's
+eyes, Yuji's marks — needs it spelled out as a physical object ("a short dark
+tattooed line on the cheekbone") rather than named as a feature, and may still
+need a touch-up pass. The blocks below use that wording where it matters.
+
 ---
 
 ## yuji
 short salmon-pink hair in an undercut, dark shaved sides, pink top swept up and back
-in soft spikes, brown eyes, two small dark marks under each eye, strong eyebrows,
-warm open face, athletic build, dark navy high-collared school uniform jacket open
-over a red hoodie with the hood bunched behind the collar, dark trousers, white sneakers
+in soft spikes, brown eyes, **a short dark tattooed line on the cheekbone directly
+under each eye**, strong eyebrows, warm open face, athletic build, dark navy
+high-collared school uniform jacket open over a red hoodie with the hood bunched
+behind the collar, dark trousers, white sneakers
 
 ## megumi
 black hair in heavy upward spikes sweeping back with strands falling over the brow,
