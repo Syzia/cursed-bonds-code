@@ -17,8 +17,17 @@ even lighting, no shadows on the background
 
 ```
 full body anime character sprite, standing facing the viewer, arms relaxed at
-their sides, entire figure visible from head to feet with space around them
+their sides, zoomed out wide shot, the whole figure from the top of the head to
+the soles of the shoes sits inside the frame with clear empty green space above
+the head and below the feet, nothing touching any edge of the image
 ```
+
+The first render came out with the right shoe clipped by the bottom edge and
+seven pixels of clearance over the hair — the model fills the frame unless it is
+pushed not to, and a clipped foot means the figure's real height is unknown, so
+it cannot be scaled correctly against the rest of the cast. The keyer now
+refuses to pass a render silently when this happens; `--batch` prints
+`figure runs off the bottom of the frame` and you re-roll that one.
 
 Aspect ratio **9:16**. LoRAs off. Keep the seed when you find one that works —
 reuse it across expressions so the body stays stable.
