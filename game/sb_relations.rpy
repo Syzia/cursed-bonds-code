@@ -163,7 +163,9 @@ init -2 python:
 
 ## Relationship state ###########################################################
 
-default roster    = ["yuji", "megumi", "nobara", "maki", "panda", "toge", "shoko", "gojo", "yaga"]
+## The second-years are introduced by a story beat, not on day one — three
+## first-years land as a core group first.
+default roster    = ["yuji", "megumi", "nobara", "shoko", "gojo", "yaga"]
 default bonds     = {}
 default affection = {}
 default flags     = set()

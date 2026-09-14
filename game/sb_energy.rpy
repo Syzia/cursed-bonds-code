@@ -45,21 +45,22 @@ init -2 python:
                 ("Hearth That Will Not Go Out", "Domain Expansion.", 90),
             ],
         ),
-        "aftersound": dict(
-            name="Aftersound",
-            jp="Zankyo — Aftersound",
-            tag="Insight",
-            scales="insight",
-            blurb=("You hear cursed energy that has already happened — the last hour "
-                   "of every room, replayed over the present like tracing paper."),
-            verb="Replay",
-            verb_desc=("Listen to a place. Find out who was here, what they did, and "
-                       "what they were careful not to say."),
+        "timestop": dict(
+            name="Stillness",
+            jp="Teishi — the Held Second",
+            tag="Control",
+            scales="control",
+            blurb=("You take a second out of the world and stand in it alone. It is not "
+                   "speed and it is not foresight — the second simply does not happen "
+                   "until you let it."),
+            verb="Hold",
+            verb_desc=("Take a period back. Spend most of your reserve and the hour does "
+                       "not pass — you get to do something else with it."),
             tiers=[
-                ("Echo",    "Hear the last hour of a room.", 0),
-                ("Overlay", "Hear the next half-second. Move first.", 30),
-                ("Chorus",  "Replay an ally's technique once, badly.", 60),
-                ("The Room Remembers", "Domain Expansion.", 90),
+                ("Stutter",   "A held half-second. Enough to be somewhere else.", 0),
+                ("Held Second", "A full second, and you can move inside it.", 30),
+                ("Arrest",    "Long enough to walk across a room nobody is crossing.", 60),
+                ("The Second That Did Not Happen", "Domain Expansion.", 90),
             ],
         ),
     }

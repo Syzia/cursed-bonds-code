@@ -28,15 +28,10 @@ label start:
     $ mc_name = "Kaito"
     $ mc_surname = "Amagiri"
 
-    ## --- Prologue: how you got here -----------------------------------------
+    ## --- Prologue: the alley, the offer, the school -------------------------
     call chapter_one
 
-    ## The four days between the corridor and the car.
     call chapter_one_b
-
-    call chapter_one_c
-
-    call chapter_one_d
 
     call chapter_two
 
@@ -79,7 +74,7 @@ label arc_one_open:
 
     hide mc with dissolve
 
-    "Three weeks until the exchange event with Kyoto. Until then the campus is open, the clock runs whether you use it or not, and everyone here has somewhere they'll be."
+    "Three weeks until the exchange event with Kyoto. Until then the campus is open, the clock runs whether you use it or not, and the three of them have somewhere they'll be."
 
     mcthink "So. Find them."
 

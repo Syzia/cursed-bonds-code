@@ -168,9 +168,10 @@ label ev_megumi_1:
             "You stand there."
             "It is, for the first four minutes, unbearable. Your brain offers you eleven conversation topics and you decline all of them."
             "At minute six, something changes."
-            if technique == "aftersound":
-                "The forest starts playing itself back to you — an hour of wind, a deer, a boy standing very still for a very long time, over and over, every day this week."
-                mcthink "He comes here every day."
+            if technique == "timestop":
+                "You hold a second, out of curiosity, with nothing in it to escape."
+                "The forest stops. The wind stops. Megumi stops, mid-breath, exactly as still as he was already trying to be."
+                mcthink "He was almost there on his own."
             elif technique == "filament":
                 "Your threads drift out on their own and find the trees, the roots, the cold seam of water under the hill."
                 mcthink "It's the first time I've used it without being terrified."

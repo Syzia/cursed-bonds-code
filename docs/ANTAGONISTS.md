@@ -1,12 +1,17 @@
 # Antagonists
 
+> **Revision 1.** The through-line is now a title, not a man. "The Strongest in
+> History" pairs against Gojo's "the strongest of today" — two holders of one
+> crown, one alive and one sealed in a casket on the far side of the campus.
+> Wakuri below is no longer the top of the pyramid; he serves the resurrection.
+
 One overarching villain across all three arcs, with an arc-level antagonist in
 front of him each time. He is not a monster; he is an administrator, which is
 the point.
 
 ---
 
-## The through-line — Sadao Wakuri, "the Cartographer"
+## The instrument — Sadao Wakuri, "the Cartographer"
 
 **Special grade curse user. Grading Office, Auxiliary Assessment Division.
 Forty-one years of service. Immaculate record.**
@@ -24,11 +29,10 @@ someone who mattered.
 He is not sadistic and he is never angry. He believes he is doing the
 arithmetic nobody else is willing to do.
 
-**Seeded already, before this document existed:**
-- ch1: Gojo on the East Wing curse — *"Grade three. Sloppy little thing.
-  It shouldn't have been here."*
-- ch1b (Aftersound): two people at the taped door at 5 a.m. —
-  *"the girl's clean, the boy isn't; don't touch the boy."*
+**Seeded in the current build:**
+- ch2, on the tour: *"Somebody filed that street as clear this year. I've asked
+  to see who."* — a special-grade-adjacent curse was in an alley behind an
+  arcade, which is not where those live.
 - ch4/ch5: the Sun Mall registered grade 3, was grade 2. Yaga:
   *"I have his name, and he will be hearing from me."*
 

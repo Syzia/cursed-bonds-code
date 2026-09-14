@@ -16,6 +16,15 @@ init -1 python:
                     "close": "Close the distance"}
 
     ENEMIES = {
+        ## The prologue curse. Absurd numbers on purpose: the scene is written to
+        ## be survived, not won, and combat() returns "down" into the story.
+        "alley_curse": dict(
+            name="Something in the alley", grade=1, hp=900, power=26, sprite="curse big",
+            tells=[("It is suddenly much closer and you did not see it move.", "fast"),
+                   ("It settles its weight and the walls creak.", "heavy"),
+                   ("It takes hold of your forearm.", "grab"),
+                   ("Something detaches and comes at you on its own.", "ranged")]),
+
         "sitter": dict(
             name="The Sitter", grade=4, hp=40, power=11, sprite="curse sitter",
             tells=[("It folds its hands and goes still.", "heavy"),
@@ -64,13 +73,18 @@ init -1 python:
             dict(id="kindling", name="Kindling", tier=2, ce=18,
                  desc="Lend the burn to whoever is beside you.", scale="output", mult=1.1, ally_buff=True),
         ],
-        "aftersound": [
-            dict(id="echo", name="Echo", tier=0, ce=5,
-                 desc="Hear the half-second before it moves.", scale="insight", mult=0.8, reveal=True),
-            dict(id="overlay", name="Overlay", tier=1, ce=12,
-                 desc="Be where it is going to be.", scale="insight", mult=1.3, freedodge=True),
-            dict(id="chorus", name="Chorus", tier=2, ce=20,
-                 desc="Replay someone else's technique, badly.", scale="insight", mult=2.0, stagger=True),
+        ## Deliberately expensive. Stopping time answers any telegraph, so if it
+        ## were affordable every round the fight would stop being a decision.
+        "timestop": [
+            dict(id="stutter", name="Stutter", tier=0, ce=14,
+                 desc="Hold half a second. Whatever it was going to do, you are elsewhere.",
+                 scale="control", mult=0.9, freedodge=True, reveal=True),
+            dict(id="held", name="Held Second", tier=1, ce=26,
+                 desc="A full second, spent hitting something that cannot move yet.",
+                 scale="control", mult=1.9, stagger=True),
+            dict(id="arrest", name="Arrest", tier=2, ce=40,
+                 desc="Long enough to cross the room. It does not get a turn.",
+                 scale="control", mult=2.8, stagger=True, freedodge=True),
         ],
     }
 
@@ -213,6 +227,7 @@ init -1 python:
                 store.hp = 0
                 c["over"] = "down"
                 return
+
 
         c["round"] += 1
         combat_telegraph()

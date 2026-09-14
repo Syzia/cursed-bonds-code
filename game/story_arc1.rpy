@@ -12,6 +12,8 @@ init 1 python:
        requires=("roll_call",))
     ev("st_noise",       kind="story", min_day=6,  periods=["Evening"],        priority=90,
        requires=("roll_call",))
+    ev("st_second_years", kind="story", min_day=5, periods=["Afternoon"],       priority=95,
+       requires=("roll_call",))
     ev("st_aftermath",   kind="story", periods=["Morning"],                    priority=95,
        requires=("sunmall_done",))
     ev("st_intensive",   kind="story", min_day=14, periods=["Afternoon"],      priority=90,
@@ -447,6 +449,78 @@ label st_night_before:
     $ renpy.pause(4.5)
     hide screen chapter_card
     with fade_slow
+
+    scene expression graded_bg() with fade_slow
+    return
+
+
+label st_second_years:
+
+    scene bg training with fade_slow
+    show maki at pos_l
+    show panda at pos_cr
+    show toge at pos_fr
+    with dissolve
+
+    "There have been three other people on this campus all week. You have seen them at a distance, at meals, crossing the courtyard, and nobody has introduced anybody, because nobody here does that."
+
+    "Today one of them walks into the training hall while you are in it, carrying a naginata over one shoulder like a shopping bag."
+
+    maki "You're the new first-year."
+
+    maki "Maki Zenin. Second-year. Congratulations on the technique, nobody cares."
+
+    yuji "Maki-san, that's—"
+
+    maki "Nobody cares, Itadori, because a technique doesn't stop a knife."
+
+    "The panda behind her is two metres tall, wearing a school uniform, and holding a can of coffee."
+
+    panda "Panda. Second-year. Yes I'm a panda, no I'm not a panda, we can do that conversation when you've eaten something."
+
+    toge "Salmon."
+
+    panda "Inumaki says welcome. He speaks in rice ball ingredients — Cursed Speech. Anything he actually says, you have to do."
+
+    panda "Last month he told a grade two 'don't move' and its legs stopped working. So we keep it to tuna mayo."
+
+    toge "Tuna mayo."
+
+    menu:
+        "Maki has not put the naginata down."
+
+        "\"Why now? You've been here all week.\"":
+            $ add_bond("maki", 6)
+            $ gain("insight", 2)
+            maki "Because for the first four days you were a first-year who'd had a bad Thursday."
+            maki "Today you were in here at six in the morning on your own. That's different."
+            maki "I'm not interested in people who've had something happen to them. I'm interested in people who get up early about it."
+
+        "\"What does a second-year know that I don't?\"":
+            $ add_bond("maki", 8)
+            $ gain("output", 2)
+            maki "Everything, and none of it is the interesting kind."
+            maki "Here's the only one that matters today."
+            "She swings — not fast, not gently, at exactly the speed of someone establishing a baseline — and you get out of the way badly and entirely on instinct."
+            maki "Good. You moved your feet before you reached for your technique."
+            maki "Everyone here reaches for the technique. Dojo. Dawn. Don't be late, I don't wait."
+            $ open_thread("maki_zenin")
+
+        "\"Hi. I'm not going to be interesting for about a month.\"":
+            $ add_bond("panda", 8)
+            $ add_bond("toge", 6)
+            $ gain("control", 2)
+            panda "Ha! Okay, I like that. That's honest."
+            panda "For the record, the second-years look out for the first-years. That's the whole system, it isn't written down anywhere, and it's the only reason any of us got through our first year."
+            toge "Salmon salmon."
+            panda "He doubles them when he means it. You'll want to learn that one."
+
+    python:
+        for _c in ("maki", "panda", "toge"):
+            recruit(_c)
+
+    $ flag("met_second_years")
+    $ advance_period()
 
     scene expression graded_bg() with fade_slow
     return

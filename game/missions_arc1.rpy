@@ -46,10 +46,10 @@ label ms_nade_1:
 
     "The warehouse has been empty for nine years. The door is chained from the inside, which is the first thing that is wrong, because somebody chained it and then did not leave."
 
-    if technique == "aftersound":
-        "You let it play. Six weeks ago a man in a suit walked the length of this floor with a clipboard, stopped in the middle, stood still for eleven minutes, and left without writing anything."
-        $ gain("insight", 2)
-        $ flag("heard_nade_survey")
+    if technique == "timestop":
+        "You hold the room. Dust hangs. And in the held second you have time to walk the whole floor and read what the survey missed — chalk marks at the roof beams, six weeks old, where somebody measured something and did not write it down."
+        $ gain("control", 2)
+        $ flag("found_nade_marks")
 
     "[_pn] gets a hand on your sleeve before you are four metres in."
 
@@ -129,10 +129,11 @@ label ms_nade_2:
         "Your threads find the drawer under the desk before your hands do. There is a phone in it, switched off, and a second one that is not."
         $ gain("control", 2)
         $ flag("found_the_phone")
-    elif technique == "aftersound":
-        "The room replays: a man on the phone, saying {i}I can't keep doing eleven, someone's going to count them{/i}, and then not saying anything for a long time while somebody on the other end talks."
-        $ gain("insight", 3)
-        $ flag("heard_the_call")
+    elif technique == "timestop":
+        "You hold the annexe and go through the desk at your leisure, in a second that is not passing."
+        "A phone, switched off. A second one that is not. And on the blotter, pressed through from a sheet that is no longer there: {i}I can't keep doing eleven.{/i}"
+        $ gain("control", 3)
+        $ flag("found_the_blotter")
 
     "The shikigami is in the stairwell, and it has been left here, which means Nade knew somebody would come."
 

@@ -233,32 +233,26 @@ label sb_spar(who):
 ## Technique verbs
 ################################################################################
 
-label sb_do_replay:
+label sb_do_hold:
 
-    if not spend_ce(10):
-        "You don't have the reserve for it."
+    $ _cost = max(20, ce_max // 2)
+
+    if not spend_ce(_cost):
+        "Not nearly enough reserve. Holding an hour costs most of everything you have."
         return
 
-    $ _folk_earlier = []
-    python:
-        _i = period_index()
-        if _i > 0:
-            _prev = PERIODS[_i - 1]
-            _folk_earlier = [c for c in roster if char_location(c, _prev) == here]
+    "You take the hour out of the world."
 
-    "You put your hand flat against the nearest surface and let the place play itself back."
+    "Nothing moves. Not the branches, not the dust in the light, not the second hand on the clock in the corridor."
 
-    if _folk_earlier:
-        $ _names = ", ".join(CAST[c]["short"] for c in _folk_earlier)
-        "Earlier this [period.lower()], this room held: [_names]."
-        $ _w = renpy.random.choice(_folk_earlier)
-        $ _n = CAST[_w]["short"]
-        $ add_bond(_w, 2)
-        "You hear a minute of [_n] that [_n] would not have said to your face. You understand them slightly better for it, and feel slightly worse."
-    else:
-        "Nobody has been here for hours. Just wind, and the building settling, and something small in the walls."
+    "You stand in it alone for as long as you can hold it, and then you let it go, and it arrives exactly where it was."
 
-    $ gain("insight", 2)
+    $ gain("control", 2)
+    $ spend_stamina(12)
+    $ flag("held_an_hour")
+
+    "The period does not pass. You have it twice."
+
     return
 
 

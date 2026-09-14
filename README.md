@@ -212,7 +212,7 @@ sprite row in `tools/gensprite.py`.
 | File | What |
 |---|---|
 | `script.rpy` | Entry point, prologue → sandbox handoff |
-| `ch1_east_wing.rpy` `ch2_arrival.rpy` | Prologue |
+| `ch1_alley.rpy` `ch1b_the_offer.rpy` `ch2_tour.rpy` | Prologue |
 | `ch4_mission.rpy` `ch5_debrief.rpy` | Arc 1 story mission (fired from the office) |
 | `sb_world.rpy` | Clock, locations, schedules, access rules |
 | `sb_energy.rpy` | Reserve/Control/Output/Insight, techniques, tiers |

@@ -34,8 +34,8 @@ init python:
             a.append(("study", "Study", "Insight. The textbook is four hundred pages.", 1))
         if loc == "rooftop":
             a.append(("think", "Sit a while", "Nothing happens. That's the point.", 1))
-        if store.technique == "aftersound":
-            a.append(("replay", "Replay", "Hear the last hour of this place.", 0))
+        if store.technique == "timestop":
+            a.append(("hold", "Hold the hour", "Spend deep reserve; the period does not pass.", 0))
         if store.technique == "emberfall" and loc == "storehouse":
             a.append(("temper", "Temper a tool", "Work the forge.", 1))
         a.append(("wait", "Wait", "Let the period pass.", 1))
