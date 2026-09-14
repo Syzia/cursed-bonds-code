@@ -95,8 +95,8 @@ image shoko       = "images/char/shoko.png"
 image utahime     = "images/char/utahime.png"
 
 ## Pre-campus cast — placeholder art until the sprite set lands.
-image sana = Transform("images/char/nobara.png", matrixcolor=TintMatrix("#dbd6eb"))
-image sana tired = Transform("images/char/nobara.png", matrixcolor=TintMatrix("#b3b3cc"))
+image sana = "images/char/sana.png"
+image sana tired = Transform("images/char/sana.png", matrixcolor=TintMatrix("#b3b3cc"))
 image mother = Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6db"))
 image father = Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff"))
 image oda = Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb"))

@@ -83,39 +83,62 @@ HAIR = {"spiky": hair_spiky, "bob": hair_bob, "ponytail": hair_ponytail,
 
 
 # ---------------------------------------------------------------- figure
+# Standing height in cm, and the tallest member of the cast that the canvas is
+# sized for. Kept in step with tools/keysprite.py — placeholders and finished
+# art have to agree about how tall everyone is, or the cast changes height as
+# each real sprite lands.
+HEIGHT_CM = {
+    "yuji": 173, "megumi": 175, "nobara": 160, "maki": 170, "panda": 200,
+    "toge": 176, "shoko": 168, "gojo": 190, "yaga": 190, "ijichi": 175,
+    "utahime": 167, "sana": 160, "mc": 172,
+}
+TALLEST_CM = 200.0
+
+
 def person(name, skin, hair_c, hair_style, uniform, accent, aura, scale=1.0,
            glasses=None, collar_up=False, **hair_kw):
     im = Img(W, H, alpha=True)
 
-    hy = H * 0.125
-    rx, ry = 104 * scale, 118 * scale
-    sh_y = H * 0.268
-    hip_y = H * 0.615
+    # `scale` is mass — how broad the character is. Height is separate, and is
+    # taken from the cast table so the figures stand in correct proportion to
+    # each other. Widths follow height at a softened rate; scaling a short
+    # character down uniformly gives them a doll's head.
+    hf = HEIGHT_CM.get(name, 173) / TALLEST_CM
+    wf = scale * (hf ** 0.5)
+
     foot_y = H * 0.995
-    sh_w = 152 * scale
-    hip_w = 114 * scale
+    def up(frac):
+        """A landmark at `frac` of the full canvas, pulled down toward the feet."""
+        return foot_y - (foot_y - H * frac) * hf
+
+    hy = up(0.125)
+    rx, ry = 104 * wf, 118 * wf
+    sh_y = up(0.268)
+    hip_y = up(0.615)
+    sh_w = 152 * wf
+    hip_w = 114 * wf
 
     uni_hi = shade(uniform, 1.18)
     uni_lo = shade(uniform, 0.66)
     pant = shade(uniform, 0.52)
 
-    im.glow(CX, H * 0.50, 520 * scale, aura, 0.26, 2.0)
-    im.glow(CX, hy + 30, 300 * scale, aura, 0.20, 2.1)
+    im.glow(CX, H * 0.50, 520 * wf, aura, 0.26, 2.0)
+    im.glow(CX, hy + 30, 300 * wf, aura, 0.20, 2.1)
 
     # legs
     for sgn in (-1, 1):
         x = CX + sgn * hip_w * 0.42
-        im.rrect(x - 48 * scale, hip_y - 30, x + 48 * scale, foot_y, 36, pant)
+        im.rrect(x - 48 * wf, hip_y - 30, x + 48 * wf, foot_y, 36, pant)
     im.rect(CX - 5, hip_y + 60, CX + 5, foot_y - 30, shade(uniform, 0.34))
     for sgn in (-1, 1):
         x = CX + sgn * hip_w * 0.42
-        im.rrect(x - 52 * scale, foot_y - 44, x + 50 * scale, foot_y, 16, shade(uniform, 0.30))
+        im.rrect(x - 52 * wf, foot_y - 44, x + 50 * wf, foot_y, 16, shade(uniform, 0.30))
 
     # arms (behind torso)
     for sgn in (-1, 1):
-        x = CX + sgn * (sh_w - 22 * scale)
-        im.rrect(x - 34 * scale, sh_y - 4, x + 34 * scale, hip_y + 26, 34, uni_lo)
-        im.ellipse(x, hip_y + 50, 31 * scale, 37 * scale, skin)
+        x = CX + sgn * (sh_w - 22 * wf)
+        im.rrect(x - 34 * wf, sh_y - 4, x + 34 * wf, hip_y + 26, 34, uni_lo)
+        im.ellipse(x, hip_y + 50, 31 * wf, 37 * wf, skin)
 
     # torso
     im.poly([(CX - sh_w, sh_y + 20), (CX - sh_w * 0.86, sh_y - 8),
@@ -123,21 +146,21 @@ def person(name, skin, hair_c, hair_style, uniform, accent, aura, scale=1.0,
              (CX + hip_w, hip_y + 24), (CX - hip_w, hip_y + 24)], uniform)
     # jacket seam + thin accent trim
     im.poly([(CX - 12, sh_y), (CX + 12, sh_y), (CX + 8, hip_y + 20), (CX - 8, hip_y + 20)], shade(uniform, 0.42))
-    im.poly([(CX - 40 * scale, sh_y + 4), (CX - 22 * scale, sh_y + 4),
-             (CX - 14 * scale, hip_y + 18), (CX - 28 * scale, hip_y + 18)], accent, 0.95)
+    im.poly([(CX - 40 * wf, sh_y + 4), (CX - 22 * wf, sh_y + 4),
+             (CX - 14 * wf, hip_y + 18), (CX - 28 * wf, hip_y + 18)], accent, 0.95)
     im.rect(CX - hip_w * 1.02, hip_y - 6, CX + hip_w * 1.02, hip_y + 26, uni_lo)
-    im.rect(CX - 34 * scale, hip_y + 2, CX + 34 * scale, hip_y + 20, accent, 0.9)
+    im.rect(CX - 34 * wf, hip_y + 2, CX + 34 * wf, hip_y + 20, accent, 0.9)
 
     # neck
-    im.rrect(CX - 30 * scale, hy + ry * 0.66, CX + 30 * scale, sh_y + 10, 16, shade(skin, 0.78))
+    im.rrect(CX - 30 * wf, hy + ry * 0.66, CX + 30 * wf, sh_y + 10, 16, shade(skin, 0.78))
     # collar
     if collar_up:
-        im.poly([(CX - 84 * scale, sh_y + 34), (CX + 84 * scale, sh_y + 34),
-                 (CX + 62 * scale, sh_y - 72 * scale), (CX - 62 * scale, sh_y - 72 * scale)], uni_hi)
-        im.rect(CX - 62 * scale, sh_y - 72 * scale, CX + 62 * scale, sh_y - 60 * scale, accent, 0.9)
+        im.poly([(CX - 84 * wf, sh_y + 34), (CX + 84 * wf, sh_y + 34),
+                 (CX + 62 * wf, sh_y - 72 * wf), (CX - 62 * wf, sh_y - 72 * wf)], uni_hi)
+        im.rect(CX - 62 * wf, sh_y - 72 * wf, CX + 62 * wf, sh_y - 60 * wf, accent, 0.9)
     else:
-        im.poly([(CX - 88 * scale, sh_y - 4), (CX + 88 * scale, sh_y - 4),
-                 (CX + 24 * scale, sh_y + 62), (CX - 24 * scale, sh_y + 62)], uni_hi)
+        im.poly([(CX - 88 * wf, sh_y - 4), (CX + 88 * wf, sh_y - 4),
+                 (CX + 24 * wf, sh_y + 62), (CX - 24 * wf, sh_y + 62)], uni_hi)
 
     # head
     im.ellipse(CX, hy, rx, ry, skin)
@@ -154,8 +177,8 @@ def person(name, skin, hair_c, hair_style, uniform, accent, aura, scale=1.0,
     else:
         for sgn in (-1, 1):
             ex = CX + sgn * rx * 0.42
-            im.rrect(ex - 17 * scale, ey - 8, ex + 17 * scale, ey + 12, 8, shade(skin, 0.30))
-            im.rrect(ex - 17 * scale, ey - 14, ex + 17 * scale, ey - 8, 3, shade(hair_c, 0.7))
+            im.rrect(ex - 17 * wf, ey - 8, ex + 17 * wf, ey + 12, 8, shade(skin, 0.30))
+            im.rrect(ex - 17 * wf, ey - 14, ex + 17 * wf, ey - 8, 3, shade(hair_c, 0.7))
 
     HAIR[hair_style](im, CX, hy, rx, ry, hair_c, **hair_kw)
 
@@ -200,6 +223,9 @@ CAST = [
     ("gojo",    "f0cdb0", "f2f4f8", "spiky",    "2b2b33", "6f8fd0", "8ed6ff", dict(scale=1.10, n=11, length=0.92, seed=21, glasses="14161f", collar_up=True)),
     ("yaga",    "c99a72", "14141a", "buzz",     "2a2f38", "4a5260", "b0b8c8", dict(scale=1.22, glasses="2a2f38")),
     ("ijichi",  "e3b892", "2a2a30", "swept",    "32323a", "55555f", "9aa0b0", dict(glasses="222228")),
+    ("shoko",   "f0cdb0", "6b4a33", "bob",      "d8d8d2", "8a6a4a", "e0c8b0", dict()),
+    ("utahime", "f0cdb0", "2e2440", "ponytail", "e2e2de", "c0392b", "d9a0c0", dict()),
+    ("sana",    "e8c49c", "1e1e26", "ponytail", "5a5f6b", "c0392b", "ffd9a0", dict()),
 ]
 
 if __name__ == "__main__":
