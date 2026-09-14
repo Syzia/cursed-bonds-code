@@ -31,34 +31,57 @@ def sample_bg(im, n=12):
     return tuple(v // cnt for v in acc)
 
 
+def _chroma(c):
+    """How green a colour is, independent of how bright it is.
+
+    RGB distance cannot separate a muted dark backdrop from dark navy clothing
+    — both are simply dark. The green channel's lead over the other two can:
+    a #3f6944 backdrop scores +37, navy trousers score -8.
+    """
+    return c[1] - max(c[0], c[2])
+
+
 def _dist(a, b):
     return math.sqrt(sum((a[k] - b[k]) ** 2 for k in range(3)))
 
 
-def key_out(im, tol=88.0, soft=46.0, bg=None):
-    """RGB(A) -> RGBA, keying against the sampled backdrop colour.
+def key_out(im, bg=None, cut=0.62, feather=0.30):
+    """RGB(A) -> RGBA, keying whatever colour the backdrop turns out to be.
 
-    tol  — distance from the backdrop that still counts as background
-    soft — width of the feathered edge beyond that, which is what keeps hair
-           from turning into a hard jagged cutout
+    cut/feather are fractions of the backdrop's own chroma, so the key adapts
+    to a vivid #00b140 screen and a muted #3f6944 one alike.
     """
     bg = bg or sample_bg(im)
+    bg_chroma = _chroma(bg)
     out = Img(im.w, im.h, alpha=True)
     ch = im.ch
-    green_bg = bg[1] > bg[0] and bg[1] > bg[2]
+
+    # A backdrop with no colour cast at all (grey/white) has to fall back to
+    # plain distance; there is no hue to key on.
+    use_chroma = bg_chroma >= 12
+    lo = bg_chroma * (cut - feather)
+    hi = bg_chroma * cut
+
     for y in range(im.h):
         for x in range(im.w):
             i = (y * im.w + x) * ch
             r, g, b = im.buf[i], im.buf[i + 1], im.buf[i + 2]
-            d = _dist((r, g, b), bg)
 
-            if d <= tol:
-                continue                                     # background
-            a = 255 if d >= tol + soft else int(255 * (d - tol) / soft)
+            if use_chroma:
+                v = g - max(r, b)
+                if v >= hi:
+                    continue                                  # background
+                a = 255 if v <= lo else int(255 * (hi - v) / (hi - lo))
+            else:
+                d = _dist((r, g, b), bg)
+                if d <= 60:
+                    continue
+                a = 255 if d >= 106 else int(255 * (d - 60) / 46)
 
-            # despill: kill the backdrop's cast in the feathered edge pixels
-            if green_bg and a < 255 and g > max(r, b):
-                g = int(g - (g - max(r, b)) * 0.85)
+            # despill: strip the backdrop's cast out of feathered edge pixels,
+            # or every strand of hair carries a green fringe onto dark scenes
+            if use_chroma and a < 255 and g > max(r, b):
+                g = int(g - (g - max(r, b)) * 0.9)
 
             j = (y * out.w + x) * 4
             out.buf[j] = r

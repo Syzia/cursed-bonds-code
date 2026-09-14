@@ -82,7 +82,7 @@ image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 ## Sprites #####################################################################
 
 image mc          = "images/char/mc.png"
-image yuji        = "images/char/yuji.png"
+## image yuji        = "images/char/yuji.png"   # superseded by jjk_sprites.rpy
 image megumi      = "images/char/megumi.png"
 image nobara      = "images/char/nobara.png"
 image maki        = "images/char/maki.png"
