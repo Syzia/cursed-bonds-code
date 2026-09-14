@@ -14,24 +14,90 @@ label chapter_one:
     hide screen chapter_card
     with fade_slow
 
-    scene bg town_street with fade_slow
+    scene bg diner with fade_slow
     show sana at pos_cr
     show mc at pos_l
     with dissolve
 
-    "You have eaten too much and Sana Torii is doing an impression of the man at the next table, who ordered in a way she describes as {i}aggressively.{/i}"
+    "Thursday. The counter place two streets from the station, which is not good, and which you have been coming to since you were fourteen because it is nine hundred yen and it is yours."
 
-    sana "— and then he says it {b}again{/b}, louder, like the waiter had personally disrespected him—"
+    sana "Okay. Okay. Ranking."
 
-    mc "He did say it twice."
+    mc "We did rankings last week."
 
-    sana "He said it {i}four times.{/i} I counted. I was going to say something."
+    sana "We did {i}food{/i} rankings last week. This is different. This is teachers."
 
-    mc "You were not going to say something."
+    "Sana Torii has been assembling this ranking, visibly, for several days. She has a system. The system has a flaw and she knows it and she is going to present it anyway."
 
-    sana "I was building to it."
+    sana "Bottom is Hasegawa, obviously—"
 
-    "She has been building to things since you were eleven. She has never once arrived."
+    mc "Obviously."
+
+    sana "—because of the thing with the projector, which I'm still not over. Top is Oda-sensei, because she caught me eating in her lesson and instead of telling me off she just said {i}finish it properly, you'll get indigestion.{/i}"
+
+    sana "That's leadership. I'd follow that woman into a war."
+
+    menu:
+        "She is entirely serious about this."
+
+        "\"You've got Hasegawa too low.\"":
+            $ flag("dinner_argued")
+            mc "The projector thing wasn't his fault."
+            sana "It was {b}entirely{/b} his fault—"
+            mc "The cable was already broken."
+            sana "Then he should have {i}known{/i} the cable was broken. That's the job. That's literally the job."
+            "You argue about a projector for eleven minutes. It is the best eleven minutes of the week and neither of you notices that at the time."
+
+        "\"Where am I on the list?\"":
+            $ flag("dinner_joked")
+            sana "You're not a teacher."
+            mc "Put me on it anyway."
+            sana "...Mid. Solid mid."
+            mc "{i}Mid?{/i}"
+            sana "You'd be higher but you do the thing where you go quiet and I have to work out what's wrong. Teachers don't do that. Teachers just tell you."
+            "She says it lightly, and it is not light, and you both let it go past."
+
+        "Let her run.":
+            $ flag("dinner_listened")
+            $ gain("insight", 1)
+            "You let her run, because she is good at this and because she has been having a long month and this is what she does instead of talking about it."
+            "She gets through eleven teachers. Four of them she has clearly never been taught by."
+
+    "She orders a second bowl she does not finish and pushes it at you halfway through, which she has done every time for two years, and has never once acknowledged doing."
+
+    sana "Oh — hey. I've got a thing to tell you."
+
+    mc "What thing?"
+
+    sana "A thing thing. A proper one."
+
+    mc "So tell me."
+
+    sana "Not in here, it's got a bad ceiling for it."
+
+    "She points at the ceiling. The ceiling is a ceiling."
+
+    sana "I'll tell you on the way. Or — no. When we get to yours. It needs a doorstep."
+
+    mc "It needs a {i}doorstep.{/i}"
+
+    sana "Some things need a doorstep!"
+
+    "She is delighted with herself. You pay, badly, in coins. She says she'll get it next time."
+
+    scene bg town_street with fade_slow
+
+    "Outside it is cold in the way October gets at about nine, and she walks with her hands pulled up into her sleeves and keeps not telling you the thing."
+
+    sana "— and I'm not saying I'd {i}win{/i} a fight with a swan. I'm saying it wouldn't be as one-sided as everyone claims."
+
+    mc "Tell me the thing."
+
+    sana "Doorstep."
+
+    mc "We're eleven minutes from the doorstep."
+
+    sana "Then you've got eleven minutes to be patient, which, frankly, is a growth area for you."
 
     "You cut through the alley behind the arcade because it saves four minutes and because you always do."
 
@@ -46,6 +112,8 @@ label chapter_one:
     "All of them, at once, in the same instant."
 
     sana "...Okay, that's a power cut. That's a power cut, right?"
+
+    sana "Hey — I'm going to tell you the thing now, actually. This feels like a doorstep."
 
     "There is no sound. That is the part your body notices before your mind does: a town makes a noise all the time, and this one has stopped."
 
@@ -76,6 +144,8 @@ label chapter_one:
     "Sana is screaming your name."
 
     "Then she is not."
+
+    mcthink "She never told me the thing."
 
     "You get up because getting up is the only instruction your body has left. You cannot see her. You cannot see anything. You go toward where the sound stopped, with both hands out, and your hands find her."
 

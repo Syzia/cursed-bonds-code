@@ -133,6 +133,30 @@ label ch1b_goodbye:
             "Your mother makes you eat something. Your father says {i}well{/i} four times over an hour."
             "Nobody in the house sleeps, and nobody says so, and in the morning there is an enormous breakfast that nobody asked for."
 
+    scene bg home_living with fade_slow
+    show mother at pos_c
+    with dissolve
+
+    "In the morning your mother makes breakfast for four."
+
+    "She lays the fourth place without thinking about it — a bowl, chopsticks, the small dish Sana always got because she liked it and said so once, three years ago, and was given it every time after."
+
+    "Then she stops, with her hand still on the dish."
+
+    mother "...Why did I—"
+
+    "It lasts about a second and a half. You watch her look at the fourth place and not be able to get to the end of the thought, and then go smoothly, terribly around it."
+
+    mother "Well. That's silly of me."
+
+    "She clears it away. She is entirely cheerful about it."
+
+    mcthink "It's not gone. It's underneath."
+
+    mcthink "She just can't get at it."
+
+    hide mother with dissolve
+
     scene bg home_bedroom_night with fade_slow
 
     "You pack at two in the morning."
@@ -165,11 +189,15 @@ label ch1b_goodbye:
 
     "Your mother hugs you the correct amount. Your father shakes your hand, which he has never done."
 
-    "As the door closes your mother puts her hand flat against the window, and for exactly one second there is something underneath her face trying to get out."
+    "As the door closes your mother puts her hand flat against the window."
+
+    "And for exactly one second it is the same face she had over the fourth place setting — something underneath, pushing, almost getting there."
 
     "Then it is gone, and she smiles, and waves."
 
-    mcthink "There. That was her."
+    mcthink "There. Twice in one day."
+
+    mcthink "She's still in there. They just filed over the top of her."
 
     scene bg car with fade_slow
 

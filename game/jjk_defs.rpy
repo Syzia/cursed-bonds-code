@@ -74,6 +74,7 @@ image bg car           = "images/bg/car.png"
 image bg sana_room       = "images/bg/sana_room.png"
 image bg sana_room_night = "images/bg/sana_room_night.png"
 image bg konbini         = "images/bg/konbini.png"
+image bg diner           = "images/bg/diner.png"
 image bg street_morning  = "images/bg/street_morning.png"
 image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 
