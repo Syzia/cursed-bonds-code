@@ -80,6 +80,18 @@ CHARACTER_EXPRESSIONS = {
     },
 }
 
+# A one-line reminder of who the character is, used INSTEAD of their full
+# description on expression rows. Megumi's full prompt is ~300 words, mostly
+# hair; the expression was one clause in it and the model ignored it -- his
+# faces changed as much in raw pixels as Yuji's (mean ~21) and all came back
+# bored. Identity is already in the picture being repainted, so the prompt's
+# only job on these rows is the expression. Characters without an entry keep
+# their full description, which is fine when it is short (Yuji's is ~117).
+FACE_BRIEF = {
+    "megumi": "spiky jet-black hair with sharp pointed bangs over the forehead, dark blue-grey "
+              "eyes, pale skin, tall dark navy funnel collar",
+}
+
 # Words in a character's description that pin their NEUTRAL face -- dropped
 # from expression rows only. The base picture already carries the eye shape;
 # saying "heavy drooping eyelids" again just drags every expression back to it.
@@ -407,7 +419,14 @@ def build(render_path, char, prompt_override=None, mask_path=None, head=False,
             base = base.replace(t, "")
     for i, (expr, words, denoise) in enumerate(rows):
         y = i * row_h
-        pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [closeup(base, words, what)],
+        if not head and char in FACE_BRIEF:
+            m = re.search(r"single ([a-z' -]+?)(?: standing|,)", base, re.I)
+            style = re.split(r"\n\s*\n", base.strip())[-1]
+            text = ("close-up of the face of a single %s, facing the viewer, %s\n\n%s\n\n%s\n\n%s"
+                    % (m.group(1) if m else "anime character", words, FACE_BRIEF[char], style, words))
+        else:
+            text = closeup(base, words, what)
+        pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [text],
                     ins=[("clip", "CLIP")], outs=[("CONDITIONING", "CONDITIONING")],
                     title="Prompt: %s" % expr)
         neg = g.add("ConditioningZeroOut", (x0, y + 280), (240, 26),
