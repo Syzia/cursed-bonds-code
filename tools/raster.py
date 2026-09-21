@@ -208,6 +208,87 @@ def paste(dst, src, x, y):
             dst.blend(dx, dy, (src.buf[i], src.buf[i + 1], src.buf[i + 2]), a)
 
 
+def _weights(n_src, n_dst):
+    """For each destination index, the (source index, weight) pairs it covers.
+
+    Area coverage when shrinking, linear interpolation when enlarging.
+    """
+    f = n_dst / float(n_src)
+    out = []
+    if f < 1.0:
+        span = 1.0 / f
+        for d in range(n_dst):
+            a, b = d * span, (d + 1) * span
+            ws, i = [], int(a)
+            while i < b and i < n_src:
+                w = min(b, i + 1) - max(a, i)
+                if w > 1e-6:
+                    ws.append((i, w / span))
+                i += 1
+            out.append(ws)
+    else:
+        for d in range(n_dst):
+            x = (d + 0.5) / f - 0.5
+            i0 = max(0, min(n_src - 1, int(x))); i1 = min(n_src - 1, i0 + 1)
+            t = max(0.0, min(1.0, x - i0))
+            out.append([(i0, 1 - t), (i1, t)] if i1 != i0 else [(i0, 1.0)])
+    return out
+
+
+def resample(im, w2, h2):
+    """Resize to w2 x h2 by area averaging (shrink) or bilinear (enlarge).
+
+    RGBA is averaged premultiplied: a half-transparent edge pixel contributes
+    half its colour, so the colour hidden under transparent pixels -- keyed
+    backdrop -- cannot bleed a fringe into the edge.
+    """
+    ch = im.ch
+    alpha = ch == 4
+    wx, wy = _weights(im.w, w2), _weights(im.h, h2)
+    # horizontal pass into floats
+    tmp = [0.0] * (w2 * im.h * ch)
+    for y in range(im.h):
+        row = y * im.w * ch
+        for x in range(w2):
+            acc = [0.0] * ch
+            for i, wt in wx[x]:
+                j = row + i * ch
+                if alpha:
+                    a = im.buf[j + 3] * wt
+                    acc[0] += im.buf[j] * a; acc[1] += im.buf[j + 1] * a
+                    acc[2] += im.buf[j + 2] * a; acc[3] += a
+                else:
+                    for k in range(ch):
+                        acc[k] += im.buf[j + k] * wt
+            t = (y * w2 + x) * ch
+            tmp[t:t + ch] = acc
+    out = Img(w2, h2, alpha=alpha)
+    for y in range(h2):
+        for x in range(w2):
+            acc = [0.0] * ch
+            for i, wt in wy[y]:
+                t = (i * w2 + x) * ch
+                for k in range(ch):
+                    acc[k] += tmp[t + k] * wt
+            j = (y * w2 + x) * ch
+            if alpha:
+                a = acc[3]
+                if a > 0.5:
+                    out.buf[j] = min(255, int(acc[0] / a + 0.5))
+                    out.buf[j + 1] = min(255, int(acc[1] / a + 0.5))
+                    out.buf[j + 2] = min(255, int(acc[2] / a + 0.5))
+                    out.buf[j + 3] = min(255, int(a + 0.5))
+            else:
+                for k in range(ch):
+                    out.buf[j + k] = min(255, int(acc[k] + 0.5))
+    return out
+
+
+def smooth_scale(im, factor):
+    """Proportional resize with proper filtering -- use this for final art."""
+    return resample(im, max(1, int(im.w * factor)), max(1, int(im.h * factor)))
+
+
 def scale(im, factor):
     """Nearest-neighbour resample (fast, adequate for thumbnails)."""
     w2, h2 = max(1, int(im.w * factor)), max(1, int(im.h * factor))

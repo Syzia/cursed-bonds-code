@@ -219,7 +219,7 @@ def fit(im, height_cm=None):
     of stretching it to fill the canvas, so a 160cm first-year does not come out
     the same size as a 2m panda.
     """
-    from raster import crop, scale, paste
+    from raster import crop, smooth_scale, paste
     x0, y0, x1, y1 = bbox(im)
     fig = crop(im, x0, y0, x1, y1)
 
@@ -229,7 +229,10 @@ def fit(im, height_cm=None):
     f = target_h / float(fig.h)
     if fig.w * f > OUT_W - 40:                     # don't let a wide pose overflow
         f = (OUT_W - 40) / float(fig.w)
-    fig = scale(fig, f)
+    # Area-averaged, not nearest-neighbour: shrinking a render by ~0.85 with
+    # nearest-neighbour drops about one row and column in six, which breaks
+    # one-pixel line art into stair-steps.
+    fig = smooth_scale(fig, f)
 
     out = Img(OUT_W, OUT_H, alpha=True)
     paste(out, fig, (OUT_W - fig.w) // 2, OUT_H - FOOT_ROOM - fig.h)
@@ -339,14 +342,14 @@ def batch(folder):
 
 def side_portrait(sprite, size=360):
     """Head-and-shoulders crop for the dialogue box."""
-    from raster import crop, scale
+    from raster import crop, smooth_scale
     x0, y0, x1, y1 = bbox(sprite)
     head_h = int((y1 - y0) * 0.34)
     cx = (x0 + x1) // 2
     half = max(head_h, (x1 - x0) // 2)
     cut = crop(sprite, max(0, cx - half), max(0, y0 - 12),
                min(sprite.w, cx + half), min(sprite.h, y0 + head_h + 20))
-    return scale(cut, size / float(max(1, cut.w)))
+    return smooth_scale(cut, size / float(max(1, cut.w)))
 
 
 if __name__ == "__main__":
