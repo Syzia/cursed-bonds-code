@@ -13,25 +13,41 @@ copies its model, text encoder, VAE, sampler, step count and prompt. The prompt
 is kept word for word except the expression, which keeps the character looking
 the same as the picture it came from.
 
-How each row works: the render is encoded, the model is allowed to repaint only
-inside the face mask (see tools/facemask.py) at a low denoise, and the result is
-composited back over the untouched original — so the hair, body, uniform and
-green backdrop come back byte-identical in all five.
+How each row works: the face is cut out of the render in a square around the
+mask, scaled up to 1024, and repainted there — only inside the face mask (see
+tools/facemask.py). The result is shrunk back and composited over the untouched
+original, so the hair, body, uniform and green backdrop come back byte-identical
+in all five.
+
+The cut-out-and-enlarge step is not optional polish. The first run repainted
+the face at its real size, where Yuji's mouth is about 25px wide — three cells
+of the model's working grid. Every expression came back nearly neutral, because
+there was no room to draw an open mouth or bared teeth. At four times the size
+there is.
 """
 import sys, os, re, json, struct, zlib, uuid
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # (expression, words that replace the neutral phrase, denoise)
-# Mouth-open expressions need more room to move than the ones that only change
-# the eyes and brows. Past ~0.6 it stops being the same person.
+# Anime faces are drawn big: the first run's polite wording ("smiling warmly",
+# "mouth open slightly") produced five near-identical faces. Say what the face
+# is doing in the terms the art style uses. Mouth-open expressions need more
+# room to move; past ~0.7 it stops being the same person.
 EXPRESSIONS = [
-    ("happy",     "smiling warmly, eyes slightly narrowed, raised brows",             0.40),
-    ("serious",   "level stare, mouth a flat line, lowered brows",                    0.40),
-    ("sad",       "downcast eyes, brows angled up at the inner ends, small frown",    0.42),
-    ("angry",     "angry glare, furrowed brows, teeth showing slightly",              0.50),
-    ("surprised", "wide eyes, raised brows, mouth open slightly",                     0.52),
+    ("happy",     "big cheerful open-mouthed grin, eyes squeezed shut into happy upturned arcs, "
+                  "raised eyebrows",                                                            0.60),
+    ("serious",   "serious determined look, mouth a firm straight line, eyebrows lowered and "
+                  "drawn together, steady narrowed eyes",                                       0.55),
+    ("sad",       "sad expression, eyes downcast and glistening, eyebrows raised and pinched "
+                  "together at the inner ends, mouth turned down at the corners",               0.58),
+    ("angry",     "fierce angry shout, mouth open showing clenched teeth, eyebrows sharply "
+                  "furrowed into a V, glaring eyes",                                            0.62),
+    ("surprised", "shocked expression, eyes wide open with small pupils, eyebrows raised high, "
+                  "mouth open in a round O",                                                    0.62),
 ]
+
+WORK = 1024       # side of the square the face is repainted at
 
 NEUTRAL = re.compile(r"neutral[^,\n]*expression|neutral expression[^,\n]*", re.I)
 
@@ -124,6 +140,48 @@ def recipe(path):
     }
 
 
+def crop_box(mask_path):
+    """Square around the white part of the mask, with room for the model to see
+    hair and collar around the face. Returns (x, y, side) in render pixels."""
+    from pngread import load
+    m = load(mask_path)
+    xs, ys = [], []
+    for y in range(m.h):
+        row = y * m.w * m.ch
+        for x in range(m.w):
+            if m.buf[row + x * m.ch] > 0:
+                xs.append(x); ys.append(y)
+    if not xs:
+        raise SystemExit("%s is all black — rebuild it with tools/facemask.py" % mask_path)
+    cx, cy = (min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2
+    need = max(max(xs) - min(xs), max(ys) - min(ys)) * 1.3
+    side = 64
+    while side < need:
+        side += 64
+    side = min(side, m.w, m.h)
+    x = max(0, min(m.w - side, cx - side // 2))
+    y = max(0, min(m.h - side, cy - side // 2))
+    return x, y, side
+
+
+def closeup(base, words):
+    """The render's prompt, re-framed for a picture that is only the face.
+
+    The framing paragraph describes a full-body sprite; handed a square that is
+    all face, the model fights the description instead of drawing the
+    expression. Keep every other paragraph word for word.
+    """
+    paras = re.split(r"\n\s*\n", base.strip())
+    subject = re.search(r"single ([a-z' -]+?)(?: standing|,)", base, re.I)
+    subject = subject.group(1) if subject else "anime character"
+    frame = "close-up of the face of a single %s, facing the viewer, %s" % (subject, words)
+    for i, p in enumerate(paras):
+        if re.search(r"full[- ]body|sprite", p, re.I):
+            paras[i] = frame
+            return "\n\n".join(paras)
+    return frame + "\n\n" + base
+
+
 # ------------------------------------------------------------ building the graph
 class Graph(object):
     """Just enough of ComfyUI's saved-workflow format to lay out a graph."""
@@ -183,33 +241,35 @@ class Graph(object):
         }
 
 
-def build(render_path, char, prompt_override=None):
+def build(render_path, char, prompt_override=None, mask_path=None):
     r = recipe(render_path)
     base = prompt_override or r["prompt"]
-    if not NEUTRAL.search(base):
-        print("!! no 'neutral ... expression' phrase in the prompt — the expression "
-              "words will be added at the front instead")
+    mask_path = mask_path or os.path.join(os.path.dirname(render_path), "masks", char + "_face.png")
+    if not os.path.exists(mask_path):
+        raise SystemExit("no mask at %s — run tools/facemask.py first" % mask_path)
+    cx, cy, side = crop_box(mask_path)
 
     render_name = os.path.basename(render_path)
-    mask_name = char + "_face.png"
+    mask_name = os.path.basename(mask_path)
     g = Graph()
 
-    note = g.add("MarkdownNote", (0, -470), (640, 400), title="Start here",
-                 color="#222", bgcolor="#000", widgets=[
+    g.add("MarkdownNote", (0, -470), (640, 400), title="Start here",
+          color="#222", bgcolor="#000", widgets=[
         "## %s: five expressions, one Run\n\n"
-        "1. **Top Load Image box:** click it and upload `%s`.\n"
-        "2. **Bottom Load Image box:** upload `%s` from the `masks` folder.\n"
+        "1. **Top Load Image box:** click the folder icon and upload `%s`.\n"
+        "2. **Bottom Load Image box:** upload `%s` from the `masks` folder. "
+        "It should be black with a small white oval.\n"
         "3. Press **Run**. Each row on the right paints one expression.\n\n"
         "Each row has two settings you can change:\n\n"
-        "- **The text box** holds your original prompt, word for word. Only the "
-        "expression words differ.\n"
+        "- **The text box** holds the prompt. Only the expression words differ.\n"
         "- **denoise** (bottom of the KSampler) sets how much the face can change. "
-        "If it barely moved, go up by 0.05. If it looks like a different person, "
-        "go down. Stay under 0.6.\n\n"
-        "Nothing outside the face mask can change: hair, body and green all come "
-        "back identical." % (char.capitalize(), render_name, mask_name)])
+        "If it barely moved, go up by 0.05. If it stops looking like %s, go "
+        "down. Stay under 0.7.\n\n"
+        "The face is cut out, repainted 4x bigger, then shrunk back in. Nothing "
+        "outside the white oval can change."
+        % (char.capitalize(), render_name, mask_name, char.capitalize())])
 
-    # ---- shared column: model, pictures, mask
+    # ---- shared column: model, pictures, the cut-out face
     unet = g.add("UNETLoader", (0, 0), (320, 82), r["unet"], outs=[("MODEL", "MODEL")])
     clip = g.add("CLIPLoader", (0, 110), (320, 106), r["clip"], outs=[("CLIP", "CLIP")])
     vae = g.add("VAELoader", (0, 245), (320, 58), [r["vae"]], outs=[("VAE", "VAE")])
@@ -217,26 +277,37 @@ def build(render_path, char, prompt_override=None):
                 outs=[("IMAGE", "IMAGE"), ("MASK", "MASK")], title="Load Image: the render")
     msk = g.add("LoadImage", (0, 750), (320, 380), [mask_name, "image"],
                 outs=[("IMAGE", "IMAGE"), ("MASK", "MASK")], title="Load Image: the face mask")
+
+    cut = g.add("ImageCrop", (360, 340), (260, 130), [side, side, cx, cy],
+                ins=[("image", "IMAGE")], outs=[("IMAGE", "IMAGE")], title="Cut out the face")
+    big = g.add("ImageScale", (360, 500), (260, 130), ["lanczos", WORK, WORK, "disabled"],
+                ins=[("image", "IMAGE")], outs=[("IMAGE", "IMAGE")], title="Enlarge to %d" % WORK)
+    enc = g.add("VAEEncode", (360, 660), (210, 46),
+                ins=[("pixels", "IMAGE"), ("vae", "VAE")], outs=[("LATENT", "LATENT")])
     to_mask = g.add("ImageToMask", (360, 750), (260, 58), ["red"],
                     ins=[("image", "IMAGE")], outs=[("MASK", "MASK")])
-    enc = g.add("VAEEncode", (360, 340), (210, 46),
-                ins=[("pixels", "IMAGE"), ("vae", "VAE")], outs=[("LATENT", "LATENT")])
-    noise = g.add("SetLatentNoiseMask", (360, 440), (240, 46),
+    cut_mask = g.add("CropMask", (360, 840), (260, 130), [cx, cy, side, side],
+                     ins=[("mask", "MASK")], outs=[("MASK", "MASK")], title="Cut out the mask")
+    # SetLatentNoiseMask resizes the mask to the latent itself, so the cut-out
+    # mask can go straight in; the composite at the end wants it at cut-out size.
+    noise = g.add("SetLatentNoiseMask", (360, 1000), (240, 46),
                   ins=[("samples", "LATENT"), ("mask", "MASK")], outs=[("LATENT", "LATENT")])
-    g.wire(msk, 0, to_mask, "image")
-    g.wire(img, 0, enc, "pixels")
+    g.wire(img, 0, cut, "image")
+    g.wire(cut, 0, big, "image")
+    g.wire(big, 0, enc, "pixels")
     g.wire(vae, 0, enc, "vae")
+    g.wire(msk, 0, to_mask, "image")
+    g.wire(to_mask, 0, cut_mask, "mask")
     g.wire(enc, 0, noise, "samples")
-    g.wire(to_mask, 0, noise, "mask")
+    g.wire(cut_mask, 0, noise, "mask")
     g.group("Shared: model, the render, its face mask", -20, -40, 660, 1190, "#3f3f5a")
 
     # ---- one row per expression
-    row_h, x0 = 400, 700
+    row_h, x0 = 420, 700
     colours = ["#3f5a4a", "#3f4f5a", "#4a3f5a", "#5a3f3f", "#5a513f"]
     for i, (expr, words, denoise) in enumerate(EXPRESSIONS):
         y = i * row_h
-        text = NEUTRAL.sub(words, base, count=1) if NEUTRAL.search(base) else words + ", " + base
-        pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [text],
+        pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [closeup(base, words)],
                     ins=[("clip", "CLIP")], outs=[("CONDITIONING", "CONDITIONING")],
                     title="Prompt: %s" % expr)
         neg = g.add("ConditioningZeroOut", (x0, y + 280), (240, 26),
@@ -249,10 +320,12 @@ def build(render_path, char, prompt_override=None):
                    outs=[("LATENT", "LATENT")])
         dec = g.add("VAEDecode", (x0 + 800, y), (200, 46),
                     ins=[("samples", "LATENT"), ("vae", "VAE")], outs=[("IMAGE", "IMAGE")])
-        comp = g.add("ImageCompositeMasked", (x0 + 800, y + 80), (290, 140), [0, 0, False],
+        small = g.add("ImageScale", (x0 + 800, y + 70), (260, 130), ["lanczos", side, side, "disabled"],
+                      ins=[("image", "IMAGE")], outs=[("IMAGE", "IMAGE")], title="Shrink back to %d" % side)
+        comp = g.add("ImageCompositeMasked", (x0 + 800, y + 220), (290, 140), [cx, cy, False],
                      ins=[("destination", "IMAGE"), ("source", "IMAGE"), ("mask", "MASK")],
                      outs=[("IMAGE", "IMAGE")], title="Paste face onto original")
-        save = g.add("SaveImage", (x0 + 1120, y), (280, 340), ["%s_%s" % (char, expr)],
+        save = g.add("SaveImage", (x0 + 1120, y), (280, 360), ["%s_%s" % (char, expr)],
                      ins=[("images", "IMAGE")], outs=[])
         g.wire(clip, 0, pos, "clip")
         g.wire(pos, 0, neg, "conditioning")
@@ -262,14 +335,15 @@ def build(render_path, char, prompt_override=None):
         g.wire(noise, 0, ks, "latent_image")
         g.wire(ks, 0, dec, "samples")
         g.wire(vae, 0, dec, "vae")
+        g.wire(dec, 0, small, "image")
         g.wire(img, 0, comp, "destination")
-        g.wire(dec, 0, comp, "source")
-        g.wire(to_mask, 0, comp, "mask")
+        g.wire(small, 0, comp, "source")
+        g.wire(cut_mask, 0, comp, "mask")
         g.wire(comp, 0, save, "images")
         g.group("%s  (denoise %.2f)" % (expr.upper(), denoise),
                 x0 - 20, y - 40, 1440, row_h - 20, colours[i % len(colours)])
 
-    return g.dump(), r
+    return g.dump(), r, (cx, cy, side)
 
 
 if __name__ == "__main__":
@@ -282,7 +356,7 @@ if __name__ == "__main__":
     if "--prompt-file" in sys.argv:
         override = open(os.path.expanduser(sys.argv[sys.argv.index("--prompt-file") + 1])).read()
 
-    wf, r = build(render, char, override)
+    wf, r, (cx, cy, side) = build(render, char, override)
     out = os.path.join(os.path.dirname(render), "%s_expressions.json" % char)
     with open(out, "w") as f:
         json.dump(wf, f, indent=1)
@@ -291,6 +365,7 @@ if __name__ == "__main__":
     print("encoder   %s (%s)" % (r["clip"][0], r["clip"][1]))
     print("vae       %s" % r["vae"])
     print("sampler   %s / %s, %d steps, cfg %s" % (r["sampler"], r["scheduler"], r["steps"], r["cfg"]))
+    print("face crop %dx%d at (%d, %d), repainted at %d" % (side, side, cx, cy, WORK))
     print("rows      %s" % ", ".join("%s %.2f" % (e, d) for e, _, d in EXPRESSIONS))
     print("\nworkflow -> %s" % out)
     print("drag it onto the Comfy Cloud canvas")
