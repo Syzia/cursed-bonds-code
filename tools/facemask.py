@@ -88,41 +88,126 @@ def face_box(im, keyed):
     return xs[k], ys[k], xs[-k], ys[-k]
 
 
-def build(src_path, name, out_dir=None):
+def face_spans(im, keyed):
+    """Row-by-row extent of the face itself, as {y: (left, right)}.
+
+    A box-shaped oval fits a round face and fails a pointed one: on Megumi its
+    lower corners ran past the jaw onto the green and the top of his collar, so
+    every expression would have redrawn a slightly different collar edge. This
+    follows the skin instead. The face is the patch of skin connected to the
+    middle of the face box -- ears, hands and neck-through-a-collar are skin
+    too, but separated from it by hair or line work, so they fall away.
+
+    Each row is filled edge to edge so eyes, brows and mouth (not skin) are
+    inside; above the widest row of the upper face the width is held, so
+    eyebrows half-hidden under a fringe stay in.
+    """
+    x0, y0, x1, y1 = face_box(im, keyed)
+    bx0, by0 = max(0, x0 - 10), max(0, y0 - 10)
+    bx1, by1 = min(im.w, x1 + 10), min(im.h, y1 + 10)
+    w = bx1 - bx0
+
+    def skin_at(x, y):
+        if keyed.buf[(y * keyed.w + x) * 4 + 3] < 200:
+            return False
+        i = (y * im.w + x) * im.ch
+        return is_skin(im.buf[i], im.buf[i + 1], im.buf[i + 2])
+
+    skin = bytearray(w * (by1 - by0))
+    for y in range(by0, by1):
+        for x in range(bx0, bx1):
+            if skin_at(x, y):
+                skin[(y - by0) * w + (x - bx0)] = 1
+
+    # Seed: the skin pixel nearest the middle of the face box.
+    cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
+    seed = None
+    for r in range(0, max(w, by1 - by0)):
+        for dy in range(-r, r + 1):
+            for dx in (-r, r) if abs(dy) != r else range(-r, r + 1):
+                x, y = cx + dx, cy + dy
+                if bx0 <= x < bx1 and by0 <= y < by1 and skin[(y - by0) * w + (x - bx0)]:
+                    seed = (x, y)
+                    break
+            if seed: break
+        if seed: break
+    if not seed:
+        raise SystemExit("could not find the face's skin near the middle of the face box")
+
+    seen = bytearray(len(skin))
+    stack = [(seed[1] - by0) * w + (seed[0] - bx0)]
+    seen[stack[0]] = 1
+    rows = {}
+    while stack:
+        p = stack.pop()
+        x, y = p % w, p // w
+        l, r = rows.get(y, (x, x))
+        rows[y] = (min(l, x), max(r, x))
+        # Four neighbours, not eight: a jaw line drawn one pixel thick has
+        # diagonal gaps, and through them the face leaks down the neck.
+        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+            if 0 <= nx < w and 0 <= ny < by1 - by0:
+                q = ny * w + nx
+                if skin[q] and not seen[q]:
+                    seen[q] = 1
+                    stack.append(q)
+
+    ys = sorted(rows)
+    top, bot = ys[0], ys[-1]
+    # Smooth: a lash line or a strand of fringe can nick one row short.
+    spans = {}
+    for y in range(top, bot + 1):
+        near = [rows[k] for k in range(y - 2, y + 3) if k in rows]
+        if not near:
+            continue
+        ls = sorted(a for a, _ in near); rs = sorted(b for _, b in near)
+        spans[y] = (ls[len(ls) // 2], rs[len(rs) // 2])
+    # Hold the upper face's widest row up to the top, for the brows.
+    upper = [y for y in spans if y <= top + (bot - top) * 0.55]
+    if upper:
+        wide = max(upper, key=lambda y: spans[y][1] - spans[y][0])
+        for y in spans:
+            if y < wide:
+                spans[y] = (min(spans[y][0], spans[wide][0]), max(spans[y][1], spans[wide][1]))
+    return {y + by0: (l + bx0, r + bx0) for y, (l, r) in spans.items()}
+
+
+def build(src_path, name, out_dir=None, inset=2):
     src_path = os.path.expanduser(src_path)
     im = load(src_path)
     keyed = key_out(im)
-    x0, y0, x1, y1 = face_box(im, keyed)
+    spans = face_spans(im, keyed)
 
-    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
-    rx, ry = (x1 - x0) / 2.0 * INSET_X, (y1 - y0) / 2.0 * INSET_Y
+    # Pull in from the face outline so the jaw line itself is never redrawn:
+    # it is the edge the key cuts along, and it must match across expressions.
+    spans = {y: (l + inset, r - inset) for y, (l, r) in spans.items() if r - l > 2 * inset}
+    ys = sorted(spans)
+    ys = ys[inset:len(ys) - inset]
+    spans = {y: spans[y] for y in ys}
+    colmin, colmax = {}, {}
+    for y, (l, r) in spans.items():
+        for x in range(l, r + 1):
+            colmin[x] = min(colmin.get(x, y), y)
+            colmax[x] = max(colmax.get(x, y), y)
 
     mask = Img(im.w, im.h, alpha=False)
     mask.rect(0, 0, im.w, im.h, (0, 0, 0))
-    # Feather inward: concentric shrinking copies from the rim to the core, so
-    # every partially-lit pixel of the mask lies on skin.
-    steps = max(1, FEATHER)
-    for s in range(steps + 1):
-        v = int(255 * s / float(steps))
-        d = steps - s
-        mask.poly(superellipse(cx, cy, rx - d, ry - d), (v, v, v))
+    # Feather inward: the soft band lies entirely inside the face.
+    for y, (l, r) in spans.items():
+        row = y * im.w * 3
+        for x in range(l, r + 1):
+            d = min(x - l, r - x, y - colmin[x], colmax[x] - y)
+            v = 255 if d >= FEATHER else int(255 * d / float(FEATHER))
+            mask.buf[row + x * 3:row + x * 3 + 3] = bytes((v, v, v))
 
     out_dir = out_dir or os.path.join(os.path.dirname(src_path), "masks")
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, name + "_face.png")
     mask.save(out)
 
-    print("face box  x %d..%d  y %d..%d" % (x0, x1, y0, y1))
-    print("shape     centre (%d, %d)  radii %d x %d  squareness %.1f"
-          % (cx, cy, rx, ry, SQUARENESS))
+    xs = [x for l, r in spans.values() for x in (l, r)]
+    print("face      x %d..%d  y %d..%d, following the skin" % (min(xs), max(xs), ys[0], ys[-1]))
     print("mask   -> %s" % out)
-    print("\ncrop for the inpaint (square, power-of-two friendly):")
-    side = 1
-    while side < max(rx, ry) * 2 * 1.3:
-        side *= 2
-    cxi, cyi = int(cx - side / 2), int(cy - side / 2)
-    print("  ImageCrop  x=%d  y=%d  width=%d  height=%d" % (max(0, cxi), max(0, cyi), side, side))
-    print("  ImageCompositeMasked must use the SAME x,y with resize_source=false")
     return out
 
 

@@ -32,8 +32,13 @@ EXPRESSIONS = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 # everyone else is scaled against that and keeps the leftover space above their
 # head. Without this every figure gets stretched to the same pixel height and
 # Nobara ends up eye to eye with Gojo.
+#
+# These are DRAWN heights: the figure's bounding box includes the hair. Where a
+# hairstyle adds real height the canon figure is raised to compensate, measured
+# so the chin-to-feet distance matches canon against Yuji -- Megumi's spikes
+# take 16% of his drawn height, so a canon 175 is drawn at 181.
 HEIGHT_CM = {
-    "yuji": 173, "megumi": 175, "nobara": 160, "maki": 170, "panda": 200,
+    "yuji": 173, "megumi": 181, "nobara": 160, "maki": 170, "panda": 200,
     "toge": 176, "shoko": 168, "gojo": 190, "yaga": 190, "ijichi": 175,
     "utahime": 167, "sana": 160, "mc": 172,
 }

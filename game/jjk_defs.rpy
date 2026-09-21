@@ -83,7 +83,7 @@ image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 
 image mc          = "images/char/mc.png"
 ## image yuji        = "images/char/yuji.png"   # superseded by jjk_sprites.rpy
-image megumi      = "images/char/megumi.png"
+## image megumi     = "images/char/megumi.png"   # superseded by jjk_sprites.rpy
 image nobara      = "images/char/nobara.png"
 image maki        = "images/char/maki.png"
 image panda       = "images/char/panda.png"
