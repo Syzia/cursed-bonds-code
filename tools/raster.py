@@ -227,11 +227,19 @@ def _weights(n_src, n_dst):
                 i += 1
             out.append(ws)
     else:
+        # Catmull-Rom: enlarging line art bilinearly turns every edge into a
+        # ramp; this keeps edges close to the original's sharpness.
         for d in range(n_dst):
             x = (d + 0.5) / f - 0.5
-            i0 = max(0, min(n_src - 1, int(x))); i1 = min(n_src - 1, i0 + 1)
-            t = max(0.0, min(1.0, x - i0))
-            out.append([(i0, 1 - t), (i1, t)] if i1 != i0 else [(i0, 1.0)])
+            i = int(x) if x >= 0 else int(x) - 1
+            t = x - i
+            ws = []
+            for k, u in ((-1, t + 1), (0, t), (1, 1 - t), (2, 2 - t)):
+                u = abs(u)
+                w = (1.5 * u ** 3 - 2.5 * u ** 2 + 1) if u < 1 else \
+                    (-0.5 * u ** 3 + 2.5 * u ** 2 - 4 * u + 2) if u < 2 else 0.0
+                ws.append((max(0, min(n_src - 1, i + k)), w))
+            out.append(ws)
     return out
 
 
@@ -274,13 +282,13 @@ def resample(im, w2, h2):
             if alpha:
                 a = acc[3]
                 if a > 0.5:
-                    out.buf[j] = min(255, int(acc[0] / a + 0.5))
-                    out.buf[j + 1] = min(255, int(acc[1] / a + 0.5))
-                    out.buf[j + 2] = min(255, int(acc[2] / a + 0.5))
-                    out.buf[j + 3] = min(255, int(a + 0.5))
+                    out.buf[j] = max(0, min(255, int(acc[0] / a + 0.5)))
+                    out.buf[j + 1] = max(0, min(255, int(acc[1] / a + 0.5)))
+                    out.buf[j + 2] = max(0, min(255, int(acc[2] / a + 0.5)))
+                    out.buf[j + 3] = max(0, min(255, int(a + 0.5)))
             else:
                 for k in range(ch):
-                    out.buf[j + k] = min(255, int(acc[k] + 0.5))
+                    out.buf[j + k] = max(0, min(255, int(acc[k] + 0.5)))
     return out
 
 
