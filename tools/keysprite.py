@@ -69,6 +69,62 @@ def _dist(a, b):
     return math.sqrt(sum((a[k] - b[k]) ** 2 for k in range(3)))
 
 
+def backdrop_regions(im, bg, lo):
+    """Which green pixels are actually backdrop, as a bytearray over the image.
+
+    Keying every green pixel would also key a character's own green parts:
+    Megumi's sea-green eyes, a jade earring, a green tie. What separates them
+    from the screen is connectivity. The backdrop is one region that touches
+    the frame edge; gaps in a pose (between an arm and the body, a hand on a
+    hip) are sealed off from it but are large, and are the backdrop's exact
+    colour. An iris is small, sealed inside the face, and a different green.
+
+    So a green region counts as backdrop if it touches the edge, OR is bigger
+    than any eye could be, OR is close to the backdrop's own colour. Anything
+    else is part of the character and stays opaque.
+    """
+    w, h, ch, buf = im.w, im.h, im.ch, im.buf
+    n = w * h
+    green = bytearray(n)
+    for p in range(n):
+        i = p * ch
+        r, g, b = buf[i], buf[i + 1], buf[i + 2]
+        if g - (r if r > b else b) > lo:
+            green[p] = 1
+
+    backdrop = bytearray(n)
+    seen = bytearray(n)
+    pocket = max(400, n // 2500)           # ~420px at 768x1368; an iris is ~120
+    for start in range(n):
+        if not green[start] or seen[start]:
+            continue
+        stack, region, edge = [start], [], False
+        seen[start] = 1
+        while stack:
+            p = stack.pop()
+            region.append(p)
+            x, y = p % w, p // w
+            if x == 0 or y == 0 or x == w - 1 or y == h - 1:
+                edge = True
+            for q in (p - 1 if x > 0 else -1, p + 1 if x < w - 1 else -1,
+                      p - w if y > 0 else -1, p + w if y < h - 1 else -1):
+                if q >= 0 and green[q] and not seen[q]:
+                    seen[q] = 1
+                    stack.append(q)
+        keep = edge or len(region) >= pocket
+        if not keep:
+            sr = sg = sb = 0
+            for p in region:
+                i = p * ch
+                sr += buf[i]; sg += buf[i + 1]; sb += buf[i + 2]
+            k = float(len(region))
+            keep = _dist((sr / k, sg / k, sb / k), bg) < 45
+        if keep:
+            for p in region:
+                backdrop[p] = 1
+    return backdrop
+
+
 def key_out(im, bg=None, cut=0.62, feather=0.30):
     """RGB(A) -> RGBA, keying whatever colour the backdrop turns out to be.
 
@@ -85,17 +141,22 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
     use_chroma = bg_chroma >= 12
     lo = bg_chroma * (cut - feather)
     hi = bg_chroma * cut
+    backdrop = backdrop_regions(im, bg, lo) if use_chroma else None
 
     for y in range(im.h):
         for x in range(im.w):
-            i = (y * im.w + x) * ch
+            p = y * im.w + x
+            i = p * ch
             r, g, b = im.buf[i], im.buf[i + 1], im.buf[i + 2]
 
             if use_chroma:
                 v = g - max(r, b)
-                if v >= hi:
+                if v <= lo or not backdrop[p]:
+                    a = 255                                   # figure, green or not
+                elif v >= hi:
                     continue                                  # background
-                a = 255 if v <= lo else int(255 * (hi - v) / (hi - lo))
+                else:
+                    a = int(255 * (hi - v) / (hi - lo))
             else:
                 d = _dist((r, g, b), bg)
                 if d <= 60:
@@ -107,7 +168,7 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
             if use_chroma and a < 255 and g > max(r, b):
                 g = int(g - (g - max(r, b)) * 0.9)
 
-            j = (y * out.w + x) * 4
+            j = p * 4
             out.buf[j] = r
             out.buf[j + 1] = max(0, min(255, g))
             out.buf[j + 2] = b
@@ -188,7 +249,9 @@ def qa(src, keyed, name):
         if a < 8:
             continue
         kept += 1
-        if keyed.buf[i + 1] - max(keyed.buf[i], keyed.buf[i + 2]) > 18:
+        # Only soft edge pixels can be fringe; an opaque green pixel is one the
+        # key deliberately kept, like a green eye.
+        if a < 255 and keyed.buf[i + 1] - max(keyed.buf[i], keyed.buf[i + 2]) > 18:
             fringe += 1
     pct = 100.0 * kept / total
     if pct > 85:
