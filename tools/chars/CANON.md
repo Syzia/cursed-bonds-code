@@ -2,7 +2,8 @@
 
 Every sprite is 760x1400 RGBA, full body, feet ~40px from the bottom, head ~40px from the top,
 figure centred. Tokyo Jujutsu High uniform unless noted: very dark navy (near-black, #1c1f2e-ish) jacket
-with a standing collar, matching trousers/skirt, white sneakers. Line art dark navy, not pure black.
+with a standing collar, matching trousers/skirt, white sneakers unless the entry says otherwise (Megumi wears brown
+ankle boots). Line art dark navy, not pure black.
 Six expressions each: neutral, happy, serious, angry, surprised, sad. Also a side portrait
 (head + shoulders crop, ~360x360) for the textbox.
 
@@ -13,9 +14,16 @@ Uniform jacket worn over a RED HOODIE — hood bunched at the neck behind the co
 warm; angry is fierce, not mean.
 
 ## megumi — Megumi Fushiguro (1st year)
-Black hair, heavily spiky — spikes sweep up and back, some fall forward over the brow. Sea-green/teal
-eyes, narrow and level; permanent slight frown; pale. Slim, tall. Uniform jacket done up to the high
-collar (gakuran-like). Hands often in pockets. Default expression flat/serious; happy is barely a smile.
+Checked against official full-body art (2026-09-21). Black hair, a dense crown of sharp spiky tufts
+flaring up and out like black flames, several pointed locks falling over the forehead to eye level,
+short at the sides with ears showing. Dark blue-grey eyes with HEAVY HALF-LIDDED UPPER LIDS — the
+drowsy, bored look is his face; wide round eyes read as someone else. Pale, long narrow face, pointed
+chin. Tall and slim with long legs. Uniform jacket in navy (not purple), hip length, with a very tall
+loose funnel collar up to the jaw and an ASYMMETRIC closure: the front flap crosses diagonally from the
+collar to one side, two gold swirl buttons off-centre on that side (one on the collar, one on the chest).
+Trousers TAPERED and CROPPED above the ankle, pleated at the waist, loose at the thigh — not wide-leg.
+Black socks showing. TAN-BROWN LEATHER ANKLE BOOTS, not the cast's white sneakers. Hands often in
+pockets. Default expression flat/bored; happy is barely a smile; anger is cold, not shouted.
 
 ## nobara — Nobara Kugisaki (1st year)
 Orange-ginger hair, chin-length bob with a longer side-swept fringe over one eye and a small bun/tie at
