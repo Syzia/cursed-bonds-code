@@ -59,17 +59,28 @@ WORK = 1024       # side of the square the face is repainted at
 # open-mouthed grin would read as someone else. Only the rows listed here
 # change; the rest fall through to EXPRESSIONS.
 CHARACTER_EXPRESSIONS = {
+    # Quieter in character, but each row still has to read as different from
+    # the others at a glance. The first pass (denoise 0.50-0.58, soft wording)
+    # came back as four versions of his neutral face.
     "megumi": {
-        "happy":     ("faint reluctant half-smile, one corner of the mouth lifted slightly, "
-                      "eyes softened a little",                                                 0.50),
-        "serious":   ("intense focused stare, eyebrows drawn hard together, jaw set",          0.55),
-        "sad":       ("quiet sad expression, eyes lowered, eyebrows tilted up at the inner "
-                      "ends, mouth turned down slightly",                                       0.58),
-        "angry":     ("cold angry glare, eyebrows pulled down hard into a V, jaw clenched, "
-                      "lips pressed tight",                                                     0.58),
-        "surprised": ("startled expression, eyes widened, eyebrows raised, lips parted "
-                      "slightly",                                                               0.58),
+        "happy":     ("small genuine smile, lips curved up at both corners, eyes softened "
+                      "and slightly narrowed",                                                  0.58),
+        "serious":   ("intense focused stare, eyebrows drawn down hard and together, eyes "
+                      "narrowed, jaw set",                                                      0.62),
+        "sad":       ("sad pained expression, eyebrows tilted steeply up at the inner ends, "
+                      "eyes lowered and glistening, mouth turned down at the corners",          0.64),
+        "angry":     ("furious scowl, eyebrows slammed down into a sharp V, eyes narrowed "
+                      "into a hard glare, teeth clenched and slightly bared",                   0.66),
+        "surprised": ("surprised expression, eyes opened wide showing the whole iris, "
+                      "eyebrows raised high, mouth open",                                       0.64),
     },
+}
+
+# Words in a character's description that pin their NEUTRAL face -- dropped
+# from expression rows only. The base picture already carries the eye shape;
+# saying "heavy drooping eyelids" again just drags every expression back to it.
+NEUTRAL_TRAITS = {
+    "megumi": ["and heavy drooping upper eyelids that\ncover the top of the irises"],
 }
 
 
@@ -378,6 +389,10 @@ def build(render_path, char, prompt_override=None, mask_path=None, head=False):
         what = "head, hair and face"
     else:
         rows, what = expressions_for(char), "face"
+        for t in NEUTRAL_TRAITS.get(char, []):
+            if t not in base:
+                raise SystemExit("NEUTRAL_TRAITS[%r] no longer matches the prompt: %r" % (char, t))
+            base = base.replace(t, "")
     for i, (expr, words, denoise) in enumerate(rows):
         y = i * row_h
         pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [closeup(base, words, what)],
