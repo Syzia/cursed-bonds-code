@@ -1,5 +1,12 @@
 # Sprite prompts
 
+**The prompts actually used live in `tools/chars/prompts/<character>.txt`** —
+one file each, in the four-paragraph structure that produced the reference Yuji
+(framing and expression / face and hair / clothing / art style, the last word
+for word the same for everyone). `tools/make_base_workflow.py <character>`
+turns one into a drag-in Comfy Cloud workflow. The blocks below are the
+starting descriptions those files were written from.
+
 Written for a general-purpose model (Krea-2 / SDXL-class) that does **not** know
 Jujutsu Kaisen by name — every character is described, never named. On a
 Danbooru-tag anime checkpoint (Illustrious, NoobAI, Pony) you can replace the

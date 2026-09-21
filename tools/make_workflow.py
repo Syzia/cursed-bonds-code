@@ -49,6 +49,29 @@ EXPRESSIONS = [
 
 WORK = 1024       # side of the square the face is repainted at
 
+# Some characters don't emote at the shared table's volume. Megumi's canon
+# happy is barely a smile and his anger is cold rather than shouted, so a big
+# open-mouthed grin would read as someone else. Only the rows listed here
+# change; the rest fall through to EXPRESSIONS.
+CHARACTER_EXPRESSIONS = {
+    "megumi": {
+        "happy":     ("faint reluctant half-smile, one corner of the mouth lifted slightly, "
+                      "eyes softened a little",                                                 0.50),
+        "serious":   ("intense focused stare, eyebrows drawn hard together, jaw set",          0.55),
+        "sad":       ("quiet sad expression, eyes lowered, eyebrows tilted up at the inner "
+                      "ends, mouth turned down slightly",                                       0.58),
+        "angry":     ("cold angry glare, eyebrows pulled down hard into a V, jaw clenched, "
+                      "lips pressed tight",                                                     0.58),
+        "surprised": ("startled expression, eyes widened, eyebrows raised, lips parted "
+                      "slightly",                                                               0.58),
+    },
+}
+
+
+def expressions_for(char):
+    own = CHARACTER_EXPRESSIONS.get(char, {})
+    return [(e,) + own[e] if e in own else (e, w, d) for e, w, d in EXPRESSIONS]
+
 NEUTRAL = re.compile(r"neutral[^,\n]*expression|neutral expression[^,\n]*", re.I)
 
 
@@ -305,7 +328,7 @@ def build(render_path, char, prompt_override=None, mask_path=None):
     # ---- one row per expression
     row_h, x0 = 420, 700
     colours = ["#3f5a4a", "#3f4f5a", "#4a3f5a", "#5a3f3f", "#5a513f"]
-    for i, (expr, words, denoise) in enumerate(EXPRESSIONS):
+    for i, (expr, words, denoise) in enumerate(expressions_for(char)):
         y = i * row_h
         pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [closeup(base, words)],
                     ins=[("clip", "CLIP")], outs=[("CONDITIONING", "CONDITIONING")],
@@ -366,6 +389,6 @@ if __name__ == "__main__":
     print("vae       %s" % r["vae"])
     print("sampler   %s / %s, %d steps, cfg %s" % (r["sampler"], r["scheduler"], r["steps"], r["cfg"]))
     print("face crop %dx%d at (%d, %d), repainted at %d" % (side, side, cx, cy, WORK))
-    print("rows      %s" % ", ".join("%s %.2f" % (e, d) for e, _, d in EXPRESSIONS))
+    print("rows      %s" % ", ".join("%s %.2f" % (e, d) for e, _, d in expressions_for(char)))
     print("\nworkflow -> %s" % out)
     print("drag it onto the Comfy Cloud canvas")
