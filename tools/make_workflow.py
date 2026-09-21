@@ -2,6 +2,11 @@
 Build a ComfyUI workflow that paints a character's five other expressions.
 
     python3 tools/make_workflow.py "~/Desktop/JJK Game images/Krea2_turbo_00001_.png" yuji
+    python3 tools/make_workflow.py --head "~/Desktop/JJK Game images/megumi_base_00001_.png" megumi
+
+`--head` writes `<character>_head.json` instead: four attempts at redrawing the
+whole head -- hair and face -- through the mask from `facemask.py --head`,
+each allowed to change a little more than the last, on a body that stays put.
 
 Writes `<character>_expressions.json` beside the render. Drag it onto the Comfy
 Cloud canvas, upload the render and its face mask into the two Load Image boxes,
@@ -187,7 +192,7 @@ def crop_box(mask_path):
     return x, y, side
 
 
-def closeup(base, words):
+def closeup(base, words, what="face"):
     """The render's prompt, re-framed for a picture that is only the face.
 
     The framing paragraph describes a full-body sprite; handed a square that is
@@ -197,7 +202,7 @@ def closeup(base, words):
     paras = re.split(r"\n\s*\n", base.strip())
     subject = re.search(r"single ([a-z' -]+?)(?: standing|,)", base, re.I)
     subject = subject.group(1) if subject else "anime character"
-    frame = "close-up of the face of a single %s, facing the viewer, %s" % (subject, words)
+    frame = "close-up of the %s of a single %s, facing the viewer, %s" % (what, subject, words)
     for i, p in enumerate(paras):
         if re.search(r"full[- ]body|sprite", p, re.I):
             paras[i] = frame
@@ -264,33 +269,72 @@ class Graph(object):
         }
 
 
-def build(render_path, char, prompt_override=None, mask_path=None):
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# A character's neutral face in words, for redrawing the whole head. Only
+# needed where the shared default would flatten who they are.
+NEUTRAL_FACE = {
+    "megumi": "calm neutral bored expression, heavy half-lidded drowsy eyes looking straight "
+              "at the viewer, mouth closed in a small flat line",
+}
+HEAD_DENOISE = [0.80, 0.85, 0.85, 0.90]     # one candidate per value
+
+
+def base_prompt(char, r, override=None):
+    """The canonical prompt file beats whatever is embedded in the render.
+
+    Once a head has been redrawn, the render's own metadata holds the close-up
+    prompt that drew it, not the full-body description the character is built
+    from -- and the file is where corrections get made.
+    """
+    if override:
+        return override
+    f = os.path.join(ROOT, "tools", "chars", "prompts", char + ".txt")
+    return open(f).read().strip() if os.path.exists(f) else r["prompt"]
+
+
+def build(render_path, char, prompt_override=None, mask_path=None, head=False):
     r = recipe(render_path)
-    base = prompt_override or r["prompt"]
-    mask_path = mask_path or os.path.join(os.path.dirname(render_path), "masks", char + "_face.png")
+    base = base_prompt(char, r, prompt_override)
+    kind = "head" if head else "face"
+    mask_path = mask_path or os.path.join(os.path.dirname(render_path), "masks", "%s_%s.png" % (char, kind))
     if not os.path.exists(mask_path):
-        raise SystemExit("no mask at %s — run tools/facemask.py first" % mask_path)
+        raise SystemExit("no mask at %s — run tools/facemask.py%s first"
+                         % (mask_path, " --head" if head else ""))
     cx, cy, side = crop_box(mask_path)
 
     render_name = os.path.basename(render_path)
     mask_name = os.path.basename(mask_path)
     g = Graph()
 
-    g.add("MarkdownNote", (0, -470), (640, 400), title="Start here",
-          color="#222", bgcolor="#000", widgets=[
-        "## %s: five expressions, one Run\n\n"
-        "1. **Top Load Image box:** click the folder icon and upload `%s`.\n"
-        "2. **Bottom Load Image box:** upload `%s` from the `masks` folder. "
-        "It should be black with a small white oval.\n"
-        "3. Press **Run**. Each row on the right paints one expression.\n\n"
-        "Each row has two settings you can change:\n\n"
-        "- **The text box** holds the prompt. Only the expression words differ.\n"
-        "- **denoise** (bottom of the KSampler) sets how much the face can change. "
-        "If it barely moved, go up by 0.05. If it stops looking like %s, go "
-        "down. Stay under 0.7.\n\n"
-        "The face is cut out, repainted 4x bigger, then shrunk back in. Nothing "
-        "outside the white oval can change."
-        % (char.capitalize(), render_name, mask_name, char.capitalize())])
+    if head:
+        g.add("MarkdownNote", (0, -470), (640, 400), title="Start here",
+              color="#222", bgcolor="#000", widgets=[
+            "## %s: new hair and face, same body\n\n"
+            "1. **Top Load Image box:** upload `%s`.\n"
+            "2. **Bottom Load Image box:** upload `%s` from the `masks` folder. "
+            "It should be black with a white dome over the head.\n"
+            "3. Press **Run**. The four rows are four attempts, each allowed to "
+            "change a little more than the last (A least, D most).\n\n"
+            "Save the one whose hair and face look most like him. Everything "
+            "below the chin comes back exactly as it was."
+            % (char.capitalize(), render_name, mask_name)])
+    else:
+        g.add("MarkdownNote", (0, -470), (640, 400), title="Start here",
+              color="#222", bgcolor="#000", widgets=[
+            "## %s: five expressions, one Run\n\n"
+            "1. **Top Load Image box:** click the folder icon and upload `%s`.\n"
+            "2. **Bottom Load Image box:** upload `%s` from the `masks` folder. "
+            "It should be black with a small white oval.\n"
+            "3. Press **Run**. Each row on the right paints one expression.\n\n"
+            "Each row has two settings you can change:\n\n"
+            "- **The text box** holds the prompt. Only the expression words differ.\n"
+            "- **denoise** (bottom of the KSampler) sets how much the face can change. "
+            "If it barely moved, go up by 0.05. If it stops looking like %s, go "
+            "down. Stay under 0.7.\n\n"
+            "The face is cut out, repainted 4x bigger, then shrunk back in. Nothing "
+            "outside the white oval can change."
+            % (char.capitalize(), render_name, mask_name, char.capitalize())])
 
     # ---- shared column: model, pictures, the cut-out face
     unet = g.add("UNETLoader", (0, 0), (320, 82), r["unet"], outs=[("MODEL", "MODEL")])
@@ -328,9 +372,15 @@ def build(render_path, char, prompt_override=None, mask_path=None):
     # ---- one row per expression
     row_h, x0 = 420, 700
     colours = ["#3f5a4a", "#3f4f5a", "#4a3f5a", "#5a3f3f", "#5a513f"]
-    for i, (expr, words, denoise) in enumerate(expressions_for(char)):
+    if head:
+        words = NEUTRAL_FACE.get(char, "calm neutral expression, mouth closed")
+        rows = [("head_%s" % "abcd"[i], words, d) for i, d in enumerate(HEAD_DENOISE)]
+        what = "head, hair and face"
+    else:
+        rows, what = expressions_for(char), "face"
+    for i, (expr, words, denoise) in enumerate(rows):
         y = i * row_h
-        pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [closeup(base, words)],
+        pos = g.add("CLIPTextEncode", (x0, y), (440, 250), [closeup(base, words, what)],
                     ins=[("clip", "CLIP")], outs=[("CONDITIONING", "CONDITIONING")],
                     title="Prompt: %s" % expr)
         neg = g.add("ConditioningZeroOut", (x0, y + 280), (240, 26),
@@ -379,8 +429,9 @@ if __name__ == "__main__":
     if "--prompt-file" in sys.argv:
         override = open(os.path.expanduser(sys.argv[sys.argv.index("--prompt-file") + 1])).read()
 
-    wf, r, (cx, cy, side) = build(render, char, override)
-    out = os.path.join(os.path.dirname(render), "%s_expressions.json" % char)
+    head = "--head" in sys.argv
+    wf, r, (cx, cy, side) = build(render, char, override, head=head)
+    out = os.path.join(os.path.dirname(render), "%s_%s.json" % (char, "head" if head else "expressions"))
     with open(out, "w") as f:
         json.dump(wf, f, indent=1)
 
@@ -389,6 +440,9 @@ if __name__ == "__main__":
     print("vae       %s" % r["vae"])
     print("sampler   %s / %s, %d steps, cfg %s" % (r["sampler"], r["scheduler"], r["steps"], r["cfg"]))
     print("face crop %dx%d at (%d, %d), repainted at %d" % (side, side, cx, cy, WORK))
-    print("rows      %s" % ", ".join("%s %.2f" % (e, d) for e, _, d in expressions_for(char)))
+    if head:
+        print("rows      four head candidates at denoise %s" % ", ".join("%.2f" % d for d in HEAD_DENOISE))
+    else:
+        print("rows      %s" % ", ".join("%s %.2f" % (e, d) for e, _, d in expressions_for(char)))
     print("\nworkflow -> %s" % out)
     print("drag it onto the Comfy Cloud canvas")

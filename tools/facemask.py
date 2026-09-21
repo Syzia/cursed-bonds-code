@@ -2,8 +2,12 @@
 Build the face-oval mask that expression variants are inpainted through.
 
     python3 tools/facemask.py "~/Desktop/JJK Game images/render.png" yuji
+    python3 tools/facemask.py --head "~/Desktop/JJK Game images/render.png" megumi
 
-Writes `masks/<name>_face.png` beside the render: a white oval on black, the
+`--head` writes `masks/<name>_head.png` instead: the whole head, hair and all,
+for redrawing a character's hair and face on a body you want to keep.
+
+Otherwise writes `masks/<name>_face.png` beside the render: a white oval on black, the
 same pixel size as the render, to be loaded into ComfyUI as the inpaint mask.
 
 The point of the oval is what it EXCLUDES. ComfyUI's ImageCompositeMasked
@@ -122,7 +126,100 @@ def build(src_path, name, out_dir=None):
     return out
 
 
+def head_box(im, keyed):
+    """Where the head is, and where the clothing starts around it.
+
+    Returns (x0, y0, x1, cut, face): the hair-and-face extent; `cut`, the first
+    row where clothing appears beside the head -- the narrowest point below the
+    face, which is the jaw with a collar or hood rising either side of it; and
+    the face box, whose bottom can sit lower than `cut` when a tall collar
+    wraps up round the chin.
+    """
+    face = face_box(im, keyed)
+    fx0, fy0, fx1, fy1 = face
+    alpha_min = 128
+
+    def span(y):
+        row = y * keyed.w * 4
+        xs = [x for x in range(keyed.w) if keyed.buf[row + x * 4 + 3] >= alpha_min]
+        return (xs[0], xs[-1]) if xs else None
+
+    mid = (fy0 + fy1) // 2
+    best, cut = None, fy1
+    for y in range(mid, min(keyed.h, fy1 + 40)):
+        sp = span(y)
+        if sp and (best is None or sp[1] - sp[0] < best):
+            best, cut = sp[1] - sp[0], y
+    cut += 3
+
+    top = bbox(keyed)[1]
+    xs0, xs1 = keyed.w, 0
+    for y in range(top, cut):
+        sp = span(y)
+        if sp:
+            xs0, xs1 = min(xs0, sp[0]), max(xs1, sp[1])
+    return xs0, top, xs1, cut, face
+
+
+def build_head(src_path, name, out_dir=None, margin=0.14):
+    """Mask for redrawing the whole head -- hair and face -- on a body you keep.
+
+    Above the clothing line it is a dome reaching past the current hair into
+    the green on every side, so a fuller hairstyle has somewhere to go. Below
+    that line it follows only the skin of the chin and neck, row by row, so a
+    collar that rises up either side of the jaw is left exactly as it was.
+    """
+    src_path = os.path.expanduser(src_path)
+    im = load(src_path)
+    keyed = key_out(im)
+    x0, y0, x1, cut, (fx0, fy0, fx1, fy1) = head_box(im, keyed)
+    pad = int((x1 - x0) * margin)
+    left, right, top = max(0, x0 - pad), min(im.w, x1 + pad), max(0, y0 - pad)
+
+    mask = Img(im.w, im.h, alpha=False)
+    mask.rect(0, 0, im.w, im.h, (0, 0, 0))
+    cx, rx, ry = (left + right) / 2.0, (right - left) / 2.0, cut - top
+    steps = max(1, FEATHER)
+    for s in range(steps + 1):
+        v = int(255 * s / float(steps))
+        d = steps - s
+        mask.poly(superellipse(cx, cut, rx - d, ry - d, n=3.2), (v, v, v))
+    for y in range(cut, im.h):
+        row = y * im.w * 3
+        mask.buf[row:row + im.w * 3] = bytes(im.w * 3)
+
+    # Chin and neck: whatever skin sits between the collar's sides, plus the
+    # outline around it. The collar's own edge is a drawn dark line, so a hard
+    # mask boundary along it hides in the line work.
+    chin = fy1 + 3
+    for y in range(cut, min(im.h, chin)):
+        xs = []
+        for x in range(max(0, fx0 - 20), min(im.w, fx1 + 20)):
+            i = (y * im.w + x) * im.ch
+            if keyed.buf[(y * keyed.w + x) * 4 + 3] >= 200 and \
+               is_skin(im.buf[i], im.buf[i + 1], im.buf[i + 2]):
+                xs.append(x)
+        if not xs:
+            continue
+        row = y * im.w * 3
+        for x in range(max(0, xs[0] - 3), min(im.w, xs[-1] + 4)):
+            mask.buf[row + x * 3:row + x * 3 + 3] = b"\xff\xff\xff"
+
+    out_dir = out_dir or os.path.join(os.path.dirname(src_path), "masks")
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, name + "_head.png")
+    mask.save(out)
+    print("head      x %d..%d  from y %d; collar beside the jaw from y %d; chin to y %d"
+          % (x0, x1, y0, cut, chin))
+    print("mask   -> %s" % out)
+    return out
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if len(args) < 2:
         print(__doc__); raise SystemExit(1)
-    build(sys.argv[1], sys.argv[2])
+    if "--head" in sys.argv:
+        build_head(args[0], args[1])
+    else:
+        build(args[0], args[1])
