@@ -27,6 +27,19 @@ either side — insets from there, and draws a superellipse rather than a plain
 ellipse so the eyebrows are inside the mask. It prints the exact ImageCrop
 x/y/width/height to reuse in ImageCompositeMasked.
 
+Then build the workflow itself:
+
+```bash
+python3 tools/make_workflow.py "~/Desktop/JJK Game images/<render>.png" <character>
+```
+
+It reads the model, sampler settings and prompt out of the render's own PNG
+metadata (ComfyUI embeds the full workflow in every image it saves) and writes
+`<character>_expressions.json`: one row per expression, each swapping only the
+expression words, each composited back over the untouched original. Drag it
+onto the Comfy Cloud canvas, upload the render and mask into the two Load Image
+boxes, press Run once.
+
 Then `python3 tools/keysprite.py --batch <folder>` ingests whatever comes back.
 
 ---
