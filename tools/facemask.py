@@ -178,6 +178,16 @@ def build(src_path, name, out_dir=None, inset=2):
     keyed = key_out(im)
     spans = face_spans(im, keyed)
 
+    # Raise the top edge by a feather's width. Skin starts where hair stops,
+    # so on a character with a fringe the eyebrows sit exactly at the top of
+    # the skin -- and the feather band put Megumi's at 20-70% strength, so no
+    # expression could move them. This lands the soft band on the fringe and
+    # the brows at full strength; a few fringe strands get redrawn per
+    # expression, which costs far less than eyebrows that can't move.
+    top = min(spans)
+    for y in range(max(0, top - FEATHER - 2), top):
+        spans[y] = spans[top]
+
     # Pull in from the face outline so the jaw line itself is never redrawn:
     # it is the edge the key cuts along, and it must match across expressions.
     spans = {y: (l + inset, r - inset) for y, (l, r) in spans.items() if r - l > 2 * inset}

@@ -4,6 +4,10 @@ Build a ComfyUI workflow that paints a character's five other expressions.
     python3 tools/make_workflow.py "~/Desktop/JJK Game images/Krea2_turbo_00001_.png" yuji
     python3 tools/make_workflow.py --head "~/Desktop/JJK Game images/megumi_base_00001_.png" megumi
 
+`--only happy,angry` builds just those rows; `--ladder 0.08` makes two rows per
+expression, the second allowed to change that much more (saved as
+`<character>_<expression>_a` and `_b`).
+
 `--head` writes `<character>_head.json` instead: four attempts at redrawing the
 whole head -- hair and face -- through the mask from `facemask.py --head`,
 each allowed to change a little more than the last, on a body that stays put.
@@ -66,13 +70,13 @@ CHARACTER_EXPRESSIONS = {
         "happy":     ("small genuine smile, lips curved up at both corners, eyes softened "
                       "and slightly narrowed",                                                  0.58),
         "serious":   ("intense focused stare, eyebrows drawn down hard and together, eyes "
-                      "narrowed, jaw set",                                                      0.62),
+                      "narrowed, jaw set",                                                      0.66),
         "sad":       ("sad pained expression, eyebrows tilted steeply up at the inner ends, "
-                      "eyes lowered and glistening, mouth turned down at the corners",          0.64),
+                      "eyes lowered and glistening, mouth turned down at the corners",          0.68),
         "angry":     ("furious scowl, eyebrows slammed down into a sharp V, eyes narrowed "
-                      "into a hard glare, teeth clenched and slightly bared",                   0.66),
+                      "into a hard glare, teeth clenched and slightly bared",                   0.70),
         "surprised": ("surprised expression, eyes opened wide showing the whole iris, "
-                      "eyebrows raised high, mouth open",                                       0.64),
+                      "eyebrows raised high, mouth open",                                       0.70),
     },
 }
 
@@ -304,7 +308,8 @@ def base_prompt(char, r, override=None):
     return open(f).read().strip() if os.path.exists(f) else r["prompt"]
 
 
-def build(render_path, char, prompt_override=None, mask_path=None, head=False):
+def build(render_path, char, prompt_override=None, mask_path=None, head=False,
+          only=None, ladder=0.0):
     r = recipe(render_path)
     base = base_prompt(char, r, prompt_override)
     kind = "head" if head else "face"
@@ -389,6 +394,13 @@ def build(render_path, char, prompt_override=None, mask_path=None, head=False):
         what = "head, hair and face"
     else:
         rows, what = expressions_for(char), "face"
+        if only:
+            rows = [r_ for r_ in rows if r_[0] in only]
+        if ladder:
+            # Two tries per expression, the second allowed to change more.
+            # Saves a round trip when the right strength is a guess.
+            rows = [(e + tag, w, d + k * ladder) for e, w, d in rows
+                    for k, tag in ((0, "_a"), (1, "_b"))]
         for t in NEUTRAL_TRAITS.get(char, []):
             if t not in base:
                 raise SystemExit("NEUTRAL_TRAITS[%r] no longer matches the prompt: %r" % (char, t))
@@ -435,17 +447,24 @@ def build(render_path, char, prompt_override=None, mask_path=None, head=False):
 
 
 if __name__ == "__main__":
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    VALUED = ("--prompt-file", "--only", "--ladder")
+    opts, args, argv = {}, [], sys.argv[1:]
+    while argv:
+        a = argv.pop(0)
+        if a in VALUED:
+            opts[a] = argv.pop(0)
+        elif a.startswith("--"):
+            opts[a] = True
+        else:
+            args.append(a)
     if len(args) < 2:
         print(__doc__); raise SystemExit(1)
-    render = os.path.expanduser(args[0])
-    char = args[1]
-    override = None
-    if "--prompt-file" in sys.argv:
-        override = open(os.path.expanduser(sys.argv[sys.argv.index("--prompt-file") + 1])).read()
-
-    head = "--head" in sys.argv
-    wf, r, (cx, cy, side) = build(render, char, override, head=head)
+    render, char = os.path.expanduser(args[0]), args[1]
+    override = open(os.path.expanduser(opts["--prompt-file"])).read() if "--prompt-file" in opts else None
+    head = "--head" in opts
+    only = opts["--only"].split(",") if "--only" in opts else None
+    ladder = float(opts.get("--ladder", 0))
+    wf, r, (cx, cy, side) = build(render, char, override, head=head, only=only, ladder=ladder)
     out = os.path.join(os.path.dirname(render), "%s_%s.json" % (char, "head" if head else "expressions"))
     with open(out, "w") as f:
         json.dump(wf, f, indent=1)
@@ -458,6 +477,8 @@ if __name__ == "__main__":
     if head:
         print("rows      four head candidates at denoise %s" % ", ".join("%.2f" % d for d in HEAD_DENOISE))
     else:
-        print("rows      %s" % ", ".join("%s %.2f" % (e, d) for e, _, d in expressions_for(char)))
+        print("rows      %s" % ", ".join("%s %.2f" % (n["title"].split(": ")[1], ks["widgets_values"][-1])
+              for n, ks in zip([n for n in wf["nodes"] if n["type"] == "CLIPTextEncode"],
+                               [n for n in wf["nodes"] if n["type"] == "KSampler"])))
     print("\nworkflow -> %s" % out)
     print("drag it onto the Comfy Cloud canvas")

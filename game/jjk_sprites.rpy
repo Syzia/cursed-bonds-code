@@ -3,6 +3,7 @@
 ## Sprites: <key> <expression>. `neutral` doubles as the bare name.
 image megumi = "images/char/megumi_neutral.png"
 image megumi neutral = "images/char/megumi_neutral.png"
+image megumi happy = "images/char/megumi_happy.png"
 
 image yuji = "images/char/yuji_neutral.png"
 image yuji neutral = "images/char/yuji_neutral.png"
@@ -15,6 +16,7 @@ image yuji sad = "images/char/yuji_sad.png"
 ## Side portraits for the textbox. Ren'Py resolves `side <key> <attrs>` from the speaker.
 image side megumi = "images/side/megumi_neutral.png"
 image side megumi neutral = "images/side/megumi_neutral.png"
+image side megumi happy = "images/side/megumi_happy.png"
 
 image side yuji = "images/side/yuji_neutral.png"
 image side yuji neutral = "images/side/yuji_neutral.png"
