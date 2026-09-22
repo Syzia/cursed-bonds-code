@@ -1,28 +1,31 @@
 """
-Build the Comfy Cloud workflow that generates location backgrounds.
+Build the ComfyUI workflow that generates location backgrounds.
 
-    python3 tools/make_bg_workflow.py courtyard classroom your_room_night
+    python3 tools/make_bg_workflow.py classroom your_room
 
-One row per location, four candidates each, from tools/bgs/prompts/<name>.txt.
-Writes `backgrounds.json` into ~/Desktop/JJK Game images. Drag it onto the Comfy
-Cloud canvas and press Run; results are saved as `bg_<name>_0000N_.png`.
+One row per location, two candidates each. Writes `backgrounds.json` into
+~/Desktop/JJK Game images; drag it into the LOCAL ComfyUI and press Run. The
+results land in ~/ComfyUI-Shared/output as `bg_<name>_0000N_.png`, where
+tools/install_bg.py can take them straight into the game.
 
-Model and sampler are copied from the reference character render, so the
-backgrounds and the sprites come out of the same model with the same settings.
-Pictures are made at 1408x792 -- exactly 16:9, about a megapixel, which is what
-the model is comfortable at -- and enlarged to the game's 1920x1080 by
-tools/install_bg.py.
+The settings are the ones the style and blend tests settled on (see
+tools/bgs/STYLE.md): Krea 2 Medium at 16:9, the scene description from
+tools/bgs/prompts/<name>.txt plus the shared tools/bgs/style.txt, steered by
+four crops of the anime at strength 0.50. Krea 2 is a paid partner node, about
+$0.035 a picture; nothing runs on this Mac's GPU.
 """
-import sys, os, json
-
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from make_workflow import Graph, recipe
+import sys, os, json, copy, uuid, shutil
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMAGES = os.path.expanduser("~/Desktop/JJK Game images")
-REFERENCE = os.path.join(IMAGES, "Krea2_turbo_00001_.png")
-W, H = 1408, 792
-CANDIDATES = 4
+REFS = os.path.join(IMAGES, "references", "style_refs")
+COMFY_INPUT = os.path.expanduser("~/ComfyUI-Shared/input")
+
+STYLE_REFS = ["style_ref_3_bridge.png", "style_ref_4_pagodas.png",
+              "style_ref_5_hall_front.png", "style_ref_6_campus_aerial.png"]
+STRENGTH = 0.50
+CANDIDATES = 2
+COST = 0.035
 
 
 def bg_prompt(name):
@@ -36,56 +39,80 @@ def bg_prompt(name):
 
 
 def build(names):
-    r = recipe(REFERENCE)
-    g = Graph()
-    g.add("MarkdownNote", (0, -440), (640, 380), title="Start here",
-          color="#222", bgcolor="#000", widgets=[
+    proto = json.load(open(os.path.join(ROOT, "tools", "comfy_nodes", "edit_nodes.json")))
+    P, shell = proto["nodes"], proto["shell"]
+    nodes, links, groups = [], [], []
+    ids = {"n": 0, "l": 0}
+
+    def add(kind, pos, size=None, title=None, widgets=None):
+        ids["n"] += 1
+        n = copy.deepcopy(P[kind])
+        n["id"], n["pos"], n["order"] = ids["n"], list(pos), ids["n"]
+        if size: n["size"] = list(size)
+        for i in n.get("inputs", []): i["link"] = None
+        for o in n.get("outputs", []): o["links"] = []
+        if title: n["title"] = title
+        if widgets is not None: n["widgets_values"] = widgets
+        nodes.append(n)
+        return n
+
+    def wire(a, b, b_input, a_slot=0):
+        ids["l"] += 1
+        slot = next(i for i, x in enumerate(b["inputs"]) if x["name"] == b_input)
+        kind = a["outputs"][a_slot]["type"]
+        assert kind == b["inputs"][slot]["type"], (a["type"], b["type"], b_input)
+        links.append([ids["l"], a["id"], a_slot, b["id"], slot, kind])
+        a["outputs"][a_slot]["links"].append(ids["l"])
+        b["inputs"][slot]["link"] = ids["l"]
+
+    for f in STYLE_REFS:
+        shutil.copy(os.path.join(REFS, f), os.path.join(COMFY_INPUT, f))
+    count = len(names) * CANDIDATES
+    ids["n"] += 1
+    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-1260, -520], "size": [620, 400],
+                  "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
+                  "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
         "## Backgrounds: %s\n\n"
-        "Press **Run**. Each row makes %d versions of one location, shown in "
-        "its Save Image box.\n\n"
-        "Save the best of each into `JJK Game images`, keeping Comfy's names "
-        "(`bg_<location>_0000N_.png`). If you can't choose, save them all.\n\n"
-        "What makes a good one: no people, an open floor or ground across the "
-        "bottom where a character could stand, and a view at standing eye level."
-        % (", ".join(names), CANDIDATES)])
+        "Run this in the **local ComfyUI**. Press **Run**: each row makes %d "
+        "versions of one location.\n\n"
+        "**Cost:** %d pictures, about **$%.2f** (Krea 2, charged to your Comfy account).\n\n"
+        "No need to save anything. The results go to ComfyUI's output folder "
+        "and Claude picks them up from there."
+        % (", ".join(names), CANDIDATES, count, count * COST)]})
 
-    unet = g.add("UNETLoader", (0, 0), (320, 82), r["unet"], outs=[("MODEL", "MODEL")])
-    clip = g.add("CLIPLoader", (0, 110), (320, 106), r["clip"], outs=[("CLIP", "CLIP")])
-    vae = g.add("VAELoader", (0, 245), (320, 58), [r["vae"]], outs=[("VAE", "VAE")])
-    size = g.add("EmptyLatentImage", (0, 340), (320, 106), [W, H, CANDIDATES],
-                 outs=[("LATENT", "LATENT")], title="Picture size (16:9)")
+    # One chain of style references feeds every row.
+    chain = None
+    for i, f in enumerate(STYLE_REFS):
+        ld = add("LoadImage", (-1260, i * 330), (300, 310), title="Style reference %d" % (i + 1),
+                 widgets=[f, "image"])
+        ref = add("Krea2StyleReferenceNode", (-900, i * 330 + 100), (240, 80),
+                  title="Reference %d at %.2f" % (i + 1, STRENGTH), widgets=[STRENGTH])
+        wire(ld, ref, "image")
+        if chain is not None:
+            wire(chain, ref, "style_reference")
+        chain = ref
 
-    row_h = 700
-    for i, name in enumerate(names):
-        y = i * row_h
-        prompt = bg_prompt(name)
-        pos = g.add("CLIPTextEncode", (360, y), (460, 330), [prompt],
-                    ins=[("clip", "CLIP")], outs=[("CONDITIONING", "CONDITIONING")],
-                    title="Prompt: %s" % name)
-        neg = g.add("ConditioningZeroOut", (360, y + 360), (240, 26),
-                    ins=[("conditioning", "CONDITIONING")], outs=[("CONDITIONING", "CONDITIONING")])
-        ks = g.add("KSampler", (850, y), (300, 262),
-                   [20260922 + i * 101, "randomize", r["steps"], r["cfg"], r["sampler"], r["scheduler"], 1.0],
-                   ins=[("model", "MODEL"), ("positive", "CONDITIONING"),
-                        ("negative", "CONDITIONING"), ("latent_image", "LATENT")],
-                   outs=[("LATENT", "LATENT")])
-        dec = g.add("VAEDecode", (850, y + 300), (200, 46),
-                    ins=[("samples", "LATENT"), ("vae", "VAE")], outs=[("IMAGE", "IMAGE")])
-        save = g.add("SaveImage", (1180, y), (1000, 640), ["bg_%s" % name],
-                     ins=[("images", "IMAGE")], outs=[])
-        g.wire(clip, 0, pos, "clip")
-        g.wire(pos, 0, neg, "conditioning")
-        g.wire(unet, 0, ks, "model")
-        g.wire(pos, 0, ks, "positive")
-        g.wire(neg, 0, ks, "negative")
-        g.wire(size, 0, ks, "latent_image")
-        g.wire(ks, 0, dec, "samples")
-        g.wire(vae, 0, dec, "vae")
-        g.wire(dec, 0, save, "images")
-        g.group(name.replace("_", " ").upper(), 340, y - 40, 1860, row_h - 20, "#3f4f5a")
-    wf = g.dump()
-    wf["extra"]["ds"] = {"scale": 0.45, "offset": [120, 480]}
-    return wf
+    row_h = 560
+    for r, name in enumerate(names):
+        y = r * row_h
+        text = bg_prompt(name)
+        for k in range(CANDIDATES):
+            n = add("Krea2ImageNode", (k * 820, y), (400, 360), title="%s (%d)" % (name, k + 1),
+                    widgets=[text, "Krea 2 Medium", "16:9", "1K", "medium", "", 0.35,
+                             1000 + r * 10 + k, "randomize"])
+            wire(chain, n, "model.style_reference")
+            s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["bg_%s" % name])
+            wire(n, s, "images")
+        groups.append((name.replace("_", " ").upper(), y))
+
+    wf = dict(shell)
+    wf.update({"id": str(uuid.uuid4()), "revision": 0, "last_node_id": ids["n"], "last_link_id": ids["l"],
+               "nodes": nodes, "links": links,
+               "groups": [{"id": i + 1, "title": t, "bounding": [-20, gy - 50, 1660, row_h - 30],
+                           "color": "#3f4f5a", "font_size": 24, "flags": {}} for i, (t, gy) in enumerate(groups)]})
+    wf["extra"] = dict(wf.get("extra") or {})
+    wf["extra"]["ds"] = {"scale": 0.4, "offset": [1340, 580]}
+    return wf, count
 
 
 if __name__ == "__main__":
@@ -95,8 +122,9 @@ if __name__ == "__main__":
     for n in names:
         if not os.path.exists(os.path.join(ROOT, "tools", "bgs", "prompts", n + ".txt")):
             raise SystemExit("no prompt for %r in tools/bgs/prompts/" % n)
-    wf = build(names)
+    wf, count = build(names)
     out = os.path.join(IMAGES, "backgrounds.json")
     json.dump(wf, open(out, "w"), indent=1)
-    print("rows      %s (%d candidates each, %dx%d)" % (", ".join(names), CANDIDATES, W, H))
+    print("rows      %s (%d each)" % (", ".join(names), CANDIDATES))
+    print("cost      %d pictures, about $%.2f" % (count, count * COST))
     print("workflow -> %s" % out)
