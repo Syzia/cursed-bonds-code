@@ -1,0 +1,277 @@
+{
+ "_source": "Comfy-Org workflow templates, from the local ComfyUI Desktop install: api_bytedance_seedream_5_0_pro_image_edit.json and api_nano_banana_pro.json",
+ "shell": {
+  "id": "745f0acb-85fe-4455-b8b8-5875bf15f808",
+  "revision": 0,
+  "last_node_id": 9,
+  "last_link_id": 10,
+  "config": {},
+  "extra": {
+   "ds": {
+    "scale": 0.4281562972381346,
+    "offset": [
+     1626.3781994114943,
+     423.5013964476002
+    ]
+   },
+   "frontendVersion": "1.51.9"
+  },
+  "version": 0.4
+ },
+ "nodes": {
+  "LoadImage": {
+   "id": 3,
+   "type": "LoadImage",
+   "pos": [
+    -370,
+    420
+   ],
+   "size": [
+    580,
+    720
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      6
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "interior_college.png",
+    "image"
+   ],
+   "widgets_values_named": {
+    "image": "interior_college.png",
+    "upload": "image"
+   }
+  },
+  "ByteDanceSeedreamNodeV3": {
+   "id": 8,
+   "type": "ByteDanceSeedreamNodeV3",
+   "pos": [
+    750,
+    420
+   ],
+   "size": [
+    400,
+    324
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model.images.image_1",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 9
+    },
+    {
+     "name": "model.images.image_2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      10
+     ]
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "ByteDanceSeedreamNodeV3"
+   },
+   "widgets_values": [
+    "Convert the entire collage into a cohesive, realistic interior design photo of a cozy living room. Render the sketched bay window area on the left into a real window filled with potted plants, including Swiss cheese plants and a fiddle-leaf fig, with a lush forest view outside. Transform the sketched snake plant in the bottom-left into a real potted snake plant. Blend the elements seamlessly under warm, natural afternoon sunlight.",
+    "seedream 5.0 pro",
+    "(1K) 1024x1024 (1:1)",
+    2048,
+    2048,
+    "standard",
+    42,
+    "randomize",
+    false,
+    true
+   ],
+   "widgets_values_named": {
+    "prompt": "Convert the entire collage into a cohesive, realistic interior design photo of a cozy living room. Render the sketched bay window area on the left into a real window filled with potted plants, including Swiss cheese plants and a fiddle-leaf fig, with a lush forest view outside. Transform the sketched snake plant in the bottom-left into a real potted snake plant. Blend the elements seamlessly under warm, natural afternoon sunlight.",
+    "model": "seedream 5.0 pro",
+    "model.size_preset": "(1K) 1024x1024 (1:1)",
+    "model.width": 2048,
+    "model.height": 2048,
+    "model.prompt_optimization": "standard",
+    "model.seed": 42,
+    "control_after_generate": "randomize",
+    "model.watermark": false,
+    "model.thinking": true
+   },
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  "SaveImageAdvanced": {
+   "id": 2,
+   "type": "SaveImageAdvanced",
+   "pos": [
+    1204,
+    420
+   ],
+   "size": [
+    560,
+    130
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 10
+    }
+   ],
+   "outputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "SaveImageAdvanced"
+   },
+   "widgets_values": [
+    "Seedream5.0_Pro_image_edit",
+    "png",
+    "8-bit",
+    "sRGB"
+   ],
+   "widgets_values_named": {
+    "filename_prefix": "Seedream5.0_Pro_image_edit",
+    "format": "png",
+    "format.bit_depth": "8-bit",
+    "format.input_color_space": "sRGB"
+   }
+  },
+  "GeminiImage2Node": {
+   "id": 35,
+   "type": "GeminiImage2Node",
+   "pos": [
+    -120,
+    80
+   ],
+   "size": [
+    410,
+    470
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 56
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      52
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "Have the suit corresponding to this character strike a casual and fashionable pose",
+    "gemini-3-pro-image-preview",
+    39494503692700,
+    "randomize",
+    "1:1",
+    "1K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  "SaveImage": {
+   "id": 30,
+   "type": "SaveImage",
+   "pos": [
+    330,
+    80
+   ],
+   "size": [
+    390,
+    440
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 52
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ComfyUI"
+   ]
+  }
+ }
+}
