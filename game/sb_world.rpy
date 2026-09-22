@@ -21,7 +21,7 @@ init -2 python:
             desc="The middle of everything. Somebody is always crossing it."),
         "classroom": dict(
             indoor=True, name="Classroom Building", bg="bg classroom", x=600, y=735,
-            desc="Four desks for four first-years. Lessons are rare and unannounced."),
+            desc="Rows of desks for a class of thirty. Four of them are used. Lessons are rare and unannounced."),
         "cafeteria": dict(
             indoor=True, name="Cafeteria", bg="bg cafeteria", x=330, y=860,
             desc="Everyone passes through here at noon. Nobody misses a meal twice."),

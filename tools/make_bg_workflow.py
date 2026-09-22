@@ -10,9 +10,10 @@ tools/install_bg.py can take them straight into the game.
 
 The settings are the ones the style and blend tests settled on (see
 tools/bgs/STYLE.md): Krea 2 Medium at 16:9, the scene description from
-tools/bgs/prompts/<name>.txt plus the shared tools/bgs/style.txt, steered by
-four crops of the anime at strength 0.50. Krea 2 is a paid partner node, about
-$0.035 a picture; nothing runs on this Mac's GPU.
+tools/bgs/prompts/<name>.txt plus a shared style paragraph, steered by crops of
+the anime at strength 0.50. Outdoor locations use style.txt and four exterior
+crops; rooms (INTERIORS) use style_interior.txt and interior crops. Krea 2 is a
+paid partner node, about $0.035 a picture; nothing runs on this Mac's GPU.
 """
 import sys, os, json, copy, uuid, shutil
 
@@ -23,6 +24,15 @@ COMFY_INPUT = os.path.expanduser("~/ComfyUI-Shared/input")
 
 STYLE_REFS = ["style_ref_3_bridge.png", "style_ref_4_pagodas.png",
               "style_ref_5_hall_front.png", "style_ref_6_campus_aerial.png"]
+
+# Rooms get their own style paragraph and references. The first classroom and
+# bedroom came back half outdoors -- a missing wall onto a dirt yard, an
+# open-air veranda -- because the shared style asked for sky, distant mist and
+# open ground, and every reference was an exterior shot.
+INTERIORS = {"classroom", "cafeteria", "training_hall", "dojo", "dorm_common_room",
+             "your_room", "your_room_night", "girls_dorm", "infirmary",
+             "principals_office", "storehouse"}
+INTERIOR_REFS = ["style_ref_7_room_interior.png", "style_ref_5_hall_front.png"]
 STRENGTH = 0.50
 CANDIDATES = 2
 COST = 0.035
@@ -34,7 +44,8 @@ def bg_prompt(name):
     Kept in separate files so the style can be tuned once for every location.
     """
     scene = open(os.path.join(ROOT, "tools", "bgs", "prompts", name + ".txt")).read().strip()
-    style = open(os.path.join(ROOT, "tools", "bgs", "style.txt")).read().strip()
+    kind = "style_interior.txt" if name in INTERIORS else "style.txt"
+    style = open(os.path.join(ROOT, "tools", "bgs", kind)).read().strip()
     return scene + "\n\n" + style
 
 
@@ -65,7 +76,7 @@ def build(names):
         a["outputs"][a_slot]["links"].append(ids["l"])
         b["inputs"][slot]["link"] = ids["l"]
 
-    for f in STYLE_REFS:
+    for f in set(STYLE_REFS + INTERIOR_REFS):
         shutil.copy(os.path.join(REFS, f), os.path.join(COMFY_INPUT, f))
     count = len(names) * CANDIDATES
     ids["n"] += 1
@@ -80,17 +91,24 @@ def build(names):
         "and Claude picks them up from there."
         % (", ".join(names), CANDIDATES, count, count * COST)]})
 
-    # One chain of style references feeds every row.
-    chain = None
-    for i, f in enumerate(STYLE_REFS):
-        ld = add("LoadImage", (-1260, i * 330), (300, 310), title="Style reference %d" % (i + 1),
-                 widgets=[f, "image"])
-        ref = add("Krea2StyleReferenceNode", (-900, i * 330 + 100), (240, 80),
-                  title="Reference %d at %.2f" % (i + 1, STRENGTH), widgets=[STRENGTH])
-        wire(ld, ref, "image")
-        if chain is not None:
-            wire(chain, ref, "style_reference")
-        chain = ref
+    # One chain of style references per kind of scene; each row uses its own.
+    def make_chain(refs, x, label):
+        chain = None
+        for i, f in enumerate(refs):
+            ld = add("LoadImage", (x, i * 330), (300, 310), title="%s reference %d" % (label, i + 1),
+                     widgets=[f, "image"])
+            ref = add("Krea2StyleReferenceNode", (x + 340, i * 330 + 100), (240, 80),
+                      title="%s %d at %.2f" % (label, i + 1, STRENGTH), widgets=[STRENGTH])
+            wire(ld, ref, "image")
+            if chain is not None:
+                wire(chain, ref, "style_reference")
+            chain = ref
+        return chain
+    chains = {}
+    if any(n not in INTERIORS for n in names):
+        chains["out"] = make_chain(STYLE_REFS, -1260, "Outdoor")
+    if any(n in INTERIORS for n in names):
+        chains["in"] = make_chain(INTERIOR_REFS, -1960, "Indoor")
 
     row_h = 560
     for r, name in enumerate(names):
@@ -100,7 +118,7 @@ def build(names):
             n = add("Krea2ImageNode", (k * 820, y), (400, 360), title="%s (%d)" % (name, k + 1),
                     widgets=[text, "Krea 2 Medium", "16:9", "1K", "medium", "", 0.35,
                              1000 + r * 10 + k, "randomize"])
-            wire(chain, n, "model.style_reference")
+            wire(chains["in" if name in INTERIORS else "out"], n, "model.style_reference")
             s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["bg_%s" % name])
             wire(n, s, "images")
         groups.append((name.replace("_", " ").upper(), y))
