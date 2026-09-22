@@ -25,6 +25,7 @@ COMFY_INPUT = os.path.expanduser("~/ComfyUI-Shared/input")
 
 EDITORS = {
     # key: (node type, save node type, dollars per image at 1K, label)
+    # Refuses recognisable characters from existing series -- see the default below.
     "seedream":   ("ByteDanceSeedreamNodeV3", "SaveImageAdvanced", 0.045, "Seedream 5.0 Pro"),
     "nanobanana": ("GeminiImage2Node",        "SaveImage",         0.16,  "Nano Banana Pro"),
 }
@@ -159,7 +160,11 @@ if __name__ == "__main__":
     def opt(name, default):
         return sys.argv[sys.argv.index(name) + 1].split(",") if name in sys.argv else default
     exprs = opt("--only", ["serious", "sad", "angry", "surprised"])
-    editors = opt("--editors", ["seedream", "nanobanana"])
+    # Nano Banana Pro by default: in the first side-by-side run on Megumi it
+    # produced four clear, on-model expressions with zero geometry drift, and
+    # Seedream's output filter refused the character outright ("may be related
+    # to copyright restrictions").
+    editors = opt("--editors", ["nanobanana"])
     for e in exprs:
         if e not in EXPRESSIONS: raise SystemExit("unknown expression %r" % e)
     for e in editors:

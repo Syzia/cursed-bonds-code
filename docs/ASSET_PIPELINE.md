@@ -12,6 +12,35 @@ canon Jujutsu Kaisen characters plus two originals (the player and Sana), and
 the under-eye marks that Krea-2 dropped are canon. So the Danbooru-tag argument
 for a local anime checkpoint is real, not hypothetical — see tools/chars/CANON.md.
 
+## What actually works (updated 2026-09-22, after Yuji and Megumi)
+
+**Base picture:** Krea-2 Turbo on Comfy Cloud, from `tools/chars/prompts/<character>.txt`
+via `make_base_workflow.py`. If the body is right but the head isn't, redraw only
+the head: `facemask.py --head` + `make_workflow.py --head` (Megumi's took one Run).
+
+**Expressions: an edit model, not inpainting.** Masked inpainting with Krea-2
+worked for Yuji and failed completely for Megumi. Four rounds, denoise up to 0.78,
+a wider mask, shorter prompts: his face was repainted at full strength every time
+(the raw pixel change matched Yuji's) and came back bored every time. What worked
+first try was **Nano Banana Pro** (Gemini 3 Pro Image, a paid partner node, about
+$0.16 an edit), given a **head close-up** rather than the full sprite:
+
+1. `python3 tools/composite_face.py --prepare <base.png> <character>`: head close-up, 1024 square
+2. `python3 tools/make_edit_workflow.py <character>`: drag-in workflow, one row per expression
+3. Run it in ComfyUI. Results land in `~/ComfyUI-Shared/output`.
+4. `python3 tools/composite_face.py <base.png> <edit.png> <character> <expression>`
+   lines the edit up with the sprite and pastes only the face through the face mask
+
+On Megumi, Nano Banana Pro kept the geometry exactly (scale 1.000, shift 0) and
+changed the colour by about 2 levels. None of the body pixels changed.
+
+**Seedream refuses these characters.** Its output filter rejected Megumi with "the
+output image may be related to copyright restrictions". Firing eight partner
+requests at once also hits rate limits: they queue and retry, which is slow but
+still works.
+
+---
+
 ## Running step 1
 
 The face mask is generated, not hand-drawn:
