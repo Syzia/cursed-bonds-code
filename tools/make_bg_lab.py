@@ -1,7 +1,8 @@
 """
 Build a style test: one location painted by several approaches, side by side.
 
-    python3 tools/make_bg_lab.py courtyard
+    python3 tools/make_bg_lab.py courtyard            # three approaches
+    python3 tools/make_bg_lab.py courtyard --blend    # Krea 2 at a ladder of reference strengths
 
 Writes `bg_style_test.json` into ~/Desktop/JJK Game images. It runs in the local
 ComfyUI (every approach is a paid partner node, so nothing runs on this Mac's
@@ -29,6 +30,15 @@ COMFY_INPUT = os.path.expanduser("~/ComfyUI-Shared/input")
 PER_APPROACH = 2
 COST = {"A": 0.03, "B": 0.035, "C": 0.16}
 
+# --blend: Krea 2 with the references at a ladder of strengths. At 0.9 (the
+# first test, approach B) the model copied the references' contents -- a roof
+# edge framing the shot from the veranda frame, a glowing orb from the lens
+# flare in the wooden-hall frame -- so those two are left out, and the ladder
+# looks for the strength that takes the colour without the contents.
+BLEND_REFS = ["style_ref_3_bridge.png", "style_ref_4_pagodas.png",
+              "style_ref_5_hall_front.png", "style_ref_6_campus_aerial.png"]
+BLEND_STRENGTHS = [0.35, 0.5, 0.65]
+
 
 def nano_prompt(name):
     scene = open(os.path.join(ROOT, "tools", "bgs", "prompts", name + ".txt")).read().strip()
@@ -39,6 +49,83 @@ def nano_prompt(name):
         ". Framing: a 16:9 wide shot from a normal lens at standing eye level, level horizon, flat "
         "open ground across the lower third where people could stand. No people, no characters, "
         "no text, no subtitles, no user interface.")
+
+
+def build_blend(name):
+    """Rows of Krea 2 + references, one row per strength, two versions each."""
+    proto = json.load(open(os.path.join(ROOT, "tools", "comfy_nodes", "edit_nodes.json")))
+    P, shell = proto["nodes"], proto["shell"]
+    nodes, links, groups = [], [], []
+    ids = {"n": 0, "l": 0}
+
+    def add(kind, pos, size=None, title=None, widgets=None):
+        ids["n"] += 1
+        n = copy.deepcopy(P[kind])
+        n["id"], n["pos"], n["order"] = ids["n"], list(pos), ids["n"]
+        if size: n["size"] = list(size)
+        for i in n.get("inputs", []): i["link"] = None
+        for o in n.get("outputs", []): o["links"] = []
+        if title: n["title"] = title
+        if widgets is not None: n["widgets_values"] = widgets
+        nodes.append(n)
+        return n
+
+    def wire(a, b, b_input, a_slot=0):
+        ids["l"] += 1
+        slot = next(i for i, x in enumerate(b["inputs"]) if x["name"] == b_input)
+        kind = a["outputs"][a_slot]["type"]
+        assert kind == b["inputs"][slot]["type"], (a["type"], b["type"], b_input)
+        links.append([ids["l"], a["id"], a_slot, b["id"], slot, kind])
+        a["outputs"][a_slot]["links"].append(ids["l"])
+        b["inputs"][slot]["link"] = ids["l"]
+
+    for f in BLEND_REFS:
+        if not os.path.exists(os.path.join(REFS, f)):
+            raise SystemExit("missing reference %s" % f)
+        shutil.copy(os.path.join(REFS, f), os.path.join(COMFY_INPUT, f))
+    count = len(BLEND_STRENGTHS) * PER_APPROACH
+    total = count * COST["B"]
+    ids["n"] += 1
+    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-1260, -520], "size": [620, 420],
+                  "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
+                  "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
+        "## Blend test: %s\n\n"
+        "Press **Run**. Each row uses your screenshots at a different strength, "
+        "two versions each:\n\n%s\n\n"
+        "Low strength is mostly the soft written style (like A). High strength "
+        "is mostly your screenshots (like B).\n\n"
+        "**Cost:** %d pictures, about **$%.2f**. No need to save anything."
+        % (name, "\n".join("- **%.2f**" % v for v in BLEND_STRENGTHS), count, total)]})
+    loads = [add("LoadImage", (-1260, i * 330), (300, 310), title="Reference %d" % (i + 1),
+                 widgets=[f, "image"]) for i, f in enumerate(BLEND_REFS)]
+    text = bg_prompt(name)
+    row_h = 560
+    for r, strength in enumerate(BLEND_STRENGTHS):
+        y = r * row_h
+        chain = None
+        for i, ld in enumerate(loads):
+            ref = add("Krea2StyleReferenceNode", (-900, y + i * 110), (240, 80),
+                      title="Reference %d at %.2f" % (i + 1, strength), widgets=[strength])
+            wire(ld, ref, "image")
+            if chain is not None:
+                wire(chain, ref, "style_reference")
+            chain = ref
+        for k in range(PER_APPROACH):
+            n = add("Krea2ImageNode", (k * 820, y), (400, 360), title="Krea 2 + screenshots at %.2f" % strength,
+                    widgets=[text, "Krea 2 Medium", "16:9", "1K", "medium", "", 0.35, 401 + r * 10 + k, "randomize"])
+            wire(chain, n, "model.style_reference")
+            tag = ("%.2f" % strength).replace("0.", "")
+            s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["bgblend_%s_%s" % (name, tag)])
+            wire(n, s, "images")
+        groups.append(("SCREENSHOTS AT %.2f" % strength, y))
+    wf = dict(shell)
+    wf.update({"id": str(uuid.uuid4()), "revision": 0, "last_node_id": ids["n"], "last_link_id": ids["l"],
+               "nodes": nodes, "links": links,
+               "groups": [{"id": i + 1, "title": t, "bounding": [-940, y - 50, 2560, row_h - 30],
+                           "color": "#3f4f5a", "font_size": 24, "flags": {}} for i, (t, y) in enumerate(groups)]})
+    wf["extra"] = dict(wf.get("extra") or {})
+    wf["extra"]["ds"] = {"scale": 0.4, "offset": [1340, 580]}
+    return wf, total
 
 
 def build(name):
@@ -151,8 +238,14 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if not args:
         print(__doc__); raise SystemExit(1)
-    wf, total = build(args[0])
-    out = os.path.join(IMAGES, "bg_style_test.json")
+    if "--blend" in sys.argv:
+        wf, total = build_blend(args[0])
+        out = os.path.join(IMAGES, "bg_blend_test.json")
+        print("blend test for %s: strengths %s x %d, about $%.2f"
+              % (args[0], ", ".join("%.2f" % v for v in BLEND_STRENGTHS), PER_APPROACH, total))
+    else:
+        wf, total = build(args[0])
+        out = os.path.join(IMAGES, "bg_style_test.json")
+        print("style test for %s: 3 approaches x %d, about $%.2f" % (args[0], PER_APPROACH, total))
     json.dump(wf, open(out, "w"), indent=1)
-    print("style test for %s: 3 approaches x %d, about $%.2f" % (args[0], PER_APPROACH, total))
     print("workflow -> %s" % out)
