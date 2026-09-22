@@ -49,6 +49,15 @@ the frame height. So every background needs:
   install_bg.py now refuses static.
 - Scale was fine: the characters stood at a believable size against the halls.
 
+## Clean, not old
+
+"Old", "worn" and "bare" make the model paint neglect: stained plaster,
+specked ceilings, grimy floors, water damage. The first classroom and
+bedroom got all of it. Jujutsu High is traditional but looked after, so
+describe buildings as traditional and well kept. The interior style asks for
+smooth freshly painted walls and clean polished floors. Moss between
+flagstones and weathered wood outdoors are fine: that's age, not dirt.
+
 ## Locked settings (2026-09-22, after the style and blend tests)
 
 - **Model:** Krea 2 Medium, the paid partner node, at 16:9 and 1K (1376x768),

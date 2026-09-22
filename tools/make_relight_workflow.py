@@ -3,6 +3,7 @@ Build a ComfyUI workflow that relights chosen backgrounds for another time of da
 
     python3 tools/make_relight_workflow.py your_room night
     python3 tools/make_relight_workflow.py courtyard evening
+    python3 tools/make_relight_workflow.py classroom your_room clean   # tidy up, same layout
 
 Takes the approved daytime picture from `JJK Game images/backgrounds_chosen/`
 and asks Nano Banana Pro to change only the light, so evening and night are
@@ -42,6 +43,14 @@ TIMES = {
     ("evening", False): "Change the time of day to early evening: a warm orange and pink sunset sky, "
                         "low golden sunlight with long soft shadows, and the first lights coming on "
                         "in a few windows.",
+    # Not a time of day: a tidy-up of an approved picture, for rooms that came
+    # out looking neglected, without losing a layout that was liked.
+    ("clean", True): "Clean this room up so it looks well cared for: remove every stain, water mark, "
+                     "speck, patch of grime and discolouration from the walls and ceiling, so the "
+                     "plaster is smooth, even and freshly painted; make the wooden floor clean and "
+                     "polished; freshen the light slightly with clean, bright daylight.",
+    ("clean", False): "Tidy this place up so it looks well cared for: remove stains, grime and "
+                      "discolouration from walls and surfaces, keeping natural moss and weathered wood.",
 }
 
 
@@ -79,12 +88,13 @@ def build(names, when):
     nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-900, -480], "size": [600, 380],
                   "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
                   "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
-        "## Relight for %s: %s\n\n"
+        "## %s: %s\n\n"
         "Run this in the **local ComfyUI** and press **Run**. Each row takes the "
-        "approved daytime picture and changes only the light, %d versions each.\n\n"
+        "approved picture and changes only %s, keeping the layout, %d versions each.\n\n"
         "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro).\n\n"
         "No need to save anything. Claude picks the results up from ComfyUI's output folder."
-        % (when, ", ".join(names), VERSIONS, count, count * COST)]})
+        % (when, ", ".join(names), "the cleanliness" if when == "clean" else "the light",
+           VERSIONS, count, count * COST)]})
 
     gem = P["GeminiImage2Node"]["widgets_values"]
     row_h = 560
@@ -119,7 +129,7 @@ def build(names, when):
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    if len(args) < 2 or args[-1] not in ("night", "evening"):
+    if len(args) < 2 or args[-1] not in ("night", "evening", "clean"):
         print(__doc__); raise SystemExit(1)
     names, when = args[:-1], args[-1]
     wf, count = build(names, when)
