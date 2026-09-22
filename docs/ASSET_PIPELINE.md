@@ -12,6 +12,26 @@ canon Jujutsu Kaisen characters plus two originals (the player and Sana), and
 the under-eye marks that Krea-2 dropped are canon. So the Danbooru-tag argument
 for a local anime checkpoint is real, not hypothetical — see tools/chars/CANON.md.
 
+## Queued for the character pass (after backgrounds)
+
+Spotted by standing Yuji and Megumi in the first real background (tools/fitcheck.py):
+
+1. **Clipped soles.** Yuji's right shoe and Megumi's right boot end in a straight
+   cut. Both base renders had the feet touching the bottom edge. keysprite's QA
+   flagged it at the time, and it was dismissed as "under 1% of height". At game
+   size it is plainly visible, so a QA flag for a clipped figure should be
+   treated as blocking. Fix: pad the base render with green below the feet, have
+   the edit model complete the shoes, and composite only a feet mask back, in
+   the same way composite_face.py does for faces. Future bases: re-roll any
+   candidate the QA flags.
+2. **Floating.** There is no shadow where they stand. Fix in the engine: a soft
+   ellipse under each sprite, scaled with it, drawn under the character layer.
+3. **Lighting by time of day.** The game tints backgrounds for evening and night
+   but not sprites, so at night the characters glow. Fix in the engine: a matching
+   per-period tint on sprites.
+
+---
+
 ## What actually works (updated 2026-09-22, after Yuji and Megumi)
 
 **Base picture:** Krea-2 Turbo on Comfy Cloud, from `tools/chars/prompts/<character>.txt`
