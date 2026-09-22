@@ -34,6 +34,7 @@ INTERIORS = {"classroom", "cafeteria", "training_hall", "dojo", "dorm_common_roo
              "principals_office", "storehouse"}
 INTERIOR_REFS = ["style_ref_7_room_interior.png", "style_ref_5_hall_front.png"]
 STRENGTH = 0.50
+assert 0 < STRENGTH <= 1.0, "Krea's API rejects style-reference strength above 1.0"
 CANDIDATES = 2
 COST = 0.035
 
@@ -88,7 +89,11 @@ def build(names):
         "versions of one location.\n\n"
         "**Cost:** %d pictures, about **$%.2f** (Krea 2, charged to your Comfy account).\n\n"
         "No need to save anything. The results go to ComfyUI's output folder "
-        "and Claude picks them up from there."
+        "and Claude picks them up from there.\n\n"
+        "**Please don't change the reference boxes.** The pictures are cleaned "
+        "crops with no characters, subtitles or player bar, which the model would "
+        "copy. Krea also rejects any strength above 1.0, even though the box "
+        "allows 2.0."
         % (", ".join(names), CANDIDATES, count, count * COST)]})
 
     # One chain of style references per kind of scene; each row uses its own.
