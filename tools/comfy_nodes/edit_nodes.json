@@ -1,5 +1,5 @@
 {
- "_source": "Comfy-Org workflow templates, from the local ComfyUI Desktop install: api_bytedance_seedream_5_0_pro_image_edit.json and api_nano_banana_pro.json",
+ "_source": "Comfy-Org workflow templates, from the local ComfyUI Desktop install: api_bytedance_seedream_5_0_pro_image_edit.json and api_nano_banana_pro.json; api_krea2_style_reference.json",
  "shell": {
   "id": "745f0acb-85fe-4455-b8b8-5875bf15f808",
   "revision": 0,
@@ -272,6 +272,167 @@
    "widgets_values": [
     "ComfyUI"
    ]
+  },
+  "Krea2ImageNode": {
+   "id": 1,
+   "type": "Krea2ImageNode",
+   "pos": [
+    -2030,
+    7980
+   ],
+   "size": [
+    400,
+    442.65625
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "style_reference",
+     "name": "model.style_reference",
+     "shape": 7,
+     "type": "KREA_STYLE_REF",
+     "link": 4
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1
+     ]
+    }
+   ],
+   "properties": {
+    "enableTabs": false,
+    "tabWidth": 65,
+    "tabXOffset": 10,
+    "hasSecondTab": false,
+    "secondTabText": "Send Back",
+    "secondTabOffset": 80,
+    "secondTabWidth": 65,
+    "cnr_id": "comfy-core",
+    "ver": "0.22.0",
+    "Node name for S&R": "Krea2ImageNode"
+   },
+   "widgets_values": [
+    "90s spaghetti western movie still, lone cowboy silhouette from behind, standing in a vast desert canyon, wearing a wide-brimmed hat, long duster coat and bandana, holding a revolver at his side, saguaro cacti in the foreground, hazy orange dust storm atmosphere, warm sepia and burnt sienna color palette, golden hour sunset light, soft atmospheric haze, vintage film grain, cinematic wide shot, dramatic composition, gritty old west aesthetic, hyperrealistic textures",
+    "Krea 2 Medium",
+    "1:1",
+    "1K",
+    "medium",
+    "",
+    0.35,
+    593877138,
+    "randomize"
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  "Krea2StyleReferenceNode": {
+   "id": 7,
+   "type": "Krea2StyleReferenceNode",
+   "pos": [
+    -2420,
+    7980
+   ],
+   "size": [
+    290,
+    200
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "image",
+     "type": "IMAGE",
+     "link": 8
+    },
+    {
+     "name": "style_reference",
+     "shape": 7,
+     "type": "KREA_STYLE_REF",
+     "link": 5
+    }
+   ],
+   "outputs": [
+    {
+     "name": "style_reference",
+     "type": "KREA_STYLE_REF",
+     "links": [
+      4
+     ]
+    }
+   ],
+   "properties": {
+    "enableTabs": false,
+    "tabWidth": 65,
+    "tabXOffset": 10,
+    "hasSecondTab": false,
+    "secondTabText": "Send Back",
+    "secondTabOffset": 80,
+    "secondTabWidth": 65,
+    "cnr_id": "comfy-core",
+    "ver": "0.22.0",
+    "Node name for S&R": "Krea2StyleReferenceNode"
+   },
+   "widgets_values": [
+    1
+   ]
+  },
+  "BatchImagesNode": {
+   "id": 36,
+   "type": "BatchImagesNode",
+   "pos": [
+    -520,
+    150
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 53
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 55
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      56
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": []
   }
  }
 }

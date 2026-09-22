@@ -25,6 +25,16 @@ W, H = 1408, 792
 CANDIDATES = 4
 
 
+def bg_prompt(name):
+    """A location's scene description followed by the shared style paragraph.
+
+    Kept in separate files so the style can be tuned once for every location.
+    """
+    scene = open(os.path.join(ROOT, "tools", "bgs", "prompts", name + ".txt")).read().strip()
+    style = open(os.path.join(ROOT, "tools", "bgs", "style.txt")).read().strip()
+    return scene + "\n\n" + style
+
+
 def build(names):
     r = recipe(REFERENCE)
     g = Graph()
@@ -48,7 +58,7 @@ def build(names):
     row_h = 700
     for i, name in enumerate(names):
         y = i * row_h
-        prompt = open(os.path.join(ROOT, "tools", "bgs", "prompts", name + ".txt")).read().strip()
+        prompt = bg_prompt(name)
         pos = g.add("CLIPTextEncode", (360, y), (460, 330), [prompt],
                     ins=[("clip", "CLIP")], outs=[("CONDITIONING", "CONDITIONING")],
                     title="Prompt: %s" % name)
