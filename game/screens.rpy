@@ -422,6 +422,7 @@ screen main_menu():
         spacing gui.navigation_spacing
 
         textbutton _("Start") action Start()
+        textbutton _("Explore the campus") action Start("explore_campus")
         textbutton _("Load") action ShowMenu("load")
         textbutton _("Preferences") action ShowMenu("preferences")
         textbutton _("About") action ShowMenu("about")
@@ -488,9 +489,12 @@ style main_menu_kanji is text:
     color "#a259ff12"
 
 style main_menu_version:
-    xpos gui.navigation_xpos
+    ## Bottom-right: the navigation list grew to six entries and reached the
+    ## bottom-left corner this used to sit in.
+    xalign 1.0
+    xoffset -64
     yalign 1.0
-    yoffset -64
+    yoffset -40
     size 18
     color gui.mute
     kerning 2

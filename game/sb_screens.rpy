@@ -11,6 +11,9 @@ init python:
 
     def place_actions(loc):
         """(id, label, hint, period_cost) for everything you can do here."""
+        if store.explore_mode:
+            nxt = PERIODS[(PERIODS.index(store.period) + 1) % len(PERIODS)]
+            return [("explore_time", "Time: %s" % nxt, "Step to the next time of day. Nothing is spent.", 0)]
         a = []
         if loc == "dorm":
             a.append(("sleep", "Sleep", "End the day. Restore everything.", 0))

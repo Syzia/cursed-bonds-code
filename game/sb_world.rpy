@@ -251,6 +251,8 @@ init -2 python:
 
     def can_enter(loc):
         """(allowed, reason) — some places are not always open to you."""
+        if store.explore_mode:
+            return True, ""
         if loc == "girls_dorm" and store.period in ("Evening", "Night"):
             if not has_flag("invited_girls_dorm"):
                 return False, "You are not walking into the girls' dormitory after dark uninvited. That is how people get nailed to things."

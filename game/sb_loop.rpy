@@ -11,7 +11,7 @@ label sandbox:
     while True:
 
         ## A story beat can be waiting at this location.
-        $ _story = pick_event("story", loc=here)
+        $ _story = None if explore_mode else pick_event("story", loc=here)
         if _story:
             call play_event(_story)
 
