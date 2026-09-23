@@ -3,7 +3,9 @@ Build the ComfyUI workflow that generates location backgrounds.
 
     python3 tools/make_bg_workflow.py classroom your_room
 
-One row per location, two candidates each. Writes `backgrounds.json` into
+One row per location, two candidates each. Seeds are fixed so a run that
+stops on a rate-limit error can simply be run again; pass --seed N for
+different pictures of the same places. Writes `backgrounds.json` into
 ~/Desktop/JJK Game images; drag it into the LOCAL ComfyUI and press Run. The
 results land in ~/ComfyUI-Shared/output as `bg_<name>_0000N_.png`, where
 tools/install_bg.py can take them straight into the game.
@@ -80,7 +82,7 @@ def bg_prompt(name):
     return scene + "\n\n" + style
 
 
-def build(names):
+def build(names, seed=1000):
     proto = json.load(open(os.path.join(ROOT, "tools", "comfy_nodes", "edit_nodes.json")))
     P, shell = proto["nodes"], proto["shell"]
     nodes, links, groups = [], [], []
@@ -120,6 +122,11 @@ def build(names):
         "**Cost:** %d pictures, about **$%.2f** (Krea 2, charged to your Comfy account).\n\n"
         "No need to save anything. The results go to ComfyUI's output folder "
         "and Claude picks them up from there.\n\n"
+        "**If it stops with a rate-limit or \"high demand\" error**, wait a "
+        "minute and press **Run** again. ComfyUI sends every picture to Krea at "
+        "once, and Krea sometimes turns some away. Pictures that already finished "
+        "are reused rather than made again (and aren't charged twice), as long as "
+        "ComfyUI hasn't been restarted in between.\n\n"
         "**Please don't change the reference boxes.** The pictures are cleaned "
         "crops with no characters, subtitles or player bar, which the model would "
         "copy. Krea also rejects any strength above 1.0, even though the box "
@@ -154,9 +161,11 @@ def build(names):
         y = r * row_h
         text = bg_prompt(name)
         for k in range(CANDIDATES):
+            # Fixed seeds, so a re-run hits ComfyUI's cache for every picture
+            # that already finished; see the note in the "Start here" box.
             n = add("Krea2ImageNode", (k * 820, y), (400, 360), title="%s (%d)" % (name, k + 1),
                     widgets=[text, "Krea 2 Medium", "16:9", "1K", "medium", "", 0.35,
-                             1000 + r * 10 + k, "randomize"])
+                             seed + r * 10 + k, "fixed"])
             wire(chains[tuple(refs_for(name))], n, "model.style_reference")
             s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["bg_%s" % name])
             wire(n, s, "images")
@@ -173,13 +182,19 @@ def build(names):
 
 
 if __name__ == "__main__":
-    names = [a for a in sys.argv[1:] if not a.startswith("--")]
+    argv = sys.argv[1:]
+    seed = 1000
+    if "--seed" in argv:
+        i = argv.index("--seed")
+        seed = int(argv[i + 1])
+        del argv[i:i + 2]
+    names = [a for a in argv if not a.startswith("--")]
     if not names:
         print(__doc__); raise SystemExit(1)
     for n in names:
         if not os.path.exists(os.path.join(ROOT, "tools", "bgs", "prompts", n + ".txt")):
             raise SystemExit("no prompt for %r in tools/bgs/prompts/" % n)
-    wf, count = build(names)
+    wf, count = build(names, seed)
     out = os.path.join(IMAGES, "backgrounds.json")
     json.dump(wf, open(out, "w"), indent=1)
     print("rows      %s (%d each)" % (", ".join(names), CANDIDATES))

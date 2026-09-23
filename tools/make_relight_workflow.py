@@ -92,7 +92,9 @@ def build(names, when):
         "Run this in the **local ComfyUI** and press **Run**. Each row takes the "
         "approved picture and changes only %s, keeping the layout, %d versions each.\n\n"
         "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro).\n\n"
-        "No need to save anything. Claude picks the results up from ComfyUI's output folder."
+        "No need to save anything. Claude picks the results up from ComfyUI's output folder.\n\n"
+        "If it stops with a rate-limit or \"high demand\" error, wait a minute and press "
+        "**Run** again: finished pictures are reused, not paid for twice."
         % (when, ", ".join(names), "the cleanliness" if when == "clean" else "the light",
            VERSIONS, count, count * COST)]})
 
@@ -109,7 +111,7 @@ def build(names, when):
         prompt = TIMES[(when, name in INTERIORS)] + " " + KEEP
         for k in range(VERSIONS):
             w = list(gem)
-            w[0], w[2], w[4], w[5], w[6] = prompt, 500 + r * 10 + k, "16:9", "1K", "IMAGE"
+            w[0], w[2], w[3], w[4], w[5], w[6] = prompt, 500 + r * 10 + k, "fixed", "16:9", "1K", "IMAGE"
             n = add("GeminiImage2Node", (k * 820, y), (400, 360), title="%s at %s (%d)" % (name, when, k + 1),
                     widgets=w)
             wire(ld, n, "images")
