@@ -7,8 +7,21 @@ for word the same for everyone). `tools/make_base_workflow.py <character>`
 turns one into a drag-in Comfy Cloud workflow. The blocks below are the
 starting descriptions those files were written from.
 
-Written for a general-purpose model (Krea-2 / SDXL-class) that does **not** know
-Jujutsu Kaisen by name — every character is described, never named. On a
+**Name them, on Krea-2 Turbo (2026-09-23).** Yuji and Megumi came out in MAPPA's
+Jujutsu Kaisen style because their descriptions were distinctive enough for the
+model to recognise them. Nobara, described as an orange bob in a uniform, came
+out generic. One Run compared the two approaches for her, two pictures each:
+her description plus a written-out version of the style gave the right
+proportions but a flat, generic face. "Nobara Kugisaki from the anime Jujutsu
+Kaisen, drawn exactly as she appears in MAPPA's Jujutsu Kaisen anime" gave her
+real face, hair and colouring. So for the rest of the cast: **name the character
+and MAPPA's style, then describe**. This model runs open on Comfy Cloud, so a
+name can't be refused. Still never name them to closed services such as
+Nano Banana or Seedream. The winning prompt is prompts/nobara.txt; the losing one
+is kept as prompts/nobara_described.txt.
+
+The notes below were first written for a general-purpose model assumed not to
+know Jujutsu Kaisen by name. On a
 Danbooru-tag anime checkpoint (Illustrious, NoobAI, Pony) you can replace the
 description block with the character tag and get closer likeness for less work.
 
