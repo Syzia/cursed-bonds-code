@@ -108,7 +108,9 @@ def build(char, exprs, editors):
             "**Cost:** %d edits, about **$%.2f** in total, charged to your Comfy "
             "account (%s).\n\n"
             "You don't need to save anything. The results land in ComfyUI's output "
-            "folder, where Claude picks them up."
+            "folder, where Claude picks them up.\n\n"
+            "If it stops with a rate-limit or \"high demand\" error, wait a minute and "
+            "press **Run** again: finished pictures are reused, not paid for twice."
             % (char.capitalize(), image_name, len(exprs) * len(editors), cost,
                ", ".join("%s ~$%.3f each" % (EDITORS[e][3], EDITORS[e][2]) for e in editors))]})
 
@@ -128,7 +130,11 @@ def build(char, exprs, editors):
             n["widgets_values"] = list(n["widgets_values"])
             n["widgets_values"][0] = prompt
             if node_t == "GeminiImage2Node":
-                # aspect 1:1 and 1K, as the close-up is square; IMAGE only.
+                # A fixed seed per row, so a Run that stops on a rate limit can
+                # be pressed again and reuse what finished. Aspect 1:1 and 1K,
+                # as the close-up is square; IMAGE only.
+                n["widgets_values"][2] = 300 + r
+                n["widgets_values"][3] = "fixed"
                 n["widgets_values"][4] = "1:1"
                 n["widgets_values"][5] = "1K"
                 n["widgets_values"][6] = "IMAGE"

@@ -43,11 +43,17 @@ def is_skin(r, g, b):
     Measured off the first render — pink hair 0.08-0.11, red hoodie 0.01-0.04,
     facial skin 0.39-0.46 — so green being at least a quarter of the way up is
     a clean cut with a wide margin on both sides.
+
+    Orange-brown hair passes that test too, so skin must also be pale, with
+    (r - b) / r at most 0.40.
     """
     if not (r > 115 and r > g > b):
         return False
     span = r - b
-    return 22 < span < 130 and (g - b) >= 0.28 * span
+    # Ginger hair has skin's hue exactly, so hue can't separate them;
+    # saturation can. Nobara's face measures 0.19-0.21 and her hair 0.43-0.68,
+    # highlights included.
+    return 22 < span < 130 and (g - b) >= 0.28 * span and span <= 0.40 * r
 
 
 def superellipse(cx, cy, rx, ry, n=None, steps=96):
