@@ -127,8 +127,18 @@ init -2 python:
         "Night":     ("#a8b4e0", -0.20),
     }
 
-    ## Places with a genuinely different night image, not just a tint.
-    NIGHT_VARIANT = {"dorm"}
+    ## Places with a genuinely different picture for an hour, not just a tint:
+    ## period -> the image's attribute ("bg rooftop evening"). Each is relit
+    ## from the day picture, so it is recognisably the same place.
+    TIME_VARIANT = {
+        "dorm":      {"Evening": "night", "Night": "night"},
+        "infirmary": {"Night": "night"},
+        "rooftop":   {"Evening": "evening", "Night": "night"},
+        "riverside": {"Evening": "evening"},
+    }
+
+    def bg_variant(loc, per):
+        return TIME_VARIANT.get(loc, {}).get(per)
 
     def bg_name(loc=None, per=None):
         loc = loc or store.here
@@ -136,8 +146,9 @@ init -2 python:
         if loc not in LOCATIONS:
             return "bg black"          # story scenes may sit outside the campus
         base = LOCATIONS[loc]["bg"]
-        if loc in NIGHT_VARIANT and per in ("Evening", "Night"):
-            base += " night"
+        v = bg_variant(loc, per)
+        if v:
+            base += " " + v
         return base
 
     ## Built once per (place, period) and held outside the store, so screens
@@ -154,9 +165,12 @@ init -2 python:
         img = bg_name(loc, per)
         if loc not in LOCATIONS:
             return img
-        if loc in NIGHT_VARIANT and per in ("Evening", "Night"):
-            ## The image is already authored dark; grading it again crushes it.
-            tint, bright = (("#ffd8b8", -0.04) if per == "Evening" else ("#ffffff", 0.0))
+        v = bg_variant(loc, per)
+        if v:
+            ## The image is already painted for its hour; grading it again
+            ## crushes it. A night picture standing in for the evening gets
+            ## a warm touch.
+            tint, bright = (("#ffd8b8", -0.04) if (v == "night" and per == "Evening") else ("#ffffff", 0.0))
         else:
             table = INDOOR_GRADE if LOCATIONS.get(loc, {}).get("indoor") else OUTDOOR_GRADE
             tint, bright = table.get(per, ("#ffffff", 0.0))

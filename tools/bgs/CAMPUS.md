@@ -64,15 +64,18 @@ the places people use after dark get a proper evening or night version relit
 from the day picture (`make_relight_workflow.py`), so they stay the same place.
 
 These are the ones worth relighting, going by the schedules in
-`game/sb_world.rpy`:
+`game/sb_world.rpy`. The game picks them up through `TIME_VARIANT` there.
 
-| Place | Used in the evening or at night by |
-|---|---|
-| Dorm common room | nearly everyone, evening and night |
-| Girls' dormitory | Nobara and Maki, at night |
-| Infirmary | Shoko, at night |
-| Rooftop | Shoko in the evening, and Gojo at any hour |
-| Riverside | Maki in the evening |
-| Courtyard, dojo, cafeteria | weekend evenings |
-| Your room | done |
-| Principal's office | nothing needed: it's candlelit at every hour |
+| Place | Used after dark by | Pictures |
+|---|---|---|
+| Your room | the player | night (done) |
+| Infirmary | Shoko, at night | night (done) |
+| Rooftop | Shoko in the evening, and Gojo at any hour | evening and night (done) |
+| Riverside | Maki in the evening | evening (done) |
+| Dorm common room | nearly everyone, evening and night | evening and night (queued) |
+| Girls' dormitory | Nobara and Maki, at night | night (queued) |
+| Courtyard, dojo, cafeteria | weekend evenings | the tint is enough for now |
+| Principal's office | nobody after dark | none needed: it's candlelit at every hour |
+
+Relight from the approved day picture in `backgrounds_chosen/`. For a room
+that was cleaned up, that is the clean version, so night stays clean too.

@@ -13,6 +13,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SDK="${RENPY_SDK:-$HOME/Desktop/renpy-8.5.3-sdk}"
 cleanup() { rm -f "$ROOT"/game/zz_smoke.rpy "$ROOT"/game/zz_smoke.rpyc "$ROOT"/game/zz_smoke.rpyc.bak; }
 trap cleanup EXIT INT TERM
+# Without a harness Ren'Py would just start the real game and sit there until
+# the watchdog kills it.
+[ -f "${1:-}" ] || { echo "no harness at ${1:-<none>}" >&2; exit 2; }
 cp "$1" "$ROOT/game/zz_smoke.rpy"
 # A real window by default: on macOS 27 the dummy SDL driver stalls at
 # "Initializing sw renderer" and never runs the script. HEADLESS=1 opts back in.

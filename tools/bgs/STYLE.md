@@ -124,6 +124,21 @@ from ComfyUI's cache instead of being made and paid for again.
   moody frame for a film still. The better one is trimmed to the picture
   between the bars. If the office is redone, watch for this.
 
+**Second and third runs (2026-09-23):**
+
+- The other five places came through. The gate, ridge, dojo and common room
+  are excellent.
+- The girls' dorm came back with stained, blotchy walls in both versions, and
+  the common room and cafeteria were mildly dingy. The Nano Banana clean-up
+  fixed all three with the layout kept. The clean wording in the style
+  paragraph helps, but doesn't guarantee a clean room, so budget a clean-up
+  pass for corridors and plain-walled rooms.
+- **Google's filter** blocked the first clean-up because the wording said
+  "remove every stain, water mark...", which it read as removing a watermark.
+  The clean-up now describes the finished room instead.
+- The relights (rooftop at evening and night, riverside at evening, infirmary
+  at night) all held the layout exactly, first time.
+
 ## The style paragraph
 
 Lives in `tools/bgs/style.txt` and is appended to every scene description in
