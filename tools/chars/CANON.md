@@ -77,11 +77,16 @@ mouth area, like stylised fangs). Expressions live entirely in the eyes and brow
 ## shoko — Shoko Ieiri (doctor)
 From her official character design sheet in `references/characters/shoko/` (2026-09-23).
 - **Age:** 28.
-- **Hair:** long, straight, dark reddish-brown, past the shoulders to
-  mid-chest. The bangs part near the middle and fall long at the sides,
-  framing her face.
-- **Face:** heavy-lidded, tired brown eyes with faint shadows beneath, a
-  small beauty mark under her left eye, pale skin.
+- **Hair:** long and straight, a warm dark cocoa brown (the sheet measures
+  hue +11°), past the shoulders to mid-chest. It is parted in the centre and
+  falls straight down both sides of her face, so her whole forehead shows,
+  with a few thin strands at the temples. Don't write "reddish" or "bangs":
+  the first four renders came back burgundy (hue −4°) with a side fringe
+  across the forehead.
+- **Face:** a soft oval face with a gentle jaw. Sleepy, heavy-lidded brown
+  eyes with lilac-grey tired shadows under them, and a small dark mole just
+  below her right eye (on the left of the picture). Thin arched brows,
+  rose-pink lips, pale skin.
 - **Outfit:** a knee-length white lab coat worn open over a fitted teal-blue
   turtleneck, slim dark navy trousers cropped at the ankle, beige high-heeled
   pumps. Often a cigarette; omit it in the sprite.
