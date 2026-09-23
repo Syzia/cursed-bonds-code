@@ -31,6 +31,14 @@ Two more repairs for a base the model got nearly right:
   back through the head mask:
 
       python3 tools/fix_edges.py shoko head <edit.png>
+
+- **HAIR_FIX** restyles the hair along its whole length, keeping the face:
+
+      python3 tools/fix_edges.py --prepare-hair shoko    # hair.json
+      python3 tools/fix_edges.py shoko hair <edit.png>
+
+`--prepare` refuses to overwrite a working base that already has repairs
+pasted in, unless given --force.
 """
 import sys, os, json, copy, uuid
 
@@ -97,6 +105,25 @@ WHAT = {
                "flat green background, with plain green left below the soles."),
 }
 CLOSE_SUBJECT = {"top": "the head and shoulders", "bottom": "the lower legs and shoes"}
+
+
+# Hair the base model got wrong, restyled on a close-up covering its whole
+# length. Shoko's came out dark and slicked flat; the anime's is a lighter brown
+# with highlight streaks, softer, framing her forehead.
+HAIR_FIX = {
+    "shoko": ("Restyle only her hair: a warm medium brown, clearly lighter than it is now, like milk "
+              "chocolate, with long lighter caramel highlight streaks running down the strands; still "
+              "parted in the centre with her forehead bare in the middle, but the hair at the front "
+              "sweeping away from the part in soft curves that frame her forehead and cover the edges "
+              "of her temples, with a few fine loose strands at the temples; the rest of her hair soft "
+              "and full, falling straight past her shoulders to mid-chest in slightly separated "
+              "strands, a little fuller at the sides than now."),
+}
+HAIR_VERSIONS = 3
+HAIR_KEEP = ("Keep her face exactly as it is: the same eyes, the tired lines under them, the mole, "
+             "eyebrows, nose, mouth and expression. Keep everything else exactly the same: the framing, "
+             "the head's size and position, the clothes, the plain flat green background, and the flat "
+             "cel shading and line art.")
 
 
 def backdrop(im, rows):
@@ -199,7 +226,9 @@ def close_rows(edge, h):
     return (0, CLOSE_H) if edge == "top" else (h - CLOSE_H, h)
 
 
-def prepare(chars):
+def write_workflow(rows, heading, blurb, out_name):
+    """rows: (char, kind, staged image, prompt, versions, aspect). One row per
+    close-up, each version saved as `edge_<char>_<kind>`."""
     proto = json.load(open(os.path.join(ROOT, "tools", "comfy_nodes", "edit_nodes.json")))
     P, shell = proto["nodes"], proto["shell"]
     nodes, links, groups = [], [], []
@@ -226,6 +255,48 @@ def prepare(chars):
         a["outputs"][a_slot]["links"].append(ids["l"])
         b["inputs"][slot]["link"] = ids["l"]
 
+    count = sum(r[4] for r in rows)
+    ids["n"] += 1
+    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-900, -520], "size": [600, 400],
+                  "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
+                  "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
+        "## %s\n\n"
+        "Run this in the **local ComfyUI** and press **Run**. %s\n\n"
+        "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro).\n\n"
+        "No need to save anything. Claude picks the results up from ComfyUI's output folder.\n\n"
+        "If it stops with a rate-limit or \"high demand\" error, wait a minute and press "
+        "**Run** again: finished pictures are reused, not paid for twice."
+        % (heading, blurb, count, count * COST)]})
+    gem = P["GeminiImage2Node"]["widgets_values"]
+    row_h = 560
+    for r, (char, kind, staged, prompt, versions, aspect) in enumerate(rows):
+        y = r * row_h
+        ld = add("LoadImage", (-900, y), (300, 320), title="%s: %s" % (char, kind), widgets=[staged, "image"])
+        for k in range(versions):
+            w = list(gem)
+            w[0], w[2], w[3], w[4], w[5], w[6] = prompt, 900 + r * 10 + k, "fixed", aspect, "1K", "IMAGE"
+            n = add("GeminiImage2Node", (k * 820, y), (400, 360), title="%s %s (%d)" % (char, kind, k + 1),
+                    widgets=w)
+            wire(ld, n, "images")
+            sv = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["edge_%s_%s" % (char, kind)])
+            wire(n, sv, "images")
+        groups.append(("%s: %s" % (char.upper(), kind.upper()) if kind in ("head", "hair") else
+                       "%s: %s EDGE" % (char.upper(), kind.upper()), y))
+
+    widest = max(r[4] for r in rows)
+    wf = dict(shell)
+    wf.update({"id": str(uuid.uuid4()), "revision": 0, "last_node_id": ids["n"], "last_link_id": ids["l"],
+               "nodes": nodes, "links": links,
+               "groups": [{"id": i + 1, "title": t, "bounding": [-920, gy - 50, 940 + 820 * widest, row_h - 30],
+                           "color": "#3f4f5a", "font_size": 24, "flags": {}} for i, (t, gy) in enumerate(groups)]})
+    wf["extra"] = dict(wf.get("extra") or {})
+    wf["extra"]["ds"] = {"scale": 0.45, "offset": [980, 560]}
+    out = os.path.join(IMAGES, out_name)
+    json.dump(wf, open(out, "w"), indent=1)
+    print("workflow -> %s  (%d pictures, about $%.2f)" % (out, count, count * COST))
+
+
+def prepare(chars, force=False):
     rows = []
     os.makedirs(FIXED, exist_ok=True)
     for char in chars:
@@ -233,7 +304,13 @@ def prepare(chars):
         if not cuts and char not in HEAD_FIX:
             print("%s: nothing touches the top or bottom edge" % char)
             continue
-        work.save(os.path.join(FIXED, "%s_base.png" % char))
+        work_path = os.path.join(FIXED, "%s_base.png" % char)
+        if os.path.exists(work_path) and not force:
+            old = rgb(load(work_path))
+            if (old.w, old.h) != (work.w, work.h) or old.buf != work.buf:
+                raise SystemExit("%s already has repairs pasted in; starting again would throw them "
+                                 "away. Pass --force to do that." % work_path)
+        work.save(work_path)
         with open(record_path(char), "w") as f:
             f.write("%s\t%d\t%d" % (BASES[char], top, bottom))
         if char in HEAD_FIX:
@@ -251,7 +328,7 @@ def prepare(chars):
                      "into that strip, with plain green left above it." if "top" in cuts else "")
             prompt = ("This is a close-up of a cartoon character, a woman on a plain flat green "
                       "background. " + HEAD_FIX[char] + crown + " " + HEAD_KEEP)
-            rows.append((char, "head", staged, prompt))
+            rows.append((char, "head", staged, prompt, HEAD_VERSIONS, "1:1"))
             print("%-7s head   close-up %dx%d at (%d, %d) -> %s" % (char, side, side, X, Y, staged))
         for edge, (x0, x1) in sorted(cuts.items()):
             if edge == "top" and char in HEAD_FIX:
@@ -266,52 +343,11 @@ def prepare(chars):
             prompt = ("This is a close-up of %s of a cartoon character, drawn on a plain flat green "
                       "background. The original picture was cut off at the %s, so %s"
                       % (CLOSE_SUBJECT[edge], edge, what))
-            rows.append((char, edge, staged, prompt))
+            rows.append((char, edge, staged, prompt, VERSIONS, "16:9"))
             print("%-7s %-6s cut at x %d-%d; close-up rows %d-%d -> %s" % (char, edge, x0, x1, r0, r1, staged))
-
-    versions = lambda edge: HEAD_VERSIONS if edge == "head" else VERSIONS
-    count = sum(versions(r[1]) for r in rows)
-    ids["n"] += 1
-    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-900, -520], "size": [600, 400],
-                  "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
-                  "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
-        "## Repair the base picture: %s\n\n"
-        "Run this in the **local ComfyUI** and press **Run**. Each row is a close-up: "
-        "a cut edge with a strip of green added, where the model draws the missing hair "
-        "or shoe, or a head to redraw. %d versions each (heads %d).\n\n"
-        "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro).\n\n"
-        "No need to save anything. Claude picks the results up from ComfyUI's output folder.\n\n"
-        "If it stops with a rate-limit or \"high demand\" error, wait a minute and press "
-        "**Run** again: finished pictures are reused, not paid for twice."
-        % (", ".join(chars), VERSIONS, HEAD_VERSIONS, count, count * COST)]})
-    gem = P["GeminiImage2Node"]["widgets_values"]
-    row_h = 560
-    for r, (char, edge, staged, prompt) in enumerate(rows):
-        y = r * row_h
-        ld = add("LoadImage", (-900, y), (300, 320), title="%s: %s" % (char, edge), widgets=[staged, "image"])
-        for k in range(versions(edge)):
-            w = list(gem)
-            aspect = "1:1" if edge == "head" else "16:9"
-            w[0], w[2], w[3], w[4], w[5], w[6] = prompt, 900 + r * 10 + k, "fixed", aspect, "1K", "IMAGE"
-            n = add("GeminiImage2Node", (k * 820, y), (400, 360), title="%s %s (%d)" % (char, edge, k + 1),
-                    widgets=w)
-            wire(ld, n, "images")
-            s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["edge_%s_%s" % (char, edge)])
-            wire(n, s, "images")
-        groups.append(("%s: HEAD" % char.upper() if edge == "head" else
-                       "%s: %s EDGE" % (char.upper(), edge.upper()), y))
-
-    wf = dict(shell)
-    wf.update({"id": str(uuid.uuid4()), "revision": 0, "last_node_id": ids["n"], "last_link_id": ids["l"],
-               "nodes": nodes, "links": links,
-               "groups": [{"id": i + 1, "title": t,
-                           "bounding": [-920, gy - 50, 940 + 820 * max(VERSIONS, HEAD_VERSIONS), row_h - 30],
-                           "color": "#3f4f5a", "font_size": 24, "flags": {}} for i, (t, gy) in enumerate(groups)]})
-    wf["extra"] = dict(wf.get("extra") or {})
-    wf["extra"]["ds"] = {"scale": 0.45, "offset": [980, 560]}
-    out = os.path.join(IMAGES, "edges.json")
-    json.dump(wf, open(out, "w"), indent=1)
-    print("workflow -> %s  (%d pictures, about $%.2f)" % (out, count, count * COST))
+    write_workflow(rows, "Repair the base picture: %s" % ", ".join(chars),
+                   "Each row is a close-up: a cut edge with a strip of green added, where the model "
+                   "draws the missing hair or shoe, or a head to redraw.", "edges.json")
 
 
 def align(close, ed, rows):
@@ -440,6 +476,205 @@ def apply(char, edge, edited):
     print("   %s edge repaired -> %s" % (edge, work_path))
 
 
+def hairlike(r, g, b):
+    """Brown hair, dark or light, highlights included; not skin, the coat,
+    the turtleneck or the backdrop."""
+    import colorsys
+    h, l, sat = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+    h = h if h < 0.5 else h - 1.0
+    if not (-15 / 360.0 < h < 45 / 360.0 and 0.05 < l < 0.68 and sat > 0.10):
+        return False
+    from facemask import is_skin
+    return not is_skin(r, g, b)          # shadowed skin (a hand, the neck) is brown too
+
+
+def hair_extent(work):
+    """(top of the figure, lowest row with hair, x range of the hair)."""
+    from keysprite import key_out, bbox
+    keyed = key_out(work)
+    x0, y0, x1, y1 = bbox(keyed)
+    last, xs = y0, []
+    for y in range(y0, y0 + int((y1 - y0) * 0.36)):     # hair ends by mid-chest
+        row = [x for x in range(work.w) if keyed.buf[(y * work.w + x) * 4 + 3] > 128 and
+               hairlike(*work.buf[(y * work.w + x) * 3:(y * work.w + x) * 3 + 3])]
+        if len(row) >= 12:
+            last = y
+            xs += [row[0], row[-1]]
+    return y0, last, (min(xs), max(xs))
+
+
+def prepare_hair(chars):
+    from raster import resample
+    from facemask import face_box
+    from keysprite import key_out
+    rows = []
+    for char in chars:
+        work = rgb(load(os.path.join(FIXED, "%s_base.png" % char)))
+        top, bottom, (hx0, hx1) = hair_extent(work)
+        fx0, fy0, fx1, fy1 = face_box(work, key_out(work))
+        side = max(bottom + 40 - (top - 24), hx1 - hx0 + 100)
+        side = min(work.w, work.h, (side + 63) // 64 * 64)
+        cx = (fx0 + fx1) // 2
+        X = max(0, min(work.w - side, cx - side // 2))
+        Y = max(0, min(work.h - side, top - 24))
+        close = resample(crop(work, X, Y, X + side, Y + side), 1024, 1024)
+        staged = "hair_%s.png" % char
+        close.save(os.path.join(COMFY_INPUT, staged))
+        close.save(os.path.join(FIXED, staged))
+        with open(os.path.join(FIXED, "masks", "%s_hair_crop.txt" % char), "w") as f:
+            f.write("%d %d %d %d\n" % (X, Y, side, bottom))
+        prompt = ("This is a close-up of a cartoon character, a woman on a plain flat green background. "
+                  + HAIR_FIX[char] + " " + HAIR_KEEP)
+        rows.append((char, "hair", staged, prompt, HAIR_VERSIONS, "1:1"))
+        print("%-7s hair   rows %d-%d, x %d-%d; close-up %dx%d at (%d, %d) -> %s"
+              % (char, top, bottom, hx0, hx1, side, side, X, Y, staged))
+    write_workflow(rows, "Restyle the hair: %s" % ", ".join(chars),
+                   "Each version restyles the hair on a close-up and keeps the face.", "hair.json")
+
+
+def dilate(mask, w, h, r):
+    """Max filter, separable, on a 0/1 bytearray."""
+    tmp = bytearray(w * h)
+    for y in range(h):
+        row = y * w
+        for x in range(w):
+            if mask[row + x]:
+                for xx in range(max(0, x - r), min(w, x + r + 1)):
+                    tmp[row + xx] = 1
+    out = bytearray(w * h)
+    for x in range(w):
+        for y in range(h):
+            if tmp[y * w + x]:
+                for yy in range(max(0, y - r), min(h, y + r + 1)):
+                    out[yy * w + x] = 1
+    return out
+
+
+def box_blur(vals, w, h, r):
+    """Box blur of a float list, separable."""
+    def one(src, n, stride, count, step):
+        out = [0.0] * len(src)
+        for c in range(count):
+            base = c * step
+            acc, win = 0.0, []
+            line = [src[base + i * stride] for i in range(n)]
+            pre = [0.0]
+            for v in line:
+                pre.append(pre[-1] + v)
+            for i in range(n):
+                a, b = max(0, i - r), min(n, i + r + 1)
+                out[base + i * stride] = (pre[b] - pre[a]) / (b - a)
+        return out
+    rows = one(vals, w, 1, h, w)
+    return one(rows, h, w, w, 1)
+
+
+def apply_hair(char, edited):
+    """Paste a restyled head of hair into the working base. The mask is the
+    hair before and after (so hair that moved outward and gaps it left are both
+    covered), grown a little for outlines, minus the inner face, which stays as
+    approved."""
+    from facemask import face_box
+    from keysprite import key_out
+    work_path = os.path.join(FIXED, "%s_base.png" % char)
+    work = rgb(load(work_path))
+    raw = rgb(load(os.path.expanduser(edited)))
+    X, Y, side, hair_bottom = [int(v) for v in
+                               open(os.path.join(FIXED, "masks", "%s_hair_crop.txt" % char)).read().split()]
+    ed = rgb(resample(raw, side, side))
+    base_sq = crop(work, X, Y, X + side, Y + side)
+
+    # Line up on what must not move: clothes and the face, not hair or backdrop.
+    pts = []
+    for y in range(0, side, 3):
+        for x in range(0, side, 3):
+            i = (y * side + x) * 3
+            r, g, b = base_sq.buf[i], base_sq.buf[i + 1], base_sq.buf[i + 2]
+            if g - max(r, b) > 20 or hairlike(r, g, b):
+                continue
+            pts.append((x, y))
+    c = (side / 2.0, side / 2.0)
+    best = (score(base_sq, ed, pts, c, 1.0, 0, 0), 1.0, 0, 0)
+    for sc in (0.99, 0.995, 1.0, 1.005, 1.01):
+        for dy in range(-4, 5):
+            for dx in range(-4, 5):
+                e = score(base_sq, ed, pts, c, sc, dx, dy)
+                if e < best[0]:
+                    best = (e, sc, dx, dy)
+    err, sc, dx, dy = best
+    print("%s hair: lined up at scale %.3f, shift (%d, %d); mismatch on clothes and face %.1f"
+          % (char, sc, dx, dy, err))
+    if err > 12:
+        raise SystemExit("the edit moved the clothes or face too much to trust (mismatch %.1f)" % err)
+
+    kx, ky = raw.w / float(side), raw.h / float(side)
+    def from_edit(u, v):
+        eu, ev = c[0] + (u - c[0]) * sc + dx, c[1] + (v - c[1]) * sc + dy
+        return sample(raw, (eu + 0.5) * kx - 0.5, (ev + 0.5) * ky - 0.5)
+
+    edit_px = [from_edit(u, v) for v in range(side) for u in range(side)]
+    hair = bytearray(side * side)
+    for p in range(side * side):
+        b0 = base_sq.buf[p * 3:p * 3 + 3]
+        e = edit_px[p]
+        if hairlike(*b0) or hairlike(int(e[0]), int(e[1]), int(e[2])):
+            hair[p] = 1
+    hair = dilate(hair, side, side, 6)
+    a = [float(v) for v in hair]
+    # Nothing below where the hair ends (plus room for it to grow a little).
+    stop = hair_bottom + 40 - Y
+    for v in range(max(0, stop), side):
+        for u in range(side):
+            a[v * side + u] = 0.0
+
+    # The inner face stays exactly as approved.
+    fx0, fy0, fx1, fy1 = face_box(work, key_out(work))
+    fw, fh = fx1 - fx0, fy1 - fy0
+    ecx, ecy = (fx0 + fx1) / 2.0 - X, fy0 + 0.60 * fh - Y
+    erx, ery = 0.40 * fw, 0.46 * fh
+    for v in range(side):
+        for u in range(side):
+            d = ((u - ecx) / erx) ** 2 + ((v - ecy) / ery) ** 2
+            if d < 1.25:
+                a[v * side + u] *= max(0.0, min(1.0, (d - 1.0) / 0.25))
+    a = box_blur(a, side, side, 3)
+    edge = 14
+    for v in range(side):
+        for u in range(side):
+            k = min(u, v, side - 1 - u, side - 1 - v)
+            if k < edge:
+                a[v * side + u] *= k / float(edge)
+
+    # Colour: take out any overall cast of the edit, judged on clothes at the
+    # mask's soft edge (never on hair, whose colour is meant to change).
+    diffs = [[], [], []]
+    for p in range(side * side):
+        if 0.05 < a[p] < 0.95:
+            b0 = base_sq.buf[p * 3:p * 3 + 3]
+            if b0[1] - max(b0[0], b0[2]) > 20 or hairlike(*b0):
+                continue
+            for k in range(3):
+                diffs[k].append(b0[k] - edit_px[p][k])
+    shift = [0.0, 0.0, 0.0]
+    if len(diffs[0]) > 40:
+        shift = [max(-15.0, min(15.0, sorted(d)[len(d) // 2])) for d in diffs]
+    print("   colour shift %s over %d clothing pixels at the mask edge" % ([round(v, 1) for v in shift], len(diffs[0])))
+
+    n = 0
+    for v in range(side):
+        for u in range(side):
+            t = a[v * side + u]
+            if t <= 0.0:
+                continue
+            n += 1
+            i = ((Y + v) * work.w + X + u) * 3
+            e = edit_px[v * side + u]
+            for k in range(3):
+                work.buf[i + k] = max(0, min(255, int(work.buf[i + k] * (1 - t) + (e[k] + shift[k]) * t + 0.5)))
+    work.save(work_path)
+    print("   %d pixels from the edit -> %s" % (n, work_path))
+
+
 def install(char):
     from keysprite import install as key_install
     path = os.path.join(FIXED, "%s_base.png" % char)
@@ -451,9 +686,13 @@ def install(char):
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
+    args = [a for a in sys.argv[1:] if a != "--force"]
     if len(args) >= 2 and args[0] == "--prepare":
-        prepare(args[1:])
+        prepare(args[1:], force="--force" in sys.argv)
+    elif len(args) >= 2 and args[0] == "--prepare-hair":
+        prepare_hair(args[1:])
+    elif len(args) == 3 and args[1] == "hair":
+        apply_hair(args[0], args[2])
     elif len(args) == 2 and args[1] == "--install":
         install(args[0])
     elif len(args) == 3 and args[1] in ("top", "bottom", "head"):
