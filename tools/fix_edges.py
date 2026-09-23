@@ -19,6 +19,18 @@ cut part and the new strip, and writes it into the working base,
 `JJK Game images/fixed/<character>_base.png`, which the expression tools then
 start from. tools/fix_feet.py did the same for Yuji's and Megumi's finished
 expression sets, bottom edge only.
+
+Two more repairs for a base the model got nearly right:
+
+- **HAIR_SHIFT** recolours the hair when it comes out a few degrees off the
+  references. It is applied to the working base before anything else.
+- **HEAD_FIX** redraws the face and the top of the hair when the base model
+  doesn't know the character well enough. That happened with Shoko, where it
+  drew a generic face twice. The fix is a "head" row in the same workflow
+  (Nano Banana on a head close-up, which also finishes a cut crown), composited
+  back through the head mask:
+
+      python3 tools/fix_edges.py shoko head <edit.png>
 """
 import sys, os, json, copy, uuid
 
@@ -42,7 +54,32 @@ SHIFT = 10
 BASES = {
     "nobara": "nobara_named_base_00001_.png",
     "gojo": "gojo_base_00001_.png",
+    "shoko": "shoko_base_00003_.png",
 }
+
+# (hue shift in degrees, saturation factor) for the hair. Shoko's measured
+# +3 degrees against the anime's +7 to +18 and the design sheet's +11, and a
+# touch more saturated than the anime's 0.22-0.24.
+HAIR_SHIFT = {"shoko": (9.0, 0.82)}
+
+# Faces the base model got wrong, redrawn on the head close-up. Described,
+# never named: this goes to Google.
+HEAD_FIX = {
+    "shoko": ("Redraw her face and the top of her hair so she looks like a tired, deadpan doctor in "
+              "her late twenties, in exactly the same anime drawing style and colours: her hair "
+              "parted exactly in the centre of her head, so that her whole high forehead is bare, "
+              "falling straight down both sides of her face; a long, slim oval face with a narrow "
+              "chin; narrow, sleepy, half-closed eyes, the upper eyelids lowered halfway over dark "
+              "brown irises, with dark upper lash lines; two thin curved lines under each eye like "
+              "tired bags, with faint grey shading; a small dark round mole just below her right "
+              "eye, which is the eye on the left side of the picture; thin, straight dark brown "
+              "eyebrows; a flat, calm, expressionless mouth, closed, with pale pink lips."),
+}
+HEAD_VERSIONS = 3
+HEAD_KEEP = ("Keep her hair colour, the outline of her hair and all the hair beside and below her "
+             "face exactly as they are. Keep everything else exactly the same: the framing, the "
+             "head's size and position, the clothes, the plain flat green background, and the flat "
+             "cel shading and line art.")
 
 WHAT = {
     "top": ("the top of the hair is sliced off by the top edge, and a strip of plain green was "
@@ -100,6 +137,55 @@ def pad(im, top, bottom):
     return out
 
 
+def recolour_hair(im, rows, shift_deg, sat_factor):
+    """Shift the hue and scale the saturation of dark, warm, saturated pixels
+    in the given rows: hair, not skin (too light), lips (too light), the coat
+    (grey) or the turtleneck (teal)."""
+    import colorsys
+    n = 0
+    for y in rows:
+        for x in range(im.w):
+            i = (y * im.w + x) * 3
+            r, g, b = im.buf[i] / 255.0, im.buf[i + 1] / 255.0, im.buf[i + 2] / 255.0
+            h, l, sat = colorsys.rgb_to_hls(r, g, b)
+            if not (0.04 < l < 0.5 and sat > 0.12 and (h < 25 / 360.0 or h > 335 / 360.0)):
+                continue
+            h = (h + shift_deg / 360.0) % 1.0
+            r, g, b = colorsys.hls_to_rgb(h, l, min(1.0, sat * sat_factor))
+            im.buf[i], im.buf[i + 1], im.buf[i + 2] = int(r * 255 + 0.5), int(g * 255 + 0.5), int(b * 255 + 0.5)
+            n += 1
+    return n
+
+
+def start(char):
+    """The working base as it is before any edit is pasted in: the chosen
+    render, padded at each cut edge, hair recoloured. Deterministic, so apply()
+    can rebuild the untouched version to line edits up against."""
+    src = rgb(load(os.path.join(IMAGES, BASES[char])))
+    cuts = cut_columns(src)
+    top, bottom = (PAD if "top" in cuts else 0), (PAD if "bottom" in cuts else 0)
+    work = pad(src, top, bottom)
+    if char in HAIR_SHIFT:
+        shift, factor = HAIR_SHIFT[char]
+        n = recolour_hair(work, range(top, top + int(src.h * 0.45)), shift, factor)
+        print("%-7s hair recoloured: %+.0f degrees, saturation x%.2f, %d pixels" % (char, shift, factor, n))
+    return src, cuts, top, bottom, work
+
+
+def head_closeup(work, top):
+    """The square around the head for the head fix, with room above a cut
+    crown for the model to finish it. Returns (X, Y, side)."""
+    from facemask import head_box
+    from keysprite import key_out
+    x0, y0, x1, cut, (fx0, fy0, fx1, fy1) = head_box(work, key_out(work))
+    side = max(x1 - x0, cut - y0, int((fx1 - fx0) * 2.8)) + 40
+    side = min(work.w, work.h, (side + 63) // 64 * 64)
+    cx = (fx0 + fx1) // 2
+    X = max(0, min(work.w - side, cx - side // 2))
+    Y = max(0, min(work.h - side, y0 - (40 if top else 12)))
+    return X, Y, side
+
+
 def record_path(char):
     return os.path.join(IMAGES, "masks", "%s_edges.txt" % char)
 
@@ -143,17 +229,33 @@ def prepare(chars):
     rows = []
     os.makedirs(FIXED, exist_ok=True)
     for char in chars:
-        src = rgb(load(os.path.join(IMAGES, BASES[char])))
-        cuts = cut_columns(src)
-        if not cuts:
+        src, cuts, top, bottom, work = start(char)
+        if not cuts and char not in HEAD_FIX:
             print("%s: nothing touches the top or bottom edge" % char)
             continue
-        top, bottom = (PAD if "top" in cuts else 0), (PAD if "bottom" in cuts else 0)
-        work = pad(src, top, bottom)
         work.save(os.path.join(FIXED, "%s_base.png" % char))
         with open(record_path(char), "w") as f:
             f.write("%s\t%d\t%d" % (BASES[char], top, bottom))
+        if char in HEAD_FIX:
+            from raster import resample
+            X, Y, side = head_closeup(work, top)
+            close = resample(crop(work, X, Y, X + side, Y + side), 1024, 1024)
+            staged = "head_%s.png" % char
+            close.save(os.path.join(COMFY_INPUT, staged))
+            close.save(os.path.join(FIXED, staged))
+            os.makedirs(os.path.join(FIXED, "masks"), exist_ok=True)
+            with open(os.path.join(FIXED, "masks", "%s_edit_crop.txt" % char), "w") as f:
+                f.write("%d %d %d\n" % (X, Y, side))
+            crown = (" The picture was cut off at the top, so the top of her head is sliced off and a "
+                     "strip of plain green was added above it: finish the top of her head naturally "
+                     "into that strip, with plain green left above it." if "top" in cuts else "")
+            prompt = ("This is a close-up of a cartoon character, a woman on a plain flat green "
+                      "background. " + HEAD_FIX[char] + crown + " " + HEAD_KEEP)
+            rows.append((char, "head", staged, prompt))
+            print("%-7s head   close-up %dx%d at (%d, %d) -> %s" % (char, side, side, X, Y, staged))
         for edge, (x0, x1) in sorted(cuts.items()):
+            if edge == "top" and char in HEAD_FIX:
+                continue                     # the head fix finishes the crown
             r0, r1 = close_rows(edge, work.h)
             close = crop(work, 0, r0, CLOSE_W, r1)
             staged = "edge_%s_%s.png" % (char, edge)
@@ -167,39 +269,43 @@ def prepare(chars):
             rows.append((char, edge, staged, prompt))
             print("%-7s %-6s cut at x %d-%d; close-up rows %d-%d -> %s" % (char, edge, x0, x1, r0, r1, staged))
 
-    count = len(rows) * VERSIONS
+    versions = lambda edge: HEAD_VERSIONS if edge == "head" else VERSIONS
+    count = sum(versions(r[1]) for r in rows)
     ids["n"] += 1
     nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-900, -520], "size": [600, 400],
                   "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
                   "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
-        "## Finish what the render cut off: %s\n\n"
-        "Run this in the **local ComfyUI** and press **Run**. Each row is a close-up of "
-        "a cut edge with a strip of green added; the model draws the missing hair or "
-        "shoe into it. %d versions each.\n\n"
+        "## Repair the base picture: %s\n\n"
+        "Run this in the **local ComfyUI** and press **Run**. Each row is a close-up: "
+        "a cut edge with a strip of green added, where the model draws the missing hair "
+        "or shoe, or a head to redraw. %d versions each (heads %d).\n\n"
         "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro).\n\n"
         "No need to save anything. Claude picks the results up from ComfyUI's output folder.\n\n"
         "If it stops with a rate-limit or \"high demand\" error, wait a minute and press "
         "**Run** again: finished pictures are reused, not paid for twice."
-        % (", ".join(chars), VERSIONS, count, count * COST)]})
+        % (", ".join(chars), VERSIONS, HEAD_VERSIONS, count, count * COST)]})
     gem = P["GeminiImage2Node"]["widgets_values"]
     row_h = 560
     for r, (char, edge, staged, prompt) in enumerate(rows):
         y = r * row_h
         ld = add("LoadImage", (-900, y), (300, 320), title="%s: %s" % (char, edge), widgets=[staged, "image"])
-        for k in range(VERSIONS):
+        for k in range(versions(edge)):
             w = list(gem)
-            w[0], w[2], w[3], w[4], w[5], w[6] = prompt, 900 + r * 10 + k, "fixed", "16:9", "1K", "IMAGE"
+            aspect = "1:1" if edge == "head" else "16:9"
+            w[0], w[2], w[3], w[4], w[5], w[6] = prompt, 900 + r * 10 + k, "fixed", aspect, "1K", "IMAGE"
             n = add("GeminiImage2Node", (k * 820, y), (400, 360), title="%s %s (%d)" % (char, edge, k + 1),
                     widgets=w)
             wire(ld, n, "images")
             s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["edge_%s_%s" % (char, edge)])
             wire(n, s, "images")
-        groups.append(("%s: %s EDGE" % (char.upper(), edge.upper()), y))
+        groups.append(("%s: HEAD" % char.upper() if edge == "head" else
+                       "%s: %s EDGE" % (char.upper(), edge.upper()), y))
 
     wf = dict(shell)
     wf.update({"id": str(uuid.uuid4()), "revision": 0, "last_node_id": ids["n"], "last_link_id": ids["l"],
                "nodes": nodes, "links": links,
-               "groups": [{"id": i + 1, "title": t, "bounding": [-920, gy - 50, 2560, row_h - 30],
+               "groups": [{"id": i + 1, "title": t,
+                           "bounding": [-920, gy - 50, 940 + 820 * max(VERSIONS, HEAD_VERSIONS), row_h - 30],
                            "color": "#3f4f5a", "font_size": 24, "flags": {}} for i, (t, gy) in enumerate(groups)]})
     wf["extra"] = dict(wf.get("extra") or {})
     wf["extra"]["ds"] = {"scale": 0.45, "offset": [980, 560]}
@@ -241,13 +347,28 @@ def align(close, ed, rows):
     return best, score(close, ed, pts, c, 1.0, 0, 0), c
 
 
+def apply_head(char, edited):
+    """Composite a redrawn head into the working base through the head mask:
+    the dome over the hair and upper face, then only the skin of the lower
+    face, so long hair beside and below the face stays as drawn."""
+    import shutil
+    from facemask import build_head
+    import composite_face
+    work_path = os.path.join(FIXED, "%s_base.png" % char)
+    mask = build_head(work_path, char, out_dir=os.path.join(FIXED, "masks"))
+    path, params = composite_face.run(work_path, edited, char, "headfix", mask_path=mask, install=False)
+    shutil.copy(path, work_path)
+    print("   head redrawn -> %s" % work_path)
+
+
 def apply(char, edge, edited):
+    if edge == "head":
+        return apply_head(char, edited)
     srcname, top, bottom = read_record(char)
-    src = rgb(load(os.path.join(IMAGES, srcname)))
-    cuts = cut_columns(src)
+    src, cuts, top2, bottom2, pristine = start(char)
+    assert (srcname, top, bottom) == (BASES[char], top2, bottom2), "run --prepare again"
     if edge not in cuts:
         raise SystemExit("%s: the %s edge isn't cut" % (char, edge))
-    pristine = pad(src, top, bottom)
     work_path = os.path.join(FIXED, "%s_base.png" % char)
     work = rgb(load(work_path))
     assert (work.w, work.h) == (pristine.w, pristine.h), "run --prepare again"
@@ -335,7 +456,7 @@ if __name__ == "__main__":
         prepare(args[1:])
     elif len(args) == 2 and args[1] == "--install":
         install(args[0])
-    elif len(args) == 3 and args[1] in ("top", "bottom"):
+    elif len(args) == 3 and args[1] in ("top", "bottom", "head"):
         apply(args[0], args[1], args[2])
     else:
         print(__doc__); raise SystemExit(1)

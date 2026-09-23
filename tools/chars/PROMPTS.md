@@ -20,6 +20,14 @@ name can't be refused. Still never name them to closed services such as
 Nano Banana or Seedream. The winning prompt is prompts/nobara.txt; the losing one
 is kept as prompts/nobara_described.txt.
 
+**When the name isn't enough (Shoko, 2026-09-23).** A minor character gets a
+generic face even when named: Krea draws her from the description, and small
+facial features such as tired eyes and a mole are exactly where it stops
+listening. Keep the base for its body and outfit, and redraw the face and the
+top of the hair with Nano Banana on the head close-up: add the character to
+HEAD_FIX in tools/fix_edges.py, and the head goes into the same Run as the edge
+repairs.
+
 The notes below were first written for a general-purpose model assumed not to
 know Jujutsu Kaisen by name. On a
 Danbooru-tag anime checkpoint (Illustrious, NoobAI, Pony) you can replace the

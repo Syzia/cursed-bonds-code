@@ -91,6 +91,12 @@ From her official character design sheet in `references/characters/shoko/` (2026
   turtleneck, slim dark navy trousers cropped at the ankle, beige high-heeled
   pumps. Often a cigarette; omit it in the sprite.
 - **Expression:** deadpan. Happy is a small wry smile; sad reads as exhausted.
+- **The model doesn't know her face.** Named or not, two Krea runs drew the
+  outfit right but a generic face: big wide-open eyes with violet irises
+  ("lilac" leaked into the irises), a smile, a fringe across the forehead.
+  Her base keeps Krea's body; her face and the top of her hair are redrawn by
+  Nano Banana on the head close-up (HEAD_FIX in tools/fix_edges.py), and her
+  hair is shifted +9 degrees toward the anime's brown (HAIR_SHIFT).
 
 ## gojo — Satoru Gojo (teacher)
 Very tall, lean. White hair, spiky, swept up and back. BLACK BLINDFOLD over the eyes (a wide cloth band),
