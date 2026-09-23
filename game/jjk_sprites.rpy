@@ -12,6 +12,11 @@ image megumi sad = lit_sprite("images/char/megumi_sad.png", (760, 1400), (379, 1
 
 image nobara = lit_sprite("images/char/nobara_neutral.png", (760, 1400), (431, 1365, 306))
 image nobara neutral = lit_sprite("images/char/nobara_neutral.png", (760, 1400), (431, 1365, 306))
+image nobara happy = lit_sprite("images/char/nobara_happy.png", (760, 1400), (431, 1365, 306))
+image nobara serious = lit_sprite("images/char/nobara_serious.png", (760, 1400), (431, 1365, 306))
+image nobara angry = lit_sprite("images/char/nobara_angry.png", (760, 1400), (431, 1365, 306))
+image nobara surprised = lit_sprite("images/char/nobara_surprised.png", (760, 1400), (431, 1365, 306))
+image nobara sad = lit_sprite("images/char/nobara_sad.png", (760, 1400), (431, 1365, 306))
 
 image yuji = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
 image yuji neutral = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
@@ -32,6 +37,11 @@ image side megumi sad = "images/side/megumi_sad.png"
 
 image side nobara = "images/side/nobara_neutral.png"
 image side nobara neutral = "images/side/nobara_neutral.png"
+image side nobara happy = "images/side/nobara_happy.png"
+image side nobara serious = "images/side/nobara_serious.png"
+image side nobara angry = "images/side/nobara_angry.png"
+image side nobara surprised = "images/side/nobara_surprised.png"
+image side nobara sad = "images/side/nobara_sad.png"
 
 image side yuji = "images/side/yuji_neutral.png"
 image side yuji neutral = "images/side/yuji_neutral.png"
