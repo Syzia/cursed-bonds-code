@@ -39,14 +39,23 @@ INTERIORS = {"classroom", "cafeteria", "training", "dojo", "dorm_common",
              "office", "storehouse"}
 INTERIOR_REFS = ["style_ref_7_room_interior.png", "style_ref_5_hall_front.png"]
 
-# A few places have a reference of their own. Here copying the reference's
+# The wild places get the anime's nature shots instead of its buildings, so no
+# temple roofs creep into the forest.
+NATURE_REFS = ["style_ref_10_mossy_stream.png", "style_ref_9_gate_approach.png",
+               "style_ref_3_bridge.png", "style_ref_11_mountain_sky.png"]
+
+# A few places have references of their own. Here copying a reference's
 # framing is the point, where for the shared sets it is a leak: the gate is
 # the anime's torii approach, the rooftop the view down from the veranda, and
-# the office Yaga's candlelit hall. Krea takes up to 10 references.
+# the office Yaga's candlelit hall. Four or fewer each, so the one that
+# matters isn't diluted; Krea takes up to 10.
 LOCATION_REFS = {
-    "gate": STYLE_REFS + ["style_ref_9_gate_approach.png"],
-    "rooftop": STYLE_REFS + ["style_ref_1_veranda_view.png"],
+    "gate": ["style_ref_9_gate_approach.png", "style_ref_10_mossy_stream.png",
+             "style_ref_5_hall_front.png", "style_ref_3_bridge.png"],
+    "rooftop": ["style_ref_1_veranda_view.png", "style_ref_6_campus_aerial.png",
+                "style_ref_4_pagodas.png", "style_ref_11_mountain_sky.png"],
     "office": ["style_ref_8_hall_interior.png", "style_ref_7_room_interior.png"],
+    "forest": NATURE_REFS, "riverside": NATURE_REFS, "ridge": NATURE_REFS,
 }
 # Rooms lit by lamps or candles instead of daylight through windows.
 LOCATION_STYLE = {"office": "style_dim.txt", "storehouse": "style_dim.txt"}
@@ -136,12 +145,8 @@ def build(names):
         key = tuple(refs_for(n))
         if key in chains:
             continue
-        if key == tuple(STYLE_REFS):
-            label = "Outdoor"
-        elif key == tuple(INTERIOR_REFS):
-            label = "Indoor"
-        else:
-            label = n.replace("_", " ").capitalize()
+        label = {tuple(STYLE_REFS): "Outdoor", tuple(INTERIOR_REFS): "Indoor",
+                 tuple(NATURE_REFS): "Nature"}.get(key) or n.replace("_", " ").capitalize()
         chains[key] = make_chain(list(key), -1260 - 700 * len(chains), label)
 
     row_h = 560

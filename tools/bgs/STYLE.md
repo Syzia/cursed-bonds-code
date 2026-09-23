@@ -80,14 +80,32 @@ flagstones and weathered wood outdoors are fine: that's age, not dirt.
 ## Round 2: the rest of the campus (2026-09-23)
 
 The 13 remaining places. Where each one is and what it looks out on is in
-`CAMPUS.md`. Three places get a reference of their own on top of the usual
-set, because for them copying the reference's framing is the point:
+`CAMPUS.md`. Not every place uses the shared exterior set any more:
 
-- **Gate:** the torii approach (`style_ref_9_gate_approach`).
-- **Rooftop:** the view down from the veranda (`style_ref_1`). It is painted as
-  the veranda at the top of the tall tower, since the campus has no flat roof.
-- **Office:** Yaga's candlelit hall (`style_ref_8`), in place of the
-  daylight room.
+- **Forest, riverside, ridge:** a nature set, so no temple roofs creep in:
+  - `style_ref_10_mossy_stream`: the mossy stream beside the garden path,
+    cropped clear of Gojo, Yuji and the subtitle. It's the softest, most
+    painterly shot in the folder.
+  - `style_ref_9_gate_approach`
+  - the bridge
+  - `style_ref_11_mountain_sky`: the mountain above the cemetery shot,
+    cropped clear of the graves, the browser banner and a lens flare.
+- **Gate:** the torii approach, the mossy stream, the hall front and the bridge.
+- **Rooftop:** the view down from the veranda (`style_ref_1`), the aerial, the
+  pagodas and the mountain sky. It is painted as the veranda at the top of the
+  tall tower, since the campus has no flat roof.
+- **Office:** Yaga's candlelit hall (`style_ref_8`), in place of the daylight room.
+
+For these places, copying a reference's framing is the point. The sets are
+kept to four so the reference that matters isn't diluted.
+
+Left out, and why:
+
+- the curved path, because its metal guard rail would turn up in the forest
+- the courtyard from above, because Gojo and Yuji stand in the middle of it
+- the walled estate with the pond (`OL-STokyo`), because it's a different place
+  (save it for a clan estate scene)
+- the cemetery's graves
 
 The office and storehouse use `style_dim.txt`, which is lit by lamps and
 candles, because the interior paragraph brings daylight through windows.
