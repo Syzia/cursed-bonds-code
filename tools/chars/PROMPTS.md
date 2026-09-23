@@ -111,7 +111,7 @@ between the eyes, grey-violet eyes, slim, average height, watchful expression,
 dark navy high-collared school uniform jacket
 
 ## sana
-sixteen year old girl, short dark hair with a grown-out fringe pinned back, dark eyes,
+eighteen year old young woman, short dark hair with a grown-out fringe pinned back, dark eyes,
 small round face, bright cheerful expression, grey school blazer with a red ribbon tie
 and grey pleated skirt
 

@@ -7,6 +7,13 @@ ankle boots). Line art dark navy, not pure black.
 Six expressions each: neutral, happy, serious, angry, surprised, sad. Also a side portrait
 (head + shoulders crop, ~360x360) for the textbox.
 
+## Ages (this game, not canon)
+The first-year class is **18**: Yuji, Megumi, Nobara and the player. Sana, the
+player's age, is 18 too. The dialogue that states ages matches this. Older
+characters keep their own history, such as Shoko, Gojo and Geto at sixteen.
+Describe the first-years to image models as young adults of eighteen, drawn
+in the same mature style as each other.
+
 ## yuji — Yuji Itadori (1st year)
 Salmon-pink hair, short undercut: dark shaved sides, pink top pushed up/back in soft spikes. Brown eyes,
 small dark marks under each eye (signature). Strong brows, open friendly face, athletic shoulders.
@@ -43,9 +50,8 @@ From the official anime art and screenshots in `references/characters/nobara/`
 - **Stance:** one hand on her hip. Carries herself like she's decided
   something. Angry is her best expression.
 
-She is 16: "feminine" means face, hair, build and stance, never anything
-body-focused. Draw her the same age as Yuji and Megumi, in the same mature
-style: a long oval face, narrow heavy-lidded eyes and about 7.5 heads tall. The
+She is 18 in this game, like Yuji and Megumi (see "Ages" at the top). Draw her
+as a young woman the same age as them, in the same mature style: a long oval face, narrow heavy-lidded eyes and about 7.5 heads tall. The
 first render came out childlike because the prompt said "shorter and more
 delicate than the boys", "soft rounded jaw" and "blush". Never put height in a
 prompt: the frame is always full height, so the model shows "short" with child

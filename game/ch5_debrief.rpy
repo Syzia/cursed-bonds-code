@@ -94,7 +94,7 @@ label chapter_five:
         "\"No. Not for anything.\"":
             $ add_bond("gojo", 10)
             $ flag("end_committed")
-            mc "I spent seventeen years not being able to do anything about anything."
+            mc "I spent eighteen years not being able to do anything about anything."
             mc "I'd rather be tired."
             gojo "Ha! Okay. Good answer."
             gojo "Wrong answer, probably. But good."

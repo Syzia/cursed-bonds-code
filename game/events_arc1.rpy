@@ -649,7 +649,7 @@ label ev_megumi_2:
             $ flag("megumi_sentence")
             megumi "..."
             megumi "Say that again."
-            mc "You've made yourself personally responsible for whether the universe is fair. You're fifteen."
+            mc "You've made yourself personally responsible for whether the universe is fair. You're eighteen."
             mc "You're going to fail at that constantly. Not because you're bad at it — because it's not a solvable problem."
             megumi "I know."
             mc "Then what happens the first time you decide wrong?"
@@ -1558,7 +1558,7 @@ label ev_yaga_1:
             yaga "..."
             yaga "You are eleven weeks from being useful and three weeks from being sent somewhere."
             yaga "Yes. To them, you are an asset with a grade on it."
-            yaga "To me you are a sixteen-year-old who walked into a condemned building for somebody who wasn't going to remember it."
+            yaga "To me you are an eighteen-year-old who walked into a condemned building for somebody who wasn't going to remember it."
             yaga "I run a school inside an institution that would prefer a factory. Every hour you spend in here holding a bench for me is an hour you are not on a form."
             yaga "Now hold it {i}straight.{/i}"
 
