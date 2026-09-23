@@ -46,13 +46,15 @@ TIMES = {
                         "low golden sunlight with long soft shadows. Any windows already in the picture "
                         "catch the light or begin to glow; do not add new ones.",
     # Not a time of day: a tidy-up of an approved picture, for rooms that came
-    # out looking neglected, without losing a layout that was liked.
-    ("clean", True): "Clean this room up so it looks well cared for: remove every stain, water mark, "
-                     "speck, patch of grime and discolouration from the walls and ceiling, so the "
-                     "plaster is smooth, even and freshly painted; make the wooden floor clean and "
-                     "polished; freshen the light slightly with clean, bright daylight.",
-    ("clean", False): "Tidy this place up so it looks well cared for: remove stains, grime and "
-                      "discolouration from walls and surfaces, keeping natural moss and weathered wood.",
+    # out looking neglected, without losing a layout that was liked. Described
+    # as the finished state, never as "remove ... water mark": Google's filter
+    # reads that as a request to strip a watermark and blocks the picture.
+    ("clean", True): "Make this room look freshly decorated and well cared for: the walls and ceiling "
+                     "are smooth, evenly painted plaster in one soft, even colour, spotless, with no "
+                     "stains, damp patches, specks or grime; the wooden floor is clean and polished; "
+                     "the light is slightly fresher, with clean, bright daylight.",
+    ("clean", False): "Make this place look well cared for: walls and surfaces clean and evenly "
+                      "coloured, with no stains or grime, keeping natural moss and weathered wood.",
 }
 
 # Wording for one place in particular. The user asked for the bedroom's
