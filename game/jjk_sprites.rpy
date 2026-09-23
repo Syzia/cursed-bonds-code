@@ -4,6 +4,11 @@
 ## lit_sprite(path, canvas size, feet (x centre, sole row, width)): see lighting.rpy.
 image gojo = lit_sprite("images/char/gojo_neutral.png", (760, 1400), (393, 1365, 423))
 image gojo neutral = lit_sprite("images/char/gojo_neutral.png", (760, 1400), (393, 1365, 423))
+image gojo happy = lit_sprite("images/char/gojo_happy.png", (760, 1400), (393, 1365, 423))
+image gojo serious = lit_sprite("images/char/gojo_serious.png", (760, 1400), (393, 1365, 423))
+image gojo angry = lit_sprite("images/char/gojo_angry.png", (760, 1400), (393, 1365, 423))
+image gojo surprised = lit_sprite("images/char/gojo_surprised.png", (760, 1400), (393, 1365, 423))
+image gojo sad = lit_sprite("images/char/gojo_sad.png", (760, 1400), (393, 1365, 423))
 
 image megumi = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi neutral = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
@@ -32,6 +37,11 @@ image yuji sad = lit_sprite("images/char/yuji_sad.png", (760, 1400), (389, 1365,
 ## Side portraits for the textbox. Ren'Py resolves `side <key> <attrs>` from the speaker.
 image side gojo = "images/side/gojo_neutral.png"
 image side gojo neutral = "images/side/gojo_neutral.png"
+image side gojo happy = "images/side/gojo_happy.png"
+image side gojo serious = "images/side/gojo_serious.png"
+image side gojo angry = "images/side/gojo_angry.png"
+image side gojo surprised = "images/side/gojo_surprised.png"
+image side gojo sad = "images/side/gojo_sad.png"
 
 image side megumi = "images/side/megumi_neutral.png"
 image side megumi neutral = "images/side/megumi_neutral.png"
