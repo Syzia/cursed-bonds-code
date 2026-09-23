@@ -10,6 +10,9 @@ image megumi angry = lit_sprite("images/char/megumi_angry.png", (760, 1400), (37
 image megumi surprised = lit_sprite("images/char/megumi_surprised.png", (760, 1400), (379, 1365, 331))
 image megumi sad = lit_sprite("images/char/megumi_sad.png", (760, 1400), (379, 1365, 331))
 
+image nobara = lit_sprite("images/char/nobara_neutral.png", (760, 1400), (431, 1365, 306))
+image nobara neutral = lit_sprite("images/char/nobara_neutral.png", (760, 1400), (431, 1365, 306))
+
 image yuji = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
 image yuji neutral = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
 image yuji happy = lit_sprite("images/char/yuji_happy.png", (760, 1400), (389, 1365, 313))
@@ -26,6 +29,9 @@ image side megumi serious = "images/side/megumi_serious.png"
 image side megumi angry = "images/side/megumi_angry.png"
 image side megumi surprised = "images/side/megumi_surprised.png"
 image side megumi sad = "images/side/megumi_sad.png"
+
+image side nobara = "images/side/nobara_neutral.png"
+image side nobara neutral = "images/side/nobara_neutral.png"
 
 image side yuji = "images/side/yuji_neutral.png"
 image side yuji neutral = "images/side/yuji_neutral.png"
