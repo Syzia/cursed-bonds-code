@@ -135,6 +135,8 @@ init -2 python:
         "infirmary": {"Night": "night"},
         "rooftop":   {"Evening": "evening", "Night": "night"},
         "riverside": {"Evening": "evening"},
+        "dorm_common": {"Evening": "evening", "Night": "night"},
+        "girls_dorm":  {"Night": "night"},
     }
 
     def bg_variant(loc, per):
