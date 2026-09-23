@@ -2,6 +2,9 @@
 
 ## Sprites: <key> <expression>. `neutral` doubles as the bare name.
 ## lit_sprite(path, canvas size, feet (x centre, sole row, width)): see lighting.rpy.
+image gojo = lit_sprite("images/char/gojo_neutral.png", (760, 1400), (393, 1365, 423))
+image gojo neutral = lit_sprite("images/char/gojo_neutral.png", (760, 1400), (393, 1365, 423))
+
 image megumi = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi neutral = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi happy = lit_sprite("images/char/megumi_happy.png", (760, 1400), (379, 1365, 331))
@@ -27,6 +30,9 @@ image yuji surprised = lit_sprite("images/char/yuji_surprised.png", (760, 1400),
 image yuji sad = lit_sprite("images/char/yuji_sad.png", (760, 1400), (389, 1365, 313))
 
 ## Side portraits for the textbox. Ren'Py resolves `side <key> <attrs>` from the speaker.
+image side gojo = "images/side/gojo_neutral.png"
+image side gojo neutral = "images/side/gojo_neutral.png"
+
 image side megumi = "images/side/megumi_neutral.png"
 image side megumi neutral = "images/side/megumi_neutral.png"
 image side megumi happy = "images/side/megumi_happy.png"
