@@ -110,6 +110,20 @@ Left out, and why:
 The office and storehouse use `style_dim.txt`, which is lit by lamps and
 candles, because the interior paragraph brings daylight through windows.
 
+**First run (2026-09-23): 11 of 26 finished** before Krea turned requests away
+("429 after all retry attempts"). ComfyUI sends every partner request at once,
+so a big batch floods Krea, and one failed node stops the whole run. The
+workflows now use fixed seeds: press Run again and the finished pictures come
+from ComfyUI's cache instead of being made and paid for again.
+
+- Rooftop, forest, riverside, training hall and storehouse came out excellent.
+  The infirmary and cafeteria are good.
+- The nature set worked: no roofs crept into the forest or the river.
+- **Letterboxing:** both office pictures came back with black film bars at the
+  top and bottom, although `style_ref_8` has none. The model took the dark,
+  moody frame for a film still. The better one is trimmed to the picture
+  between the bars. If the office is redone, watch for this.
+
 ## The style paragraph
 
 Lives in `tools/bgs/style.txt` and is appended to every scene description in
