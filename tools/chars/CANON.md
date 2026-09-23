@@ -44,7 +44,12 @@ From the official anime art and screenshots in `references/characters/nobara/`
   something. Angry is her best expression.
 
 She is 16: "feminine" means face, hair, build and stance, never anything
-body-focused.
+body-focused. Draw her the same age as Yuji and Megumi, in the same mature
+style: a long oval face, narrow heavy-lidded eyes and about 7.5 heads tall. The
+first render came out childlike because the prompt said "shorter and more
+delicate than the boys", "soft rounded jaw" and "blush". Never put height in a
+prompt: the frame is always full height, so the model shows "short" with child
+proportions. keysprite's HEIGHT_CM sets her height in the game.
 
 ## maki — Maki Zenin (2nd year)
 Very dark green (reads black-green) hair in a high ponytail with a straight fringe. GLASSES with round
