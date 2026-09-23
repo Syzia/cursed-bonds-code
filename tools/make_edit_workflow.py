@@ -56,6 +56,28 @@ KEEP = ("Change only the facial expression. Keep everything else exactly the sam
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
 
+# Gojo's eyes are under a blindfold, so his expressions live in his mouth and
+# jaw, as they do in the anime. Asked for eyes or brows, an editor draws eyes on
+# the cloth or takes it off.
+CHAR_EXPRESSIONS = {
+    "gojo": {
+        "happy":     "Change his facial expression to a big delighted grin: mouth wide open in a broad "
+                     "smile showing his upper teeth, cheeks lifted.",
+        "serious":   "Change his facial expression to cold, flat seriousness: the grin gone, mouth "
+                     "closed in a straight firm line, jaw set.",
+        "sad":       "Change his facial expression to quiet sadness: the grin gone, mouth closed with "
+                     "the corners turned down, lips pressed together.",
+        "angry":     "Change his facial expression to cold anger: lips drawn back tight in a snarl "
+                     "showing clenched teeth, jaw clenched.",
+        "surprised": "Change his facial expression to open surprise: mouth dropped open in a round "
+                     "'o', jaw slack.",
+    },
+}
+CHAR_KEEP = {
+    "gojo": "His eyes stay completely hidden behind the wide black cloth blindfold: keep the blindfold, "
+            "and everything above the nose, exactly as it is, and do not draw any eyes.",
+}
+
 
 def build(char, exprs, editors):
     src = json.load(open(os.path.join(ROOT, "tools", "comfy_nodes", "edit_nodes.json")))
@@ -122,7 +144,9 @@ def build(char, exprs, editors):
     colours = {"happy": "#3f5a4a", "serious": "#3f4f5a", "sad": "#4a3f5a", "angry": "#5a3f3f", "surprised": "#5a513f"}
     for r, expr in enumerate(exprs):
         y = r * row_h
-        prompt = EXPRESSIONS[expr].format(his=his) + " " + KEEP
+        prompt = (CHAR_EXPRESSIONS.get(char, {}).get(expr) or EXPRESSIONS[expr].format(his=his)) + " " + KEEP
+        if char in CHAR_KEEP:
+            prompt += " " + CHAR_KEEP[char]
         x = 0
         for ed in editors:
             node_t, save_t, _, label = EDITORS[ed]
