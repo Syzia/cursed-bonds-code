@@ -88,30 +88,30 @@ image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 
 ## Sprites #####################################################################
 
-image mc          = "images/char/mc.png"
+image mc = lit("images/char/mc.png")
 ## image yuji        = "images/char/yuji.png"   # superseded by jjk_sprites.rpy
 ## image megumi     = "images/char/megumi.png"   # superseded by jjk_sprites.rpy
-image nobara      = "images/char/nobara.png"
-image maki        = "images/char/maki.png"
-image panda       = "images/char/panda.png"
-image toge        = "images/char/toge.png"
-image gojo        = "images/char/gojo.png"
-image yaga        = "images/char/yaga.png"
-image ijichi      = "images/char/ijichi.png"
-image shoko       = "images/char/shoko.png"
-image utahime     = "images/char/utahime.png"
+image nobara = lit("images/char/nobara.png")
+image maki = lit("images/char/maki.png")
+image panda = lit("images/char/panda.png")
+image toge = lit("images/char/toge.png")
+image gojo = lit("images/char/gojo.png")
+image yaga = lit("images/char/yaga.png")
+image ijichi = lit("images/char/ijichi.png")
+image shoko = lit("images/char/shoko.png")
+image utahime = lit("images/char/utahime.png")
 
 ## Pre-campus cast — placeholder art until the sprite set lands.
-image sana = "images/char/sana.png"
-image sana tired = Transform("images/char/sana.png", matrixcolor=TintMatrix("#b3b3cc"))
-image mother = Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6db"))
-image father = Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff"))
-image oda = Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb"))
-image kurose = Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#9e9eb3"))
-image nade = Transform("images/char/yaga.png", matrixcolor=TintMatrix("#b0a894"))
-image curse small = "images/char/curse_small.png"
-image curse sitter = Transform("images/char/curse_small.png", zoom=0.72)
-image curse big   = "images/char/curse_big.png"
+image sana = lit("images/char/sana.png")
+image sana tired = lit(Transform("images/char/sana.png", matrixcolor=TintMatrix("#b3b3cc")))
+image mother = lit(Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6db")))
+image father = lit(Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff")))
+image oda = lit(Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb")))
+image kurose = lit(Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#9e9eb3")))
+image nade = lit(Transform("images/char/yaga.png", matrixcolor=TintMatrix("#b0a894")))
+image curse small = lit("images/char/curse_small.png")
+image curse sitter = lit(Transform("images/char/curse_small.png", zoom=0.72))
+image curse big = lit("images/char/curse_big.png")
 
 
 ## Stage positions #############################################################

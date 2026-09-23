@@ -12,23 +12,38 @@ canon Jujutsu Kaisen characters plus two originals (the player and Sana), and
 the under-eye marks that Krea-2 dropped are canon. So the Danbooru-tag argument
 for a local anime checkpoint is real, not hypothetical — see tools/chars/CANON.md.
 
-## Queued for the character pass (after backgrounds)
+## The character pass: grounding and light (done 2026-09-23)
 
-Spotted by standing Yuji and Megumi in the first real background (tools/fitcheck.py):
+Spotted by standing Yuji and Megumi in the first real background
+(tools/fitcheck.py), and fixed once the campus backgrounds were done:
 
-1. **Clipped soles.** Yuji's right shoe and Megumi's right boot end in a straight
-   cut. Both base renders had the feet touching the bottom edge. keysprite's QA
-   flagged it at the time, and it was dismissed as "under 1% of height". At game
-   size it is plainly visible, so a QA flag for a clipped figure should be
-   treated as blocking. Fix: pad the base render with green below the feet, have
-   the edit model complete the shoes, and composite only a feet mask back, in
-   the same way composite_face.py does for faces. Future bases: re-roll any
-   candidate the QA flags.
-2. **Floating.** There is no shadow where they stand. Fix in the engine: a soft
-   ellipse under each sprite, scaled with it, drawn under the character layer.
-3. **Lighting by time of day.** The game tints backgrounds for evening and night
-   but not sprites, so at night the characters glow. Fix in the engine: a matching
-   per-period tint on sprites.
+1. **Clipped soles: fixed.** Yuji's and Megumi's left shoes (on the right of the
+   picture) ended in a straight cut with a green fringe. Both base renders had
+   the feet touching the bottom edge. keysprite's QA flagged it at the time, and
+   it was dismissed as "under 1% of height". At game size it is plainly visible,
+   so a QA flag for a clipped figure should be treated as blocking.
+   - `tools/fix_feet.py` pads the base with backdrop green and sends a 16:9
+     close-up of the feet to Nano Banana, which finishes the sole.
+   - It then lines the result up on the trousers (scale 1.0025, shift 0) and
+     pastes only the clipped foot into all six expressions, whose feet are
+     pixel-identical.
+   - About $0.64 for both characters, two versions each.
+   - Future bases: re-roll any candidate the QA flags.
+2. **Floating: fixed.** Every generated sprite now has a soft contact shadow
+   under its feet (`lit_sprite()` in `game/lighting.rpy`).
+   - The feet are measured from the neutral pose by `gen_sprite_defs.py`, which
+     also draws `images/fx/contact_shadow.png`.
+   - The shadow is subtle, because the feet stand only about 20px above the
+     bottom of the screen.
+3. **Lighting: fixed.** Every character image is wrapped in a lit transform.
+   - The light is set whenever a background goes up on the master layer, through
+     a `config.show` hook: from the place and hour for `scene expression graded_bg()`,
+     or from the background's name for `scene bg ...`.
+   - At night in the courtyard the characters are moonlit blue, at sunset on the
+     rooftop they're warm, and in Yaga's office they're candlelit.
+   - The tables are `OUTDOOR_LIGHT`, `INDOOR_LIGHT`, `PLACE_LIGHT` and `BG_LIGHT`.
+     Add a row when a new painted evening or night picture, or a new story
+     background, lands.
 
 ---
 

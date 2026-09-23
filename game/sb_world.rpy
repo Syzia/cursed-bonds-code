@@ -180,6 +180,7 @@ init -2 python:
             _BG_CACHE[key] = img
             return img
         d = Transform(img, matrixcolor=TintMatrix(tint) * BrightnessMatrix(bright))
+        d._light_key = key          # lets lighting.rpy light the characters to match
         _BG_CACHE[key] = d
         return d
 
