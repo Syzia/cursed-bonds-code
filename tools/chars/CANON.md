@@ -26,13 +26,25 @@ Black socks showing. TAN-BROWN LEATHER ANKLE BOOTS, not the cast's white sneaker
 pockets. Default expression flat/bored; happy is barely a smile; anger is cold, not shouted.
 
 ## nobara — Nobara Kugisaki (1st year)
-Orange-brown ginger hair in a straight chin-length bob, side-parted, with a sweeping fringe toward one
-eye (no bun). Warm amber-brown eyes with long dark lashes. A clearly feminine face: soft rounded jaw,
-small chin, thin arched brows, rose-pink lips. Slender, with narrow shoulders, and shorter than the
-boys (drawn 160 cm). A girl's cut of the navy uniform jacket, fitted and buttoned, belted at the waist
-with brown leather. Dark navy pleated skirt above the knee, black tights, brown ankle boots. Stands
-with one hand on her hip. Carries herself like she's decided something. Angry is her best expression.
-She is 16: "feminine" means face, hair, build and stance, never anything body-focused.
+From the official anime art and screenshots in `references/characters/nobara/`
+(2026-09-23).
+- **Hair:** light orange-brown, a muted ginger-brown rather than bright orange.
+  A straight chin-length bob with fine pointed tips, parted on one side. The
+  long side of the fringe sweeps across the forehead past one eye; the other
+  side is tucked behind the ear.
+- **Face:** an oval face with a soft jaw and small pointed chin. Reddish-brown
+  eyes with a thick upper lash line and short separate strokes for lower
+  lashes, which is her signature look. Thin neat brows, pale pink lips.
+- **Uniform:** a cropped navy jacket ending above the waist, with a small
+  mandarin collar, gold buttons and white cuffs. A band of white blouse shows
+  below it. A high-waisted flared navy skirt to the knee, with a wide dark
+  waistband and gold buttons. Brown sheer tights and brown penny loafers.
+- **Build:** slim, with narrow shoulders, shorter than the boys (drawn 160 cm).
+- **Stance:** one hand on her hip. Carries herself like she's decided
+  something. Angry is her best expression.
+
+She is 16: "feminine" means face, hair, build and stance, never anything
+body-focused.
 
 ## maki — Maki Zenin (2nd year)
 Very dark green (reads black-green) hair in a high ponytail with a straight fringe. GLASSES with round
