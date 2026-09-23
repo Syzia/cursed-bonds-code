@@ -75,9 +75,17 @@ cheeks above the collar: small dark "snake-and-fangs" seal marks (short curved l
 mouth area, like stylised fangs). Expressions live entirely in the eyes and brows.
 
 ## shoko — Shoko Ieiri (doctor)
-Brown hair, shoulder-length, loose, slightly untidy. Brown eyes with visible tired shadows/bags under
-them. Pale. White lab coat over a dark shirt/skirt. Often a cigarette (omit or make optional). Deadpan;
-happy is a small wry smile; sad reads as exhausted.
+From her official character design sheet in `references/characters/shoko/` (2026-09-23).
+- **Age:** 28.
+- **Hair:** long, straight, dark reddish-brown, past the shoulders to
+  mid-chest. The bangs part near the middle and fall long at the sides,
+  framing her face.
+- **Face:** heavy-lidded, tired brown eyes with faint shadows beneath, a
+  small beauty mark under her left eye, pale skin.
+- **Outfit:** a knee-length white lab coat worn open over a fitted teal-blue
+  turtleneck, slim dark navy trousers cropped at the ankle, beige high-heeled
+  pumps. Often a cigarette; omit it in the sprite.
+- **Expression:** deadpan. Happy is a small wry smile; sad reads as exhausted.
 
 ## gojo — Satoru Gojo (teacher)
 Very tall, lean. White hair, spiky, swept up and back. BLACK BLINDFOLD over the eyes (a wide cloth band),
