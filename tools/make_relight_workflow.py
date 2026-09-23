@@ -2,14 +2,15 @@
 Build a ComfyUI workflow that relights chosen backgrounds for another time of day.
 
     python3 tools/make_relight_workflow.py your_room night
-    python3 tools/make_relight_workflow.py courtyard evening
     python3 tools/make_relight_workflow.py classroom your_room clean   # tidy up, same layout
+    python3 tools/make_relight_workflow.py girls_dorm:clean infirmary:night rooftop:evening --versions 1
 
 Takes the approved daytime picture from `JJK Game images/backgrounds_chosen/`
 and asks Nano Banana Pro to change only the light, so evening and night are
 recognisably the same place: same furniture, same angle, same art style. A
-fresh generation would give a different room at night. Two versions each,
-saved as `bg_<name>_<time>`; install the pick with
+fresh generation would give a different room at night. Saved as
+`bg_<name>_<time>`, two versions each unless --versions says otherwise;
+install the pick with
 
     python3 tools/install_bg.py <file> <name>_<time>
 
@@ -28,21 +29,22 @@ KEEP = ("Keep everything else exactly the same: the same place, layout, furnitur
         "framing and soft painted anime art style. No people, no characters, no text.")
 
 # Rooms and outdoor places get lit differently at night; a room needs its own
-# lamps on, and the user asked for the bedroom's window to be shut and covered.
+# lamps on. Lights are only ever switched on where the picture already has
+# them: asked for "lanterns" by name, the model would put stone lanterns on a
+# riverbank.
 TIMES = {
     ("night", True): "Change the time of day to night. Outside the windows it is dark, with a deep blue "
-                     "night sky. The windows are closed, with pale curtains drawn across them. The "
-                     "ceiling lamp is switched on and fills the room with warm yellow light and soft "
-                     "shadows, and a small lamp glows on the desk.",
+                     "night sky. The room's own ceiling lights are switched on and fill it with warm "
+                     "yellow light and soft shadows.",
     ("night", False): "Change the time of day to night: a deep blue night sky with a few stars and a "
-                      "faint moon, cool blue moonlight on the ground and roofs, and warm yellow light "
-                      "glowing from a few windows and stone lanterns.",
+                      "faint moon, and cool blue moonlight on everything, with soft shadows. Any windows "
+                      "or lanterns already in the picture glow warm yellow; do not add new ones.",
     ("evening", True): "Change the time of day to early evening. Warm orange sunset light slants in "
                        "through the windows, long soft shadows cross the floor, and the sky outside "
                        "glows orange and pink.",
     ("evening", False): "Change the time of day to early evening: a warm orange and pink sunset sky, "
-                        "low golden sunlight with long soft shadows, and the first lights coming on "
-                        "in a few windows.",
+                        "low golden sunlight with long soft shadows. Any windows already in the picture "
+                        "catch the light or begin to glow; do not add new ones.",
     # Not a time of day: a tidy-up of an approved picture, for rooms that came
     # out looking neglected, without losing a layout that was liked.
     ("clean", True): "Clean this room up so it looks well cared for: remove every stain, water mark, "
@@ -53,8 +55,18 @@ TIMES = {
                       "discolouration from walls and surfaces, keeping natural moss and weathered wood.",
 }
 
+# Wording for one place in particular. The user asked for the bedroom's
+# windows to be shut and covered at night.
+PLACE_TIMES = {
+    ("your_room", "night"): "Change the time of day to night. Outside the windows it is dark, with a deep "
+                            "blue night sky. The windows are closed, with pale curtains drawn across "
+                            "them. The ceiling lamp is switched on and fills the room with warm yellow "
+                            "light and soft shadows, and a small lamp glows on the desk.",
+}
 
-def build(names, when):
+
+def build(jobs, versions=VERSIONS):
+    """jobs: (name, when) pairs, one row each."""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from make_bg_workflow import INTERIORS
     proto = json.load(open(os.path.join(ROOT, "tools", "comfy_nodes", "edit_nodes.json")))
@@ -83,24 +95,26 @@ def build(names, when):
         a["outputs"][a_slot]["links"].append(ids["l"])
         b["inputs"][slot]["link"] = ids["l"]
 
-    count = len(names) * VERSIONS
+    count = len(jobs) * versions
+    listing = "\n".join("- %s: %s" % (name.replace("_", " "), "clean-up" if when == "clean" else when)
+                         for name, when in jobs)
     ids["n"] += 1
-    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-900, -480], "size": [600, 380],
+    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [-900, -520], "size": [600, 420],
                   "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
                   "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
-        "## %s: %s\n\n"
+        "## Relight and clean-up\n\n%s\n\n"
         "Run this in the **local ComfyUI** and press **Run**. Each row takes the "
-        "approved picture and changes only %s, keeping the layout, %d versions each.\n\n"
+        "approved picture and changes only the light (or tidies it up), keeping "
+        "the layout, %d version%s each.\n\n"
         "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro).\n\n"
         "No need to save anything. Claude picks the results up from ComfyUI's output folder.\n\n"
         "If it stops with a rate-limit or \"high demand\" error, wait a minute and press "
         "**Run** again: finished pictures are reused, not paid for twice."
-        % (when, ", ".join(names), "the cleanliness" if when == "clean" else "the light",
-           VERSIONS, count, count * COST)]})
+        % (listing, versions, "" if versions == 1 else "s", count, count * COST)]})
 
     gem = P["GeminiImage2Node"]["widgets_values"]
     row_h = 560
-    for r, name in enumerate(names):
+    for r, (name, when) in enumerate(jobs):
         src = os.path.join(CHOSEN, name + ".png")
         if not os.path.exists(src):
             raise SystemExit("no approved daytime picture at %s" % src)
@@ -108,8 +122,8 @@ def build(names, when):
         shutil.copy(src, os.path.join(COMFY_INPUT, staged))
         y = r * row_h
         ld = add("LoadImage", (-900, y), (300, 320), title="Daytime: %s" % name, widgets=[staged, "image"])
-        prompt = TIMES[(when, name in INTERIORS)] + " " + KEEP
-        for k in range(VERSIONS):
+        prompt = (PLACE_TIMES.get((name, when)) or TIMES[(when, name in INTERIORS)]) + " " + KEEP
+        for k in range(versions):
             w = list(gem)
             w[0], w[2], w[3], w[4], w[5], w[6] = prompt, 500 + r * 10 + k, "fixed", "16:9", "1K", "IMAGE"
             n = add("GeminiImage2Node", (k * 820, y), (400, 360), title="%s at %s (%d)" % (name, when, k + 1),
@@ -130,12 +144,26 @@ def build(names, when):
 
 
 if __name__ == "__main__":
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    if len(args) < 2 or args[-1] not in ("night", "evening", "clean"):
+    argv = sys.argv[1:]
+    versions = VERSIONS
+    if "--versions" in argv:
+        i = argv.index("--versions")
+        versions = int(argv[i + 1])
+        del argv[i:i + 2]
+    args = [a for a in argv if not a.startswith("--")]
+    whens = ("night", "evening", "clean")
+    if args and all(":" in a for a in args):
+        jobs = [tuple(a.split(":", 1)) for a in args]
+    elif len(args) >= 2 and args[-1] in whens:
+        jobs = [(n, args[-1]) for n in args[:-1]]
+    else:
         print(__doc__); raise SystemExit(1)
-    names, when = args[:-1], args[-1]
-    wf, count = build(names, when)
+    for name, when in jobs:
+        if when not in whens:
+            raise SystemExit("%r: the time must be one of %s" % (name, ", ".join(whens)))
+    wf, count = build(jobs, versions)
     out = os.path.join(IMAGES, "relight.json")
     json.dump(wf, open(out, "w"), indent=1)
-    print("relight   %s -> %s, %d versions each, about $%.2f" % (", ".join(names), when, VERSIONS, count * COST))
+    print("relight   %s, %d version%s each, about $%.2f" % (
+        ", ".join("%s:%s" % j for j in jobs), versions, "" if versions == 1 else "s", count * COST))
     print("workflow -> %s" % out)
