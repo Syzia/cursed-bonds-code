@@ -26,9 +26,13 @@ Black socks showing. TAN-BROWN LEATHER ANKLE BOOTS, not the cast's white sneaker
 pockets. Default expression flat/bored; happy is barely a smile; anger is cold, not shouted.
 
 ## nobara — Nobara Kugisaki (1st year)
-Orange-ginger hair, chin-length bob with a longer side-swept fringe over one eye and a small bun/tie at
-the back. Brown eyes, sharp; confident tilt to the chin. Uniform jacket open at the collar, pleated skirt,
-knee socks, sneakers. Carries herself like she's decided something. Angry is her best expression.
+Orange-brown ginger hair in a straight chin-length bob, side-parted, with a sweeping fringe toward one
+eye (no bun). Warm amber-brown eyes with long dark lashes. A clearly feminine face: soft rounded jaw,
+small chin, thin arched brows, rose-pink lips. Slender, with narrow shoulders, and shorter than the
+boys (drawn 160 cm). A girl's cut of the navy uniform jacket, fitted and buttoned, belted at the waist
+with brown leather. Dark navy pleated skirt above the knee, black tights, brown ankle boots. Stands
+with one hand on her hip. Carries herself like she's decided something. Angry is her best expression.
+She is 16: "feminine" means face, hair, build and stance, never anything body-focused.
 
 ## maki — Maki Zenin (2nd year)
 Very dark green (reads black-green) hair in a high ponytail with a straight fringe. GLASSES with round

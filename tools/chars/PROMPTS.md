@@ -67,9 +67,12 @@ narrow sea-green eyes, permanent slight frown, pale, slim and tall, dark navy
 high-collared school uniform buttoned to the throat, hands in pockets
 
 ## nobara
-orange-ginger hair in a chin-length bob with a long side-swept fringe over one eye,
-brown eyes, sharp confident expression, chin slightly raised, dark navy school jacket
-open at the collar, pleated skirt, knee socks, sneakers
+straight orange-brown ginger hair in a chin-length bob with a sweeping side fringe,
+clearly feminine heart-shaped face with a soft jaw, large amber-brown eyes with long
+lashes, thin arched brows, rose-pink lips, slender with narrow shoulders, one hand on
+her hip, girl's cut of the dark navy school jacket buttoned and belted with brown
+leather, navy pleated skirt above the knee, black tights, brown ankle boots
+(full prompt: prompts/nobara.txt)
 
 ## maki
 very dark green hair in a high ponytail with a straight fringe, round red-brown
