@@ -41,15 +41,17 @@ SHIFT = 10
 # The chosen base render for each character.
 BASES = {
     "nobara": "nobara_named_base_00001_.png",
+    "gojo": "gojo_base_00001_.png",
 }
 
 WHAT = {
     "top": ("the top of the hair is sliced off by the top edge, and a strip of plain green was "
             "added above it. Draw the missing top of the hair into the green strip so the hair is "
-            "whole, with a naturally rounded crown, in exactly the same drawing style, line weight, "
-            "colour and highlights as the rest of the hair. Keep everything else exactly the same: "
-            "the face, the rest of the hair, the clothes, the framing, and the plain flat green "
-            "background, with plain green left above the hair."),
+            "whole, continuing its existing shape naturally (a smooth crown stays smooth, spikes "
+            "end in points), in exactly the same drawing style, line weight, colour and highlights "
+            "as the rest of the hair. Keep everything else exactly the same: the face, the rest of "
+            "the hair, the clothes, the framing, and the plain flat green background, with plain "
+            "green left above the hair."),
     "bottom": ("the sole of the shoe on the %s is sliced off by the bottom edge, and a strip of plain "
                "green was added below it. Draw the missing bottom of that shoe into the green strip so "
                "both shoes are complete, with whole soles standing flat on the same level, in exactly "
