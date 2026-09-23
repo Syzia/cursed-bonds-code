@@ -77,6 +77,21 @@ flagstones and weathered wood outdoors are fine: that's age, not dirt.
   The vivid anime colour suits the cel-shaded sprites far better than round 1's
   crisp wallpaper look did.
 
+## Round 2: the rest of the campus (2026-09-23)
+
+The 13 remaining places. Where each one is and what it looks out on is in
+`CAMPUS.md`. Three places get a reference of their own on top of the usual
+set, because for them copying the reference's framing is the point:
+
+- **Gate:** the torii approach (`style_ref_9_gate_approach`).
+- **Rooftop:** the view down from the veranda (`style_ref_1`). It is painted as
+  the veranda at the top of the tall tower, since the campus has no flat roof.
+- **Office:** Yaga's candlelit hall (`style_ref_8`), in place of the
+  daylight room.
+
+The office and storehouse use `style_dim.txt`, which is lit by lamps and
+candles, because the interior paragraph brings daylight through windows.
+
 ## The style paragraph
 
 Lives in `tools/bgs/style.txt` and is appended to every scene description in

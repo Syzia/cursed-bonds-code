@@ -12,8 +12,11 @@ The settings are the ones the style and blend tests settled on (see
 tools/bgs/STYLE.md): Krea 2 Medium at 16:9, the scene description from
 tools/bgs/prompts/<name>.txt plus a shared style paragraph, steered by crops of
 the anime at strength 0.50. Outdoor locations use style.txt and four exterior
-crops; rooms (INTERIORS) use style_interior.txt and interior crops. Krea 2 is a
-paid partner node, about $0.035 a picture; nothing runs on this Mac's GPU.
+crops; rooms (INTERIORS) use style_interior.txt and interior crops; a few places
+add a reference or a lighting paragraph of their own (LOCATION_REFS,
+LOCATION_STYLE). Krea 2 is a paid partner node, about $0.035 a picture; nothing
+runs on this Mac's GPU. Where each place is and what it looks out on:
+tools/bgs/CAMPUS.md.
 """
 import sys, os, json, copy, uuid, shutil
 
@@ -29,14 +32,32 @@ STYLE_REFS = ["style_ref_3_bridge.png", "style_ref_4_pagodas.png",
 # bedroom came back half outdoors -- a missing wall onto a dirt yard, an
 # open-air veranda -- because the shared style asked for sky, distant mist and
 # open ground, and every reference was an exterior shot.
-INTERIORS = {"classroom", "cafeteria", "training_hall", "dojo", "dorm_common_room",
+# Names are the game's image names (game/images/bg/<name>.png), so a render
+# saved as bg_<name> installs straight into the right slot.
+INTERIORS = {"classroom", "cafeteria", "training", "dojo", "dorm_common",
              "your_room", "your_room_night", "girls_dorm", "infirmary",
-             "principals_office", "storehouse"}
+             "office", "storehouse"}
 INTERIOR_REFS = ["style_ref_7_room_interior.png", "style_ref_5_hall_front.png"]
+
+# A few places have a reference of their own. Here copying the reference's
+# framing is the point, where for the shared sets it is a leak: the gate is
+# the anime's torii approach, the rooftop the view down from the veranda, and
+# the office Yaga's candlelit hall. Krea takes up to 10 references.
+LOCATION_REFS = {
+    "gate": STYLE_REFS + ["style_ref_9_gate_approach.png"],
+    "rooftop": STYLE_REFS + ["style_ref_1_veranda_view.png"],
+    "office": ["style_ref_8_hall_interior.png", "style_ref_7_room_interior.png"],
+}
+# Rooms lit by lamps or candles instead of daylight through windows.
+LOCATION_STYLE = {"office": "style_dim.txt", "storehouse": "style_dim.txt"}
 STRENGTH = 0.50
 assert 0 < STRENGTH <= 1.0, "Krea's API rejects style-reference strength above 1.0"
 CANDIDATES = 2
 COST = 0.035
+
+
+def refs_for(name):
+    return LOCATION_REFS.get(name) or (INTERIOR_REFS if name in INTERIORS else STYLE_REFS)
 
 
 def bg_prompt(name):
@@ -45,7 +66,7 @@ def bg_prompt(name):
     Kept in separate files so the style can be tuned once for every location.
     """
     scene = open(os.path.join(ROOT, "tools", "bgs", "prompts", name + ".txt")).read().strip()
-    kind = "style_interior.txt" if name in INTERIORS else "style.txt"
+    kind = LOCATION_STYLE.get(name) or ("style_interior.txt" if name in INTERIORS else "style.txt")
     style = open(os.path.join(ROOT, "tools", "bgs", kind)).read().strip()
     return scene + "\n\n" + style
 
@@ -77,7 +98,7 @@ def build(names):
         a["outputs"][a_slot]["links"].append(ids["l"])
         b["inputs"][slot]["link"] = ids["l"]
 
-    for f in set(STYLE_REFS + INTERIOR_REFS):
+    for f in set(sum((refs_for(n) for n in names), [])):
         shutil.copy(os.path.join(REFS, f), os.path.join(COMFY_INPUT, f))
     count = len(names) * CANDIDATES
     ids["n"] += 1
@@ -109,11 +130,19 @@ def build(names):
                 wire(chain, ref, "style_reference")
             chain = ref
         return chain
+    # One column per distinct set, laid out leftwards from the rows.
     chains = {}
-    if any(n not in INTERIORS for n in names):
-        chains["out"] = make_chain(STYLE_REFS, -1260, "Outdoor")
-    if any(n in INTERIORS for n in names):
-        chains["in"] = make_chain(INTERIOR_REFS, -1960, "Indoor")
+    for n in names:
+        key = tuple(refs_for(n))
+        if key in chains:
+            continue
+        if key == tuple(STYLE_REFS):
+            label = "Outdoor"
+        elif key == tuple(INTERIOR_REFS):
+            label = "Indoor"
+        else:
+            label = n.replace("_", " ").capitalize()
+        chains[key] = make_chain(list(key), -1260 - 700 * len(chains), label)
 
     row_h = 560
     for r, name in enumerate(names):
@@ -123,7 +152,7 @@ def build(names):
             n = add("Krea2ImageNode", (k * 820, y), (400, 360), title="%s (%d)" % (name, k + 1),
                     widgets=[text, "Krea 2 Medium", "16:9", "1K", "medium", "", 0.35,
                              1000 + r * 10 + k, "randomize"])
-            wire(chains["in" if name in INTERIORS else "out"], n, "model.style_reference")
+            wire(chains[tuple(refs_for(name))], n, "model.style_reference")
             s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["bg_%s" % name])
             wire(n, s, "images")
         groups.append((name.replace("_", " ").upper(), y))
