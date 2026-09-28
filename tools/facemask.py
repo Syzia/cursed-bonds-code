@@ -86,6 +86,9 @@ def face_box(im, keyed):
             if is_skin(im.buf[i], im.buf[i + 1], im.buf[i + 2]):
                 xs.append(x); ys.append(y)
     if len(xs) < 200:
+        fur = fur_face_box(im, keyed)
+        if fur:
+            return fur
         raise SystemExit("could not find a face — is this render keyed on green "
                          "and is the head in the top third of the figure?")
 
@@ -94,6 +97,85 @@ def face_box(im, keyed):
     xs.sort(); ys.sort()
     k = max(1, len(xs) // 50)
     return xs[k], ys[k], xs[-k], ys[-k]
+
+
+def is_white_fur(r, g, b):
+    """Light and nearly colourless: Panda's face fur, not skin (warm) and not
+    the green backdrop."""
+    return min(r, g, b) > 170 and max(r, g, b) - min(r, g, b) < 45
+
+
+def fur_face_box(im, keyed):
+    """For a face made of white fur (Panda): the topmost large patch of white
+    in the upper part of the figure, which is the head between the ears.
+    None if there is no such patch."""
+    fx0, fy0, fx1, fy1 = bbox(keyed)
+    limit = min(im.h, fy0 + int((fy1 - fy0) * 0.40))
+    W = im.w
+    white = {}
+    for y in range(fy0, limit):
+        for x in range(fx0, fx1):
+            if keyed.buf[(y * keyed.w + x) * 4 + 3] < 200:
+                continue
+            i = (y * W + x) * im.ch
+            if is_white_fur(im.buf[i], im.buf[i + 1], im.buf[i + 2]):
+                white[(x, y)] = 1
+    best = None
+    seen = set()
+    for start in white:
+        if start in seen:
+            continue
+        stack, comp = [start], []
+        seen.add(start)
+        while stack:
+            p = stack.pop()
+            comp.append(p)
+            x, y = p
+            for q in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if q in white and q not in seen:
+                    seen.add(q)
+                    stack.append(q)
+        if len(comp) < 2000:
+            continue
+        top = min(p[1] for p in comp)
+        if best is None or top < best[0]:
+            best = (top, comp)
+    if best is None:
+        return None
+    xs = sorted(p[0] for p in best[1]); ys = sorted(p[1] for p in best[1])
+    k = max(1, len(xs) // 100)
+    return xs[k], ys[k], xs[-k], ys[-k]
+
+
+def build_fur(src_path, name, out_dir=None):
+    """Face mask for a fur face (Panda): a feathered oval inside the white of
+    the head, over the eye patches, the brow lines, the nose and the mouth,
+    clear of the ears and the head's outline, which stay exactly as drawn.
+
+    Writes masks/<name>_face.png, the file the expression composites use.
+    """
+    src_path = os.path.expanduser(src_path)
+    im = load(src_path)
+    keyed = key_out(im)
+    hx0, hy0, hx1, hy1 = fur_face_box(im, keyed) or face_box(im, keyed)
+    w, h = hx1 - hx0, hy1 - hy0
+    cx, cy = (hx0 + hx1) / 2.0, hy0 + 0.56 * h
+    rx, ry = 0.40 * w, 0.40 * h
+    mask = Img(im.w, im.h, alpha=False)
+    mask.rect(0, 0, im.w, im.h, (0, 0, 0))
+    steps = max(1, FEATHER)
+    for s in range(steps + 1):
+        v = int(255 * s / float(steps))
+        d = steps - s
+        mask.poly(superellipse(cx, cy, rx - d, ry - d, n=2.6), (v, v, v))
+    out_dir = out_dir or os.path.join(os.path.dirname(src_path), "masks")
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, name + "_face.png")
+    mask.save(out)
+    print("fur face  head white x %d..%d  y %d..%d; oval centre (%.0f, %.0f), radii %.0f x %.0f"
+          % (hx0, hx1, hy0, hy1, cx, cy, rx, ry))
+    print("mask   -> %s" % out)
+    return out
 
 
 def face_spans(im, keyed):
@@ -379,5 +461,7 @@ if __name__ == "__main__":
         build_head(args[0], args[1])
     elif "--below-hairline" in sys.argv:
         build_below_hairline(args[0], args[1])
+    elif "--fur" in sys.argv:
+        build_fur(args[0], args[1])
     else:
         build(args[0], args[1])
