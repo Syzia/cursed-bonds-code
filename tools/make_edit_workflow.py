@@ -165,8 +165,25 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change her facial expression to surprise: eyes opened wide, eyebrows raised high, lips "
                      "parted.",
     },
+    # Ijichi is permanently anxious: surprised and sad are his home expressions
+    # (tools/chars/CANON.md), his happy is relief, and his anger is a stressed,
+    # flustered grimace rather than rage.
+    "ijichi": {
+        "happy":     "Change his facial expression to a small, relieved smile: the corners of his mouth lifted a "
+                     "little, eyebrows relaxed and slightly raised, eyes softened.",
+        "serious":   "Change his facial expression to a focused, professional look: eyebrows level and drawn "
+                     "slightly together, eyes steady, mouth closed in a firm line.",
+        "sad":       "Change his facial expression to anxious, dejected sadness: the inner ends of his eyebrows "
+                     "raised high and pulled together, gaze lowered, mouth closed with the corners turned down.",
+        "angry":     "Change his facial expression to stressed, flustered frustration: eyebrows pulled down and "
+                     "together into a tense frown, eyes narrowed, teeth gritted in a grimace.",
+        "surprised": "Change his facial expression to startled alarm: eyes opened wide, eyebrows raised high, "
+                     "mouth dropped open.",
+    },
 }
 CHAR_KEEP = {
+    "ijichi": "Keep his glasses on exactly as they are, with the same frames and lenses, and keep his hair "
+              "exactly as it is.",
     "utahime": "Keep the scar across her face exactly where it is, and keep her fringe exactly as it is.",
     "toge": "Keep the seal marks beside his mouth (a small ring on each cheek joined to the corner of his "
             "mouth by a short line) at the corners of his mouth, keep his spiky hair exactly as it is, and "
