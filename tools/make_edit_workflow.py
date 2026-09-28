@@ -151,8 +151,23 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change his facial expression to surprise: eyes opened wide, eyebrows raised high, mouth "
                      "dropped open.",
     },
+    # Utahime is prim and quick to irritation (mostly at Gojo), but warm with
+    # her students, so her happy is a real smile and her anger is a fuming glare.
+    "utahime": {
+        "happy":     "Change her facial expression to a warm, gentle smile: the corners of her mouth lifted, "
+                     "lips closed, eyes softened, eyebrows relaxed.",
+        "serious":   "Change her facial expression to stern, composed seriousness: eyebrows level and drawn "
+                     "slightly together, eyes steady and direct, mouth pressed into a firm line.",
+        "sad":       "Change her facial expression to quiet sadness: the inner ends of her eyebrows raised and "
+                     "pulled together, gaze lowered, mouth closed with the corners turned down.",
+        "angry":     "Change her facial expression to fuming irritation: eyebrows pulled down hard into a sharp "
+                     "V with a crease between them, eyes narrowed into a glare, teeth clenched in a scowl.",
+        "surprised": "Change her facial expression to surprise: eyes opened wide, eyebrows raised high, lips "
+                     "parted.",
+    },
 }
 CHAR_KEEP = {
+    "utahime": "Keep the scar across her face exactly where it is, and keep her fringe exactly as it is.",
     "toge": "Keep the seal marks beside his mouth (a small ring on each cheek joined to the corner of his "
             "mouth by a short line) at the corners of his mouth, keep his spiky hair exactly as it is, and "
             "keep the collar of his jacket under his chin.",
