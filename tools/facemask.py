@@ -318,11 +318,66 @@ def build_head(src_path, name, out_dir=None, margin=0.14):
     return out
 
 
+def build_below_hairline(src_path, name, out_dir=None, chin_extra=16, feather=6):
+    """Face mask for a character whose eyes are hidden behind glasses or a
+    blindfold, where the frame cuts the skin in two and face_spans' flood fill
+    can't reach the forehead. Takes the whole-head mask (build_head) from the
+    top of the forehead down, carried chin_extra rows below the chin for a
+    beard, so the brows above the frames and everything down to the beard's
+    point can move, while the hair above the hairline stays as drawn.
+
+    Writes masks/<name>_face.png, the file the expression composites use.
+    """
+    src_path = os.path.expanduser(src_path)
+    im = load(src_path)
+    keyed = key_out(im)
+    out_dir = out_dir or os.path.join(os.path.dirname(src_path), "masks")
+    head = load(build_head(src_path, name, out_dir=out_dir))
+    x0, y0, x1, cut, (fx0, fy0, fx1, fy1) = head_box(im, keyed)
+    cx = (fx0 + fx1) // 2
+    hairline = None
+    for y in range(y0, fy1):
+        row = sum(1 for x in range(cx - 30, cx + 31)
+                  if is_skin(*im.buf[(y * im.w + x) * im.ch:(y * im.w + x) * im.ch + 3]))
+        if row >= 30:
+            hairline = y
+            break
+    mask = Img(im.w, im.h, alpha=False)
+    mask.buf = bytearray(head.buf[:im.w * im.h * 3]) if head.ch == 3 else bytearray(
+        b for p in range(im.w * im.h) for b in (head.buf[p * head.ch],) * 3)
+    for y in range(0, im.h):
+        k = 1.0 if y >= hairline + feather else max(0.0, (y - hairline + 2) / float(feather + 2))
+        if k >= 1.0:
+            continue
+        row = y * im.w * 3
+        for i in range(row, row + im.w * 3):
+            mask.buf[i] = int(mask.buf[i] * k)
+    # carry the lowest row down for a beard's point
+    last = max(y for y in range(im.h) if any(mask.buf[(y * im.w + x) * 3] > 128 for x in range(im.w)))
+    xs = [x for x in range(im.w) if mask.buf[(last * im.w + x) * 3] > 128]
+    for k in range(1, chin_extra + 1):
+        y = last + k
+        if y >= im.h:
+            break
+        v = int(255 * (1.0 - k / float(chin_extra + 1)))
+        for x in range(min(xs), max(xs) + 1):
+            i = (y * im.w + x) * 3
+            if mask.buf[i] < v:
+                mask.buf[i:i + 3] = bytes((v, v, v))
+    out = os.path.join(out_dir, name + "_face.png")
+    mask.save(out)
+    print("face      from the hairline at y %d down past the chin at y %d (+%d rows)" % (hairline, last, chin_extra))
+    print("mask   -> %s" % out)
+    return out
+
+
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) < 2:
         print(__doc__); raise SystemExit(1)
     if "--head" in sys.argv:
         build_head(args[0], args[1])
+    elif "--below-hairline" in sys.argv:
+        build_below_hairline(args[0], args[1])
     else:
         build(args[0], args[1])
