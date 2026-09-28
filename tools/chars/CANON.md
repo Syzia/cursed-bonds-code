@@ -81,9 +81,24 @@ From the anime stills and official art in `references/characters/maki/` (2026-09
   flag, so scripts keep saying `show maki angry`.
 
 ## panda — Panda (2nd year)
-An actual panda, ~2m tall, stocky, standing upright. Black eye patches, ears, arms, legs; white face,
-belly, top of head. Wears the uniform JACKET (fitted for him) — no trousers needed. Expressive, kind
-face; big soft eyes inside the patches. Happy is a broad smile; angry shows small fangs.
+From the official art and stills in `references/characters/panda/` (2026-09-28).
+- **What he is:** an actual giant panda, about 2 m tall with his ears, stocky,
+  standing upright like a person.
+- **Clothes: none.** The old note that he wears the uniform jacket was wrong.
+  The references show only his fur. In fights he wears red or blue wrist cuffs
+  with panda faces; in one still, an "I ♥" armband.
+- **Markings:** a white head with small round black ears, black oval eye
+  patches slanting toward the nose, small dark eyes inside them, and a few fur
+  lines above the eyes for brows. A black nose, a short muzzle. A black band
+  over the shoulders and across the upper chest, black arms with claws, a huge
+  round white belly, and short black legs.
+- **Sprite pose:** arms hanging at his sides. The official pose raises a paw,
+  but that makes him too wide for the 760 px canvas at full height.
+- **Height:** 200 cm drawn, ears included: the tallest of the cast, the height
+  the game is scaled to. He has no chin, so he isn't measured chin to soles.
+- **No skin:** his face is white fur, so face masks find it by fur, not skin.
+- **Expressions:** kind and expressive. Happy is a broad smile; angry shows
+  small fangs.
 
 ## toge — Toge Inumaki (2nd year)
 Pale ash-white hair, short and messy with fringe over the brow. Violet/purple eyes, calm and a bit sleepy.
