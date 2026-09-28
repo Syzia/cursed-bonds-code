@@ -178,8 +178,25 @@ Neat black hair combed back/side-parted, rectangular glasses, pale, permanently 
 suit, white shirt, dark tie. Slight stoop, hands clasped. Surprised and sad are his home expressions.
 
 ## utahime — Utahime Iori (Kyoto teacher; used later)
-Long dark purple-black hair with a ribbon, straight fringe. A SCAR across the bridge of her nose (a short
-diagonal line). Brown eyes. Red-and-white miko-style outfit: white top with red hakama. Prim, irritable.
+From her official design sheet and stills in `references/characters/utahime/` (2026-09-28).
+- **Age:** 31, per the sheet's profile. Gojo is her junior, and she is often
+  harsh with him.
+- **Hair:** long, straight, very dark purple-black with an indigo sheen, past
+  the shoulders to mid-back. A long, choppy, wispy fringe to the eyes and long
+  locks framing the face. The upper part is tied at the back of the head with
+  a large cream-white ribbon bow, whose loops show above her head from the front.
+- **The scar:** a **wide band** across the middle of her face, from cheek to
+  cheek over the bridge of the nose just below the eyes. Rough pinkish-brown
+  skin with faint scratch lines. The old note ("a short diagonal line") was
+  wrong.
+- **Face:** a mature long oval face, sharp brown eyes with heavy lids.
+- **Outfit:** a shrine maiden's white kimono top with a crossed collar and
+  wide hanging sleeves, and red pleated hakama to the ankles, tied high with
+  a big front bow. Brown heeled ankle boots. A casual look also exists (cap,
+  black off-shoulder top), unused.
+- **Pose:** hands clasped in front of her waist, as on the sheet.
+- **Expressions:** prim and composed. Warm with her students, so happy is a
+  real smile; angry is fuming irritation, her reaction to Gojo.
 
 ## sana — Sana Torii (the friend from the East Wing; original)
 Same age as the player. Black hair in a low ponytail, straight fringe, dark eyes, small round face.
