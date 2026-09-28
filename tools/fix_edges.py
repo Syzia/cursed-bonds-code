@@ -37,6 +37,12 @@ Two more repairs for a base the model got nearly right:
       python3 tools/fix_edges.py --prepare-hair shoko    # hair.json
       python3 tools/fix_edges.py shoko hair <edit.png>
 
+- **BODY_FIX** reshapes the body on the full picture and pastes back only
+  the body from the collar down, keeping the approved head:
+
+      python3 tools/fix_edges.py --prepare-body yaga     # body.json
+      python3 tools/fix_edges.py yaga body <edit.png>
+
 `--prepare` refuses to overwrite a working base that already has repairs
 pasted in, unless given --force.
 """
@@ -561,6 +567,78 @@ def apply(char, edge, edited):
     print("   %s edge repaired -> %s" % (edge, work_path))
 
 
+# Bodies the base model drew the wrong build, reshaped by Nano Banana on the
+# full picture; only the body from the collar down is pasted back, so the
+# approved head is kept exactly. Yaga came out about 11-16% wider through the
+# chest and stomach than his design sheet, bulging at the middle.
+BODY_FIX = {
+    "yaga": ("Make his build muscular rather than heavy, as in his design: keep his shoulders just as "
+             "broad, but make his chest and waist narrower and his stomach flat, so his black jacket "
+             "hangs straight down from his shoulders to his hips instead of bulging at the middle; make "
+             "his arms and legs a little slimmer to match."),
+}
+BODY_VERSIONS = 3
+
+
+def prepare_body(chars):
+    rows = []
+    for char in chars:
+        work = rgb(load(os.path.join(FIXED, "%s_base.png" % char)))
+        staged = "body_%s.png" % char
+        work.save(os.path.join(COMFY_INPUT, staged))
+        his, who = pronoun(char)
+        prompt = ("This is a full-body picture of a cartoon character, %s on a plain flat green background. "
+                  % who + BODY_FIX[char] + " Keep %s head, face, sunglasses, beard and hair exactly as they "
+                  "are, and keep %s pose, the positions of %s hands and feet, %s height, the clothes and "
+                  "their colours, the framing and the plain flat green background exactly the same, in the "
+                  "same flat cel shading and line art." % (his, his, his, his))
+        rows.append((char, "body", staged, prompt, BODY_VERSIONS, "9:16"))
+        print("%-7s body   full picture %dx%d -> %s" % (char, work.w, work.h, staged))
+    write_workflow(rows, "Reshape the body: %s" % ", ".join(chars),
+                   "Each version reshapes the body on the full picture; only the body is kept.", "body.json")
+
+
+def apply_body(char, edited):
+    """Paste the reshaped body from the collar down, lined up on the head and
+    collar (which the edit must not move), fading in across the collar so no
+    seam shows. The approved head above stays exactly as it is."""
+    from facemask import head_box
+    from keysprite import key_out
+    work_path = os.path.join(FIXED, "%s_base.png" % char)
+    work = rgb(load(work_path))
+    raw = rgb(load(os.path.expanduser(edited)))
+    ed = rgb(resample(raw, work.w, work.h))
+    x0, y0, x1, cut, (fx0, fy0, fx1, fy1) = head_box(work, key_out(work))
+    seam = fy1 + 50                  # inside the collar, clear of the chin and a beard's point
+    band = 20
+    pts = [(x, y) for y in range(y0, seam, 2) for x in range(0, work.w, 2)
+           if work.buf[(y * work.w + x) * 3 + 1] - max(work.buf[(y * work.w + x) * 3],
+                                                       work.buf[(y * work.w + x) * 3 + 2]) <= 20]
+    c = ((fx0 + fx1) / 2.0, (fy0 + fy1) / 2.0)
+    best = (score(work, ed, pts, c, 1.0, 0, 0), 1.0, 0, 0)
+    for sc in [0.98 + 0.005 * i for i in range(9)]:
+        for dy in range(-10, 11, 2):
+            for dx in range(-10, 11, 2):
+                e = score(work, ed, pts, c, sc, dx, dy)
+                if e < best[0]:
+                    best = (e, sc, dx, dy)
+    err, sc, dx, dy = best
+    print("%s body: lined up on the head at scale %.3f, shift (%d, %d); mismatch %.1f" % (char, sc, dx, dy, err))
+    if err > 14:
+        raise SystemExit("the edit moved the head too much to join the body on cleanly (mismatch %.1f)" % err)
+    kx, ky = raw.w / float(work.w), raw.h / float(work.h)
+    for y in range(seam - band, work.h):
+        t = min(1.0, (y - (seam - band)) / float(band))
+        for x in range(work.w):
+            ex, ey = c[0] + (x - c[0]) * sc + dx, c[1] + (y - c[1]) * sc + dy
+            v = sample(raw, (ex + 0.5) * kx - 0.5, (ey + 0.5) * ky - 0.5)
+            i = (y * work.w + x) * 3
+            for k in range(3):
+                work.buf[i + k] = max(0, min(255, int(work.buf[i + k] * (1 - t) + v[k] * t + 0.5)))
+    work.save(work_path)
+    print("   body from row %d down (fading in over %d rows) -> %s" % (seam - band, band, work_path))
+
+
 def hairlike(r, g, b):
     """Brown hair, dark or light, highlights included; not skin, the coat,
     the turtleneck or the backdrop."""
@@ -803,6 +881,10 @@ if __name__ == "__main__":
         prepare(args[1:], force="--force" in sys.argv)
     elif len(args) >= 2 and args[0] == "--prepare-hair":
         prepare_hair(args[1:])
+    elif len(args) >= 2 and args[0] == "--prepare-body":
+        prepare_body(args[1:])
+    elif len(args) == 3 and args[1] == "body":
+        apply_body(args[0], args[2])
     elif len(args) == 3 and args[1] == "hair":
         apply_hair(args[0], args[2])
     elif len(args) == 2 and args[1] == "--install":
