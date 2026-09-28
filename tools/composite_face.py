@@ -256,7 +256,7 @@ def place(base, raw, crop_rec):
     return ed
 
 
-def run(base_path, edited_path, char, expr, mask_path=None, install=True):
+def run(base_path, edited_path, char, expr, mask_path=None, install=True, crop_rec=None):
     base_path, edited_path = os.path.expanduser(base_path), os.path.expanduser(edited_path)
     folder = os.path.dirname(base_path)
     mask_path = mask_path or os.path.join(folder, "masks", char + "_face.png")
@@ -264,7 +264,7 @@ def run(base_path, edited_path, char, expr, mask_path=None, install=True):
     raw = rgb(load(edited_path))
     if (mask.w, mask.h) != (base.w, base.h):
         raise SystemExit("mask is %dx%d but the base is %dx%d" % (mask.w, mask.h, base.w, base.h))
-    crop_rec = read_crop(folder, char, raw)
+    crop_rec = crop_rec or read_crop(folder, char, raw)
     ed = place(base, raw, crop_rec) if crop_rec else resize(raw, base.w, base.h)
     params, before, c = align(base, ed, mask)
     err, s, dx, dy = params

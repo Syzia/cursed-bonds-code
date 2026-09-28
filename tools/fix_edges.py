@@ -443,7 +443,15 @@ def write_workflow(rows, heading, blurb, out_name):
     row_h = 560
     for r, (char, kind, staged, prompt, versions, aspect) in enumerate(rows):
         y = r * row_h
-        ld = add("LoadImage", (-900, y), (300, 320), title="%s: %s" % (char, kind), widgets=[staged, "image"])
+        if isinstance(staged, tuple):
+            # Several pictures for one edit: loaded separately, batched.
+            ld = add("BatchImagesNode", (-560, y + 120), (220, 120), title="%s: both pictures" % char)
+            for j, name in enumerate(staged):
+                one = add("LoadImage", (-1240 + j * 330, y), (300, 320), title="%s: picture %d" % (char, j + 1),
+                          widgets=[name, "image"])
+                wire(one, ld, "images.image%d" % j)
+        else:
+            ld = add("LoadImage", (-900, y), (300, 320), title="%s: %s" % (char, kind), widgets=[staged, "image"])
         for k in range(versions):
             w = list(gem)
             w[0], w[2], w[3], w[4], w[5], w[6] = prompt, 900 + r * 10 + k, "fixed", aspect, "1K", "IMAGE"
@@ -452,14 +460,14 @@ def write_workflow(rows, heading, blurb, out_name):
             wire(ld, n, "images")
             sv = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["edge_%s_%s" % (char, kind)])
             wire(n, sv, "images")
-        groups.append(("%s: %s" % (char.upper(), kind.upper()) if kind in ("head", "hair") else
+        groups.append(("%s: %s" % (char.upper(), kind.upper()) if kind in ("head", "hair", "ref", "body") else
                        "%s: %s EDGE" % (char.upper(), kind.upper()), y))
 
     widest = max(r[4] for r in rows)
     wf = dict(shell)
     wf.update({"id": str(uuid.uuid4()), "revision": 0, "last_node_id": ids["n"], "last_link_id": ids["l"],
                "nodes": nodes, "links": links,
-               "groups": [{"id": i + 1, "title": t, "bounding": [-920, gy - 50, 940 + 820 * widest, row_h - 30],
+               "groups": [{"id": i + 1, "title": t, "bounding": [-1260, gy - 50, 1280 + 820 * widest, row_h - 30],
                            "color": "#3f4f5a", "font_size": 24, "flags": {}} for i, (t, gy) in enumerate(groups)]})
     wf["extra"] = dict(wf.get("extra") or {})
     wf["extra"]["ds"] = {"scale": 0.45, "offset": [980, 560]}
@@ -770,6 +778,61 @@ def apply_side(char, edge, edited, src, cuts, top, left, right, pristine, work, 
 # full picture; only the body from the collar down is pasted back, so the
 # approved head is kept exactly. Yaga came out about 11-16% wider through the
 # chest and stomach than his design sheet, bulging at the middle.
+# A detail copied from another version of the same close-up: Nano Banana gets
+# the current face close-up and the other version together, and changes only
+# that detail. Utahime: the softer face of head-fix box 3 with box 1's scar.
+# (file in ComfyUI's output, the close-up square it was made from, instruction)
+REF_FIX = {
+    "utahime": ("edge_utahime_head_00001_.png", (128, 24, 512),
+                "The first picture is the character. The second picture shows the same character with a "
+                "different scar. Change only the scar on the first picture so that it matches the scar in the "
+                "second picture exactly, in shape, size, angle and position: a wide, rough band of pinkish-brown "
+                "scarred skin running across her face from low on one cheek, over the bridge of her nose, to "
+                "just under the other eye, with faint scratch lines. Remove the thin scar line that is there "
+                "now. Keep everything else in the first picture exactly as it is: her eyes, eyelids, eyebrows, "
+                "nose, lips, face shape, hair, fringe, ribbon bow, clothes, framing and the plain flat green "
+                "background, in the same flat cel shading and line art."),
+}
+REF_VERSIONS = 3
+OUTPUT = os.path.expanduser("~/ComfyUI-Shared/output")
+
+
+def prepare_ref(chars):
+    import shutil
+    rows = []
+    for char in chars:
+        ref_name, (X, Y, side), instruction = REF_FIX[char]
+        work = rgb(load(os.path.join(FIXED, "%s_base.png" % char)))
+        close = resample(crop(work, X, Y, X + side, Y + side), 1024, 1024)
+        face = "ref_%s_face.png" % char
+        ref = "ref_%s_ref.png" % char
+        close.save(os.path.join(COMFY_INPUT, face))
+        close.save(os.path.join(FIXED, face))
+        shutil.copy(os.path.join(OUTPUT, ref_name), os.path.join(COMFY_INPUT, ref))
+        with open(os.path.join(FIXED, "masks", "%s_ref_crop.txt" % char), "w") as f:
+            f.write("%d %d %d\n" % (X, Y, side))
+        rows.append((char, "ref", (face, ref), instruction, REF_VERSIONS, "1:1"))
+        print("%-7s ref    face close-up %dx%d at (%d, %d) -> %s, reference %s -> %s"
+              % (char, side, side, X, Y, face, ref_name, ref))
+    write_workflow(rows, "Copy a detail: %s" % ", ".join(chars),
+                   "Each version gets two pictures (the face now, and the version with the detail to "
+                   "copy) and changes only that detail.", "ref.json")
+
+
+def apply_ref(char, edited):
+    """Composite through the face mask: the edit changed one detail of the face."""
+    import shutil
+    import composite_face
+    from facemask import build
+    work_path = os.path.join(FIXED, "%s_base.png" % char)
+    X, Y, side = [int(v) for v in open(os.path.join(FIXED, "masks", "%s_ref_crop.txt" % char)).read().split()]
+    mask = build(work_path, char, out_dir=os.path.join(FIXED, "masks"))
+    path, params = composite_face.run(work_path, edited, char, "reffix", mask_path=mask, install=False,
+                                      crop_rec=(X, Y, side))
+    shutil.copy(path, work_path)
+    print("   detail copied in -> %s" % work_path)
+
+
 BODY_FIX = {
     "yaga": ("Make his build muscular rather than heavy, as in his design: keep his shoulders just as "
              "broad, but make his chest and waist narrower and his stomach flat, so his black jacket "
@@ -1125,6 +1188,10 @@ if __name__ == "__main__":
         prepare(args[1:], force="--force" in sys.argv)
     elif len(args) >= 2 and args[0] == "--prepare-hair":
         prepare_hair(args[1:])
+    elif len(args) >= 2 and args[0] == "--prepare-ref":
+        prepare_ref(args[1:])
+    elif len(args) == 3 and args[1] == "ref":
+        apply_ref(args[0], args[2])
     elif len(args) >= 2 and args[0] == "--prepare-body":
         prepare_body(args[1:])
     elif len(args) == 3 and args[1] == "body":
