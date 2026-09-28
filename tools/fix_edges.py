@@ -120,6 +120,13 @@ HAIR_FIX = {
               "strands, a little fuller at the sides than now."),
 }
 HAIR_VERSIONS = 3
+
+# The colour the restyled hair is graded to: (hue in degrees, saturation,
+# median lightness), measured off the character's references. Nano Banana
+# gets the style right but overshoots the colour: Shoko's came back +22
+# degrees, saturation 0.37, lightness 0.37, against the anime stills' +7 to +18,
+# 0.20-0.24 and 0.23-0.31.
+HAIR_TARGET = {"shoko": (14.0, 0.24, 0.31)}
 HAIR_KEEP = ("Keep her face exactly as it is: the same eyes, the tired lines under them, the mole, "
              "eyebrows, nose, mouth and expression. Keep everything else exactly the same: the framing, "
              "the head's size and position, the clothes, the plain flat green background, and the flat "
@@ -584,13 +591,20 @@ def apply_hair(char, edited):
     ed = rgb(resample(raw, side, side))
     base_sq = crop(work, X, Y, X + side, Y + side)
 
-    # Line up on what must not move: clothes and the face, not hair or backdrop.
+    # Line up on what must not move: clothes and the face. Not hair or backdrop
+    # in either picture, since restyled hair can cover coat or temple that used
+    # to show, and its edges.
+    near_hair = bytearray(side * side)
+    for p in range(side * side):
+        if hairlike(*base_sq.buf[p * 3:p * 3 + 3]) or hairlike(*ed.buf[p * 3:p * 3 + 3]):
+            near_hair[p] = 1
+    near_hair = dilate(near_hair, side, side, 4)
     pts = []
     for y in range(0, side, 3):
         for x in range(0, side, 3):
             i = (y * side + x) * 3
             r, g, b = base_sq.buf[i], base_sq.buf[i + 1], base_sq.buf[i + 2]
-            if g - max(r, b) > 20 or hairlike(r, g, b):
+            if g - max(r, b) > 20 or near_hair[y * side + x]:
                 continue
             pts.append((x, y))
     c = (side / 2.0, side / 2.0)
@@ -644,6 +658,25 @@ def apply_hair(char, edited):
             k = min(u, v, side - 1 - u, side - 1 - v)
             if k < edge:
                 a[v * side + u] *= k / float(edge)
+
+    # Grade the new hair to the references (only hair inside the mask; the
+    # face is already masked out).
+    if char in HAIR_TARGET:
+        import colorsys
+        th, ts, tl = HAIR_TARGET[char]
+        idx = [p for p in range(side * side)
+               if a[p] > 0 and hairlike(int(edit_px[p][0]), int(edit_px[p][1]), int(edit_px[p][2]))]
+        hls = [colorsys.rgb_to_hls(*(max(0.0, min(255.0, c)) / 255.0 for c in edit_px[p])) for p in idx]
+        hs = sorted(h if h < 0.5 else h - 1.0 for h, l, sat in hls)
+        ls = sorted(l for h, l, sat in hls)
+        ss = sorted(sat for h, l, sat in hls)
+        mh, ml, ms = hs[len(hs) // 2], ls[len(ls) // 2], ss[len(ss) // 2]
+        dh, fl, fs = th / 360.0 - mh, tl / ml, ts / ms
+        for p, (h, l, sat) in zip(idx, hls):
+            r, g, b = colorsys.hls_to_rgb((h + dh) % 1.0, min(1.0, l * fl), min(1.0, sat * fs))
+            edit_px[p] = [r * 255.0, g * 255.0, b * 255.0]
+        print("   hair graded: hue %+.0f -> %+.0f deg, saturation %.2f -> %.2f, lightness %.2f -> %.2f (%d pixels)"
+              % (mh * 360, th, ms, ts, ml, tl, len(idx)))
 
     # Colour: take out any overall cast of the edit, judged on clothes at the
     # mask's soft edge (never on hair, whose colour is meant to change).

@@ -98,7 +98,7 @@ image toge = lit("images/char/toge.png")
 ## image gojo        = "images/char/gojo.png"   # superseded by jjk_sprites.rpy
 image yaga = lit("images/char/yaga.png")
 image ijichi = lit("images/char/ijichi.png")
-image shoko = lit("images/char/shoko.png")
+## image shoko       = "images/char/shoko.png"   # superseded by jjk_sprites.rpy
 image utahime = lit("images/char/utahime.png")
 
 ## Pre-campus cast — placeholder art until the sprite set lands.
