@@ -76,6 +76,7 @@ BASES = {
     "maki": "maki_base_00001_.png",
     "panda": "panda_base_00004_.png",
     "toge": "toge_base_00004_.png",
+    "utahime": "utahime_base_00004_.png",
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
@@ -766,23 +767,59 @@ BODY_FIX = {
              "hangs straight down from his shoulders to his hips instead of bulging at the middle; make "
              "his arms and legs a little slimmer to match."),
 }
+BODY_FIX["utahime"] = (
+    "Make her white kimono top fit her more closely, as a grown woman's would, so her mature, womanly "
+    "figure shows: the top follows the curve of her bust, then narrows and tucks snugly into the red "
+    "hakama at her waist, and the hakama sits smoothly over her hips. Keep the long, wide, hanging "
+    "sleeves, the crossed collar, the big red bow at the front of her waist and the pleated hakama "
+    "falling to her ankles. Remove the thin gold band at the top of the hakama, so the red waistband "
+    "sits directly against the white top.")
 BODY_VERSIONS = 3
+BODY_KEEP = ("Keep {his} head, face and hair exactly as they are, and keep {his} pose, the positions of {his} "
+             "hands and feet, {his} height, the framing and the plain flat green background exactly the same, "
+             "in the same flat cel shading and line art.")
+BODY_KEEP_FOR = {
+    "yaga": ("Keep his head, face, sunglasses, beard and hair exactly as they are, and keep his pose, the "
+             "positions of his hands and feet, his height, the clothes and their colours, the framing and "
+             "the plain flat green background exactly the same, in the same flat cel shading and line art."),
+}
+
+
+def body_record(char):
+    return os.path.join(FIXED, "masks", "%s_body.txt" % char)
+
+
+def body_source(char):
+    """(path, mode). A body fix made after other repairs works on the working
+    base ("base"); one made first works on the render itself ("render", with
+    any rescreen applied), and its result becomes the character's new render,
+    which --prepare then repairs as usual."""
+    work_path = os.path.join(FIXED, "%s_base.png" % char)
+    if os.path.exists(work_path):
+        return work_path, "base"
+    os.makedirs(FIXED, exist_ok=True)
+    src = start(char)[0]
+    pre = os.path.join(FIXED, "%s_prebody.png" % char)
+    src.save(pre)
+    return pre, "render"
 
 
 def prepare_body(chars):
     rows = []
     for char in chars:
-        work = rgb(load(os.path.join(FIXED, "%s_base.png" % char)))
+        path, mode = body_source(char)
+        work = rgb(load(path))
+        os.makedirs(os.path.join(FIXED, "masks"), exist_ok=True)
+        with open(body_record(char), "w") as f:
+            f.write("%s\t%s" % (mode, path))
         staged = "body_%s.png" % char
         work.save(os.path.join(COMFY_INPUT, staged))
         his, who = pronoun(char)
+        keep = BODY_KEEP_FOR.get(char) or BODY_KEEP.format(his=his)
         prompt = ("This is a full-body picture of a cartoon character, %s on a plain flat green background. "
-                  % who + BODY_FIX[char] + " Keep %s head, face, sunglasses, beard and hair exactly as they "
-                  "are, and keep %s pose, the positions of %s hands and feet, %s height, the clothes and "
-                  "their colours, the framing and the plain flat green background exactly the same, in the "
-                  "same flat cel shading and line art." % (his, his, his, his))
+                  % who + BODY_FIX[char] + " " + keep)
         rows.append((char, "body", staged, prompt, BODY_VERSIONS, "9:16"))
-        print("%-7s body   full picture %dx%d -> %s" % (char, work.w, work.h, staged))
+        print("%-7s body   full picture %dx%d (%s) -> %s" % (char, work.w, work.h, mode, staged))
     write_workflow(rows, "Reshape the body: %s" % ", ".join(chars),
                    "Each version reshapes the body on the full picture; only the body is kept.", "body.json")
 
@@ -793,7 +830,9 @@ def apply_body(char, edited):
     seam shows. The approved head above stays exactly as it is."""
     from facemask import head_box
     from keysprite import key_out
-    work_path = os.path.join(FIXED, "%s_base.png" % char)
+    mode, work_path = "base", os.path.join(FIXED, "%s_base.png" % char)
+    if os.path.exists(body_record(char)):
+        mode, work_path = open(body_record(char)).read().split("\t")
     work = rgb(load(work_path))
     raw = rgb(load(os.path.expanduser(edited)))
     ed = rgb(resample(raw, work.w, work.h))
@@ -824,8 +863,15 @@ def apply_body(char, edited):
             i = (y * work.w + x) * 3
             for k in range(3):
                 work.buf[i + k] = max(0, min(255, int(work.buf[i + k] * (1 - t) + v[k] * t + 0.5)))
-    work.save(work_path)
-    print("   body from row %d down (fading in over %d rows) -> %s" % (seam - band, band, work_path))
+    if mode == "render":
+        out = os.path.join(FIXED, "%s_bodyfix.png" % char)
+        work.save(out)
+        print("   body from row %d down (fading in over %d rows) -> %s" % (seam - band, band, out))
+        print("   this is %s's new render: set BASES[%r] = 'fixed/%s_bodyfix.png', then --prepare"
+              % (char, char, char))
+    else:
+        work.save(work_path)
+        print("   body from row %d down (fading in over %d rows) -> %s" % (seam - band, band, work_path))
 
 
 def hairlike(r, g, b):
