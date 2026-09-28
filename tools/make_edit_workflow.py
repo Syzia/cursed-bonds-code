@@ -72,10 +72,28 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change his facial expression to open surprise: mouth dropped open in a round "
                      "'o', jaw slack.",
     },
+    # Shoko is deadpan: her happy is a wry half-smile and her sad is exhaustion
+    # (tools/chars/CANON.md), and her anger is cold rather than shouting.
+    "shoko": {
+        "happy":     "Change her facial expression to a small, wry, knowing half-smile: one corner of her "
+                     "mouth lifted, lips closed, her heavy-lidded eyes staying sleepy and relaxed.",
+        "serious":   "Change her facial expression to cool, clinical focus: eyes a little more open with a "
+                     "steady, level stare, eyebrows level and slightly lowered, mouth pressed into a flat line.",
+        "sad":       "Change her facial expression to quiet, exhausted sadness: eyelids drooping almost "
+                     "closed with the gaze cast down, the inner ends of the eyebrows raised slightly, mouth "
+                     "flat with the corners turned slightly down.",
+        "angry":     "Change her facial expression to cold, contained anger: eyebrows pulled down into a hard "
+                     "frown, eyes narrowed into a flat, cold glare, mouth pressed into a tight line, jaw "
+                     "clenched.",
+        "surprised": "Change her facial expression to surprise: eyes opened wide so the irises show fully, "
+                     "eyebrows raised high, lips parted in a small 'o'.",
+    },
 }
 CHAR_KEEP = {
     "gojo": "His eyes stay completely hidden behind the wide black cloth blindfold: keep the blindfold, "
             "and everything above the nose, exactly as it is, and do not draw any eyes.",
+    "shoko": "Keep the tired lines under her eyes and the small dark mole under her right eye, the eye on "
+             "the left side of the picture, exactly where they are.",
 }
 
 
