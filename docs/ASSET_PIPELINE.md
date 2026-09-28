@@ -12,6 +12,58 @@ canon Jujutsu Kaisen characters plus two originals (the player and Sana), and
 the under-eye marks that Krea-2 dropped are canon. So the Danbooru-tag argument
 for a local anime checkpoint is real, not hypothetical — see tools/chars/CANON.md.
 
+## Making a character: the recipe (2026-09-28, after all nine campus regulars)
+
+Yuji, Megumi, Nobara, Maki, Toge, Shoko, Yaga, Gojo and Panda are done, six
+expressions each. The same steps, and the fixes that turned out to be needed,
+cover every one of them.
+
+1. **References.** Put 2–5 in `references/characters/<name>/`. A full-body
+   shot and a face close-up are the two that matter; an official design sheet
+   beats everything else.
+2. **Base picture:** `tools/chars/prompts/<name>.txt`, then
+   `make_base_workflow.py <name>`. This runs on Comfy Cloud, because Krea-2
+   Turbo needs a big NVIDIA card; it's about 36 GB unpacked on a Mac.
+   - **Name** the character and MAPPA's style, then describe them. Named
+     prompts get the anime's look; pure descriptions come out generic. Never
+     name them to Nano Banana or Seedream.
+   - Say nothing about height. A full-frame "shorter" becomes child
+     proportions; `HEIGHT_CM` sets height instead.
+   - If anything on them is **green** (Maki's hair), render on magenta.
+3. **Repair the base** (`fix_edges.py --prepare <name>`, one `edges.json` Run
+   in the local ComfyUI). Add the character to `BASES` first. Every option is
+   per character:
+   - **Cut edges, any side:** Krea overflows the frame on almost every render.
+   - **`HEAD_FIX`:** the model draws the outfit right but the face generic
+     (Shoko), or misses details (Yaga's goatee and glasses), or you want a
+     different look (Toge's spiky hair and seal marks). `HEAD_MARGIN` and
+     `HEAD_ROOM_ABOVE` give hair that changes shape room to grow.
+   - **`HAIR_FIX`** restyles hair along its whole length, and `HAIR_TARGET`
+     grades its colour to the references. Nano Banana overshoots colour.
+   - **`BODY_FIX`** reshapes a build (Yaga came out fat) and keeps the head.
+   - **`SKIN_TARGET`** grades skin to the official art (Yaga's tan).
+4. **Measure the drawn height** chin to soles, then set `HEIGHT_CM`. Include
+   heels, ponytails and spikes. A very wide build gets `CANVAS_W` (Panda: 880),
+   so the fit doesn't squeeze it. Then run `fix_edges.py <name> --install` and
+   retire the placeholder `image <name>` line in `jjk_defs.rpy`.
+5. **Face mask** (`facemask.py`):
+   - default: follows the skin
+   - `--below-hairline`: glasses or a blindfold split the face
+   - `--fur`: Panda
+   Overlay the mask and look at it before spending anything.
+6. **Expressions:** `composite_face.py --prepare`, then `make_edit_workflow.py
+   <name> --only happy,serious,sad,angry,surprised` (about $0.80), then
+   `composite_face.py` on each result, then `gen_sprite_defs.py`.
+   - `CHAR_EXPRESSIONS` holds per-character wording: Gojo and Yaga have hidden
+     eyes, Maki's happy is a smirk, Shoko is deadpan, Panda has fur brows.
+   - `CHAR_KEEP` protects glasses, blindfolds and marks.
+7. **Check every time:** zero body pixels differ from the neutral below the
+   face, lint is clean, and the cast line-up still reads as one show.
+
+Typical cost per character, besides the base run on the Comfy Cloud plan:
+$0.50–1.50 of repairs and $0.80 of expressions, at Nano Banana Pro's
+$0.16 a picture.
+
 ## The character pass: grounding and light (done 2026-09-23)
 
 Spotted by standing Yuji and Megumi in the first real background

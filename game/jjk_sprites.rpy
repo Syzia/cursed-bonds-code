@@ -52,6 +52,11 @@ image shoko sad = lit_sprite("images/char/shoko_sad.png", (760, 1400), (423, 136
 
 image toge = lit_sprite("images/char/toge_neutral.png", (760, 1400), (391, 1365, 321))
 image toge neutral = lit_sprite("images/char/toge_neutral.png", (760, 1400), (391, 1365, 321))
+image toge happy = lit_sprite("images/char/toge_happy.png", (760, 1400), (391, 1365, 321))
+image toge serious = lit_sprite("images/char/toge_serious.png", (760, 1400), (391, 1365, 321))
+image toge angry = lit_sprite("images/char/toge_angry.png", (760, 1400), (391, 1365, 321))
+image toge surprised = lit_sprite("images/char/toge_surprised.png", (760, 1400), (391, 1365, 321))
+image toge sad = lit_sprite("images/char/toge_sad.png", (760, 1400), (391, 1365, 321))
 
 image yaga = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 505))
 image yaga neutral = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 505))
@@ -120,6 +125,11 @@ image side shoko sad = "images/side/shoko_sad.png"
 
 image side toge = "images/side/toge_neutral.png"
 image side toge neutral = "images/side/toge_neutral.png"
+image side toge happy = "images/side/toge_happy.png"
+image side toge serious = "images/side/toge_serious.png"
+image side toge angry = "images/side/toge_angry.png"
+image side toge surprised = "images/side/toge_surprised.png"
+image side toge sad = "images/side/toge_sad.png"
 
 image side yaga = "images/side/yaga_neutral.png"
 image side yaga neutral = "images/side/yaga_neutral.png"
