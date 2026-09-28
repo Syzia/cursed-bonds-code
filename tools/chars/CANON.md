@@ -104,8 +104,20 @@ so expression is mouth + brow-line + head tilt only. Big confident grin as defau
 jacket (uniform-like, longer than the students'), dark trousers, dark boots. Hands in pockets.
 
 ## yaga — Masamichi Yaga (principal)
-Large, broad, heavy build. Tan/dark skin. Black hair in a short spiky flat-top; goatee/beard. Dark
-SUNGLASSES always. Dark uniform jacket, tight across the shoulders. Stern; happy is the beard moving.
+From his official design sheet and anime stills in `references/characters/yaga/` (2026-09-28).
+- **Age:** 47. He collects sunglasses and likes cute things (his dolls).
+- **Build:** very large, broad and heavily muscled, with a thick neck and tan skin.
+- **Hair:** dark brown, the sides shaved short and grey, the top a short spiky
+  flat-top standing up.
+- **Face:** narrow rectangular sunglasses with thin dark frames and dark red
+  lenses, always on. A goatee: the moustache's ends curve down around the
+  mouth to a short pointed chin beard. Heavy square jaw, deep lines.
+- **Outfit:** a black zip-up jacket with a high stand collar zipped to the
+  throat and a thin silver zip down the middle, loose black trousers and black
+  shoes. There is also a training look (grey T-shirt, taped wrists), which
+  could be an alternate outfit.
+- **Expressions:** stern; happy is the beard moving. His eyes are behind the
+  sunglasses, so his expressions live in his brows, mouth and beard, like Gojo's.
 
 ## ijichi — Kiyotaka Ijichi (assistant manager)
 Neat black hair combed back/side-parted, rectangular glasses, pale, permanently anxious. Black business
