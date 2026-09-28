@@ -174,20 +174,23 @@ From his official design sheet and anime stills in `references/characters/yaga/`
   glasses (HEAD_FIX).
 
 ## ijichi — Kiyotaka Ijichi (assistant manager)
-From the official art and anime stills in `references/characters/ijichi/` (2026-09-29).
+From the anime close-ups and the manga colour art in `references/characters/ijichi/` (2026-09-29).
 - **Age:** late twenties.
 - **Hair:** neat, straight, black with a faint blue sheen. Short at the back,
   with a straight fringe to the eyebrows parted slightly off-centre, and the
   sides over the tops of the ears. It isn't combed back, as the old note said.
-- **Face:** narrow rectangular glasses with thin black frames. A long, narrow,
-  angular face with a sharp jaw and hollow cheeks, tired eyes with lines under
-  them, thin worried brows, pale skin. Tall, thin and lanky, with drooping
-  shoulders.
-- **Outfit:** a dark charcoal-grey single-breasted suit (two buttons, flap
-  pockets), a white shirt, a dark maroon tie, black dress shoes. The black
-  suit and tie in some manga colour art aren't the anime's colours.
-- **Pose:** the official art's nervous stance, one arm folded across his body
-  holding the other arm.
+- **Face:** from the anime close-ups: narrow rectangular glasses with thin
+  black frames, a long, narrow, sharp face, calm, slightly tired eyes, thin
+  brows, pale skin. Tall, slim and long-legged.
+- **Outfit, the game's look (the user's choice, 2026-09-29): "a little bit of
+  style".** From the manga colour art the user picked: a sharp, sleek,
+  slim-fitting **black** suit with narrow lapels closed with one button, a
+  crisp white shirt, a slim black tie, a silver wristwatch, slim trousers
+  tapered to the ankle, and polished pointed black shoes. Not the anime's
+  frumpy charcoal suit and maroon tie, whose renders the user rejected.
+- **Pose:** tall and relaxed, adjusting the watch on his left wrist at chest
+  height, as in that art, but facing the viewer. Cool and composed, not
+  hunched.
 - **Expressions:** permanently anxious. Surprised and sad are his home
   expressions; happy is relief. His glasses may split the face mask the way
   Yaga's did, in which case use `facemask.py --below-hairline`.
