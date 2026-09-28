@@ -12,6 +12,11 @@ image gojo sad = lit_sprite("images/char/gojo_sad.png", (760, 1400), (393, 1365,
 
 image ijichi = lit_sprite("images/char/ijichi_neutral.png", (760, 1400), (387, 1365, 357))
 image ijichi neutral = lit_sprite("images/char/ijichi_neutral.png", (760, 1400), (387, 1365, 357))
+image ijichi happy = lit_sprite("images/char/ijichi_happy.png", (760, 1400), (387, 1365, 357))
+image ijichi serious = lit_sprite("images/char/ijichi_serious.png", (760, 1400), (387, 1365, 357))
+image ijichi angry = lit_sprite("images/char/ijichi_angry.png", (760, 1400), (387, 1365, 357))
+image ijichi surprised = lit_sprite("images/char/ijichi_surprised.png", (760, 1400), (387, 1365, 357))
+image ijichi sad = lit_sprite("images/char/ijichi_sad.png", (760, 1400), (387, 1365, 357))
 
 image maki = lit_sprite("images/char/maki_neutral.png", (760, 1400), (414, 1365, 320))
 image maki neutral = lit_sprite("images/char/maki_neutral.png", (760, 1400), (414, 1365, 320))
@@ -96,6 +101,11 @@ image side gojo sad = "images/side/gojo_sad.png"
 
 image side ijichi = "images/side/ijichi_neutral.png"
 image side ijichi neutral = "images/side/ijichi_neutral.png"
+image side ijichi happy = "images/side/ijichi_happy.png"
+image side ijichi serious = "images/side/ijichi_serious.png"
+image side ijichi angry = "images/side/ijichi_angry.png"
+image side ijichi surprised = "images/side/ijichi_surprised.png"
+image side ijichi sad = "images/side/ijichi_sad.png"
 
 image side maki = "images/side/maki_neutral.png"
 image side maki neutral = "images/side/maki_neutral.png"
