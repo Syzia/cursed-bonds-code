@@ -70,11 +70,47 @@ def _chroma(c):
     return c[1] - max(c[0], c[2])
 
 
+def screen_key(bg):
+    """(kind, lean) for the backdrop colour bg: `lean(r, g, b)` is how far a
+    pixel leans toward the screen's hue, independent of its brightness. Green
+    is the house screen; magenta is for characters with green in them (Maki's
+    dark green hair would lean toward a green screen); blue for completeness.
+    None when the backdrop has no colour cast to key on.
+    """
+    r, g, b = bg
+    if g - max(r, b) >= 12:
+        return "green", lambda r, g, b: g - (r if r > b else b)
+    if min(r, b) - g >= 12:
+        return "magenta", lambda r, g, b: (r if r < b else b) - g
+    if b - max(r, g) >= 12:
+        return "blue", lambda r, g, b: b - (r if r > g else g)
+    return None
+
+
+PURE_GREEN = (0, 255, 0)
+
+
+def rescreen(im, colour=PURE_GREEN):
+    """The figure laid over a new flat backdrop, keyed off whatever it was
+    rendered on. A character rendered on magenta goes onto pure green for the
+    rest of the pipeline, whose key thresholds scale with the backdrop: on
+    pure green only a green lean above 82 counts as backdrop, where Krea's
+    muted green (64, 106, 68) keys from 12, and no hair reaches 82."""
+    keyed = key_out(im)
+    out = Img(im.w, im.h, alpha=False)
+    for p in range(im.w * im.h):
+        j = p * 4
+        a = keyed.buf[j + 3] / 255.0
+        for k in range(3):
+            out.buf[p * 3 + k] = int(keyed.buf[j + k] * a + colour[k] * (1 - a) + 0.5)
+    return out
+
+
 def _dist(a, b):
     return math.sqrt(sum((a[k] - b[k]) ** 2 for k in range(3)))
 
 
-def backdrop_regions(im, bg, lo):
+def backdrop_regions(im, bg, lo, lean=None):
     """Which green pixels are actually backdrop, as a bytearray over the image.
 
     Keying every green pixel would also key a character's own green parts:
@@ -91,10 +127,10 @@ def backdrop_regions(im, bg, lo):
     w, h, ch, buf = im.w, im.h, im.ch, im.buf
     n = w * h
     green = bytearray(n)
+    lean = lean or (lambda r, g, b: g - (r if r > b else b))
     for p in range(n):
         i = p * ch
-        r, g, b = buf[i], buf[i + 1], buf[i + 2]
-        if g - (r if r > b else b) > lo:
+        if lean(buf[i], buf[i + 1], buf[i + 2]) > lo:
             green[p] = 1
 
     backdrop = bytearray(n)
@@ -137,16 +173,18 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
     to a vivid #00b140 screen and a muted #3f6944 one alike.
     """
     bg = bg or sample_bg(im)
-    bg_chroma = _chroma(bg)
+    screen = screen_key(bg)
+    kind, lean = screen if screen else (None, None)
+    bg_chroma = lean(*bg) if lean else 0
     out = Img(im.w, im.h, alpha=True)
     ch = im.ch
 
     # A backdrop with no colour cast at all (grey/white) has to fall back to
     # plain distance; there is no hue to key on.
-    use_chroma = bg_chroma >= 12
+    use_chroma = lean is not None
     lo = bg_chroma * (cut - feather)
     hi = bg_chroma * cut
-    backdrop = backdrop_regions(im, bg, lo) if use_chroma else None
+    backdrop = backdrop_regions(im, bg, lo, lean) if use_chroma else None
 
     for y in range(im.h):
         for x in range(im.w):
@@ -155,7 +193,7 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
             r, g, b = im.buf[i], im.buf[i + 1], im.buf[i + 2]
 
             if use_chroma:
-                v = g - max(r, b)
+                v = lean(r, g, b)
                 if v <= lo or not backdrop[p]:
                     a = 255                                   # figure, green or not
                 elif v >= hi:
@@ -170,13 +208,19 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
 
             # despill: strip the backdrop's cast out of feathered edge pixels,
             # or every strand of hair carries a green fringe onto dark scenes
-            if use_chroma and a < 255 and g > max(r, b):
-                g = int(g - (g - max(r, b)) * 0.9)
+            if use_chroma and a < 255:
+                if kind == "green" and g > max(r, b):
+                    g = int(g - (g - max(r, b)) * 0.9)
+                elif kind == "magenta" and min(r, b) > g:
+                    e = (min(r, b) - g) * 0.9
+                    r, b = int(r - e), int(b - e)
+                elif kind == "blue" and b > max(r, g):
+                    b = int(b - (b - max(r, g)) * 0.9)
 
             j = p * 4
-            out.buf[j] = r
+            out.buf[j] = max(0, min(255, r))
             out.buf[j + 1] = max(0, min(255, g))
-            out.buf[j + 2] = b
+            out.buf[j + 2] = max(0, min(255, b))
             out.buf[j + 3] = a
     return out
 
@@ -246,9 +290,11 @@ def qa(src, keyed, name):
     """
     problems = []
     bg = sample_bg(src)
-    if _chroma(bg) < 12:
-        problems.append("backdrop is not green (%d,%d,%d) — keyed on plain "
-                        "distance, expect a rough cutout" % bg)
+    screen = screen_key(bg)
+    lean = screen[1] if screen else None
+    if lean is None:
+        problems.append("backdrop has no colour to key on (%d,%d,%d) — keyed on "
+                        "plain distance, expect a rough cutout" % bg)
 
     total = keyed.w * keyed.h
     kept = fringe = 0
@@ -259,7 +305,7 @@ def qa(src, keyed, name):
         kept += 1
         # Only soft edge pixels can be fringe; an opaque green pixel is one the
         # key deliberately kept, like a green eye.
-        if a < 255 and keyed.buf[i + 1] - max(keyed.buf[i], keyed.buf[i + 2]) > 18:
+        if a < 255 and lean and lean(keyed.buf[i], keyed.buf[i + 1], keyed.buf[i + 2]) > 18:
             fringe += 1
     pct = 100.0 * kept / total
     if pct > 85:
@@ -267,7 +313,7 @@ def qa(src, keyed, name):
     elif pct < 4:
         problems.append("kept only %.1f%% of the frame — the figure was keyed away" % pct)
     if fringe:
-        problems.append("%d pixels still read as green (%.3f%% of the figure)"
+        problems.append("%d edge pixels still carry the backdrop's colour (%.3f%% of the figure)"
                         % (fringe, 100.0 * fringe / max(1, kept)))
 
     # A figure touching the frame edge was cropped by the renderer, so its real

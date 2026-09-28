@@ -226,6 +226,13 @@ def start(char):
     render, padded at each cut edge, hair recoloured. Deterministic, so apply()
     can rebuild the untouched version to line edits up against."""
     src = rgb(load(os.path.join(IMAGES, BASES[char])))
+    # A character rendered on another screen colour (magenta, for Maki's green
+    # hair) goes onto pure green first, so everything below stays green-based.
+    from keysprite import screen_key, sample_bg, rescreen
+    screen = screen_key(sample_bg(src))
+    if screen and screen[0] != "green":
+        src = rgb(rescreen(src))
+        print("%-7s rendered on %s; moved onto pure green" % (char, screen[0]))
     cuts = cut_columns(src)
     top, bottom = (PAD if "top" in cuts else 0), (PAD if "bottom" in cuts else 0)
     work = pad(src, top, bottom)
@@ -369,9 +376,6 @@ def prepare(chars, force=False):
     os.makedirs(FIXED, exist_ok=True)
     for char in chars:
         src, cuts, top, bottom, work = start(char)
-        if not cuts and char not in HEAD_FIX:
-            print("%s: nothing touches the top or bottom edge" % char)
-            continue
         work_path = os.path.join(FIXED, "%s_base.png" % char)
         if os.path.exists(work_path) and not force:
             old = rgb(load(work_path))
@@ -381,6 +385,9 @@ def prepare(chars, force=False):
         work.save(work_path)
         with open(record_path(char), "w") as f:
             f.write("%s\t%d\t%d" % (BASES[char], top, bottom))
+        if not cuts and char not in HEAD_FIX:
+            print("%-7s nothing touches the top or bottom edge; working base written" % char)
+            continue
         if char in HEAD_FIX:
             from raster import resample
             X, Y, side = head_closeup(work, top)
@@ -414,6 +421,9 @@ def prepare(chars, force=False):
                       % (CLOSE_SUBJECT[edge], edge, what))
             rows.append((char, edge, staged, prompt, VERSIONS, "16:9"))
             print("%-7s %-6s cut at x %d-%d; close-up rows %d-%d -> %s" % (char, edge, x0, x1, r0, r1, staged))
+    if not rows:
+        print("nothing to repair: no workflow needed; install with --install")
+        return
     write_workflow(rows, "Repair the base picture: %s" % ", ".join(chars),
                    "Each row is a close-up: a cut edge with a strip of green added, where the model "
                    "draws the missing hair or shoe, or a head to redraw.", "edges.json")
