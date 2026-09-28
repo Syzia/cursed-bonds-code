@@ -137,8 +137,24 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change his facial expression to surprise: his small eyes opened wide and round, the "
                      "short fur lines above his eye patches raised high, mouth dropped open.",
     },
+    # Toge's collar is zipped up over his mouth and nose, so his expressions
+    # live in his eyes and brows (the reverse of Gojo, whose eyes are hidden).
+    "toge": {
+        "happy":     "Change his facial expression to a warm, happy look shown with his eyes: his eyes curved "
+                     "into gentle upturned arcs as if he is smiling behind his collar, eyebrows relaxed and "
+                     "slightly raised.",
+        "serious":   "Change his facial expression to a serious, focused look: eyebrows lowered and drawn "
+                     "together, eyes steady and direct.",
+        "sad":       "Change his facial expression to sadness: the inner ends of his eyebrows raised and pulled "
+                     "together, eyes glossy with the gaze lowered.",
+        "angry":     "Change his facial expression to anger: eyebrows pulled down hard into a sharp V, eyes "
+                     "narrowed into a glare.",
+        "surprised": "Change his facial expression to surprise: eyes opened wide, eyebrows raised high.",
+    },
 }
 CHAR_KEEP = {
+    "toge": "Keep his high collar zipped up over his mouth and nose exactly as it is, so his mouth never "
+            "shows.",
     "panda": "Keep his ears, the outline of his head, his black nose and his black eye patches in the "
              "same place and size.",
     "maki": "Keep her thin silver wire-framed glasses on exactly as they are, and keep her straight bangs "
