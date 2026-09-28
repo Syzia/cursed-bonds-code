@@ -44,6 +44,11 @@ HEIGHT_CM = {
 }
 TALLEST_CM = 200.0
 
+# Canvas width per character, where the default 760 would squeeze a wide
+# build: Panda is about 0.6 as wide as he is tall, so at his full 200 cm he
+# needs about 800 px plus margin.
+CANVAS_W = {"panda": 880}
+
 
 def sample_bg(im, n=12):
     """Average the corners — whatever colour the backdrop is, that is the key."""
@@ -262,7 +267,7 @@ def bbox(im, alpha_min=24, min_px=None):
     return xs[0], ys[0], xs[-1] + 1, ys[-1] + 1
 
 
-def fit(im, height_cm=None):
+def fit(im, height_cm=None, out_w=OUT_W):
     """Crop to the figure and place it on the game canvas, feet anchored.
 
     height_cm scales the figure against the tallest member of the cast instead
@@ -277,15 +282,15 @@ def fit(im, height_cm=None):
     if height_cm:
         target_h *= height_cm / TALLEST_CM
     f = target_h / float(fig.h)
-    if fig.w * f > OUT_W - 40:                     # don't let a wide pose overflow
-        f = (OUT_W - 40) / float(fig.w)
+    if fig.w * f > out_w - 40:                     # don't let a wide pose overflow
+        f = (out_w - 40) / float(fig.w)
     # Area-averaged, not nearest-neighbour: shrinking a render by ~0.85 with
     # nearest-neighbour drops about one row and column in six, which breaks
     # one-pixel line art into stair-steps.
     fig = smooth_scale(fig, f)
 
-    out = Img(OUT_W, OUT_H, alpha=True)
-    paste(out, fig, (OUT_W - fig.w) // 2, OUT_H - FOOT_ROOM - fig.h)
+    out = Img(out_w, OUT_H, alpha=True)
+    paste(out, fig, (out_w - fig.w) // 2, OUT_H - FOOT_ROOM - fig.h)
     return out
 
 
@@ -346,7 +351,7 @@ def install(src_path, name, quiet=False):
     im = load(os.path.expanduser(src_path))
     keyed = key_out(im)
     problems = qa(im, keyed, name)
-    sprite = fit(keyed, HEIGHT_CM.get(key))
+    sprite = fit(keyed, HEIGHT_CM.get(key), CANVAS_W.get(key, OUT_W))
 
     cp = os.path.join(root, "game", "images", "char", name + ".png")
     os.makedirs(os.path.dirname(cp), exist_ok=True)

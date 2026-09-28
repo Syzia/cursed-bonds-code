@@ -8,7 +8,9 @@ picture, before any expressions are made from it.
     python3 tools/fix_edges.py nobara --install          # key the repaired base into the game
 
 Krea-2 Turbo fills the frame whatever the prompt says, so a base render often
-has the crown of the hair or a sole sliced off by the edge. `--prepare` pads
+has the crown of the hair or a sole sliced off by the edge, and a wide figure
+(Panda) can graze the left and right edges too; those get a 9:16 close-up
+down the side. `--prepare` pads
 each cut edge with a strip of backdrop green, cuts a 16:9 close-up there, and
 writes edges.json. In it, Nano Banana Pro draws the missing hair or shoe into
 the strip.
@@ -59,6 +61,7 @@ COMFY_INPUT = os.path.expanduser("~/ComfyUI-Shared/input")
 FIXED = os.path.join(IMAGES, "fixed")
 PAD = 64                       # rows of backdrop added beyond a cut edge
 CLOSE_W, CLOSE_H = 768, 432    # 16:9, so the edit comes back the same shape
+SIDE_W, SIDE_H = 432, 768      # 9:16, for a cut down the left or right edge
 VERSIONS = 2
 COST = 0.16
 SCALES = [0.98 + 0.005 * i for i in range(9)]      # 0.98 .. 1.02
@@ -71,6 +74,7 @@ BASES = {
     "shoko": "shoko_base_00003_.png",
     "yaga": "yaga_base_00001_.png",
     "maki": "maki_base_00001_.png",
+    "panda": "panda_base_00004_.png",
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
@@ -136,7 +140,14 @@ WHAT = {
                "everything else exactly the same: the legs, the other shoe, the framing, and the plain "
                "flat green background, with plain green left below the soles."),
 }
-CLOSE_SUBJECT = {"top": "the head and shoulders", "bottom": "the lower legs and shoes"}
+WHAT["side"] = ("the outer edge of the body on the %s side (the arm's outline) is sliced off by the frame "
+                "edge, and a strip of plain green was added beside it. Draw the missing outer edge into the "
+                "green strip so the outline is complete and curves back in naturally, in exactly the same "
+                "drawing style, line weight, colours and fur or cloth texture. Keep everything else exactly "
+                "the same: the rest of the body, the framing, and the plain flat green background, with plain "
+                "green left beyond the outline.")
+CLOSE_SUBJECT = {"top": "the head and shoulders", "bottom": "the lower legs and shoes",
+                 "left": "the side of the body and arm", "right": "the side of the body and arm"}
 
 
 # Hair the base model got wrong, restyled on a close-up covering its whole
@@ -177,7 +188,8 @@ def backdrop(im, rows):
 
 
 def cut_columns(im):
-    """{edge: (x0, x1)} for each edge the figure runs into."""
+    """{edge: span} for each edge the figure runs into: (x0, x1) along the top
+    or bottom edge, (y0, y1) down the left or right edge."""
     from keysprite import key_out
     keyed = key_out(im)
     out = {}
@@ -185,12 +197,32 @@ def cut_columns(im):
         cols = [x for x in range(im.w) if keyed.buf[(y * im.w + x) * 4 + 3] > 128]
         if cols:
             out[edge] = (min(cols), max(cols))
+    for edge, x in (("left", 0), ("right", im.w - 1)):
+        rows = [y for y in range(im.h) if keyed.buf[(y * im.w + x) * 4 + 3] > 128]
+        if rows:
+            out[edge] = (min(rows), max(rows))
     return out
 
 
-def pad(im, top, bottom):
-    """The render with `top` and `bottom` rows of backdrop added, each strip in
-    the backdrop colour next to it."""
+def side_pads(cuts):
+    return (PAD if "left" in cuts else 0), (PAD if "right" in cuts else 0)
+
+
+def side_backdrop(im, cols):
+    """Median backdrop colour over the given columns."""
+    px = []
+    for y in range(0, im.h, 2):
+        for x in cols:
+            i = (y * im.w + x) * 3
+            r, g, b = im.buf[i], im.buf[i + 1], im.buf[i + 2]
+            if g - max(r, b) > 20:
+                px.append((r, g, b))
+    return tuple(sorted(p[k] for p in px)[len(px) // 2] for k in range(3))
+
+
+def pad(im, top, bottom, left=0, right=0):
+    """The render with `top` and `bottom` rows and `left` and `right` columns
+    of backdrop added, each strip in the backdrop colour next to it."""
     out = Img(im.w, im.h + top + bottom, alpha=False)
     if top:
         c = backdrop(im, range(0, 24))
@@ -199,7 +231,21 @@ def pad(im, top, bottom):
     if bottom:
         c = backdrop(im, range(im.h - 24, im.h))
         out.buf[(top + im.h) * im.w * 3:] = bytes(c) * (bottom * im.w)
-    return out
+    if not (left or right):
+        return out
+    cl = side_backdrop(out, range(0, 24)) if left else None
+    cr = side_backdrop(out, range(out.w - 24, out.w)) if right else None
+    W = out.w + left + right
+    wide = Img(W, out.h, alpha=False)
+    for y in range(out.h):
+        row = bytearray()
+        if left:
+            row += bytes(cl) * left
+        row += out.buf[y * out.w * 3:(y + 1) * out.w * 3]
+        if right:
+            row += bytes(cr) * right
+        wide.buf[y * W * 3:(y + 1) * W * 3] = row
+    return wide
 
 
 def recolour_hair(im, rows, shift_deg, sat_factor):
@@ -236,7 +282,8 @@ def start(char):
         print("%-7s rendered on %s; moved onto pure green" % (char, screen[0]))
     cuts = cut_columns(src)
     top, bottom = (PAD if "top" in cuts else 0), (PAD if "bottom" in cuts else 0)
-    work = pad(src, top, bottom)
+    left, right = side_pads(cuts)
+    work = pad(src, top, bottom, left, right)
     if char in HAIR_SHIFT:
         shift, factor = HAIR_SHIFT[char]
         n = recolour_hair(work, range(top, top + int(src.h * 0.45)), shift, factor)
@@ -294,12 +341,29 @@ def record_path(char):
 
 
 def read_record(char):
-    src, top, bottom = open(record_path(char)).read().split("\t")
-    return src, int(top), int(bottom)
+    """(render, top, bottom, left, right) pads; older records have no sides."""
+    parts = open(record_path(char)).read().split("\t")
+    nums = [int(v) for v in parts[1:]] + [0, 0]
+    return (parts[0],) + tuple(nums[:4])
 
 
-def close_rows(edge, h):
-    return (0, CLOSE_H) if edge == "top" else (h - CLOSE_H, h)
+def close_size(w):
+    """A 16:9 close-up across the whole working width: 768 x 432 for a render
+    with no side padding, as before."""
+    return w, int(round(w * 9 / 16.0))
+
+
+def close_rows(edge, h, ch=CLOSE_H):
+    return (0, ch) if edge == "top" else (h - ch, h)
+
+
+def side_box(edge, y0, y1, top, work):
+    """(X, Y) of the 9:16 close-up for a cut down the left or right edge,
+    centred on the cut rows."""
+    cy = top + (y0 + y1) // 2
+    Y = max(0, min(work.h - SIDE_H, cy - SIDE_H // 2))
+    X = 0 if edge == "left" else work.w - SIDE_W
+    return X, Y
 
 
 def write_workflow(rows, heading, blurb, out_name):
@@ -384,8 +448,9 @@ def prepare(chars, force=False):
                 raise SystemExit("%s already has repairs pasted in; starting again would throw them "
                                  "away. Pass --force to do that." % work_path)
         work.save(work_path)
+        left, right = side_pads(cuts)
         with open(record_path(char), "w") as f:
-            f.write("%s\t%d\t%d" % (BASES[char], top, bottom))
+            f.write("%s\t%d\t%d\t%d\t%d" % (BASES[char], top, bottom, left, right))
         if not cuts and char not in HEAD_FIX:
             print("%-7s nothing touches the top or bottom edge; working base written" % char)
             continue
@@ -410,8 +475,22 @@ def prepare(chars, force=False):
         for edge, (x0, x1) in sorted(cuts.items()):
             if edge == "top" and char in HEAD_FIX:
                 continue                     # the head fix finishes the crown
-            r0, r1 = close_rows(edge, work.h)
-            close = crop(work, 0, r0, CLOSE_W, r1)
+            if edge in ("left", "right"):
+                X, Y = side_box(edge, x0, x1, top, work)
+                close = crop(work, X, Y, X + SIDE_W, Y + SIDE_H)
+                staged = "edge_%s_%s.png" % (char, edge)
+                close.save(os.path.join(COMFY_INPUT, staged))
+                close.save(os.path.join(FIXED, staged))
+                prompt = ("This is a close-up of %s of a cartoon character, drawn on a plain flat green "
+                          "background. The original picture was cut off at the %s, so %s"
+                          % (CLOSE_SUBJECT[edge], edge, WHAT["side"] % edge))
+                rows.append((char, edge, staged, prompt, VERSIONS, "9:16"))
+                print("%-7s %-6s cut at rows %d-%d; close-up %dx%d at (%d, %d) -> %s"
+                      % (char, edge, x0, x1, SIDE_W, SIDE_H, X, Y, staged))
+                continue
+            cw, ch = close_size(work.w)
+            r0, r1 = close_rows(edge, work.h, ch)
+            close = crop(work, 0, r0, cw, r1)
             staged = "edge_%s_%s.png" % (char, edge)
             close.save(os.path.join(COMFY_INPUT, staged))
             close.save(os.path.join(FIXED, staged))
@@ -441,6 +520,10 @@ def align(close, ed, rows):
             if g - max(r, b) > 20:                 # backdrop: matches anywhere
                 continue
             pts.append((x, y))
+    return align_pts(close, ed, pts)
+
+
+def align_pts(close, ed, pts):
     if len(pts) < 300:
         raise SystemExit("not enough of the figure in the close-up to line the pictures up")
     c = (close.w / 2.0, close.h / 2.0)
@@ -502,23 +585,27 @@ def apply_head(char, edited):
 def apply(char, edge, edited):
     if edge == "head":
         return apply_head(char, edited)
-    srcname, top, bottom = read_record(char)
+    srcname, top, bottom, left, right = read_record(char)
     src, cuts, top2, bottom2, pristine = start(char)
-    assert (srcname, top, bottom) == (BASES[char], top2, bottom2), "run --prepare again"
+    assert (srcname, top, bottom, left, right) == (BASES[char], top2, bottom2) + side_pads(cuts), \
+        "run --prepare again"
     if edge not in cuts:
         raise SystemExit("%s: the %s edge isn't cut" % (char, edge))
     work_path = os.path.join(FIXED, "%s_base.png" % char)
     work = rgb(load(work_path))
     assert (work.w, work.h) == (pristine.w, pristine.h), "run --prepare again"
-    r0, r1 = close_rows(edge, pristine.h)
-    close = crop(pristine, 0, r0, CLOSE_W, r1)
+    if edge in ("left", "right"):
+        return apply_side(char, edge, edited, src, cuts, top, left, right, pristine, work, work_path)
+    cw, ch = close_size(pristine.w)
+    r0, r1 = close_rows(edge, pristine.h, ch)
+    close = crop(pristine, 0, r0, cw, r1)
 
     raw = rgb(load(os.path.expanduser(edited)))
-    ed = rgb(resample(raw, CLOSE_W, CLOSE_H))
+    ed = rgb(resample(raw, cw, ch))
     # The cut, in close-up rows, and the rows to line up on: well away from it.
     if edge == "top":
         cut = top
-        ref_rows = range(min(CLOSE_H - 40, cut + 110), CLOSE_H, 3)
+        ref_rows = range(min(ch - 40, cut + 110), ch, 3)
     else:
         cut = top + src.h - 1 - r0
         ref_rows = range(0, max(40, cut - 110), 3)
@@ -533,7 +620,7 @@ def apply(char, edge, edited):
     # and on the edge that faces into the figure.
     FEATHER, INTO, SIDE = 20, 60, 30
     x0, x1 = cuts[edge]
-    px0, px1 = max(0, x0 - SIDE), min(src.w - 1, x1 + SIDE)
+    px0, px1 = max(0, x0 + left - SIDE), min(pristine.w - 1, x1 + left + SIDE)
     if edge == "top":
         ys = range(0, top + INTO + 1)
         inner = lambda y: (top + INTO - y) / float(FEATHER)
@@ -541,7 +628,7 @@ def apply(char, edge, edited):
         first = top + src.h - 1 - INTO
         ys = range(first, pristine.h)
         inner = lambda y: (y - first) / float(FEATHER)
-    kx, ky = raw.w / float(CLOSE_W), raw.h / float(CLOSE_H)
+    kx, ky = raw.w / float(cw), raw.h / float(ch)
     cx, cy = c
     patch = {}
     for y in ys:
@@ -570,6 +657,73 @@ def apply(char, edge, edited):
             shift[k] = max(-20.0, min(20.0, d[len(d) // 2]))
     print("   colour shift %s over %d edge pixels" % ([round(v, 1) for v in shift], len(fig)))
 
+    for (x, y), (a, v) in patch.items():
+        i = (y * work.w + x) * 3
+        for k in range(3):
+            work.buf[i + k] = max(0, min(255, int(work.buf[i + k] * (1 - a) + (v[k] + shift[k]) * a + 0.5)))
+    work.save(work_path)
+    print("   %s edge repaired -> %s" % (edge, work_path))
+
+
+def apply_side(char, edge, edited, src, cuts, top, left, right, pristine, work, work_path):
+    """Paste a finished outline down the left or right edge: the new strip and
+    a little of the figure beside it, over the cut rows, lined up on the
+    figure well away from the cut and feathered into it."""
+    y0, y1 = cuts[edge]
+    X, Y = side_box(edge, y0, y1, top, pristine)
+    close = crop(pristine, X, Y, X + SIDE_W, Y + SIDE_H)
+    raw = rgb(load(os.path.expanduser(edited)))
+    ed = rgb(resample(raw, SIDE_W, SIDE_H))
+    padw = left if edge == "left" else right
+    cols = (range(padw + 110, SIDE_W, 3) if edge == "left" else range(0, max(3, SIDE_W - padw - 110), 3))
+    pts = []
+    for yy in range(0, SIDE_H, 3):
+        for xx in cols:
+            i = (yy * SIDE_W + xx) * 3
+            r, g, b = close.buf[i], close.buf[i + 1], close.buf[i + 2]
+            if g - max(r, b) > 20:
+                continue
+            pts.append((xx, yy))
+    (err, s, dx, dy), before, c = align_pts(close, ed, pts)
+    print("%s %s: lined up at scale %.4f, shift (%d, %d); mismatch %.1f -> %.1f"
+          % (char, edge, s, dx, dy, before, err))
+    if err > 12:
+        raise SystemExit("the edit moved the figure too much to trust (mismatch %.1f)" % err)
+
+    FEATHER, INTO, MARGIN = 20, 60, 40
+    if edge == "left":
+        xs = range(0, left + INTO + 1)
+        inner = lambda x: (left + INTO - x) / float(FEATHER)
+    else:
+        first = pristine.w - right - 1 - INTO
+        xs = range(first, pristine.w)
+        inner = lambda x: (x - first) / float(FEATHER)
+    ry0, ry1 = max(Y, top + y0 - MARGIN), min(Y + SIDE_H - 1, top + y1 + MARGIN)
+    kx, ky = raw.w / float(SIDE_W), raw.h / float(SIDE_H)
+    cx, cy = c
+    patch = {}
+    for y in range(ry0, ry1 + 1):
+        wy = min(1.0, (y - ry0) / float(FEATHER), (ry1 - y) / float(FEATHER))
+        for x in xs:
+            a = max(0.0, min(wy, min(1.0, inner(x))))
+            if a <= 0:
+                continue
+            ex = cx + (x - X - cx) * s + dx
+            ey = cy + (y - Y - cy) * s + dy
+            patch[(x, y)] = (a, sample(raw, (ex + 0.5) * kx - 0.5, (ey + 0.5) * ky - 0.5))
+    shift = [0.0, 0.0, 0.0]
+    fig = []
+    for (x, y), (a, v) in patch.items():
+        if a >= 1.0:
+            continue
+        i = (y * pristine.w + x) * 3
+        if pristine.buf[i + 1] - max(pristine.buf[i], pristine.buf[i + 2]) <= 20:
+            fig.append((i, v))
+    if len(fig) > 40:
+        for k in range(3):
+            d = sorted(pristine.buf[i + k] - v[k] for i, v in fig)
+            shift[k] = max(-20.0, min(20.0, d[len(d) // 2]))
+    print("   colour shift %s over %d edge pixels" % ([round(v, 1) for v in shift], len(fig)))
     for (x, y), (a, v) in patch.items():
         i = (y * work.w + x) * 3
         for k in range(3):
@@ -900,7 +1054,7 @@ if __name__ == "__main__":
         apply_hair(args[0], args[2])
     elif len(args) == 2 and args[1] == "--install":
         install(args[0])
-    elif len(args) == 3 and args[1] in ("top", "bottom", "head"):
+    elif len(args) == 3 and args[1] in ("top", "bottom", "left", "right", "head"):
         apply(args[0], args[1], args[2])
     else:
         print(__doc__); raise SystemExit(1)
