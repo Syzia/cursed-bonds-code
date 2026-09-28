@@ -195,6 +195,12 @@ From her official design sheet and stills in `references/characters/utahime/` (2
   a big front bow. Brown heeled ankle boots. A casual look also exists (cap,
   black off-shoulder top), unused.
 - **Pose:** hands clasped in front of her waist, as on the sheet.
+- **Figure and face (the user's direction, 2026-09-28):** she's 31, so draw
+  her as a mature, feminine woman: a full bust, a slim defined waist and
+  rounded hips under the kimono top; a soft oval face, long lashes, full lips.
+  The first render drew her flat and plain, with no scar and a huge bow on top
+  of her head. The face gets a Nano Banana head redraw after the base (HEAD_FIX),
+  which also adds the scar if the base drops it.
 - **Expressions:** prim and composed. Warm with her students, so happy is a
   real smile; angry is fuming irritation, her reaction to Gojo.
 
