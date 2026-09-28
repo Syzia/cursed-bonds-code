@@ -193,6 +193,11 @@ def composite(base, raw, mask, params, c, crop_rec=None):
 
 EDIT_SIZE = 1024
 
+# How much wider than the face box the close-up is. 2.8 frames a human face at
+# about a third of the width; Panda's "face box" is his whole white head (fur
+# is found as a patch, throat included), so 1.6 gives the same framing.
+FACE_FACTOR = {"panda": 1.6}
+
 
 def prepare(base_path, char):
     """Write the head close-up an edit model should be given."""
@@ -207,7 +212,7 @@ def prepare(base_path, char):
     # The whole head and hair, the neck and the top of the shoulders, with
     # the face about a third of the width -- enough context for the model to
     # keep the character, big enough to redraw the brows and mouth.
-    side = max(x1 - x0, cut - y0, int((fx1 - fx0) * 2.8)) + 40
+    side = max(x1 - x0, cut - y0, int((fx1 - fx0) * FACE_FACTOR.get(char, 2.8))) + 40
     side = min(base.w, base.h, (side + 63) // 64 * 64)
     cx = (fx0 + fx1) // 2
     X = max(0, min(base.w - side, cx - side // 2))

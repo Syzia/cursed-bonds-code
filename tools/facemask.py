@@ -158,9 +158,11 @@ def build_fur(src_path, name, out_dir=None):
     im = load(src_path)
     keyed = key_out(im)
     hx0, hy0, hx1, hy1 = fur_face_box(im, keyed) or face_box(im, keyed)
-    w, h = hx1 - hx0, hy1 - hy0
-    cx, cy = (hx0 + hx1) / 2.0, hy0 + 0.56 * h
-    rx, ry = 0.40 * w, 0.40 * h
+    # The white patch runs on down the throat, so its height says nothing
+    # about the face; its width is the head's. Brow lines to below the mouth.
+    w = hx1 - hx0
+    cx, cy = (hx0 + hx1) / 2.0, hy0 + 0.48 * w
+    rx, ry = 0.40 * w, 0.37 * w
     mask = Img(im.w, im.h, alpha=False)
     mask.rect(0, 0, im.w, im.h, (0, 0, 0))
     steps = max(1, FEATHER)

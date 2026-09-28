@@ -119,8 +119,28 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change her facial expression to surprise: eyes opened wide, eyebrows raised high, "
                      "lips parted.",
     },
+    # Panda has no eyebrows: the short fur lines above his eye patches do their
+    # job. Happy is a broad smile; angry shows small fangs (CANON.md).
+    "panda": {
+        "happy":     "Change his facial expression to a big, broad, happy smile with his mouth open and his "
+                     "cheeks lifted, his small eyes squeezed into happy curved lines inside the black eye "
+                     "patches.",
+        "serious":   "Change his facial expression to a serious, focused look: the short fur lines above his "
+                     "eye patches pulled down and together into a frown, his small eyes steady and alert, "
+                     "mouth closed in a firm flat line.",
+        "sad":       "Change his facial expression to a sad look: the short fur lines above his eye patches "
+                     "angled up in the middle, his small eyes glossy and looking down, mouth closed and turned "
+                     "down at the corners.",
+        "angry":     "Change his facial expression to anger: the short fur lines above his eye patches pulled "
+                     "down hard into a scowl, his small eyes narrowed into a glare, mouth open in a snarl "
+                     "showing small sharp fangs.",
+        "surprised": "Change his facial expression to surprise: his small eyes opened wide and round, the "
+                     "short fur lines above his eye patches raised high, mouth dropped open.",
+    },
 }
 CHAR_KEEP = {
+    "panda": "Keep his ears, the outline of his head, his black nose and his black eye patches in the "
+             "same place and size.",
     "maki": "Keep her thin silver wire-framed glasses on exactly as they are, and keep her straight bangs "
             "exactly as they are.",
     "yaga": "Keep his narrow rectangular sunglasses on exactly as they are, with the same thin frames and "
