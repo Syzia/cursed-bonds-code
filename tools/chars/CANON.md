@@ -101,10 +101,23 @@ From the official art and stills in `references/characters/panda/` (2026-09-28).
   small fangs.
 
 ## toge — Toge Inumaki (2nd year)
-Pale ash-white hair, short and messy with fringe over the brow. Violet/purple eyes, calm and a bit sleepy.
-The uniform collar is ZIPPED UP HIGH over his mouth and nose — you never see his mouth. Visible on his
-cheeks above the collar: small dark "snake-and-fangs" seal marks (short curved lines at the corners of the
-mouth area, like stylised fangs). Expressions live entirely in the eyes and brows.
+From the official art and stills in `references/characters/toge/` (2026-09-28).
+- **Age:** 19 in this game, like Maki.
+- **Hair (Arc 1):** pale silvery ash-blond, almost white. A neat short cut
+  with a straight, slightly choppy fringe to the eyebrows, and the sides over
+  the tops of the ears. The spikier hair and the knit scarf are later looks.
+- **Face:** calm, sleepy violet-grey eyes with heavy lids, thin light brows,
+  pale skin.
+- **Uniform:** the navy jacket with a very tall, loose funnel collar zipped up
+  and folded over his mouth and nose, fastened at the side with one gold
+  button, with white shirt cuffs. Baggy navy trousers cropped above the ankle,
+  black socks, white high-top sneakers with a folded cuff.
+- **Seal marks:** the "snake-and-fangs" crest is a small ring at each **corner
+  of the mouth**, joined to it by a short line like a fang, plus a mark on his
+  tongue. With the collar up they are hidden. The old note that they show on
+  his cheeks was wrong.
+- **Expressions:** entirely in the eyes and brows. The collar never comes down
+  in a sprite.
 
 ## shoko — Shoko Ieiri (doctor)
 From her official character design sheet in `references/characters/shoko/` (2026-09-23).
