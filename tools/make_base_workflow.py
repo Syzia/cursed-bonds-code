@@ -42,8 +42,8 @@ def build(char, prompts):
         "Press **Run**. It makes %d versions at once, in the Save Image box%s.\n\n"
         "Save the one you like best into `JJK Game images` and keep the name "
         "Comfy gives it. If you can't choose, save them all and I'll compare.\n\n"
-        "What makes a good one: the whole body inside the picture with green "
-        "above the head and below the feet, facing forward, a calm face. The "
+        "What makes a good one: the whole body inside the picture with empty "
+        "background above the head and below the feet, facing forward, a calm face. The "
         "face gets repainted for the other expressions, but hair, clothes and "
         "pose are permanent." % (char.capitalize(), each * len(prompts),
                                  "" if len(prompts) == 1 else

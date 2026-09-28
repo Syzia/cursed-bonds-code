@@ -58,10 +58,27 @@ prompt: the frame is always full height, so the model shows "short" with child
 proportions. keysprite's HEIGHT_CM sets her height in the game.
 
 ## maki — Maki Zenin (2nd year)
-Very dark green (reads black-green) hair in a high ponytail with a straight fringe. GLASSES with round
-red-brown frames (she needs them to see curses). Gold/amber eyes, hard stare. Athletic build, taller than
-the first-years. Uniform jacket, sleeves sometimes pushed up. Often a naginata or training blade — omit
-weapon in the sprite. Rarely smiles; "happy" is a smirk.
+From the anime stills and official art in `references/characters/maki/` (2026-09-28).
+- **Age:** 19 in this game, a year above the first-years.
+- **Hair:** very dark teal-green, a muted blue-green (the references measure
+  hue 171-184 degrees) that reads almost black in shadow. A high ponytail tied
+  with a dark band, straight bangs across the forehead, and long straight
+  locks framing her face down to the jaw.
+- **Face:** sharp amber-gold eyes with heavy upper lids, thin straight brows.
+  Thin **silver wire-framed** glasses with narrow oval lenses, not round
+  red-brown ones: she needs them to see curses.
+- **Arc 1 outfit, from the full-body references:** the navy uniform jacket
+  with a high standing collar, the white shirt collar showing, fastened at the
+  side with one gold button; a fitted navy skirt just above the knee; loose,
+  slouchy white socks; brown lace-up ankle boots. Omit the weapon. Tall and
+  athletic.
+- **Expressions:** she rarely smiles; "happy" is a smirk.
+- **Backdrop: magenta, not green.** Her hair would key away on Krea's muted
+  green: a stress test lost 82% of dark green hair. fix_edges.start() moves a
+  magenta render onto pure green for the rest of the pipeline.
+- **Later look (Shibuya onward):** burn scars, short hair, and later no
+  glasses. Add it as a second sprite set the game switches to from a story
+  flag, so scripts keep saying `show maki angry`.
 
 ## panda — Panda (2nd year)
 An actual panda, ~2m tall, stocky, standing upright. Black eye patches, ears, arms, legs; white face,
