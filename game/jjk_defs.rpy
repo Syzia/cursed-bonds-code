@@ -99,7 +99,7 @@ image mc = lit("images/char/mc.png")
 ## image yaga        = "images/char/yaga.png"   # superseded by jjk_sprites.rpy
 image ijichi = lit("images/char/ijichi.png")
 ## image shoko       = "images/char/shoko.png"   # superseded by jjk_sprites.rpy
-image utahime = lit("images/char/utahime.png")
+## image utahime     = "images/char/utahime.png"   # superseded by jjk_sprites.rpy (Oda still borrows the file)
 
 ## Pre-campus cast — placeholder art until the sprite set lands.
 image sana = lit("images/char/sana.png")

@@ -90,7 +90,7 @@ HAIR = {"spiky": hair_spiky, "bob": hair_bob, "ponytail": hair_ponytail,
 HEIGHT_CM = {
     "yuji": 173, "megumi": 175, "nobara": 160, "maki": 180, "panda": 200,
     "toge": 179, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 175,
-    "utahime": 167, "sana": 160, "mc": 172,
+    "utahime": 178, "sana": 160, "mc": 172,
 }
 TALLEST_CM = 200.0
 
