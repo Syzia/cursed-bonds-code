@@ -174,8 +174,25 @@ From his official design sheet and anime stills in `references/characters/yaga/`
   glasses (HEAD_FIX).
 
 ## ijichi — Kiyotaka Ijichi (assistant manager)
-Neat black hair combed back/side-parted, rectangular glasses, pale, permanently anxious. Black business
-suit, white shirt, dark tie. Slight stoop, hands clasped. Surprised and sad are his home expressions.
+From the official art and anime stills in `references/characters/ijichi/` (2026-09-29).
+- **Age:** late twenties.
+- **Hair:** neat, straight, black with a faint blue sheen. Short at the back,
+  with a straight fringe to the eyebrows parted slightly off-centre, and the
+  sides over the tops of the ears. It isn't combed back, as the old note said.
+- **Face:** narrow rectangular glasses with thin black frames. A long, narrow,
+  angular face with a sharp jaw and hollow cheeks, tired eyes with lines under
+  them, thin worried brows, pale skin. Tall, thin and lanky, with drooping
+  shoulders.
+- **Outfit:** a dark charcoal-grey single-breasted suit (two buttons, flap
+  pockets), a white shirt, a dark maroon tie, black dress shoes. The black
+  suit and tie in some manga colour art aren't the anime's colours.
+- **Pose:** the official art's nervous stance, one arm folded across his body
+  holding the other arm.
+- **Expressions:** permanently anxious. Surprised and sad are his home
+  expressions; happy is relief. His glasses may split the face mask the way
+  Yaga's did, in which case use `facemask.py --below-hairline`.
+- **Placeholder:** the prologue's father and Kurose borrow
+  `images/char/ijichi.png`, so keep that file.
 
 ## utahime — Utahime Iori (Kyoto teacher; used later)
 From her official design sheet and stills in `references/characters/utahime/` (2026-09-28).
