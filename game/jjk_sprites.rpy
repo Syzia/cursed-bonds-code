@@ -36,6 +36,11 @@ image shoko sad = lit_sprite("images/char/shoko_sad.png", (760, 1400), (423, 136
 
 image yaga = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 505))
 image yaga neutral = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 505))
+image yaga happy = lit_sprite("images/char/yaga_happy.png", (760, 1400), (379, 1365, 505))
+image yaga serious = lit_sprite("images/char/yaga_serious.png", (760, 1400), (379, 1365, 505))
+image yaga angry = lit_sprite("images/char/yaga_angry.png", (760, 1400), (379, 1365, 505))
+image yaga surprised = lit_sprite("images/char/yaga_surprised.png", (760, 1400), (379, 1365, 505))
+image yaga sad = lit_sprite("images/char/yaga_sad.png", (760, 1400), (379, 1365, 505))
 
 image yuji = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
 image yuji neutral = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
@@ -80,6 +85,11 @@ image side shoko sad = "images/side/shoko_sad.png"
 
 image side yaga = "images/side/yaga_neutral.png"
 image side yaga neutral = "images/side/yaga_neutral.png"
+image side yaga happy = "images/side/yaga_happy.png"
+image side yaga serious = "images/side/yaga_serious.png"
+image side yaga angry = "images/side/yaga_angry.png"
+image side yaga surprised = "images/side/yaga_surprised.png"
+image side yaga sad = "images/side/yaga_sad.png"
 
 image side yuji = "images/side/yuji_neutral.png"
 image side yuji neutral = "images/side/yuji_neutral.png"
