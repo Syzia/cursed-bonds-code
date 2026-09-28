@@ -34,8 +34,8 @@ image shoko angry = lit_sprite("images/char/shoko_angry.png", (760, 1400), (423,
 image shoko surprised = lit_sprite("images/char/shoko_surprised.png", (760, 1400), (423, 1365, 298))
 image shoko sad = lit_sprite("images/char/shoko_sad.png", (760, 1400), (423, 1365, 298))
 
-image yaga = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 502))
-image yaga neutral = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 502))
+image yaga = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 505))
+image yaga neutral = lit_sprite("images/char/yaga_neutral.png", (760, 1400), (379, 1365, 505))
 
 image yuji = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
 image yuji neutral = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
