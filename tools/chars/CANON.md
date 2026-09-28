@@ -118,6 +118,12 @@ From his official design sheet and anime stills in `references/characters/yaga/`
   could be an alternate outfit.
 - **Expressions:** stern; happy is the beard moving. His eyes are behind the
   sunglasses, so his expressions live in his brows, mouth and beard, like Gojo's.
+- **What the base model got wrong (2026-09-28):** named, Krea drew his body,
+  jacket and hair right, but his skin pale peach, his goatee as a faint chin
+  tuft, and his sunglasses tall, with thin silver frames and glossy pink
+  lenses. His skin is graded to the sheet's tan (SKIN_TARGET, so face and fists
+  match), and Nano Banana redraws the goatee and the slit-like black-framed
+  glasses (HEAD_FIX).
 
 ## ijichi — Kiyotaka Ijichi (assistant manager)
 Neat black hair combed back/side-parted, rectangular glasses, pale, permanently anxious. Black business

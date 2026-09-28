@@ -63,7 +63,20 @@ BASES = {
     "nobara": "nobara_named_base_00001_.png",
     "gojo": "gojo_base_00001_.png",
     "shoko": "shoko_base_00003_.png",
+    "yaga": "yaga_base_00001_.png",
 }
+
+HER = {"nobara", "maki", "shoko", "utahime", "sana"}
+
+# Skin graded to the official art: (hue in degrees, saturation, median
+# lightness). Yaga is tan in his design sheet, (227, 184, 150), and came out
+# pale peach, (240, 203, 177). Applied to all his skin, so the fists match
+# the face.
+SKIN_TARGET = {"yaga": (26.0, 0.56, 0.74)}
+
+# Rows added below the chin to the head mask, for a beard that may reach
+# below the drawn chin.
+HEAD_CHIN_EXTRA = {"yaga": 16}
 
 # (hue shift in degrees, saturation factor) for the hair. Shoko's measured
 # +3 degrees against the anime's +7 to +18 and the design sheet's +11, and a
@@ -83,11 +96,23 @@ HEAD_FIX = {
               "eye, which is the eye on the left side of the picture; thin, straight dark brown "
               "eyebrows; a flat, calm, expressionless mouth, closed, with pale pink lips."),
 }
+HEAD_FIX["yaga"] = (
+    "Redraw his face so it matches this description, in exactly the same anime drawing style: "
+    "narrow rectangular sunglasses like thin horizontal slits, with thick black frames and dark red "
+    "lenses, across his eyes, much narrower and darker than now, with no shine; a bold dark brown "
+    "goatee drawn as solid dark shapes with crisp edges, a thick moustache whose ends curve down "
+    "around the corners of his mouth to join a short pointed beard on his chin; a heavy square jaw; "
+    "deep lines down his cheeks; a stern mouth closed in a firm line. Keep his tan skin colour, his "
+    "spiky hair, the shaved sides of his head and his ears exactly as they are.")
 HEAD_VERSIONS = 3
-HEAD_KEEP = ("Keep her hair colour, the outline of her hair and all the hair beside and below her "
+HEAD_KEEP = ("Keep {his} hair colour, the outline of {his} hair and all the hair beside and below {his} "
              "face exactly as they are. Keep everything else exactly the same: the framing, the "
              "head's size and position, the clothes, the plain flat green background, and the flat "
              "cel shading and line art.")
+
+
+def pronoun(char):
+    return ("her", "a woman") if char in HER else ("his", "a man")
 
 WHAT = {
     "top": ("the top of the hair is sliced off by the top edge, and a strip of plain green was "
@@ -127,10 +152,9 @@ HAIR_VERSIONS = 3
 # degrees, saturation 0.37, lightness 0.37, against the anime stills' +7 to +18,
 # 0.20-0.24 and 0.23-0.31.
 HAIR_TARGET = {"shoko": (14.0, 0.24, 0.31)}
-HAIR_KEEP = ("Keep her face exactly as it is: the same eyes, the tired lines under them, the mole, "
-             "eyebrows, nose, mouth and expression. Keep everything else exactly the same: the framing, "
-             "the head's size and position, the clothes, the plain flat green background, and the flat "
-             "cel shading and line art.")
+HAIR_KEEP = ("Keep {his} face exactly as it is: the same eyes, eyebrows, nose, mouth, expression and any "
+             "marks on the skin. Keep everything else exactly the same: the framing, the head's size and "
+             "position, the clothes, the plain flat green background, and the flat cel shading and line art.")
 
 
 def backdrop(im, rows):
@@ -203,7 +227,38 @@ def start(char):
         shift, factor = HAIR_SHIFT[char]
         n = recolour_hair(work, range(top, top + int(src.h * 0.45)), shift, factor)
         print("%-7s hair recoloured: %+.0f degrees, saturation x%.2f, %d pixels" % (char, shift, factor, n))
+    if char in SKIN_TARGET:
+        grade_skin(work, SKIN_TARGET[char], char)
     return src, cuts, top, bottom, work
+
+
+def grade_skin(work, target, char):
+    """Grade every skin pixel on the figure to target (hue, saturation, median
+    lightness), keeping the shading: lightness and saturation are scaled,
+    hue shifted."""
+    import colorsys
+    from facemask import is_skin
+    from keysprite import key_out
+    keyed = key_out(work)
+    idx, hls = [], []
+    for p in range(work.w * work.h):
+        if keyed.buf[p * 4 + 3] < 200:
+            continue
+        r, g, b = work.buf[p * 3:p * 3 + 3]
+        if is_skin(r, g, b):
+            idx.append(p)
+            hls.append(colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0))
+    th, ts, tl = target
+    hs = sorted(h if h < 0.5 else h - 1.0 for h, l, sat in hls)
+    ls = sorted(l for h, l, sat in hls)
+    ss = sorted(sat for h, l, sat in hls)
+    mh, ml, ms = hs[len(hs) // 2], ls[len(ls) // 2], ss[len(ss) // 2]
+    dh, fl, fs = th / 360.0 - mh, tl / ml, ts / ms
+    for p, (h, l, sat) in zip(idx, hls):
+        r, g, b = colorsys.hls_to_rgb((h + dh) % 1.0, min(1.0, l * fl), min(1.0, sat * fs))
+        work.buf[p * 3:p * 3 + 3] = bytes((int(r * 255 + 0.5), int(g * 255 + 0.5), int(b * 255 + 0.5)))
+    print("%-7s skin graded: hue %+.0f -> %+.0f deg, saturation %.2f -> %.2f, lightness %.2f -> %.2f (%d pixels)"
+          % (char, mh * 360, th, ms, ts, ml, tl, len(idx)))
 
 
 def head_closeup(work, top):
@@ -330,11 +385,12 @@ def prepare(chars, force=False):
             os.makedirs(os.path.join(FIXED, "masks"), exist_ok=True)
             with open(os.path.join(FIXED, "masks", "%s_edit_crop.txt" % char), "w") as f:
                 f.write("%d %d %d\n" % (X, Y, side))
-            crown = (" The picture was cut off at the top, so the top of her head is sliced off and a "
-                     "strip of plain green was added above it: finish the top of her head naturally "
-                     "into that strip, with plain green left above it." if "top" in cuts else "")
-            prompt = ("This is a close-up of a cartoon character, a woman on a plain flat green "
-                      "background. " + HEAD_FIX[char] + crown + " " + HEAD_KEEP)
+            his, who = pronoun(char)
+            crown = (" The picture was cut off at the top, so the top of %s head is sliced off and a "
+                     "strip of plain green was added above it: finish the top of %s head naturally "
+                     "into that strip, with plain green left above it." % (his, his) if "top" in cuts else "")
+            prompt = ("This is a close-up of a cartoon character, %s on a plain flat green "
+                      "background. " % who + HEAD_FIX[char] + crown + " " + HEAD_KEEP.format(his=his))
             rows.append((char, "head", staged, prompt, HEAD_VERSIONS, "1:1"))
             print("%-7s head   close-up %dx%d at (%d, %d) -> %s" % (char, side, side, X, Y, staged))
         for edge, (x0, x1) in sorted(cuts.items()):
@@ -390,6 +446,26 @@ def align(close, ed, rows):
     return best, score(close, ed, pts, c, 1.0, 0, 0), c
 
 
+def extend_chin(mask_path, rows):
+    """Carry the head mask's lowest row down `rows` more, fading out, so a
+    beard drawn below the chin comes across."""
+    m = rgb(load(mask_path))
+    last = max(y for y in range(m.h) if any(m.buf[(y * m.w + x) * 3] > 128 for x in range(m.w)))
+    xs = [x for x in range(m.w) if m.buf[(last * m.w + x) * 3] > 128]
+    x0, x1 = min(xs), max(xs)
+    for k in range(1, rows + 1):
+        y = last + k
+        if y >= m.h:
+            break
+        v = int(255 * (1.0 - k / float(rows + 1)))
+        for x in range(x0, x1 + 1):
+            i = (y * m.w + x) * 3
+            if m.buf[i] < v:
+                m.buf[i:i + 3] = bytes((v, v, v))
+    m.save(mask_path)
+    print("   head mask carried %d rows below the chin (x %d-%d from row %d)" % (rows, x0, x1, last))
+
+
 def apply_head(char, edited):
     """Composite a redrawn head into the working base through the head mask:
     the dome over the hair and upper face, then only the skin of the lower
@@ -399,6 +475,8 @@ def apply_head(char, edited):
     import composite_face
     work_path = os.path.join(FIXED, "%s_base.png" % char)
     mask = build_head(work_path, char, out_dir=os.path.join(FIXED, "masks"))
+    if HEAD_CHIN_EXTRA.get(char):
+        extend_chin(mask, HEAD_CHIN_EXTRA[char])
     path, params = composite_face.run(work_path, edited, char, "headfix", mask_path=mask, install=False)
     shutil.copy(path, work_path)
     print("   head redrawn -> %s" % work_path)
@@ -530,8 +608,9 @@ def prepare_hair(chars):
         close.save(os.path.join(FIXED, staged))
         with open(os.path.join(FIXED, "masks", "%s_hair_crop.txt" % char), "w") as f:
             f.write("%d %d %d %d\n" % (X, Y, side, bottom))
-        prompt = ("This is a close-up of a cartoon character, a woman on a plain flat green background. "
-                  + HAIR_FIX[char] + " " + HAIR_KEEP)
+        his, who = pronoun(char)
+        prompt = ("This is a close-up of a cartoon character, %s on a plain flat green background. " % who
+                  + HAIR_FIX[char] + " " + HAIR_KEEP.format(his=his))
         rows.append((char, "hair", staged, prompt, HAIR_VERSIONS, "1:1"))
         print("%-7s hair   rows %d-%d, x %d-%d; close-up %dx%d at (%d, %d) -> %s"
               % (char, top, bottom, hx0, hx1, side, side, X, Y, staged))
