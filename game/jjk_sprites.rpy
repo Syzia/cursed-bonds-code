@@ -36,6 +36,11 @@ image nobara sad = lit_sprite("images/char/nobara_sad.png", (760, 1400), (431, 1
 
 image panda = lit_sprite("images/char/panda_neutral.png", (880, 1400), (447, 1365, 571))
 image panda neutral = lit_sprite("images/char/panda_neutral.png", (880, 1400), (447, 1365, 571))
+image panda happy = lit_sprite("images/char/panda_happy.png", (880, 1400), (447, 1365, 571))
+image panda serious = lit_sprite("images/char/panda_serious.png", (880, 1400), (447, 1365, 571))
+image panda angry = lit_sprite("images/char/panda_angry.png", (880, 1400), (447, 1365, 571))
+image panda surprised = lit_sprite("images/char/panda_surprised.png", (880, 1400), (447, 1365, 571))
+image panda sad = lit_sprite("images/char/panda_sad.png", (880, 1400), (447, 1365, 571))
 
 image shoko = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
 image shoko neutral = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
@@ -96,6 +101,11 @@ image side nobara sad = "images/side/nobara_sad.png"
 
 image side panda = "images/side/panda_neutral.png"
 image side panda neutral = "images/side/panda_neutral.png"
+image side panda happy = "images/side/panda_happy.png"
+image side panda serious = "images/side/panda_serious.png"
+image side panda angry = "images/side/panda_angry.png"
+image side panda surprised = "images/side/panda_surprised.png"
+image side panda sad = "images/side/panda_sad.png"
 
 image side shoko = "images/side/shoko_neutral.png"
 image side shoko neutral = "images/side/shoko_neutral.png"
