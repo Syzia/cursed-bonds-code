@@ -88,8 +88,27 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change her facial expression to surprise: eyes opened wide so the irises show fully, "
                      "eyebrows raised high, lips parted in a small 'o'.",
     },
+    # Yaga's eyes are behind narrow red-lensed sunglasses: his expressions are
+    # his brows above the frames, his mouth and his beard. Happy is rare and
+    # small ("the beard moving", tools/chars/CANON.md).
+    "yaga": {
+        "happy":     "Change his facial expression to a rare, small smile: the corners of his mouth lift "
+                     "slightly under the moustache so the beard moves, and his eyebrows relax above the "
+                     "sunglasses.",
+        "serious":   "Change his facial expression to stern seriousness: eyebrows lowered and drawn together "
+                     "above the sunglasses, mouth pressed into a hard flat line, jaw set.",
+        "sad":       "Change his facial expression to quiet sadness: the inner ends of his eyebrows raised "
+                     "above the sunglasses, mouth closed with the corners turned down, lips pressed together.",
+        "angry":     "Change his facial expression to fierce anger: eyebrows pulled down hard into a deep frown "
+                     "above the sunglasses, deep creases across the forehead, lips drawn back showing clenched "
+                     "teeth, jaw clenched.",
+        "surprised": "Change his facial expression to surprise: eyebrows raised high above the sunglasses with "
+                     "deep lines across the forehead, mouth dropped open.",
+    },
 }
 CHAR_KEEP = {
+    "yaga": "Keep his narrow rectangular sunglasses on exactly as they are, with the same thin frames and "
+            "dark red lenses, and do not draw his eyes over them.",
     "gojo": "His eyes stay completely hidden behind the wide black cloth blindfold: keep the blindfold, "
             "and everything above the nose, exactly as it is, and do not draw any eyes.",
     "shoko": "Keep the tired lines under her eyes and the small dark mole under her right eye, the eye on "
