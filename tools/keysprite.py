@@ -39,7 +39,7 @@ EXPRESSIONS = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 # take 16% of his drawn height, so a canon 175 is drawn at 181.
 HEIGHT_CM = {
     "yuji": 173, "megumi": 181, "nobara": 160, "maki": 180, "panda": 200,
-    "toge": 179, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 175,
+    "toge": 179, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 180,
     "utahime": 178, "sana": 160, "mc": 172,
 }
 TALLEST_CM = 200.0

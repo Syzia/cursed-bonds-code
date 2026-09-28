@@ -97,7 +97,7 @@ image mc = lit("images/char/mc.png")
 ## image toge        = "images/char/toge.png"   # superseded by jjk_sprites.rpy
 ## image gojo        = "images/char/gojo.png"   # superseded by jjk_sprites.rpy
 ## image yaga        = "images/char/yaga.png"   # superseded by jjk_sprites.rpy
-image ijichi = lit("images/char/ijichi.png")
+## image ijichi      = "images/char/ijichi.png"   # superseded by jjk_sprites.rpy (father and Kurose still borrow the file)
 ## image shoko       = "images/char/shoko.png"   # superseded by jjk_sprites.rpy
 ## image utahime     = "images/char/utahime.png"   # superseded by jjk_sprites.rpy (Oda still borrows the file)
 

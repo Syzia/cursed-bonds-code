@@ -89,7 +89,7 @@ HAIR = {"spiky": hair_spiky, "bob": hair_bob, "ponytail": hair_ponytail,
 # each real sprite lands.
 HEIGHT_CM = {
     "yuji": 173, "megumi": 175, "nobara": 160, "maki": 180, "panda": 200,
-    "toge": 179, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 175,
+    "toge": 179, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 180,
     "utahime": 178, "sana": 160, "mc": 172,
 }
 TALLEST_CM = 200.0
