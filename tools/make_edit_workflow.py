@@ -105,8 +105,24 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change his facial expression to surprise: eyebrows raised high above the sunglasses with "
                      "deep lines across the forehead, mouth dropped open.",
     },
+    # Maki rarely smiles: her happy is a smirk (tools/chars/CANON.md). Her
+    # anger is fierce, her sadness held in.
+    "maki": {
+        "happy":     "Change her facial expression to a confident, cocky smirk: one corner of her mouth "
+                     "lifted, lips closed, eyes relaxed and a little narrowed.",
+        "serious":   "Change her facial expression to a hard, focused stare: eyebrows lowered and drawn "
+                     "together, eyes steady and direct, mouth pressed into a flat line.",
+        "sad":       "Change her facial expression to quiet, held-in sadness: the inner ends of her eyebrows "
+                     "raised slightly, gaze lowered, mouth closed with the corners turned slightly down.",
+        "angry":     "Change her facial expression to fierce anger: eyebrows pulled down hard into a sharp V, "
+                     "eyes narrowed into a glare, lips drawn back showing clenched teeth.",
+        "surprised": "Change her facial expression to surprise: eyes opened wide, eyebrows raised high, "
+                     "lips parted.",
+    },
 }
 CHAR_KEEP = {
+    "maki": "Keep her thin silver wire-framed glasses on exactly as they are, and keep her straight bangs "
+            "exactly as they are.",
     "yaga": "Keep his narrow rectangular sunglasses on exactly as they are, with the same thin frames and "
             "dark red lenses, and do not draw his eyes over them.",
     "gojo": "His eyes stay completely hidden behind the wide black cloth blindfold: keep the blindfold, "
