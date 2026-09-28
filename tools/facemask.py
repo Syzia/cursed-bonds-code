@@ -366,11 +366,13 @@ def build_head(src_path, name, out_dir=None, margin=0.14):
     mask = Img(im.w, im.h, alpha=False)
     mask.rect(0, 0, im.w, im.h, (0, 0, 0))
     cx, rx, ry = (left + right) / 2.0, (right - left) / 2.0, cut - top
+    # Outermost (faintest) first, each smaller one brighter on top, so the
+    # edge fades in over FEATHER px. Drawn the other way round, the last and
+    # largest shape was solid white and covered the fade.
     steps = max(1, FEATHER)
     for s in range(steps + 1):
         v = int(255 * s / float(steps))
-        d = steps - s
-        mask.poly(superellipse(cx, cut, rx - d, ry - d, n=3.2), (v, v, v))
+        mask.poly(superellipse(cx, cut, rx - s, ry - s, n=3.2), (v, v, v))
     for y in range(cut, im.h):
         row = y * im.w * 3
         mask.buf[row:row + im.w * 3] = bytes(im.w * 3)
