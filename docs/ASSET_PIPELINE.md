@@ -42,6 +42,13 @@ cover every one of them.
      grades its colour to the references. Nano Banana overshoots colour.
    - **`BODY_FIX`** reshapes a build (Yaga came out fat) and keeps the head.
    - **`SKIN_TARGET`** grades skin to the official art (Yaga's tan).
+   - **Combining two head-fix versions** (Utahime: box 3's face with box 1's
+     scar): `tools/transplant_scar.py` moves a detail pixel by pixel, because
+     both close-ups are lined-up crops of the same base. Don't ask Nano Banana
+     to combine two pictures: given both, it returned the reference whole.
+   - **Which version is which:** output file numbers follow completion order,
+     not the order of the boxes. Map them through ComfyUI's /history before
+     acting on "the first one".
 4. **Measure the drawn height** chin to soles, then set `HEIGHT_CM`. Include
    heels, ponytails and spikes. A very wide build gets `CANVAS_W` (Panda: 880),
    so the fit doesn't squeeze it. Then run `fix_edges.py <name> --install` and

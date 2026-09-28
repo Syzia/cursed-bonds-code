@@ -782,6 +782,11 @@ def apply_side(char, edge, edited, src, cuts, top, left, right, pristine, work, 
 # the current face close-up and the other version together, and changes only
 # that detail. Utahime: the softer face of head-fix box 3 with box 1's scar.
 # (file in ComfyUI's output, the close-up square it was made from, instruction)
+#
+# IT DID NOT WORK (2026-09-28): all three versions came back as box 1's whole
+# face, eyes and mouth within 3-4 levels of it. When both versions are
+# lined-up close-ups of the same base, move the detail pixel by pixel with
+# tools/transplant_scar.py instead, which is free and exact.
 REF_FIX = {
     "utahime": ("edge_utahime_head_00001_.png", (128, 24, 512),
                 "The first picture is the character. The second picture shows the same character with a "
