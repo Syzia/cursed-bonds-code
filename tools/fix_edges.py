@@ -76,7 +76,7 @@ BASES = {
     "maki": "maki_base_00001_.png",
     "panda": "panda_base_00004_.png",
     "toge": "toge_base_00004_.png",
-    "utahime": "utahime_base_00004_.png",
+    "utahime": "fixed/utahime_bodyfix.png",   # render #4 with a closer-fitting kimono top (BODY_FIX)
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
@@ -126,10 +126,19 @@ HEAD_FIX["toge"] = (
     "small neutral line; and on each cheek, just beside the corners of his mouth, a small hollow ring "
     "with a thick dark outline, each joined to the corner of his mouth by a short dark line, like the "
     "fangs of a snake, the two sides matching.")
+HEAD_FIX["utahime"] = (
+    "Redraw her face so it matches this description, in exactly the same anime drawing style: the "
+    "beautiful, mature face of a woman of thirty-one, a soft, gently tapered oval face with a small "
+    "chin; sharp, slightly weary brown eyes with heavy upper eyelids and long dark lashes; thin, softly "
+    "arched dark eyebrows; a small straight nose; full soft lips with a hint of rose colour, closed in a "
+    "calm, composed line; and a wide, rough scar running straight across the middle of her face, from one "
+    "cheek over the bridge of her nose to the other cheek, just below her eyes: a band of pinkish-brown "
+    "scarred skin about as tall as her nose is wide, with faint scratch lines, even on both sides. Keep "
+    "her long dark purple-black hair, her wispy fringe and her cream ribbon bow exactly as they are.")
 # Room for the redraw to grow: hair that changes shape (spikes) reaches past
 # the old outline, so the head mask's dome is wider (a fraction of the head's
 # width) and the close-up starts higher above the head (px).
-HEAD_MARGIN = {"toge": 0.35}
+HEAD_MARGIN = {"toge": 0.35, "utahime": 0.25}   # Utahime: her bow's loops, cut by the frame
 HEAD_ROOM_ABOVE = {"toge": 80}
 # What a head fix must keep, where the hair is meant to change.
 HEAD_KEEP_FOR = {
