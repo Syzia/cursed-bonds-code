@@ -103,9 +103,8 @@ From the official art and stills in `references/characters/panda/` (2026-09-28).
 ## toge — Toge Inumaki (2nd year)
 From the official art and stills in `references/characters/toge/` (2026-09-28).
 - **Age:** 19 in this game, like Maki.
-- **Hair (Arc 1):** pale silvery ash-blond, almost white. A neat short cut
-  with a straight, slightly choppy fringe to the eyebrows, and the sides over
-  the tops of the ears. The spikier hair and the knit scarf are later looks.
+- **Hair:** pale silvery ash-blond, almost white. In season 1 it is a neat
+  short cut with a straight fringe; the game uses his spikier look (see below).
 - **Face:** calm, sleepy violet-grey eyes with heavy lids, thin light brows,
   pale skin.
 - **Uniform:** the navy jacket with a very tall, loose funnel collar zipped up
@@ -116,8 +115,12 @@ From the official art and stills in `references/characters/toge/` (2026-09-28).
   of the mouth**, joined to it by a short line like a fang, plus a mark on his
   tongue. With the collar up they are hidden. The old note that they show on
   his cheeks was wrong.
-- **Expressions:** entirely in the eyes and brows. The collar never comes down
-  in a sprite.
+- **The game's look (the user's choice, 2026-09-28): spiky hair and visible
+  seal marks.** The collar sits under his chin so the marks at the corners of
+  his mouth show. Krea drew the body (with the collar under the chin, whatever
+  the prompt said); Nano Banana redrew the head with spiky hair, the marks, a
+  slimmer face and sleepy eyes (HEAD_FIX in tools/fix_edges.py).
+- **Expressions:** eyes, brows and mouth; the marks stay at the mouth's corners.
 
 ## shoko — Shoko Ieiri (doctor)
 From her official character design sheet in `references/characters/shoko/` (2026-09-23).

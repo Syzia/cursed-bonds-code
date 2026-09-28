@@ -75,6 +75,7 @@ BASES = {
     "yaga": "yaga_base_00001_.png",
     "maki": "maki_base_00001_.png",
     "panda": "panda_base_00004_.png",
+    "toge": "toge_base_00004_.png",
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
@@ -115,6 +116,26 @@ HEAD_FIX["yaga"] = (
     "around the corners of his mouth to join a short pointed beard on his chin; a heavy square jaw; "
     "deep lines down his cheeks; a stern mouth closed in a firm line. Keep his tan skin colour, his "
     "spiky hair, the shaved sides of his head and his ears exactly as they are.")
+HEAD_FIX["toge"] = (
+    "Redraw his hair and face so they match this description, in exactly the same anime drawing style: "
+    "his hair the same pale silvery ash-blond, almost white, but messy and spiky, with short thick tufts "
+    "standing up and out in soft pointed spikes all over his head, a few spiky strands falling over his "
+    "forehead, and spiky tufts over the tops of his ears; a slim young man's face with a narrower chin; "
+    "calm, slightly sleepy half-lidded violet-grey eyes with heavy upper eyelids; his mouth closed in a "
+    "small neutral line; and on each cheek, just beside the corners of his mouth, a small hollow ring "
+    "with a thick dark outline, each joined to the corner of his mouth by a short dark line, like the "
+    "fangs of a snake, the two sides matching.")
+# Room for the redraw to grow: hair that changes shape (spikes) reaches past
+# the old outline, so the head mask's dome is wider (a fraction of the head's
+# width) and the close-up starts higher above the head (px).
+HEAD_MARGIN = {"toge": 0.35}
+HEAD_ROOM_ABOVE = {"toge": 80}
+# What a head fix must keep, where the hair is meant to change.
+HEAD_KEEP_FOR = {
+    "toge": ("Keep the hair colour. Keep everything else exactly the same: the framing, the head's size "
+             "and position, the ears, the tall collar of his jacket sitting under his chin, the clothes, the "
+             "plain flat green background, and the flat cel shading and line art."),
+}
 HEAD_VERSIONS = 3
 HEAD_KEEP = ("Keep {his} hair colour, the outline of {his} hair and all the hair beside and below {his} "
              "face exactly as they are. Keep everything else exactly the same: the framing, the "
@@ -322,7 +343,7 @@ def grade_skin(work, target, char):
           % (char, mh * 360, th, ms, ts, ml, tl, len(idx)))
 
 
-def head_closeup(work, top):
+def head_closeup(work, top, char=None):
     """The square around the head for the head fix, with room above a cut
     crown for the model to finish it. Returns (X, Y, side)."""
     from facemask import head_box
@@ -332,7 +353,8 @@ def head_closeup(work, top):
     side = min(work.w, work.h, (side + 63) // 64 * 64)
     cx = (fx0 + fx1) // 2
     X = max(0, min(work.w - side, cx - side // 2))
-    Y = max(0, min(work.h - side, y0 - (40 if top else 12)))
+    room = HEAD_ROOM_ABOVE.get(char, 40 if top else 12)
+    Y = max(0, min(work.h - side, y0 - room))
     return X, Y, side
 
 
@@ -456,7 +478,7 @@ def prepare(chars, force=False):
             continue
         if char in HEAD_FIX:
             from raster import resample
-            X, Y, side = head_closeup(work, top)
+            X, Y, side = head_closeup(work, top, char)
             close = resample(crop(work, X, Y, X + side, Y + side), 1024, 1024)
             staged = "head_%s.png" % char
             close.save(os.path.join(COMFY_INPUT, staged))
@@ -468,8 +490,9 @@ def prepare(chars, force=False):
             crown = (" The picture was cut off at the top, so the top of %s head is sliced off and a "
                      "strip of plain green was added above it: finish the top of %s head naturally "
                      "into that strip, with plain green left above it." % (his, his) if "top" in cuts else "")
+            keep = HEAD_KEEP_FOR.get(char) or HEAD_KEEP.format(his=his)
             prompt = ("This is a close-up of a cartoon character, %s on a plain flat green "
-                      "background. " % who + HEAD_FIX[char] + crown + " " + HEAD_KEEP.format(his=his))
+                      "background. " % who + HEAD_FIX[char] + crown + " " + keep)
             rows.append((char, "head", staged, prompt, HEAD_VERSIONS, "1:1"))
             print("%-7s head   close-up %dx%d at (%d, %d) -> %s" % (char, side, side, X, Y, staged))
         for edge, (x0, x1) in sorted(cuts.items()):
@@ -574,7 +597,8 @@ def apply_head(char, edited):
     from facemask import build_head
     import composite_face
     work_path = os.path.join(FIXED, "%s_base.png" % char)
-    mask = build_head(work_path, char, out_dir=os.path.join(FIXED, "masks"))
+    mask = build_head(work_path, char, out_dir=os.path.join(FIXED, "masks"),
+                      margin=HEAD_MARGIN.get(char, 0.14))
     if HEAD_CHIN_EXTRA.get(char):
         extend_chin(mask, HEAD_CHIN_EXTRA[char])
     path, params = composite_face.run(work_path, edited, char, "headfix", mask_path=mask, install=False)
