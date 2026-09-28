@@ -28,6 +28,11 @@ image nobara sad = lit_sprite("images/char/nobara_sad.png", (760, 1400), (431, 1
 
 image shoko = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
 image shoko neutral = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
+image shoko happy = lit_sprite("images/char/shoko_happy.png", (760, 1400), (423, 1365, 298))
+image shoko serious = lit_sprite("images/char/shoko_serious.png", (760, 1400), (423, 1365, 298))
+image shoko angry = lit_sprite("images/char/shoko_angry.png", (760, 1400), (423, 1365, 298))
+image shoko surprised = lit_sprite("images/char/shoko_surprised.png", (760, 1400), (423, 1365, 298))
+image shoko sad = lit_sprite("images/char/shoko_sad.png", (760, 1400), (423, 1365, 298))
 
 image yuji = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
 image yuji neutral = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
@@ -64,6 +69,11 @@ image side nobara sad = "images/side/nobara_sad.png"
 
 image side shoko = "images/side/shoko_neutral.png"
 image side shoko neutral = "images/side/shoko_neutral.png"
+image side shoko happy = "images/side/shoko_happy.png"
+image side shoko serious = "images/side/shoko_serious.png"
+image side shoko angry = "images/side/shoko_angry.png"
+image side shoko surprised = "images/side/shoko_surprised.png"
+image side shoko sad = "images/side/shoko_sad.png"
 
 image side yuji = "images/side/yuji_neutral.png"
 image side yuji neutral = "images/side/yuji_neutral.png"
