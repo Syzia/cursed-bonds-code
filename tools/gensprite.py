@@ -88,7 +88,7 @@ HAIR = {"spiky": hair_spiky, "bob": hair_bob, "ponytail": hair_ponytail,
 # art have to agree about how tall everyone is, or the cast changes height as
 # each real sprite lands.
 HEIGHT_CM = {
-    "yuji": 173, "megumi": 175, "nobara": 160, "maki": 170, "panda": 200,
+    "yuji": 173, "megumi": 175, "nobara": 160, "maki": 180, "panda": 200,
     "toge": 176, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 175,
     "utahime": 167, "sana": 160, "mc": 172,
 }

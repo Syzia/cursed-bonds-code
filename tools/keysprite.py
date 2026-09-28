@@ -38,7 +38,7 @@ EXPRESSIONS = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 # so the chin-to-feet distance matches canon against Yuji -- Megumi's spikes
 # take 16% of his drawn height, so a canon 175 is drawn at 181.
 HEIGHT_CM = {
-    "yuji": 173, "megumi": 181, "nobara": 160, "maki": 170, "panda": 200,
+    "yuji": 173, "megumi": 181, "nobara": 160, "maki": 180, "panda": 200,
     "toge": 176, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 175,
     "utahime": 167, "sana": 160, "mc": 172,
 }
@@ -184,7 +184,13 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
     use_chroma = lean is not None
     lo = bg_chroma * (cut - feather)
     hi = bg_chroma * cut
-    backdrop = backdrop_regions(im, bg, lo, lean) if use_chroma else None
+    # Connectivity protects a character's own green (an eye, a tie) from a
+    # green key. Another screen colour is only chosen for a character with none
+    # of it on them, so there is nothing to protect, and protecting would leave
+    # backdrop trapped in thin gaps as coloured flecks: a thin sliver's mean
+    # is mostly blended edge pixels, so it doesn't read as backdrop colour
+    # (it happened between Maki's wrist and skirt).
+    backdrop = backdrop_regions(im, bg, lo, lean) if kind == "green" else None
 
     for y in range(im.h):
         for x in range(im.w):
@@ -194,7 +200,7 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
 
             if use_chroma:
                 v = lean(r, g, b)
-                if v <= lo or not backdrop[p]:
+                if v <= lo or (backdrop is not None and not backdrop[p]):
                     a = 255                                   # figure, green or not
                 elif v >= hi:
                     continue                                  # background

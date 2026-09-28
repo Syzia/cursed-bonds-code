@@ -70,6 +70,7 @@ BASES = {
     "gojo": "gojo_base_00001_.png",
     "shoko": "shoko_base_00003_.png",
     "yaga": "yaga_base_00001_.png",
+    "maki": "maki_base_00001_.png",
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}

@@ -10,6 +10,9 @@ image gojo angry = lit_sprite("images/char/gojo_angry.png", (760, 1400), (393, 1
 image gojo surprised = lit_sprite("images/char/gojo_surprised.png", (760, 1400), (393, 1365, 423))
 image gojo sad = lit_sprite("images/char/gojo_sad.png", (760, 1400), (393, 1365, 423))
 
+image maki = lit_sprite("images/char/maki_neutral.png", (760, 1400), (414, 1365, 320))
+image maki neutral = lit_sprite("images/char/maki_neutral.png", (760, 1400), (414, 1365, 320))
+
 image megumi = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi neutral = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi happy = lit_sprite("images/char/megumi_happy.png", (760, 1400), (379, 1365, 331))
@@ -58,6 +61,9 @@ image side gojo serious = "images/side/gojo_serious.png"
 image side gojo angry = "images/side/gojo_angry.png"
 image side gojo surprised = "images/side/gojo_surprised.png"
 image side gojo sad = "images/side/gojo_sad.png"
+
+image side maki = "images/side/maki_neutral.png"
+image side maki neutral = "images/side/maki_neutral.png"
 
 image side megumi = "images/side/megumi_neutral.png"
 image side megumi neutral = "images/side/megumi_neutral.png"
