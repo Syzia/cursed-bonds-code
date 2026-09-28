@@ -92,11 +92,43 @@ def face_box(im, keyed):
         raise SystemExit("could not find a face — is this render keyed on green "
                          "and is the head in the top third of the figure?")
 
+    xs, ys = _head_skin(xs, ys)
+
     # Trim the tails: stray skin pixels (an ear lobe through hair, a hand raised
     # to the chin) would otherwise stretch the box well past the face.
     xs.sort(); ys.sort()
     k = max(1, len(xs) // 50)
     return xs[k], ys[k], xs[-k], ys[-k]
+
+
+def _head_skin(xs, ys):
+    """Only the skin that belongs to the head. Hands raised to the chest (Ijichi
+    checking his watch) sit inside the top third of the figure too, and pulled
+    the face box down over his whole chest. The face is the highest sizeable
+    patch of skin; ears and a neck start beside or just under it and stay,
+    and a patch that starts more than half a face below the chin is dropped."""
+    pts = set(zip(xs, ys))
+    comps, seen = [], set()
+    for start in pts:
+        if start in seen:
+            continue
+        stack, comp = [start], []
+        seen.add(start)
+        while stack:
+            x, y = stack.pop()
+            comp.append((x, y))
+            for q in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if q in pts and q not in seen:
+                    seen.add(q)
+                    stack.append(q)
+        comps.append(comp)
+    big = [c for c in comps if len(c) >= 200] or comps
+    face = min(big, key=lambda c: min(p[1] for p in c))
+    top = min(p[1] for p in face)
+    bottom = max(p[1] for p in face)
+    cutoff = bottom + 0.5 * (bottom - top)
+    kept = [p for c in comps if min(q[1] for q in c) <= cutoff for p in c]
+    return [p[0] for p in kept], [p[1] for p in kept]
 
 
 def is_white_fur(r, g, b):

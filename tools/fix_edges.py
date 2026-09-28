@@ -77,6 +77,7 @@ BASES = {
     "panda": "panda_base_00004_.png",
     "toge": "toge_base_00004_.png",
     "utahime": "fixed/utahime_bodyfix.png",   # render #4 with a closer-fitting kimono top (BODY_FIX)
+    "ijichi": "ijichi_base_00003_.png",
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
@@ -135,6 +136,14 @@ HEAD_FIX["utahime"] = (
     "cheek over the bridge of her nose to the other cheek, just below her eyes: a band of pinkish-brown "
     "scarred skin about as tall as her nose is wide, with faint scratch lines, even on both sides. Keep "
     "her long dark purple-black hair, her wispy fringe and her cream ribbon bow exactly as they are.")
+HEAD_FIX["ijichi"] = (
+    "Redraw his hair and face so they match this description, in exactly the same anime drawing style: "
+    "his hair the same black, but neat and smooth, with a straight fringe parted slightly off-centre that "
+    "falls to his eyebrows and stops above his glasses, and the sides lying smooth over the tops of his "
+    "ears; the face of a tired man in his late twenties: a long, narrow face with high cheekbones, a sharp "
+    "jaw and faint lines from his nose to the corners of his mouth; narrow, heavy-lidded, slightly tired "
+    "dark eyes behind narrow rectangular glasses with thin black frames; thin, straight dark eyebrows; a "
+    "long straight nose; thin lips closed in a calm, composed line.")
 # Room for the redraw to grow: hair that changes shape (spikes) reaches past
 # the old outline, so the head mask's dome is wider (a fraction of the head's
 # width) and the close-up starts higher above the head (px).
@@ -142,6 +151,9 @@ HEAD_MARGIN = {"toge": 0.35, "utahime": 0.25}   # Utahime: her bow's loops, cut 
 HEAD_ROOM_ABOVE = {"toge": 80}
 # What a head fix must keep, where the hair is meant to change.
 HEAD_KEEP_FOR = {
+    "ijichi": ("Keep the hair colour and the shape of the glasses. Keep everything else exactly the same: the "
+               "framing, the head's size and position, the ears, the white shirt collar, the black tie and "
+               "suit, the plain flat green background, and the flat cel shading and line art."),
     "toge": ("Keep the hair colour. Keep everything else exactly the same: the framing, the head's size "
              "and position, the ears, the tall collar of his jacket sitting under his chin, the clothes, the "
              "plain flat green background, and the flat cel shading and line art."),
