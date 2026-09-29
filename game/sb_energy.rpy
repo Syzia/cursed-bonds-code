@@ -94,9 +94,6 @@ init -2 python:
 
     ## Energy -------------------------------------------------------------------
 
-    def ce_pct():
-        return int(100.0 * store.ce / max(1, store.ce_max))
-
     def spend_ce(amount):
         """Spend reserve. Returns False (and spends nothing) if you can't afford it."""
         if store.ce < amount:
@@ -125,10 +122,6 @@ init -2 python:
             renpy.notify("%s +%d" % (stat.capitalize(), after - cur))
         if tech_tier()[0] > before_tier:
             renpy.notify("Technique advanced — %s" % tech_tier()[1])
-            flag("tier_" + str(tech_tier()[0]))
-
-    def tech_name():
-        return tech()["name"]
 
     def add_ce(amount):
         """Prologue-era shim: raise whichever stat this technique scales off."""

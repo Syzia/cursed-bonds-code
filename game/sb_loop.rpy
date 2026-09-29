@@ -215,9 +215,28 @@ label sb_spar(who):
         yuji "Okay — back foot! Remember the back foot!"
         "Yuji Itadori is a startlingly good teacher, because he explains everything twice in two different ways and never once makes you feel stupid."
         $ gain("output", 4)
-    else:
+    elif who == "megumi":
+        megumi "No dogs. You won't learn anything if I call the dogs."
+        "He barely says another word for an hour. He just keeps being a step to the left of wherever you aimed, until you finally start aiming there."
+        $ gain("output", 2)
+        $ gain("control", 2)
+    elif who == "nobara":
+        nobara "No hammer, no nails. I'm going easy on you, so don't make it weird."
+        "She is not going easy on you. She fights like she's settling a grudge she had before you arrived, and she laughs every time you get back up."
+        $ gain("output", 2)
+        $ gain("control", 2)
+    elif who == "toge":
+        toge "Tuna mayo!"
+        "He taps the collar over his mouth, which you take to mean no Cursed Speech, and then spends an hour being very quick and very hard to find."
+        $ gain("output", 2)
+        $ gain("control", 2)
+    elif who == "panda":
         panda "Alright, come at me. I'm structurally very forgiving."
         "Hitting a two-metre cursed corpse turns out to be excellent for confidence and terrible for your knuckles."
+        $ gain("output", 2)
+        $ gain("control", 2)
+    else:
+        "[_n] doesn't go easy on you, which is the kindest thing anyone does for you all day."
         $ gain("output", 2)
         $ gain("control", 2)
 

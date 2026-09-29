@@ -3,7 +3,7 @@
 ##
 ## Text roles (jjk_display / jjk_label / jjk_small) live in screens.rpy next to
 ## the base styles. This file adds the panel, the section head, the meter, and
-## the two full-screen cards.
+## the chapter card.
 ################################################################################
 
 ## Shared styling ##############################################################
@@ -11,9 +11,6 @@
 style jjk_panel is frame:
     background Frame("gui/panel.png", 4, 4)
     padding (34, 28)
-
-style jjk_panel_solid is jjk_panel:
-    background Frame("gui/panel_solid.png", 4, 4)
 
 style jjk_head is text:
     font gui.display_font
@@ -38,13 +35,6 @@ style jjk_button_text is text:
     hover_color gui.paper
     insensitive_color gui.mute
     size 23
-
-style jjk_button_primary is jjk_button:
-    background Frame("gui/panel_active.png", 4, 4)
-    hover_background Frame("gui/panel_active.png", 4, 4)
-
-style jjk_button_primary_text is jjk_button_text:
-    color gui.paper
 
 
 ## Section head: seal + title, optional trailing note, then a rule. ############
@@ -117,58 +107,3 @@ screen chapter_card(kicker, title, subtitle=""):
 
         null height 8
         use rule(360)
-
-
-## End-of-prologue summary #####################################################
-
-screen run_summary():
-
-    modal True
-    zorder 70
-
-    add "bg veil"
-    add Solid(gui.ink) alpha 0.72
-
-    frame:
-        style "jjk_panel_solid"
-        xalign 0.5
-        yalign 0.5
-        xsize 960
-
-        vbox:
-            spacing 18
-
-            use section(_("End of the Prologue"), k="序", note="[mc_surname] [mc_name]")
-
-            null height 6
-
-            for _key in BOND_ORDER:
-
-                $ _info = CAST[_key]
-                $ _val = bonds[_key]
-                $ _short = _info["short"]
-                $ _col = _info["color"]
-                $ _rank = bond_rank(_val)[1]
-
-                hbox:
-                    spacing 18
-                    fixed:
-                        xysize (170, 30)
-                        text "[_short]":
-                            font gui.display_font
-                            color _col
-                            size 24
-                            yalign 0.5
-                    fixed:
-                        xysize (440, 30)
-                        use meter(_val, width=440, height=6, fill=_col)
-                    text "[_rank]" style "jjk_small" yalign 0.5
-
-            null height 14
-
-            textbutton _("Continue"):
-                style "jjk_button_primary"
-                text_style "jjk_button_primary_text"
-                xfill False
-                xalign 1.0
-                action Return(True)

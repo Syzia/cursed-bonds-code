@@ -93,7 +93,6 @@ init -2 python:
 
     def begin_together(who):
         store.together.append(who)
-        flag("together_" + who)
         renpy.notify("%s — together" % CAST[who]["short"])
 
     def add_bond(who, amount, quiet=False):
@@ -132,7 +131,7 @@ init -2 python:
             store.affection.setdefault(who, 0)
         renpy.notify("%s joined your circle." % CAST[who]["name"])
 
-    def partner():
+    def closest_partner():
         """Whoever you are actually closest to, romance first."""
         best, score = None, -1
         for c in store.roster:
@@ -140,12 +139,6 @@ init -2 python:
             if s > score:
                 best, score = c, s
         return best
-
-    ## Aliases kept so the prologue and the summary screen keep working.
-    BOND_ORDER = ROSTER_ORDER
-
-    def bond_value(who):
-        return store.bonds.get(who, 0)
 
     def total_bond():
         return sum(store.bonds.values())

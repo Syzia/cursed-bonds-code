@@ -25,22 +25,6 @@ init -1 python:
                    ("It takes hold of your forearm.", "grab"),
                    ("Something detaches and comes at you on its own.", "ranged")]),
 
-        "sitter": dict(
-            name="The Sitter", grade=4, hp=40, power=11, sprite="curse sitter",
-            tells=[("It folds its hands and goes still.", "heavy"),
-                   ("It is suddenly a metre closer.", "fast"),
-                   ("It reaches, slowly, for your wrist.", "grab")]),
-        "stairwell": dict(
-            name="Stairwell Residual", grade=4, hp=46, power=12, sprite="curse small",
-            tells=[("It swells against the walls.", "heavy"),
-                   ("It drops flat and skitters.", "fast"),
-                   ("It spits something wet at the ceiling.", "ranged")]),
-        "sunmall": dict(
-            name="Kawagoe Accumulation", grade=2, hp=150, power=24, sprite="curse big",
-            tells=[("Every face on it turns the same way.", "heavy"),
-                   ("It comes apart and reassembles closer.", "fast"),
-                   ("A limb unspools toward you across the atrium.", "grab"),
-                   ("It draws breath in four-four time.", "ranged")]),
         "nade_curse": dict(
             name="Nade's Shikigami", grade=3, hp=92, power=18, sprite="curse small",
             tells=[("It plants itself and lowers its head.", "heavy"),
@@ -236,6 +220,7 @@ init -1 python:
 default hp = 60
 default hp_max = 60
 default cb = {}
+default quick_menu_before_combat = True     # set on entry to every fight
 
 
 ################################################################################
@@ -244,6 +229,9 @@ default cb = {}
 
 label combat(enemy, ally=None, flee_ok=True, bg=None):
 
+    ## Hide the quick menu for the fight, then put back whatever the caller had:
+    ## the sandbox runs with it off, story scenes with it on.
+    $ quick_menu_before_combat = quick_menu
     $ quick_menu = False
     $ combat_begin(enemy, ally, flee_ok, bg)
 
@@ -262,7 +250,7 @@ label combat(enemy, ally=None, flee_ok=True, bg=None):
 
         if cb["over"]:
             $ _outcome = cb["over"]
-            $ quick_menu = True
+            $ quick_menu = quick_menu_before_combat
             return _outcome
 
 

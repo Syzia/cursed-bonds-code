@@ -5,8 +5,6 @@
 init -2 python:
 
     PERIODS = ["Morning", "Noon", "Afternoon", "Evening", "Night"]
-    PERIOD_ICON = {"Morning": "☀", "Noon": "☀", "Afternoon": "☁",
-                   "Evening": "☾", "Night": "☾"}
     WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
     ## Campus ------------------------------------------------------------------
@@ -200,9 +198,6 @@ init -2 python:
 
     def is_weekend():
         return weekday() in ("Sat", "Sun")
-
-    def date_line():
-        return "Day %d · %s · %s" % (store.day, weekday(), store.period)
 
     def advance_period(n=1):
         """Move the clock forward. Returns True if the day rolled over."""

@@ -798,9 +798,6 @@ screen jjk_status():
                                                 yalign 0.5
 
 
-default spent_today = set()
-
-
 ## Journal ######################################################################
 
 screen jjk_journal():

@@ -1,5 +1,5 @@
 ################################################################################
-## Explore the campus: a look-around mode, started from the main menu.
+## Explore the campus: a look-around mode, on the main menu when run from the SDK (config.developer).
 ##
 ## Drops straight into free roam at the courtyard for judging locations and
 ## backgrounds. No story beats fire, every door is open, and a Time button
@@ -20,8 +20,6 @@ init python:
 label explore_campus:
 
     $ explore_mode = True
-    $ mc_name = "Kaito"
-    $ mc_surname = "Amagiri"
     $ day = 1
     $ period = "Morning"
     $ here = "courtyard"

@@ -8,6 +8,10 @@
 define mc      = Character("[mc_name]", color="#c9a6ff")
 define mcthink = Character(None, what_prefix="{i}", what_suffix="{/i}", what_color="#c8c2d8")
 
+## The player names him when Gojo asks in the alley; these cover a fresh start.
+default mc_name    = "Kaito"
+default mc_surname = "Amagiri"
+
 define yuji    = Character("Yuji",    color="#ff8fa3")
 define megumi  = Character("Megumi",  color="#8fb0ff")
 define nobara  = Character("Nobara",  color="#ffb066")
@@ -23,14 +27,11 @@ define utahime = Character("Utahime", color="#c9a0d8")
 ## Pre-campus cast
 define sana    = Character("Sana",        color="#ffd27a")
 define mother  = Character("Mom",         color="#d8c8b8")
-define father  = Character("Dad",         color="#b8c0c8")
 define oda     = Character("Oda-sensei",  color="#a9a2b8")
 define kurose  = Character("Kurose",      color="#8f8aa0")
 define nade    = Character("Nade",        color="#9a8f7a")
 
-define curse   = Character("???",     color="#6cff9e")
 define curse2  = Character("???",     color="#ff5f8a")
-define teacher = Character("Teacher", color="#a9a2b8")
 define voice_  = Character("Voice",   color="#8f8aa0")
 
 
@@ -42,7 +43,6 @@ image bg gate       = "images/bg/gate.png"
 image bg courtyard  = "images/bg/courtyard.png"
 image bg classroom  = "images/bg/classroom.png"
 image bg training   = "images/bg/training.png"
-image bg dorm       = "images/bg/dorm.png"
 image bg forest     = "images/bg/forest.png"
 image bg city       = "images/bg/city_night.png"
 image bg rooftop    = "images/bg/rooftop.png"
@@ -71,15 +71,8 @@ image bg map_campus  = "images/bg/map_campus.png"
 
 ## Pre-campus (prologue) locations
 image bg home_living   = "images/bg/home_living.png"
-image bg home_bedroom  = "images/bg/home_bedroom.png"
-image bg yotsuka_hall  = "images/bg/yotsuka_hall.png"
-image bg yotsuka_class = "images/bg/yotsuka_class.png"
 image bg town_street   = "images/bg/town_street.png"
-image bg festival      = "images/bg/festival.png"
-image bg station       = "images/bg/station.png"
 image bg car           = "images/bg/car.png"
-image bg sana_room       = "images/bg/sana_room.png"
-image bg sana_room_night = "images/bg/sana_room_night.png"
 image bg konbini         = "images/bg/konbini.png"
 image bg diner           = "images/bg/diner.png"
 image bg street_morning  = "images/bg/street_morning.png"
@@ -87,30 +80,16 @@ image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 
 
 ## Sprites #####################################################################
-
-## image mc = "images/char/mc.png"   # superseded by jjk_sprites.rpy
-## image yuji        = "images/char/yuji.png"   # superseded by jjk_sprites.rpy
-## image megumi     = "images/char/megumi.png"   # superseded by jjk_sprites.rpy
-## image nobara      = "images/char/nobara.png"   # superseded by jjk_sprites.rpy
-## image maki        = "images/char/maki.png"   # superseded by jjk_sprites.rpy
-## image panda       = "images/char/panda.png"   # superseded by jjk_sprites.rpy
-## image toge        = "images/char/toge.png"   # superseded by jjk_sprites.rpy
-## image gojo        = "images/char/gojo.png"   # superseded by jjk_sprites.rpy
-## image yaga        = "images/char/yaga.png"   # superseded by jjk_sprites.rpy
-## image ijichi      = "images/char/ijichi.png"   # superseded by jjk_sprites.rpy (father and Kurose still borrow the file)
-## image shoko       = "images/char/shoko.png"   # superseded by jjk_sprites.rpy
-## image utahime     = "images/char/utahime.png"   # superseded by jjk_sprites.rpy (Oda still borrows the file)
+##
+## The main cast's sprites live in jjk_sprites.rpy.
 
 ## Pre-campus cast — placeholder art until the sprite set lands.
-## image sana = "images/char/sana.png"   # superseded by jjk_sprites.rpy
-image sana tired = Transform("sana neutral", matrixcolor=TintMatrix("#b3b3cc"))
 image mother = lit(Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6db")))
 image father = lit(Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff")))
 image oda = lit(Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb")))
 image kurose = lit(Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#9e9eb3")))
 image nade = lit(Transform("images/char/yaga.png", matrixcolor=TintMatrix("#b0a894")))
 image curse small = lit("images/char/curse_small.png")
-image curse sitter = lit(Transform("images/char/curse_small.png", zoom=0.72))
 image curse big = lit("images/char/curse_big.png")
 
 
@@ -147,20 +126,6 @@ transform pos_loom_r:
 
 ## Small motion ################################################################
 
-transform shake:
-    linear 0.04 xoffset 22
-    linear 0.04 xoffset -22
-    linear 0.04 xoffset 14
-    linear 0.04 xoffset -14
-    linear 0.04 xoffset 6
-    linear 0.04 xoffset 0
-
-transform breathe:
-    block:
-        linear 2.2 yoffset -6
-        linear 2.2 yoffset 0
-        repeat
-
 transform pulse_in:
     alpha 0.0 zoom 0.86
     parallel:
@@ -187,8 +152,3 @@ init 1 python:
         "panda": panda, "toge": toge, "shoko": shoko, "gojo": gojo,
         "yaga": yaga, "utahime": utahime,
     }
-
-
-## Pre-campus state ############################################################
-
-default sana_trust = 0

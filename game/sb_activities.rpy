@@ -13,6 +13,7 @@ init -1 python:
     ## who:   None = anyone, or a tuple of keys
     ## loc:   None = anywhere, or a tuple of location keys
     ## per:   None = any period, or a tuple of period names
+    ## cost:  periods it takes (0 = free). Required on every entry.
 
     ACTIVITIES = [
         dict(id="talk",     label="Talk",              hint="A few minutes. Costs nothing.",
@@ -121,8 +122,6 @@ init -1 python:
             return False, "Bond %d" % a["min_bond"]
         if af < a.get("min_aff", 0):
             return False, "♡ %d" % a["min_aff"]
-        if a.get("cost") is None:
-            a["cost"] = 1
         if a.get("once") and has_flag("did_%s_%s" % (a["id"], who)):
             return False, "Done"
         if a.get("requires_flag") and not has_flag(a["requires_flag"] + who):
@@ -166,4 +165,7 @@ init -1 python:
 ## Who is currently tagging along ###############################################
 
 default companion = None
-default companion_day = 0
+
+## People you have already spent a period with today (talking is free). Cleared
+## by new_day() in sb_world.rpy.
+default spent_today = set()

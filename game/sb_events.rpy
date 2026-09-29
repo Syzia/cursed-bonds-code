@@ -11,14 +11,14 @@ init -1 python:
 
     def ev(label, kind="hangout", who=None, loc=None, periods=None, weekend=None,
            min_bond=0, min_aff=0, max_bond=101, requires=(), forbids=(),
-           once=True, arc=1, title=None, cost=1, priority=0,
+           once=True, arc=1, priority=0,
            min_day=0, max_day=9999, thread=None):
         """Register an event. `label` is the Ren'Py label that plays it."""
         EVENTS.append(dict(
             label=label, kind=kind, who=who, loc=loc, periods=periods,
             weekend=weekend, min_bond=min_bond, min_aff=min_aff, max_bond=max_bond,
             requires=tuple(requires), forbids=tuple(forbids), once=once, arc=arc,
-            title=title or label, cost=cost, priority=priority,
+            priority=priority,
             min_day=min_day, max_day=max_day, thread=thread,
         ))
 

@@ -23,7 +23,10 @@ define gui.show_name = True
 
 ## The version of the game.
 
-define config.version = "0.1 — Prologue"
+define config.version = "0.2 — Arc One"
+
+## The build folder name comes from this; it may not contain spaces.
+define build.version = "0.2"
 
 
 ## Text that is placed on the game's about screen. Place the text between the
@@ -37,8 +40,9 @@ You play an original first-year sorcerer alongside the canon cast; the story
 branches on the bonds you build.
 
 Jujutsu Kaisen is created by Gege Akutami. This is a fan work made for fun,
-not affiliated with or endorsed by the rights holders. All placeholder art is
-generated procedurally and is meant to be replaced.
+not affiliated with or endorsed by the rights holders. The character sprites
+and campus backgrounds are made with ComfyUI; some prologue and story
+backgrounds are still placeholders.
 
 Built with Ren'Py.
 """)
@@ -56,10 +60,13 @@ define build.name = "CursedBonds"
 ## These three variables control, among other things, which mixers are shown
 ## to the player by default. Setting one of these to False will hide the
 ## appropriate mixer.
+##
+## The game has no audio yet, so all three are off and Preferences shows no
+## dead volume sliders. Turn music and sound back on when audio lands.
 
-define config.has_sound = True
-define config.has_music = True
-define config.has_voice = True
+define config.has_sound = False
+define config.has_music = False
+define config.has_voice = False
 
 
 ## To allow the user to play a test sound on the sound or voice channel,
@@ -194,6 +201,16 @@ init python:
     build.classify('**/.**', None)
     build.classify('**/#**', None)
     build.classify('**/thumbs.db', None)
+
+    ## Project-side material that never ships: tooling, notes, the attic,
+    ## reference images, and anything written in Markdown.
+    build.classify('tools/**', None)
+    build.classify('docs/**', None)
+    build.classify('attic/**', None)
+    build.classify('references/**', None)
+    build.classify('**.md', None)
+    build.classify('README.md', None)
+    build.classify('.github/**', None)
 
     ## To archive files, classify them as 'archive'.
 

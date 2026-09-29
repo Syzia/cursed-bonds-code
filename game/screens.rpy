@@ -36,10 +36,6 @@ init python:
                     continue
         return gui.violet
 
-    def cap(s):
-        """Uppercase a UI string for a tracked label."""
-        return renpy.substitute(s).upper()
-
 
 ## A red hanko seal with a kanji in it. The one motif; used for section marks.
 screen seal(k="呪", size=44):
@@ -422,7 +418,9 @@ screen main_menu():
         spacing gui.navigation_spacing
 
         textbutton _("Start") action Start()
-        textbutton _("Explore the campus") action Start("explore_campus")
+        ## A background-review tool; only shown when run from the SDK.
+        if config.developer:
+            textbutton _("Explore the campus") action Start("explore_campus")
         textbutton _("Load") action ShowMenu("load")
         textbutton _("Preferences") action ShowMenu("preferences")
         textbutton _("About") action ShowMenu("about")

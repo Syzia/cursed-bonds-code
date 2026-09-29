@@ -55,7 +55,6 @@ init -10 python:
         "bg city":               ("#b0bbe6", -0.08, 0.85, 0.39),
         "bg veil":               ("#c0b4dc", -0.08, 0.85, 0.39),
         "bg home_bedroom_night": ("#c6cdee", -0.06, 0.88, 0.41),
-        "bg sana_room_night":    ("#c6cdee", -0.06, 0.88, 0.41),
     }
 
     def light_for_place(loc, per):
