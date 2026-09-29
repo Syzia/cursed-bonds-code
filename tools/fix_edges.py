@@ -79,6 +79,7 @@ BASES = {
     "utahime": "fixed/utahime_bodyfix.png",   # render #4 with a closer-fitting kimono top (BODY_FIX)
     "ijichi": "ijichi_base_00003_.png",
     "sana": "sana_base_00001_.png",
+    "mc": "mc_base_00001_.png",       # the Jin-Woo-type render, looking straight out
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
@@ -145,6 +146,17 @@ HEAD_FIX["ijichi"] = (
     "jaw and faint lines from his nose to the corners of his mouth; narrow, heavy-lidded, slightly tired "
     "dark eyes behind narrow rectangular glasses with thin black frames; thin, straight dark eyebrows; a "
     "long straight nose; thin lips closed in a calm, composed line.")
+# The player: Krea gave the Jin-Woo-type face a heavy shaggy mop, a fringe hiding
+# his eyebrows, stray strands on the crown, and a brown so dark it reads black.
+HEAD_FIX["mc"] = (
+    "Redraw only his hair so it matches this description, in exactly the same anime drawing style: a "
+    "neater, shorter, textured cut with much less volume, lying closer to his head; the fringe swept to "
+    "one side and lifted off his face, so his forehead shows on one side and both of his straight dark "
+    "brown eyebrows are fully visible above his eyes; one thin loose lock falling across his forehead "
+    "toward the bridge of his nose; the sides trimmed, covering only the tops of his ears; the back "
+    "tapered at the nape; no stray strands sticking up from the crown; the colour a clear dark chocolate "
+    "brown with warm lighter brown highlights, a shade lighter than it is now, so it reads as brown and "
+    "not black.")
 # Room for the redraw to grow: hair that changes shape (spikes) reaches past
 # the old outline, so the head mask's dome is wider (a fraction of the head's
 # width) and the close-up starts higher above the head (px).
@@ -152,6 +164,10 @@ HEAD_MARGIN = {"toge": 0.35, "utahime": 0.25}   # Utahime: her bow's loops, cut 
 HEAD_ROOM_ABOVE = {"toge": 80}
 # What a head fix must keep, where the hair is meant to change.
 HEAD_KEEP_FOR = {
+    "mc": ("Keep his face exactly as it is: the same sharp grey-violet eyes and steady gaze, the same nose, "
+           "mouth, jaw and ears, and the same calm, cool expression. Keep everything else exactly the same: "
+           "the framing, the head's size and position, the collar of his jacket, the clothes, the plain flat "
+           "green background, and the flat cel shading and line art."),
     "ijichi": ("Keep the hair colour and the shape of the glasses. Keep everything else exactly the same: the "
                "framing, the head's size and position, the ears, the white shirt collar, the black tie and "
                "suit, the plain flat green background, and the flat cel shading and line art."),
