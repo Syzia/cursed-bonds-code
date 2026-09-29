@@ -15,7 +15,7 @@ label splashscreen:
     hide text with dissolve
     $ renpy.pause(0.3)
 
-    show text "{size=28}{color=#9d95ae}All art in this build is placeholder art,\ngenerated procedurally. Replace it freely.{/color}{/size}" with dissolve
+    show text "{size=28}{color=#9d95ae}The art in this fan game was made with ComfyUI.\nSome placeholder art remains.{/color}{/size}" with dissolve
     $ renpy.pause(2.2)
     hide text with dissolve
     $ renpy.pause(0.4)
@@ -68,7 +68,7 @@ label arc_one_open:
 
     mcthink "Nobody's told me what to do today. Nobody's going to."
 
-    "Gojo's version of a timetable, delivered yesterday in full, was: {i}go and have some boring afternoons.{/i}"
+    "Gojo's version of a timetable, delivered yesterday in full, was: {i}you four do something.{/i}"
 
     "Yaga's version was longer and contained the phrase 'I will be checking'."
 

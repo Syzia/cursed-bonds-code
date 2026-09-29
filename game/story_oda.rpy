@@ -19,7 +19,7 @@ init 1 python:
 
 label st_oda_letter:
 
-    scene bg dorm with fade_slow
+    scene bg your_room night with fade_slow
 
     "There is a letter on your desk."
 
@@ -91,7 +91,7 @@ label st_oda_letter:
 
 label st_oda_2:
 
-    scene bg dorm with fade_slow
+    scene bg your_room night with fade_slow
 
     "Oda-sensei writes again, and this one is not a letter about you."
 
@@ -143,7 +143,7 @@ label st_oda_2:
             "You ask for the names, and the dates, and anything she can get without being seen getting it."
             "She sends them in a fortnight. It takes her four attempts to post the letter, because she keeps going back for something she has forgotten, which is what happens near this."
             mcthink "I have just made a civilian into an asset."
-            mcthink "Nine days ago I sat in an office being told what that costs."
+            mcthink "The other week I sat in an office being told what that costs."
 
         "Say nothing. Take it to Yaga.":
             $ flag("oda_escalated")

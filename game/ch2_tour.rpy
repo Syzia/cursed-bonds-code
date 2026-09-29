@@ -174,7 +174,7 @@ label chapter_two:
             $ flag("yaga_honest")
             $ add_bond("yaga", 8)
             $ gain("insight", 3)
-            mc "I said yes in an alley eight hours after watching my friend die. That's not a decision, that's a reflex."
+            mc "I said yes in an alley minutes after watching my friend die. That's not a decision, that's a reflex."
             mc "I don't know what I want. I know I can't unsee it."
             "Yaga looks at you for a long moment."
             yaga "That is the best answer anyone has given me in four years."
@@ -282,7 +282,7 @@ label chapter_two:
             nobara "...Right. That's enough of that."
             nobara "Tomorrow you're doing something, though. I'm not running a hospice."
 
-    scene bg dorm with fade_slow
+    scene bg your_room night with fade_slow
 
     "Your room has a bed, a desk, and a window facing a mountain that is also Tokyo."
 

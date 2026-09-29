@@ -119,8 +119,8 @@ label act_stand(who):
 
     ## ----------------------------------------------------------------- Panda
     elif who == "panda":
-        panda "You asked me a question a while back and I said come back in a few months."
-        panda "It's been a few months."
+        panda "You asked me a question a while back and I said come back in a few weeks."
+        panda "It's been a few weeks."
         "He has brought coffee, which is how Panda opens anything difficult."
         panda "I've got a name for her."
         panda "I'm not going to tell you what it is yet, because I've only just decided and if I say it out loud today it'll be a thing I decided today."
@@ -191,12 +191,12 @@ label act_stand(who):
         gojo "So. Get in the habit. Start now, while it's cheap and I'm in a good mood."
         menu:
             "He is eating something and pretending this is nothing."
-            "\"You should have come sooner. In the corridor.\"":
-                mc "Four minutes earlier and Sana wouldn't have a bruise she can't explain."
+            "\"You should have come sooner. To the alley.\"":
+                mc "Forty seconds, you said. Forty seconds sooner and Sana would still be alive."
                 gojo "..."
                 gojo "Yes."
-                gojo "That's correct, and I've thought about it, and I decided the version where I arrive on time is worse for you long-term."
-                gojo "Which is a monstrous thing to decide about somebody else's friend, and I did it in about a second and a half, and I'd probably do it again."
+                gojo "That's correct, and I've thought about it. I felt that thing from across the city and I walked the last street, because I have never once in my life needed to run."
+                gojo "Which is a monstrous habit to have when it's somebody else's friend on the other end of it, and nobody's ever told me so, because usually I'm in time."
                 gojo "See — that's useful. Say more things like that."
                 $ add_bond("gojo", 14)
                 $ flag("told_gojo_wrong")
@@ -222,7 +222,7 @@ label act_stand(who):
         yaga "I am asking you to be in that room."
         mc "I'm a first-year."
         yaga "You will not always be a first-year."
-        yaga "And I am not asking the sorcerer. I am asking the person who walked into a condemned building for a girl who was never going to remember it."
+        yaga "And I am not asking the sorcerer. I am asking the person who was offered a clean forgetting in that alley, and chose to go on remembering the girl instead."
         yaga "That person is the correct one for the room. I have been doing this for a long time and I am rarely wrong about which person is correct for which room."
         mc "...All right."
         yaga "Good."

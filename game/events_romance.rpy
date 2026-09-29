@@ -127,7 +127,7 @@ label act_rom_say(who):
         maki "..."
         maki "Then ask me."
         mc "Maki—"
-        maki "{b}Yes.{/b} Sorry. Yes. I've been holding that for about four weeks, I wasn't going to make you finish."
+        maki "{b}Yes.{/b} Sorry. Yes. I've been holding that for a couple of weeks, I wasn't going to make you finish."
 
     else:
         mc "Shoko."
@@ -143,12 +143,11 @@ label act_rom_say(who):
         mc "I love you."
         "She is quiet for a long time."
         shoko "Right. Okay."
-        shoko "I'm going to say it back and then I'm going to be extremely normal about it, because if I stop to feel it properly I'll cry, and I have not cried since two thousand and eleven and I'd like to keep the record."
+        shoko "I'm going to say it back and then I'm going to be extremely normal about it, because if I stop to feel it properly I'll cry, and I have not cried since two thousand and fifteen and I'd like to keep the record."
         shoko "I love you. Pass me that form."
         "You pass her the form. Her hand is not entirely steady."
 
     $ add_bond(who, 10)
-    $ flag("did_rom_say_" + who)
     $ begin_together(who)
     $ add_aff(who, 10)
 

@@ -1,5 +1,7 @@
 ################################################################################
-## Chapter Four — Kawagoe Sun Mall, Closed 2019
+## Mission — Kawagoe Sun Mall, Closed 2019
+##
+## Plays mid-sandbox, from the office (ev_mission_sunmall).
 ################################################################################
 
 label chapter_four:
@@ -7,14 +9,15 @@ label chapter_four:
     scene bg black
     with None
 
-    show screen chapter_card("CHAPTER FOUR", "Kawagoe Sun Mall", "Closed 2019. Three missing.")
+    show screen chapter_card("MISSION", "Kawagoe Sun Mall", "Closed 2019. Three missing.")
     with fade_slow
     $ renpy.pause(2.6)
     hide screen chapter_card
     with fade_slow
 
-    $ partner = closest_first_year()
-    $ partner_name = CAST[partner]["short"]
+    ## The first-year you're closest to comes along (not closest_partner(), which
+    ## can pick a second-year or a romance).
+    $ _partner = closest_first_year()
     $ tname = TECHNIQUES[technique]["name"]
 
     scene bg city
@@ -50,18 +53,21 @@ label chapter_four:
 
     megumi "Then [mc_surname] goes with—"
 
-    if partner == "yuji":
+    if _partner == "yuji":
         yuji "Me."
         "It isn't a suggestion, and it isn't a favour. He says it the way you'd state a fact that was already on the paperwork."
         yuji "Sorry, Kugisaki. I'll shout less, I promise."
         nobara "You will not."
         nobara "{i}Fine.{/i} Fushiguro, you're with me. Try to be interesting."
         megumi "No."
-    elif partner == "megumi":
+    elif _partner == "megumi":
         megumi "—me."
         "He says it before the sentence is finished, which for Megumi Fushiguro is practically shouting."
         nobara "Oh, {i}now{/i} he has opinions."
-        megumi "They've been standing in a forest with me for three days. I know how they move."
+        if has_flag("megumi_silence"):
+            megumi "They've stood in a forest with me and kept their mouth shut. I know how they move."
+        else:
+            megumi "I've watched them train. I know how they move."
         megumi "That's worth more than liking each other."
         yuji "That is the most Megumi sentence ever constructed."
     else:
@@ -81,26 +87,26 @@ label chapter_four:
     hide mc
     with None
 
-    "Inside, the mall smells the way the East Wing smelled, and your whole body reports for duty before your brain has finished the comparison."
+    "Inside, the mall smells the way the alley behind the arcade smelled, and your whole body reports for duty before your brain has finished the comparison."
 
     "Sixty shopfronts with the shutters down. A children's ride, still plugged into something, turning very slowly."
 
     "And running through all of it, everywhere, like damp: cursed energy."
 
-    if partner == "yuji":
+    if _partner == "yuji":
         show yuji at pos_cr
-    elif partner == "megumi":
+    elif _partner == "megumi":
         show megumi at pos_cr
     else:
         show nobara at pos_cr
     show mc at pos_l
     with dissolve
 
-    if partner == "yuji":
+    if _partner == "yuji":
         yuji "Okay, so, this is where you tell me you have a really useful technique for exactly this situation."
-        mc "I have a technique that I have had for eleven days."
+        mc "I have a technique that I have had for about as long as I've known you."
         yuji "Perfect. Love that. Let's go."
-    elif partner == "megumi":
+    elif _partner == "megumi":
         megumi "Don't use your technique yet."
         mc "Why not?"
         megumi "Because it's watching, and I want it to think there are two ordinary students in here for as long as possible."
@@ -120,11 +126,11 @@ label chapter_four:
             $ add_ce(2)
             "It says {b}I WAS ONLY HERE FOR THE PHOTOS{/b}, four times, in handwriting that gets smaller each time."
             "The fourth one is about the size of a fingernail."
-            if partner == "yuji":
+            if _partner == "yuji":
                 yuji "..."
                 yuji "One of the explorers. That's one of the explorers."
                 yuji "They were writing it while it was happening."
-            elif partner == "megumi":
+            elif _partner == "megumi":
                 megumi "It kept them alive long enough to write it four times."
                 megumi "That's not a grade three. Grade threes don't {i}keep{/i} things."
             else:
@@ -166,12 +172,12 @@ label chapter_four:
 
     curse2 "The last three were so {b}tired{/b} by the end."
 
-    if partner == "yuji":
+    if _partner == "yuji":
         yuji "{b}Hey!{/b}"
         "Itadori steps forward — not back, forward, all the way into its attention on purpose."
         yuji "Yeah, look at me. Big ugly. Look at me instead."
         mcthink "He's taking the first hit so I don't have to. He decided that before we walked in."
-    elif partner == "megumi":
+    elif _partner == "megumi":
         megumi "Don't run."
         megumi "It's built for chasing. Everything about it is built for chasing."
         "His shadow is already deepening under him."
@@ -213,9 +219,9 @@ label ch4_save_first:
 
     "Its attention comes off the atrium and onto you like a spotlight, which is the entire point, and which is also the worst thing you have ever voluntarily arranged."
 
-    if partner == "yuji":
+    if _partner == "yuji":
         yuji "{b}GO!{/b} I've got it! I've — okay I don't have it, but I've got its {i}face{/i}—"
-    elif partner == "megumi":
+    elif _partner == "megumi":
         megumi "Idiot—"
         "Two dogs come out of the floor at a dead sprint before he's finished the word."
         megumi "Fine. {i}Fine.{/i} Eight seconds. I said eight seconds."
@@ -229,9 +235,9 @@ label ch4_save_first:
 
     mc "No. Can you walk?"
 
-    voice_ "I don't know. I've been here since Thursday."
+    voice_ "I don't know. What day is it?"
 
-    "It is Sunday."
+    "You tell her, and watch her start the arithmetic, and watch her decide not to finish it."
 
     $ add_ce(3)
 
@@ -260,10 +266,10 @@ label ch4_fight_first:
 
     $ add_ce(5)
 
-    if partner == "yuji":
+    if _partner == "yuji":
         yuji "{b}Together!{/b}"
         "You have never fought alongside anyone. It turns out that Yuji Itadori makes it very easy, because Yuji Itadori simply assumes you will be where he needs you and then behaves as though you already are."
-    elif partner == "megumi":
+    elif _partner == "megumi":
         megumi "Left side. Don't improvise."
         "You take the left side. You do not improvise. It is the single most useful thing anyone has ever told you."
     else:
@@ -306,8 +312,11 @@ label ch4_climax:
     if tech_stat() >= 40:
         $ flag("climax_strong")
         "And you already know where everyone is."
-        "Maki made you name three exits in every room for a week. You named them on the way in without noticing you were doing it."
-        "You know where the woman is. You know where your partner is. You know where the stairwell is and how many strides, and you have four hundred repetitions of one bad punch in your arms, and eleven days ago you were a high school student who was frightened of a corridor."
+        if has_flag("maki_positioning"):
+            "Maki made you name three exits in every room you walked into. You named them on the way in without noticing you were doing it."
+        else:
+            "Somewhere along the way you started counting the exits in every room. You counted them on the way in without noticing you were doing it."
+        "You know where the woman is. You know where your partner is. You know where the stairwell is and how many strides, and you have four hundred repetitions of one bad punch in your arms, and not long ago you were a high school student who could not even see what was in the alley."
         mcthink "I don't have to win."
         mcthink "I have to hold it for eight seconds."
     else:
@@ -317,11 +326,11 @@ label ch4_climax:
         mcthink "Eight seconds."
         mcthink "I have got maybe four."
 
-    if partner == "yuji":
+    if _partner == "yuji":
         yuji "[mc_name]!"
         yuji "{b}I'm here! I'm right here!{/b}"
         "He is. He has been the whole time. He puts himself between the thing and the stairwell and takes a hit meant for you and gets up so fast it looks like a rewind."
-    elif partner == "megumi":
+    elif _partner == "megumi":
         megumi "Nue."
         "Something enormous comes out of his shadow and hits the atrium ceiling and the air goes white."
         megumi "Now. While it's blind. {i}Now{/i}, [mc_surname]."
@@ -365,7 +374,7 @@ label ch4_climax:
     else:
         nobara "She's alive."
         "There is a pause with a shape to it."
-        nobara "She was in the gap for four days and she's got a broken wrist and she is {i}alive{/i}, so before you start, don't."
+        nobara "She was in that gap for days and she's got a broken wrist and she is {i}alive{/i}, so before you start, don't."
         yuji "I wasn't going to say anything."
         nobara "You were {b}thinking{/b} at me. I could hear it."
         megumi "You made a call with four seconds and bad information."

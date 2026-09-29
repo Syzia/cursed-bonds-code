@@ -37,7 +37,8 @@ init 1 python:
     ev("ev_toge_2",   who="toge",   min_bond=35, thread=("toge_voice", 2))
 
     ## --- the two who had nothing ----------------------------------------------
-    ev("ev_gojo_1",   who="gojo",   min_bond=20, thread=("gojo_measure", 1))
+    ev("ev_gojo_1",   who="gojo",   min_bond=20, thread=("gojo_measure", 1),
+       requires=("sunmall_done",))
     ev("ev_yaga_1",   who="yaga",   min_bond=20)
     ev("ev_gojo_2",   who="gojo",   min_bond=40)
     ev("ev_yaga_2",   who="yaga",   min_bond=40)
@@ -67,18 +68,26 @@ label ev_yuji_1:
 
     "He rolls onto his back and squints up at you, and for a second the constant motion of him stops."
 
-    yuji "You did really good yesterday. With Maki-san. I meant to say."
+    if "maki" in roster:
+        yuji "You did really good with Maki-san, by the way. I meant to say."
 
-    mc "I got hit with a stick."
+        mc "She told me nobody cares about my technique."
 
-    yuji "You got hit with a stick {i}on purpose{/i}, which is completely insane, and also I'd have done the same thing."
+        yuji "She told {i}me{/i} that! First day! It's how she says hello. She doesn't bother saying it to people she's already written off."
+
+    else:
+        yuji "You're doing really good, by the way. Here, I mean. I meant to say."
+
+        mc "I got lost between the dorms and the cafeteria twice this morning."
+
+        yuji "Yeah, but you kept walking. Most people who come in from outside spend their first week hiding in their room."
 
     yuji "That's how I know you're going to be okay here."
 
     menu:
         "He's smiling. He's been smiling since you walked up here."
 
-        "\"You asked me to ask again in a couple of weeks. It's been three days.\"":
+        "\"You told me to ask again in a couple of weeks. I'm asking early.\"" if has_flag("first_day_asking"):
             $ add_bond("yuji", 12)
             $ flag("yuji_told_truth")
             "The smile doesn't go anywhere. It just... stops being in front of anything."
@@ -92,9 +101,9 @@ label ev_yuji_1:
             yuji "He talks to me. He's very funny and he wants everyone I love to die."
             yuji "They were going to execute me. Gojo-sensei got it postponed. Not cancelled — {i}postponed{/i}, until I've eaten all twenty."
             "The wind goes across the roof."
-            mc "...Why are you telling me this on day three?"
-            yuji "Because on day thirty it'd be a betrayal that I hadn't."
-            yuji "And because you're going into a building with me next week and you deserve to know what's in there with us."
+            mc "...Why are you telling me this now? You barely know me."
+            yuji "Because in a month it'd be a betrayal that I hadn't."
+            yuji "And because you're going to be walking into buildings with me, and you deserve to know what's in there with us."
             "He looks over. The grin comes back on, and this time you can see exactly how much it costs him to put it on."
             yuji "Also because you didn't laugh when I said the whale thing. That was huge for me, honestly."
 
@@ -104,7 +113,7 @@ label ev_yuji_1:
             $ flag("yuji_kindness")
             yuji "Huh?"
             mc "You've asked Kugisaki if she ate today. Twice. You asked Fushiguro if his shoulder was okay and he said it was fine and you got him ice anyway."
-            mc "You've known me for seventy-two hours and you brought me candy."
+            mc "You hardly know me and you brought me candy."
             yuji "...Is that weird? That's weird, isn't it."
             mc "It's not weird. I'm asking why."
             "He thinks about it. It takes him longer than you expected."
@@ -190,7 +199,7 @@ label ev_megumi_1:
             $ add_bond("megumi", 9)
             $ flag("megumi_philosophy")
             "His eyes open."
-            megumi "That's a big question for day three."
+            megumi "That's a big question for somebody who just got here."
             mc "I've had a strange week."
             megumi "..."
             megumi "I don't think I want to save everyone. I've never said that out loud."
@@ -208,7 +217,7 @@ label ev_megumi_1:
             $ gain(tech()["scales"], 4)
             $ flag("megumi_demo")
             megumi "It's not a party trick."
-            mc "I've been a sorcerer for eight days. Everything is a party trick to me."
+            mc "I've been a sorcerer for about five minutes. Everything is a party trick to me."
             "That, unexpectedly, gets something out of him that is almost a laugh."
             megumi "...Fine."
             "He makes a shape with his hands. His shadow on the leaf-litter goes deep in a way shadows should not, and two white dogs come out of it like they're stepping over a threshold."
@@ -240,7 +249,7 @@ label ev_nobara_1:
 
     nobara "Rule two: you're carrying the bags on the way back, because I carried Itadori's the last time and he thanked me for it, which was somehow worse."
 
-    "By the fourth shop you have stopped protesting. It is, and you would not admit this under interrogation, the first time in nine days that nothing has been trying to kill you."
+    "By the fourth shop you have stopped protesting. It is, and you would not admit this under interrogation, the first time since the alley that nothing has been trying to kill you."
 
     nobara "So. You've got the face."
 
@@ -251,7 +260,7 @@ label ev_nobara_1:
     menu:
         "She's not wrong. You've been carrying something around all week."
 
-        "\"How do you go shopping three days before a mission?\"":
+        "\"How do you go shopping when something could kill you next week?\"":
             $ add_bond("nobara", 12)
             $ flag("nobara_philosophy")
             nobara "Oh, we're doing this one already? Fine, sit down, I'll do the speech."
@@ -259,7 +268,7 @@ label ev_nobara_1:
             nobara "I grew up in a village of two hundred people that decided what I was when I was six and never revised it."
             nobara "I got out. And the deal I made with myself when I got out was: I'm going to like my life. Out loud. On purpose. Where people can see it."
             nobara "So I buy the coat. I get the nails done. I eat the expensive one."
-            nobara "Because in four days something is going to try very hard to make me stop existing, and I refuse — {i}refuse{/i} — to have spent the week before that being sensible."
+            nobara "Because any week now something is going to try very hard to make me stop existing, and I refuse — {i}refuse{/i} — to have spent the week before that being sensible."
             mc "That's not what I expected."
             nobara "What did you expect?"
             mc "Something about not thinking about it."
@@ -282,7 +291,10 @@ label ev_nobara_1:
             $ add_bond("nobara", 10)
             $ flag("nobara_chose_you")
             nobara "Because Itadori would've enjoyed it too much and Fushiguro would've stood in the corner like a coat rack."
-            nobara "And because when Maki-san knocked you over, you got up and you didn't apologise for it."
+            if "maki" in roster:
+                nobara "And because when Maki-san told you your technique didn't matter, you didn't apologise for having one."
+            else:
+                nobara "And because the day you turned up here you looked like something had run you over, and you didn't apologise for it."
             nobara "People here apologise constantly. For being new, for being scared, for taking up space."
             nobara "You didn't. I decided on the spot that I liked you and now you're stuck."
             mc "That's it? That's the whole assessment?"
@@ -343,8 +355,8 @@ label ev_maki_1:
             $ add_bond("maki", 9)
             $ gain(tech()["scales"], 5)
             $ flag("maki_reason")
-            maki "You took the hit."
-            mc "That was stupid."
+            maki "You were in the hall on your own before anybody told you to be."
+            mc "I couldn't sleep. That's not dedication, that's stupid."
             maki "Extremely. But stupid I can work with. Stupid means you'll do the boring part."
             maki "Everyone in this school has a technique that makes them feel special, and the second they feel special they stop doing the boring part."
             maki "Then they meet something that doesn't care how special they are."
@@ -376,7 +388,7 @@ label ev_maki_1:
 
 label ev_panda_1:
 
-    scene bg dorm
+    scene bg your_room night
     with fade_slow
 
     show panda at pos_cl
@@ -389,7 +401,7 @@ label ev_panda_1:
 
     mc "I'm fine."
 
-    panda "Right, sure. How many nights have you actually slept since the corridor?"
+    panda "Right, sure. How many nights have you actually slept since the alley?"
 
     "You open your mouth. You close it."
 
@@ -443,7 +455,7 @@ label ev_panda_1:
             panda "That one means it, by the way. He doubles them when he means it."
             "You will remember that. Later, in the dark, it will matter."
 
-    "They stay until midnight. Nobody asks you a single thing about the East Wing."
+    "They stay until midnight. Nobody asks you a single thing about the alley."
 
     mcthink "That was the point. That was the entire point."
 
@@ -988,7 +1000,7 @@ label ev_shoko_r1:
 
     shoko "Can't sleep, or won't?"
 
-    mc "Every time I close my eyes I'm in that corridor."
+    mc "Every time I close my eyes I'm back in that alley."
 
     shoko "Mm. That doesn't go. I can tell you that honestly or I can be encouraging, and you strike me as someone who'd rather have the first one."
 
@@ -1061,6 +1073,8 @@ label ev_mission_sunmall:
     call chapter_five
 
     $ flag("sunmall_done")
+    $ here = "dorm"
+    $ period = "Night"
 
     scene expression graded_bg() with fade_slow
     return
@@ -1286,7 +1300,7 @@ label ev_shoko_3:
 
     shoko "..."
 
-    shoko "I told you that once, six weeks ago, in passing."
+    shoko "I told you that once, a few weeks ago, in passing."
 
     mc "You told me once. That's usually how telling works."
 
@@ -1307,7 +1321,7 @@ label ev_shoko_3:
             $ add_bond("shoko", 14)
             $ add_aff("shoko", 8)
             $ flag("shoko_open")
-            shoko "And it stopped working about a month ago."
+            shoko "And it stopped working a while back."
             shoko "You kept coming back. That's not in the technique. The technique assumes people get what they need and leave."
             shoko "So at some point I stopped giving you managed pieces and started just — talking. And I genuinely did not notice it happening."
             "She finally drinks the coffee."
@@ -1383,7 +1397,7 @@ label ev_panda_2:
             panda "Nobody's asked me that. Ever. Not once, in my whole entire life."
             "He's quiet for long enough that you wonder if you've done something wrong."
             panda "I don't have an answer. I want to think about it properly."
-            panda "But — hey. Come back and ask me again in a few months. I'll have one."
+            panda "But — hey. Come back and ask me again in a few weeks. I'll have one."
             panda "That's a good thing to have to think about. That's a really good thing to have to think about."
 
     return
@@ -1451,6 +1465,7 @@ label ev_toge_2:
 
 label ev_gojo_1:
 
+    scene expression graded_bg("courtyard") with fade_slow
     show gojo at pos_cr
     show mc at pos_l
     with dissolve
@@ -1558,7 +1573,7 @@ label ev_yaga_1:
             yaga "..."
             yaga "You are eleven weeks from being useful and three weeks from being sent somewhere."
             yaga "Yes. To them, you are an asset with a grade on it."
-            yaga "To me you are an eighteen-year-old who walked into a condemned building for somebody who wasn't going to remember it."
+            yaga "To me you are an eighteen-year-old who stood in an alley, could not save his friend, and came here anyway."
             yaga "I run a school inside an institution that would prefer a factory. Every hour you spend in here holding a bench for me is an hour you are not on a form."
             yaga "Now hold it {i}straight.{/i}"
 
@@ -1645,7 +1660,7 @@ label ev_yaga_2:
 
     yaga "..."
 
-    yaga "Three second-years. Sixteen years old. Nineteen ninety-nine."
+    yaga "Three second-years. Sixteen years old. Two thousand and fourteen."
 
     yaga "Satoru Gojo. Shoko Ieiri. Suguru Geto."
 

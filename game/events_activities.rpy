@@ -148,7 +148,6 @@ label act_invite(who):
         "[_n] peels off at the next junction with a half-wave."
         return
     $ companion = who
-    $ companion_day = day
     if who == "megumi":
         megumi "...Fine. I wasn't doing anything."
     elif who == "nobara":
@@ -187,13 +186,13 @@ label act_confide(who):
         yuji "You just — do the day anyway. And then there's a load of days behind you and you're in it."
         yuji "That's the whole trick. There isn't a better one, I've looked."
     elif who == "megumi":
-        mc "I killed something in a bedroom before I got here. On my own. I haven't told anyone that."
+        mc "I fought the thing that killed Sana. On my own, before Gojo got there. I lost. I haven't told anyone that."
         megumi "..."
         megumi "How long did it take you to stop replaying it?"
         mc "I haven't."
         megumi "No. You don't."
         megumi "You get a second one, and the first one moves back a place. That's not comfort, it's just what happens."
-        megumi "For what it's worth — doing it alone, untrained, and not telling anyone afterwards is the most Fushiguro thing I have ever heard from someone who isn't me."
+        megumi "For what it's worth — going at it alone, untrained, and not telling anyone afterwards is the most Fushiguro thing I have ever heard from someone who isn't me."
     elif who == "nobara":
         mc "My parents were made happy about me leaving. Professionally. There's a paper."
         nobara "...Yeah. There's a paper for everyone."
@@ -207,12 +206,12 @@ label act_confide(who):
         maki "Everyone here who is good at it was bad at it in a room where nobody was watching. That's the entire secret and people keep making it into a personality."
         maki "You're at the boring part. Stay at the boring part."
     elif who == "panda":
-        mc "Sometimes I think the person who left that town four weeks ago isn't me any more."
+        mc "Sometimes I think the person who got into that car outside my house isn't me any more."
         panda "Oh, he isn't. That's not a metaphor, by the way, I'm the wrong person to ask for metaphors about identity."
-        panda "But here's the thing nobody says: it's not a loss. You didn't lose him. You've got him. He's in there being the reason you go into corridors."
+        panda "But here's the thing nobody says: it's not a loss. You didn't lose him. You've got him. He's in there being the reason you're doing any of this."
         panda "I've got two people in me who never got to be anyone. You've got one who did. Use him."
     elif who == "toge":
-        "You tell him. All of it — the paper, the corridor, the girl who cannot keep what you told her."
+        "You tell him. All of it — Kurose's forms, the alley, the girl nobody but you remembers properly now."
         "He listens the way he does everything, completely, and when you finish he takes out his phone and types for a long time."
         "{i}I couldn't say any of that back to you without putting it in your body. So I'm going to sit here instead.{/i}"
         "{i}That's not less. I've had years to decide whether it's less. It isn't.{/i}"

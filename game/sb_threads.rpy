@@ -12,7 +12,7 @@ init -1 python:
             who="yuji", title="The Countdown",
             stages=[
                 "He is the loudest person here and something underneath him is very quiet.",
-                "He told you about Sukuna. He told you on day three, unprompted.",
+                "He stopped moving for one second on the roof. Something enormous is underneath.",
                 "He told you the half he never says out loud: he expects to go first.",
                 "You promised to be there. He said you couldn't promise that. You did it anyway.",
             ]),
@@ -64,7 +64,7 @@ init -1 python:
         "gojo_measure": dict(
             who="gojo", title="Taking Your Measure",
             stages=[
-                "He recruited you off one corridor and has been unreadable since.",
+                "He recruited you off one night in an alley and has been unreadable since.",
                 "He's been testing you the whole time. You finally noticed.",
                 "He taught you something real, without the show. Once.",
             ]),

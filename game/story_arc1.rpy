@@ -54,7 +54,7 @@ label st_roll_call:
 
     "He looks along the row and stops on you."
 
-    yaga "[mc_surname]. Eleven days ago you didn't know cursed energy existed. In three weeks you'll be on that field."
+    yaga "[mc_surname]. Last week you didn't know cursed energy existed. In three weeks you'll be on that field."
 
     menu:
         "Everyone is looking."
@@ -76,7 +76,6 @@ label st_roll_call:
             yaga "I would prefer a third time not to have your name on it."
 
         "\"Who am I fighting?\"":
-            $ add_bond("maki", 3)
             $ gain("insight", 2)
             $ flag("rollcall_tactical")
             yaga "Good question. Wrong week for it, but good question."
@@ -299,7 +298,7 @@ label st_intensive:
             gojo "..."
             gojo "Because Itadori has Sukuna doing his arithmetic for him and Fushiguro was raised in a clan that taught him this at nine."
             gojo "And Kugisaki works it out herself, in her own time, by being annoyed about it."
-            gojo "You're the one who came in from outside eleven days before term."
+            gojo "You're the one who came in from outside. Off the street, off one bad Thursday."
             gojo "Everyone else here got a running start. I'm evening it up. Quietly, because if I do it loudly you'll all decide it means something."
             mc "Doesn't it?"
             gojo "...Yeah."
@@ -399,7 +398,7 @@ label st_night_before:
 
     "Maki is sitting on the railing with her back to the drop, cleaning something that does not need cleaning."
 
-    $ _closest = partner()
+    $ _closest = closest_partner()
     $ _cn = CAST[_closest]["short"]
     $ _cb = bonds.get(_closest, 0)
 
@@ -408,7 +407,7 @@ label st_night_before:
     else:
         "You find a space at the edge and sit in it."
 
-    "Twenty-one days ago you were in a corridor in a condemned school building with your hands full of something you couldn't name."
+    "Not so long ago you were on the ground in the alley behind the arcade with your hands full of something you couldn't name."
 
     $ _open = len(threads_open())
     $ _done = len(threads_complete())

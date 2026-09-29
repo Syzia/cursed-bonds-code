@@ -230,11 +230,11 @@ label ms_nade_3:
 
     "It is a map of the Kantō region. There are eleven circles on it in red, and a twelfth in a different hand."
 
-    "The twelfth is around a town you know extremely well, because you grew up in it, and the date beside it is four years before the East Wing."
+    "The twelfth is around a town you know extremely well, because you grew up in it, and the date beside it is four years before the alley."
 
     mcthink "Four years."
 
-    mcthink "It was in the diary before I ever went into that corridor."
+    mcthink "It was in the diary before I ever cut through that alley."
 
     $ flag("nade_map")
     $ flag("cartographer_seeded")

@@ -1,5 +1,5 @@
 ################################################################################
-## Chapter Five — Debrief
+## Debrief — the evening of the Sun Mall, straight after the mission.
 ################################################################################
 
 label chapter_five:
@@ -7,13 +7,13 @@ label chapter_five:
     scene bg black
     with None
 
-    show screen chapter_card("CHAPTER FIVE", "Debrief", "Two days later.")
+    show screen chapter_card("DEBRIEF", "What Should Have Happened", "That evening.")
     with fade_slow
     $ renpy.pause(2.4)
     hide screen chapter_card
     with fade_slow
 
-    scene bg classroom
+    scene expression graded_bg("classroom", "Evening")
     with fade_slow
 
     show yaga at pos_c
@@ -43,31 +43,35 @@ label chapter_five:
         yaga "I am {i}recording{/i} it, because it is going to happen again, and next time I want you to have done it once already with somebody watching."
     else:
         yaga "You made a tactical call to neutralise the threat before extraction."
-        yaga "It was correct. It was also the call that puts a civilian in a gap for another ninety seconds, and you have been carrying that around for two days, and you should."
+        yaga "It was correct. It was also the call that puts a civilian in a gap for another ninety seconds, and you will be carrying that around for a while, and you should."
         yaga "Not forever. But you should."
 
     if tech_stat() >= 40:
         $ grade = 3
-        yaga "Your cursed energy has come along faster than your file predicted. Zenin's doing, I assume."
+        if "maki" in roster:
+            yaga "Your cursed energy has come along faster than your file predicted. Zenin's doing, I assume."
+        else:
+            yaga "Your cursed energy has come along faster than your file predicted."
         yaga "Effective immediately: Grade 4 to Grade 3."
         yaga "That is not a reward. That is a heavier assignment list."
     else:
         $ grade = 4
-        yaga "Your control is still where a first-week student's should be, which is where it should be, because it is your first week."
+        yaga "Your control is still where a new student's should be, which is where it should be, because you are new."
         yaga "You stay Grade 4. Nobody in this room thinks less of you for it, and the two of us are the only people in this room."
 
     if total_bond() >= 90:
         $ flag("strong_class")
         yaga "One more thing."
-        yaga "Gojo told you to go and have three boring afternoons. He tells everyone that. Almost nobody does it."
+        yaga "Gojo left the four of you in a training hall and told you to do something. He tells everyone that. Almost nobody does it."
         yaga "Itadori requested you as a partner. Fushiguro corroborated the request, in writing, which he has never done for anyone."
-        yaga "Zenin has you in her training log every day for a week."
+        if "maki" in roster and bonds.get("maki", 0) >= 20:
+            yaga "Zenin has you in her training log most days."
         yaga "That is worth more to me than your grade. Do not tell Gojo I said that, he will be unbearable."
 
     hide yaga
     with dissolve
 
-    scene bg rooftop
+    scene bg rooftop evening
     with fade_slow
 
     show gojo at pos_cr
@@ -84,7 +88,7 @@ label chapter_five:
 
     gojo "Okay. Real question, and then I'll go away and be annoying somewhere else."
 
-    gojo "Eleven days ago you were in a corridor. Something had its hand on your friend."
+    gojo "The other week you were in an alley behind an arcade. Something was standing over your friend."
 
     gojo "If you could go back and not have any of it — the technique, the school, all of us — would you?"
 
@@ -103,7 +107,7 @@ label chapter_five:
         "\"Ask me when I've stopped shaking.\"":
             $ add_bond("gojo", 8)
             $ flag("end_honest")
-            mc "It's been two days and my hands still aren't right."
+            mc "It's been a few hours and my hands still aren't right."
             mc "I don't know. That's the honest version. I don't know yet."
             gojo "..."
             gojo "You know, out of everyone I've ever asked that, about four people said 'I don't know'."
@@ -121,22 +125,22 @@ label chapter_five:
             gojo "..."
             gojo "There was a guy. Best friend. Strongest person I knew apart from me, which — at the time, honestly, felt like the same category."
             gojo "And there was a version of the world where I noticed what was happening to him in time."
-            gojo "So, yes. There's a corridor I'd go back to."
+            gojo "So, yes. There's an alley I'd go back to."
             "He hops off the railing and the grin snaps back into place like a door closing."
-            gojo "{i}Anyway!{/i} That's why I'm making you lot go and have boring afternoons together, so you'll notice."
+            gojo "{i}Anyway!{/i} That's why I keep leaving you lot in a room together and telling you to do something. So you'll notice."
             gojo "Very heavy-handed teaching. I'm aware. It's the only kind I've got."
 
     gojo "Right. Homework."
 
-    gojo "In three weeks there's an exchange event with Kyoto. They'll try to hurt you, it's traditional, don't take it personally except from Todo, who means it."
+    gojo "There's an exchange event with Kyoto coming up. They'll try to hurt you, it's traditional, don't take it personally except from Todo, who means it."
 
-    gojo "Before then: keep doing the boring thing. All of it. Especially the parts that felt like a waste of an afternoon."
+    gojo "Before then: keep doing whatever it is you four do. All of it. Especially the parts that felt like a waste of an afternoon."
 
     gojo "Because in about six months something is going to be standing in front of one of your friends, and the only thing that'll matter is whether you already knew where they were."
 
     "He walks off toward the stairs, waves without turning round, and is gone in a way that does not look like walking."
 
-    scene bg rooftop
+    scene bg rooftop evening
     with slowdissolve
 
     show mc at pos_c
@@ -144,7 +148,7 @@ label chapter_five:
 
     "You stay on the roof for a while."
 
-    "A few weeks ago you were frightened of a corridor. You are still frightened of the corridor. You have simply added several other things."
+    "The other week you were frightened of an alley. You are still frightened of the alley. You have simply added several other things."
 
     if has_flag("strong_class"):
         "Below you, in the courtyard, three first-years are arguing about whether a person could punch a whale."

@@ -115,7 +115,7 @@ label st_kurose:
 
 label st_kurose_2:
 
-    scene bg dorm with fade_slow
+    scene bg your_room night with fade_slow
 
     "An envelope has been put under your door, squarely, by somebody who did not knock."
 
