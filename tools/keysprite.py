@@ -40,7 +40,7 @@ EXPRESSIONS = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 HEIGHT_CM = {
     "yuji": 173, "megumi": 181, "nobara": 160, "maki": 180, "panda": 200,
     "toge": 179, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 180,
-    "utahime": 178, "sana": 167, "mc": 179,
+    "utahime": 178, "sana": 167, "mc": 179, "mcyotsuka": 179,
 }
 TALLEST_CM = 200.0
 

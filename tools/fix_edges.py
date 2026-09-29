@@ -45,6 +45,13 @@ Two more repairs for a base the model got nearly right:
       python3 tools/fix_edges.py --prepare-body yaga     # body.json
       python3 tools/fix_edges.py yaga body <edit.png>
 
+- **OUTFIT_FIX** redraws the clothes on a finished working base and keeps
+  everything but the head, making a second outfit that shares the face and
+  so every expression; its result is the outfit's own render:
+
+      python3 tools/fix_edges.py --prepare-outfit mcyotsuka   # outfit.json
+      python3 tools/fix_edges.py mcyotsuka outfit <edit.png>
+
 `--prepare` refuses to overwrite a working base that already has repairs
 pasted in, unless given --force.
 """
@@ -80,6 +87,7 @@ BASES = {
     "ijichi": "ijichi_base_00003_.png",
     "sana": "sana_base_00001_.png",
     "mc": "mc_base_00001_.png",       # the Jin-Woo-type render, looking straight out
+    "mcyotsuka": "fixed/mcyotsuka_render.png",   # mc in the Yotsuka uniform (OUTFIT_FIX)
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}
@@ -980,6 +988,104 @@ def apply_body(char, edited):
         print("   body from row %d down (fading in over %d rows) -> %s" % (seam - band, band, work_path))
 
 
+# A second outfit: the same picture in other clothes, so the face, and every
+# expression made on it, is shared. key: (character it's made from, change).
+# The outfit is then a character of its own for the rest of the pipeline.
+# Described, never named: this goes to Google.
+OUTFIT_FIX = {
+    # Kaito's prologue uniform: Yotsuka High, matching Sana's (tools/chars/CANON.md).
+    "mcyotsuka": ("mc", "Change only his clothes into an ordinary Japanese high school boy's uniform: a fitted "
+                  "grey blazer worn open, with thin dark green piping along the edges of the lapels and a small "
+                  "dark green school crest on the chest pocket; a crisp white collared shirt with a neatly "
+                  "knotted red necktie; plain grey trousers; brown leather loafers. The white shirt collar sits "
+                  "around his neck below his chin, with no tall collar."),
+}
+OUTFIT_VERSIONS = 3
+OUTFIT_KEEP = ("Keep {his} head, face and hair exactly as they are, and keep {his} pose, the positions of {his} "
+               "hands and feet, {his} height and build, the framing and the plain flat green background exactly "
+               "the same, in the same flat cel shading and line art.")
+
+
+def prepare_outfit(chars):
+    rows = []
+    for char in chars:
+        src_char, change = OUTFIT_FIX[char]
+        work = rgb(load(os.path.join(FIXED, "%s_base.png" % src_char)))
+        staged = "outfit_%s.png" % char
+        work.save(os.path.join(COMFY_INPUT, staged))
+        his, who = pronoun(src_char)
+        prompt = ("This is a full-body picture of a cartoon character, %s on a plain flat green background. "
+                  % who + change + " " + OUTFIT_KEEP.format(his=his))
+        rows.append((char, "outfit", staged, prompt, OUTFIT_VERSIONS, "9:16"))
+        print("%-9s outfit full picture %dx%d from %s's working base -> %s"
+              % (char, work.w, work.h, src_char, staged))
+    write_workflow(rows, "Second outfit: %s" % ", ".join(chars),
+                   "Each version redraws the clothes on the full picture; everything but the head is kept.",
+                   "outfit.json")
+
+
+def apply_outfit(char, edited):
+    """Paste the new clothes round the unchanged head: everything from the
+    edit except the head (hair, face and neck skin, through the head-fix mask,
+    which leaves out a collar beside the jaw), lined up on the head, which the
+    edit must not move, and colour-matched on the face skin, the one large
+    area that is the same in both. Writes the outfit's new render."""
+    from facemask import build_head, is_skin
+    src_char = OUTFIT_FIX[char][0]
+    work_path = os.path.join(FIXED, "%s_base.png" % src_char)
+    work = rgb(load(work_path))
+    raw = rgb(load(os.path.expanduser(edited)))
+    ed = rgb(resample(raw, work.w, work.h))
+    head = load(build_head(work_path, char, out_dir=os.path.join(FIXED, "masks"),
+                           margin=HEAD_MARGIN.get(src_char, 0.14)))
+    W, H = work.w, work.h
+    inside = [p for p in range(0, W * H, 2) if head.buf[p * head.ch] > 200
+              and work.buf[p * 3 + 1] - max(work.buf[p * 3], work.buf[p * 3 + 2]) <= 20]
+    pts = [(p % W, p // W) for p in inside[::2]]
+    xs, ys = [x for x, y in pts], [y for x, y in pts]
+    c = ((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0)
+    best = (score(work, ed, pts, c, 1.0, 0, 0), 1.0, 0, 0)
+    for sc in [0.98 + 0.005 * i for i in range(9)]:
+        for dy in range(-10, 11, 2):
+            for dx in range(-10, 11, 2):
+                e = score(work, ed, pts, c, sc, dx, dy)
+                if e < best[0]:
+                    best = (e, sc, dx, dy)
+    err, sc, dx, dy = best
+    print("%s outfit: lined up on the head at scale %.3f, shift (%d, %d); mismatch %.1f" % (char, sc, dx, dy, err))
+    if err > 14:
+        raise SystemExit("the edit moved the head too much to join the clothes on cleanly (mismatch %.1f)" % err)
+    kx, ky = raw.w / float(W), raw.h / float(H)
+
+    def from_edit(x, y):
+        ex, ey = c[0] + (x - c[0]) * sc + dx, c[1] + (y - c[1]) * sc + dy
+        return sample(raw, (ex + 0.5) * kx - 0.5, (ey + 0.5) * ky - 0.5)
+
+    diffs = [[], [], []]
+    for p in inside:
+        r, g, b = work.buf[p * 3:p * 3 + 3]
+        if is_skin(r, g, b):
+            e = from_edit(p % W, p // W)
+            for k in range(3):
+                diffs[k].append((r, g, b)[k] - e[k])
+    shift = [max(-20.0, min(20.0, sorted(d)[len(d) // 2])) if len(d) > 200 else 0.0 for d in diffs]
+    print("   colour shift %s, judged on %d face-skin pixels" % ([round(v, 1) for v in shift], len(diffs[0])))
+    out = Img(W, H, alpha=False)
+    out.buf = bytearray(work.buf)
+    for p in range(W * H):
+        t = 1.0 - head.buf[p * head.ch] / 255.0
+        if t <= 0.0:
+            continue
+        e = from_edit(p % W, p // W)
+        for k in range(3):
+            out.buf[p * 3 + k] = max(0, min(255, int(work.buf[p * 3 + k] * (1 - t) + (e[k] + shift[k]) * t + 0.5)))
+    dest = os.path.join(FIXED, "%s_render.png" % char)
+    out.save(dest)
+    print("   everything but the head from the edit -> %s" % dest)
+    if BASES.get(char) != "fixed/%s_render.png" % char:
+        print("   this is %s's render: set BASES[%r] = 'fixed/%s_render.png', then --prepare" % (char, char, char))
+
+
 def hairlike(r, g, b):
     """Brown hair, dark or light, highlights included; not skin, the coat,
     the turtleneck or the backdrop."""
@@ -1232,6 +1338,10 @@ if __name__ == "__main__":
         apply_body(args[0], args[2])
     elif len(args) == 3 and args[1] == "hair":
         apply_hair(args[0], args[2])
+    elif len(args) >= 2 and args[0] == "--prepare-outfit":
+        prepare_outfit(args[1:])
+    elif len(args) == 3 and args[1] == "outfit":
+        apply_outfit(args[0], args[2])
     elif len(args) == 2 and args[1] == "--install":
         install(args[0])
     elif len(args) == 3 and args[1] in ("top", "bottom", "left", "right", "head"):
