@@ -35,6 +35,11 @@ cover every one of them.
      a move onto green by comparing pixels whose colour is far from the
      backdrop, not with the key's own measure: nothing inside the outline
      should change.
+   - The move onto green mixes each soft edge pixel so the green key reads
+     back the same alpha, and strips the screen's colour from the 2 px just
+     inside the outline. Before that (fixed 2026-09-29) both magenta
+     characters, Maki and Sana, had a green and maroon fringe. Check an
+     outline at 4x zoom on a dark and a light ground.
 3. **Repair the base** (`fix_edges.py --prepare <name>`, one `edges.json` Run
    in the local ComfyUI). Add the character to `BASES` first. Every option is
    per character:

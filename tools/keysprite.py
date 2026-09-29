@@ -129,14 +129,32 @@ def rescreen(im, colour=PURE_GREEN):
     rendered on. A character rendered on magenta goes onto pure green for the
     rest of the pipeline, whose key thresholds scale with the backdrop: on
     pure green only a green lean above 82 counts as backdrop, where Krea's
-    muted green (64, 106, 68) keys from 12, and no hair reaches 82."""
+    muted green (64, 106, 68) keys from 12, and no hair reaches 82.
+
+    That same 82 means a soft edge pixel can't simply be blended over the
+    green: up to a third green leans less than 82, so the green key would
+    keep it solid and green, and it did, as a green fringe round all of
+    Sana's outline. Each soft pixel is instead mixed so that its green lean
+    is exactly the one the green key maps back to this pixel's alpha."""
     keyed = key_out(im)
     out = Img(im.w, im.h, alpha=False)
+    chroma = colour[1] - max(colour[0], colour[2])
+    lo, hi = chroma * (0.62 - 0.30), chroma * 0.62          # key_out's cut and feather
     for p in range(im.w * im.h):
         j = p * 4
-        a = keyed.buf[j + 3] / 255.0
-        for k in range(3):
-            out.buf[p * 3 + k] = int(keyed.buf[j + k] * a + colour[k] * (1 - a) + 0.5)
+        a = keyed.buf[j + 3]
+        if a == 255:
+            out.buf[p * 3:p * 3 + 3] = keyed.buf[j:j + 3]
+            continue
+        if a == 0:
+            out.buf[p * 3:p * 3 + 3] = bytes(colour)
+            continue
+        r, g, b = keyed.buf[j], keyed.buf[j + 1], keyed.buf[j + 2]
+        v = hi - (hi - lo) * a / 255.0              # the lean that keys back to alpha a
+        m = max(r, b) - g                           # how far the figure leans off green
+        t = max(0.0, min(1.0, (chroma - v) / (chroma + m) if chroma + m > 0 else 1.0))
+        for k, f in enumerate((r, g, b)):
+            out.buf[p * 3 + k] = int(f * t + colour[k] * (1 - t) + 0.5)
     return out
 
 
@@ -251,9 +269,11 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
             if use_chroma and a < 255:
                 if kind == "green" and g > max(r, b):
                     g = int(g - (g - max(r, b)) * 0.9)
-                elif kind == "magenta" and min(r, b) > g:
-                    e = (min(r, b) - g) * 0.9
-                    r, b = int(r - e), int(b - e)
+                elif kind == "magenta" and v > 0:
+                    # take out the screen's own colour, in proportion: a rose
+                    # screen is mostly red, and an even cut leaves red edges
+                    f = v / bg_chroma * 0.9
+                    r, b = int(r - f * (bg[0] - bg[1])), int(b - f * (bg[2] - bg[1]))
                 elif kind == "blue" and b > max(r, g):
                     b = int(b - (b - max(r, g)) * 0.9)
 
@@ -262,6 +282,41 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
             out.buf[j + 1] = max(0, min(255, g))
             out.buf[j + 2] = max(0, min(255, b))
             out.buf[j + 3] = a
+
+    # A vivid screen also tints the solid pixels just inside the outline: up
+    # to a third of the screen's colour still counts as figure. On Krea's
+    # muted green the tint doesn't show; on magenta it drew a maroon line round
+    # Sana. So solid pixels within 2 px of a soft one lose it too.
+    if kind == "magenta":
+        w, h = im.w, im.h
+        soft = bytearray(1 if out.buf[p * 4 + 3] < 255 else 0 for p in range(w * h))
+        band = _grow(soft, w, h, 2)
+        for p in range(w * h):
+            if band[p] and not soft[p]:
+                i = p * ch
+                r, g, b = im.buf[i], im.buf[i + 1], im.buf[i + 2]
+                v = lean(r, g, b)
+                if v > 0:
+                    f = v / bg_chroma * 0.9
+                    out.buf[p * 4] = max(0, int(r - f * (bg[0] - bg[1])))
+                    out.buf[p * 4 + 2] = max(0, int(b - f * (bg[2] - bg[1])))
+    return out
+
+
+def _grow(mask, w, h, r):
+    """The mask grown by r px in every direction, as a new bytearray."""
+    tmp = bytearray(w * h)
+    for y in range(h):
+        row = y * w
+        for x in range(w):
+            if mask[row + x]:
+                tmp[row + max(0, x - r):row + min(w, x + r + 1)] = b"\x01" * (min(w, x + r + 1) - max(0, x - r))
+    out = bytearray(w * h)
+    for y in range(h):
+        for x in range(w):
+            if tmp[y * w + x]:
+                for yy in range(max(0, y - r), min(h, y + r + 1)):
+                    out[yy * w + x] = 1
     return out
 
 

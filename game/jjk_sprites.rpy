@@ -50,8 +50,8 @@ image panda angry = lit_sprite("images/char/panda_angry.png", (880, 1400), (447,
 image panda surprised = lit_sprite("images/char/panda_surprised.png", (880, 1400), (447, 1365, 571))
 image panda sad = lit_sprite("images/char/panda_sad.png", (880, 1400), (447, 1365, 571))
 
-image sana = lit_sprite("images/char/sana_neutral.png", (760, 1400), (377, 1365, 215))
-image sana neutral = lit_sprite("images/char/sana_neutral.png", (760, 1400), (377, 1365, 215))
+image sana = lit_sprite("images/char/sana_neutral.png", (760, 1400), (376, 1365, 215))
+image sana neutral = lit_sprite("images/char/sana_neutral.png", (760, 1400), (376, 1365, 215))
 
 image shoko = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
 image shoko neutral = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
