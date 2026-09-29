@@ -1,0 +1,704 @@
+<!-- Arc One storyboard, as agreed in comments on 2026-09-29. Live copy: https://claude.ai/artifact/V6qPxrGmSUQDUn5twNWsbr (portraits omitted here). -->
+<title>Cursed Bonds Arc One</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F3F3F6; --surface:#FFFFFF; --sunk:#E9E9EF;
+  --ink:#15162A; --ink2:#3F4360; --muted:#6A6E86; --rule:#D9DAE3;
+  --accent:#5A46D2; --accent-soft:#ECE8FB;
+  --seal:#B3312A; --seal-soft:#F7E5E3;
+  --gold:#9A700F; --gold-soft:#F5ECD5;
+  --g4:#737A90; --g3:#23857A; --g2:#2C69C8; --g1:#6844CC; --gs:#B3312A;
+  --screen:#0C0B13; --screen2:#171624; --screen-ink:#ECEAF6; --screen-muted:#9894AE; --screen-rule:#2B2940;
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0D0C14; --surface:#161522; --sunk:#1D1C2B;
+    --ink:#ECEAF6; --ink2:#C7C4DA; --muted:#928EAA; --rule:#2B2A3C;
+    --accent:#A193FF; --accent-soft:#231F40;
+    --seal:#E2665C; --seal-soft:#341A1B;
+    --gold:#E1B754; --gold-soft:#2E2512;
+    --g4:#9AA0B4; --g3:#4CC0B2; --g2:#6A9EF0; --g1:#A889F5; --gs:#E2665C;
+    --screen:#08070E; --screen2:#12111C;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0D0C14; --surface:#161522; --sunk:#1D1C2B;
+  --ink:#ECEAF6; --ink2:#C7C4DA; --muted:#928EAA; --rule:#2B2A3C;
+  --accent:#A193FF; --accent-soft:#231F40;
+  --seal:#E2665C; --seal-soft:#341A1B;
+  --gold:#E1B754; --gold-soft:#2E2512;
+  --g4:#9AA0B4; --g3:#4CC0B2; --g2:#6A9EF0; --g1:#A889F5; --gs:#E2665C;
+  --screen:#08070E; --screen2:#12111C;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;padding-inline:20px;padding-block:0 80px}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:210px minmax(0,1fr);gap:56px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-top:48px;max-height:100vh;overflow:auto}
+nav.toc p{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+nav.toc a{display:block;color:var(--ink2);text-decoration:none;font-size:14px;padding:5px 0 5px 12px;border-left:2px solid var(--rule)}
+nav.toc a:hover{color:var(--accent);border-left-color:var(--accent)}
+main{min-width:0;max-width:800px}
+header.top{padding:56px 0 28px;border-bottom:1px solid var(--rule);margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,50px);line-height:1.12;margin:10px 0 14px;text-wrap:balance}
+h1 .jp{font-size:.5em;color:var(--seal);font-weight:600;margin-left:.3em;letter-spacing:.1em;vertical-align:.25em}
+.lede{font-size:18px;color:var(--ink2);max-width:62ch;margin:0}
+section{padding:44px 0 8px;border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:0}
+h2{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.25;margin:0 0 6px;display:flex;align-items:center;gap:12px;text-wrap:balance}
+h2 .seal{flex:none;width:30px;height:30px;border-radius:4px;background:var(--seal);color:#fff;font-family:var(--display);font-weight:800;font-size:17px;display:grid;place-items:center;line-height:1}
+.sub{color:var(--muted);margin:0 0 22px;max-width:65ch}
+h3{font-family:var(--display);font-weight:800;font-size:20px;margin:30px 0 8px;text-wrap:balance}
+h4{font-size:15px;margin:22px 0 6px;letter-spacing:.02em}
+p{margin:0 0 14px;max-width:68ch}
+ul,ol{margin:0 0 16px;padding-left:22px;max-width:66ch}
+li{margin:4px 0}
+code,.mono{font-family:var(--mono);font-size:.86em}
+code{background:var(--sunk);padding:1px 5px;border-radius:3px}
+.muted{color:var(--muted)}
+strong{font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.03em;padding:2px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap;line-height:1.6}
+.g4{color:var(--g4)} .g3{color:var(--g3)} .g2{color:var(--g2)} .g1{color:var(--g1)} .gs{color:var(--gs)}
+.new{color:var(--gold)}
+.callout{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:18px 20px;margin:18px 0}
+.callout.decide{border-color:var(--seal);background:var(--seal-soft)}
+.callout .tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--seal);margin-bottom:6px;display:block}
+.take{display:grid;gap:14px;margin:6px 0 10px}
+.take .row{display:grid;grid-template-columns:130px minmax(0,1fr);gap:18px;padding:12px 0;border-top:1px solid var(--rule)}
+.take .row:first-child{border-top:0}
+.take .k{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.take .row p{margin:0}
+.tablewrap{overflow-x:auto;margin:10px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:620px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td .chip{margin:1px 0}
+.timeline{position:relative;margin:8px 0 8px;padding-left:34px}
+.timeline::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:var(--rule)}
+.act{position:relative;margin:0 0 30px}
+.act::before{content:"";position:absolute;left:-29px;top:7px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:3px solid var(--accent)}
+.act.pro::before{border-color:var(--muted)}
+.act-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 14px;margin-bottom:6px}
+.act-num{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.act.pro .act-num{color:var(--muted)}
+.act h3{margin:0}
+.act .canon{font-size:13.5px;color:var(--muted);margin:0 0 10px}
+.beats{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.beats li{margin:0;padding:10px 14px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px}
+.beats .kind{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding-top:4px;color:var(--muted);min-width:66px}
+.beats .kind.story{color:var(--accent)} .beats .kind.set{color:var(--seal)} .beats .kind.have{color:var(--g3)}
+.beats b{font-weight:700}
+.chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:12px 0 18px}
+.cmiss{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:14px 16px}
+.cmiss h4{margin:0 0 2px;font-size:15px}
+.cmiss .when{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;margin-bottom:8px}
+.cmiss ol{margin:0;padding-left:18px;font-size:14px}
+.cmiss li{margin:3px 0}
+.ladder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:14px 0 8px;min-width:640px}
+.rung{border:1px solid var(--rule);border-top:4px solid currentColor;border-radius:6px;background:var(--surface);padding:10px 10px 12px;font-size:13px;line-height:1.45}
+.rung b{display:block;font-family:var(--display);font-size:16px;color:var(--ink);margin-bottom:4px}
+.rung span{color:var(--muted)}
+.rung.arc{box-shadow:inset 0 0 0 1px currentColor}
+.scroll{overflow-x:auto}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:12px 0 18px}
+.tool{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;font-size:14px}
+.tool h4{margin:0 0 6px;font-family:var(--display);font-size:16px}
+.tool.locked{background:repeating-linear-gradient(135deg,var(--surface) 0 10px,var(--sunk) 10px 20px)}
+/* game screen mocks */
+.screen{background:var(--screen);color:var(--screen-ink);border-radius:10px;padding:16px;margin:16px 0 22px;border:1px solid var(--screen-rule)}
+.screen .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--screen-muted);margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hud{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:var(--screen2);border:1px solid var(--screen-rule);border-radius:8px;padding:10px 14px;font-size:13.5px}
+.hud .obj{flex:1 1 260px;color:var(--screen-ink)}
+.hud .obj b{color:#E1B754;font-weight:500}
+.hud .btns{display:flex;gap:6px}
+.hud .btns span{border:1px solid var(--screen-rule);border-radius:6px;padding:3px 10px;font-size:12.5px;color:var(--screen-ink)}
+.hud.old{font-family:var(--mono);font-size:11.5px;color:var(--screen-muted);gap:6px 12px}
+.hud.old span{white-space:nowrap}
+.jr{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px}
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tabs span{font-size:13px;padding:5px 12px;border-radius:6px;color:var(--screen-muted);border:1px solid transparent}
+.tabs span.on{color:var(--screen-ink);border-color:var(--screen-rule);background:var(--screen2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+.card{background:var(--screen2);border:1px solid var(--screen-rule);border-radius:8px;padding:6px 6px 8px;text-align:center;cursor:pointer;font:inherit;color:inherit}
+.card:hover,.card.sel{border-color:#A193FF}
+.card img,.card .sil{width:100%;aspect-ratio:1;border-radius:5px;display:block;background:#1d1b2c;object-fit:cover}
+.card .sil{display:grid;place-items:center;font-family:var(--display);font-size:30px;color:#4a4665;background:radial-gradient(circle at 50% 38%,#2a2740 0 22%,transparent 23%),radial-gradient(ellipse at 50% 100%,#2a2740 0 46%,transparent 47%),#15141f}
+.card .nm{font-size:11.5px;margin-top:5px;line-height:1.25}
+.card .st{font-family:var(--mono);font-size:9.5px;color:var(--screen-muted);letter-spacing:.04em}
+.card .st.next{color:#E1B754}
+.card.lock{cursor:default;opacity:.85}
+.detail{background:var(--screen2);border:1px solid var(--screen-rule);border-radius:8px;padding:14px;font-size:13.5px;line-height:1.55}
+.detail .who{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.detail .who img{width:64px;height:64px;border-radius:6px;object-fit:cover;background:#1d1b2c}
+.detail .who b{font-family:var(--display);font-size:18px;display:block;line-height:1.2}
+.detail .who span{font-family:var(--mono);font-size:10.5px;color:var(--screen-muted)}
+.detail .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--screen-muted);margin:10px 0 3px}
+.detail .nextbox{border:1px solid #6b5a1c;background:#1e1a0c;border-radius:6px;padding:8px 10px;color:#F0DFA8}
+.detail ul{margin:0;padding-left:16px;max-width:none}
+.meter{height:5px;border-radius:3px;background:#262438;overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;background:#A193FF}
+.phases{counter-reset:ph;list-style:none;padding:0;margin:10px 0 18px;display:grid;gap:10px;max-width:none}
+.phases li{counter-increment:ph;margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:14px 16px 14px 58px;position:relative}
+.phases li::before{content:counter(ph);position:absolute;left:16px;top:13px;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);color:var(--accent);font-family:var(--display);font-weight:800;display:grid;place-items:center;font-size:15px}
+.phases b{display:block;font-family:var(--display);font-size:17px;margin-bottom:2px}
+.phases .cost{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.qs{counter-reset:q;list-style:none;padding:0;margin:10px 0;display:grid;gap:10px;max-width:none}
+.qs li{counter-increment:q;margin:0;border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 16px 12px 52px;position:relative}
+.qs li::before{content:counter(q);position:absolute;left:14px;top:12px;width:26px;height:26px;border-radius:4px;background:var(--seal);color:#fff;font-family:var(--display);font-weight:800;display:grid;place-items:center;font-size:14px}
+.qs .rec{display:block;font-size:14px;color:var(--ink2);margin-top:3px}
+.qs .rec b{color:var(--seal)}
+.qs li.done{border-color:var(--g3)}
+.qs li.done::before{content:"✓";background:var(--g3)}
+.qs li.done .rec b{color:var(--g3)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.two>div{min-width:0}
+footer{padding:28px 0 0;color:var(--muted);font-size:13px}
+@media (max-width:980px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  nav.toc{position:static;padding-top:20px;max-height:none;display:flex;gap:4px 14px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:14px}
+  nav.toc p{width:100%}
+  nav.toc a{border-left:0;padding:2px 0}
+  header.top{padding-top:28px}
+}
+@media (max-width:720px){
+  .jr,.two{grid-template-columns:minmax(0,1fr)}
+  .take .row{grid-template-columns:minmax(0,1fr);gap:4px}
+  body{font-size:15.5px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <p>Contents</p>
+  <a href="#take">My take</a>
+  <a href="#spine">Arc One, act by act</a>
+  <a href="#people">Character missions</a>
+  <a href="#board">Utahime's mission board</a>
+  <a href="#grades">Grades</a>
+  <a href="#combat">Combat and powers</a>
+  <a href="#tools">Cursed tools</a>
+  <a href="#world">The campus, alive</a>
+  <a href="#firstperson">First person</a>
+  <a href="#lively">Making it move</a>
+  <a href="#ui">The new UI</a>
+  <a href="#cast">New cast</a>
+  <a href="#bgs">Backgrounds</a>
+  <a href="#plan">Build order</a>
+  <a href="#questions">Your calls</a>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">Jujutsu Kaisen: Cursed Bonds · storyboard for review · 29 Sep 2026</div>
+  <h1>Arc One<span class="jp">呪縛 第一章</span></h1>
+  <p class="lede">The plan for Arc One before anything is built: the story act by act, the missions, grades, combat, cursed tools, the new UI, and what ComfyUI can do to make it feel alive. Nothing here is implemented yet. The seven questions at the end need your answer first.</p>
+</header>
+
+<section id="take">
+  <h2><span class="seal">見</span>My take</h2>
+  <p class="sub">I agree with all of it. The game has strong bones. It plays like "a PNG story" for fixable reasons.</p>
+  <div class="take">
+    <div class="row"><div class="k">What's there</div><p>A calendar of story beats up to the Kyoto event on day 22, a bond system with written hangouts at three tiers, eight character threads, a real turn-based combat engine built on reading a curse's tell, 13 characters with six expressions each, and 24 painted campus backgrounds.</p></div>
+    <div class="row"><div class="k">Why it feels flat</div><p>No scene uses the expressions we made. Side portraits never render. Characters vanish while you talk to them. Only 3 fights use the combat engine, and HP is never restored, so every fight after the prologue starts at zero. The HUD shows about 12 numbers at all times. There is no audio at all.</p></div>
+    <div class="row"><div class="k">Season 1</div><p>A good spine. The original plot already in the game fits it well. Wakuri, the curse user inside the Grading Office who files curses one grade low, is exactly what went wrong at the detention center in the show. I'd keep him as the hidden hand and let Season 1's beats be what you see.</p></div>
+    <div class="row"><div class="k">First person</div><p>Yes. Kaito is on screen in about 40 scenes today. Taking him off makes every other character look at you. His new art moves to the journal, combat and a few big moments.</p></div>
+    <div class="row"><div class="k">Scope</div><p>This is weeks of work, not days. I'd build the foundation first (UI, grades, the mission system, first person), then combat, then the story one act at a time.</p></div>
+  </div>
+</section>
+
+<section id="spine">
+  <h2><span class="seal">筋</span>Arc One, act by act</h2>
+  <p class="sub">Season 1's episodes as the spine, with our cast and our originals woven in. Beats marked Have already exist in the game and get reworked; the rest are new. Main story missions unlock in order and wait for you; nothing runs on a deadline. The Goodwill Event is part of the main story.</p>
+
+  <div class="timeline">
+    <div class="act pro">
+      <div class="act-head"><span class="act-num">Prologue</span><h3>The Lights · The Offer · The Tour</h3><span class="chip g4">no grade</span></div>
+      <p class="canon">Already written. Season 1, episode 1 in spirit.</p>
+      <ul class="beats">
+        <li><span class="kind have">Have</span><span>All evening Sana has a "thing" to tell you. In the dark alley she finally does: for weeks she's been seeing creatures nobody else can. Seconds later one of them kills her. Your sight opens and your technique wakes: <b>Last Light</b> (残光, Zankō), the power to stop a moment. Gojo makes the offer; you say goodbye at home; Yaga interviews you.</span></li>
+        <li><span class="kind">Rework</span><span>First-person pass: Kaito off screen. On the tour, the sealed casket in the storehouse is gone: Gojo points up at the veil on the ridge instead and tells you never to go near it. The alley gets its own background (it borrows the konbini today). The prologue fight ends after a few rounds instead of grinding forever. The technique choice goes: Last Light is the only one, so Filament and Emberfall and their story branches are cut. Clean out the retired "Aftersound" text too.</span></li>
+      </ul>
+    </div>
+
+    <div class="act">
+      <div class="act-head"><span class="act-num">Act I</span><h3>Grade Four</h3><span class="chip g4">Grade 4</span></div>
+      <p class="canon">Season 1 episodes 2–5: the Roppongi building, the detention center.</p>
+      <ul class="beats">
+        <li><span class="kind have">Have</span><span><b>Roll call</b> with Yaga and the first-years. New: your grade is assessed on screen. You're Grade 4.</span></li>
+        <li><span class="kind">New</span><span><b>Utahime's office opens.</b> She's Kyoto's teacher, come ahead of the Goodwill Event to prepare it. While she's here she hands out Tokyo's missions, and she's also helping Gojo with something neither of them will explain. Her board replaces Ijichi's note.</span></li>
+        <li><span class="kind story">Story</span><span><b>Mission: the Sun Mall.</b> Our Roppongi building, reworked from the existing chapter into a real fight. You, Yuji and Nobara inside; Megumi and Gojo watching. The combat tutorial.</span></li>
+        <li><span class="kind have">Have</span><span><b>Kurose</b> explains the cover story for Sana's death. Grief thread.</span></li>
+        <li><span class="kind set">Set piece</span><span><b>Mission: the detention center.</b> Filed as Grade 3 by the Grading Office, a fair job for all three first-years and you. It's a special grade. Yuji lets Sukuna out to save you all, and Sukuna rips out his heart. You watch someone die again.</span></li>
+        <li><span class="kind">New</span><span><b>Aftermath.</b> Megumi goes quiet, Nobara goes to the roof, Gojo goes cold about the higher-ups. Your first entry in Memories.</span></li>
+        <li><span class="kind set">Set piece</span><span><b>The infirmary.</b> You go to see Yuji one last time. Shoko is about to examine him, with Gojo leaning on the wall, and Yuji sits up on her table. The three of you agree to keep it secret. The act ends on it.</span></li>
+      </ul>
+    </div>
+
+    <div class="act">
+      <div class="act-head"><span class="act-num">Act II</span><h3>The Ones Who Stay</h3><span class="chip g4">Grade 4</span><span class="chip g3">→ Grade 3</span></div>
+      <p class="canon">Season 1 episodes 6–8: the second-years, Gojo against Jogo.</p>
+      <ul class="beats">
+        <li><span class="kind have">Have</span><span><b>The second-years</b> join. Maki opens the armory and your first cursed tool; Panda spars; Toge teaches you to listen.</span></li>
+        <li><span class="kind story">Story</span><span><b>Gojo's first lesson</b> in his new office. He only trains you on special occasions, and this is one.</span></li>
+        <li><span class="kind set">Set piece</span><span><b>"The Strongest."</b> Gojo takes you on an errand and Jogo attacks, with Hanami watching. Infinity, then Unlimited Void with you caught inside for a fraction of a second.</span></li>
+        <li><span class="kind">New</span><span><b>The secret.</b> Only you, Gojo and Shoko know Yuji is alive, which first person makes powerful: you have to keep it from Megumi and Nobara while they grieve. Shoko becomes the one person you can talk to about it. You can visit Yuji in the basement, where he trains watching movies with a cursed doll that punches him when his energy slips. You try it too.</span></li>
+        <li><span class="kind have">Have</span><span>The courtyard curse, Shoko on cursed-energy debt, Oda's first letter.</span></li>
+        <li><span class="kind story">Story</span><span><b>Promotion mission</b> with Maki observing. Grade 3.</span></li>
+      </ul>
+    </div>
+
+    <div class="act">
+      <div class="act-head"><span class="act-num">Act III</span><h3>Overtime</h3><span class="chip g3">Grade 3</span><span class="chip g2">→ Grade 2</span></div>
+      <p class="canon">Season 1 episodes 9–13: Nanami, Mahito, Junpei.</p>
+      <ul class="beats">
+        <li><span class="kind">New</span><span><b>Nanami</b>, a Grade 1 and an ex-salaryman who hates overtime, becomes your supervisor. He teaches you that every target has a weak point at the 7:3 line.</span></li>
+        <li><span class="kind story">Story</span><span><b>Mission: the cinema.</b> Deaths in Kawasaki, bodies twisted into shapes. Mahito's work.</span></li>
+        <li><span class="kind">New</span><span><b>Junpei Yoshino.</b> A bullied boy you meet at the cinema. You befriend him; Mahito gets to him first.</span></li>
+        <li><span class="kind have">Have</span><span><b>Nade's missions</b> fold in here as Mahito's curse-user ally: the warehouse, the Saitama annexe, and the map with your home town circled.</span></li>
+        <li><span class="kind set">Set piece</span><span><b>Mission: Satozakura High.</b> Junpei attacks his school. You reach him and almost talk him down, and then Mahito touches him and reshapes him into something that dies in front of you, laughing as he does it. There is no way to save him. You, Nanami and the secretly living Yuji against Mahito. Your first <b>Black Flash</b>, which unlocks it in combat.</span></li>
+        <li><span class="kind story">Story</span><span><b>You're promoted to Grade 2</b> on Nanami's word. Being a Grade 1 also makes him one of the two recommenders you need for Grade 1 in Act V.</span></li>
+      </ul>
+    </div>
+
+    <div class="act">
+      <div class="act-head"><span class="act-num">Act IV</span><h3>Goodwill</h3><span class="chip g2">Grade 2</span></div>
+      <p class="canon">Season 1 episodes 14–21: the Kyoto Sister School Goodwill Event. Main story, announced once Act III is done instead of on day 22. How it goes changes nothing about the Arc One missions outside it.</p>
+      <ul class="beats">
+        <li><span class="kind set">Set piece</span><span><b>Kyoto arrives</b>, led by Utahime, who spent a month giving you missions and now leads the other side. Todo, Mai, Miwa, Momo, Kamo and Mechamaru. Then Yuji walks in alive.</span></li>
+        <li><span class="kind story">Story</span><span><b>Day one, the team battle</b> in the forest. Todo corners you and asks what type of woman you like; your answer decides how it goes. You and Yuji against Todo becomes a lesson in Black Flash. Miwa shows you Simple Domain.</span></li>
+        <li><span class="kind set">Set piece</span><span><b>The attack.</b> A veil drops. Hanami and curse users come for the students. You, Yuji and Todo against Hanami, then Gojo breaks through. Mihara, next arc's villain, is seeded here.</span></li>
+        <li><span class="kind">New</span><span><b>Day two: baseball.</b> A timing mini-game that reuses the Black Flash meter.</span></li>
+        <li><span class="kind">New</span><span>Todo and Miwa join your journal.</span></li>
+      </ul>
+    </div>
+
+    <div class="act">
+      <div class="act-head"><span class="act-num">Act V</span><h3>Cursed Womb</h3><span class="chip g2">Grade 2</span><span class="chip g1">→ Grade 1 candidate</span></div>
+      <p class="canon">Season 1 episodes 22–24: the Death Paintings.</p>
+      <ul class="beats">
+        <li><span class="kind story">Story</span><span><b>Mission: the Yasohachi Bridge.</b> Eso and Kechizu, with Yuji and Nobara. Poison blood brings status effects to combat.</span></li>
+        <li><span class="kind">New</span><span><b>Mei Mei.</b> A Grade 1 who does nothing for free. She offers paid missions and becomes your second recommender.</span></li>
+        <li><span class="kind story">Story</span><span><b>Recommended for Grade 1</b> by Nanami and Mei Mei. You end the arc as a Grade 1 candidate.</span></li>
+        <li><span class="kind">New</span><span><b>Yuta calls</b> Gojo from abroad while you're in the office. A voice and a locked card in your journal. He arrives in Arc Two.</span></li>
+        <li><span class="kind set">Set piece</span><span><b>Why Sana could see them.</b> Her sketchbook reaches you: weeks of drawings of curses, dated. The last page is the one that killed her, drawn days before, and in the corner a man in a suit who was always standing near it. Her death wasn't random, and it points at Wakuri. The emotional end of the arc.</span></li>
+      </ul>
+    </div>
+
+    <div class="act pro">
+      <div class="act-head"><span class="act-num">After Act V</span><h3>Free time, then Arc Two when you choose</h3></div>
+      <p class="canon">The main story is done; Arc One stays open.</p>
+      <ul class="beats">
+        <li><span class="kind">New</span><span><b>Keep playing Arc One</b> for as long as you like: board missions, training, and every character story you haven't finished.</span></li>
+        <li><span class="kind">New</span><span><b>Arc Two is a choice, not a date.</b> Finishing the main story is all it needs. Before it starts, the game asks: <i>"This begins Arc Two. Character stories you haven't finished in Arc One will close."</i> Every memory stays in the journal to relive.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="people">
+  <h2><span class="seal">絆</span>Character missions</h2>
+  <p class="sub">Every character gets a personal story of about three missions in Arc One. The eight threads already in the journal become the backbone, and the written hangouts stay as the bond scenes between missions. The journal always shows the next one and where to find them.</p>
+  <div class="chars">
+    <div class="cmiss"><h4>Yuji</h4><div class="when">thread: the countdown</div><ol><li>Grandpa's last words</li><li>The basement: secret training, after his "death"</li><li>A finger retrieval</li></ol></div>
+    <div class="cmiss"><h4>Megumi</h4><div class="when">thread: Tsumiki</div><ol><li>The hospital: visiting his sister</li><li>Divine Dogs: a mission with his shikigami</li><li>What the Zenin wanted from him</li></ol></div>
+    <div class="cmiss"><h4>Nobara</h4><div class="when">thread: Saori</div><ol><li>Harajuku: a day out</li><li>Straw doll: resonance training</li><li>Saori's letter</li></ol></div>
+    <div class="cmiss"><h4>Maki</h4><div class="when">thread: the Zenin name</div><ol><li>The armory: your first tool</li><li>Mai, before Kyoto</li><li>Playful Cloud, on loan</li></ol></div>
+    <div class="cmiss"><h4>Panda</h4><div class="when">thread: made</div><ol><li>Gorilla core</li><li>Yaga's son</li><li>Three hearts</li></ol></div>
+    <div class="cmiss"><h4>Toge</h4><div class="when">thread: his voice</div><ol><li>Onigiri words: guess what he means</li><li>Throat medicine</li><li>"Don't move": his voice saves you</li></ol></div>
+    <div class="cmiss"><h4>Gojo</h4><div class="when">thread: the measure · special occasions only</div><ol><li>Infinity</li><li>Unlimited Void, from outside</li><li>Under the blindfold</li></ol></div>
+    <div class="cmiss"><h4>Utahime <span class="chip new">new</span></h4><div class="when">her office · mission giver</div><ol><li>What she's really helping Gojo with</li><li>Rivals: her feud with Gojo</li><li>Kyoto's teacher, in Act IV</li></ol></div>
+    <div class="cmiss"><h4>Shoko</h4><div class="when">thread: she remembers</div><ol><li>Coffee in the infirmary</li><li>Reverse cursed technique, in theory</li><li>Old friends</li></ol></div>
+    <div class="cmiss"><h4>Yaga</h4><div class="when">the principal</div><ol><li>The cursed doll workshop</li><li>"Why do you do this?", asked again</li></ol></div>
+    <div class="cmiss"><h4>Ijichi <span class="chip new">new</span></h4><div class="when">the driver</div><ol><li>Ride-along: a day on the job. Afterwards he'll drive you into the city</li><li>The veil: learn to raise one</li></ol></div>
+    <div class="cmiss"><h4>Nanami <span class="chip new">new</span></h4><div class="when">Act III</div><ol><li>Overtime</li><li>The bakery</li><li>Ratio: the weak-point skill</li></ol></div>
+    <div class="cmiss"><h4>Todo <span class="chip new">new</span></h4><div class="when">Act IV</div><ol><li>"What type of woman?"</li><li>Brother: Boogie Woogie practice</li><li>The idol handshake event</li></ol></div>
+    <div class="cmiss"><h4>Miwa <span class="chip new">new</span></h4><div class="when">Act IV</div><ol><li>Simple Domain</li><li>An autograph from Gojo</li></ol></div>
+    <div class="cmiss"><h4>Mei Mei <span class="chip new">new</span></h4><div class="when">Act V</div><ol><li>Everything has a price</li></ol></div>
+    <div class="cmiss"><h4>Sana</h4><div class="when">Memories, not missions</div><ol><li>Keepsakes and places unlock flashbacks: the diner, the daisy clip, the teacher ranking</li><li>They build to why she could see curses, and who else knew</li></ol></div>
+  </div>
+  <p class="muted">The romance routes already written for Nobara, Maki and Shoko stay inside their storylines as they are.</p>
+</section>
+
+<section id="board">
+  <h2><span class="seal">任</span>Utahime's mission board</h2>
+  <p class="sub">The side missions between story beats. They replace today's text-only patrol.</p>
+  <ul>
+    <li><b>Graded.</b> You can take missions at your grade. With a senior partner you can take one grade higher.</li>
+    <li><b>Built from parts:</b> a place, a curse and a twist. For example a Grade 3 missing-persons case in a tunnel where the curse only moves in the dark.</li>
+    <li><b>Bring someone.</b> Your partner fights with you, adds their support move and gains bond.</li>
+    <li><b>Rewards:</b> progress toward promotion, yen for supplies, bond, and sometimes a cursed tool.</li>
+    <li><b>Misgraded missions.</b> Now and then a Grade 3 job hides a Grade 2 curse. That's Wakuri at work, and it becomes a clue.</li>
+  </ul>
+</section>
+
+<section id="grades">
+  <h2><span class="seal">級</span>Grades</h2>
+  <p class="sub">As in the show. Today the game maps grades wrongly (its "Grade 1" is shown as Grade 2) and has no Special grade. It gets rebuilt.</p>
+  <div class="scroll"><div class="ladder">
+    <div class="rung g4 arc"><b>Grade 4</b><span>Start of Arc One. Board: Grade 4. Reserve 100.</span></div>
+    <div class="rung g3 arc"><b>Grade 3</b><span>End of Act II. Armory opens further. Reserve 140.</span></div>
+    <div class="rung g2 arc"><b>Grade 2</b><span>End of Act III. Kyoto team. Reserve 180.</span></div>
+    <div class="rung g1 arc"><b>Semi-Grade 1</b><span>End of Arc One, as a candidate. Reserve 220.</span></div>
+    <div class="rung g1"><b>Grade 1</b><span>Arc Two. Needs two Grade 1 recommendations.</span></div>
+    <div class="rung gs"><b>Special</b><span>Gojo, Yuta, Yuki. Geto (Kenjaku) and Sukuna on the other side. Out of reach.</span></div>
+  </div></div>
+  <p>Special grade covers curses and curse users too. <b>Sukuna</b>, the King of Curses, and <b>Geto</b>, whose body Kenjaku now wears, sit at the very top of the story, and Sukuna is the final villain, in the end taking Yuji's body for good. His own body is on campus. On the mountain ridge above the school, Sukuna's mummified body sits cross-legged as if meditating, its fingers missing, sealed inside a veil Jujutsu High keeps up day and night. It replaces the casket in the storehouse. Kenjaku is the one Wakuri really serves. <b>Yuki Tsukumo</b>, the third special-grade sorcerer, arrives in a later arc.</p>
+  <h4>What your grade decides</h4>
+  <ul>
+    <li>Which missions Utahime will give you.</li>
+    <li>Your cursed energy reserve, and how far your stats can grow.</li>
+    <li>What the armory will release to you.</li>
+    <li>Promotion needs merit from missions, a promotion mission, and for Grade 1, two recommendations.</li>
+  </ul>
+</section>
+
+<section id="combat">
+  <h2><span class="seal">戦</span>Combat and powers</h2>
+  <p class="sub">The engine at the heart of it is good: each curse shows a tell, and you answer it (brace a heavy blow, step aside from a fast one, break a grab, close on a ranged attack). I'd keep that and build on it.</p>
+  <h3>Fix first</h3>
+  <ul>
+    <li>HP is never restored, so every fight after the prologue starts at zero.</li>
+    <li>The prologue fight can't end if you play well (900 HP, no retreat).</li>
+    <li>Some technique moves deal damage and also block the hit, which removes the choice.</li>
+    <li>Every ally hits the same way, using your stats.</li>
+    <li>In the first Nade mission, losing gives more bond than winning. Infirmary rest and storehouse tools cost no time and can be repeated forever.</li>
+    <li>The Sun Mall, the courtyard curse and patrols are menus, not fights.</li>
+  </ul>
+  <h3>Add</h3>
+  <div class="two">
+    <div>
+      <h4>Black Flash</h4>
+      <p>A timing meter on your strike with a tiny window. Hit it and you deal 2.5 times the damage, refill cursed energy, and the next window widens for a while, as in the show. Locked until your first story Black Flash in Act III.</p>
+      <h4>Partners with their own moves</h4>
+      <p>Megumi's Divine Dogs track the next tell. Nobara's resonance keeps hurting. Maki breaks armor. Panda hits hard. Toge's "Don't move" skips a turn at a cost to his throat. Nanami exposes the 7:3 weak point. Todo's clap swaps places to dodge.</p>
+    </div>
+    <div>
+      <h4>Last Light, your one technique</h4>
+      <p>Stillness, renamed. In the alley you wanted the second before the dark to stop, and it did: Last Light holds the instant the lights went out. One technique means all the effort goes into making it look and feel right. When you use it, colour drains from the screen, dust hangs in the air, the curse freezes mid-motion, and one warm light stays on. It gains a move at each tier, ending in "The Second That Did Not Happen". Simple Domain (from Miwa) counters sure-hit attacks. Domain Expansion stays a Gojo set piece in Arc One.</p>
+      <h4>Enemies that behave</h4>
+      <p>Grade changes how a curse fights, not just its numbers: higher grades telegraph over two turns and change phase. Bosses get their own rules: Mahito's touch, Hanami's roots, Eso's poison, Todo's swaps.</p>
+    </div>
+  </div>
+  <h3>Everyone has their own stats</h3>
+  <p>Every character gets their own grade, cursed energy reserve, control and output, and grows on their own schedule whether you're there or not.</p>
+  <ul>
+    <li><b>Train or take missions with someone</b> and you both grow faster. That's the reason to pick a partner, not just their bond.</li>
+    <li><b>Fall behind and they grade up without you.</b> Megumi or Nobara can be promoted before you, take jobs you can't, and say so. The journal shows it.</li>
+    <li><b>Grade is who gets picked.</b> The Kyoto team and the big missions go to whoever has earned it.</li>
+    <li><b>The gap to the top is visible.</b> Special grades don't fit on the same scale: Gojo's reserve runs off the edge of the bar. A spar with him is a lesson, not a fight.</li>
+    <li><b>Some break the rules.</b> Maki has almost no cursed energy; her Heavenly Restriction puts it all into her body instead.</li>
+  </ul>
+  <h4>On screen</h4>
+  <p>Hit flashes, screen shake, damage numbers, Last Light's grey-out and its one warm light, curses that move, a cut-in when you use a technique (your hands, in first person), black lightning for Black Flash, and battle music.</p>
+</section>
+
+<section id="tools">
+  <h2><span class="seal">具</span>Cursed tools</h2>
+  <p class="sub">A real inventory. The armory is in the storehouse, which already has art. Your grade decides what it releases; the legendary tools are story rewards.</p>
+  <div class="tools">
+    <div class="tool"><h4>Sealing talismans</h4><span class="chip g4">Grade 4</span><p>Burned in a fight: bind a curse in place for a turn. Used up.</p></div>
+    <div class="tool"><h4>Slaughter Demon</h4><span class="chip g4">Grade 4</span><p>A cursed knife. Strikes leave a bleed.</p></div>
+    <div class="tool"><h4>Nunchaku</h4><span class="chip g3">Grade 3</span><p>Maki's training weapon. Fast strikes that chain.</p></div>
+    <div class="tool"><h4>Playful Cloud</h4><span class="chip g2">Grade 2</span><p>Special-grade staff, lent by Maki at the end of her story. Damage scales with raw strength.</p></div>
+    <div class="tool"><h4>Split Soul Katana</h4><span class="chip g1">Grade 1 candidate</span><p>Cuts the soul, ignoring a curse's defense. The Act V reward.</p></div>
+    <div class="tool locked"><h4>Inverted Spear of Heaven</h4><span class="chip gs">Special</span><p>Visible in the armory, sealed. Cancels any technique it touches. A goal for Arc Two.</p></div>
+  </div>
+  <h3>Worn talismans</h3>
+  <p>Besides the one tool in your hand, you wear talismans: paper wards tucked into your uniform that change how you fight. They're the build choice between missions, and they're graded like sorcerers and curses, from Grade 4 up to Special grade.</p>
+  <ul>
+    <li><b>Slots grow with your grade:</b> one at Grade 4, two at Grade 3, three at Grade 2, four as a Grade 1 candidate.</li>
+    <li><b>You can wear talismans up to your own grade.</b> Higher ones sit sealed in your inventory until you're promoted, so a lucky find is also a goal.</li>
+    <li><b>Special-grade talismans are the exception.</b> They're legendary, one of a kind, and bind to you through a story moment rather than a promotion. You can only wear one, and each carries a heavy price.</li>
+    <li><b>Every strong ward has a price,</b> so choosing them means something. A bigger reserve might mean slower recovery.</li>
+    <li><b>Where they come from:</b> Utahime writes the lower grades (her own technique boosts other sorcerers' cursed energy, so it fits her), Mei Mei sells the rare ones, missions drop a few, and the legendary ones come from the story.</li>
+  </ul>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Grade</th><th>Talisman</th><th>Effect</th><th>From</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip g4">Grade 4</span></td><td>Paper Ward</td><td>+10 cursed energy reserve</td><td>Utahime</td></tr>
+      <tr><td><span class="chip g4">Grade 4</span></td><td>Steady Hand</td><td>+Control: techniques cost a little less</td><td>Utahime</td></tr>
+      <tr><td><span class="chip g3">Grade 3</span></td><td>Deep Well</td><td>+20 reserve; you recover a little less between fights</td><td>Utahime</td></tr>
+      <tr><td><span class="chip g3">Grade 3</span></td><td>Iron Seal</td><td>+Output: strikes hit harder; guarding blocks less</td><td>Mission reward</td></tr>
+      <tr><td><span class="chip g2">Grade 2</span></td><td>Spark</td><td>Black Flash timing window a little wider</td><td>Utahime, after Act III</td></tr>
+      <tr><td><span class="chip g2">Grade 2</span></td><td>Held Breath</td><td>Last Light costs less, and the frozen moment lasts one beat longer</td><td>Gojo's training</td></tr>
+      <tr><td><span class="chip g1">Grade 1</span></td><td>Afterglow</td><td>A Black Flash refills more cursed energy, and the widened window lasts longer</td><td>Mei Mei</td></tr>
+      <tr><td><span class="chip g1">Grade 1</span></td><td>Black Sun</td><td>Black Flash hits for 3× instead of 2.5×, but the window is narrower</td><td>Mei Mei, rare</td></tr>
+      <tr><td><span class="chip gs">Special</span></td><td><b>Unending Moment</b></td><td>Once a fight, Last Light holds for a whole round: the enemy loses two turns. Afterwards you can't use Last Light again that fight</td><td>The end of Gojo's story</td></tr>
+      <tr><td><span class="chip gs">Special</span></td><td><b>The Zone</b></td><td>After your first Black Flash in a fight you stay in the zone: the window stays wide for the rest of it. Until then, your strikes are weaker</td><td>Todo, at the end of his story</td></tr>
+      <tr><td><span class="chip gs">Special</span></td><td><b>Finger Wrap</b></td><td>The paper that once sealed one of Sukuna's fingers. Output far beyond your grade, but Sukuna notices every fight you win with it</td><td>Found in Act V · ties to his binding vow</td></tr>
+      <tr><td><span class="chip gs">Special</span></td><td><b>Tengen's Seal</b></td><td>The first hit against you each fight is cancelled by a barrier</td><td>Sealed · Arc Two</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="world">
+  <h2><span class="seal">景</span>The campus, alive</h2>
+  <p class="sub">People doing things where they are, before you walk up to them.</p>
+  <h3>Two new offices</h3>
+  <div class="two">
+    <div class="callout"><b>Utahime's office.</b> Neat, traditional, a mission board on the wall. She came ahead of the Goodwill Event to prepare it, gives out missions, and is quietly helping Gojo with something. She leaves to lead Kyoto in Act IV, which the board notices.</div>
+    <div class="callout"><b>Gojo's office.</b> Sweets on every surface and a big TV. He trains you only on special occasions: story milestones, and the odd day the journal marks "Gojo is in".</div>
+  </div>
+  <h3>Everyone doing something</h3>
+  <p>Each character gets painted into the places they go, doing something: one picture per character and place. You see the scene first; when you choose to talk, the camera eases in and they look up.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Who</th><th>Where you might find them</th></tr></thead>
+    <tbody>
+      <tr><td>Yuji</td><td>Cafeteria, halfway through an enormous bowl · the vending machine in the courtyard</td></tr>
+      <tr><td>Megumi</td><td>Classroom, reading · riverside, with a Divine Dog</td></tr>
+      <tr><td>Nobara</td><td>Dorm common room, on her phone · the rooftop</td></tr>
+      <tr><td>Maki</td><td>Training ground, drilling with a staff</td></tr>
+      <tr><td>Panda and Toge</td><td>Courtyard, sparring · Toge in the cafeteria with onigiri</td></tr>
+      <tr><td>Gojo</td><td>His office, eating mochi · the ridge, sitting just outside the veil</td></tr>
+      <tr><td>Utahime</td><td>Her office, buried in paperwork</td></tr>
+      <tr><td>Shoko</td><td>Infirmary, with coffee</td></tr>
+      <tr><td>Yaga</td><td>Principal's office, sewing a cursed doll</td></tr>
+      <tr><td>Ijichi</td><td>The gate, on the phone beside the car</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Out into Tokyo</h3>
+  <p>People do more than stand in a place. Ijichi's car is the way off campus: after his ride-along story, he'll drive you into the city on free days. Each district is a small hub with its own places, board missions, hangouts and curses.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>District</th><th>What's there</th></tr></thead>
+    <tbody>
+      <tr><td><b>Shibuya</b></td><td>The scramble crossing, the station, an arcade, a café. Board missions, Yuji and Nobara hangouts. You get to know it well, which is the point: in a later arc it gets destroyed</td></tr>
+      <tr><td><b>Shinjuku</b></td><td>Neon streets, the station, rooftops at night. Grade 2 and up missions, and where Mei Mei does business</td></tr>
+      <tr><td><b>Harajuku</b></td><td>Takeshita Street. Nobara's day out, shops for supplies and sealing talismans</td></tr>
+      <tr><td><b>Kawasaki</b></td><td>The cinema and Junpei's neighbourhood, in Act III</td></tr>
+      <tr><td><b>Home</b></td><td>Yotsuka: your parents' house, the diner, the alley. Visits to your family, and Sana's memories</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li><b>A trip costs time:</b> half a day there and back, so a day in the city is a real choice against training on campus.</li>
+    <li><b>Grade opens districts:</b> Shibuya and Harajuku from the start, Shinjuku at Grade 2.</li>
+    <li><b>The map gets a second layer:</b> the campus, and Tokyo. You reach Tokyo from the gate, where Ijichi waits with the car.</li>
+    <li>The placeholder "city" background used in about 9 scenes today becomes these districts.</li>
+  </ul>
+</section>
+
+<section id="firstperson">
+  <h2><span class="seal">我</span>First person</h2>
+  <ul>
+    <li><b>Kaito comes off screen</b> in the roughly 40 scenes that show him today. Everyone else faces the camera, which is you.</li>
+    <li><b>Where you still see him:</b> the journal, combat cut-ins, a few big moments, and reflections. Both of his outfits stay in use there.</li>
+    <li><b>The prose.</b> Kaito narrates in "I": "I cut through the alley because it saves four minutes." Everyone else speaks to him as "you" or calls him by his name, whatever the player chose (Kaito by default). Today's "you" narration is converted chapter by chapter.</li>
+  </ul>
+</section>
+
+<section id="lively">
+  <h2><span class="seal">動</span>Making it move</h2>
+  <p class="sub">Ranked by what each gives for what it costs. Your ComfyUI already has what's needed: Nano Banana for pictures, and image-to-video from Kling, Veo 3, Wan, Hailuo and others.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>What</th><th>How</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td><b>Use what we made</b></td><td>Expressions in every scene; side portraits beside the text</td><td>Free</td></tr>
+      <tr><td><b>Blinking and talking</b></td><td>Two edits per character (eyes closed, mouth open). The game blinks at random and moves the mouth while they speak</td><td>about $0.32 a character</td></tr>
+      <tr><td><b>Motion in the engine</b></td><td>Breathing, the camera easing in on conversations, depth on backgrounds, petals and dust, light that follows the time of day</td><td>Free</td></tr>
+      <tr><td><b>People in their places</b></td><td>Nano Banana paints the character into the background, doing something</td><td>about $0.32 a scene</td></tr>
+      <tr><td><b>Music and sound</b></td><td>The game has none. Comfy Cloud has a music model for a small soundtrack: campus, battle, grief, Gojo, Kyoto</td><td>small</td></tr>
+      <tr><td><b>Big-moment pictures</b></td><td>Illustrations for Sana's death, the detention center, Unlimited Void, Black Flash, Todo's clap, Junpei</td><td>about $0.50 each</td></tr>
+      <tr><td><b>Looping scenes</b></td><td>Image-to-video with the same first and last frame, so it loops: steam rising, hair moving, a page turning</td><td>$0.30–1.50 a clip</td></tr>
+      <tr><td><b>Short cinematic clips</b></td><td>Three to five key moments as 5-second video</td><td>$0.50–1.50 each</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><span class="tag">Test first</span>Seedream refused these characters. The video models may too, especially ByteDance's. A single test clip on Kling or Veo from one of our sprites settles it for about a dollar before we plan around video.</div>
+</section>
+
+<section id="ui">
+  <h2><span class="seal">簡</span>The new UI</h2>
+  <p class="sub">Show only what you need right now, and always answer "what can I do next?".</p>
+
+  <div class="screen" aria-label="HUD today and proposed">
+    <div class="cap"><span>HUD today</span><span>12 readouts, 5 buttons, on every screen</span></div>
+    <div class="hud old"><span>DAY 9 · MON</span><span>● ● ● ○ ○</span><span>CE 48/80</span><span>STA 60</span><span>CTRL 18</span><span>OUT 12</span><span>INS 22</span><span>TIER I</span><span>KYOTO −13</span><span>[MAP] [STATUS] [JOURNAL] [STAY] [MENU]</span></div>
+    <div class="cap" style="margin-top:16px"><span>HUD proposed, while walking around</span><span>the date and three buttons</span></div>
+    <div class="hud"><span class="obj">Day 9 · Monday</span><span class="btns"><span>Map</span><span>Journal</span><span>Menu</span></span></div>
+  </div>
+
+  <ul>
+    <li><b>Three buttons:</b> Map, Journal, Menu. Status, Travel and Stay fold into those.</li>
+    <li><b>Only the day and weekday</b> show while you walk around. The background already shows the time of day. Grade, energy and health live in the journal's Stats tab and appear in combat. Your next objective shows briefly when it changes, and is always in the journal.</li>
+    <li><b>The map</b> shows who's where and which missions are waiting, grouped into areas instead of 16 equal pins. A second layer shows Tokyo's districts.</li>
+    <li><b>At a place</b> you see the scene with people in it. Clicking someone gives three or four choices that make sense there, not a list of 18 with locked rows.</li>
+    <li><b>Rewards</b> queue up instead of overwriting each other.</li>
+  </ul>
+
+  <h3>The journal</h3>
+  <p>Six tabs: People, Missions, Memories, Stats, Equipment and Inventory. Click a card below.</p>
+  <div class="screen" id="journal">
+    <div class="cap"><span>Journal · People</span><span>mock-up with the real cast</span></div>
+    <div class="tabs"><span class="on">People</span><span>Missions</span><span>Memories</span><span>Stats</span><span>Equipment</span><span>Inventory</span></div>
+    <div class="jr">
+      <div class="grid" id="jgrid"></div>
+      <div class="detail" id="jdetail" aria-live="polite"></div>
+    </div>
+  </div>
+  <ul>
+    <li><b>People:</b> everyone you've met, with their bond and the next thing to do with them, and where. Locked characters show as silhouettes with a hint.</li>
+    <li><b>Missions:</b> story, character and board missions: available, active, done.</li>
+    <li><b>Memories:</b> replay any scene you've seen, by person or by act. Sana's memories live here.</li>
+    <li><b>Stats:</b> Kaito's portrait, grade and progress to the next one, cursed energy reserve, control, output, Last Light's tier, and health.</li>
+    <li><b>Equipment:</b> the cursed tool in your hand and your talisman slots. Swap them here between missions.</li>
+    <li><b>Inventory:</b> things you find along the way: keepsakes, sealing talismans, supplies, and items missions hand you. Exactly what goes in it is still to be decided.</li>
+  </ul>
+</section>
+
+<section id="cast">
+  <h2><span class="seal">新</span>New cast</h2>
+  <p class="sub">Made the way we made the first 13: named to Krea, repaired, five expressions. About $2 each in edits, plus the Comfy Cloud base run.</p>
+  <div class="callout decide"><span class="tag">First in line</span><b>Sukuna, in Yuji's body.</b> The final villain starts in Act I, so his version of Yuji gets the full treatment before anyone else: the marks, the second pair of eyes opening under Yuji's, a different stance, and expressions of his own (a smirk, contempt, laughter, rare interest). Plus a small overlay of the mouth that opens on Yuji's cheek to talk.</div>
+  <h3>Sukuna, set up from the start</h3>
+  <p><b>The long game.</b> We follow the show with Yuji as Sukuna's vessel, with one change. In the show Sukuna eventually takes Megumi's body. Here he takes Yuji's for good. The friend you trained and grieved with becomes the final villain, with Sukuna wearing him. Everything in Arc One is built so that hurts: every bond scene with Yuji, and every hint that Sukuna means to keep this body.</p>
+  <ul>
+    <li><b>Act I, the detention center:</b> the first time you see him. He kills Yuji with Yuji's own hands and enjoys it.</li>
+    <li><b>Act II:</b> the mouth on Yuji's cheek starts talking to you when no one else is around. He's interested in a first-year who can stop a moment.</li>
+    <li><b>Act III:</b> at Satozakura High he surfaces for a few seconds against Mahito, and you see how far above everyone he is.</li>
+    <li><b>Act IV:</b> Todo notices something in Yuji that isn't Yuji.</li>
+    <li><b>Act V:</b> the Death Paintings are cursed wombs, sealed like his fingers. Yuji eats another finger, and Sukuna gets stronger.</li>
+    <li><b>The end of the arc:</b> he offers Kaito a binding vow. You don't have to take it, but the journal remembers that he asked.</li>
+  </ul>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Act</th><th>Characters</th></tr></thead>
+    <tbody>
+      <tr><td>I</td><td><b>Sukuna in Yuji's body (first in line)</b> · the detention center's special grade · four ordinary curses by grade, replacing today's two placeholders</td></tr>
+      <tr><td>II</td><td>Jogo · Hanami</td></tr>
+      <tr><td>III</td><td>Nanami · Junpei Yoshino · Mahito · Nade (borrows Yaga's placeholder today)</td></tr>
+      <tr><td>IV</td><td>Todo · Miwa · Mai · Momo · Kamo · Mechamaru</td></tr>
+      <tr><td>V</td><td>Mei Mei · Eso · Kechizu</td></tr>
+      <tr><td>Supporting</td><td>Kurose, Oda, Kaito's parents (all borrowing placeholder sprites today)</td></tr>
+      <tr><td>Arc Two</td><td>Yuta (a voice and a silhouette in Act V), Choso</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="bgs">
+  <h2><span class="seal">背</span>Backgrounds</h2>
+  <p class="sub">All 24 campus backgrounds are done. Every prologue background before the gate is still a placeholder, and there are new places to add.</p>
+  <div class="two">
+    <div>
+      <h4>Real art needed now</h4>
+      <ul>
+        <li>The alley behind the arcade (new; borrows the konbini today)</li>
+        <li>Konbini, diner, town street</li>
+        <li>Home living room, bedroom at night, street in the morning, the car</li>
+        <li>City at night (about 9 scenes), ruin, veil</li>
+        <li>"Dorm" can simply point at your room</li>
+      </ul>
+    </div>
+    <div>
+      <h4>New places, placeholders first</h4>
+      <ul>
+        <li>Gojo's office · Utahime's office · the armory · the basement</li>
+        <li>The ridge with its veil, and Sukuna's body inside it (a big-moment picture)</li>
+        <li>Sun Mall · detention center · Kawasaki cinema · Satozakura High · Mahito's sewer</li>
+        <li>Baseball field · Yasohachi Bridge · hospital · Nanami's bakery</li>
+        <li>Tokyo: Shibuya (crossing, station, arcade, café) · Shinjuku (streets, station, rooftop) · Harajuku (Takeshita Street) · Kawasaki</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="plan">
+  <h2><span class="seal">順</span>Build order</h2>
+  <p class="sub">Each phase is playable when it's done.</p>
+  <ol class="phases">
+    <li><b>Foundation</b>First-person pass on the prologue. The new HUD, map, place view and journal. Grades. Story, character and board missions as one system. The two offices on placeholder backgrounds. Expressions and side portraits in use. Clean out the old-prologue leftovers.<div class="cost">no art cost</div></li>
+    <li><b>Combat</b>Fix the bugs, then Black Flash, partner moves, cursed tools, enemy phases and the effects. Turn the menu fights into real ones.<div class="cost">no art cost; placeholder curses</div></li>
+    <li><b>Act I</b>The Sun Mall and the detention center. Utahime's board live. Blinking and talking for the cast. The first people-in-places scenes. Real prologue backgrounds.<div class="cost">about $15–20</div></li>
+    <li><b>Acts II and III</b>The second-years' training, Gojo against Jogo, Nanami, Junpei, Mahito. Black Flash. Music.<div class="cost">about $20–30</div></li>
+    <li><b>Acts IV and V</b>The Kyoto cast and the Goodwill Event, the Death Paintings, Mei Mei, the recommendation, Sana's answer. Big-moment pictures and a few clips.<div class="cost">about $30–50</div></li>
+  </ol>
+</section>
+
+<section id="questions">
+  <h2><span class="seal">決</span>Your calls</h2>
+  <p class="sub">I need these before phase 1. My recommendation is under each.</p>
+  <ol class="qs">
+    <li class="done">Keep the original villains alongside Season 1?<span class="rec"><b>Decided: yes.</b> Wakuri stays hidden in the Grading Office behind the misgraded missions, Nade becomes Mahito's ally, and Mihara is seeded at Kyoto. Sukuna sits above them all as the final villain.</span></li>
+    <li class="done">Does Yuji die in front of you at the detention center, and come back as a secret?<span class="rec"><b>Decided: yes,</b> and the secret is shared by you, Gojo and Shoko. You're in the infirmary when he sits up on Shoko's table, at the end of Act I.</span></li>
+    <li class="done">Can Junpei be saved?<span class="rec"><b>Decided: no.</b> He dies for good at Satozakura High, reshaped by Mahito in front of you. It makes Mahito the arc's real monster.</span></li>
+    <li class="done">What was Sana's "thing"?<span class="rec"><b>Decided:</b> she'd been seeing curses for weeks. She tells you in the dark alley, and one of them kills her seconds later. Act V answers why she could see them (suggested: her sketchbook, and Wakuri).</span></li>
+    <li class="done">Narration in "I", or keep "you"?<span class="rec"><b>Decided:</b> "I" whenever Kaito talks about himself; other characters say "you" or his given name. Converted chapter by chapter.</span></li>
+    <li class="done">Why is Utahime in Tokyo?<span class="rec"><b>Decided:</b> she's come ahead of the Goodwill Event to prepare it, and she's helping Gojo with something. She gives out missions while she's here and leads Kyoto in Act IV.</span></li>
+    <li class="done">Story missions wait for you instead of firing on a date?<span class="rec"><b>Decided: yes.</b> The Goodwill Event is main story (Act IV), announced after Act III; its outcome doesn't change Arc One's other missions. After Act V you can finish everything left in Arc One, or start Arc Two with a warning that unfinished character stories close. Memories always stay.</span></li>
+  </ol>
+</section>
+
+<footer>Built from a survey of the game as it stands on 29 September 2026: 13 characters, 24 campus backgrounds, the combat engine in sb_combat.rpy, and the Arc One calendar in story_arc1.rpy.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var P = {};
+  var people = [
+    {k:"yuji", ce:150, n:"Yuji Itadori", g:"No grade yet", bond:"Trusted · 60", b:60, next:"The basement: find him after dark, now that you know he's alive", where:"Basement · Night · Act II", mem:["First day","The Sun Mall","The detention center"]},
+    {k:"megumi", ce:180, n:"Megumi Fushiguro", g:"Grade 2", bond:"Comrade · 40", b:40, next:"Tsumiki: go with him to the hospital", where:"Gate · Evening · after Act I", mem:["First day","The detention center"]},
+    {k:"nobara", ce:130, n:"Nobara Kugisaki", g:"Grade 3", bond:"Comrade · 45", b:45, next:"Harajuku: she wants a day out, and a bag carrier", where:"Dorm common room · Weekend", mem:["First day","The Sun Mall"]},
+    {k:"maki", ce:8, n:"Maki Zenin", g:"Grade 4", bond:"Acquaintance · 25", b:25, next:"The armory: pick your first cursed tool", where:"Storehouse · Afternoon", mem:["The second-years"]},
+    {k:"panda", ce:170, n:"Panda", g:"Grade 2", bond:"Acquaintance · 20", b:20, next:"Gorilla core: a spar he says you'll lose", where:"Courtyard · Afternoon", mem:["The second-years"]},
+    {k:"toge", ce:200, n:"Toge Inumaki", g:"Semi-Grade 1", bond:"Acquaintance · 20", b:20, next:"Onigiri words: work out what he means", where:"Cafeteria · Noon", mem:["The second-years"]},
+    {k:"gojo", ce:"inf", n:"Satoru Gojo", g:"Special", bond:"Comrade · 40", b:40, next:"Infinity: he's in his office today. Special occasion", where:"Gojo's office · Morning", mem:["The offer","The tour","The Strongest"]},
+    {k:"utahime", ce:220, n:"Utahime Iori", g:"Semi-Grade 1", bond:"Acquaintance · 20", b:20, next:"A Grade 4 mission is waiting on her board", where:"Utahime's office · Any time", mem:["The coordinator"]},
+    {k:"shoko", ce:150, n:"Shoko Ieiri", g:"Doctor", bond:"Comrade · 40", b:40, next:"Reverse cursed technique, in theory", where:"Infirmary · Evening", mem:["Cursed energy debt"]},
+    {k:"yaga", ce:230, n:"Masamichi Yaga", g:"Principal", bond:"Acquaintance · 20", b:20, next:"The cursed doll workshop", where:"Principal's office · Afternoon", mem:["The interview"]},
+    {k:"ijichi", ce:90, n:"Kiyotaka Ijichi", g:"Assistant manager", bond:"Acquaintance · 20", b:20, next:"Ride-along: a day on the job", where:"Gate · Morning", mem:["The car"]},
+    {k:"sana", ce:null, n:"Sana Torii", g:"In memory", bond:"Memories · 3 of 7", b:43, next:"The daisy clip: take it to the riverside", where:"Riverside · Evening", mem:["The teacher ranking","The alley","The doorstep"]}
+  ];
+  var locked = [
+    {n:"Kento Nanami", h:"Act III"}, {n:"Aoi Todo", h:"Goodwill Event"}, {n:"Kasumi Miwa", h:"Goodwill Event"},
+    {n:"Mei Mei", h:"Act V"}, {n:"Yuta Okkotsu", h:"Abroad"}
+  ];
+  var grid = document.getElementById("jgrid"), detail = document.getElementById("jdetail");
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function bar(label, v){
+    var inf = v === "inf", w = inf ? 100 : Math.min(100, v / 300 * 100);
+    return '<div style="display:grid;grid-template-columns:44px minmax(0,1fr) 78px;gap:8px;align-items:center;font-size:11.5px;margin-top:4px">'+
+      '<span style="color:var(--screen-muted)">'+label+'</span>'+
+      '<div class="meter" style="margin:0;'+(inf?'overflow:visible;':'')+'"><i style="width:'+w+'%;'+(inf?'background:linear-gradient(90deg,#A193FF,#E2665C);box-shadow:0 0 10px #A193FF;':'')+'"></i></div>'+
+      '<span style="font-family:var(--mono);color:'+(inf?'#E2665C':'var(--screen-ink)')+'">'+(inf?'off the scale':v)+'</span></div>';
+  }
+  function reserve(p){
+    if (p.ce === null) return "";
+    return '<div class="lbl">Cursed energy reserve</div>'+bar(p.n.split(" ")[0], p.ce)+bar("You", 100)+
+      (p.k === "maki" ? '<div style="font-size:11.5px;color:var(--screen-muted);margin-top:4px">Heavenly Restriction: her strength is in her body.</div>' : "");
+  }
+  function show(i){
+    var p = people[i];
+    Array.prototype.forEach.call(grid.querySelectorAll(".card"), function(c){ c.classList.toggle("sel", c.getAttribute("data-i") == i); });
+    detail.innerHTML =
+      '<div class="who"><img alt="" src="'+P[p.k]+'"><div><b>'+esc(p.n)+'</b><span>'+esc(p.g)+' · '+esc(p.bond)+'</span><div class="meter"><i style="width:'+p.b+'%"></i></div></div></div>'+
+      '<div class="lbl">Next with them</div><div class="nextbox">'+esc(p.next)+'<br><span style="font-size:11.5px;opacity:.8">'+esc(p.where)+'</span></div>'+
+      reserve(p)+
+      '<div class="lbl">Memories</div><ul>'+p.mem.map(function(m){return '<li>'+esc(m)+'</li>';}).join("")+'</ul>';
+  }
+  people.forEach(function(p, i){
+    var b = document.createElement("button");
+    b.className = "card"; b.type = "button"; b.setAttribute("data-i", i);
+    b.innerHTML = '<img alt="" src="'+P[p.k]+'"><div class="nm">'+esc(p.n.split(" ")[0])+'</div><div class="st next">Next ›</div>';
+    b.addEventListener("click", function(){ show(i); });
+    grid.appendChild(b);
+  });
+  locked.forEach(function(l){
+    var d = document.createElement("div");
+    d.className = "card lock";
+    d.innerHTML = '<div class="sil" aria-hidden="true"></div><div class="nm">???</div><div class="st">'+esc(l.h)+'</div>';
+    d.title = "Locked: " + l.h;
+    grid.appendChild(d);
+  });
+  show(1);
+})();
+</script>
