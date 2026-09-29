@@ -11,6 +11,7 @@ does not compile them, and kept in the repo so the writing is not lost.
 | `ch1c_the_edit.rpy` | The edited house, the Sitter in Sana's bedroom, the truth she can't keep. |
 | `ch1d_fifth_day.rpy` | Gojo on the konbini kerb, what the paper does, the car. |
 | `ch2_arrival.rpy` | Yaga's assessment, all three first-years, Maki's spar, Panda and Toge. |
+| `ch3_freetime.rpy` | Chapter Three, "Three Boring Afternoons": Gojo's homework, a free-time loop. Never committed; recovered 2026-09-29 from Ren'Py's automatic backups (`~/Library/RenPy/backups`). The source of the "boring afternoons" lines still quoted in script.rpy and ch5_debrief.rpy. |
 
 Material worth mining later: Kurose and the paperwork thread (seeds Wakuri);
 the mother's one second at the car window; Oda-sensei; Maki's sparring test,
