@@ -78,6 +78,7 @@ BASES = {
     "toge": "toge_base_00004_.png",
     "utahime": "fixed/utahime_bodyfix.png",   # render #4 with a closer-fitting kimono top (BODY_FIX)
     "ijichi": "ijichi_base_00003_.png",
+    "sana": "sana_base_00001_.png",
 }
 
 HER = {"nobara", "maki", "shoko", "utahime", "sana"}

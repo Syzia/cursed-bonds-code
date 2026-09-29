@@ -102,8 +102,8 @@ image mc = lit("images/char/mc.png")
 ## image utahime     = "images/char/utahime.png"   # superseded by jjk_sprites.rpy (Oda still borrows the file)
 
 ## Pre-campus cast — placeholder art until the sprite set lands.
-image sana = lit("images/char/sana.png")
-image sana tired = lit(Transform("images/char/sana.png", matrixcolor=TintMatrix("#b3b3cc")))
+## image sana = "images/char/sana.png"   # superseded by jjk_sprites.rpy
+image sana tired = Transform("sana neutral", matrixcolor=TintMatrix("#b3b3cc"))
 image mother = lit(Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6db")))
 image father = lit(Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff")))
 image oda = lit(Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb")))
