@@ -252,12 +252,21 @@ Designed with the user (2026-09-29), from the Reze references in `references/cha
 - **Expressions:** happy is her default. After the wipe, oddly serene.
 
 ## mc — the player (original)
-**Hair colour to change** (the user, 2026-09-29): Sana has the purple bob, so
-the player gets a different shade, so the two don't read as siblings.
-Violet-tinted dark hair, medium length, swept to one side, a lock falling between the eyes. Grey-violet
-eyes. Slim, average height. Starts in the Yotsuka High uniform (grey blazer like Sana's, white shirt, tie) —
-this is the pre-campus look; a second variant "mc_jjk" in the Jujutsu High uniform is used on campus.
-Expression default: watchful. Make them look like someone who notices things.
+Kaito Amagiri by default (the player can rename him): 18, Sana's classmate
+at Yotsuka High, then a first-year at Jujutsu High.
+- **Hair: dark ash brown** (the user, 2026-09-29), so he and Sana's purple
+  bob don't read as siblings: a cool, muted brown with soft grey
+  highlights, medium length, swept to one side, a lock between the eyes.
+  Grey-violet eyes. Slim, average height. "They just need to look like
+  they belong in the verse": no references, an original design.
+- **Two outfits, one face.** The base is rendered in the Jujutsu High
+  uniform (dark navy, stand-up collar, gold swirl buttons): most of the
+  game is on campus, and the model draws it best by name. The Yotsuka High
+  version (grey blazer with Sana's dark green piping, white shirt, red tie
+  to match her ribbon, grey trousers, brown loafers) is the same picture
+  with the clothes swapped, so the face, and every expression, is shared.
+- **Backdrop: magenta**, for the Yotsuka blazer's dark green piping.
+- **Expression default:** watchful. Someone who notices things.
 
 ## Curses (keep abstract — do not humanise)
 curse_small: pond-scum green, too many joints, a mouth that goes round the side of the head, two eyes.
