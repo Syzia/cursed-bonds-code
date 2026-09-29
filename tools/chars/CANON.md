@@ -269,7 +269,12 @@ at Yotsuka High, then a first-year at Jujutsu High.
   to match her ribbon, grey trousers, brown loafers) is the same picture
   with the clothes swapped, so the face, and every expression, is shared.
 - **Backdrop: magenta**, for the Yotsuka blazer's dark green piping.
-- **Expression default:** watchful. Someone who notices things.
+- **Expression default:** watchful. Someone who notices things. His happy
+  is a warm, confident smile, his anger cold.
+- **Done 2026-09-29:** render #1 with a head redraw (a neat side-swept dark
+  brown cut, (71, 53, 44), eyebrows showing), drawn 179 cm (standing 172).
+  Yotsuka outfit: box 1, the blazer buttoned. He wears it until the flag
+  `settled_in` (Arc One's opening), then the Jujutsu High uniform.
 
 ## Curses (keep abstract — do not humanise)
 curse_small: pond-scum green, too many joints, a mouth that goes round the side of the head, two eyes.

@@ -77,6 +77,18 @@ one of them.
    - `CHAR_KEEP` protects glasses, blindfolds and marks.
 7. **Check every time:** zero body pixels differ from the neutral below the
    face, lint is clean, and the cast line-up still reads as one show.
+8. **A second outfit** (Kaito, 2026-09-29): `OUTFIT_FIX` in fix_edges.py
+   redraws the clothes on the finished working base and pastes everything
+   but the head, so the face is pixel-identical and the five expressions
+   are made once, then copied onto the other outfit's base. The outfit is a
+   character of its own for the tools (`mcyotsuka`); in the game,
+   `OUTFITS` in gen_sprite_defs.py makes the owner's images a
+   ConditionSwitch on a story flag, so scenes just `show mc`.
+   - Anything pasted from an edit model sits on its vivid green,
+     (10, 249, 10). keysprite gives solid pixels near the outline of a vivid
+     screen their own ramp and despill, and treats a sealed sliver of that
+     green as backdrop. Look for green on the outline and in gaps between
+     a hand and a leg.
 
 Typical cost per character, besides the base run on the Comfy Cloud plan:
 $0.50–1.50 of repairs and $0.80 of expressions, at Nano Banana Pro's
