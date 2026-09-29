@@ -225,13 +225,34 @@ From her official design sheet and stills in `references/characters/utahime/` (2
   real smile; angry is fuming irritation, her reaction to Gojo.
 
 ## sana — Sana Torii (the friend from the East Wing; original)
-Same age as the player. Black hair in a low ponytail, straight fringe, dark eyes, small round face.
-Ordinary high-school uniform of a DIFFERENT school: grey blazer, white shirt, red ribbon/tie, grey pleated
-skirt. Bright, a little reckless; after the wipe, oddly serene. Happy is her default.
+Designed with the user (2026-09-29), from the Reze references in `references/characters/sana/`.
+- **Who she is:** the player's best friend since they were three. Funny,
+  opinionated, a little reckless, teasing. She has "a thing to tell you" and
+  dies in the alley in chapter one. Reze (Chainsaw Man, also MAPPA) dies in an
+  alley on the way to meet the boy, which makes her a deliberate homage.
+- **Age:** 18, the player's classmate at Yotsuka High.
+- **Face and hair, from Reze:** a short dark purple (indigo-violet) bob with
+  loose strands across her face and a small bun at the nape, large bright
+  green eyes, a gentle, teasing smile, a faint blush. The user kept the
+  purple; the player's hair will change colour instead.
+- **Her own:** a small **white daisy hair clip** above her left temple, a
+  nod to Reze's flower and a memento the story can reuse after the alley.
+  No choker: Reze's grenade-pin choker stays Reze's.
+- **Outfit:** the Yotsuka High uniform: a grey blazer worn open, a white
+  shirt, a red ribbon bow, a grey pleated skirt just above the knee, black
+  knee socks and brown loafers. The player's prologue uniform matches (the
+  boys' version with a tie).
+- **Backdrop: magenta.** Her darker green eyes measured only 49 from Krea's
+  muted green, against a cutoff of 45. Her indigo hair leans at most 32
+  toward magenta, where the key keeps everything below 38. She is moved
+  onto pure green after, where her eyes are safe.
+- **Expressions:** happy is her default. After the wipe, oddly serene.
 
 ## mc — the player (original)
+**Hair colour to change** (the user, 2026-09-29): Sana has the purple bob, so
+the player gets a different shade, so the two don't read as siblings.
 Violet-tinted dark hair, medium length, swept to one side, a lock falling between the eyes. Grey-violet
-eyes. Slim, average height. Starts in the Yotsuka High uniform (dark blazer, white shirt, dark tie) —
+eyes. Slim, average height. Starts in the Yotsuka High uniform (grey blazer like Sana's, white shirt, tie) —
 this is the pre-campus look; a second variant "mc_jjk" in the Jujutsu High uniform is used on campus.
 Expression default: watchful. Make them look like someone who notices things.
 

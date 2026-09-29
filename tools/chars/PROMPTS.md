@@ -132,9 +132,9 @@ between the eyes, grey-violet eyes, slim, average height, watchful expression,
 dark navy high-collared school uniform jacket
 
 ## sana
-eighteen year old young woman, short dark hair with a grown-out fringe pinned back, dark eyes,
-small round face, bright cheerful expression, grey school blazer with a red ribbon tie
-and grey pleated skirt
+original character with Reze's (Chainsaw Man) face and purple bob, a white daisy hair clip,
+green eyes, the Yotsuka High uniform (grey blazer, red ribbon, grey pleated skirt), no choker,
+rendered on magenta (full prompt: prompts/sana.txt)
 
 ---
 
