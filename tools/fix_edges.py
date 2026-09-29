@@ -1024,6 +1024,55 @@ def prepare_outfit(chars):
                    "outfit.json")
 
 
+def chin_only(head, work):
+    """Below the collar line the head mask takes all the skin between the
+    collar's sides, chin and neck together. For a new outfit the neck belongs
+    to the new clothes (a shirt collar sits where Kaito's old stand-up collar
+    showed his neck), so those rows keep only the chin: from the middle of
+    the face out to the jaw's drawn outline, the outline included, so the
+    seam hides in the line work."""
+    from facemask import head_box, is_skin
+    from keysprite import key_out
+    W, H = work.w, work.h
+    _, _, _, cut, (fx0, fy0, fx1, fy1) = head_box(work, key_out(work))
+    cx = (fx0 + fx1) // 2
+
+    def px(x, y):
+        return work.buf[(y * W + x) * 3:(y * W + x) * 3 + 3]
+
+    def dark(x, y):
+        return sum(px(x, y)) < 3 * 120
+
+    # The skin runs on from chin to neck unbroken, so the face box's bottom is
+    # the neck's, not the chin's. The chin ends at its drawn outline: the first
+    # dark line down the middle of the face below the collar line.
+    chin = cut
+    while chin < H - 1 and not dark(cx, chin):
+        chin += 1
+    end = chin
+    while end < H - 1 and dark(cx, end) and end - chin < 5:
+        end += 1
+    for y in range(cut, H):
+        keep = None
+        if y < end:
+            spans = []
+            for step in (-1, 1):
+                x = cx
+                while 0 < x < W - 1 and is_skin(*px(x, y)):
+                    x += step
+                n = 0
+                while 0 < x < W - 1 and dark(x, y) and n < (30 if y >= chin else 5):   # the outline
+                    x += step
+                    n += 1
+                spans.append(x)
+            keep = (spans[0], spans[1])
+        row = y * head.w * head.ch
+        for x in range(W):
+            v = 255 if keep and keep[0] <= x <= keep[1] else 0
+            for k in range(head.ch):
+                head.buf[row + x * head.ch + k] = v
+
+
 def apply_outfit(char, edited):
     """Paste the new clothes round the unchanged head: everything from the
     edit except the head (hair, face and neck skin, through the head-fix mask,
@@ -1039,6 +1088,7 @@ def apply_outfit(char, edited):
     head = load(build_head(work_path, char, out_dir=os.path.join(FIXED, "masks"),
                            margin=HEAD_MARGIN.get(src_char, 0.14)))
     W, H = work.w, work.h
+    chin_only(head, work)
     inside = [p for p in range(0, W * H, 2) if head.buf[p * head.ch] > 200
               and work.buf[p * 3 + 1] - max(work.buf[p * 3], work.buf[p * 3 + 2]) <= 20]
     pts = [(p % W, p // W) for p in inside[::2]]

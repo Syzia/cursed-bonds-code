@@ -180,6 +180,7 @@ def backdrop_regions(im, bg, lo, lean=None):
     n = w * h
     green = bytearray(n)
     lean = lean or (lambda r, g, b: g - (r if r > b else b))
+    vivid = lean(*bg) > 120
     for p in range(n):
         i = p * ch
         if lean(buf[i], buf[i + 1], buf[i + 2]) > lo:
@@ -212,6 +213,20 @@ def backdrop_regions(im, bg, lo, lean=None):
                 sr += buf[i]; sg += buf[i + 1]; sb += buf[i + 2]
             k = float(len(region))
             keep = _dist((sr / k, sg / k, sb / k), bg) < 45
+        # A thin sliver of backdrop, sealed off between a hand and a leg, is
+        # mostly blended edge pixels, so its mean doesn't read as backdrop (it
+        # stayed as a green stripe beside Kaito's hand). On a vivid screen no
+        # part of a character is anywhere near the backdrop's own colour, so a
+        # few pixels of it are enough.
+        if not keep and vivid:
+            close = 0
+            for p in region:
+                i = p * ch
+                if _dist((buf[i], buf[i + 1], buf[i + 2]), bg) < 45:
+                    close += 1
+                    if close >= 4:
+                        keep = True
+                        break
         if keep:
             for p in region:
                 backdrop[p] = 1
@@ -285,8 +300,26 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
 
     # A vivid screen also tints the solid pixels just inside the outline: up
     # to a third of the screen's colour still counts as figure. On Krea's
-    # muted green the tint doesn't show; on magenta it drew a maroon line round
-    # Sana. So solid pixels within 2 px of a soft one lose it too.
+    # muted green the tint doesn't show. On a vivid green (pure green after a
+    # rescreen, or an edit model's own, (10, 249, 10)) it drew a green line
+    # down Kaito's grey trousers: there, solid pixels within 2 px of a soft one
+    # get a ramp that starts near zero lean, and are despilled. Interior
+    # greens (an eye, a crest) are never beside a soft pixel.
+    if kind == "green" and bg_chroma > 120:
+        w, h = im.w, im.h
+        soft = bytearray(1 if out.buf[p * 4 + 3] < 255 else 0 for p in range(w * h))
+        band = _grow(soft, w, h, 2)
+        lo2 = bg_chroma * 0.05
+        for p in range(w * h):
+            if band[p] and not soft[p]:
+                i = p * ch
+                r, g, b = im.buf[i], im.buf[i + 1], im.buf[i + 2]
+                v = lean(r, g, b)
+                if v > lo2:
+                    out.buf[p * 4 + 1] = int(g - (g - max(r, b)) * 0.9)
+                    out.buf[p * 4 + 3] = max(0, int(255 * min(1.0, (hi - v) / (hi - lo2))))
+    # On magenta it drew a maroon line round Sana: solid pixels within 2 px of
+    # a soft one lose the screen's colour too.
     if kind == "magenta":
         w, h = im.w, im.h
         soft = bytearray(1 if out.buf[p * 4 + 3] < 255 else 0 for p in range(w * h))

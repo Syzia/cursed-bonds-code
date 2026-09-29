@@ -2,6 +2,7 @@
 
 ## Sprites: <key> <expression>. `neutral` doubles as the bare name.
 ## lit_sprite(path, canvas size, feet (x centre, sole row, width)): see lighting.rpy.
+## A ConditionSwitch picks a second outfit (OUTFITS in the generator).
 image gojo = lit_sprite("images/char/gojo_neutral.png", (760, 1400), (393, 1365, 423))
 image gojo neutral = lit_sprite("images/char/gojo_neutral.png", (760, 1400), (393, 1365, 423))
 image gojo happy = lit_sprite("images/char/gojo_happy.png", (760, 1400), (393, 1365, 423))
@@ -26,8 +27,13 @@ image maki angry = lit_sprite("images/char/maki_angry.png", (760, 1400), (414, 1
 image maki surprised = lit_sprite("images/char/maki_surprised.png", (760, 1400), (414, 1365, 320))
 image maki sad = lit_sprite("images/char/maki_sad.png", (760, 1400), (414, 1365, 320))
 
-image mc = lit_sprite("images/char/mc_neutral.png", (760, 1400), (387, 1365, 321))
-image mc neutral = lit_sprite("images/char/mc_neutral.png", (760, 1400), (387, 1365, 321))
+image mc = ConditionSwitch("not has_flag('settled_in')", lit_sprite("images/char/mcyotsuka_neutral.png", (760, 1400), (388, 1364, 319)), "True", lit_sprite("images/char/mc_neutral.png", (760, 1400), (387, 1365, 321)))
+image mc neutral = ConditionSwitch("not has_flag('settled_in')", lit_sprite("images/char/mcyotsuka_neutral.png", (760, 1400), (388, 1364, 319)), "True", lit_sprite("images/char/mc_neutral.png", (760, 1400), (387, 1365, 321)))
+image mc happy = ConditionSwitch("not has_flag('settled_in')", lit_sprite("images/char/mcyotsuka_happy.png", (760, 1400), (388, 1364, 319)), "True", lit_sprite("images/char/mc_happy.png", (760, 1400), (387, 1365, 321)))
+image mc serious = ConditionSwitch("not has_flag('settled_in')", lit_sprite("images/char/mcyotsuka_serious.png", (760, 1400), (388, 1364, 319)), "True", lit_sprite("images/char/mc_serious.png", (760, 1400), (387, 1365, 321)))
+image mc angry = ConditionSwitch("not has_flag('settled_in')", lit_sprite("images/char/mcyotsuka_angry.png", (760, 1400), (388, 1364, 319)), "True", lit_sprite("images/char/mc_angry.png", (760, 1400), (387, 1365, 321)))
+image mc surprised = ConditionSwitch("not has_flag('settled_in')", lit_sprite("images/char/mcyotsuka_surprised.png", (760, 1400), (388, 1364, 319)), "True", lit_sprite("images/char/mc_surprised.png", (760, 1400), (387, 1365, 321)))
+image mc sad = ConditionSwitch("not has_flag('settled_in')", lit_sprite("images/char/mcyotsuka_sad.png", (760, 1400), (388, 1364, 319)), "True", lit_sprite("images/char/mc_sad.png", (760, 1400), (387, 1365, 321)))
 
 image megumi = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi neutral = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
@@ -126,8 +132,13 @@ image side maki angry = "images/side/maki_angry.png"
 image side maki surprised = "images/side/maki_surprised.png"
 image side maki sad = "images/side/maki_sad.png"
 
-image side mc = "images/side/mc_neutral.png"
-image side mc neutral = "images/side/mc_neutral.png"
+image side mc = ConditionSwitch("not has_flag('settled_in')", "images/side/mcyotsuka_neutral.png", "True", "images/side/mc_neutral.png")
+image side mc neutral = ConditionSwitch("not has_flag('settled_in')", "images/side/mcyotsuka_neutral.png", "True", "images/side/mc_neutral.png")
+image side mc happy = ConditionSwitch("not has_flag('settled_in')", "images/side/mcyotsuka_happy.png", "True", "images/side/mc_happy.png")
+image side mc serious = ConditionSwitch("not has_flag('settled_in')", "images/side/mcyotsuka_serious.png", "True", "images/side/mc_serious.png")
+image side mc angry = ConditionSwitch("not has_flag('settled_in')", "images/side/mcyotsuka_angry.png", "True", "images/side/mc_angry.png")
+image side mc surprised = ConditionSwitch("not has_flag('settled_in')", "images/side/mcyotsuka_surprised.png", "True", "images/side/mc_surprised.png")
+image side mc sad = ConditionSwitch("not has_flag('settled_in')", "images/side/mcyotsuka_sad.png", "True", "images/side/mc_sad.png")
 
 image side megumi = "images/side/megumi_neutral.png"
 image side megumi neutral = "images/side/megumi_neutral.png"
