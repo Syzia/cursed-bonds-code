@@ -196,8 +196,24 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change her facial expression to strong surprise: eyes opened wide so the whole round iris "
                      "shows, eyebrows raised high and arched, mouth dropped open in a small oval.",
     },
+    # Kaito is a cool, watchful lead (the user asked for a Sung Jin-Woo type):
+    # his happy is a confident smile rather than a grin, his anger cold.
+    "mc": {
+        "happy":     "Change his facial expression to a warm, confident smile: the corners of his mouth lifted, "
+                     "lips closed, his eyes softened, eyebrows relaxed.",
+        "serious":   "Change his facial expression to intense focus: eyebrows lowered and drawn together, eyes "
+                     "narrowed slightly with a sharp, steady stare, mouth pressed into a firm line, jaw set.",
+        "sad":       "Change his facial expression to quiet, held-in sadness: the inner ends of his eyebrows raised "
+                     "and pulled together, gaze lowered, mouth closed with the corners turned slightly down.",
+        "angry":     "Change his facial expression to cold fury: eyebrows pulled down hard into a sharp V with a "
+                     "crease between them, eyes narrowed into a piercing glare, teeth clenched, jaw tight.",
+        "surprised": "Change his facial expression to surprise: eyes opened wide, eyebrows raised high, lips "
+                     "parted.",
+    },
 }
 CHAR_KEEP = {
+    "mc": "Keep his side-swept fringe and the loose lock across his forehead exactly where they are, and keep "
+          "his eyes the same grey-violet.",
     "sana": "Keep the loose strands of hair that fall across her face and between her eyes exactly where they "
             "are, keep her eyes the same bright green, and keep the white daisy clip in her hair.",
     "ijichi": "Keep his glasses on exactly as they are, with the same frames and lenses, and keep his hair "
