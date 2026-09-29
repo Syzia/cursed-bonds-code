@@ -254,11 +254,14 @@ Designed with the user (2026-09-29), from the Reze references in `references/cha
 ## mc — the player (original)
 Kaito Amagiri by default (the player can rename him): 18, Sana's classmate
 at Yotsuka High, then a first-year at Jujutsu High.
-- **Hair: dark ash brown** (the user, 2026-09-29), so he and Sana's purple
-  bob don't read as siblings: a cool, muted brown with soft grey
-  highlights, medium length, swept to one side, a lock between the eyes.
-  Grey-violet eyes. Slim, average height. "They just need to look like
-  they belong in the verse": no references, an original design.
+- **A Sung Jin-Woo type** (the user, after the first renders): "the MC
+  always has to be good looking". Named to Krea for the face, hairstyle,
+  build and bearing, as Reze was for Sana: strikingly handsome, sharp
+  narrow eyes, a defined jaw, lean and athletic, cool and composed.
+- **Hair: dark brown** (the user chose dark ash brown), not Jin-Woo's
+  black, which would make him a Megumi double in shared scenes, and not
+  purple like Sana's. Say "dark chocolate brown": "ash" and "grey
+  highlights" came back charcoal grey, (75, 84, 85). Grey-violet eyes.
 - **Two outfits, one face.** The base is rendered in the Jujutsu High
   uniform (dark navy, stand-up collar, gold swirl buttons): most of the
   game is on campus, and the model draws it best by name. The Yotsuka High
