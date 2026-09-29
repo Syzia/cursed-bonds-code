@@ -224,7 +224,7 @@ From her official design sheet and stills in `references/characters/utahime/` (2
 - **Expressions:** prim and composed. Warm with her students, so happy is a
   real smile; angry is fuming irritation, her reaction to Gojo.
 
-## sana — Sana Torii (the friend from the East Wing; original)
+## sana — Sana Torii (the best friend who dies in the alley; original)
 Designed with the user (2026-09-29), from the Reze references in `references/characters/sana/`.
 - **Who she is:** the player's best friend since they were three. Funny,
   opinionated, a little reckless, teasing. She has "a thing to tell you" and
@@ -249,7 +249,7 @@ Designed with the user (2026-09-29), from the Reze references in `references/cha
   keysprite's magenta key now also measures lean along the screen's own hue
   (her hair leans blue, the screen red). Moved onto pure green, nothing more
   than 3 px inside her outline changed.
-- **Expressions:** happy is her default. After the wipe, oddly serene.
+- **Expressions:** happy is her default.
 
 ## mc — the player (original)
 Kaito Amagiri by default (the player can rename him): 18, Sana's classmate

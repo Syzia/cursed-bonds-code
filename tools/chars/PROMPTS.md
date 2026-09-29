@@ -127,9 +127,11 @@ neat black side-parted hair, rectangular glasses, pale, anxious expression, blac
 business suit with a white shirt and dark tie, slight stoop, hands clasped
 
 ## mc
-violet-tinted dark hair of medium length swept to one side with a lock falling
-between the eyes, grey-violet eyes, slim, average height, watchful expression,
-dark navy high-collared school uniform jacket
+original character, a Sung Jin-Woo type (Sung Jinwoo's face and hairstyle, named to Krea):
+strikingly handsome, dark chocolate brown hair, messy, with a fringe of pointed locks and one
+falling between the eyes, sharp narrow grey-violet eyes, lean and athletic, cool and watchful,
+Jujutsu High uniform, rendered on magenta (full prompt: prompts/mc.txt; the Yotsuka High
+outfit is the same picture with the clothes swapped)
 
 ## sana
 original character with Reze's (Chainsaw Man) face and purple bob, a white daisy hair clip,
@@ -140,22 +142,19 @@ rendered on magenta (full prompt: prompts/sana.txt)
 
 ## Expressions
 
-Generate the body once, then change only the face. On a full-inpainting setup,
-mask the head and re-run with the expression swapped. Without inpainting, keep
-the same seed and change only this clause:
-
-| | |
-|---|---|
-| neutral | `neutral expression, mouth closed, relaxed brows` |
-| happy | `smiling warmly, eyes slightly narrowed, raised brows` |
-| serious | `level stare, mouth a flat line, lowered brows` |
-| angry | `angry glare, furrowed brows, teeth showing slightly` |
-| surprised | `wide eyes, raised brows, mouth open slightly` |
-| sad | `downcast eyes, brows angled up at the inner ends, small frown` |
+Expressions are not prompted any more. The base picture is the neutral, and
+the other five come from an edit model: `tools/make_edit_workflow.py` sends
+the head close-up (from `composite_face.py --prepare`) to Nano Banana Pro with
+one instruction per expression, from `EXPRESSIONS` (the shared wording) or
+`CHAR_EXPRESSIONS` (a character's own, such as Gojo's, whose eyes are under
+the blindfold), and `composite_face.py` pastes each face back. Describe only
+what changes, and never name the character to it. The full steps are in
+docs/ASSET_PIPELINE.md (recipe step 6).
 
 ## Target output
 
 760 x 1400 RGBA, figure centred, feet ~40px from the bottom, head ~40px from the
 top. Name files `<key>_<expression>.png` in `game/images/char/`, then run
-`python3 tools/gen_sprite_defs.py` — the declarations, expression attributes and
-textbox side portraits all wire themselves up.
+`python3 tools/gen_sprite_defs.py` — the declarations and expression attributes
+wire themselves up. Side portraits are generated too, but they only appear once
+the Characters get image= tags, which none has yet (a phase 1 UI decision).

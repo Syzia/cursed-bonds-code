@@ -1,9 +1,22 @@
+"""Flat placeholder sprites for the characters who have no finished art yet.
+
+    python3 tools/gensprite.py [--force]
+
+Writes game/images/char/<name>.png only, never the <name>_<expression>.png
+files that tools/keysprite.py makes from the ComfyUI renders, and skips any
+file that already exists unless --force is given.
+
+What is left here is what the game still reads: the bare shoko, ijichi,
+utahime and yaga files, which game/jjk_defs.rpy tints to stand in for Mom,
+Dad, Oda, Kurose and Nade, and the two curse images.
+"""
 import sys, os, math, random
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from raster import Img, hexc, lerp
+from keysprite import HEIGHT_CM, TALLEST_CM
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "game", "images", "char")
-os.makedirs(OUT, exist_ok=True)
+FORCE = "--force" in sys.argv
 W, H = 760, 1400
 CX = W / 2.0
 
@@ -83,16 +96,8 @@ HAIR = {"spiky": hair_spiky, "bob": hair_bob, "ponytail": hair_ponytail,
 
 
 # ---------------------------------------------------------------- figure
-# Standing height in cm, and the tallest member of the cast that the canvas is
-# sized for. Kept in step with tools/keysprite.py — placeholders and finished
-# art have to agree about how tall everyone is, or the cast changes height as
-# each real sprite lands.
-HEIGHT_CM = {
-    "yuji": 173, "megumi": 175, "nobara": 160, "maki": 180, "panda": 200,
-    "toge": 179, "shoko": 180, "gojo": 195, "yaga": 191, "ijichi": 180,
-    "utahime": 178, "sana": 167, "mc": 179, "mcyotsuka": 179,
-}
-TALLEST_CM = 200.0
+# Standing heights come from tools/keysprite.py, so placeholders and finished
+# art agree about how tall everyone is.
 
 
 def person(name, skin, hair_c, hair_style, uniform, accent, aura, scale=1.0,
@@ -213,26 +218,30 @@ def curse(name, body, glow_c, eyes=3, seed=1, scale=1.0):
 
 
 CAST = [
-    ("mc",      "e3b892", "6b5aa8", "swept",    "2b2b33", "a259ff", "a259ff", dict(collar_up=True)),
-    ("yuji",    "e3b892", "f2748c", "spiky",    "2b2b33", "d9536e", "ff8fa3", dict(n=9,  length=0.80, seed=3)),
-    ("megumi",  "f0cdb0", "1b2233", "spiky",    "2b2b33", "39507a", "6f8fd0", dict(n=12, length=1.05, seed=6, collar_up=True)),
-    ("nobara",  "f0cdb0", "c96a2e", "bob",      "2b2b33", "e0873f", "ffb066", dict()),
-    ("maki",    "e3b892", "2f5d43", "ponytail", "2b2b33", "3d8f5f", "77e0a0", dict(glasses="b03a3a")),
-    ("panda",   "f2f2ee", "efefe9", "panda",    "1a1a1e", "3a3a42", "d8d8e8", dict(scale=1.18)),
-    ("toge",    "f0cdb0", "d8dfe2", "swept",    "2b2b33", "8fa6ad", "bfe3ea", dict(collar_up=True)),
-    ("gojo",    "f0cdb0", "f2f4f8", "spiky",    "2b2b33", "6f8fd0", "8ed6ff", dict(scale=1.10, n=11, length=0.92, seed=21, glasses="14161f", collar_up=True)),
     ("yaga",    "c99a72", "14141a", "buzz",     "2a2f38", "4a5260", "b0b8c8", dict(scale=1.22, glasses="2a2f38")),
     ("ijichi",  "e3b892", "2a2a30", "swept",    "32323a", "55555f", "9aa0b0", dict(glasses="222228")),
     ("shoko",   "f0cdb0", "6b4a33", "bob",      "d8d8d2", "8a6a4a", "e0c8b0", dict()),
     ("utahime", "f0cdb0", "2e2440", "ponytail", "e2e2de", "c0392b", "d9a0c0", dict()),
-    ("sana",    "e8c49c", "1e1e26", "ponytail", "5a5f6b", "c0392b", "ffd9a0", dict()),
 ]
 
+
+def wanted(name):
+    if FORCE or not os.path.exists(os.path.join(OUT, name + ".png")):
+        return True
+    print("  ", name, "exists; skipped (--force to redraw)")
+    return False
+
+
 if __name__ == "__main__":
+    os.makedirs(OUT, exist_ok=True)
     print("sprites ->", OUT)
     for name, skin, hair, style, uni, acc, aura, kw in CAST:
+        if not wanted(name):
+            continue
         if "glasses" in kw:
             kw = dict(kw); kw["glasses"] = hexc(kw["glasses"])
         person(name, hexc(skin), hexc(hair), style, hexc(uni), hexc(acc), hexc(aura), **kw)
-    curse("curse_small", hexc("2c4a36"), hexc("6cff9e"), eyes=2, seed=4, scale=0.75)
-    curse("curse_big", hexc("3a1f4a"), hexc("ff5f8a"), eyes=4, seed=9, scale=1.15)
+    if wanted("curse_small"):
+        curse("curse_small", hexc("2c4a36"), hexc("6cff9e"), eyes=2, seed=4, scale=0.75)
+    if wanted("curse_big"):
+        curse("curse_big", hexc("3a1f4a"), hexc("ff5f8a"), eyes=4, seed=9, scale=1.15)

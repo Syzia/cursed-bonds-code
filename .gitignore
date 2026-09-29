@@ -28,8 +28,11 @@
 # macOS
 .DS_Store
 
-# Session scratch: smoke harnesses, screenshot dumps, renderer test renders
+# Python bytecode from the tools
+__pycache__/
+*.pyc
+
+# Session scratch: smoke harnesses, screenshot dumps
 /game/zz_*.rpy
 /shots
 /game/shots
-/game/images/char/_test_*

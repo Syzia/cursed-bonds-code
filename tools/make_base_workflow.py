@@ -2,7 +2,7 @@
 Build the Comfy Cloud workflow that generates a character's base picture.
 
     python3 tools/make_base_workflow.py megumi
-    python3 tools/make_base_workflow.py nobara nobara nobara_named   # compare two prompts
+    python3 tools/make_base_workflow.py nobara nobara nobara_described   # compare two prompts
 
 Reads the prompt from tools/chars/prompts/<character>.txt (or from each named
 prompt file, splitting the candidates between them, saved as

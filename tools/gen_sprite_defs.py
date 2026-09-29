@@ -2,8 +2,10 @@
 Scan game/images/char and game/images/side and write game/jjk_sprites.rpy.
 
 Convention: images/char/<key>_<expression>.png and images/side/<key>_<expression>.png.
-"neutral" is the default attribute, so `show yuji` == `show yuji neutral`, and
-`image side yuji` follows Character(image="yuji") speakers automatically.
+"neutral" is the default attribute, so `show yuji` == `show yuji neutral`.
+Side portraits (`image side yuji ...`) are generated too, but they only appear
+once a Character gets image="yuji": no Character has an image= tag yet, so
+SideImage() shows nothing for now. Adding the tags is a phase 1 UI decision.
 
 Each sprite is wrapped in lit_sprite() (game/lighting.rpy): lit by the scene
 it stands in, with a contact shadow under its feet. The feet are measured

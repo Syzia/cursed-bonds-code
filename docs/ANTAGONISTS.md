@@ -38,10 +38,10 @@ arithmetic nobody else is willing to do.
 
 That name is where Arc 1 goes.
 
-**What he wants with the player.** The player awakened at sixteen with no
-family line and no training, in a corridor Wakuri chose. He has a file on
-them that is four years old. The awakening was not an accident of fate; it was
-scheduled. Revealing *how* is the Arc 3 turn.
+**What he wants with the player.** The player awakened at eighteen with no
+family line and no training, in the alley behind the arcade, a place Wakuri
+chose. He has a file on them that is four years old. The awakening was not an
+accident of fate; it was scheduled. Revealing *how* is the Arc 3 turn.
 
 **How he appears.** Never in person until Arc 3. In Arc 1 he is a signature on
 a form. In Arc 2 he is a voice on a phone. He is old, softly spoken, and
