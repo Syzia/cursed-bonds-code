@@ -52,6 +52,11 @@ image panda sad = lit_sprite("images/char/panda_sad.png", (880, 1400), (447, 136
 
 image sana = lit_sprite("images/char/sana_neutral.png", (760, 1400), (376, 1365, 215))
 image sana neutral = lit_sprite("images/char/sana_neutral.png", (760, 1400), (376, 1365, 215))
+image sana happy = lit_sprite("images/char/sana_happy.png", (760, 1400), (376, 1365, 215))
+image sana serious = lit_sprite("images/char/sana_serious.png", (760, 1400), (376, 1365, 215))
+image sana angry = lit_sprite("images/char/sana_angry.png", (760, 1400), (376, 1365, 215))
+image sana surprised = lit_sprite("images/char/sana_surprised.png", (760, 1400), (376, 1365, 215))
+image sana sad = lit_sprite("images/char/sana_sad.png", (760, 1400), (376, 1365, 215))
 
 image shoko = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
 image shoko neutral = lit_sprite("images/char/shoko_neutral.png", (760, 1400), (423, 1365, 298))
@@ -144,6 +149,11 @@ image side panda sad = "images/side/panda_sad.png"
 
 image side sana = "images/side/sana_neutral.png"
 image side sana neutral = "images/side/sana_neutral.png"
+image side sana happy = "images/side/sana_happy.png"
+image side sana serious = "images/side/sana_serious.png"
+image side sana angry = "images/side/sana_angry.png"
+image side sana surprised = "images/side/sana_surprised.png"
+image side sana sad = "images/side/sana_sad.png"
 
 image side shoko = "images/side/shoko_neutral.png"
 image side shoko neutral = "images/side/shoko_neutral.png"
