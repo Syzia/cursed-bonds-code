@@ -174,8 +174,11 @@ def composite(base, raw, mask, params, c, crop_rec=None):
     # Median, not mean: the soft edge also crosses fringe strands and
     # eyebrows, and an eyebrow the expression moved is an outlier, not a
     # colour cast. (Filtering to "skin on both sides" was tried and was worse:
-    # the cast itself changes which pixels pass the skin test.)
-    edge = [p for p in face if mask.buf[p * mask.ch] < 255]
+    # the cast itself changes which pixels pass the skin test.) Backdrop is
+    # left out: a head mask's edge runs mostly through it, and the player's
+    # head redraw came back tinted to the edit's green, (-5, +7, -5).
+    edge = [p for p in face if mask.buf[p * mask.ch] < 255
+            and base.buf[p * 3 + 1] - max(base.buf[p * 3], base.buf[p * 3 + 2]) <= 20]
     shift = [0.0, 0.0, 0.0]
     if len(edge) > 50:
         for k in range(3):

@@ -26,6 +26,9 @@ image maki angry = lit_sprite("images/char/maki_angry.png", (760, 1400), (414, 1
 image maki surprised = lit_sprite("images/char/maki_surprised.png", (760, 1400), (414, 1365, 320))
 image maki sad = lit_sprite("images/char/maki_sad.png", (760, 1400), (414, 1365, 320))
 
+image mc = lit_sprite("images/char/mc_neutral.png", (760, 1400), (387, 1365, 321))
+image mc neutral = lit_sprite("images/char/mc_neutral.png", (760, 1400), (387, 1365, 321))
+
 image megumi = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi neutral = lit_sprite("images/char/megumi_neutral.png", (760, 1400), (379, 1365, 331))
 image megumi happy = lit_sprite("images/char/megumi_happy.png", (760, 1400), (379, 1365, 331))
@@ -122,6 +125,9 @@ image side maki serious = "images/side/maki_serious.png"
 image side maki angry = "images/side/maki_angry.png"
 image side maki surprised = "images/side/maki_surprised.png"
 image side maki sad = "images/side/maki_sad.png"
+
+image side mc = "images/side/mc_neutral.png"
+image side mc neutral = "images/side/mc_neutral.png"
 
 image side megumi = "images/side/megumi_neutral.png"
 image side megumi neutral = "images/side/megumi_neutral.png"

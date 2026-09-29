@@ -88,7 +88,7 @@ image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 
 ## Sprites #####################################################################
 
-image mc = lit("images/char/mc.png")
+## image mc = "images/char/mc.png"   # superseded by jjk_sprites.rpy
 ## image yuji        = "images/char/yuji.png"   # superseded by jjk_sprites.rpy
 ## image megumi     = "images/char/megumi.png"   # superseded by jjk_sprites.rpy
 ## image nobara      = "images/char/nobara.png"   # superseded by jjk_sprites.rpy
