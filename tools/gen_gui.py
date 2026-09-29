@@ -45,11 +45,9 @@ panel("panel_solid.png",   PANEL, 255, LINE)
 panel("panel_hover.png",   PANEL2, 245, LINE2)
 panel("panel_active.png",  VIOLET_DEEP, 245, VIOLET)
 panel("panel_gold.png",    PANEL, 236, GOLD)
-panel("panel_seal.png",    PANEL, 236, SEAL)
 panel("panel_dark.png",    INK, 232, LINE)
 panel("panel_ghost.png",   INK, 170, LINE)
 panel("rail_violet.png",   PANEL2, 245, VIOLET, rail=VIOLET, rail_w=6)
-panel("rail_gold.png",     PANEL2, 245, GOLD,   rail=GOLD, rail_w=6)
 panel("rail_only.png",     PANEL, 0, PANEL, border_w=0, rail=VIOLET, rail_w=4)   # transparent, just the rail
 
 # --- textbox: vertical gradient, transparent -> ink ----------------------------------
@@ -124,7 +122,7 @@ fg("button/check_selected_foreground.png", fill=VIOLET)
 fg("button/radio_foreground.png", outline=MUTE)
 fg("button/radio_selected_foreground.png", fill=VIOLET)
 
-# --- bars / sliders / scrollbars: flat ----------------------------------------------
+# --- sliders / scrollbars: flat (bars are Solid() in screens.rpy) ---------------------
 def flat(name, w, h, col, a=255):
     save(Image.new("RGBA", (w, h), rgba(col, a)), name)
 
@@ -139,8 +137,6 @@ for pre in ("idle", "hover"):
     flat("scrollbar/vertical_%s_bar.png" % pre, 6, 64, LINE, 0 if pre == "idle" else 255)
     flat("scrollbar/horizontal_%s_thumb.png" % pre, 64, 6, MUTE if pre == "idle" else DIM)
     flat("scrollbar/vertical_%s_thumb.png" % pre, 6, 64, MUTE if pre == "idle" else DIM)
-    flat("bar/left.png", 64, 6, VIOLET); flat("bar/right.png", 64, 6, LINE)
-    flat("bar/top.png", 6, 64, VIOLET); flat("bar/bottom.png", 6, 64, LINE)
 
 # slider thumb: a diamond
 diamond("slider/horizontal_idle_thumb.png", 26, fill=DIM)
@@ -148,8 +144,8 @@ diamond("slider/horizontal_hover_thumb.png", 26, fill=VIOLET)
 diamond("slider/vertical_idle_thumb.png", 26, fill=DIM)
 diamond("slider/vertical_hover_thumb.png", 26, fill=VIOLET)
 
-# --- hanko seal: red square outline, used behind a kanji text ---------------------------
-for size in (44, 60, 84):
+# --- hanko seal: red square outline, used behind a kanji text (only ever at 44px) --------
+for size in (44,):
     S = size * 4
     im = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
