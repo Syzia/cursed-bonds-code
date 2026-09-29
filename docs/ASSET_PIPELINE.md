@@ -15,8 +15,9 @@ for a local anime checkpoint is real, not hypothetical — see tools/chars/CANON
 ## Making a character: the recipe (2026-09-28, after all nine campus regulars)
 
 Yuji, Megumi, Nobara, Maki, Toge, Shoko, Yaga, Gojo and Panda are done, six
-expressions each. The same steps, and the fixes that turned out to be needed,
-cover every one of them.
+expressions each, and since then Utahime, Ijichi and Sana (the first original)
+too. The same steps, and the fixes that turned out to be needed, cover every
+one of them.
 
 1. **References.** Put 2–5 in `references/characters/<name>/`. A full-body
    shot and a face close-up are the two that matter; an official design sheet
