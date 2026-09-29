@@ -180,8 +180,26 @@ CHAR_EXPRESSIONS = {
         "surprised": "Change his facial expression to startled alarm: eyes opened wide, eyebrows raised high, "
                      "mouth dropped open.",
     },
+    # Sana rests on a gentle, teasing smile, so her happy is a big open grin.
+    # She's opinionated: her anger is indignant, mid-argument (CANON.md).
+    "sana": {
+        "happy":     "Change her facial expression to a big, bright grin: mouth open in a wide smile showing her "
+                     "upper teeth, cheeks lifted, lower eyelids pushed up so her eyes crinkle happily, eyebrows "
+                     "raised.",
+        "serious":   "Change her facial expression to earnest seriousness: the smile gone, eyes fully open with a "
+                     "steady, direct look, eyebrows level and drawn slightly together, mouth closed in a flat line.",
+        "sad":       "Change her facial expression to clear sadness: the smile gone, the inner ends of her eyebrows "
+                     "raised and pulled together, eyes glossy with the gaze lowered, mouth closed with the corners "
+                     "turned down.",
+        "angry":     "Change her facial expression to indignant anger: eyebrows pulled down hard into a sharp V with "
+                     "a crease between them, eyes narrowed into a glare, mouth open mid-shout showing her teeth.",
+        "surprised": "Change her facial expression to strong surprise: eyes opened wide so the whole round iris "
+                     "shows, eyebrows raised high and arched, mouth dropped open in a small oval.",
+    },
 }
 CHAR_KEEP = {
+    "sana": "Keep the loose strands of hair that fall across her face and between her eyes exactly where they "
+            "are, keep her eyes the same bright green, and keep the white daisy clip in her hair.",
     "ijichi": "Keep his glasses on exactly as they are, with the same frames and lenses, and keep his hair "
               "exactly as it is.",
     "utahime": "Keep the scar across her face exactly where it is, and keep her fringe exactly as it is.",

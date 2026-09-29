@@ -75,18 +75,47 @@ def _chroma(c):
     return c[1] - max(c[0], c[2])
 
 
+def _hue_lean(bg):
+    """How far a pixel leans along the backdrop's own hue, less how far it
+    leans across it. For a screen that is exactly magenta (red = blue) this
+    is min(r, b) - g, just as g - max(r, b) is the same measure for green."""
+    m = sum(bg) / 3.0
+    c = [v - m for v in bg]
+    n = math.sqrt(sum(v * v for v in c)) or 1.0
+    c = [v / n for v in c]
+    q = 1 / math.sqrt(3)
+    u = (q * (c[2] - c[1]), q * (c[0] - c[2]), q * (c[1] - c[0]))   # c turned 90 degrees
+
+    def lean(r, g, b):
+        m = (r + g + b) / 3.0
+        d0, d1, d2 = r - m, g - m, b - m
+        along = d0 * c[0] + d1 * c[1] + d2 * c[2]
+        across = d0 * u[0] + d1 * u[1] + d2 * u[2]
+        return 1.2247449 * along - 0.7071068 * abs(across)
+    return lean
+
+
 def screen_key(bg):
     """(kind, lean) for the backdrop colour bg: `lean(r, g, b)` is how far a
     pixel leans toward the screen's hue, independent of its brightness. Green
     is the house screen; magenta is for characters with green in them (Maki's
     dark green hair would lean toward a green screen); blue for completeness.
     None when the backdrop has no colour cast to key on.
+
+    Krea's "bright magenta" comes back rose, (231, 59, 140), and a plain
+    min(r, b) - g can't tell that from purple: Sana's lavender hair highlights,
+    (150, 112, 183), lean 40 against the screen's 81 and were keyed half out.
+    Her hair leans blue where the screen leans red, so the magenta key also
+    measures lean along the screen's own hue, and takes the lower of the two
+    (a red ribbon leans along a rose screen's hue, but not toward magenta).
     """
     r, g, b = bg
     if g - max(r, b) >= 12:
         return "green", lambda r, g, b: g - (r if r > b else b)
     if min(r, b) - g >= 12:
-        return "magenta", lambda r, g, b: (r if r < b else b) - g
+        hue = _hue_lean(bg)
+        k = (min(r, b) - g) / hue(r, g, b)
+        return "magenta", lambda r, g, b: min((r if r < b else b) - g, hue(r, g, b) * k)
     if b - max(r, g) >= 12:
         return "blue", lambda r, g, b: b - (r if r > g else g)
     return None

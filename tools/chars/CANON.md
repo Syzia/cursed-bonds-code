@@ -243,9 +243,12 @@ Designed with the user (2026-09-29), from the Reze references in `references/cha
   knee socks and brown loafers. The player's prologue uniform matches (the
   boys' version with a tie).
 - **Backdrop: magenta.** Her darker green eyes measured only 49 from Krea's
-  muted green, against a cutoff of 45. Her indigo hair leans at most 32
-  toward magenta, where the key keeps everything below 38. She is moved
-  onto pure green after, where her eyes are safe.
+  muted green, against a cutoff of 45. Krea's magenta came back rose,
+  (231, 59, 140), and her lavender hair highlights lean toward it almost as
+  far as the key's cut, so the first move onto green keyed them half out.
+  keysprite's magenta key now also measures lean along the screen's own hue
+  (her hair leans blue, the screen red). Moved onto pure green, nothing more
+  than 3 px inside her outline changed.
 - **Expressions:** happy is her default. After the wipe, oddly serene.
 
 ## mc — the player (original)

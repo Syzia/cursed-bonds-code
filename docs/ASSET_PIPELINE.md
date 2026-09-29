@@ -30,6 +30,11 @@ cover every one of them.
    - Say nothing about height. A full-frame "shorter" becomes child
      proportions; `HEIGHT_CM` sets height instead.
    - If anything on them is **green** (Maki's hair), render on magenta.
+     Krea's magenta comes back rose, and purple hair leans toward it (Sana),
+     so the magenta key also measures lean along the screen's own hue. Check
+     a move onto green by comparing pixels whose colour is far from the
+     backdrop, not with the key's own measure: nothing inside the outline
+     should change.
 3. **Repair the base** (`fix_edges.py --prepare <name>`, one `edges.json` Run
    in the local ComfyUI). Add the character to `BASES` first. Every option is
    per character:
