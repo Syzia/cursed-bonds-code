@@ -285,7 +285,7 @@ label stage_person(who, expr=None):
 ## Gojo's lesson (5.3) ##########################################################
 
 label act_lesson(who):
-    ## PLACEHOLDER — rewrite in phase 3
+    ## PLACEHOLDER — rewrite in phase 4
     $ actions_today.add("lesson")
     $ _v = day % 3
 

@@ -13,7 +13,7 @@
 ##                        event-done hook and migration 70
 ##
 ## Tool and talisman effects are stored in `fx` now and switched on by the
-## combat update (phase 2). Nothing here changes a fight yet.
+## combat update (phase 3). Nothing here changes a fight yet.
 ################################################################################
 
 init -1 python:
@@ -30,7 +30,7 @@ init -1 python:
     ##   sealed     None, or what unseals it ("Arc Two")
     ##   stack      more than one can be carried; otherwise the count stays at 1
     ##   desc       what it is, in my words; effect: what it does, in a line
-    ##   fx         the phase-2 numbers (stored, not applied yet)
+    ##   fx         the phase-3 numbers (stored, not applied yet)
     ##   source     where it comes from, for the inventory panel
     ##   from_flag  the story flag that grants it (sync_keepsakes), or None
     ##   hidden     not listed in any catalogue until it is owned (daisy_clip)
@@ -135,7 +135,7 @@ init -1 python:
           fx={"hold_cost": -0.15, "hold_beats": 1},
           source="Gojo's training.")
     ## Effect text is the storyboard's, word for word. 3.8's fx has no key yet
-    ## for "the widened window lasts longer": phase 2 adds one when it applies fx.
+    ## for "the widened window lasts longer": phase 3 adds one when it applies fx.
     _item("afterglow", "Afterglow", "talisman", grade="g1",
           desc="Priced like a car. Mei Mei calls it a bargain.",
           effect="A Black Flash refills more cursed energy, and the widened window lasts longer.",
