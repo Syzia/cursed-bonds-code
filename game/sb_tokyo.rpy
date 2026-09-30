@@ -4,7 +4,7 @@
 ## WP1 (PHASE1_DESIGN.md 3.3). After Ijichi's ride-along (flag ijichi_rides)
 ## he drives me into the city from the gate, mornings to afternoons. A trip is
 ## half a day: a short arrival in the district, then back at the gate. The
-## districts' own scenes (label district_<key>) come in phase 3; sb_trip calls
+## districts' own scenes (label district_<key>) come in phase 4; sb_trip calls
 ## one when it exists.
 ##
 ## To add a district: an entry in DISTRICTS, its key in DISTRICT_ORDER, a
@@ -122,7 +122,7 @@ init -1 python:
 ## first (walking is free). Only plain values stay in the store: the district
 ## is read from DISTRICTS[key] each time.
 label sb_trip(key):
-    ## PLACEHOLDER — rewrite in phase 3
+    ## PLACEHOLDER — rewrite in phase 4
     ## (the arrival lines stand in for the district scenes, label district_<key>)
     if key not in DISTRICTS or not district_state(key)[0] or not trip_ok_now():
         return
