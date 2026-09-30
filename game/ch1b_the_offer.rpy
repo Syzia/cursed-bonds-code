@@ -107,9 +107,9 @@ label ch1b_goodbye:
 
     mc serious "I'll go."
 
-    gojo happy "Okay."
+    gojo serious "Okay."
 
-    gojo neutral "Then go home first. Say it properly. I'll be outside at seven and the paperwork is my problem, not yours."
+    gojo neutral "Then go home first. Say it properly. Take the weekend. A car will be outside at seven on Sunday morning, and the paperwork is my problem, not yours."
 
     mc @ sad "What do I tell them?"
 

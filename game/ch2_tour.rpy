@@ -191,7 +191,12 @@ label ch2_the_veil:
             "I look at it for a long time. It has no eyes that I can find, and it does not move, and after a while I understand what is wrong with the shape of it."
             "…It is facing the school."
             gojo sad "...Yeah. It does that."
-            gojo neutral "Don't take it personally. It faces whoever's looking. Most people just can't feel it."
+            gojo neutral "Don't take it personally. It's faced this way for as long as anyone's kept records. Most people just can't feel it."
+
+    ## Already on screen in a new game. A save made at the old storehouse menu
+    ## lands on this menu with the storehouse still up, so set the ridge again.
+    scene bg ridge_veil
+    show gojo neutral at pos_c
 
     gojo happy "Right! That's the tour."
 
@@ -237,7 +242,7 @@ label ch2_yaga:
             $ flag("yaga_anger")
             $ add_bond("yaga", 6)
             $ gain("output", 2)
-            mc angry "She could see them. She'd been seeing them for weeks. I stood next to her in an alley and something took her apart four feet away and I couldn't even see it."
+            mc angry "She could see them. She'd been seeing them for weeks. I stood next to her in an alley and something took her apart three metres from me and I couldn't even see it."
             mc "I'm not here to be noble. I'm here because I was useless and I'd like to stop."
             yaga @ surprised "...Good."
             yaga serious "Anger is fuel. Fuel is fine. Fuel that doesn't know where it's going burns the house down."
@@ -341,7 +346,7 @@ label ch2_first_years:
             "Nobara drives a nail through a straw doll on the far wall and something in the rafters that I had not known was there comes apart."
             "Yuji punches the training post so hard that the sound arrives twice."
             yuji happy "Okay — your go!"
-            mc @ happy "I stopped a second once. For one second. Badly."
+            mc @ serious "I stopped a second once. For one second. Badly."
             nobara surprised "...That's a lot, actually."
             megumi serious "That's a great deal, actually."
 
@@ -365,7 +370,7 @@ label ch2_first_years:
             $ add_bond("yuji", 8)
             $ add_bond("nobara", 5)
             $ gain("control", 3)
-            mc @ sad "Honestly? I got here four hours ago and I've been awake since Thursday."
+            mc @ sad "Honestly? I got here four hours ago and I haven't really slept since Thursday."
             "There is a pause."
             yuji sad "Oh. Yeah. Okay."
             "He sits down on the floor of the training hall. Then Nobara does. Then, after a moment of visible internal argument, so does Megumi."
@@ -377,7 +382,7 @@ label ch2_first_years:
 
     "The room they give me is at the end of the first-year corridor, and by the time I see it properly it is dark."
 
-    "My bag is on the floor, unpacked."
+    "My bag is on the floor, still packed."
 
     if has_flag("took_photo"):
         "I put the photograph on the desk, face up, where I will have to look at it."

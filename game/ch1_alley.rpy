@@ -145,7 +145,7 @@ label ch1_diner:
     show sana neutral at pos_c
     with dissolve
 
-    "Outside it is cold in the way October gets at about nine, and she walks with her hands pulled up into her sleeves and keeps not telling me the thing."
+    "Outside it is cold in the way October gets this late, and she walks with her hands pulled up into her sleeves and keeps not telling me the thing."
 
     sana happy "— and I'm not saying I'd {i}win{/i} a fight with a swan. I'm saying it wouldn't be as one-sided as everyone claims."
 
@@ -157,7 +157,7 @@ label ch1_diner:
 
     sana happy "Then you've got eleven minutes to be patient, which, frankly, is a growth area for you."
 
-    "She glances back over her shoulder, once, at nothing. Then she links her arm through mine as if that was all she turned round for."
+    "She glances back over her shoulder, once, at nothing. Then she links her arm through mine as if that was all she turned round for, and keeps it there until the mouth of the alley, where she lets go to check her phone."
 
     "I cut through the alley behind the arcade because it saves four minutes and because I always do."
 
@@ -196,7 +196,7 @@ label ch1_the_thing:
 
     sana "I've been seeing things. Not people. {i}Things.{/i} For about six weeks."
 
-    sana "The one on the ceiling in there tonight. I pointed right at it, and you looked right at it, and you didn't see anything."
+    sana "The one on the ceiling at the diner tonight. I pointed right at it, and you looked right at it, and you didn't see anything."
 
     sana sad "There's one on the platform every morning. By the third pillar. Everyone walks straight through where it is, and it just... lets them."
 

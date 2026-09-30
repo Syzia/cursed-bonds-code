@@ -103,7 +103,12 @@ label arc_one_open:
 ## new game story_point already names the chapter's first step, so it does
 ## nothing. With no story_point (an old save still mid-step) it does nothing
 ## either: the step marks its successor when it ends.
+##
+## The work list is dynamic (local to each call): chapter_one_b is itself a
+## step and calls this at its top, and a shared list would lose every step
+## queued after it.
 label prologue_catch_up(upto):
+    $ renpy.dynamic("_catch_up", "_catch_step", "_steps")
     python:
         _steps = [s for s, c in PROLOGUE_STEPS]
         _catch_up = []

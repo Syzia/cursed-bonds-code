@@ -291,6 +291,19 @@ label zz_smoke:
         autoplay(False)
         _got = zz9_steps_seen(_mark)
         check(_got == ["arc_one_open"], "no story_point: the catch-up does nothing", _got)
+        ## Nested: this catch-up plays chapter_one_b, whose own catch-up must
+        ## not wipe the steps still queued after it.
+        _mark = len(ZZ9["labels"])
+        story_point = "ch1_gojo"
+        autoplay()
+    call arc_one_open
+    python:
+        autoplay(False)
+        _got = [l for l in ZZ9["labels"][_mark:] if l in ZZ9_STEPS or l == "chapter_one_b"]
+        check(_got == ["arc_one_open", "ch1_gojo", "chapter_one_b", "ch1b_goodbye", "ch2_arrival",
+                       "ch2_the_veil", "ch2_yaga", "ch2_first_years"],
+              "a catch-up that spans chapter_one_b keeps the steps after it", _got)
+        check(story_point == "arc_one_open" and has_flag("enrolled"), "and still opens the campus", story_point)
         _mark = len(ZZ9["labels"])
         story_point = "ch2_arrival"
         autoplay()
