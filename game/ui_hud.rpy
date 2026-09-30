@@ -87,10 +87,22 @@ init python:
                 changed = True
         return changed
 
+    def _toast_trim_skipping():
+        """While the player skips (Ctrl, or skip after choices), keep only the
+        newest four: nobody reads a toast from three skipped days ago, and a
+        backlog would otherwise trickle over the next screens for minutes.
+        Outside skipping nothing is dropped (4.2). True if it dropped any."""
+        items = TOASTQ.items
+        if not config.skipping or len(items) <= TOAST_VISIBLE:
+            return False
+        del items[:len(items) - TOAST_VISIBLE]
+        return True
+
     def toast_push(text, kind="info", who=None, amount=None):
         """WP7. Queue a toast for the `toasts` overlay (3.10). toast() calls
         this through TOAST_SINK[0]. Consecutive bond or affection gains for
-        the same person merge into one toast (D34)."""
+        the same person merge into one toast (D34). While skipping, only the
+        newest four are kept."""
         items = TOASTQ.items
         now = _hud_time.time()
         if items and kind in ("bond", "aff") and amount is not None:
@@ -107,6 +119,7 @@ init python:
         items.append(builtins.dict(text=builtins.str(text),
                                    kind=(kind if kind in TOAST_KINDS else "info"),
                                    who=who, amount=amount, t_shown=None))
+        _toast_trim_skipping()
         _toast_reveal(now)
         renpy.restart_interaction()
 
@@ -115,12 +128,14 @@ init python:
         the next ones waiting. Restarts the interaction only on a change."""
         now = _hud_time.time()
         items = TOASTQ.items
+        ## A backlog queued before skipping began goes too, once it does.
+        trimmed = _toast_trim_skipping()
         ## Toasts the current limit hides (the person view shows two) stop
         ## their clocks and wait, so none expires unseen (4.2).
         for t in items[toast_limit():]:
             t["t_shown"] = None
         keep = [t for t in items if t["t_shown"] is None or now - t["t_shown"] < TOAST_LIFE]
-        changed = len(keep) != len(items)
+        changed = trimmed or len(keep) != len(items)
         if changed:
             items[:] = keep
         if _toast_reveal(now) or changed:
