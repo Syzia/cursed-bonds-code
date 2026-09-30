@@ -284,8 +284,9 @@ init python:
         whole line is kept to that many characters (the card has room for
         two lines). The where may be WP1's full weekly schedule ("Classroom
         Building (mornings) · Cafeteria (noon) · ..."), so it is shortened
-        first by keeping its leading " · " parts, then the text is clipped
-        (never below 16 characters), and last the where itself is clipped."""
+        first by keeping its leading " · " parts (with " …" after them), then
+        the where itself is clipped (never below 20 characters), and only
+        last the text ("Eat together at Bond 10" keeps its number)."""
         try:
             nf = next_for(who)
         except Exception:
@@ -303,11 +304,16 @@ init python:
             if limit:
                 room = limit - 9                     # "Next: " and " — "
                 parts = where.split(" · ")
+
+                def _where(k):
+                    return " · ".join(parts[:k]) + (" …" if k < len(parts) else "")
+
                 keep = len(parts)
-                while keep > 1 and len(text) + len(" · ".join(parts[:keep])) > room:
+                while keep > 1 and len(text) + len(_where(keep)) > room:
                     keep -= 1
-                if keep < len(parts):
-                    where = " · ".join(parts[:keep]) + " …"
+                where = _where(keep)
+                if len(text) + len(where) > room:
+                    where = jr_clip(where, max(20, room - len(text)))
                 if len(text) + len(where) > room:
                     text = jr_clip(text, max(16, room - len(where)))
                 if len(text) + len(where) > room:
@@ -1753,8 +1759,8 @@ screen jr_board_view():
                                     use jr_chip(_("Needs a senior partner"), gui.seal)
                             text jr_clip(jr_get(_o, "title", ""), 60) font JR_DISPLAY_FONT color gui.paper size 22 xsize 414
                             text jr_clip(jr_offer_line(_o), 80) style "jr_dim" size 16 xsize 414
-                            if jr_get(_o, "blurb"):
-                                text jr_clip(jr_get(_o, "blurb"), 90) style "jr_dim" size 15 xsize 414 italic True
+                            if jr_get(_o, "curse"):
+                                text jr_clip("Reported: %s" % jr_get(_o, "curse"), 90) style "jr_dim" size 15 xsize 414 italic True
                             hbox:
                                 spacing 16
                                 $ _om = jr_get(_o, "merit", 0) or 0
