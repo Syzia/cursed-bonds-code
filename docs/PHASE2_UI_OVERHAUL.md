@@ -2,13 +2,13 @@
 
 *Jujutsu Kaisen: Cursed Bonds · scope written 30 Sep 2026 from the owner's playtest notes on checkpoints 2 and 3 ("JJK notes", with screenshots).*
 
-This is the scope of a new phase that the owner asked for after playing the phase 1 build. It is **not yet a build plan**. Once the open questions at the end are answered and phase 1's last package (WP11) is merged, it gets a full design in the style of `PHASE1_DESIGN.md`: work packages, contracts and acceptance.
+This is the scope of a new phase that the owner asked for after playing the phase 1 build. It is **not yet a build plan**. Once the open questions at the end are answered and phase 1 (WP0–WP11) has passed the owner's checkpoint 4, it gets a full design in the style of `PHASE1_DESIGN.md`: work packages, contracts and acceptance.
 
 ## The new phase order
 
 | # | Phase | What it is |
 |---|---|---|
-| 1 | Foundation | Built. WP0–WP10 are merged on `phase1`; WP11 (integration, review tools, docs) is still to do. |
+| 1 | Foundation | Built. WP0–WP11 are merged on `phase1`, pending the owner's checkpoint 4. |
 | **2** | **UI overhaul** (new) | This document. |
 | 3 | Combat | Formerly phase 2: Black Flash, partner moves, tool and talisman effects, real board fights, enemy phases. |
 | 4+ | Story acts | Formerly phase 3+: the unwritten missions, districts, Sana's flashbacks, converting the chapters to "I". |

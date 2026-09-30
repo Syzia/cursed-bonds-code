@@ -407,10 +407,12 @@ init -1 python:
         if store.board_week != w or not store.board_offers:
             store.board_offers = board_generate(w)
             store.board_week = w
+            _board_npc_keep()
             return
         for i, o in enumerate(list(store.board_offers)):
             if o.get("taken_by") and o.get("day", store.day) < store.day:
                 store.board_offers[i] = _board_replacement(o, i)
+        _board_npc_keep()
 
     def _board_new_day():
         ## New-day hook: Mondays repost; yesterday's taken cards are replaced.
@@ -440,15 +442,41 @@ init -1 python:
         st_board_open) shows no board anywhere until Utahime's scene."""
         return has_flag("mission_board_open") and board_host()[0] in store.roster
 
+    def _board_npc_above():
+        mine = _board_player_rank()
+        return [w for w in _board_students() if grade_rank(_board_npc_grade(w)) > mine]
+
+    def _board_npc_keep():
+        """WP11. Fix this week's senior card once it is picked (board_npc), so
+        its taker, grade and place don't change when students join mid-week.
+        Picked again only for a new week or when the taker no longer outranks
+        me. Called from board_refresh, never from a screen."""
+        kept = store.board_npc
+        week = board_week_now()
+        if isinstance(kept, dict) and kept.get("week") == week and kept.get("taken_by") in _board_npc_above():
+            return
+        card = _board_npc_pick()
+        store.board_npc = dict(card, week=week) if card else None
+
     def board_npc_card():
         """WP4. While any rostered student outranks me, one read-only card,
         dict(taken_by=who, grade, title): "Grade 2 · taken by Megumi" (D12).
-        Who took it rotates by week among the students above me. None until
+        Who took it rotates by week among the students above me; once the
+        board has posted it for the week (board_npc) it stays. None until
         the board has been introduced."""
         if not board_introduced():
             return None
-        mine = _board_player_rank()
-        above = [w for w in _board_students() if grade_rank(_board_npc_grade(w)) > mine]
+        kept = store.board_npc
+        if (isinstance(kept, dict) and kept.get("week") == board_week_now()
+                and kept.get("taken_by") in _board_npc_above()):
+            return dict(taken_by=kept["taken_by"], grade=kept["grade"], title=kept["title"])
+        return _board_npc_pick()
+
+    def _board_npc_pick():
+        """The senior card as it would be picked now, or None."""
+        if not board_introduced():
+            return None
+        above = _board_npc_above()
         if not above:
             return None
         week = board_week_now()
@@ -1160,5 +1188,6 @@ screen board_partner(offer):
 
 default board_offers = []       # this week's offers, and the cards I took until replaced (3.7)
 default board_week = -1         # the week board_offers was posted for
+default board_npc = None        # WP11: this week's senior card, dict(week, taken_by, grade, title)
 default board_log = []          # the last 30 runs
 default board_misgrades = 0     # misgraded jobs found (board_log keeps only 30 runs)

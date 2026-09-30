@@ -113,7 +113,7 @@ init 999 python:
         """A Grade 4 player on a Monday morning in Utahime's office, board open."""
         base = dict(day=1, period="Morning", here="utahime_office", grade="g4", technique="timestop",
                     control=12, output=10, insight=10, stamina=100, merit=0, yen=0, inventory={},
-                    roster=list(ZZ_EVERYONE), bonds={}, npc_state={}, board_offers=[], board_week=-1,
+                    roster=list(ZZ_EVERYONE), bonds={}, npc_state={}, board_offers=[], board_week=-1, board_npc=None,
                     board_log=[], board_misgrades=0, schedule_overrides={}, explore_mode=False)
         base.update(kw)
         fixture(**base)
@@ -643,6 +643,22 @@ label zz_smoke:
         promote("nobara", "g2", "zz", quiet=True)
         check(board_npc_card() and board_npc_card()["taken_by"] in ("megumi", "nobara"), "a newly promoted student can take it too", board_npc_card())
         npc_state = {}
+
+        ## Once the week posts, the card stays when a student joins mid-week.
+        zz_open_state(grade="g3", roster=["yuji", "megumi", "nobara", "shoko", "gojo", "yaga", "utahime", "ijichi"])
+        board_refresh()
+        _c1 = board_npc_card()
+        check(_c1 and _c1["taken_by"] == "megumi" and board_npc and board_npc.get("taken_by") == "megumi",
+              "board_refresh keeps the week's senior card", (_c1, board_npc))
+        roster.extend(["maki", "panda", "toge"])
+        store.day += 1
+        board_refresh()
+        check(board_npc_card() == _c1, "the senior card doesn't change when students join mid-week", (_c1, board_npc_card()))
+        grade = "g2"
+        check(board_npc_card() != _c1, "the card is picked again once its taker no longer outranks me", board_npc_card())
+        grade = "g3"
+        npc_state = {}
+        board_npc = None
 
     ## --- weekly regeneration and migration 80 --------------------------------------------------------------
     python:

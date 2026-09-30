@@ -392,12 +392,17 @@ init -1 python:
         None (D16). None after roll call -> "g4" too (roll call always
         assesses). A key stays. Idempotent. A finished st_roll_call counts as
         roll call: migration 40 backfills the flag later, so a save that left
-        roll call through a recovery would otherwise wait a load for it."""
+        roll call through a recovery would otherwise wait a load for it.
+        play_event marks st_roll_call done before the scene plays, so a save
+        made inside roll call, before its assessment line, reaches g4 here;
+        the scene's promote() then does nothing. So whenever this moves the
+        player to "g4" it also logs the assessment, once."""
         rc = has_flag("roll_call") or "st_roll_call" in store.done_events
         g = store.grade
         if g is None:
             if rc:
                 store.grade = "g4"
+                _migrate_20_log()
             return
         if isinstance(g, str) and g in GRADES:
             return
@@ -405,6 +410,14 @@ init -1 python:
             store.grade = "g3"
         else:
             store.grade = "g4" if rc else None
+            if rc:
+                _migrate_20_log()
+
+    def _migrate_20_log():
+        """Migration 20's roll-call row: added only if the player has none."""
+        if not any(p.get("who") == "mc" for p in store.promotions_log):
+            store.promotions_log.append(dict(day=store.day, who="mc", grade="g4",
+                                             why="Assessed at roll call"))
 
     def _migrate_30():
         """WP2, migration 30. hp_max from today's stats; a save left at 0 HP

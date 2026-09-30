@@ -187,7 +187,10 @@ init python:
         """WP11. Mark the main story complete (dev_story_complete), so the
         campus journal offers Arc Two."""
         flag("dev_story_complete")
-        toast("Main story marked complete. Journal, Missions: Begin Arc Two.", "mission")
+        if has_flag("arc2_started"):
+            toast("Main story marked complete. Arc Two has begun.", "mission")
+        else:
+            toast("Main story marked complete. Journal, Missions: Begin Arc Two.", "mission")
         _dev_after()
 
     def dev_week():
@@ -279,6 +282,11 @@ init python:
         if key in DEV_SCENES and store.explore_mode:
             return "Not in explore mode"
         if key == "story":
+            o = current_objective()
+            if o is None:
+                return "The campus isn't open yet"
+            if not o.get("mid"):
+                return "No written story step left"
             txt = objective_text()
             return "Plays it: " + _dev_short(txt) if txt else "The campus isn't open yet"
         if key == "utahime":
@@ -301,6 +309,8 @@ init python:
         if key == "armory":
             return "Open" if has_flag("armory_open") else "Maki's flag (armory_open): tools up to my grade"
         if key == "complete":
+            if has_flag("arc2_started"):
+                return "Arc Two has begun"
             if main_story_complete():
                 return "Done: Journal, Missions, Begin Arc Two"
             return "Then Journal, Missions: Begin Arc Two"

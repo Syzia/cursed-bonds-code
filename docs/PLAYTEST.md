@@ -156,8 +156,9 @@ New in this checkpoint:
   the character scenes (a person's "new scene"), which can come up from day 1,
   still say "you". Phase 4 converts them to "I".
 - **Arc Two** is only a card for now.
-- **Toasts can sit over the journal's top right** for a moment after a board
-  job. The UI overhaul (phase 2) moves them.
+- **Toasts can sit over the top right** of the journal, the board and the
+  partner picker for a moment. They don't block clicks. The UI overhaul
+  (phase 2) moves them.
 
 Your UI notes from checkpoints 2 and 3 are already planned as phase 2, the UI
 overhaul (`docs/PHASE2_UI_OVERHAUL.md`), so there's no need to repeat them here.

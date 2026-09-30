@@ -72,8 +72,9 @@ everyone else says "you", `[mc_name]` or `[mc_surname]`, never a literal
 "Kaito" or "Amagiri". Kaito is never shown on screen; everyone faces the
 camera. Expressions (neutral / happy / serious / angry / surprised / sad) work
 only on the 13 characters with an image tag: mc, yuji, megumi, nobara, maki,
-panda, toge, gojo, yaga, ijichi, shoko, utahime, sana. The later chapters
-still say "you" until phase 4 converts them (design 5.4).
+panda, toge, gojo, yaga, ijichi, shoko, utahime, sana. The Sun Mall and the
+chapters after it, and the character scenes (hangouts, which can come up from
+day 1), still say "you" until phase 4 converts them (design 5.4, D9).
 `tools/check_content.py` checks all of this.
 
 ### Hooks, migrations and saves — `sb_hooks.rpy`
@@ -544,7 +545,9 @@ Drop real files in with the same names — nothing in the script changes.
   effects switch on then too.
 - Most character missions, the unwritten story beats, the district scenes and
   Sana's flashbacks read "Written in a later build" / "Coming in a later build".
-- The later chapters still narrate in "you" until phase 4 converts them.
+- The Sun Mall and the chapters after it, and the character scenes (hangouts,
+  which can come up from day 1), still say "you" until phase 4 converts them
+  (design 5.4, D9).
 - No audio. `game/audio/` is empty by design so nothing errors.
 - Sprites have one pose each (with six expressions).
 - Six places have painted evening or night images (`TIME_VARIANT`). The rest

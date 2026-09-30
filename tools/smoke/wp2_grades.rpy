@@ -130,6 +130,7 @@ label zz_smoke:
         check(len([o for o in _orders if o == 10]) == 1 and 20 in _orders and 30 in _orders,
               "exactly one migration 10, plus 20 and 30", _orders)
 
+        _plog = builtins.list(promotions_log)
         ## acc: the legacy grade migration.
         for _val, _rc, _want in [(3, False, "g3"), (3, True, "g3"), (4, True, "g4"), (4, False, None),
                                  ("g2", False, "g2"), (None, False, None),
@@ -155,6 +156,31 @@ label zz_smoke:
             done_events.discard("st_roll_call")
             flags.discard("roll_call")
             grade = _g
+
+        ## A save made inside roll call, before its assessment line: grade
+        ## None, st_roll_call already done. The migration gives g4 and logs the
+        ## assessment once; the scene's promote() then adds nothing.
+        _g = grade
+        promotions_log[:] = []
+        grade = None
+        flags.discard("roll_call")
+        done_events.add("st_roll_call")
+        run_migrations()
+        run_migrations()
+        _mc = [p for p in promotions_log if p.get("who") == "mc"]
+        check(grade == "g4" and len(_mc) == 1 and _mc[0]["grade"] == "g4" and _mc[0]["why"] == "Assessed at roll call",
+              "inside roll call: the assessment is logged once after loading", (grade, promotions_log))
+        check(promote("mc", "g4", "Assessed at roll call", quiet=True) is False
+              and len([p for p in promotions_log if p.get("who") == "mc"]) == 1,
+              "inside roll call: the scene's promote adds no second row", promotions_log)
+        promotions_log[:] = [dict(day=1, who="mc", grade="g3", why="earlier")]
+        grade = 4
+        run_migrations()
+        check(grade == "g4" and len(promotions_log) == 1, "migration 20 adds no row when the player already has one", promotions_log)
+        done_events.discard("st_roll_call")
+        flags.discard("roll_call")
+        grade = _g
+        promotions_log[:] = _plog
 
         ## acc: migration 10 on an Emberfall fixture, twice.
         technique = "emberfall"  # legacy-technique

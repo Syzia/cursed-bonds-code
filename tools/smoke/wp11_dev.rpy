@@ -313,6 +313,10 @@ init 999 python:
         check(store.arc == 2 and has_flag("arc2_started"), "Begin Arc Two: arc 2, arc2_started", store.arc)
         check(mission_status("cm_panda_1") in ("closed", "done"), "unfinished character stories closed",
               mission_status("cm_panda_1"))
+        check(dev_hint("complete") == "Arc Two has begun", "after Arc Two the complete hint says so", dev_hint("complete"))
+        _o = current_objective()
+        if _o is not None and not _o.get("mid"):
+            check(dev_hint("story") == "No written story step left", "with no step left the story hint says so", dev_hint("story"))
         return None
 
 

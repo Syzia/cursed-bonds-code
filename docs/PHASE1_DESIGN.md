@@ -1149,6 +1149,8 @@ Developer builds only, reached from `("dev",)` in the place view. It runs in the
 - the ridge veil, again today (sets `saw_the_ridge_veil`, clears `"veil"` from `actions_today`)
 - Close
 
+The two scene buttons (finish the next story step, recruit Utahime) return to `dev_tools`, which calls `start_mission` (a waiting step first moves the days forward; otherwise a toast says why); both are off in Explore mode.
+
 ---
 
 ## 5. Story changes
@@ -1955,7 +1957,7 @@ Each checkpoint is played in the owner's folder on branch `phase1`, from the SDK
   - tool and talisman `fx` applied;
   - board jobs as real fights (`use_combat` via `combat_begin(dict)`);
   - enemy phases;
-  - the rest of the time economy, including: the Nade missions call `advance_period(2)` inside their scenes, so one started in the Evening rolls the day over mid-mission, while the Ride-Along charges after its scene;
+  - the rest of the time economy, including: the Nade missions call `advance_period(2)` inside their scenes, so one started in the Evening rolls the day over mid-mission, while the Ride-Along charges after its scene; and the 2-period activities (stand, confide, the car trip) can jump a Noon- or Afternoon-only story beat (`st_roster`, `st_second_years`, `st_intensive`), which then waits a day: `board_clock` already stops for a waiting beat (`board_beat_waiting`), and `sb_activity` / `sb_trip` could do the same;
   - recheck the combat layout at 1920×1080 with partner moves and Black Flash (phase 1 checked up to three moves);
   - balance (risk 6): in 60 days with one act done only Yuji reaches Grade 3, and Nobara needs two acts for Grade 2, so the NPC growth numbers need tuning; the board's difficulty, merit, yen and drop rates are guesses too, to tune when board jobs become fights;
   - item `fx`: all the numbers are stored only; applying them includes reviewing the placeholder values. Afterglow needs a window-duration key for the storyboard's "the widened window lasts longer" (today its fx is only `{"bf_refill": 0.5}`).
