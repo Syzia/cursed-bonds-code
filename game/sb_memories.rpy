@@ -49,9 +49,11 @@
 ##            doesn't exist yet.
 ##
 ## For the journal (WP8): memory_groups(mode) gives the tiles, each a
-## memory_entry() with "state" ("seen" / "unseen" / "later"), "is_seen" and
-## "text" (the hint, or "Written in a later build"); memory_replay(m) is the
-## tile's action; memories_with(who) gives one person's memories.
+## memory_entry() with "state" ("seen" / "unseen" / "later"), "seen" and
+## "is_seen" (both True only when the tile can be replayed) and "text" (the
+## hint, or "Written in a later build"); memory_replay(m) is the tile's
+## action; memories_with(who) gives one person's memories. In a tile the
+## catalogue's rules are under "seen_rules", so "seen" can be tested as is.
 ##
 ## To add a memory, add a line to the catalogue below. The lint validator
 ## checks its label, people, act, rules and background.
@@ -82,6 +84,10 @@ init -1 python:
 
     ## The tile text for a memory whose scene is still to be written.
     MEMORY_LATER = "Written in a later build"
+
+    ## The hint on an unseen Bonds tile with someone the player hasn't met,
+    ## so the tab doesn't name them before the People tab does.
+    MEMORY_UNMET_HINT = "Someone you haven't met yet."
 
     ## Labels other wave-1 packages add, one set per package: the prologue's
     ## sub-labels (WP9, D39) and the two new story scenes (WP3). A set is
@@ -298,6 +304,7 @@ init -1 python:
         ## Romance and after (Nobara, Maki, Shoko). The flag prefix each scene
         ## (or sb_activity) sets, or None; then per person a title and a place
         ## (location, period), or a plain bg for a scene that sets its own.
+        ## Nobara's "In a Corridor" is the girls' dormitory corridor, at night.
         for _aid, _hint, _prefix, _rows in [
                 ("rom_town", "Into town together, at ♡ 30.", "town_date_", [
                     ("nobara", "You Carry the Bags",          "bg city"),
@@ -308,7 +315,7 @@ init -1 python:
                     ("maki",   "Six in the Morning",          ("dojo", "Morning")),
                     ("shoko",  "The Lamp Turned Down",        ("infirmary", "Night"))]),
                 ("rom_say", "Saying it, at ♡ 100.", "did_rom_say_", [
-                    ("nobara", "In a Corridor",               ("dorm_common", "Night")),
+                    ("nobara", "In a Corridor",               ("girls_dorm", "Night")),
                     ("maki",   "Then Ask Me",                 ("dojo", "Afternoon")),
                     ("shoko",  "Pass Me That Form",           ("infirmary", "Afternoon"))]),
                 ("int_night", "After saying it, at ♡ 110.", None, [
@@ -405,18 +412,43 @@ init -1 python:
             return "later"
         return "seen"
 
+    def _mem_met(who):
+        """WP5. Whether the player has met someone, by the journal cast's met
+        rule (3.6.2: ("roster",), ("flag", name) or ("always",)); anyone
+        without one counts as met once in the roster. Sana always counts."""
+        if who == "sana":
+            return True
+        rule = None
+        for c in (getattr(store, "JOURNAL_CAST", None) or ()):
+            if isinstance(c, dict) and c.get("who") == who:
+                rule = c.get("met")
+                break
+        if isinstance(rule, (tuple, list)) and rule:
+            if rule[0] == "always":
+                return True
+            if rule[0] == "flag" and len(rule) > 1:
+                return has_flag(rule[1])
+        return who in (store.roster or ())
+
     def memory_entry(mem):
         """WP5. A copy of the catalogue entry for the journal, plus "state"
-        ("seen" / "unseen" / "later"), "is_seen" and "text": the hint on an
-        unseen tile, "Written in a later build" on a later one, "" on a seen
-        one."""
+        ("seen" / "unseen" / "later"), "seen" and "is_seen" (True only when
+        the tile can be replayed; the catalogue's rules move to "seen_rules")
+        and "text": the hint on an unseen tile (a generic one on a Bonds tile
+        with someone not met yet), "Written in a later build" on a later one,
+        "" on a seen one."""
         m = _mem_lookup(mem)
         if m is None:
             return None
         e = dict(m)
         e["state"] = memory_state(m)
         e["is_seen"] = (e["state"] == "seen")
-        e["text"] = {"seen": "", "later": MEMORY_LATER}.get(e["state"], m["hint"])
+        e["seen_rules"] = m["seen"]
+        e["seen"] = e["is_seen"]
+        hint = m["hint"]
+        if m["act"] == "Bonds" and not all(_mem_met(w) for w in m["who"]):
+            hint = MEMORY_UNMET_HINT
+        e["text"] = {"seen": "", "later": MEMORY_LATER}.get(e["state"], hint)
         return e
 
     def memories_with(who):
@@ -427,8 +459,10 @@ init -1 python:
     def memory_groups(mode):
         """WP5. [(group title, [entry])] for the Memories tab, each entry a
         memory_entry(). "person": Sana first, then the journal's cast order,
-        then "Everyone else" (a memory with two people is in both groups).
-        "act": Prologue, Act I-V, Bonds, Sana. Empty groups are left out."""
+        then "Everyone else" (a memory with two people is in both groups);
+        someone not met yet has no group until one of their memories is
+        reached. "act": Prologue, Act I-V, Bonds, Sana. Empty groups are
+        left out."""
         out = []
         if mode == "person":
             people = list(MEMORY_PEOPLE)
@@ -438,7 +472,7 @@ init -1 python:
                         people.append(w)
             for w in people:
                 ms = [memory_entry(m) for m in MEMORIES if w in m["who"]]
-                if ms:
+                if ms and (_mem_met(w) or any(e["state"] != "unseen" for e in ms)):
                     out.append((CAST[w]["short"] if w in CAST else w.capitalize(), ms))
             rest = [memory_entry(m) for m in MEMORIES if not m["who"]]
             if rest:
@@ -481,9 +515,11 @@ init -1 python:
 
     ## What a replayed scene starts with, copied from the save. The first list
     ## is 3.9's; the second is what the scenes also read (the day and who is
-    ## where, for st_noise and the graded backgrounds), plus smoke_autoplay so
-    ## that a harness replay plays its fights through. Everything else starts
-    ## at its default, because the replay store is a clean one.
+    ## where, for st_noise and the graded backgrounds), what the seen rules
+    ## read (so a journal opened inside a replay shows the save's memories;
+    ## the recorder does nothing there, and these are copies anyway), plus
+    ## smoke_autoplay so that a harness replay plays its fights through.
+    ## Everything else starts at its default: the replay store is a clean one.
     MEMORY_SCOPE_KEYS = (
         "mc_name", "mc_surname", "flags", "roster", "bonds", "affection", "together",
         "threads", "technique", "grade", "control", "output", "insight", "ce", "ce_max",
@@ -491,7 +527,8 @@ init -1 python:
     )
     MEMORY_SCOPE_EXTRA = (
         "day", "stamina_max", "gojo_today", "schedule_overrides", "companion", "arc",
-        "tname", "merit", "gojo_in", "smoke_autoplay",
+        "tname", "merit", "gojo_in", "memories_seen", "seen_acts", "inventory",
+        "districts_visited", "smoke_autoplay",
     )
 
     def _mem_copy(v):
@@ -542,6 +579,8 @@ init -1 python:
             self.mem_id = mem_id
 
         def __call__(self):
+            if getattr(store, "_in_replay", None):
+                return None
             self.scope = memory_scope(self.mem_id)
             try:
                 return Replay.__call__(self)
@@ -551,9 +590,10 @@ init -1 python:
     def memory_replay(mem):
         """WP5. The action that replays a memory: a Replay of label mem_play
         with locked=False (D5). NullAction() for a memory that can't be
-        replayed (unknown, unseen, or its scene not written yet)."""
+        replayed (unknown, unseen, or its scene not written yet), and inside
+        a replay, so one replay never starts another."""
         m = _mem_lookup(mem)
-        if m is None or memory_state(m) != "seen":
+        if m is None or getattr(store, "_in_replay", None) or memory_state(m) != "seen":
             return NullAction()
         return MemoryReplay(m["id"])
 

@@ -9,7 +9,9 @@
 ##   legacy       an old-save fixture (flags and done_events only, then the
 ##                migrations) lists the right seen entries by person and by act;
 ##   recorder     the label callback records st_roll_call in normal play, but
-##                not inside renpy.call_replay; record_act likewise;
+##                not inside renpy.call_replay (checked in the replay's own
+##                store, and shown to fail for an unguarded recorder);
+##                record_act likewise;
 ##   scope        memory_scope has every key 3.9 names, as copies;
 ##   replay       replaying st_roll_call and act_confide("yuji") through
 ##                mem_play (and through the journal's action) leaves bonds,
@@ -20,7 +22,11 @@
 ##                a save loaded mid-prologue counts the rest once settled in;
 ##   staging      every replay opens on a picture, and a memory with a place
 ##                replays there (here and period), not where the save stands;
-##   sun mall     the chapters stay unseen while Yaga's briefing plays.
+##   sun mall     the chapters stay unseen while Yaga's briefing plays;
+##   tiles        a tile's "seen" is its replayable state (the rules move to
+##                "seen_rules"); nobody unmet has a group or is named in a
+##                hint; a journal opened inside a replay reads the save's
+##                memories, and no replay starts inside another.
 ## Screenshots (shots/wp5_memories/): the memories by person and by act, as a
 ## harness-drawn board (the journal's real tab is WP8's), and a replayed scene.
 
@@ -40,6 +46,13 @@ init 999 python:
     ZZ_OPEN = builtins.list()
     ## (label, chapter_four's state, chapter_five's state) as the Sun Mall plays.
     ZZ_SUNMALL = builtins.list()
+    ## Inside a replay, as st_roll_call begins (after the recorder has run):
+    ## whether st_roll_call is in the replay store's memories_seen.
+    ZZ_RC_IN = builtins.list()
+    ## What a journal would read inside a replay, and a prebuilt tile action
+    ## to try from there.
+    ZZ_NESTED = builtins.list()
+    ZZ_PREBUILT = builtins.list()
 
     ## The sweep leaves out scenes with a fight, which wait for input until
     ## WP2's smoke_autoplay timer is in combat_screen, and The Offer, whose
@@ -54,6 +67,8 @@ init 999 python:
         if _r and _m and name == _m["label"] and not [o for o in ZZ_OPEN if o[0] == ZZ_CUR[0]]:
             ZZ_OPEN.append((ZZ_CUR[0], bool(renpy.get_showing_tags("master")),
                             getattr(store, "here", None), getattr(store, "period", None)))
+        if _r and name == "st_roll_call":
+            ZZ_RC_IN.append("st_roll_call" in store.memories_seen)
         if not _r and name in ("ev_mission_sunmall", "chapter_four", "chapter_five"):
             ZZ_SUNMALL.append((name, memory_state("chapter_four"), memory_state("chapter_five")))
 
@@ -86,6 +101,18 @@ init 999 python:
 
     def zz_same(a, b):
         return [k for k in a if a[k] != b[k]]
+
+    def zz_unguarded_cb(name, abnormal):
+        ## The recorder without its _in_replay guard: the in-replay check
+        ## must catch it.
+        if name in MEMORY_LABELS and name not in store.memories_seen:
+            store.memories_seen[name] = store.day
+
+    def zz_probe():
+        ## What the journal's Memories tab reads.
+        return (memory_counts(), memory_state("confide:shoko"), memory_state("confide:yuji"),
+                memory_state("st_roll_call"), memory_state("sana_mem_diner"), memory_state("sana_mem_daisy"),
+                [(t, len(es)) for t, es in memory_groups("person")])
 
 
 ## A harness-drawn view of memory_groups(): one line per group, each memory
@@ -200,6 +227,8 @@ label zz_smoke:
               and "gojo" in MEMORY_BY_ID["ch1b_goodbye"]["who"] and "yuji" in MEMORY_BY_ID["st_second_years"]["who"],
               "catalogue: cast members who speak are in the memory's people")
         check(all(renpy.has_image(m["bg"], exact=True) for m in MEMORIES), "every memory background exists")
+        check(MEMORY_BY_ID["rom_say:nobara"]["place"] == ("girls_dorm", "Night"),
+              "'In a Corridor' replays in the girls' dormitory corridor")
 
     ## --- a fresh game: nothing seen, the stub contract still holds --------------------------
     python:
@@ -209,11 +238,18 @@ label zz_smoke:
               "memory_replay is NullAction for an unknown or unseen memory")
         _g = memory_groups("person")
         check(_g and _g[0][0] == "Sana", "by person: Sana's group comes first", [t for t, es in _g])
+        check([t for t, es in _g] == ["Sana", "Yuji", "Megumi", "Nobara", "Gojo", "Shoko", "Yaga", "Ijichi", MEMORY_NOBODY],
+              "fresh game: nobody unmet has a group (no Maki, Panda, Toge or Utahime yet)", [t for t, es in _g])
+        check(memory_entry("ev_maki_1")["text"] == MEMORY_UNMET_HINT and memory_entry("ev_panda_1")["text"] == MEMORY_UNMET_HINT
+              and memory_entry("ev_yuji_1")["text"] == "Time with Yuji.",
+              "fresh game: a hangout with someone unmet has a hint that doesn't name them",
+              [memory_entry(i)["text"] for i in ("ev_maki_1", "ev_panda_1", "ev_yuji_1")])
         check([t for t, es in memory_groups("act")] == ["Prologue · The Lights", "Act I · Grade Four",
               "Act II · The Ones Who Stay", "Act III · Overtime", "Act IV · Goodwill", "Bonds", "Sana"],
               "by act: the acts in order, empty ones left out", [t for t, es in memory_groups("act")])
-        check(all(e["state"] == "unseen" and e["text"] == e["hint"] and not e["is_seen"]
-                  for t, es in _g for e in es), "fresh game: every tile unseen, with its hint")
+        check(all(e["state"] == "unseen" and e["text"] in (e["hint"], MEMORY_UNMET_HINT) and not e["is_seen"]
+                  and e["seen"] is False for t, es in memory_groups("act") for e in es),
+              "fresh game: every tile unseen (seen False), with its hint")
     call mem_play
     $ check(True, "mem_play outside a replay just returns")
 
@@ -289,8 +325,17 @@ label zz_smoke:
               "legacy by person: Shoko (the confession from `together`)", sorted(zz_ids(zz_group(_gp, "Shoko"))))
         check(zz_ids(zz_group(_gp, "Sana")) == {"ch1_diner", "ch1_the_thing"}, "legacy by person: Sana",
               sorted(zz_ids(zz_group(_gp, "Sana"))))
-        check(zz_ids(zz_group(_gp, "Utahime")) == set() and len(zz_group(_gp, "Utahime")) == 1,
-              "legacy by person: Utahime not met yet, her memory unseen")
+        check(zz_group(_gp, "Utahime") is None, "legacy by person: Utahime not met yet, so no group of hers")
+        flag("utahime_arrived")
+        _gu = zz_group(memory_groups("person"), "Utahime")
+        check(_gu is not None and zz_ids(_gu) == {"st_utahime_office"},
+              "legacy by person: Utahime's group appears once her scene is reached", _gu and [e["state"] for e in _gu])
+        store.flags.discard("utahime_arrived")
+        _all = [e for t, es in _gp for e in es]
+        check(all(e["seen"] is e["is_seen"] and isinstance(e["seen"], bool) and e["seen_rules"] == MEMORY_BY_ID[e["id"]]["seen"]
+                  for e in _all) and any(e["seen"] for e in _all) and not all(e["seen"] for e in _all),
+              "a tile's 'seen' is whether it can be replayed; the rules are under 'seen_rules'")
+        check(all(isinstance(m["seen"], list) for m in MEMORIES), "the catalogue itself keeps its rules")
         check(zz_ids(zz_group(_gp, MEMORY_NOBODY)) == {"st_kurose"},
               "legacy by person: everyone else", sorted(zz_ids(zz_group(_gp, MEMORY_NOBODY))))
 
@@ -384,10 +429,12 @@ label zz_smoke:
         _bonds_obj, _flags_obj = bonds, flags
         _before = zz_snapshot()
         del ZZ_LABELS[:]
+        del ZZ_RC_IN[:]
     $ autoplay()
     $ renpy.call_replay("mem_play", memory_scope("st_roll_call"))
     $ autoplay(False)
     python:
+        check(ZZ_RC_IN == [False], "the label callback didn't record inside renpy.call_replay (checked inside the replay store)", ZZ_RC_IN)
         check(("mem_play", True) in ZZ_LABELS and ("st_roll_call", True) in ZZ_LABELS,
               "renpy.call_replay('mem_play') played st_roll_call as a replay", ZZ_LABELS[:6])
         _d = zz_same(_before, zz_snapshot())
@@ -396,6 +443,19 @@ label zz_smoke:
         check(not ZZ_TOASTS, "no toasts during the st_roll_call replay", ZZ_TOASTS)
         check(bonds is _bonds_obj and flags is _flags_obj, "the save's own objects are still in place")
         check(not _in_replay, "the replay has ended", _in_replay)
+        ## The same replay with the guard taken out of the recorder: the
+        ## in-replay check sees st_roll_call written, so it can fail.
+        _i = config.label_callbacks.index(_mem_label_cb)
+        config.label_callbacks[_i] = zz_unguarded_cb
+        del ZZ_RC_IN[:]
+    $ autoplay()
+    $ renpy.call_replay("mem_play", memory_scope("st_roll_call"))
+    $ autoplay(False)
+    python:
+        config.label_callbacks[_i] = _mem_label_cb
+        check(ZZ_RC_IN == [True], "control: an unguarded recorder is caught by the in-replay check", ZZ_RC_IN)
+        check(not zz_same(_before, zz_snapshot()) and "st_roll_call" not in memories_seen,
+              "control: ... while the after-replay check alone can't tell")
         del ZZ_LABELS[:]
         seen_acts.add("confide:yuji")
         _before = zz_snapshot()
@@ -513,6 +573,38 @@ label zz_smoke:
               "an unwritten flashback can't be replayed")
         _c = memory_counts()
         note("counts after the fixture", "%d of %d found" % _c)
+
+    ## --- a journal opened inside a replay -------------------------------------------------------------
+    ## The Memories tab reads the same state inside a replay as outside, and
+    ## no replay starts inside another (a fresh tile action is NullAction, and
+    ## an action built before the replay does nothing).
+    python:
+        seen_acts.add("confide:shoko")
+        MEMORY_BY_ID["zz_nested"] = dict(id="zz_nested", title="Nested", who=(), act="I", label="zz_replay_nested",
+                                         args=(), seen=[("label", "zz_replay_nested")], hint="h", unlock=None, bg="bg black")
+        memories_seen["zz_replay_nested"] = 1
+        _outside = zz_probe()
+        del ZZ_NESTED[:]
+        ZZ_PREBUILT[:] = [memory_replay("st_roll_call")]
+        check(isinstance(ZZ_PREBUILT[0], Replay), "outside a replay, a seen tile's action is a Replay")
+        _before = zz_snapshot()
+        del ZZ_LABELS[:]
+    $ memory_replay("zz_nested")()
+    python:
+        _d = zz_same(_before, zz_snapshot())
+        del MEMORY_BY_ID["zz_nested"]
+        memories_seen.pop("zz_replay_nested", None)
+        _in = ZZ_NESTED[0] if ZZ_NESTED else None
+        check(_in is not None and _in[0] == _outside, "inside a replay the Memories tab reads what it reads outside",
+              (_in and _in[0], _outside))
+        check(_in is not None and _in[1] == "seen", "inside its own replay, the memory reads seen", _in and _in[1])
+        check(_in is not None and _in[2] and _in[3] is None,
+              "inside a replay, a tile's action is NullAction and a prebuilt one does nothing", _in and _in[2:])
+        check(("zz_replay_nested", True) in ZZ_LABELS and ("st_roll_call", True) not in ZZ_LABELS,
+              "no replay started inside the replay", ZZ_LABELS)
+        check(not _d, "the save is unchanged after the nested attempt", _d)
+        seen_acts.discard("confide:shoko")
+        ZZ_PREBUILT[:] = []
     show screen zz_mem_board("person")
     $ zz_shot("sana_triggered")
     hide screen zz_mem_board
@@ -546,6 +638,14 @@ label zz_smoke:
         check("persistent" not in _src, "the recorder and the seen rules never touch persistent")
 
     $ finish()
+
+
+## Harness-only: what a journal reads inside a replay, and whether a replay
+## can start from there.
+label zz_replay_nested:
+    $ ZZ_NESTED.append((zz_probe(), memory_state("zz_nested"), isinstance(memory_replay("st_roll_call"), NullAction),
+                        ZZ_PREBUILT[0]()))
+    return
 
 
 ## Harness-only: like act_confide, no scene of its own: what the replay opens on.
