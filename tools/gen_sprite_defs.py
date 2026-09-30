@@ -3,9 +3,13 @@ Scan game/images/char and game/images/side and write game/jjk_sprites.rpy.
 
 Convention: images/char/<key>_<expression>.png and images/side/<key>_<expression>.png.
 "neutral" is the default attribute, so `show yuji` == `show yuji neutral`.
-Side portraits (`image side yuji ...`) are generated too, but they only appear
-once a Character gets image="yuji": no Character has an image= tag yet, so
-SideImage() shows nothing for now. Adding the tags is a phase 1 UI decision.
+Side portraits (`image side yuji ...`) are generated too. They appear beside
+the dialogue for the 13 Characters that carry an image= tag in
+game/jjk_defs.rpy (mc, yuji, megumi, nobara, maki, panda, toge, gojo, yaga,
+ijichi, shoko, utahime, sana; added in phase 1, WP0), whenever that person is
+not on screen (config.side_image_only_not_showing). Only those 13 take
+expression attributes: a new character needs its images here and an image=
+tag there.
 
 Each sprite is wrapped in lit_sprite() (game/lighting.rpy): lit by the scene
 it stands in, with a contact shadow under its feet. The feet are measured

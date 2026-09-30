@@ -20,7 +20,7 @@ Where this document and older notes disagree, this document wins. Where it and t
 - **The alley fight ends** after four exchanges instead of grinding forever. The alley has its own (placeholder) background.
 - **The casket is gone.** On the tour, Gojo points up at the veil on the mountain ridge, where Sukuna's mummified body sits cross-legged with its fingers missing. He asks you never to go near it.
 - **A quieter screen.** Walking around, you see only the day and weekday, plus three buttons: Map, Journal and Menu. Rewards stack up in the corner instead of replacing each other. When your next goal changes, a short banner tells you what it is.
-- **People are doing things.** Each place shows who is there and what they're doing ("Yuji — halfway through an enormous bowl"). Clicking someone brings them closer and offers three or four sensible choices, not a long list of locked rows. They stay on screen while you talk.
+- **People are doing things.** Each place shows who is there and what they're doing ("Yuji — halfway through an enormous bowl"). Clicking someone brings them closer and offers two to four sensible choices, not a long list of locked rows. They stay on screen while you talk.
 - **A new map.** The campus is grouped into six areas that show who is where and which missions are waiting. A Tokyo tab opens after Ijichi's ride-along. Trips there take half a day; the districts themselves are placeholders for now.
 - **A journal with six tabs:** People, Missions, Memories, Stats, Equipment and Inventory. You can replay any scene you've seen.
 - **Grades as in the show.** You're assessed as Grade 4 at roll call. Your grade limits how far your stats and cursed energy can grow, which board jobs you can take, what the armory will give you and how many talismans you can wear. Everyone else has a grade too, grows on their own schedule, grows faster when you train together, and can be promoted without you.
@@ -54,22 +54,22 @@ Every graft the judges recommended and every gap they found is resolved below. "
 | D6 | **Memories are recorded per save:** `config.label_callbacks` adds catalogued labels to `memories_seen` (never during a replay), plus legacy rules read from `done_events` and flags. For settled old saves, the prologue sub-labels are backfilled as seen by migration 65. Nothing is written to `persistent`. | WP5 |
 | D7 | The toast queue is a `builtins.object` / `builtins.list` created in `init python`. It is never assigned at runtime, so it is not saved and not rolled back. It is muted during replays and migrations. | WP0, WP7 |
 | D8 | **Calendar phrasing sweep.** Every deadline-bound line is listed with its replacement in section 5.4.2, including `story_arc1.rpy:264/266/324/339/349/364/418/423/450/467/494/497`, `events_arc1.rpy:1574` and `ch5_debrief.rpy:38/163–172`. Durations that aren't deadlines ("four days later", "Three weeks" of Nade's silence) stay. | WP0, WP10 |
-| D9 | **The seam between "I" and "you".** Phase 1 also converts to "I": the sandbox's own narration (`sb_loop.rpy`, `sb_smalltalk`), `st_roll_call` (reworked anyway) and every new scene, including Utahime's arrival. So the first "you" scene the player meets is the Sun Mall briefing, on day 4 at the earliest. Phase 4 converts in story order: Sun Mall/ch4/ch5 → aftermath → Kurose → second-years → noise → Oda → intensive → Nade → hangouts. | WP7, WP3, WP10 |
+| D9 | **The seam between "I" and "you".** Phase 1 also converts to "I": the sandbox's own narration (`sb_loop.rpy`, `sb_smalltalk`), the activity scenes in `events_activities.rpy` except `act_confide`, `st_roll_call` (reworked anyway) and every new scene, including Utahime's arrival. So the first "you" scene the player meets is the Sun Mall briefing, on day 4 at the earliest. Phase 4 converts in story order: Sun Mall/ch4/ch5 → aftermath → Kurose → second-years → noise → Oda → intensive → Nade → hangouts. | WP7, WP3, WP10 |
 | D10 | **Storehouse vs armory.** The `storehouse_access` flag (roll call, Yaga's workshop) lets you **enter and look** ("Look through the racks", once a day). `armory_open` is set by Maki's character mission *The Armory* in Act II, as the storyboard has it, and **releases tools up to your grade**. Yaga's roll-call line becomes "Look, don't take. Nothing on those racks leaves without a grade and a reason." | WP10, WP3, WP6 |
 | D11 | **Sana's flashbacks have unlock triggers, stored as data:** *The Diner* on the first trip to Yotsuka; *The Daisy Clip* when the keepsake `daisy_clip` is in the inventory (handed out in phase 4); *The Teacher Ranking* once Oda's first letter is read. Each one's label is written in phase 4. Until then, a triggered flashback shows "Written in a later build". | WP5, WP6 |
 | D12 | **"Grade is who gets picked; they say so."** When an NPC is promoted: a toast overnight, a remark on your next Talk with them (`pending_remarks`), and a line in the People tab. While any student outranks you, Utahime's board shows a read-only card: "Grade 2 · taken by Megumi". `pick_team(n, min_key)` is provided now for phase 4 (Kyoto team, big missions). | WP2, WP3, WP4 |
 | D13 | **Utahime leaves to lead Kyoto** (Act IV, phase 4). `board_host()` switches on the flag `utahime_leads_kyoto`: the board moves to Yaga's office under Ijichi, with a line saying so. A generic `FLAG_SCHEDULES` table lets a flag replace a character's schedule. That will also be needed when Yuji "dies" in Act I. Phase 1 ships the mechanism with an empty table. | WP1, WP4 |
 | D14 | **Aftermath placement.** In phase 1 the existing `st_aftermath` (Shoko on cursed-energy debt, "the morning after Saitama") stays in Act I, the morning after the Sun Mall. When the detention center lands in phase 4, the storyboard's new Aftermath gets its own label and step. `m_aftermath` then moves to Act II with its first line rewritten; its id stays, so saves past it are unaffected. | WP3 |
-| D15 | **Sukuna seeds.** The ridge place now mentions the veil above. Gojo's ambient pose there is "sitting just outside the veil". A free, once-a-day ridge action, *Look up at the veil*, has three rotating lines; the third time, "It is facing the school." Reserved flag names for phase 4 are in section 10. | WP1 |
+| D15 | **Sukuna seeds.** The ridge place now mentions the veil above. Gojo's ambient pose there is "sitting just outside the veil". A free, once-a-day ridge action, *Look up at the veil*, has three rotating lines; the third time, "It's facing the school." Reserved flag names for phase 4 are in section 10. | WP1 |
 | D16 | **No grade until roll call.** `grade` defaults to `None` ("Not yet assessed"). Roll call assesses you on screen as Grade 4, with a grade card. While `grade` is `None`, caps and slots use Grade 4's numbers. | WP2, WP10 |
-| D17 | **"Gojo is in" days start after his first lesson** (flag `intensive_done`). About 1 day in 6, seeded by day, never two days running. His office is locked before that, with a note on the door ("SOON!"). | WP1 |
+| D17 | **"Gojo is in" days start after his first lesson** (flag `intensive_done`). About 1 day in 6, seeded by day, never two days running, and never more than `GOJO_MAX_GAP` = 8 days without one (the draw alone gives only 4–5 in-days in 60; WP1's acceptance keeps 7–14). His office is locked before that, with a note on the door ("SOON!"). | WP1 |
 | D18 | **The Grade 3 promotion is a real mission with Maki watching.** It is a fight in the training hall on the existing combat engine, against a new enemy entry `promo_g3`. Losing or withdrawing means trying again the next day. It needs 60 merit. The story alone pays 70 merit by the end of Act II, so the board is never a grind wall for the reviewer. | WP3, WP2 |
 | D19 | The Grade 2 promotion (on Nanami's word) is an unwritten row in phase 1. Grade 3 is the ceiling in normal play; the review tools can promote further. | WP3 |
 | D20 | **Every storyboard beat has a row:** detention center, infirmary, The Strongest, the secret, Nanami, cinema, Junpei, Satozakura, Kyoto arrives, team battle, the attack, baseball, new faces, Yasohachi, Mei Mei, the recommendation, Yuta's call, the sketchbook. Unwritten rows never block written ones and never complete an act or the arc. Rows have spaced `order` numbers and a `skip_if`, so beats inserted in phase 4 don't become stale objectives for saves already past them. | WP3 |
 | D21 | NPC xp is **cumulative**; promotion thresholds are cumulative too. Stats are base + a growth bonus, so they never drop. `ACT_STUDENT_CAP` limits NPC promotions by how many acts are complete. No existing dialogue names an NPC's grade (checked), so there is nothing to contradict. | WP2 |
 | D22 | The mission status cache is cleared by `config.interact_callbacks`. The cache is exactly per interaction, so a bond gain shows a newly available character mission immediately. | WP3 |
 | D23 | `arc_one_open` sets `arc_start_day = day` (default 1). The prologue step's done-day is `arc_start_day`, so roll call waits for day 2, as it does today. | WP3, WP9 |
-| D24 | Keepsakes are granted only by `sync_keepsakes()`, which is idempotent and reads the flags. It runs as a migration and when the campus opens, not at the packing choice. One path, no double grants. | WP6 |
+| D24 | Keepsakes are granted only by `sync_keepsakes()`, which is idempotent and reads the flags. It runs as migration 70, on each new day (order 70) and after each event, never at the packing choice. One idempotent path, no double grants. | WP6 |
 | D25 | **Quick menu:** BACK · HISTORY · SKIP · AUTO · SAVE · JOURNAL · MENU. It hides itself while any screen tagged `sandbox` or `menu` is showing. The sandbox stops setting `quick_menu = False`, and migration 5 restores `quick_menu = True` for old saves. The game menu's navigation column serves as the pause menu; there is no separate `pause_menu` screen. | WP7, WP8 |
 | D26 | Small exploit fixes pulled forward: *Hold the hour*, *Get patched up* and *Look through the racks* are once a day (`actions_today`). HP refills at dawn. The rest of the combat economy is phase 3. | WP7, WP1 |
 | D27 | **Test isolation.** `tools/smoke.sh` v2 runs each harness in a **scratch copy** of the project, with `--savedir` set to a scratch folder. It never touches the owner's saves, persistent data or `.rpyc` files, and it passes or fails from a result file. Package worktrees get read-only **copies** of the owner's `game/*.rpyc`, so load tests match the real tree. | WP0 |
@@ -78,7 +78,7 @@ Every graft the judges recommended and every gap they found is resolved below. "
 | D30 | **Review tools** are a developer-only panel (runs from the SDK), reachable from a small HUD button in any sandbox place, not only explore mode. They run in the main context, so their changes stick. | WP11, WP7 |
 | D31 | `sb_do_temper` is kept as a two-line retired label ("The forge is cold."), not deleted, following the label policy. | WP7 |
 | D32 | Re-pointing the placeholder `bg city` scenes to the Tokyo districts is left to phase 4. The list is in section 10. | — |
-| D33 | The HUD on the map screen shows the date and MENU only. The person view shows the date only. JOURNAL appears on the place view. | WP7 |
+| D33 | The HUD on the map screen shows the date and MENU only. The person view shows the date and MENU. JOURNAL appears on the place view. | WP7 |
 | D34 | Consecutive bond or affection toasts for the same person merge ("Yuji bond +4"). Toast kinds are colour-coded with a kanji. | WP7, WP0 |
 | D35 | A place/period **arrival caption** fades after about 3 s, replacing a permanent place label. A "running on empty" line appears when stamina is below 25. | WP7 |
 | D36 | Ijichi's ride-along unlocks after Utahime's arrival. *Ask Ijichi for a ride* is both a gate action and a person choice. Yotsuka (home) opens with Shibuya and Harajuku. | WP3, WP1 |
@@ -108,7 +108,10 @@ The rules:
    - in `sb_loop.rpy`: `call screen sb_place`, `$ _r = _return`, `call screen sb_map`, `$ _m = _return`, `call screen sb_char(who)`, `$ _p = _return`, `call sb_activity(_p[1], _p[2])`, `call play_event(_story)`, `call expression "sb_do_" + _r[1]`, `call expression "act_" + aid pass (who)`;
    - in `sb_combat.rpy`: `call screen combat_screen`, `$ _a = _return`;
    - in `sb_events.rpy`: `call expression e["label"]` and the `if e["thread"]:` line after it;
-   - in `script.rpy`: every line of `label start`.
+   - in `script.rpy`: every line of `label start`;
+   - in `sb_missions.rpy` (label `start_mission`): `call play_event(_sm_event)`, `call expression MISSION_BY_ID[mid]["label"]` and the `if mission_state.get(mid) == "active":` line after it;
+   - in `sb_items.rpy` (label `sb_do_armory`): `call screen armory` and the `if not isinstance(_return, tuple) or not _return or _return[0] == "close":` line after it;
+   - the other phase-1 sites a save can sit on, each with the line after it: in `sb_loop.rpy` `call screen journal(_r[1])` / `$ _j = _return` and `call start_mission(_r[1])`; in `sb_board.rpy` `call screen board_screen` / `$ _bs = _return`, `call screen board_partner(board_find(_bs[1]))` / `$ _bp = _return` and `call run_board_mission(_bs[1], _bp[1])`; in `sb_tokyo.rpy` `call screen sb_map(layer="tokyo")` / `$ _car = _return`; in `sb_hooks.rpy` `call expression _next`.
 
    New branches go in as **new** `elif` lines, and new statements go before or after these.
 2. **Never delete a label a save could be inside.** Retired labels stay, unreachable. The only deletions this phase are unregistering `ev()` entries, which are init code, not labels.
@@ -249,10 +252,10 @@ Functions: `area_of(loc)`, `places_in(area)`.
 | utahime | utahime_office | utahime_office | utahime_office | cafeteria | - | Afternoon `-`, Evening courtyard |
 | ijichi | gate | gate | gate | - | - | none |
 
-**Flag schedules (D13).** `FLAG_SCHEDULES = []` holds entries `(flag, who, table_or_None)`. When the flag is set, `table` replaces that character's schedule, and `None` means off campus. `char_location` checks it before `schedule_overrides`. Phase 1 ships the list empty and tests it in the harness.
+**Flag schedules (D13).** `FLAG_SCHEDULES = []` holds entries `(flag, who, table_or_None)`. When the flag is set, `table` replaces that character's whole schedule, the weekend schedule too (a period the table leaves out is off campus), and `None` means off campus. The last matching entry wins. `char_location` checks it before `schedule_overrides`, so story pins still win. Phase 1 ships the list empty and tests it in the harness.
 
 **Gojo.** `roll_gojo()` keeps `GOJO_SPOTS` roaming. `default gojo_in = False`.
-- `gojo_in_on(day)` is deterministic: `Random(day*131+7).random() < 1/6`, never two days running (checked recursively and memoised), and False unless `intensive_done` (D17).
+- `gojo_in_on(day)` is deterministic: `Random(day*131+7).random() < 1/6`, never two days running (checked recursively and memoised), never more than `GOJO_MAX_GAP` = 8 days without one (D17's draw alone gives 4–5 in-days in 60), and False unless `intensive_done` (D17).
 - `roll_gojo()` sets `gojo_in = gojo_in_on(day)`. On those days Gojo is at `gojo_office` Morning–Afternoon and roams the rest.
 - `gojo_in_today()` reports it. Story milestones may still `pin("gojo", "gojo_office")`.
 - `new_day()` toasts "Gojo is in today." (kind `info`) when it's true.
@@ -264,13 +267,13 @@ Functions: `area_of(loc)`, `places_in(area)`.
 **Clock.** `new_day()` keeps today's behaviour and adds `actions_today = set()` (WP0), `refresh_vitals()`, `hp = hp_max`, and the call to `run_new_day_hooks()`, which stays last. `KYOTO_DAY` and `days_left()` are deleted by WP0.
 
 **Helpers:**
-- `usual_places(who)` gives a string such as "Dojo (mornings) · Training Hall (afternoons) · Riverside (evenings)". Gojo's is "Nowhere you can predict. His office on the days he's in."
+- `usual_places(who)` gives a string such as "Dojo (mornings and noon) · Training Hall (afternoons) · Riverside (evenings)". Runs of three periods or more read "X to Y" ("mornings to afternoons"). Gojo's is "Nowhere I can predict." before `intensive_done`, and "Nowhere I can predict. His office on the days he's in." after it.
 - `when_at(who, loc)` gives when someone is at a place, e.g. "weekday mornings, noon and evenings".
 
 **Ridge extra (D15).**
 - `register_place_action("veil", "Look up at the veil", "Free. Once a day.", locs=("ridge",), when="veil_ok")`.
 - `veil_ok()` means `saw_the_ridge_veil` is set and `"veil"` is not in `actions_today`.
-- `label sb_do_veil` is first person and rotates three short passages, counting with the flags `looked_at_veil_1..3`. The third ends on the mcthink "It's facing the school."
+- `label sb_do_veil` is first person and rotates three short passages, counting with the flags `looked_at_veil_1..3`: in order the first three times, then by day. Passage 2 follows the time of day and whether I asked if he's dead (`asked_dead`). Passage 3's first-time discovery plays once, and only without `watched_the_box`; every form of it ends on the mcthink "It's facing the school."
 - It costs no time.
 
 ### 3.3 Tokyo layer: `game/sb_tokyo.rpy` (WP1)
@@ -283,9 +286,9 @@ DISTRICTS[key] = dict(name, kanji, desc, places, bg, min_grade, needs_flag, lock
 | key | name | kanji | places (shown as "what's there") | bg | opens when |
 |---|---|---|---|---|---|
 | shibuya | Shibuya | 渋谷 | the scramble crossing, the station, an arcade, a café | `bg shibuya` | flag `ijichi_rides` |
-| harajuku | Harajuku | 原宿 | Takeshita Street; supplies and sealing talismans (later) | `bg harajuku` | `ijichi_rides` |
-| shinjuku | Shinjuku | 新宿 | neon streets, the station, rooftops at night | `bg shinjuku` | `ijichi_rides` and Grade 2 |
-| kawasaki | Kawasaki | 川崎 | the cinema, Junpei's neighbourhood | `bg kawasaki` | `ijichi_rides` and flag `kawasaki_open` (Act III, phase 4) |
+| harajuku | Harajuku | 原宿 | Takeshita Street, crêpe stands, a talisman shop down a side street | `bg harajuku` | `ijichi_rides` |
+| shinjuku | Shinjuku | 新宿 | Neon streets, the station, the rooftops | `bg shinjuku` | `ijichi_rides` and Grade 2 |
+| kawasaki | Kawasaki | 川崎 | The river, a cinema, streets I don't know yet | `bg kawasaki` | `ijichi_rides` and flag `kawasaki_open` (Act III, phase 4) |
 | yotsuka | Home — Yotsuka | 四塚 | my parents' house, the diner, the alley | `bg yotsuka` | `ijichi_rides` |
 
 `lines` holds 2–3 first-person arrival lines for each district (WP1 writes them, following the writing rules in 2.3).
@@ -299,19 +302,21 @@ DISTRICTS[key] = dict(name, kanji, desc, places, bg, min_grade, needs_flag, lock
 `default districts_visited = set()`
 
 **label `sb_trip(key)`:**
-1. A menu: "Half a day in [name]." Choices "Go." and "Not today." (return).
-2. `scene bg car`, then one Ijichi line.
+0. Returns at once unless the district is open and `trip_ok_now()`.
+1. A menu: "Half a day in [name]." Choices "Go." and "Not today." (return). The menu is taken as "Go." under `smoke_autoplay`. Then, if I'm not at the gate, one line walks me down (walking is free). A companion stays at the gate ("one spare seat"), and `companion` is cleared.
+2. `scene bg car`, then Ijichi's first-trip line, or after that one of three lines rotating by day and period.
 3. `scene` the district's background, and play its `lines`.
 4. `districts_visited.add(key)`.
-5. `call expression "district_" + key` if `renpy.has_label` (none exist in phase 1).
+5. `call expression "district_" + key` if `renpy.has_label` (none exist in phase 1). Then one closing line ("Ijichi is waiting where he said he'd be…").
 6. `advance_period(2)`, `here = "gate"`, `scene expression graded_bg()`.
 
 A trip that starts in the Morning ends in the Afternoon, at the gate.
 
 **label `sb_do_car`:**
+- Returns at once unless `car_action_ok()`.
 - `call screen sb_map(layer="tokyo")`. This is a new, separate call statement; the existing `call screen sb_map` stays untouched.
 - `("district", k)` → `call sb_trip(k)`.
-- `("go", loc)` → walk there, as `sb_travel` does.
+- `("go", loc)` → walk there, as `sb_travel` does, if `can_enter` allows it (otherwise its reason is said).
 - It is registered with `register_place_action("car", "Ask Ijichi for a ride", "Into the city. Half a day.", cost=2, locs=("gate",), when="car_action_ok")`.
 
 ### 3.4 Grades, merit and per-character stats: `game/sb_grades.rpy` + `game/sb_energy.rpy` (WP2)
@@ -337,7 +342,7 @@ A trip that starts in the Morning ends in the Afternoon, at the gate.
 - `talisman_slots(key=None)`, `merit_needed(key=None)`.
 - `add_merit(n, why="")`: toast kind `grade`, e.g. "Merit +30 — The Sun Mall".
 - `merit_progress()` → `(merit, need, next_key)`.
-- `next_grade_text()` for the Stats tab, e.g. "Merit 34/60, then a promotion mission — Maki will watch."
+- `next_grade_text()` for the Stats tab, e.g. "Merit 34/60, then a promotion mission — Maki will watch." While `grade` is None: "Not yet assessed. Roll call comes first." Once the merit is met: "Merit m/n. Ready: <how>". At Semi-Grade 1: "Grade 1: Two Grade 1 recommendations. Arc Two." Empty at Grade 1 and above.
 
 **Promotion.** `promote(who, key, why="", quiet=False)`:
 - For `"mc"` it sets `store.grade`; for anyone else it sets `npc_state[who]["grade"]`.
@@ -382,12 +387,12 @@ Related helpers:
 | yuta | sp | — | — | — | 0 | — | hidden |
 
 - `default npc_state = {}` maps `who → dict(grade, xp, promoted_day)` and is created lazily.
-- `npc_stats(who)` returns `grade`, `ce_max`, `control` and `output`, each computed as base + `min(30, xp // 6)` (so it never drops), plus `off_scale`, `restricted`, `role` and `note`.
+- `npc_stats(who)` returns `grade`, `ce_max`, `control` and `output`, each computed as base + `min(30, xp // 6)` (so it never drops), except that a restricted NPC's reserve stays 0 (Maki: Heavenly Restriction; her control and output still grow), plus `off_scale`, `restricted`, `role` and `note`.
 - **Growth** (`grow_everyone`, a new-day hook). Every rostered NPC with rate > 0 gains `rate` xp, plus a jitter of 0 or 1 from `Random(day*1009 + zlib.crc32(who))`. xp is cumulative. They are promoted when all of these hold:
   - xp ≥ `PROMO_XP[next]`, with `PROMO_XP = {"g3": 40, "g2": 130, "s1": 290}` (cumulative);
   - the next rank ≤ their max grade;
   - the next rank ≤ `ACT_STUDENT_CAP[acts_done()]`, where `ACT_STUDENT_CAP = {0: None, 1: "g3", 2: "g2", 3: "g2", 4: "s1", 5: "s1"}` and None means no promotions (D21).
-- **Working together.** `train_together(who, n=3, stat=None)`: the NPC gains `2*n` xp, and if `stat` is given the player gets `gain(stat, 1)`. It is called by:
+- **Working together.** `train_together(who, n=3, stat=None)`: a student NPC (rate > 0) gains `2*n` xp (staff don't grow), and if `stat` is given the player gets `gain(stat, 1)`. It is called by:
   - sparring and `act_train` (n=3, "output");
   - `act_study` (n=2, "insight");
   - `act_swim` and `act_walk` (n=1);
@@ -423,9 +428,9 @@ Related helpers:
 
 - `MOVES = {"timestop": [Stutter, Held Second, Arrest]}`, with today's numbers unchanged. `moves_available()` reads `MOVES["timestop"]`. The heal, burn and ally_buff branches in `combat_player`/`combat_enemy` are deleted; stored `cb` keys are read with `.get()`.
 - `ENEMIES` grades become keys: `alley_curse` `"g1"`, `nade_curse` `"g3"`, `warehouse` `"g2"`.
-- `alley_curse` gains `rounds=4`. After round 4, `combat_enemy` sets `cb["over"] = "down"` and logs "It stops playing with you." `combat_begin` copies it as `cb["rounds"] = e.get("rounds")`.
+- `alley_curse` gains `rounds=4`. After round 4, `combat_enemy` sets `cb["over"] = "down"` and logs "It stops playing with me." (rule 2.3 and D9: the first "you" scene is the Sun Mall; combat text, meaning tells, move descriptions and the log, is first person). `combat_begin` copies it as `cb["rounds"] = e.get("rounds")`.
 - New entry `promo_g3`: name "Grade 3 assessment curse", grade `"g3"`, hp 100, power 16, sprite `"curse small"`, tells heavy / fast / grab.
-- `combat_begin(key_or_dict, ally=None, flee_ok=True, bg=None)` accepts an enemy dict (for board fights in phase 3). It floors HP at half: `hp = max(hp, hp_max // 2)`.
+- `combat_begin(key_or_dict, ally=None, flee_ok=True, bg=None)` accepts an enemy dict (for board fights in phase 3). It floors HP at half: `hp = max(hp, hp_max // 2)`. `cb` keeps only plain values (2.1 rule 6): `bg` is the caller's image name or None (a displayable is dropped), plus `bg_loc = here` and `bg_per = period` for lighting at draw time. A sprite that isn't a string becomes `"curse small"`.
 - `combat_screen` prints `grade_label(_c["grade"])` in place of "GRADE [_grade]". When `smoke_autoplay` is set, it adds `timer 0.05 action Return((ANSWERS[_c["kind"]],))` (8.1).
 - `refresh_vitals()` is unchanged.
 
@@ -464,7 +469,7 @@ mission(id, kind,            # "story" | "character" | "promotion"
 5. `active`: `mission_state[id] == "active"` (started, scene not finished).
 6. `waiting`: everything is met except that the gap day or retry day hasn't come yet. This shows as "tomorrow" or "in 2 days".
 7. `available`:
-   - **Story chain.** Every earlier non-optional story row is done, skipped or unwritten. `day ≥ done_day(previous written step) + gap_days`, where the prologue's done day is `arc_start_day` (D23) and backfilled steps count as day 0.
+   - **Story chain.** Every earlier non-optional story or promotion row is done, skipped or unwritten (promotion rows are in the chain, so the Nade missions wait for the Grade 3 fight). `day ≥ done_day(previous written step) + gap_days`, where the prologue's done day is `arc_start_day` (D23) and backfilled steps count as day 0.
    - **Gates.** `gate` flags / not_flags / min_bond (with `who` or `with_who`) / min_grade / merit / thread `(tid, stage)` / gojo_in / act_done all pass.
    - **Retry.** `day ≥ mission_retry_day.get(id, 0)`.
 8. `locked` otherwise.
@@ -474,7 +479,7 @@ mission(id, kind,            # "story" | "character" | "promotion"
 **State** (all `default`): `mission_state = {}`, `missions_done = set()`, `mission_done_day = {}`, `mission_retry_day = {}`, `last_objective = None`.
 
 **Hooks** (registered by WP3):
-- **Event gate.** An event whose label is in `MISSION_BY_LABEL` fires only while that mission is `available`. A label in `RETIRED_LABELS` never fires. Once Arc Two has started, arc-1 hangouts with `thread=` stop firing if that thread is unfinished.
+- **Event gate.** An event whose label is in `MISSION_BY_LABEL` fires only while that mission is `available`, or `active` (a save recovered from inside the scene). A label in `RETIRED_LABELS` never fires. Once Arc Two has started, arc-1 hangouts with `thread=` stop firing if that thread is unfinished.
 - **Event done.** `complete_mission(id)` records `mission_done_day[id] = day`, adds the id to `missions_done`, clears `mission_state[id]`, and pays the rewards once (`merit_granted` key `"mission:<id>"`). Rewards merit (`add_merit`), bond, yen (`add_yen`), items (`give_item`) and flags.
 
 **`label start_mission(mid)`:**
@@ -486,11 +491,12 @@ mission(id, kind,            # "story" | "character" | "promotion"
 `mission_fail(mid)` sets `mission_retry_day[mid] = day + 1`, removes the `"active"` state and toasts "Not today. Try again tomorrow."
 
 **Queries:**
-- `missions_list(kind=None, status=None, act=None, who=None)`.
+- `missions_list(kind=None, status=None, act=None, who=None)`. `kind` is a kind or a tuple of kinds; the story chain is `kind=("story", "promotion")`.
 - `missions_here(loc)`: start-type, `available`, `where` matches, the giver is present and the period fits.
 - `missions_with(who, loc=None)`.
-- `mission_markers()` → `{loc: [(text, kind)]}`. For example "Yaga · The Sun Mall" at the giver's place, "Board · 3 jobs" at Utahime's office, "Gojo is in" at his office.
+- `mission_markers()` → `{loc: [(text, kind)]}`. For example "Yaga · The Sun Mall" at the giver's current place (`char_location`), only while the mission can be started there; "Board · 3 jobs" at Utahime's office, "Gojo is in" at his office.
 - `next_for(who)` → `(text, where)`. Priority: a mission with them, then a new bond scene (`has_event("hangout", who)`), then the next activity unlock (`next_unlock`), then "Talk".
+- `missions_here`, `missions_with`, `mission_markers` and `next_for` also offer a start mission that is `active` (a save recovered from inside its scene).
 - `act_done(act)`: at least one written row, and all non-optional written rows done or skipped.
 - `acts_done()`: consecutive acts done from I.
 - `act_progress(act)` → `(done, written, total)`.
@@ -501,6 +507,7 @@ mission(id, kind,            # "story" | "character" | "promotion"
 - The first story row, in order, that is `active`, `available` or `waiting`:
   - auto rows: "<objective> — <periods>, wherever I am", with "tomorrow" or "in N days" when waiting;
   - start rows: "<objective> — <place>, <when_at(giver, place)>".
+  - Periods read "middays" for Noon in a list, and "at noon" when Noon is alone ("at night" likewise).
 - If the first unfinished row is locked by merit: "Earn merit on Utahime's board: 34/60 — then the promotion fight".
 - If only unwritten rows remain: the best available character mission ("Ijichi has something for me — Main Gate, mornings to afternoons").
 - Otherwise: "The story continues in a later build. The board and everyone on campus are open."
@@ -511,19 +518,19 @@ Unwritten rows are **bold italic**. The labels of all written rows exist today, 
 
 | order | id | label | trigger · where · periods | gap | gate / notes | done_if (old saves) | merit | objective (NEXT line) |
 |---|---|---|---|---|---|---|---|---|
-| 0 | m_prologue | — | — | — | | flag:settled_in | | — |
+| 0 | m_prologue | arc_one_open | — | — | done day `arc_start_day` (D23). The label keeps the row from reading as unwritten, so `main_story_complete` can be true | flag:settled_in | | — |
 | **Act I · Grade Four** (band: Grade 4) |
 | 110 | m_roll_call | st_roll_call | auto · Morning | 1 | | event:st_roll_call, flag:roll_call | 5 | Roll call with Principal Yaga |
 | 120 | m_utahime | st_utahime_office NEW | auto · M/N/A | 1 | ev() priority 96 | event:st_utahime_office, flag:utahime_arrived | 0 (items: paper_ward, sealing_talisman ×2) | Someone is moving into the room next to Yaga's |
 | 130 | m_sunmall | ev_mission_sunmall | start · office · with yaga | 1 | | event:ev_mission_sunmall, flag:sunmall_done | 30 | Yaga has a mission for the first-years |
 | 140 | m_aftermath | st_aftermath | auto · Morning | 1 | D14 | event:st_aftermath, flag:aftermath_done | 5 | Shoko wants to look at all four of us |
-| 150 | m_kurose | st_kurose | auto · Afternoon/Evening | 0 | | event:st_kurose, flag:kurose_met | 0 | A man from auxiliary management is waiting outside Yaga's office |
+| 150 | m_kurose | st_kurose | auto · Afternoon/Evening | 0 | | event:st_kurose, flag:kurose_met | 0 | A man from auxiliary management wants a word |
 | 160 | ***m_detention*** | — | | | | | | The detention center |
 | 170 | ***m_aftermath_2*** | — | | | | | | Aftermath |
 | 180 | ***m_infirmary*** | — | | | | | | The infirmary |
 | **Act II · The Ones Who Stay** (band: Grade 4 → Grade 3) |
 | 210 | m_second_years | st_second_years | auto · Afternoon | 1 | | event:st_second_years, flag:met_second_years | 0 | The second-years are back from wherever they were |
-| 220 | m_noise | st_noise | auto · Evening | 1 | | event:st_noise | 10 | Stay on campus into the evening |
+| 220 | m_noise | st_noise | auto · Evening | 1 | | event:st_noise | 10 | Something is wrong on campus after dark |
 | 230 | m_oda_letter | st_oda_letter | auto · Evening | 1 | | event:st_oda_letter, flag:oda_letter_read | 0 | A letter is on its way from home |
 | 240 | m_intensive | st_intensive | auto · Afternoon | 2 | Gojo's first lesson | event:st_intensive, flag:intensive_done | 0 | Gojo wants eleven minutes of my time |
 | 250 | ***m_strongest*** | — | | | | | | "The Strongest" |
@@ -547,13 +554,13 @@ Unwritten rows are **bold italic**. The labels of all written rows exist today, 
 | **Act V · Cursed Womb** (band: Grade 2 → Grade 1 candidate) |
 | 510–550 | ***m_yasohachi, m_meimei, m_recommended, m_yuta_call, m_sketchbook*** | — | | | | | | |
 
-The existing `ev()` registrations keep `periods`, `loc`, `priority` and `requires`. WP10 deletes their `min_day` arguments; WP0 has already stopped `find_events` from reading them (D40). `st_board_open` and `ev_patrol` are unregistered by WP10 and blocked by the gate until then; their labels stay. `sb_do_missions` and `sb_patrol` stay as unreachable labels.
+`st_kurose` and `st_noise` fire wherever I am. The existing `ev()` registrations keep `periods`, `loc`, `priority` and `requires`. WP10 deletes their `min_day` arguments; WP0 has already stopped `find_events` from reading them (D40). `st_board_open` and `ev_patrol` are unregistered by WP10 and blocked by the gate until then; their labels stay. `sb_do_missions` and `sb_patrol` stay as unreachable labels.
 
 The story alone pays merit 5 + 30 + 5 + 10, plus 20 from the ch5 recommendation: **70 by the end of Act II** (D18). Act III adds 80 more (**150**), which will be the Grade 2 threshold once `m_promo_g2` is written.
 
 #### 3.6.2 Character missions
 
-The label is `cm_<who>_<n>`, the trigger is `start` with `who`, and `where` is None (wherever they are). They show as `unwritten` until the label exists. **Written in phase 1:** `cm_ijichi_1` and `cm_maki_1`, both placeholders.
+The label is `cm_<who>_<n>`, the trigger is `start` with `who`, and `where` is None (wherever they are). They show as `unwritten` until the label exists. **Written in phase 1:** `cm_ijichi_1` and `cm_maki_1`, both placeholders. Each also pays bond +5 with its giver (`_CM_EXTRA`; the owner can remove this), and `cm_maki_1` pays the Slaughter Demon through its rewards.
 
 | who (thread) | 1 | 2 | 3 |
 |---|---|---|---|
@@ -587,6 +594,8 @@ How the existing content maps:
   - yuta: "A voice on Gojo's phone. Act V."
   - sana: always shown, as a memorial card.
 
+  The default roster (`sb_relations.rpy`) already holds Gojo, Ijichi, Yaga and the first-years before the prologue introduces them, so the `("roster",)` met rule uses the prologue step until the campus opens (`JR_PROLOGUE_MEET`, `ui_journal.rpy`).
+
 #### 3.6.3 Arc Two
 
 - `begin_arc_two()` sets flag `arc2_started` and `arc = 2`. Every Arc One character mission that isn't done gets `mission_state[id] = "closed"`. Memories are untouched.
@@ -607,12 +616,12 @@ It is reached only from the campus journal (D38), and only while `main_story_com
   - a drainage tunnel in Nerima
   - a closed maternity ward in Adachi
   - a dead platform under Ikebukuro
-  - a school pool in Setagaya, after hours
+  - an after-hours school pool in Setagaya
   - an apartment stairwell in Kita
   - a train depot in Shinagawa
   - a riverbank underpass in Edogawa
   - a karaoke box in Koenji that closed mid-song
-- `BOARD_CURSES`, 3 or 4 per grade:
+- `BOARD_CURSES`, 2–3 per grade (s1 has 2; the validator requires at least 2):
   - g4: a residual that eats light bulbs · a stairwell crawler · a grudge the size of a dog
   - g3: a mimic that uses the missing person's voice · a nest of finger-length curses · a pool drowner
   - g2: a curse that only moves in the dark · a platform pusher · a thing wearing the building
@@ -624,9 +633,10 @@ It is reached only from the campus journal (D38), and only while `main_story_com
   - `decoy` +3 "The reported curse is a decoy"
   - `daylight` −3 "It sleeps in daylight" (mornings only)
   - `none` 0
+- **Fit tables** keep a card consistent: `BOARD_CASE_FITS` (case → places), `BOARD_CURSE_FITS` (curse → places) and `BOARD_CURSE_CASE` (curse → cases). A part that isn't listed fits everywhere.
 - `PARTNER_LINES[who] = dict(arrive, win, hurt)` for yuji, megumi, nobara, maki, panda and toge, in first-person narration around their spoken line.
 
-**State:** `board_offers = []`, `board_week = -1`, `board_log = []` (last 30 runs).
+**State:** `board_offers = []`, `board_week = -1`, `board_log = []`, `board_misgrades = 0` (`board_log` keeps only the last 30 runs).
 
 An offer is a plain dict: `id, grade, true_grade, case, place, curse, twist, title, blurb, merit, yen, drop, senior_only`. A taken card is `dict(taken_by=who, grade, title)`, read-only.
 
@@ -641,7 +651,7 @@ An offer is a plain dict: `id, grade, true_grade, case, place, curse, twist, tit
 - `board_open()`: flag `mission_board_open`, `here` is the host place, and the host is there this period (`char_location`). An old save carries `mission_board_open` from the retired `st_board_open`, but its board stays closed until Utahime is rostered, because an unrostered character has no location.
 - `register_place_action("board", "Mission board", "Graded jobs. Bring someone.", locs=("utahime_office", "office"), when="board_open")`.
 - **Partners:** anyone rostered with an NPC grade that is not None, excluding gojo, yaga and utahime, and currently on campus. A senior partner is anyone whose grade rank is above yours. You can't go alone ("Always take someone," Utahime's rule).
-- **Cost:** 2 periods and 25 stamina. Refused in the Evening and at Night, with the line "Utahime doesn't send anyone out after dark."
+- **Cost:** 2 periods and 25 stamina. Refused in the Evening and at Night, with the line "Utahime doesn't send anyone out after dark." The 2 periods are charged by `board_clock(res)`, the script's last step, after the host's debrief (once, via a clocked mark on the log row). An Afternoon job ends at Night, but its debrief plays in the Afternoon.
 
 **Resolve** (phase 1 resolves automatically; phase 3 turns it into a fight):
 - power = `sorcerer_power("mc") + 0.6 * sorcerer_power(partner)`, times a factor between 0.9 and 1.1 (seeded by offer id and day).
@@ -653,16 +663,16 @@ An offer is a plain dict: `id, grade, true_grade, case, place, curse, twist, tit
 - yen: g4 3,000–6,000 / g3 6,000–10,000 / g2 10,000–15,000 / s1 15,000–20,000;
 - partner bond +5 clean / +6 costly / +2 withdrew;
 - `train_together(partner, 6)`;
-- drops: 30% a sealing talisman; 10% a not-yet-owned talisman of the posted grade (g4 paper_ward or steady_hand, g3 deep_well or iron_seal).
+- drops: 30% a sealing talisman; 10% a not-yet-owned talisman of the posted grade (g4 paper_ward or steady_hand, g3 deep_well or iron_seal); 5% a cursed tool I don't own from the posted grade (g4 slaughter_demon, g3 nunchaku), only once `armory_open` is set (D10) and only at or below my grade.
 
-All of it is paid exactly once per run.
+All of it is paid exactly once per run. A withdrawn job pays no merit, no yen and no drops (bond +2 and `train_together` still apply).
 
 **Misgrade reveal.** A misgraded job gets an extra narration beat, and a toast "Filed as Grade 3. It wasn't." It counts in `misgrade_count()` and sets flag `wakuri_clue`.
 
 **Labels and screens:**
-- `label sb_do_board` → `screen board_screen` → `screen board_partner(offer)` → `label run_board_mission(offer_id, partner)`.
+- `label sb_do_board` → `screen board_screen` → `screen board_partner(offer)` → `label run_board_mission(offer_id, who)` (not `partner`: that is an old store variable, and label parameters are store variables).
 - The narration is 6–10 first-person lines built from the parts, plus the partner's `arrive` / `win` / `hurt` line and the outcome.
-- `board_summary()` gives the journal what it needs: offers, taken cards, the last 10 log rows and the misgrade count.
+- `board_summary()` gives the journal what it needs: offers, taken cards, the last 10 log rows and the misgrade count. Before `board_introduced()` (`mission_board_open` set and the host rostered) it has no offers and no taken cards. Offers carry `senior_only` for my current grade. An extra `note` key holds the D13 line, or "".
 
 ### 3.8 Items and equipment: `game/sb_items.rpy` (WP6)
 
@@ -698,7 +708,7 @@ All of it is paid exactly once per run.
 - `equip_talisman(id)`, `unequip_talisman(id)`, `equip_tool(id or None)`. All three call `renpy.retain_after_load()` (D4).
 - `armory_open_now()`: `here == "storehouse"` and `has_flag("armory_open")`.
 - `armory_tools()` → `[(id, state, reason)]`, where the state is `take`, `owned`, `sealed` ("Sealed until Grade 3"), `story` ("Story reward") or `arcii` ("Sealed — Arc Two").
-- `sync_keepsakes()` is idempotent (keys `"flag:<f>"` in `items_granted`). It runs as a new-day hook and as migration 70 (D24).
+- `sync_keepsakes()` is idempotent (keys `"flag:<f>"` in `items_granted`). It runs as a new-day hook (order 70), after each event, and as migration 70 (D24).
 
 **Rules:**
 - Slots come from `talisman_slots()`.
@@ -715,12 +725,16 @@ Before `armory_open`, the old storehouse action stays as "Look through the racks
 
 ### 3.9 Memories and replay: `game/sb_memories.rpy` (WP5)
 
-`MEMORIES` entries: `dict(id, title, who=(), act, label, args=(), seen=rule, hint, unlock=None, bg)`. The `act` is Prologue / I / II / III / IV / V / Bonds / Sana. The seen rule is one of:
+`MEMORIES` entries: `dict(id, title, who=(), act, label, args=(), seen=[rules], hint, unlock=None, bg, place=None, stage=None)`. The `act` is Prologue / I / II / III / IV / V / Bonds / Sana. `seen` is a list of rules, and the memory is seen if any one holds:
 - `("label", name)`: in `memories_seen`;
 - `("event", label)`: in `done_events`;
 - `("flag", name)`;
 - `("act", "aid:who")`: in `seen_acts`;
 - `("together", who)`.
+
+A memory without args also counts once its label is in `memories_seen`. Prologue memories also count from `settled_in`. `chapter_four` counts from its own flags, and `chapter_five` from its `end_*` flags (both also from `sunmall_done`), not from `ev_mission_sunmall`, which `play_event` marks done before the briefing plays.
+
+The optional `place=(loc, period)` and `stage=image`: `memory_scope` sets `_mem_place` / `_mem_bg` and overrides `here` / `period`, and `mem_play` opens on that picture before calling the scene.
 
 **Contents:**
 - **Prologue sub-labels** (D39):
@@ -749,9 +763,10 @@ Before `armory_open`, the old storehouse action stays as "Look through the racks
 - Legacy fallbacks for old saves: `confided_<who>`, `did_stand_<who>`, `town_date_<who>`, `close_<who>`, `together`, `talked_about_after_<who>` (WP5 confirms each flag name against the act scenes).
 
 **Replay.** `memory_replay(mem)` → `Replay("mem_play", scope=memory_scope(mem), locked=False)`.
-- `memory_scope` copies `mc_name`, `mc_surname`, `flags` (a copy), `roster`, `bonds`, `affection`, `together`, `threads`, `technique`, `grade`, `control`, `output`, `insight`, `ce`, `ce_max`, `hp`, `hp_max`, `stamina`, `done_events`, `here` and `period`, and sets `_mem_label` and `_mem_args`.
+- `memory_scope` copies `mc_name`, `mc_surname`, `flags` (a copy), `roster`, `bonds`, `affection`, `together`, `threads`, `technique`, `grade`, `control`, `output`, `insight`, `ce`, `ce_max`, `hp`, `hp_max`, `stamina`, `done_events`, `here` and `period`, plus `day`, `stamina_max`, `gojo_today`, `schedule_overrides`, `companion`, `arc`, `tname`, `merit`, `gojo_in`, `memories_seen`, `seen_acts`, `inventory`, `districts_visited` and `smoke_autoplay` (risk 10), and sets `_mem_label` and `_mem_args`.
 - `label mem_play`: `call expression _mem_label pass (*_mem_args)`, then `return`, which ends the replay.
 - Replays run in their own store (`renpy/game.py:361`), so nothing reaches the save. Toasts are muted.
+- The journal (the quick menu's JOURNAL and the game menu's entry) isn't offered during a replay, and shows an unavailable panel if reached.
 
 Helpers: `memory_groups(mode)` (`"person"` / `"act"`; Sana first), `memory_counts()` → `(seen, total)`.
 
@@ -775,7 +790,7 @@ Helpers: `memory_groups(mode)` (`"person"` / `"act"`; Sana first), `memory_count
   | `info` | 報 | `gui.dim` |
 
   WP0 changes `add_bond` / `add_aff` / `recruit` / `begin_together` to call `toast(...)` with the right kind, who and amount.
-- `check_objective()`, called by the loop: if `objective_text() != last_objective`, show `objective_toast` for 4.5 s and store the new text. Because `last_objective` starts as None, it appears once after loading an old save. It is skipped in explore mode.
+- `check_objective()`, called by the loop: if `objective_text() != last_objective`, show `objective_toast` for 4.5 s and store the new text. Because `last_objective` starts as None, it appears once after loading an old save. It is skipped in explore mode. The toast waits for the arrival caption, is withdrawn when the loop leaves the place view, shows again if it wasn't read, and shows once after every load; the place view runs `check_objective()` as it appears.
 
 ### 3.11 Store variables
 
@@ -797,9 +812,9 @@ Helpers: `memory_groups(mode)` (`"person"` / `"act"`; Sana first), `memory_count
 |---|---|
 | WP0 (`sb_hooks`) | `story_point`, `save_version`, `arc_start_day`, `actions_today`, `hide_side_images`, `smoke_autoplay`, `persistent.mc_face` |
 | WP1 | `gojo_in`, `districts_visited` |
-| WP2 | `merit`, `merit_granted`, `npc_state`, `promotions_log`, `pending_remarks` |
-| WP3 | `mission_state`, `missions_done`, `mission_done_day`, `mission_retry_day`, `last_objective` |
-| WP4 | `board_offers`, `board_week`, `board_log` |
+| WP2 | `merit`, `merit_granted`, `npc_state`, `promotions_log`, `pending_remarks`, `quick_menu_before_card` |
+| WP3 | `mission_state`, `missions_done`, `mission_done_day`, `mission_retry_day`, `last_objective`, `_sm_event` |
+| WP4 | `board_offers`, `board_week`, `board_log`, `board_misgrades` |
 | WP5 | `memories_seen`, `seen_acts` |
 | WP6 | `inventory`, `items_granted`, `yen`, `equipped_tool`, `equipped_talismans`, `bound_specials` |
 
@@ -814,10 +829,10 @@ All migrations are in one ordered list. Each is idempotent and wrapped in try/ex
 | 15 | WP1 | If `gojo_today` is missing any period, `roll_gojo()`. If `here` is not in `LOCATIONS` and `settled_in` is set, `here = "courtyard"`. |
 | 20 | WP2 | `grade`: int 3 → `"g3"`; any other int → `"g4"` if flag `roll_call`, else `None`; a key stays. |
 | 30 | WP2 | `refresh_vitals()`; if `hp <= 0`, `hp = hp_max`. |
-| 40 | WP3 | If `settled_in` and `"ijichi"` is not in the roster, add him. If `utahime_arrived` and she's missing, add her. If `arc1_complete`, set flag `night_before_done`. |
+| 40 | WP3 | If `settled_in` and `"ijichi"` is not in the roster, add him. If `utahime_arrived` and she's missing, add her. If `arc1_complete`, set flag `night_before_done`. A finished story scene gets the flags later steps need (`_MS_BACKFILL`): `st_roll_call` → `roll_call`, `storehouse_access`; `st_kurose` → `kurose_met`; `st_second_years` → `met_second_years`; `st_intensive` → `intensive_done`. Mission scenes are not backfilled. |
 | 50 | WP3 | If `arc != 1` and not `arc2_started`, `arc = 1`. |
-| 60 | WP3 | For every mission now `done` whose merit is not in `merit_granted`, pay it quietly. If `sunmall_done`, pay `"ch5_recommendation"` (20). |
-| 65 | WP3 + WP5 | Every done story row with no recorded done day gets `mission_done_day = 0` (no gap delays). If `settled_in`, mark the prologue sub-labels in `memories_seen` (day 0). |
+| 60 | WP3 | For every mission now `done` whose merit is not in `merit_granted`, pay it quietly. If `sunmall_done` and `"ch5_recommendation"` is not in `merit_granted`, pay it (20), add the key, and set flag `recommended_g3`. |
+| 65 | WP3 + WP5 | Every done story row with no recorded done day gets `mission_done_day = 0` (no gap delays). Mark the prologue sub-labels in `memories_seen` (day 0) up to the save's resume point (all of them once `settled_in`). |
 | 70 | WP6 | `sync_keepsakes()`: keepsakes and mission items from flags. |
 | 80 | WP4 | If `mission_board_open` (the old flag or the new scene) and there are no offers, generate them. |
 
@@ -875,7 +890,7 @@ Everything is laid out at 1920×1080, using the palette and fonts from `gui.rpy`
 
 It replaces today's 92px rail with its roughly 12 readouts.
 
-- **Date chip** at (40, 26): a `panel_ghost` frame, padding (22, 8), with "Day 9 · Monday" in `display_font` 28 (the full weekday via `weekday_full()`). Explore mode shows "Explore · Morning".
+- **Date chip** at (40, 26): a `panel_ghost` frame, padding (22, 8), with "Day 9 · Monday" in `display_font` 28 (the full weekday via WP7's `weekday_full()`, in `ui_hud.rpy`). Explore mode shows "Explore · Morning".
 - **Buttons** at the top right (`xalign 1.0`, `xoffset -40`, `ypos 26`, spacing 10), 148×52 `jjk_button`s:
 
   | button | action | when shown |
@@ -890,7 +905,7 @@ It replaces today's 92px rail with its roughly 12 readouts.
 
 ### 4.2 Toasts: `screen toasts` (in `config.overlay_screens`, zorder 150, WP7)
 
-- The stack sits at the top right: right edge at 1880, the first toast at y 92, spacing 8. Up to 4 are visible at once, newest at the bottom; the rest wait, and none are dropped.
+- The stack sits at the top right: right edge at 1880, the first toast at y 92, spacing 8. Up to 4 are visible at once, newest at the bottom; the rest wait, and none are dropped, except while skipping, when only the newest four are kept. Over the person view the stack sits beside MENU, two at a time, and the rest wait with their clocks stopped.
 - Each toast is 460×56: a 6px bar in the kind's colour, a 36px kanji seal, and the text in `body_medium_font` 20.
 - A toast lives 3.2 s once visible, with a 0.2 s slide in and fade out. A `timer 0.1 repeat True` expires them.
 - Toasts are hidden during replays. The old `notify` screen stays only as a fallback.
@@ -908,7 +923,7 @@ It replaces today's 92px rail with its roughly 12 readouts.
   - Zoom is `PLACE_STAGING.get(here, {}).get("zoom", 0.52)`, with `yalign 1.0` and `yoffset -40` plus the place's `y`.
   - Centres by count: 1 → 700; 2 → 470/930; 3 → 330/700/1070; 4 → 240/540/860/1160.
   - Each person is a `button` with hover brightness +0.08, returning `("char", who)`.
-  - A **nameplate** is centred on the person at y 960: the name in `display_font` 26 in their colour, then the caption in italic 18 `dim` ("halfway through an enormous bowl"). A gold 「!」 badge shows when `missions_with(who, here)` is non-empty, and a gold NEW chip when `has_event("hangout", who, here)`.
+  - A **nameplate** is centred on the person at y 944: the name in `display_font` 26 in their colour, then the caption in italic 18 `dim` ("halfway through an enormous bowl"). A gold 「!」 badge shows when `missions_with(who, here)` is non-empty, and a gold NEW chip when `has_event("hangout", who, here)`.
   - Overflow: a "+N" chip at (1300, 900) with a textbutton for each extra name.
   - An empty place shows a ghost panel at the centre of the stage: "Nobody here right now. The map shows who's where."
 - **Action card** at `xpos 1440`, `yalign 1.0`, `yoffset -40`, `xsize 440`, in a `panel_dark` frame:
@@ -928,7 +943,7 @@ It replaces today's 92px rail with its roughly 12 readouts.
   - courtyard: train ("Practice")
   - classroom: study
   - rooftop: think
-  - everywhere: hold ("Hold the hour — Last Light", once a day, D26)
+  - everywhere: hold ("Hold the hour", hint "Last Light. Once a day; costs reserve.", once a day, D26)
   - then `registered_place_actions(loc)`, then wait.
 
   There is no "missions", "temper" or Travel button. Explore mode shows only "Time: <next>" plus any registered `explore=True` actions.
@@ -943,7 +958,7 @@ It replaces today's 92px rail with its roughly 12 readouts.
   | nobara | dorm_common | on her phone | neutral |
   | nobara | rooftop | leaning on the railing | neutral |
   | maki | training / dojo | drilling with a staff | serious |
-  | panda | courtyard | sparring with Toge | happy |
+  | panda | courtyard | sparring with Toge (only while Toge is there, `AMBIENT_NEEDS`; otherwise "waiting for a sparring partner": `SCHEDULE` never puts them in the courtyard together) | happy |
   | toge | cafeteria | with onigiri | happy |
   | gojo | gojo_office | eating mochi in front of the TV | happy |
   | gojo | ridge | sitting just outside the veil | serious |
@@ -961,16 +976,15 @@ It replaces the 18-row panel with its locked rows.
 
 - **Background:** `graded_bg()` under an ink wash at alpha 0.35. Other people are not drawn.
 - **The person** is `"<who> <PERSON_GREET_EXPR[who]>"` at `transform char_focus(x0)`. It eases over 0.35 s from their stage centre at zoom 0.52 to `xcenter 520`, zoom 0.66, `yalign 1.0`, `yoffset -20`.
-- **Card** at `xpos 1000`, `ypos 150`, `xsize 820`, in a `jjk_panel`:
+- **Card** at `xpos 1000`, `ypos 150`, `xsize 820`, `ymaximum 890`, padding (20, 22), in a `jjk_panel`:
   - the name in `display_font` 46, in their colour;
   - the role line: CAST `year` · `grade_label(npc grade)` or the role ("First-year · Grade 2", "Doctor", "Off the scale");
-  - BOND with the rank name and a 740×10 meter; for romanceable characters with affection > 0, the affection meter and its cap note;
+  - BOND with the rank name and a 740×10 meter; for romanceable characters with affection > 0, the affection meter, with its cap note on the affection row;
   - the thread title in gold, with stage pips;
   - the ambient caption in italic.
-- **Choices:** up to 4 buttons, 780×84, from `person_choices(who, here)` (section 6), each with a title (26), a hint (18 `dim`) and cost ◆. Missions are drawn in gold, romance with ♡.
-- **Footer:**
+- **Choices:** up to 4 buttons, 780 wide, `yminimum 72`, padding (22, 8), from `person_choices(who, here)` (section 6), each with a title (26), a hint (18 `dim`) and cost ◆. Missions are drawn in gold, romance with ♡.
+- **Footer:** the gold hint from `next_unlock(who)` on its own line ("Closer: Sit out with them — at Bond 50"), then on one line:
   - the invite link "Ask them along" / "Let them go" (`("do","invite",who)`), when that activity is available;
-  - one gold hint from `next_unlock(who)`: "Closer: Sit out with them — at Bond 50";
   - "Back" (Esc and right-click too) → `("cancel",)`.
 - **HUD:** `use sb_hud(person=True)`, which shows the date and MENU only.
 - Returns `("do", aid, who)`, `("mission", mid)`, `("act", id)` or `("cancel",)`.
@@ -980,19 +994,20 @@ It replaces the 18-row panel with its locked rows.
 It replaces the 16 equal pins. `default view = layer`.
 
 - **Header** at `ypos 108`, centred: `seal("図")`, "TOKYO JUJUTSU HIGH", and tabs **[校 Campus] [東京 Tokyo]** (`SetScreenVariable("view", …)`). The Tokyo tab reads "After Ijichi's ride-along" and is insensitive until `tokyo_open()`. The subline reads "Walking is free. Doing something takes time."
-- **Campus layer:** `bg map_campus` under a wash at alpha 0.35. The six AREAS cards (width 340) are centred on their anchors:
+- **Campus layer:** `bg map_campus` under a wash at alpha 0.35. The six AREAS cards (width 340) are centred on their anchors, kept below the header (top ≥ 200, `MAP_TOP`) and above the Find someone strip:
   - The card header shows the seal, the area name (`display_font` 24) and a gold "◆ N" when N missions are waiting in the area.
-  - Each place is a 320×44 row button (64 tall when it has markers), with the place name (20) on the left and, on the right, one of:
+  - Each place is a 320×44 row button (64 tall when it has markers, or when more than one person is there and their names don't fit, which puts the names on a second line), with the place name (20) on the left and, on the right, one of:
     - who is there now (short names in their colours, up to 3, then "+n"; a gold "!" after a name with a mission or new scene);
     - "YOU ARE HERE" in `violet2`;
     - the lock reason in `seal` red (hover shows the full `can_enter` text).
   - The second line shows `mission_markers()` for that place ("Yaga · The Sun Mall", "Board · 3 jobs", "Gojo is in").
-  - Clicking a row returns `("go", loc)`. Your own place and locked places are insensitive.
+  - Clicking a row returns `("go", loc)`. Your own place is insensitive. A locked row is a hoverable button (`NullAction`) drawn in the insensitive style, so the full `can_enter` reason shows on hover.
+  - Utahime's office row reads "Empty Office" until `utahime_arrived` (`map_place_name`). `LOCATIONS` keeps "Utahime's Office".
 - **Find someone strip** at (40, 1000): a 56×56 face chip for each rostered person. The chip is their side image, cropped by `FACE_BOX.get(who, (68, 0, 223, 223))` and scaled. Hover shows "Yuji — Cafeteria" or "Off campus". A click returns `("go", loc)` when you can enter that place.
 - **Stay here** at the bottom right → `("cancel",)` (Esc too).
-- **Tokyo layer:** `bg map_tokyo`, plus five district cards (360 wide) at shinjuku (500, 300), harajuku (520, 540), shibuya (560, 780), kawasaki (1120, 820) and yotsuka (1340, 440), and a "Jujutsu High — Ijichi's car" card at (1500, 220).
-  - Each district card has the kanji (48), the name, one line, "what's there", a "½ day" chip, a lock chip (from `district_state`) and a "visited" tick.
-  - An open district returns `("district", key)` when `trip_ok_now()`. Otherwise it is insensitive with "Ijichi drives from the gate, mornings to afternoons."
+- **Tokyo layer:** `bg map_tokyo`, plus five district cards (360 wide) at shinjuku (500, 300), harajuku (520, 540), shibuya (560, 780), kawasaki (1120, 820) and yotsuka (1340, 440), and a "Jujutsu High — Ijichi's car" card at (1500, 220), drawn at y 260 (`CAR_POS` y 220 clamped to `MAP_TOP + 60`).
+  - Each district card has the kanji (48), the name, one line, "what's there", a "½ day" chip, a lock chip (from `district_state`) and a gold VISITED chip (✓ is in none of the game fonts).
+  - An open district returns `("district", key)` when `trip_ok_now()`. Otherwise it shows a "Not now" chip, and the tooltip reads "Ijichi isn't at the gate right now." during Morning–Afternoon, or "Ijichi drives from the gate, mornings to afternoons." outside those hours.
   - Footnote: "A trip takes half a day. District scenes come in a later build."
 - **HUD:** `use sb_hud(on_map=True)`, showing the date and MENU.
 - Returns `("go", loc)`, `("district", key)` or `("cancel",)`.
@@ -1006,12 +1021,13 @@ It replaces the 16 equal pins. `default view = layer`.
 
 **Chrome.**
 - A left rail from x 0 to 320 on `gui.panel`: `seal("記")` and "Journal", then six 260×72 tab buttons, each with a kanji seal, a label and an optional count badge: 人 People · 任 Missions · 憶 Memories · 力 Stats · 装 Equipment · 品 Inventory. **Return** is at the bottom (Esc and right-click too) → `Return()`.
+- The journal (the quick menu's JOURNAL and the game menu's entry) isn't offered during a replay, and shows an unavailable panel if reached (3.9).
 - The content area runs from x 360 to 1880 and y 40 to 1040. At the top, a gold strip "◆ NEXT  <objective_text()>", 1520 wide.
 
 **People.**
 - A grid of 4 columns of 362×330 cards in `JOURNAL_CAST` order.
-- A met card shows the side portrait (`images/side/<who>_neutral.png`, 360×223, at zoom 0.9), the name, a grade chip ("Off the scale" for Gojo, the role for the ungraded), the bond rank and meter (plus the heart meter for Nobara, Maki and Shoko), and "Next: <next_for> — <where>" in gold, on up to two lines.
-- An **unmet** card shows a black silhouette: the neutral sprite through `TintMatrix("#000000")` at alpha 0.85. Characters without art get a panel with a large 「？」. The card also shows the hint.
+- A met card shows the side portrait (`images/side/<who>_neutral.png`, 360×195–223 (Gojo's is the tallest), at zoom 0.9), the name, a grade chip ("Off the scale" for Gojo, the role for the ungraded), the bond rank and meter (plus the heart meter for Nobara, Maki and Shoko), and "Next: <next_for> — <where>" in gold, on up to two lines.
+- An **unmet** card shows a black silhouette: the darkened side-portrait crop (324×162, as on met cards) through `TintMatrix("#000000")` at alpha 0.85. "Has art" is judged by the side portrait; characters without one get a panel with a large 「？」. The card also shows the hint.
 - **Sana** shows her portrait, "In memory" and "Memories: n of m", and links to Memories filtered to her.
 - Clicking a met card sets `sel`, which opens the **detail pane**:
   - on the left, the raw sprite file at zoom 0.5, unlit;
@@ -1049,7 +1065,7 @@ It replaces the 16 equal pins. `default view = layer`.
   - the promotion panel: a merit bar and `next_grade_text()`;
   - 620px bars with cap markers: Health (`hp`/`hp_max`), Cursed energy (`ce`/`ce_max`, marker at the reserve cap), Control and Output (marker at the stat cap), Insight (no cap), and Stamina;
   - a **Last Light** panel: 残光 · Zankō, the tier name and description, the next tier ("at Control 60 — needs Grade 2" when the cap is lower than the requirement), the Hold verb ("once a day"), and the moves with their costs;
-  - a **"Your year"** strip: Kaito, Yuji, Megumi and Nobara on one reserve scale (0–300), with Gojo's bar running off the edge, labelled ∞.
+  - a **"MY YEAR · CURSED ENERGY RESERVE, 0–300"** strip (the journal speaks in the first person): Kaito, Yuji, Megumi and Nobara on one reserve scale (0–300), with Gojo's bar running off the edge, labelled ∞.
 
 **Equipment.**
 - The tool card ("In my hand: Bare hands" or the tool), with a **Change** button.
@@ -1090,6 +1106,8 @@ A card at the centre, 900×420, `jjk_panel`:
 - the grade name in `display_font` 64;
 - one line of what it opens: "Board: Grade 3 jobs · Reserve up to 140 · 2 talisman slots".
 
+The card hides the quick menu while it shows (`quick_menu_before_card` keeps the old value). A None key shows Grade 4.
+
 ### 4.11 Engine screens: `screens.rpy` (WP8)
 
 - **Say screen:**
@@ -1099,7 +1117,7 @@ A card at the centre, 900×420, `jjk_panel`:
           add SideImage() xpos 6 yalign 1.0 zoom 0.8
   ```
   At 288×178, the image stays inside the 300px dialogue margin, so it never overlaps the text.
-- **Preferences:** a new `radio` vbox, "[mc_name]'s portrait", with Show / Hide (`SetField(persistent, "mc_face", True/False)`).
+- **Preferences:** a new `radio` vbox, "[mc_name]'s portrait" (a neutral "MY PORTRAIT" until Gojo asks the name), with Show / Hide (`SetField(persistent, "mc_face", True/False)`).
 - **Quick menu** (D25), both variants:
   - `if quick_menu and not renpy.get_screen(("sandbox", "menu")):` — the list form works (`renpy/display/screen.py:1128`). WP0 already made this change in both variants (migration 5 turns the quick menu on for every load, so it had to hide over the sandbox straight away); WP8 keeps the line as it is.
   - Default variant: BACK · HISTORY · SKIP · AUTO · SAVE · JOURNAL (`ShowMenu("journal")`) · MENU (`ShowMenu()`).
@@ -1108,7 +1126,7 @@ A card at the centre, 900×420, `jjk_panel`:
 
 ### 4.12 Combat screen (WP2)
 
-Unchanged, except for the enemy grade line (`grade_label`) and the `smoke_autoplay` timer.
+Unchanged, except for: the enemy grade line (`grade_label`; an enemy with no grade reads "Ungraded"); the `smoke_autoplay` timer; Read it / Withdraw sit on the HP row; move descriptions wrap at 330 px; the background is `cb["bg"]` or `graded_bg(cb["bg_loc"], cb["bg_per"])`.
 
 ### 4.13 Review tools: `screen dev_panel` / `label dev_tools` (`explore.rpy`, WP11)
 
@@ -1166,6 +1184,11 @@ How the others are re-staged:
 | ch1b:10 | gojo at `pos_cr` | `pos_c` |
 | ch2:27 | gojo at `pos_cr` | `pos_c` |
 | script:63, 75 | mc lines | deleted |
+| ch4:25 | Ijichi at `pos_fr` | `pos_c` |
+| ch4 atrium | the partner | moves to `pos_cl` when the curse appears (the curse at `pos_loom_r`) |
+| st_aftermath | Shoko at `pos_cr` | `pos_c` |
+| st_second_years | maki / panda / toge | `pos_l` / `pos_c` / `pos_r` |
+| missions_arc1:62 (Nade 1) | `_p` at `pos_fr` | `pos_cl` |
 
 **People stay on screen during activities.** `label stage_person(who, expr=None)` (WP7, `sb_activities.rpy`) runs `scene expression graded_bg()`, then `$ renpy.show(who + " " + (expr or PERSON_GREET_EXPR[who]), at_list=[pos_c])`, then `with Dissolve(0.3)`. `sb_activity` calls it before Talk and before every `act_*` (not before "hang", because hangouts stage themselves). WP10 removes the scene resets inside the act labels:
 - `events_activities.rpy:80` (`act_eat`): delete the `scene` line.
@@ -1193,7 +1216,7 @@ How the others are re-staged:
    - `sana serious "Okay. The thing."` She has been seeing things, not people, for about six weeks.
    - The one on the diner ceiling tonight: she pointed at it, and I looked right at it.
    - One stands on the platform every morning by the third pillar, and everyone walks through where it is.
-   - She has been drawing them in the back of her maths book, so she'd know she isn't making it up: "if I was, I'd draw them different every time, and I don't."
+   - She has been drawing them in the back of her maths book, then in a sketchbook, with the dates, when the maths book ran out, so she'd know she isn't making it up: "if I was, I'd draw them different every time, and I don't."
    - Kaito: `mc "Is this a bit? This feels like a bit."`
    - `sana "There's one at the end of this alley."` It has been standing there since they turned in, and she didn't say in case saying it made it—
    - Set `flag("sana_told_the_thing")` and `flag("sana_sketchbook")` (the Act V seed).
@@ -1229,14 +1252,14 @@ How the others are re-staged:
 #### `ch2_tour.rpy` — The Strongest of Today
 
 **Structure.** `chapter_two` keeps its card, then calls `ch2_arrival`, `ch2_the_veil`, `ch2_yaga` and `ch2_first_years`.
-- **`ch2_arrival`**: the car and Ijichi (surprised, then sad), the gate with Gojo at `pos_c`, and the courtyard tour. The tour line becomes: `gojo "Storehouse is Yaga's, the ridge is for running up — the lower half — and the riverside is freezing and everyone swims in it anyway."` The three questions stay as they are.
+- **`ch2_arrival`**: the car and Ijichi (surprised, then sad; he says Gojo is the strongest, "It's on the paperwork"), the gate with Gojo at `pos_c`, and the courtyard tour. The tour line becomes: `gojo "Storehouse is Yaga's, the ridge is for running up — the lower half — and the riverside is freezing and everyone swims in it anyway."` The three questions stay as they are.
 - **`ch2_the_veil`** replaces lines 75–139 (the building, the storehouse and the casket):
-  - "Then, near the top of the grounds, he stops walking and looks up." The "strongest of today" exchange stays.
+  - "Then, near the top of the grounds, he stops walking and looks up." The "strongest of today" exchange stays. Then he takes me up the running path as far as the rope markers, looks up, and points.
   - `scene bg ridge_veil with fade_curse`. High on the ridge the air is wrong: a dome, dark and faintly violet. Inside it, if I let my eyes do the new thing they do, a figure sits cross-legged, like someone meditating. It is dry, brown and very still, and the hands in its lap are missing their fingers.
-  - `gojo "That's the strongest in history."` The title and filing-category lines are kept. `mcthink "Has. Present tense."`
+  - `gojo "That's the strongest in history."` The title and filing-category lines are kept. `mcthink "Has. Present tense."` Gojo names him: "Ryomen Sukuna. King of Curses."
   - Menu prompt: "The veil ripples very slightly. There is no wind up there." The choices and flags are unchanged (`asked_dead`, `asked_why_here`, `watched_the_box`):
     - dead → "He's a corpse. That's not the same thing, and the difference is the entire reason this school keeps a veil up there day and night." / "Nine people take turns holding it…"
-    - why here → "Because I'm here…" (unchanged)
+    - why here → "Because I'm here." Its closing line becomes "There's a veil, nine very tired people, and me."
     - say nothing → "…It is facing the school." / `gojo "...Yeah. It does that."`
   - It ends: `gojo serious "Don't go near it. Not the ridge path past the rope markers. Not on a dare, not on your own. That's not a rule, the rules are Yaga's. That's me asking."`
   - `flag("saw_the_ridge_veil")` replaces `saw_the_casket`, which nothing reads.
@@ -1256,10 +1279,10 @@ All new scenes are first person, use expressions, and are marked as placeholders
 
 | label | file (WP) | trigger | content |
 |---|---|---|---|
-| `st_utahime_office` | missions_stubs (WP3) | `ev(kind="story", periods=M/N/A, priority=96)` | 15–25 lines, `scene bg utahime_office`. A new nameplate next to Yaga's door. Utahime (serious, then annoyed at the mention of Gojo) came ahead of the Goodwill Event to prepare it, and she's helping Gojo with something she won't explain. **Board rules:** jobs at my grade; one grade up with a senior partner; always take someone. She gives a Paper Ward she wrote herself and two sealing talismans. The items are granted by the mission's `rewards` when it completes, not in the scene. `recruit("utahime")`, `flag("utahime_arrived")`, `flag("mission_board_open")`. The text is **timeless**, because old saves may meet her late. |
+| `st_utahime_office` | missions_stubs (WP3) | `ev(kind="story", periods=M/N/A, priority=96)` | 15–25 lines, `scene bg utahime_office`. A new nameplate next to Yaga's door. Utahime (serious, then annoyed at the mention of Gojo) came ahead of the Goodwill Event to prepare it, and she's helping Gojo with something she won't explain. **Board rules:** jobs at my grade or under it; one grade up with a senior partner; always take someone. She gives a Paper Ward she wrote herself and two sealing talismans. The items are granted by the mission's `rewards` when it completes, not in the scene. `recruit("utahime")`, `flag("utahime_arrived")`, `flag("mission_board_open")`. The text is **timeless**, because old saves may meet her late. |
 | `st_promotion_g3` | missions_stubs (WP3) | start: Maki at training/dojo | Maki (serious) watches; Utahime has sent the paperwork. `call combat("promo_g3", None, True, "bg training")`. On `"win"`: Maki's verdict (happy), `promote("mc","g3","Promotion assessment")`, `call show_grade_card("g3")`. On `"down"` or `"fled"`: Maki's "Again. Tomorrow." and `mission_fail("m_promo_g3")`. |
 | `cm_ijichi_1` Ride-Along | missions_stubs (WP3) | start: Ijichi at the gate, M/N/A, cost 2 | A day in his passenger seat, three sites and a veil raised on a street corner. He offers to drive me into the city on free days. `flag("ijichi_rides")`. |
-| `cm_maki_1` The Armory | missions_stubs (WP3) | start: Maki, bond 10, `met_second_years` | Maki unlocks the racks; grade decides what they release. She gives the Slaughter Demon (`give_item`). `flag("armory_open")`. |
+| `cm_maki_1` The Armory | missions_stubs (WP3) | start: Maki, bond 10, `met_second_years` | Maki unlocks the racks; grade decides what they release. The Slaughter Demon comes from the mission's rewards (`items`), paid once. `flag("armory_open")`. |
 | `arc_two_start` | sb_missions (WP3) | the journal | See 3.6.3. |
 | `act_lesson` (+ activity `lesson`) | sb_activities (WP7) | Gojo at `gojo_office` on an in-day, once a day | Three first-person variants. `gain("control", 5)`, `raise_reserve(5)`, 1 period. |
 | `sb_trip`, the district lines | sb_tokyo (WP1) | the map | 3.3. |
@@ -1271,7 +1294,7 @@ All new scenes are first person, use expressions, and are marked as placeholders
 
 ### 5.4 Later chapters (WP10): compatibility edits only
 
-Narration stays "you", except `st_roll_call` (D9).
+Narration stays "you", except `st_roll_call` (D9). `tools/check_content.py` exempts exactly these scenes from its narration-person rule (`PHASE4_YOU`, 8.4).
 
 #### 5.4.1 One technique
 
@@ -1300,7 +1323,7 @@ Narration stays "you", except `st_roll_call` (D9).
 | story_arc1:264 | "You've been on campus a fortnight. You've got…" | "You've got a technique you didn't ask for and a body that hasn't caught up to it." |
 | story_arc1:266 | "And in a week you're going to stand on a field…" | "And one of these days you're going to stand on a field opposite people who have had this their whole lives." |
 | story_arc1:285, 296 | `$ ce_max = min(160, ce_max + 20)` / `+ 12` | `$ raise_reserve(20)` / `$ raise_reserve(12)` |
-| story_arc1:324 | "…on a Thursday, and Maki…" | "…one noon, and Maki…" |
+| story_arc1:324 | "…on a Thursday, and Maki…" | "…at noon one day, and Maki…" |
 | story_arc1:339 | menu prompt "Four days." | "Not long now." |
 | story_arc1:349 | "…four days out." | "…this close to it." |
 | story_arc1:364 | "You could build four days around it." | "You could build the rest of the time around it." |
@@ -1311,9 +1334,11 @@ Narration stays "you", except `st_roll_call` (D9).
 | story_arc1:467 | "…all week." | "…since you arrived." |
 | story_arc1:494 | "You've been here all week." | "You've been here the whole time." |
 | story_arc1:497 | "for the first four days" | "for the first few days" |
-| events_arc1:1574 | "…three weeks from being sent somewhere." | "…a good deal less than that from being sent somewhere." |
+| events_arc1:1574 | "…three weeks from being sent somewhere." | "You are eleven weeks from being useful and they will send you anyway." |
 | ch5_debrief:38 | "A fortnight ago you did not know…" | "Not long ago you did not know…" |
+| ch5_debrief:161 | "Still time. Not much, but still time." | "They're not going anywhere. Neither am I." |
 | ch5_debrief:163–172 | `days_left` block | WP0: `mcthink "Nobody has given me a date for anything."` / `mcthink "So I get to choose what the days are for."` |
+| st_night_before | "There wasn't time and I spent what there was." | "I spent my days on other things." |
 
 The `ev()` registrations lose `min_day` in `story_arc1` (lines 10–25), `story_kurose` (10–13), `story_oda` (12–15), `missions_arc1` (9–14) and `events_arc1` (47). The `st_board_open` (14–15) and `ev_patrol` (49–50) registrations are deleted; their labels stay.
 
@@ -1373,7 +1398,13 @@ WP0 writes every one of these with its final signature, a docstring naming the o
 6. the one activity that fits the place: eat (cafeteria) / train (training, dojo, ridge, forest) / swim (riverside) / stargaze (rooftop, ridge, riverside at night) / study (classroom, dorm_common, dorm) / walk;
 7. `talk`.
 
-Only available activities appear (`activity_state` ok). `invite` is the footer link.
+Step 6's Train together needs 15 stamina (what `sb_spar` needs); below that it isn't offered. Only available activities appear (`activity_state` ok). `invite` is the footer link.
+
+**Return shapes, as merged** (the journal reads these):
+- `missions_here(loc)` and `missions_with(who, loc)` return mission ids; look the record up with `MISSION_BY_ID`.
+- `next_for(who)` returns `(text, where)`, where `where` is a display string (a place name, or `usual_places(who)`'s schedule string), or None when they aren't met.
+- `board_summary()` returns a dict with keys `offers`, `taken`, `log` (newest first), `misgrades`, `host`, `open`, `week` and `note`.
+- `ACTS` rows are `(id, title, kanji, grade band)`.
 
 ---
 
@@ -1697,7 +1728,7 @@ Wave 2 (sequential)   WP11 integration, review tools, save regression, docs
 - `tools/load_all_saves.sh` in the worktree: every save parked on `call screen sb_place` loads into the new place view without `load_recover`.
 - **Owner check (checkpoint 3):**
   - over three in-game days, the HUD shows only the date and three buttons;
-  - Yuji at noon offers 3–4 sensible choices and stays on screen while you talk and eat;
+  - Yuji at noon offers 2–4 sensible choices (3 when he has a new scene or a mission) and stays on screen while you talk and eat;
   - bond gains stack;
   - the next objective slides in when it changes;
   - Gojo's lesson appears on an in-day (use the review tools).
@@ -1770,7 +1801,7 @@ Wave 2 (sequential)   WP11 integration, review tools, save regression, docs
 - `check_content.py --no-mc-on-screen --one-technique --no-deadline` on the owned files finds nothing.
 - `grep -n -e 'technique ==' -e tname -e min_day -e 'arc = 2' -e 'min(160' -e 'min(140' -e 'grade = '` on the owned files finds nothing.
 - The label count per file is unchanged (`grep -c '^label'`).
-- Every `flag("…")` string present before is still present (a script compares the sets).
+- Every `flag("…")` string present before is still present (a script compares the sets), except `arc1_complete` and `found_the_phone`, which 5.4.1/5.4.2 retire.
 - The lint dialogue-block count is reported before and after (the expected drop is only the collapsed technique branches and deadline lines).
 - `wp10_chapters` under autoplay calls `st_roll_call`, `st_intensive`, `st_roster`, `st_night_before`, `chapter_four`, `chapter_five`, `ms_nade_1` and `act_eat("yuji")` on a seeded store, with no exception. It asserts `arc == 1`, `mc` never showing, and `grade == "g4"` after roll call.
 - `tools/load_all_saves.sh` in the worktree reports which saves sit in edited statements and recover.
@@ -1803,7 +1834,7 @@ Wave 2 (sequential)   WP11 integration, review tools, save regression, docs
 
 **Acceptance:**
 - Lint is clean on the merged tree.
-- `check_content.py --all` finds nothing.
+- `check_content.py --all game/*.rpy` finds nothing outside the 5.4 exemption (the narration-person rule skips the later chapters that keep "you" until phase 4, and prints their count as a note; `--include-phase4` lists them).
 - All harnesses pass, including `phase1_all`.
 - Every existing save loads without an exception. It lands on campus or at the right prologue step, with bonds, flags and keepsakes intact. The report is attached.
 - **Owner check (checkpoint 4)**, following `docs/PLAYTEST.md`:
@@ -1858,7 +1889,7 @@ Several harnesses can run at once, even from one checkout.
   - `--no-mc-on-screen`: `^\s*(show|hide)\s+mc\b`, unless the line has `## first-person exception`.
   - `--one-technique`: `filament|emberfall|aftersound|stillness` (case-insensitive), except on lines tagged `# legacy-technique`.
   - `--no-deadline`: `KYOTO_DAY|days_left\(|days until Kyoto|TO KYOTO|Three weeks from today|In three weeks|\barc\s*=\s*2\b|END OF ARC ONE`.
-  - `--narration-person`: narrator lines (`^\s*"…"` not ending in `:`) containing `\b(you|your|yours|yourself)\b` outside `{i}…{/i}`, except on lines tagged `## you-ok`.
+  - `--narration-person`: narrator lines (`^\s*"…"` not ending in `:`) containing `\b(you|your|yours|yourself)\b` outside `{i}…{/i}`, except on lines tagged `## you-ok`. The later chapters that 5.4 keeps in "you" are exempt through the `PHASE4_YOU` table (file → labels): every label of events_arc1, ch4_mission, events_intimate, events_romance, story_oda, missions_arc1, events_stand, story_kurose and ch5_debrief; story_arc1 except `st_roll_call`; `act_confide` in events_activities. Their count prints as one note line, `--include-phase4` lists them, and phase 4 shrinks the table as chapters convert. No other rule is scoped.
   - `--no-literal-name`: `Kaito|Amagiri` inside string literals, except `jjk_defs.rpy` defaults, `script.rpy` `label start`, and the `renpy.input` defaults.
   - `--dup-labels`: a label defined twice across `game/`.
 - **Validators** run inside lint (`config.lint_hooks`). Each registered function returns problem strings, which print as `VALIDATE: …`. Each package registers its own (listed in its tasks).
@@ -1904,7 +1935,14 @@ Each checkpoint is played in the owner's folder on branch `phase1`, from the SDK
 
 *Renumbered 30 Sep 2026, when the owner added a UI overhaul after playing checkpoints 2 and 3: phase 2 is now the **UI overhaul** (`docs/PHASE2_UI_OVERHAUL.md`), combat moves to phase 3 and the story acts to phase 4+. Every phase number in this document uses the new numbering.*
 
-- **Phase 2 (UI overhaul):** see `docs/PHASE2_UI_OVERHAUL.md`. It also takes over the storyboard's "people in their places" pictures and blinking/talking, which the storyboard had scheduled with Act I.
+- **Phase 2 (UI overhaul):** see `docs/PHASE2_UI_OVERHAUL.md`. It also takes over the storyboard's "people in their places" pictures and blinking/talking, which the storyboard had scheduled with Act I. Notes left by phase 1 for it:
+  - the map hides the people inside a locked place behind its lock tag (an owner preference; 2.A's area markers replace the row map);
+  - the `PLACE_STAGING` zooms are guesses (2.F);
+  - the toasts overlay can show over the game menu if something toasts there (`screen toasts` checks only `_in_replay`; 2.B);
+  - toasts are drawn over the journal: a board job's pay, bond and item toasts cover the NEXT bar's end and the Missions filters, because the stack only moves aside for `sb_char`. Hide or move the stack while the journal (or any full-screen menu) is up;
+  - while skipping, only the newest four toasts are kept (4.2). Open question: should skipped rewards go to a log in the journal?
+  - the People grid (17 cards) and long Missions lists need scrolling (2.C);
+  - macron letters in serif titles come from DejaVu Sans Bold (`macron_font`, `screens.rpy`). A serif font with Latin Extended-A is a new asset.
 
 - **Phase 3 (combat):**
   - fix the damage-and-block moves, allies using your stats, and the Nade 1 bond inversion;
@@ -1913,15 +1951,27 @@ Each checkpoint is played in the owner's folder on branch `phase1`, from the SDK
   - tool and talisman `fx` applied;
   - board jobs as real fights (`use_combat` via `combat_begin(dict)`);
   - enemy phases;
-  - the rest of the time economy.
+  - the rest of the time economy, including: the Nade missions call `advance_period(2)` inside their scenes, so one started in the Evening rolls the day over mid-mission, while the Ride-Along charges after its scene;
+  - recheck the combat layout at 1920×1080 with partner moves and Black Flash (phase 1 checked up to three moves);
+  - balance (risk 6): in 60 days with one act done only Yuji reaches Grade 3, and Nobara needs two acts for Grade 2, so the NPC growth numbers need tuning; the board's difficulty, merit, yen and drop rates are guesses too, to tune when board jobs become fights;
+  - item `fx`: all the numbers are stored only; applying them includes reviewing the placeholder values. Afterglow needs a window-duration key for the storyboard's "the widened window lasts longer" (today its fx is only `{"bf_refill": 0.5}`).
 - **Phase 4+ (story):**
   - write the unwritten rows (their ids are reserved in 3.6.1) and the character missions `cm_*`;
   - district scenes `district_<key>`;
   - Sana's flashbacks `sana_mem_*`;
   - move `m_aftermath` to Act II when the detention center lands (D14);
-  - Utahime's Act IV switch (`utahime_leads_kyoto`);
-  - Yuji's "death" through `FLAG_SCHEDULES`;
+  - Utahime's Act IV switch (`utahime_leads_kyoto`). It needs a `FLAG_SCHEDULES` entry that puts Ijichi at `office` in working periods, or the board under Ijichi never opens (`board_open()` needs the host at the host place; his schedule is the gate);
+  - Yuji's "death" through `FLAG_SCHEDULES`. `board_npc_card` and `_board_students` (`sb_board.rpy`) must skip him too (e.g. `and not has_flag("yuji_presumed_dead")`, or honour a `None` entry), or a "taken by Yuji" card gives the twist away;
+  - Gojo's ambient pose "sitting just outside the veil" (D15) is never seen: `GOJO_SPOTS` has no ridge, and WP1's regression check freezes the roaming draws. It needs a story pin, or a new Evening draw after `intensive_done`;
+  - `st_noise` and `chapter_four` pick their companion inside the scene, so a replay can show a different first-year. Record the original companion when those scenes are rewritten;
+  - backfill `sana_told_the_thing` and `sana_sketchbook` for settled saves (a migration) before the Act V sketchbook payoff reads them;
+  - after Yuji's reveal in `events_arc1.rpy` (before "I ate one."), add `mc "The thing on the ridge."` / `yuji "...Gojo-sensei showed you. Yeah. That's the rest of him."`;
+  - Ryosuke, Kanto and Soma were written without macrons when the font lacked them. `macron_styles` now draws ō, so the story pass may restore Ryōsuke / Kantō / Sōma, to match Zankō (editing those Say lines renames their statements, so not before);
+  - storyboard differences left for the rewrite: Gojo's first lesson happens in his new office, and only Yuji and Nobara go inside the Sun Mall while Megumi and Gojo watch;
+  - the atrium curse ends at zoom 0.64 because `pulse_in` overrides `pos_loom_r`; a larger curse needs a `pulse_in` variant in `jjk_defs.rpy`;
   - convert the chapters to "I" in the order given in D9;
   - re-point the placeholder `bg city` scenes: `ev_nobara_1` (events_arc1:239 and 305), `ev_nobara_3` (1225) and `act_rom_town` (events_romance:10) → Shibuya or Harajuku. The Kawaguchi warehouse and the Saitama Sun Mall keep their own backgrounds.
 - **Reserved flag names:** `yuji_secret`, `utahime_leads_kyoto`, `kawasaki_open`, `sukuna_cheek_spoke`, `sukuna_vow_offered`, `sukuna_vow_taken`, `wakuri_clue`, `sana_sketchbook`, `daisy_clip` (item).
 - **Art:** the alley, the ridge veil (the big-moment picture), the offices, the Tokyo districts and `map_tokyo`. Each drops in by filename through `bg_placeholder` with no script change: `images/bg/alley.png`, `alley_dark.png`, `ridge_veil.png`, `utahime_office.png`, `gojo_office.png`, `map_tokyo.png`, `shibuya.png`, `harajuku.png`, `shinjuku.png`, `kawasaki.png`, `yotsuka.png`.
+  - The stand-ins until then (`bg_placeholders.rpy`, WP1 task 10): alley / alley_dark = crops of the night skyline; ridge_veil = the ridge with a masked violet dome; utahime_office = the dojo's windows; gojo_office = the common room, mirrored and tinted pink; map_tokyo = the night skyline, dimmed; shibuya = the skyline in pink neon; harajuku = town_street as a pink daytime street; shinjuku = a close crop of the towers; kawasaki = street_morning's low roofs, bleached; yotsuka = street_morning.
+  - When the real alley art lands, move `LAST_LIGHT_LAMP` (`ch1_alley.rpy`) onto the lamp over the fire door.

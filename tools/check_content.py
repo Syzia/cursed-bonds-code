@@ -19,6 +19,14 @@ Rules (flags):
                       string, not a menu choice ending in `:`) that say you,
                       your, yours or yourself outside {i}...{/i}. Allowed on a
                       line tagged `## you-ok`.
+                      Exempt: the later chapters that section 5.4 keeps in
+                      "you" until phase 4 converts them (the PHASE4_YOU table
+                      below: files, and the labels in them). Their findings
+                      are counted, not listed, and one note line on stderr
+                      gives the count. This rule only; every other rule still
+                      checks those files.
+  --include-phase4    List the PHASE4_YOU findings as well (they then count
+                      as findings and make the exit code 1).
   --no-literal-name   "Kaito" or "Amagiri" inside a string literal (D29).
                       Allowed: `default` lines in jjk_defs.rpy, `label start`
                       in script.rpy, and the renpy.input defaults (a line that
@@ -37,6 +45,7 @@ under game/ is checked.
 
 Examples:
     python3 tools/check_content.py --all game/*.rpy
+    python3 tools/check_content.py --narration-person --include-phase4 game/story_arc1.rpy
     python3 tools/check_content.py --no-literal-name game/sb_board.rpy
 """
 
@@ -71,6 +80,40 @@ LABEL_DEF = re.compile(r"^\s*label\s+([A-Za-z_.][\w.]*)")
 PYTHON_HEADER = re.compile(r"^(init(\s+[-+]?\d+)?\s+)?python\b")
 # The narrator's string may be followed by say arguments or a transition.
 SAY_TAIL = re.compile(r"^(with\b|\(|id\b|nointeract\b)")
+
+# Section 5.4 of docs/PHASE1_DESIGN.md: "Narration stays you" in the later
+# chapters, except st_roll_call (D9). Phase 4 converts them in D9's order and
+# removes each entry here as its chapter turns into "I". Keyed by file name;
+# the value holds the exempt labels, "*" for every label in the file, and
+# "-<label>" for a label that is NOT exempt (already first person).
+# Only --narration-person reads this table.
+PHASE4_YOU = {
+    "events_arc1.rpy":       {"*"},
+    "ch4_mission.rpy":       {"*"},
+    "story_arc1.rpy":        {"*", "-st_roll_call"},
+    "events_intimate.rpy":   {"*"},
+    "events_romance.rpy":    {"*"},
+    "story_oda.rpy":         {"*"},
+    "missions_arc1.rpy":     {"*"},
+    "events_stand.rpy":      {"*"},
+    "story_kurose.rpy":      {"*"},
+    "ch5_debrief.rpy":       {"*"},
+    # WP7 converted the other activity scenes; confiding is a phase 4 scene.
+    "events_activities.rpy": {"act_confide"},
+}
+
+
+def phase4_exempt(path, label):
+    """True when a narration-person finding in `label` of `path` is one that
+    section 5.4 keeps in "you" for now."""
+    rules = PHASE4_YOU.get(os.path.basename(path))
+    if not rules or label is None:
+        return False
+    top = label.split(".")[0]
+    if "-" + top in rules:
+        return False
+    return "*" in rules or top in rules
+
 
 # Blocks whose bare strings are not narration.
 NON_SCRIPT_BLOCKS = {"python", "screen", "transform", "image", "style",
@@ -312,6 +355,9 @@ def main(argv=None):
     ap.add_argument("--all", action="store_true", help="every rule (the default)")
     for r in RULES:
         ap.add_argument("--" + r, dest=r.replace("-", "_"), action="store_true")
+    ap.add_argument("--include-phase4", action="store_true",
+                    help="also list the narration-person findings that section 5.4 "
+                         "exempts (the PHASE4_YOU table)")
     ap.add_argument("files", nargs="*", help=".rpy files or folders (default: game/)")
     args = ap.parse_args(argv)
 
@@ -328,6 +374,7 @@ def main(argv=None):
 
     cache = {}
     findings = []   # (path, line, rule, text)
+    exempt = {}     # file -> narration-person lines exempted by PHASE4_YOU
     per_line_rules = [
         ("no-mc-on-screen", rule_mc),
         ("one-technique", rule_technique),
@@ -340,6 +387,10 @@ def main(argv=None):
         for name, fn in per_line_rules:
             if name in chosen:
                 for ln in fn(path, lines):
+                    if (name == "narration-person" and not args.include_phase4
+                            and phase4_exempt(path, label_of(ln))):
+                        exempt[path] = exempt.get(path, 0) + 1
+                        continue
                     findings.append((path, ln.n, name, ln.raw.strip()))
 
     if "dup-labels" in chosen:
@@ -364,6 +415,14 @@ def main(argv=None):
         if len(text) > 200:
             text = text[:197] + "..."
         print("%s:%d: %s: %s" % (shown(path), n, rule, text))
+
+    if exempt:
+        n_ex = sum(exempt.values())
+        print("check_content: note: narration-person: %d line%s exempt in %d file%s "
+              "(section 5.4 keeps the later chapters in \"you\" until phase 4; "
+              "--include-phase4 lists them)" % (
+                  n_ex, "" if n_ex == 1 else "s",
+                  len(exempt), "" if len(exempt) == 1 else "s"), file=sys.stderr)
 
     counts = {}
     for f in findings:
