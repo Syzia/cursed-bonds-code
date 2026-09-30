@@ -50,6 +50,16 @@ init 999 python:
     def zz_counting_retain():
         ZZ_RETAIN[0] += 1
 
+    ## Counts give_item calls (sync_keepsakes looks give_item up in the store,
+    ## so swapping store.give_item catches every grant it makes).
+    ZZ_GIVES = builtins.list()
+
+    def zz_counting_give(orig):
+        def wrapped(id, n=1, quiet=False):
+            ZZ_GIVES.append(id)
+            return orig(id, n, quiet)
+        return wrapped
+
     ## The 3.8 table: id -> (kind, grade).
     ZZ_TABLE = {
         "photo": ("keepsake", None), "hachimaki": ("keepsake", None), "watch": ("keepsake", None),
@@ -140,12 +150,21 @@ label zz_smoke:
         flag("took_watch")
         flag("kurose_leak")
         del ZZ_TOASTS[:]
-        sync_keepsakes()
-        sync_keepsakes()
-        sync_keepsakes()
-        check(item_count("watch") == 1 and item_count("kurose_photocopy") == 1,
+        del ZZ_GIVES[:]
+        _orig_give = store.give_item
+        store.give_item = zz_counting_give(_orig_give)
+        try:
+            sync_keepsakes()
+            sync_keepsakes()
+            sync_keepsakes()
+        finally:
+            store.give_item = _orig_give
+        check(item_count("watch") == 1 and item_count("kurose_photocopy") == 1
+              and sorted(ZZ_GIVES) == ["kurose_photocopy", "watch"]
+              and [t[1] for t in ZZ_TOASTS] == ["item", "item"]
+              and items_granted == {"flag:took_watch", "flag:kurose_leak"},
               "ACC flags took_watch and kurose_leak grant watch and kurose_photocopy exactly once across three syncs",
-              dict(inventory))
+              (dict(inventory), ZZ_GIVES, ZZ_TOASTS, items_granted))
         check(items_granted == {"flag:took_watch", "flag:kurose_leak"}, "grants are keyed flag:<f>", items_granted)
         check([t[1] for t in ZZ_TOASTS] == ["item", "item"], "one item toast per grant", ZZ_TOASTS)
         check(set(inventory) == {"watch", "kurose_photocopy"}, "nothing else is granted", dict(inventory))
@@ -204,6 +223,34 @@ label zz_smoke:
         check(yen == 12000, "add_yen adds", yen)
         _s = pickle.dumps((inventory, items_granted, yen, equipped_tool, equipped_talismans, bound_specials))
         check(bool(_s), "the item state pickles")
+
+        ## take_item's edges: nothing to take, a take-all of nothing, a negative n.
+        zz_reset()
+        give_item("sealing_talisman", 2, quiet=True)
+        _inv = dict(inventory)
+        try:
+            _r = (take_item("photo", 0), take_item("first_aid", item_count("first_aid")))
+            _err = None
+        except Exception as _e:
+            _r, _err = None, repr(_e)
+        check(_err is None and _r == (True, True) and dict(inventory) == _inv,
+              "take_item of zero (and a take-all of an unowned item) takes nothing and doesn't raise", (_r, _err))
+        check(take_item("sealing_talisman", -2) is False and dict(inventory) == _inv,
+              "take_item with a negative n is refused and adds nothing", dict(inventory))
+        check(take_item("sealing_talisman", 3) is False and item_count("sealing_talisman") == 2,
+              "take_item of more than I have takes nothing")
+        check(take_item("sealing_talisman", 2) is True and "sealing_talisman" not in inventory,
+              "taking the whole stack removes the entry")
+
+        ## An id that isn't in ITEMS: counted, as WP0's contract check requires,
+        ## but never toasted; the catalogue readers skip it.
+        _bogus = "zz_" + "bogus"      # built, so the validator's script scan doesn't see it
+        del ZZ_TOASTS[:]
+        check(give_item(_bogus) == 1 and item_count(_bogus) == 1 and ZZ_TOASTS == [],
+              "give_item on an unknown id: counted (WP0 contract), no toast", (dict(inventory), ZZ_TOASTS))
+        check(all(_bogus not in items_in(k) for k in ITEM_KINDS) and _bogus not in all_item_ids(True),
+              "an unknown id never shows in items_in or all_item_ids")
+        take_item(_bogus)
 
     ## --- ACC 2: Grade 4 ------------------------------------------------------------------
     python:
@@ -342,13 +389,61 @@ label zz_smoke:
     call sb_do_armory
     hide screen zz_armory_driver
     python:
-        check(has_item("nunchaku") and not has_item("slaughter_demon") and equipped_tool is None,
-              "armory at g3: take nunchaku, return the Slaughter Demon (hand empties)",
+        check(has_item("nunchaku") and not has_item("slaughter_demon") and equipped_tool == "nunchaku",
+              "armory at g3: Take puts the Nunchaku in my hand; returning the Slaughter Demon leaves it there",
               (dict(inventory), equipped_tool))
         check(dict((i, s) for i, s, r in armory_tools()).get("slaughter_demon") == "take",
               "a returned tool is back on the rack")
         check(armory_return("playful_cloud") is False and has_item("playful_cloud"), "a story tool can't be returned")
         check((day, period) == (_day, _per), "the armory costs no time", (day, period))
+
+        ## Returning the tool in my hand hands me the next one I own, in rack order.
+        zz_reset(grade="g3")
+        give_item("playful_cloud", quiet=True)
+        give_item("nunchaku", quiet=True)
+        give_item("slaughter_demon", quiet=True)
+        equip_tool("slaughter_demon")
+        del ZZ_TOASTS[:]
+        armory_return("slaughter_demon")
+        check(equipped_tool == "nunchaku", "returning the tool in hand: the next owned tool (rack order) takes its place",
+              equipped_tool)
+        check(ZZ_TOASTS[-1:] and "Nunchaku in my hand" in ZZ_TOASTS[-1][0], "the return toast says what is in my hand now",
+              ZZ_TOASTS)
+        armory_return("nunchaku")
+        check(equipped_tool == "playful_cloud", "then a story tool, if that is all I own", equipped_tool)
+        give_item("nunchaku", quiet=True)
+        armory_return("nunchaku")
+        check(equipped_tool == "playful_cloud", "returning a tool that wasn't in hand leaves the hand alone", equipped_tool)
+        zz_reset(grade="g4")
+        give_item("slaughter_demon", quiet=True)
+        armory_return("slaughter_demon")
+        check(equipped_tool is None, "returning my only tool leaves bare hands", equipped_tool)
+
+        ## Taking from the rack is choosing to carry it, even with a tool in hand.
+        zz_reset(grade="g4")
+        give_item("playful_cloud", quiet=True)
+        del ZZ_TOASTS[:]
+        check(armory_take("slaughter_demon") and equipped_tool == "slaughter_demon" and has_item("playful_cloud"),
+              "armory_take puts the tool in hand; the one it replaces stays in the inventory", (equipped_tool, dict(inventory)))
+        check(ZZ_TOASTS == [("Slaughter Demon — in my hand", "item", None, 1)], "one toast for a take, saying where it went",
+              ZZ_TOASTS)
+        check(give_item("nunchaku", quiet=True) == 1 and equipped_tool == "slaughter_demon",
+              "a story grant (give_item) still never replaces the tool in hand")
+
+        ## An owned sealed tool (review tools can grant one) still reads Sealed — Arc Two.
+        zz_reset(grade="g4")
+        for _i in all_item_ids(include_hidden=True):
+            give_item(_i, quiet=True)
+        check(armory_state("inverted_spear") == ("arcii", "Sealed — Arc Two"),
+              "an owned Inverted Spear still reads Sealed — Arc Two", armory_state("inverted_spear"))
+        check(not armory_take("inverted_spear"), "the Arc Two spear can't be taken, even when owned")
+        flag("armory_open")
+        here = "storehouse"
+        ZZ_ARMORY_Q[:] = [("armory_all_owned", ("close",))]
+    show screen zz_armory_driver
+    call sb_do_armory
+    hide screen zz_armory_driver
+    python:
         flags.discard("armory_open")
     call sb_do_armory
     $ check(True, "sb_do_armory returns at once when the armory isn't open")

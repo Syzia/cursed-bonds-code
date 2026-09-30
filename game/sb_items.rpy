@@ -179,7 +179,9 @@ init -1 python:
     ]
     _ARMORY_KIND = dict(ARMORY_RACK)
 
-    ## What Utahime's board can drop (3.7), checked by the validator.
+    ## What Utahime's board can drop (3.7), checked by the validator. WP4 draws
+    ## its drops from this tuple (the hand-off asks it to), so the check covers
+    ## the real drops; give_item also refuses any id that isn't in ITEMS.
     BOARD_DROP_ITEMS = ("sealing_talisman", "paper_ward", "steady_hand", "deep_well", "iron_seal")
 
     ## Lookups ----------------------------------------------------------------------
@@ -203,12 +205,19 @@ init -1 python:
     def give_item(id, n=1, quiet=False):
         """WP6. Add n of an item, with a toast (kind item) unless quiet. An item
         that doesn't stack stays at one. A cursed tool goes straight into an
-        empty hand. Returns how many were added."""
+        empty hand. An id that isn't in ITEMS is still counted (WP0's contract
+        check gives one), but never toasted, and in developer mode it is logged:
+        readers of the inventory use ITEMS.get(id). Returns how many were added."""
         if n <= 0:
             return 0
         it = ITEMS.get(id)
         have = store.inventory.get(id, 0)
-        if it is not None and not it["stack"]:
+        if it is None:
+            if config.developer:
+                print("WP6 give_item: %r is not in ITEMS" % (id,))
+            store.inventory[id] = have + n
+            return n
+        if not it["stack"]:
             n = min(n, 1 - have)
             if n <= 0:
                 return 0
@@ -216,18 +225,21 @@ init -1 python:
         if not quiet:
             text = item_name(id) if n == 1 else "%s ×%d" % (item_name(id), n)
             toast(text, "item", None, n)
-        if it is not None and it["kind"] == "tool" and store.equipped_tool is None and can_hold(id)[0]:
+        if it["kind"] == "tool" and store.equipped_tool is None and can_hold(id)[0]:
             equip_tool(id)
         return n
 
     def take_item(id, n=1):
         """WP6. Remove n of an item. False (and nothing removed) if there aren't
-        enough. Taking the last one also takes it out of my hand or slot."""
+        enough. Taking the last one also takes it out of my hand or slot.
+        n == 0 removes nothing and is True; a negative n is refused (False)."""
+        if n <= 0:
+            return n == 0
         have = store.inventory.get(id, 0)
         if have < n:
             return False
         if have == n:
-            del store.inventory[id]
+            store.inventory.pop(id, None)
             if store.equipped_tool == id:
                 equip_tool(None)
             if id in store.equipped_talismans:
@@ -358,16 +370,17 @@ init -1 python:
     def armory_tools():
         """WP6. [(id, state, reason)] for every tool on the racks, in rack order.
         state: take | owned | sealed ("Sealed until Grade 3") | story ("Story
-        reward") | arcii ("Sealed — Arc Two"). An owned tool is "owned" whatever
-        else is true of it; its reason says whether it is in my hand."""
+        reward") | arcii ("Sealed — Arc Two"). A tool sealed until Arc Two reads
+        arcii even if I own it (review tools can grant it); any other owned
+        tool is "owned", and its reason says whether it is in my hand."""
         out = []
         mine = _my_rank()
         for id, rack in ARMORY_RACK:
             it = ITEMS[id]
-            if has_item(id):
-                out.append((id, "owned", "In my hand" if store.equipped_tool == id else "Owned"))
-            elif it["sealed"]:
+            if it["sealed"]:
                 out.append((id, "arcii", "Sealed — " + it["sealed"]))
+            elif has_item(id):
+                out.append((id, "owned", "In my hand" if store.equipped_tool == id else "Owned"))
             elif rack == "story":
                 out.append((id, "story", "Story reward"))
             elif grade_rank(it["grade"]) > mine:
@@ -384,19 +397,38 @@ init -1 python:
         return (None, "")
 
     def armory_take(id):
-        """WP6. Take a released tool off the rack (it goes into an empty hand).
-        True if taken."""
+        """WP6. Take a released tool off the rack and into my hand: choosing it
+        from the rack is choosing to carry it (the tool it replaces stays in my
+        inventory). True if taken."""
         if armory_state(id)[0] != "take":
             return False
-        return give_item(id) > 0
+        if give_item(id, quiet=True) <= 0:
+            return False
+        equip_tool(id)
+        toast("%s — in my hand" % item_name(id), "item", None, 1)
+        return True
 
     def armory_return(id):
         """WP6. Hang an armory tool back on its rack. Story tools stay mine.
-        True if returned."""
+        If it was in my hand, the next tool I own (in rack order) takes its
+        place, so my hand is only empty when I own no other tool. True if
+        returned."""
         if _ARMORY_KIND.get(id) != "armory" or not has_item(id):
             return False
+        was_held = store.equipped_tool == id
         take_item(id, item_count(id))
-        toast("%s — back on the rack" % item_name(id), "item")
+        nxt = None
+        if was_held:
+            for other, rack in ARMORY_RACK:
+                if other != id and can_hold(other)[0]:
+                    nxt = other
+                    break
+            if nxt:
+                equip_tool(nxt)
+        if nxt:
+            toast("%s — back on the rack; %s in my hand" % (item_name(id), item_name(nxt)), "item")
+        else:
+            toast("%s — back on the rack" % item_name(id), "item")
         return True
 
     ## Registration -----------------------------------------------------------------
@@ -492,13 +524,12 @@ label sb_do_armory:
         return
     while True:
         call screen armory
-        $ _armory_r = _return
-        if not isinstance(_armory_r, tuple) or not _armory_r or _armory_r[0] == "close":
+        if not isinstance(_return, tuple) or not _return or _return[0] == "close":
             return
-        elif _armory_r[0] == "take":
-            $ armory_take(_armory_r[1])
-        elif _armory_r[0] == "return":
-            $ armory_return(_armory_r[1])
+        elif _return[0] == "take":
+            $ armory_take(_return[1])
+        elif _return[0] == "return":
+            $ armory_return(_return[1])
     return
 
 
