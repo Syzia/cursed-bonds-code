@@ -4,7 +4,9 @@
 ##
 ##   SMOKE_SHOTS=shots/wp3 tools/smoke.sh tools/smoke/wp3_missions.rpy
 ##
-## 1. An old-save fixture, migrated twice (m_utahime current, merit 60, arc 1).
+## 1. The spec's old-save fixture, migrated twice (m_utahime current, merit
+##    60, arc 1), then played on (Utahime, then Kurose), plus smaller fixtures:
+##    stranded "active" missions, map markers, the board marker's shapes.
 ## 2. A fresh post-prologue game driven day by day through the whole written
 ##    story: every period, the story event that fires (played under autoplay),
 ##    then any start-type mission whose giver is present (start_mission).
@@ -197,7 +199,7 @@ init 999 python:
         ## m_sunmall is offered in the office only while Yaga is there.
         if st("m_sunmall") == "available" and "sunmall_here" not in ZZ_FLAGS:
             ZZ_FLAGS["sunmall_here"] = True
-            p0, ok, seen = store.period, True, set()
+            p0, ok, seen, mk_bad = store.period, True, set(), []
             for p in PERIODS:
                 store.period = p
                 yaga_in = "yaga" in who_is_here("office")
@@ -205,9 +207,14 @@ init 999 python:
                 seen.add(yaga_in)
                 if yaga_in != shown:
                     ok = False
+                mk = mission_markers()
+                where = [l for l, rows in mk.items() for t, k in rows if t == "Yaga · The Sun Mall"]
+                if where != (["office"] if yaga_in else []):
+                    mk_bad.append((p, yaga_in, where))
             store.period = p0
             check(ok and seen == {True, False},
                   "m_sunmall shows in missions_here(\"office\") only while Yaga is there", seen)
+            check(not mk_bad, "the Sun Mall marker is on the office only while Yaga is there", mk_bad)
             mk = mission_markers()
             check(any(t == "Yaga · The Sun Mall" for t, k in mk.get("office", [])),
                   "mission_markers: \"Yaga · The Sun Mall\" at the office", mk)
@@ -302,17 +309,21 @@ label zz_smoke:
               "character missions are labelled cm_<who>_<n>")
         check(all(renpy.has_label(l) for l in ("cm_ijichi_1", "cm_maki_1", "st_utahime_office", "st_promotion_g3")),
               "the four new scenes exist")
+        _l2 = missions_list(kind=("story", "promotion"), act="II")
+        check("m_promo_g3" in _l2 and len(_l2) == act_progress("II")[2]
+              and "m_promo_g3" not in missions_list(kind="story", act="II"),
+              "missions_list takes a tuple of kinds: act II's story chain includes the promotion", _l2)
 
     ## --- 1. an old save ---------------------------------------------------------------------
+    ## The acceptance fixture exactly (plus settled_in, which every save past
+    ## the prologue has): done_events, flag sunmall_done, grade g3, arc 2.
     python:
         zz_reset()
         done_events = {"st_roll_call", "st_board_open", "st_second_years", "ev_mission_sunmall", "st_aftermath"}
-        flags = {"settled_in", "roll_call", "storehouse_access", "mission_board_open", "met_second_years",
-                 "sunmall_done", "arc1_complete"}
+        flags = {"settled_in", "sunmall_done"}
         grade = "g3"
         setattr(store, "arc", 2)
-        day = 12
-        roster = ["yuji", "megumi", "nobara", "shoko", "gojo", "yaga", "maki", "panda", "toge"]
+        day = 14
         _up = run_migrations()
         check(_up, "old save: migrations upgrade it")
         _o = current_objective()
@@ -322,14 +333,38 @@ label zz_smoke:
         check(merit == 60, "old save: merit backfilled to 5 + 30 + 5 + 20 = 60", merit)
         check(arc == 1, "old save: arc 2 -> 1", arc)
         check("ijichi" in roster, "migration 40: Ijichi on the roster", roster)
-        check(has_flag("night_before_done"), "migration 40: arc1_complete -> night_before_done")
+        check(all(has_flag(f) for f in ("roll_call", "storehouse_access", "met_second_years")),
+              "migration 40: finished scenes' flags are backfilled", sorted(flags))
+        check(not has_flag("kurose_met") and not has_flag("intensive_done"),
+              "migration 40: no flag for a scene not played", sorted(flags))
         check(all(mission_done_day.get(m) == 0 for m in ("m_roll_call", "m_sunmall", "m_aftermath", "m_second_years")),
               "migration 65: done rows get day 0", mission_done_day)
-        _snap = (merit, set(merit_granted), dict(mission_done_day), arc, list(roster))
+        _snap = (merit, set(merit_granted), dict(mission_done_day), arc, list(roster), set(flags))
         run_migrations()
         run_migrations(block=False)
-        check((merit, set(merit_granted), dict(mission_done_day), arc, list(roster)) == _snap,
+        check((merit, set(merit_granted), dict(mission_done_day), arc, list(roster), set(flags)) == _snap,
               "old save: a second migration run adds nothing", (merit, _snap[0]))
+        ## Play on: Utahime's scene fires first, then Kurose the same afternoon.
+        period = "Morning"
+        _zz_e = pick_event("story")
+        check(_zz_e and _zz_e["label"] == "st_utahime_office", "old save: Utahime's scene fires first",
+              _zz_e and _zz_e["label"])
+    if _zz_e:
+        $ autoplay()
+        call play_event(_zz_e)
+        $ autoplay(False)
+    python:
+        check(mission_status("m_utahime") == "done", "old save: Utahime's step is done after her scene")
+        check(mission_status("m_kurose") == "available", "old save: m_kurose is next", mission_reason("m_kurose"))
+        period = "Afternoon"
+        _zz_e = pick_event("story")
+        check(_zz_e and _zz_e["label"] == "st_kurose", "old save: st_kurose fires that afternoon (the chain continues)",
+              _zz_e and _zz_e["label"])
+        ## The old arc ending counts as the night before.
+        zz_reset()
+        flags = {"settled_in", "arc1_complete"}
+        run_migrations()
+        check(has_flag("night_before_done"), "migration 40: arc1_complete -> night_before_done")
         ## A save the new ch5 already paid (recommended_g3) gets no second 20.
         zz_reset()
         flags = {"settled_in", "sunmall_done", "recommended_g3"}
@@ -348,6 +383,75 @@ label zz_smoke:
         setattr(store, "arc", 2)
         run_migrations()
         check(arc == 2, "migration 50 keeps a begun Arc Two", arc)
+
+    ## --- 1b. stranded "active" missions and the map markers -----------------------------------
+    ## A save recovered from inside a start mission's scene leaves it "active":
+    ## it must be offered again, and start_mission must finish it.
+    python:
+        zz_reset()
+        flags = {"settled_in", "roll_call", "utahime_arrived"}
+        done_events = {"st_roll_call", "st_utahime_office"}
+        roster = roster + ["utahime"]
+        run_migrations()
+        mission_state = {"cm_ijichi_1": "active"}
+        _zz_at = None
+        for _d in range(1, 8):
+            for _p in PERIODS:
+                day, period = _d, _p
+                if "ijichi" in who_is_here("gate") and _p in MISSION_BY_ID["cm_ijichi_1"]["periods"]:
+                    _zz_at = (_d, _p)
+                    break
+            if _zz_at:
+                break
+        check(_zz_at is not None, "fixture: Ijichi is at the gate some weekday morning", _zz_at)
+        day, period = _zz_at or (2, "Morning")
+        check(mission_status("cm_ijichi_1") == "active", "stranded: status stays active", mission_status("cm_ijichi_1"))
+        check("cm_ijichi_1" in missions_here("gate") and "cm_ijichi_1" in missions_with("ijichi"),
+              "stranded: an active Ride-Along is offered at the gate again", missions_here("gate"))
+        check(any(t == "Ijichi · Ride-Along" for t, k in mission_markers().get("gate", [])),
+              "stranded: its marker is on the gate", mission_markers())
+        ## The board marker takes a list of offers or a count (WP4's shape isn't frozen).
+        flags.add("mission_board_open")
+        _zz_bs = board_summary
+        _zz_host, _zz_hloc = board_host()
+        _zz_bm = []
+        for _v in ({"offers": 3}, {"offers": ["a", "b"]}, {"offers": 0}, {"offers": []}, {}):
+            board_summary = lambda _v=_v: _v
+            _zz_bm.append([t for t, k in mission_markers().get(_zz_hloc, []) if k == "board"])
+        board_summary = _zz_bs
+        check(_zz_bm == [["Board · 3 jobs"], ["Board · 2 jobs"], [], [], []],
+              "the board marker counts a list or an int of offers", _zz_bm)
+        here = "gate"
+    $ autoplay()
+    call start_mission("cm_ijichi_1")
+    $ autoplay(False)
+    python:
+        check(mission_status("cm_ijichi_1") == "done" and has_flag("ijichi_rides") and "cm_ijichi_1" not in mission_state,
+              "stranded: start_mission finishes the active Ride-Along", (mission_status("cm_ijichi_1"), mission_state))
+        ## A stranded promotion: the chain before it is done, Maki is in.
+        zz_reset()
+        flags = {"settled_in", "met_second_years"}
+        roster = roster + ["maki", "panda", "toge"]
+        missions_done = set(m["id"] for m in STORY_ROWS if m["order"] < 270 and m["id"] != "m_prologue")
+        merit = 60
+        run_migrations()
+        mission_state = {"m_promo_g3": "active"}
+        _zz_ok = []
+        for _d in range(1, 8):
+            for _p in PERIODS:
+                day, period = _d, _p
+                _loc = char_location("maki")
+                if _loc in ("training", "dojo"):
+                    _zz_ok.append(("m_promo_g3" in missions_here(_loc),
+                                   any(t == "Maki · Promotion: Grade 3" for t, k in mission_markers().get(_loc, []))))
+                else:
+                    _zz_ok.append((True, not any(t == "Maki · Promotion: Grade 3"
+                                                 for rows in mission_markers().values() for t, k in rows)))
+        check(_zz_ok and all(a and b for a, b in _zz_ok) and mission_status("m_promo_g3") == "active",
+              "stranded: an active promotion is offered (and marked) wherever Maki gives it, and only there", _zz_ok)
+        check(current_objective()["mid"] == "m_promo_g3", "stranded: the objective still points at the promotion")
+        mission_state = {}
+        mission_cache_clear()
 
     ## --- 2. a fresh game, day by day ----------------------------------------------------------
     python:

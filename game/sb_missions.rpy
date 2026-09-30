@@ -39,8 +39,8 @@ init -1 python:
     ## role only for those without a CAST entry; met is ("roster",),
     ## ("flag", name) or ("always",); hint is the line an unmet card shows.
     JOURNAL_CAST = [
-        dict(who="yuji",    met=("roster",), hint="A first-year. You'll hear him before you see him."),
-        dict(who="megumi",  met=("roster",), hint="A first-year. Four words when one would do."),
+        dict(who="yuji",    met=("roster",), hint="A first-year. I'll hear him before I see him."),
+        dict(who="megumi",  met=("roster",), hint="A first-year. One word when four would do."),
         dict(who="nobara",  met=("roster",), hint="A first-year from the countryside. Proud of it."),
         dict(who="maki",    met=("roster",), hint="A second-year. She trains at dawn."),
         dict(who="panda",   met=("roster",), hint="A second-year. Yes, really."),
@@ -141,7 +141,7 @@ init -1 python:
             done_if=("event:st_aftermath", "flag:aftermath_done"), rewards=dict(merit=5))
     mission("m_kurose", "story", "I", 150, "The Cover Story",
             "A man from auxiliary management explains what the world was told about Sana.",
-            "A man from auxiliary management is waiting outside Yaga's office",
+            "A man from auxiliary management wants a word",
             label="st_kurose", periods=("Afternoon", "Evening"), gate=dict(gap_days=0),
             done_if=("event:st_kurose", "flag:kurose_met"))
     mission("m_detention", "story", "I", 160, "The Detention Center",
@@ -159,7 +159,7 @@ init -1 python:
             label="st_second_years", periods=("Afternoon",), gate=dict(gap_days=1),
             done_if=("event:st_second_years", "flag:met_second_years"))
     mission("m_noise", "story", "II", 220, "The Courtyard Curse",
-            "Something on campus, after dark.", "Stay on campus into the evening",
+            "Something on campus, after dark.", "Something is wrong on campus after dark",
             label="st_noise", periods=("Evening",), gate=dict(gap_days=1),
             done_if=("event:st_noise",), rewards=dict(merit=10))
     mission("m_oda_letter", "story", "II", 230, "A Letter from Home",
@@ -571,8 +571,9 @@ init -1 python:
 
     ## Words ---------------------------------------------------------------------
 
-    _MS_PER_PLURAL = {"Morning": "mornings", "Noon": "noon", "Afternoon": "afternoons",
+    _MS_PER_PLURAL = {"Morning": "mornings", "Noon": "middays", "Afternoon": "afternoons",
                       "Evening": "evenings", "Night": "nights"}
+    _MS_PER_ONE = {"Noon": "at noon", "Night": "at night"}
     _MS_PER_TOMORROW = {"Morning": "tomorrow morning", "Noon": "tomorrow at noon",
                         "Afternoon": "tomorrow afternoon", "Evening": "tomorrow evening",
                         "Night": "tomorrow night"}
@@ -583,12 +584,13 @@ init -1 python:
         return ", ".join(words[:-1]) + " and " + words[-1]
 
     def periods_text(pers):
-        """WP3. "mornings", "mornings to afternoons", "afternoons or evenings"."""
+        """WP3. "mornings", "mornings to afternoons", "afternoons or evenings",
+        "at noon", "at night", "mornings, middays and evenings"."""
         pers = [p for p in PERIODS if p in (pers or ())]
         if not pers or len(pers) == len(PERIODS):
             return "any time"
         if len(pers) == 1:
-            return "at night" if pers[0] == "Night" else _MS_PER_PLURAL[pers[0]]
+            return _MS_PER_ONE.get(pers[0]) or _MS_PER_PLURAL[pers[0]]
         idx = [PERIODS.index(p) for p in pers]
         if len(pers) >= 3 and idx == list(range(idx[0], idx[-1] + 1)):
             return "%s to %s" % (_MS_PER_PLURAL[pers[0]], _MS_PER_PLURAL[pers[-1]])
@@ -647,13 +649,16 @@ init -1 python:
 
     def missions_list(kind=None, status=None, act=None, who=None):
         """WP3. The ids of the missions matching every filter given, in order.
-        status may be one status or a tuple of them; who matches the
-        mission's who or with_who."""
+        kind and status may each be one value or a tuple of them (the story
+        chain is kind=("story", "promotion")); who matches the mission's who
+        or with_who."""
+        if isinstance(kind, str):
+            kind = (kind,)
         if isinstance(status, str):
             status = (status,)
         out = []
         for m in MISSIONS:
-            if kind and m["kind"] != kind:
+            if kind and m["kind"] not in kind:
                 continue
             if act and m["act"] != act:
                 continue
@@ -665,9 +670,11 @@ init -1 python:
         return out
 
     def _ms_startable(m, loc=None):
-        """Start-type, available, its period fits and (with loc) its giver is
-        at loc, which is a place it can be given."""
-        if m["trigger"] != "start" or mission_status(m["id"]) != "available":
+        """Start-type, available (or left "active" by a scene that never
+        returned: a save recovered mid-mission, so it can be started again),
+        its period fits and (with loc) its giver is at loc, which is a place it
+        can be given."""
+        if m["trigger"] != "start" or mission_status(m["id"]) not in ("available", "active"):
             return False
         if not _ms_period_ok(m):
             return False
@@ -683,8 +690,8 @@ init -1 python:
 
     def missions_here(loc):
         """WP3. Ids of the start-type missions that can be started at loc now:
-        available, `where` matches, the giver is present and the period fits.
-        Never in explore mode."""
+        available (or a stranded "active"), `where` matches, the giver is
+        present and the period fits. Never in explore mode."""
         if store.explore_mode:
             return []
         return [m["id"] for m in MISSIONS if _ms_startable(m, loc)]
@@ -700,23 +707,26 @@ init -1 python:
 
     def mission_markers():
         """WP3. {loc: [(text, kind)]} for the map: "Yaga · The Sun Mall"
-        (kind "mission") at the giver's place, "Board · 3 jobs" (kind "board")
-        at the board's host, "Gojo is in" (kind "gojo") at his office."""
+        (kind "mission") at the giver's place, only while the giver is there
+        and it can be started now; "Board · 3 jobs" (kind "board") at the
+        board's host; "Gojo is in" (kind "gojo") at his office."""
         out = {}
         if store.explore_mode:
             return out
         for m in MISSIONS:
-            if m["trigger"] != "start" or mission_status(m["id"]) != "available":
-                continue
-            loc = _ms_place(m)
-            if loc:
+            giver = _ms_giver(m)
+            loc = char_location(giver) if giver in store.roster else None
+            if loc and _ms_startable(m, loc):
                 out.setdefault(loc, []).append(
-                    ("%s · %s" % (_ms_short(_ms_giver(m)), m["title"]), "mission"))
+                    ("%s · %s" % (_ms_short(giver), m["title"]), "mission"))
         host, hloc = board_host()
         if has_flag("mission_board_open") and host in store.roster:
-            offers = (board_summary() or {}).get("offers") or []
-            if offers:
-                out.setdefault(hloc, []).append(("Board · %d jobs" % len(offers), "board"))
+            ## board_summary()'s shape isn't frozen (WP4): take a list of
+            ## offers or a count.
+            offers = (board_summary() or {}).get("offers")
+            n = offers if isinstance(offers, int) else len(offers or ())
+            if n > 0:
+                out.setdefault(hloc, []).append(("Board · %d jobs" % n, "board"))
         if gojo_in_today():
             out.setdefault("gojo_office", []).append(("Gojo is in", "gojo"))
         return out
@@ -730,7 +740,7 @@ init -1 python:
         usual = usual_places(who) or _ms_place_name(char_location(who))
         for m in MISSIONS:
             if _ms_giver(m) == who and m["trigger"] == "start" \
-                    and mission_status(m["id"]) == "available":
+                    and mission_status(m["id"]) in ("available", "active"):
                 loc = _ms_place(m)
                 when = _ms_when(who, loc)
                 where = _ms_place_name(loc) + ((", " + when) if when else "")
@@ -917,15 +927,16 @@ init -1 python:
     ## Hooks (3.6) --------------------------------------------------------------------
 
     def _ms_event_gate(e):
-        """An event bound to a mission fires only while it is available; a
-        retired one never; after Arc Two begins, an arc-1 hangout whose thread
-        is unfinished stops."""
+        """An event bound to a mission fires only while it is available (or
+        "active": start_mission is playing it, or a recovered save left it
+        so); a retired one never; after Arc Two begins, an arc-1 hangout
+        whose thread is unfinished stops."""
         lab = e["label"]
         if lab in RETIRED_LABELS:
             return False
         m = MISSION_BY_LABEL.get(lab)
         if m is not None:
-            return mission_status(m["id"]) == "available"
+            return mission_status(m["id"]) in ("available", "active")
         if (e["kind"] == "hangout" and e.get("thread") and e.get("arc", 1) == 1
                 and has_flag("arc2_started") and not thread_done(e["thread"][0])):
             return False
@@ -941,15 +952,33 @@ init -1 python:
 
     ## Migrations (3.12) -------------------------------------------------------------
 
+    ## A story scene marked done (done_events) whose flags later ev()s or
+    ## gates need: a save that has the event but not the flag (one that left
+    ## the scene through a recovery) gets the flag, or the next step would be
+    ## "available" and never fire. Missions (the Sun Mall, Nade) are left
+    ## alone: a save from inside one really hasn't finished it.
+    _MS_BACKFILL = (
+        ("st_roll_call", ("roll_call", "storehouse_access")),
+        ("st_kurose", ("kurose_met",)),
+        ("st_second_years", ("met_second_years",)),
+        ("st_intensive", ("intensive_done",)),
+    )
+
     def _migrate_40():
         """WP3, migration 40: Ijichi and Utahime on the roster; the old arc
-        ending counts as the night before."""
+        ending counts as the night before; finished story scenes get the flags
+        the next steps require (_MS_BACKFILL)."""
         if has_flag("settled_in") and "ijichi" not in store.roster:
             recruit("ijichi")
         if has_flag("utahime_arrived") and "utahime" not in store.roster:
             recruit("utahime")
         if has_flag("arc1_complete"):
             flag("night_before_done")
+        for lab, fl in _MS_BACKFILL:
+            if lab in store.done_events:
+                for f in fl:
+                    if not has_flag(f):
+                        flag(f)
         mission_cache_clear()
 
     def _migrate_50():
@@ -1089,6 +1118,9 @@ label start_mission(mid):
     $ mission_state[mid] = "active"
     $ mission_cache_clear()
     $ _sm_event = _ms_event(MISSION_BY_ID[mid])
+    ## SAVE-PROTECTED: saves made inside a mission scene return to the two
+    ## calls below and the `if` after the second. Keep these three statements
+    ## textually identical (a comment doesn't change statement names).
     if _sm_event:
         call play_event(_sm_event)
     else:
@@ -1136,3 +1168,4 @@ default missions_done = set()
 default mission_done_day = {}     # id -> day
 default mission_retry_day = {}    # id -> first day it can be tried again
 default last_objective = None     # the objective text last shown (WP7)
+default _sm_event = None          # the EVENTS entry start_mission is playing

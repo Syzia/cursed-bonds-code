@@ -193,11 +193,11 @@ init -1 python:
             "If you're here for a job, the board is on the wall. If you're here to chat, I'm working.",
             "Take someone with you. Every time. I don't care what the file says.",
             "If Gojo sent you, the answer is no. If he didn't, sit up straight.",
-            "Tokyo files its jobs as if it's paying by the grade. Read the whole report before you go.",
+            "Read the whole report before you go. Tokyo's files have a habit of being one grade kind.",
         ],
         "ijichi": [
             "Ah — good morning. Or afternoon. Sorry, I've been in the car since five.",
-            "If you need a ride anywhere, please ask. Please ask early. Please.",
+            "If Gojo-san asks where I am, you haven't seen me. Please. You haven't.",
             "Gojo-san asked me to buy forty mochi. I'm told it's for a meeting.",
             "I have three reports due, and one of them is about the other two.",
         ],
@@ -205,11 +205,14 @@ init -1 python:
 
     ## What a student says the first time you talk after they're promoted
     ## (D12), in place of small talk. %(grade)s is their new grade.
+    ## maki and toge can't be promoted with today's NPC_BASE caps (Maki is
+    ## held at Grade 4, Toge is already semi-grade 1): their lines are
+    ## unreachable for now and kept so every student has one.
     PROMO_LINES = {
         "yuji":   "Guess who's %(grade)s now! Me! I don't really know what it means, but Megumi said \"fine\", and I think that's his version of a party.",
         "megumi": "%(grade)s. It's paperwork. It means they send me further away, that's all.",
         "nobara": "%(grade)s. Don't make a face, you'll catch up. Probably.",
-        "maki":   "They moved my grade. Took them long enough. Doesn't change what time I'm in the dojo.",
+        "maki":   "%(grade)s. Somebody in Kyoto is going to choke on that. Good.",
         "panda":  "%(grade)s! Yaga says he isn't proud. He said it twice, which means he is.",
         "toge":   "Salmon! ...Tuna mayo.",
     }

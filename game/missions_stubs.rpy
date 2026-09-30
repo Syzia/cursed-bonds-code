@@ -30,9 +30,7 @@ label st_utahime_office:
 
     scene bg utahime_office with fade_slow
 
-    "There is a new nameplate beside Yaga's door, the ink on it barely dry. {i}Iori.{/i}"
-
-    "The door is open. Inside, a woman in a white and red hakama is pinning job sheets to a board in rows so straight they look ruled."
+    "The nameplate by the door is new, the ink on it barely dry. {i}Iori.{/i} Inside, a woman in a white and red hakama is pinning job sheets to a board in rows so straight they look ruled."
 
     show utahime serious at pos_c
     with dissolve
@@ -49,7 +47,7 @@ label st_utahime_office:
 
     utahime "There are three rules. I'll say them once."
 
-    utahime "One. You take jobs at your own grade."
+    utahime "One. You take jobs at your grade or under it."
 
     utahime "Two. One grade up, only with a senior partner beside you."
 
@@ -121,6 +119,8 @@ label st_promotion_g3:
 
         maki serious "Grade 3. It means they send you somewhere worse. Congratulations."
 
+        maki "That's one more than me, if you're counting. Don't count."
+
     else:
 
         scene bg training with fade_hard
@@ -129,7 +129,10 @@ label st_promotion_g3:
 
         maki "Again. Tomorrow."
 
-        maki "Eat something first. You fought like you were hungry."
+        if _return == "fled":
+            maki "Walking out is allowed. Once."
+        else:
+            maki "Eat something first. You fought like you were hungry."
 
         $ mission_fail("m_promo_g3")
 
@@ -166,7 +169,7 @@ label cm_ijichi_1:
     show ijichi serious at pos_c
     with dissolve
 
-    "The third is a street corner in Nerima, where an assessment team is going in after dark and needs the block kept clear."
+    "The third is a street corner in Nerima, where an assessment team is about to go in and needs the block kept clear."
 
     ijichi "Please stand behind me. It isn't dangerous. It's just rude to stand in front."
 
@@ -174,7 +177,7 @@ label cm_ijichi_1:
 
     "Nobody on the street notices. That is the point of it, he tells me: people walk around the corner without ever deciding to."
 
-    mcthink "Somebody raises one of these every time a sorcerer goes to work. I had never once thought about who."
+    mcthink "Somebody raises one of these every time a sorcerer goes to work. I've never once thought about who."
 
     scene bg car with fade_hard
     show ijichi neutral at pos_c
@@ -202,13 +205,13 @@ label cm_maki_1:
     show maki serious at pos_c
     with dissolve
 
-    "Maki walks me to the storehouse without saying why, takes a key off a nail I never noticed, and opens the inner door."
+    "Maki walks me to the storehouse without saying why, takes a key off a nail I've never noticed, and opens the inner door."
 
     maki "Yaga's rule is look, don't take. Yaga's rule has an exception, and it's me."
 
-    maki "These racks are graded the way you are. Grade 4 tools come out for Grade 4 sorcerers. Anything above that stays sealed until your paperwork catches up."
+    maki "These racks are graded the way you are. Grade 4 tools come out for Grade 4 sorcerers. Anything above that stays sealed until your paperwork catches up. Mine never has, so I stopped asking."
 
-    maki @ angry "Don't sulk. It's the only rule in this place that's ever kept anyone alive."
+    maki @ angry "Don't sulk. I've been Grade 4 for a year with a family name sitting on my paperwork. The rule's stupid. It's still the rule."
 
     "She takes a short knife off the lowest rack. The black sheath has a paper seal across the guard."
 
