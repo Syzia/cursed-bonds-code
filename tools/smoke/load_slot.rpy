@@ -14,6 +14,12 @@
 ## stands (renpy.get_filename_line()) and the state that the migrations in
 ## 3.12 touch, takes a screenshot a moment later, and quits.
 ##
+## It then notes a summary for the report (report.*): version, technique,
+## grade, arc, day, roster size, merit, the story step (story_point, or
+## legacy_story_point() for a save without one, then the story row the
+## objective points at), the objective, the keepsakes in the inventory, and
+## where it landed (a statement, or load_recover / return_recover first).
+##
 ## The result notes a status:
 ##   SAME            landed on the statement it was saved at
 ##   EARLIER         the saved statement is gone; it rolled back to an older one
@@ -52,6 +58,7 @@ init 999 python:
             self.saved_at = None
             self.target = None
             self.mc_before = None   # renpy.showing("mc") before the migrations ran
+            self.game_version = None  # the game version the save was made with
 
     zz_load = ZZLoadState()
 
@@ -103,6 +110,7 @@ init 999 python:
         try:
             info = renpy.slot_json(slot) or {}
             ctime = info.get("_ctime")
+            zz_load.game_version = info.get("_version")
             note("saved", "%s, game version %s, Ren'Py %s" % (
                 time.strftime("%Y-%m-%d %H:%M", time.localtime(ctime)) if ctime else "?",
                 info.get("_version", "?"), info.get("_renpy_version", "?")))
@@ -177,7 +185,75 @@ init 999 python:
                 note("state." + name, zz_load_fmt(getattr(store, name)))
             else:
                 note("state." + name, "<missing>")
+        zz_load_report(landed, recover)
         check(True, "loads without an exception")
+
+    def zz_load_get(fn, fallback="?"):
+        """fn(), or a short "<error>" text: the report never raises."""
+        try:
+            v = fn()
+        except Exception as e:
+            return "<%s: %s>" % (type(e).__name__, " ".join(str(e).split())[:80])
+        return fallback if v is None else v
+
+    def zz_load_report(landed, recover):
+        """The per-slot summary the load report shows (7 · WP11 task 5), as
+        report.* notes. Every field is read defensively: a save the game can
+        load but a helper can't read shows "<error>", never a failed run."""
+        def version():
+            return "save_version %s · game %s" % (getattr(store, "save_version", "?"),
+                                                    zz_load.game_version or "?")
+
+        def technique():
+            t = getattr(store, "technique", None)
+            n = getattr(store, "tname", None)
+            return "%s (%s)" % (t, n) if n else str(t)
+
+        def grade():
+            return getattr(store, "grade", None) or "unassessed"
+
+        def step():
+            sp = getattr(store, "story_point", None)
+            src = "story_point"
+            if not sp:
+                sp = legacy_story_point()
+                src = "legacy"
+            row = ""
+            o = current_objective() if has_flag("settled_in") else None
+            if o and o.get("mid"):
+                row = " · %s (%s)" % (o["mid"], mission_status(o["mid"]))
+            return "%s [%s]%s" % (sp, src, row)
+
+        def objective():
+            try:
+                t = objective_text()
+            except Exception:
+                o = current_objective()
+                t = o.get("text") if o else ""
+            return t or "(none: before the campus opens)"
+
+        def keepsakes():
+            inv = getattr(store, "inventory", None) or {}
+            ks = [ITEMS[i]["name"] for i in sorted(inv)
+                  if i in ITEMS and ITEMS[i].get("kind") == "keepsake" and inv[i]]
+            return ", ".join(ks) or "none"
+
+        def where():
+            if recover:
+                return "%s -> %s" % (" -> ".join(recover), landed)
+            return "statement %s" % landed
+
+        note("report.version", zz_load_get(version))
+        note("report.technique", zz_load_get(technique))
+        note("report.grade", zz_load_get(grade))
+        note("report.arc", zz_load_get(lambda: getattr(store, "arc", "?")))
+        note("report.day", zz_load_get(lambda: "%s %s" % (store.day, store.period)))
+        note("report.roster", zz_load_get(lambda: len(store.roster)))
+        note("report.merit", zz_load_get(lambda: store.merit))
+        note("report.story_step", zz_load_get(step))
+        note("report.objective", zz_load_get(objective))
+        note("report.keepsakes", zz_load_get(keepsakes))
+        note("report.where", zz_load_get(where))
 
     def zz_load_dead_frames():
         """Call-stack frames whose return site is gone from the script. The
