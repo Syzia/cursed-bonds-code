@@ -298,6 +298,9 @@ label zz_smoke:
         complete_mission("m_nope")
         mission_fail("m_nope")
         check([a[0] for a in ACTS] == ["P", "I", "II", "III", "IV", "V"], "ACTS")
+        check(isinstance(ACT_BY_ID, dict) and all(isinstance(a, dict) for a in ACT_BY_ID.values())
+              and "talk" in ACT_BY_ID and "invite" in ACT_BY_ID,
+              "ACT_BY_ID is still the activity table (WP3 does not shadow it)")
         check([c["who"] for c in JOURNAL_CAST] == ["yuji", "megumi", "nobara", "maki", "panda", "toge", "gojo",
               "utahime", "shoko", "yaga", "ijichi", "nanami", "todo", "miwa", "mei_mei", "yuta", "sana"],
               "JOURNAL_CAST order")
