@@ -102,6 +102,7 @@ label act_study(who):
 label act_swim(who):
     scene bg riverside with Dissolve(0.5)
     show expression who at pos_c
+    with dissolve
     $ _n = CAST[who]["short"]
     $ _l = line_for("swim", who)
     "[_l]"

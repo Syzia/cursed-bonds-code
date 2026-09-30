@@ -22,7 +22,7 @@ label chapter_four:
     scene bg city
     with fade_slow
 
-    show ijichi at pos_fr
+    show ijichi at pos_c
     with dissolve
 
     "The Sun Mall is four storeys of dead escalators in a town that built a bigger one two stations down."
@@ -147,7 +147,14 @@ label chapter_four:
 
     "The corridor lets out into the atrium, and the atrium is where it has been keeping them."
 
-    show curse big at pos_loom, pulse_in
+    ## The partner steps aside so the curse isn't drawn over them (2.3, two figures).
+    if _partner == "yuji":
+        show yuji at pos_cl
+    elif _partner == "megumi":
+        show megumi at pos_cl
+    else:
+        show nobara at pos_cl
+    show curse big at pos_loom_r, pulse_in
     with fade_curse
 
     "It is not a grade three."

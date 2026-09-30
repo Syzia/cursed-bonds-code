@@ -46,11 +46,11 @@ label st_roll_call:
 
     yaga "Two schools, one field, and a scoreboard that the higher-ups read very carefully."
 
-    nobara happy "So it's a job interview with sticks."
+    nobara @ happy "So it's a job interview with sticks."
 
-    yaga angry "That is the most accurate description of it I have ever heard and I would appreciate you never repeating it."
+    yaga "That is the most accurate description of it I have ever heard and I would appreciate you never repeating it."
 
-    yaga serious "Four first-years. Kyoto has six students and two of them have been doing this since they were eleven."
+    yaga "Four first-years. Kyoto has six students and two of them have been doing this since they were eleven."
 
     yaga "When it comes, you will not be ready. The question is how much not-ready."
 
@@ -65,7 +65,7 @@ label st_roll_call:
 
     yaga "Fushiguro is Grade 2. Kugisaki, Grade 3. Itadori is Grade 4 on paper, for reasons above both of us."
 
-    yuji happy "On paper. I'm taking that as a compliment."
+    yuji @ happy "On paper. I'm taking that as a compliment."
 
     megumi serious "Don't."
 
@@ -77,7 +77,7 @@ label st_roll_call:
             $ gain("output", 2)
             $ flag("rollcall_defiant")
             yaga "You had better."
-            yaga "Most people your age hear a number and hear how small it is. You heard it as a starting line."
+            yaga "Most people your age hear 'Grade 4' and hear the bottom rung. You heard it as a starting line."
             yaga "That's the correct reading. Don't let it make you stupid."
 
         "\"What happens if I'm not ready?\"":
@@ -101,6 +101,10 @@ label st_roll_call:
     yaga "Two: Kyoto's teacher arrives tomorrow to prepare the Goodwill Event, and she has agreed to run the board while she is here. Low grade. Real."
 
     $ flag("roll_call")
+    ## A save made before this chapter and resumed at the menu above skips
+    ## the promote: migration 20 has already turned its old int into None.
+    if not isinstance(grade, str):
+        $ promote("mc", "g4", "Assessed at roll call", quiet=True)
     $ flag("storehouse_access")
     $ advance_period()
 
@@ -208,7 +212,7 @@ label st_noise:
 label st_aftermath:
 
     scene bg infirmary with fade_slow
-    show shoko at pos_cr
+    show shoko at pos_c
     with dissolve
 
     "The morning after Saitama, Shoko Ieiri goes through all four of you in order and does not say anything at all until she's finished."
@@ -332,7 +336,7 @@ label st_roster:
     show maki at pos_c
     with dissolve
 
-    "The Kyoto roster goes up on the board outside the classroom building one noon, and Maki reads it standing very still."
+    "The Kyoto roster goes up on the board outside the classroom building at noon one day, and Maki reads it standing very still."
 
     maki "Mai's on it."
 
@@ -429,7 +433,7 @@ label st_night_before:
         mcthink "When I got here I'd have said that was the soft part of the job."
     elif _open >= 2:
         mcthink "I know some of them. Properly, I mean — past the introductions."
-        mcthink "Not enough of them. There wasn't time and I spent what there was."
+        mcthink "Not enough of them. I spent my days on other things."
     else:
         mcthink "I've spent almost all of my time here alone, on a ridge, getting stronger."
         mcthink "Tomorrow I find out whether that was the right trade."
@@ -472,8 +476,8 @@ label st_second_years:
 
     scene bg training with fade_slow
     show maki at pos_l
-    show panda at pos_cr
-    show toge at pos_fr
+    show panda at pos_c
+    show toge at pos_r
     with dissolve
 
     "There have been three other people on this campus since you arrived. You have seen them at a distance, at meals, crossing the courtyard, and nobody has introduced anybody, because nobody here does that."

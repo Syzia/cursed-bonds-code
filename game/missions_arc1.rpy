@@ -19,7 +19,7 @@ init 1 python:
 
 label ms_nade_1:
 
-    yaga "Ryōsuke Nade."
+    yaga "Ryosuke Nade."
 
     yaga "Grade 2. Fourteen years in the field, six of them in assessment. He is the man who walked around the Kawagoe Sun Mall for forty minutes and wrote {i}three{/i} on a form."
 
@@ -46,7 +46,7 @@ label ms_nade_1:
 
     "The warehouse has been empty for nine years. The door is chained from the inside, which is the first thing that is wrong, because somebody chained it and then did not leave."
 
-    "You hold the room. Dust hangs. And in the held second you have time to walk the whole floor and read what the survey missed — chalk marks at the roof beams, six weeks old, where somebody measured something and did not write it down."
+    "You hold the room. Dust hangs. And in the held second you have time to read the whole floor from the doorway — chalk marks at the roof beams, six weeks old, where somebody measured something and did not write it down."
     $ gain("control", 2)
     $ flag("found_nade_marks")
 
@@ -166,7 +166,7 @@ label ms_nade_3:
     show nade at pos_c
     with dissolve
 
-    "Ryōsuke Nade is forty-six and has not slept properly in some time. He opens the door before you knock."
+    "Ryosuke Nade is forty-six and has not slept properly in some time. He opens the door before you knock."
 
     nade "You're one of Yaga's."
 
@@ -219,7 +219,7 @@ label ms_nade_3:
 
     nade "Don't tell me his name. I've spent six years not knowing it on purpose and I'd like to keep that."
 
-    "It is a map of the Kantō region. There are eleven circles on it in red, and a twelfth in a different hand."
+    "It is a map of the Kanto region. There are eleven circles on it in red, and a twelfth in a different hand."
 
     "The twelfth is around a town you know extremely well, because you grew up in it, and the date beside it is four years before the alley."
 

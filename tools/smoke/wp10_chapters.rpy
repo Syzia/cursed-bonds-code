@@ -31,6 +31,7 @@ init 999 python:
     import builtins
     import os
     import re
+    import time
 
     class ZZWP10State(builtins.object):
         def __init__(self):
@@ -40,6 +41,11 @@ init 999 python:
             self.combats = builtins.list()     # (enemy, outcome)
             self.snap = None                   # screenshot name, armed
             self.snapped = builtins.list()
+            self.say_needle = None             # (needle, name): photograph that say line
+            self.say_snap = None               # name, armed for the current say line
+            self.say_t = 0.0
+            self.menu_needle = None            # (needle, name): photograph that menu
+            self.bounds = builtins.dict()      # say-shot name -> {tag: (x, y, w, h)}
 
     zz_wp10_state = ZZWP10State()
 
@@ -127,11 +133,33 @@ init 999 python:
         ## start-interaction callback is not, under fast skip).
         zz_wp10_state.texts.append(s)
         zz_wp10_interact()
+        if zz_wp10_state.menu_needle and zz_wp10_state.menu_needle[0] in s:
+            zz_wp10_state.snap = zz_wp10_state.menu_needle[1]
+            zz_wp10_state.menu_needle = None
+            config.auto_choice_delay = 1.2
+        if zz_wp10_state.say_needle and zz_wp10_state.say_needle[0] in s:
+            ## Hold this one line on screen (skipping off) until the snapper
+            ## has photographed it, then end it and fast-skip on.
+            zz_wp10_state.say_snap = zz_wp10_state.say_needle[1]
+            zz_wp10_state.say_needle = None
+            zz_wp10_state.say_t = time.time()
+            config.skipping = None
+            zz_smoke_state.autoplay = False
         return _zz_wp10_prev_filter(s) if _zz_wp10_prev_filter else s
 
     config.say_menu_text_filter = zz_wp10_text
 
     def zz_wp10_try_snap():
+        name = zz_wp10_state.say_snap
+        if name and renpy.get_screen("say") and time.time() > zz_wp10_state.say_t + 1.2:
+            zz_wp10_state.say_snap = None
+            zz_wp10_state.bounds[name] = dict((t, renpy.get_image_bounds(t))
+                for t in renpy.get_showing_tags() if t != "bg")
+            if shot(name, wait=0):
+                zz_wp10_state.snapped.append(name)
+            zz_smoke_state.autoplay = True
+            config.skipping = "fast"
+            return True
         name = zz_wp10_state.snap
         if name and renpy.get_screen("choice"):
             zz_wp10_state.snap = None
@@ -151,7 +179,7 @@ init 999 python:
 
 screen zz_wp10_snapper():
     zorder 200
-    if zz_wp10_state.snap:
+    if zz_wp10_state.snap or zz_wp10_state.say_snap:
         timer 0.1 repeat True action Function(zz_wp10_try_snap)
 
 
@@ -189,7 +217,7 @@ label zz_wp10_play(lbl, k=None, who=None, snap=None):
         if zz_wp10_state.snap:
             note("shot " + zz_wp10_state.snap, "no menu came up to photograph")
             zz_wp10_state.snap = None
-        check(not renpy.showing("mc"), "%s: mc not showing at the end" % lbl)
+        check(not renpy.showing("mc"), "%s: mc not showing at the end" % (lbl,))
     return
 
 
@@ -291,6 +319,19 @@ label zz_smoke:
     call zz_wp10_play("st_roll_call", 2)
     $ check(has_flag("rollcall_tactical"), "roll call, third choice: flag")
     $ check(zz_wp10_saw(_t0, "Wrong day for it"), "roll call: 'Wrong day for it'")
+    ## An old save parked on roll call's menu resumes after the promote: after
+    ## migration 20 its grade is None and roll_call is unset. It still ends g4.
+    python:
+        _node = renpy.game.script.namemap["st_roll_call"]
+        while _node is not None and not isinstance(_node, renpy.ast.Menu):
+            _node = _node.next
+        check(_node is not None, "roll call: its menu node found")
+        _rc_menu = _node.name
+        grade = None
+        flags.discard("roll_call")
+    call zz_wp10_play(_rc_menu, 1)
+    $ check(grade == "g4", 'roll call resumed from its menu: grade == "g4" afterwards', repr(grade))
+    $ check(has_flag("roll_call"), "roll call resumed from its menu: roll_call set")
 
     ## --- st_second_years, st_noise, st_aftermath ---------------------------------------
     $ period = "Afternoon"
@@ -322,7 +363,7 @@ label zz_smoke:
     call zz_wp10_play("st_roster", 0, snap="roster_menu")
     call zz_wp10_play("st_roster", 1)
     python:
-        check(zz_wp10_saw(_t0, "Not long now.") and zz_wp10_saw(_t0, "one noon"), "st_roster: no Thursday, no 'Four days'")
+        check(zz_wp10_saw(_t0, "Not long now.") and zz_wp10_saw(_t0, "at noon one day"), "st_roster: no Thursday, no 'Four days'")
         check(not zz_wp10_saw(_t0, "four days"), "st_roster: no 'four days'")
 
     ## --- st_night_before: arc stays 1 ---------------------------------------------------------------
@@ -364,7 +405,17 @@ label zz_smoke:
     ## choice 2 / 1: Last Light on the corridor, then kill it first (partner Megumi)
     $ bonds["megumi"] = 40
     $ _t1 = len(zz_wp10_state.texts)
+    $ zz_wp10_state.say_needle = ("It is not a grade three.", "ch4_curse_reveal")
+    $ zz_wp10_state.menu_needle = ("You have perhaps four seconds", "ch4_atrium_menu")
     call zz_wp10_play("chapter_four", 2, snap="ch4_corridor_menu")
+    python:
+        check("ch4_curse_reveal" in zz_wp10_state.snapped, "chapter_four: shot at 'It is not a grade three.'")
+        check("ch4_atrium_menu" in zz_wp10_state.snapped, "chapter_four: shot at the atrium menu")
+        _b = zz_wp10_state.bounds.get("ch4_curse_reveal", {})
+        note("ch4 curse reveal bounds", repr(_b))
+        _pb, _cb = _b.get("megumi"), _b.get("curse")
+        check(_pb and _cb and (_pb[0] + _pb[2] / 2.0) < _cb[0] + _cb[2] * 0.25,
+              "chapter_four: the partner stands clear of the curse (centre left of the curse's left quarter)", repr(_b))
     python:
         check(has_flag("scouted_corridor") and has_flag("fought_first"), "chapter_four, choice 2: scouted_corridor + fought_first")
         check("maki" not in bonds or bonds.get("maki", 0) == 0, "chapter_four: no Maki bond while she's not in the roster", bonds.get("maki"))

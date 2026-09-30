@@ -49,9 +49,11 @@ label chapter_five:
     ## A recommendation, not a promotion: Grade 3 is earned on the board and
     ## in the promotion fight with Maki watching (D18). Old saves promoted
     ## here by the old chapter keep their grade (migration 20).
-    yaga "I am putting your name forward for Grade 3."
     if "maki" in roster:
         yaga "Your cursed energy has come along faster than your file predicted. Zenin's doing, I assume."
+    else:
+        yaga "Your cursed energy has come along faster than your file predicted."
+    yaga "I am putting your name forward for Grade 3."
     yaga "That is not a promotion. It is a recommendation, and it is worth exactly what you do with it. Earn it on Iori's board, and then in front of a witness."
 
     ## Paid once: the "ch5_recommendation" key is the one migration 60 checks
@@ -81,7 +83,7 @@ label chapter_five:
     show gojo at pos_c
     with dissolve
 
-    gojo "So! Yaga did the whole 'this is not a reward' thing, right? He loves that one."
+    gojo "So! Yaga did the whole 'this is not a promotion' thing, right? He loves that one."
 
     mc "You were listening."
 
@@ -158,7 +160,7 @@ label chapter_five:
     else:
         "Below you, in the courtyard, three first-years are arguing about something you can't hear."
         "You watch them for a while, from up here, and then you go down."
-        mcthink "Still time. Not much, but still time."
+        mcthink "They're not going anywhere. Neither am I."
 
     ## This is a mid-arc debrief now, not a finale — the arc closes on the
     ## roof the night before Kyoto. Hand the player back to the campus.

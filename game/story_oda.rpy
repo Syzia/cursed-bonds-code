@@ -102,7 +102,7 @@ label st_oda_2:
 
     oda "In the last four years, nine students in this prefecture have transferred out at short notice, mid-term, to schools the paperwork does not name."
 
-    oda "Two of them I taught. One of them was a boy called Sōma with terrible handwriting who was not remotely academic, and the notice describes a specialist bursary."
+    oda "Two of them I taught. One of them was a boy called Soma with terrible handwriting who was not remotely academic, and the notice describes a specialist bursary."
 
     oda "Three of the nine are recorded as having died within the following eighteen months. The causes are ordinary and the reports are thorough."
 

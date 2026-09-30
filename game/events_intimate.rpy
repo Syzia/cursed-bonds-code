@@ -85,6 +85,7 @@ label act_int_day(who):
 
     scene bg riverside with fade_slow
     show expression who at pos_c
+    with dissolve
     $ _n = CAST[who]["short"]
 
     "You take an entire day. No training, no board, nobody told."
