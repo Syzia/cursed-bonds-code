@@ -112,7 +112,7 @@ init -1 python:
                 out |= labs
         return frozenset(out)
 
-    ## Sana's flashbacks are written in phase 3 (D11).
+    ## Sana's flashbacks are written in phase 4 (D11).
     MEMORY_UNWRITTEN_LABELS = frozenset(["sana_mem_diner", "sana_mem_daisy", "sana_mem_ranking"])
 
     ## The prologue's memories in the order they play (3.9, D39). Migration 65
