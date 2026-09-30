@@ -31,7 +31,7 @@ Two tips:
 2. **Day 1 on campus.** The top of the screen shows only the date and three
    buttons: MAP, JOURNAL and MENU. A "NEXT" banner slides down with your next
    goal.
-3. **Sleep.** Open the map, go to Your Room (Dormitories) and choose Sleep.
+3. **Sleep.** Open the map, go to My Room (Dormitories) and choose Sleep.
 4. **Day 2, morning: roll call.** It starts by itself wherever you are. Yaga
    assesses you, and a card shows **Grade 4 · ASSESSED**.
 5. **Sleep again. Day 3, morning to afternoon: Utahime arrives.** This scene
@@ -54,7 +54,11 @@ Two tips:
 
 ## 2. An old save (about 3 minutes)
 
-1. **Load one of your older saves**, from before phase 1.
+1. **Load one of your older saves**: slot 1-1 (from before phase 1) and an
+   autosave from checkpoint 3 (auto-2, day 7) are good ones. Slot 1-1 was saved
+   in Explore mode, so it opens in Explore mode: no story runs there, and the
+   Journal's NEXT line reads "Explore mode: no story here". Use an autosave
+   for step 3.
 2. It should load with no error screen. If the game can't put you back at the
    exact line, it says "This save came from an older version of the game" and
    picks up on campus, or at the start of the prologue scene you were in. Both
@@ -65,7 +69,7 @@ Two tips:
    the room next to Yaga's". Every old save meets Utahime once, whenever it
    reaches her.
 4. **People** shows your bonds as you left them. **Inventory** has the keepsake
-   you packed.
+   you packed (a save from before the keepsake choice, like 1-1, has none).
 5. The ridge (Mountain Ridge) offers *Look up at the veil* in an old save
    too: loading a save that finished the prologue marks the veil as seen, so
    you don't have to replay the tour for it. Once a day; the Review tools'

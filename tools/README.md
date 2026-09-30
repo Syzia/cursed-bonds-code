@@ -104,14 +104,15 @@ for input: it calls the loop's functions directly.
 | `wp1_world.rpy` | Places, areas, schedules (with a frozen copy of the old ones), the offices' locks, Gojo's in-days, Tokyo trips, the ridge veil, the map (screenshots). |
 | `wp2_grades.rpy` | Grades, caps, merit, NPC growth and promotions, Last Light, the alley fight's four rounds, the Grade 3 fight, migrations 10/20/30. |
 | `wp3_missions.rpy` | The mission registry and story chain on a fresh and an old-save fixture; the objective at every step goes to `objectives.txt` for a read-through. |
-| `wp4_board.rpy` | The board: offers, partners, outcomes over many trials, misgrades, rewards paid once, time and refusals (screenshots). One harness self-check is a known failure. |
+| `wp4_board.rpy` | The board: offers, partners, outcomes over many trials, misgrades, rewards paid once, time and refusals (screenshots). |
 | `wp5_memories.rpy` | The memories catalogue, the recorder, replays leaving the save untouched, Sana's flashbacks. |
 | `wp6_items.rpy` | Keepsakes from flags, talisman slots and rules, the armory's states. |
 | `wp7_ui.rpy` | The HUD, toasts (order, merging), the place view with four people, `person_choices` over every person, place and period. |
 | `wp8_journal.rpy` | Every journal tab on a fresh and a rich save (screenshots), equipment surviving save and load, replays returning to the journal. |
 | `wp9_prologue.rpy` | The whole prologue under autoplay, its flags, Kaito never on screen, the replay guards. |
 | `wp10_chapters.rpy` | The later chapters' edits, then their scenes under autoplay. |
-| `phase1_all.rpy` | The whole of phase 1 end to end: a new game through the prologue, then 30 simulated days (each day the story events and start missions in order, one board job, a new day). It fails on any exception and logs the objective every day. |
+| `wp11_dev.rpy` | The review tools (`dev_panel`): every button, explore mode never firing the story, the two story buttons through the loop, and Arc Two's exact warning (screenshots). |
+| `phase1_all.rpy` | The whole of phase 1 end to end: label `start` as New Game plays it (the prologue under autoplay, always "Go with him.", the real `combat`), then 30 days of the real sandbox loop, played by an overlay driver that answers the loop's own screens: start missions, the objective's place, the journal and the map each day, one board job, one person, then Sleep. It fails on any exception, a stuck day or story rows finishing out of order, and writes `objectives.txt` (one line per day: grade, merit, story step, objective, the scenes played) and `driver_log.txt`. `PHASE1_DAYS` sets the number of days. |
 | `load_slot.rpy` | Used by `load_all_saves.sh`: loads one save (`SMOKE_SAVES=1 SMOKE_SLOT=1-1`) and reports where it lands. |
 
 ### `load_all_saves.sh [slot ...]` — the save regression
@@ -121,8 +122,9 @@ Loads every save (or just the slots named) in `game/saves` and
 read-only copies, and writes `shots/load_report.txt` (`LOAD_SHOTS=<dir>` puts
 it elsewhere). Names with spaces are skipped. The report's header counts the
 slots by status, then a table gives each slot's status, where it was saved and
-where it landed, then each slot's details (the save's state: technique, grade,
-arc, day, roster, merit, the story step and the objective, keepsakes):
+where it landed, then each slot's summary (version, technique, grade, arc, day,
+roster size, merit, the story step, the objective, keepsakes and where it
+landed), then any call-stack return sites the script no longer has:
 
 - **SAME** — landed where it was saved;
 - **EARLIER** — its statement is gone, so it rolled back to an older one;

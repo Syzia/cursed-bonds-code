@@ -1139,8 +1139,9 @@ screen journal(tab="people"):
     ## D4: editable only when opened from campus, in the main context.
     $ editable = journal_editable()
     $ _cur = js["tab"]
-    $ _obj = objective_text() or ""
-    $ _idle = _("Nothing pressing. Go and see who's around.") if jr_on_campus() else _("Nothing pressing.")
+    ## Explore mode never fires the story, so it shows no story goal.
+    $ _obj = "" if explore_mode else (objective_text() or "")
+    $ _idle = _("Explore mode: no story here.") if explore_mode else (_("Nothing pressing. Go and see who's around.") if jr_on_campus() else _("Nothing pressing."))
 
     add gui.game_menu_background
     add Solid(gui.ink) alpha 0.86
@@ -1779,7 +1780,9 @@ screen jr_board_view():
                             spacing 12
                             use jr_chip(grade_label(jr_get(_t, "grade")), gui.mute)
                             text jr_clip(jr_get(_t, "title", ""), 40) color gui.mute size 18 yalign 0.5
-                            $ _tb = jr_short(jr_get(_t, "taken_by", "")) if jr_get(_t, "taken_by") else "someone"
+                            ## A job I took reads "me and Nobara" (board_card_line's words).
+                            $ _tb = jr_get(_t, "taken_by")
+                            $ _tb = ((("me and " + jr_short(jr_get(_t, "partner"))) if jr_get(_t, "partner") else "me") if _tb == "mc" else (jr_short(_tb) if _tb else "someone"))
                             text "· taken by [_tb]" color gui.mute size 16 yalign 0.5
 
         if _b["log"]:
