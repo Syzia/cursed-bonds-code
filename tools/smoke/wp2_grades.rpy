@@ -92,7 +92,7 @@ label zz_smoke:
     ## --- grade lookups -----------------------------------------------------------------------
     python:
         check(grade_name() == "Not yet assessed", "grade_name() before roll call", grade_name())
-        check(next_grade_text() == "Not assessed yet. Roll call comes first.", "next_grade_text before roll call", next_grade_text())
+        check(next_grade_text() == "Not yet assessed. Roll call comes first.", "next_grade_text before roll call (D16's wording, as grade_label)", next_grade_text())
         check(grade_cap("stat") == 40 and grade_cap("reserve") == 100 and talisman_slots() == 1, "Grade 4's numbers while unassessed (D16)")
         grade = 3
         check(grade_name() == "Grade 3" and grade_cap("stat") == 55, "a legacy int grade still reads", grade_name())
@@ -105,6 +105,11 @@ label zz_smoke:
         merit = 34
         check(merit_progress() == (34, 60, "g3"), "merit_progress at Grade 4", merit_progress())
         check(next_grade_text() == "Merit 34/60, then a promotion mission — Maki will watch.", "next_grade_text at Grade 4", next_grade_text())
+        merit = 70
+        check(next_grade_text() == "Merit 70/60. Ready: a promotion mission — Maki will watch.", "next_grade_text once merit is met (70 at Grade 4)", next_grade_text())
+        merit = 60
+        check(next_grade_text().startswith("Merit 60/60. Ready: "), "next_grade_text at exactly the requirement", next_grade_text())
+        merit = 34
         grade = "s1"
         check(merit_progress() == (34, None, "g1") and "recommendations" in next_grade_text(), "next grade from Semi-Grade 1", (merit_progress(), next_grade_text()))
         grade = "g1"
@@ -414,6 +419,21 @@ label zz_smoke:
     call screen zz_snap("combat_promo_g3")
     $ check(renpy.get_screen("combat_screen") is not None, "combat_screen renders (promo_g3)")
     hide screen combat_screen
+    ## A phase-2 board fight passing displayables: only plain values are saved.
+    python:
+        combat_begin(dict(name="Stray curse", hp=40, power=8,
+                          sprite=Transform("curse small", zoom=0.9),
+                          tells=[("It twitches toward me.", "fast")]),
+                     None, True, Transform("bg classroom", zoom=1.0))
+        _bad = sorted(k for k, v in cb.items() if not _wp2_builtin(v))
+        check(not _bad and cb["bg"] is None and cb["sprite"] == "curse small" and cb["grade"] is None,
+              "2.1.6: a displayable sprite and bg from an enemy dict leave only builtins in the fight state",
+              (_bad, cb.get("bg"), cb.get("sprite"), cb.get("grade")))
+    show screen combat_screen
+    call screen zz_snap("combat_ungraded_enemy")
+    $ _gshown = renpy.get_screen("combat_screen").scope.get("_grade")
+    $ check(_gshown == "Ungraded", "an enemy with no grade reads 'Ungraded', not the player's 'Not yet assessed'", _gshown)
+    hide screen combat_screen
 
     ## --- the fights through the combat label, under autoplay ----------------------------------------
     python:
@@ -443,10 +463,38 @@ label zz_smoke:
     show screen grade_card("g3", "PROMOTED")
     $ shot("grade_card_promoted")
     hide screen grade_card
+    show screen grade_card(None, "ASSESSED")
+    $ shot("grade_card_none")
+    $ _gl = renpy.get_screen("grade_card").scope.get("_gl")
+    $ check(_gl == "Grade 4", "grade_card(None) shows Grade 4 (D16), never 'ASSESSED / Not yet assessed'", _gl)
+    hide screen grade_card
+    python:
+        ## Stand in for the card's 3-second pause: record the quick menu while
+        ## the card is up (a real pause could be ended by a stray click).
+        _wp2_seen = builtins.list()
+        _wp2_pause = renpy.pause
+        def _wp2_watch(*a, **kw):
+            if renpy.get_screen("grade_card") is not None:
+                _wp2_seen.append(store.quick_menu)
+            return _wp2_pause(0, hard=True)
+        renpy.pause = _wp2_watch
+        quick_menu = True
     $ autoplay()
     call show_grade_card("g3")
-    call show_grade_card("g4", "ASSESSED")
+    call show_grade_card(None, "ASSESSED")
     $ autoplay(False)
     $ check(renpy.get_screen("grade_card") is None, "show_grade_card shows the card and takes it away")
+    $ check(_wp2_seen and not any(_wp2_seen) and quick_menu is True,
+            "the quick menu is hidden while the card shows, and restored after", (len(_wp2_seen), builtins.sorted(builtins.set(_wp2_seen)), quick_menu))
+    python:
+        quick_menu = False
+        del _wp2_seen[:]
+    $ autoplay()
+    call show_grade_card("g4", "ASSESSED")
+    $ autoplay(False)
+    python:
+        renpy.pause = _wp2_pause
+        check(quick_menu is False, "a quick menu already off stays off after the card", quick_menu)
+        quick_menu = True
 
     $ finish()

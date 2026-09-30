@@ -97,11 +97,17 @@ init -1 python:
         else:
             e = key_or_dict
             key = e.get("key", "custom")
+        ## 2.1.6: the fight state is saved, so it keeps only plain values. A
+        ## displayable background is dropped (it is lit at draw time from
+        ## bg_loc/bg_per); a displayable sprite falls back to the stock curse.
+        if bg is not None and not isinstance(bg, str):
+            bg = None
+        sprite = e["sprite"] if isinstance(e.get("sprite"), str) else "curse small"
         refresh_vitals()
         store.hp = max(store.hp, store.hp_max // 2)
         store.cb = dict(
             key=key, name=e["name"], grade=(grade_key(e.get("grade")) or e.get("grade")),
-            ehp=e["hp"], ehp_max=e["hp"], power=e["power"], sprite=e["sprite"],
+            ehp=e["hp"], ehp_max=e["hp"], power=e["power"], sprite=sprite,
             tells=list(e["tells"]), tell=None, kind=None,
             ally=ally, flee_ok=flee_ok, bg=bg,
             bg_loc=store.here, bg_per=store.period,
@@ -275,7 +281,7 @@ screen combat_screen():
 
     $ _c = cb
     $ _ename = _c["name"]
-    $ _grade = grade_label(_c["grade"])
+    $ _grade = grade_label(_c["grade"]) if _c.get("grade") is not None else "Ungraded"
     $ _tell = _c["tell"]
     $ _meaning = ANSWER_LABEL[ANSWERS[_c["kind"]]] if _c["read"] else "?"
     $ _moves = moves_available()

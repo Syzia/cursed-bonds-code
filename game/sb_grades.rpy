@@ -140,13 +140,18 @@ init -1 python:
         """WP2. The Stats tab's promotion line, e.g. "Merit 34/60, then a
         promotion mission — Maki will watch." Empty at the top of the scale."""
         if store.grade is None:
-            return "Not assessed yet. Roll call comes first."
+            return "Not yet assessed. Roll call comes first."
         m, need, nxt = merit_progress()
         if not nxt:
             return ""
         how = GRADE_HOW.get(nxt, "")
         if need is None:
             return "%s: %s" % (GRADES[nxt]["name"], how)
+        if m >= need:
+            ## The merit is there: only the last step is left.
+            if how.startswith("then "):
+                how = how[len("then "):]
+            return ("Merit %d/%d. Ready: %s" % (m, need, how)).strip()
         return ("Merit %d/%d, %s" % (m, need, how)).strip()
 
     def grade_opens_text(key):
@@ -456,8 +461,9 @@ screen grade_card(key, kicker):
 
     zorder 90
 
-    $ _gl = grade_label(key)
-    $ _opens = grade_opens_text(key)
+    ## D16: an unset grade shows Grade 4's card, never "ASSESSED / Not yet assessed".
+    $ _gl = grade_label(key or "g4")
+    $ _opens = grade_opens_text(key or "g4")
 
     add Solid(gui.ink) alpha 0.5
 
@@ -503,13 +509,18 @@ screen grade_card(key, kicker):
                 size 21
 
 ## WP2. Shows the card for three seconds (a click ends it early), then
-## dissolves it away.
+## dissolves it away. The quick menu is hidden while it shows (same save and
+## restore as a fight), so nothing is clickable under the backdrop.
 label show_grade_card(key, kicker="PROMOTED"):
+    $ key = key or "g4"
+    $ quick_menu_before_card = quick_menu
+    $ quick_menu = False
     show screen grade_card(key, kicker)
     with dissolve
     $ renpy.pause(3.0)
     hide screen grade_card
     with dissolve
+    $ quick_menu = quick_menu_before_card
     return
 
 
@@ -517,4 +528,5 @@ default merit = 0
 default merit_granted = set()     # keys paid once: "mission:m_sunmall", "ch5_recommendation"…
 default npc_state = {}            # who -> dict(grade, xp, promoted_day), made on first use
 default promotions_log = []       # dict(day, who, grade, why), the player's and everyone's
+default quick_menu_before_card = True   # set while the grade card shows
 default pending_remarks = {}      # who -> True until the next Talk remarks on their promotion
