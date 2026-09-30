@@ -33,7 +33,7 @@ init -1 python:
         ("V",   "Cursed Womb",             "五", "Grade 2 → Grade 1 candidate"),
     ]
     ACT_IDS = [a[0] for a in ACTS]
-    ACT_BY_ID = {a[0]: a for a in ACTS}
+    ## No ACT_BY_ID here: that name is WP7's activity table (sb_activities.rpy).
 
     ## Who the journal's People tab shows, in order (3.6.2). name / color /
     ## role only for those without a CAST entry; met is ("roster",),
