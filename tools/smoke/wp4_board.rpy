@@ -91,6 +91,18 @@ init 999 python:
             return value(*args) if callable(value) else value
         abort("unscripted call screen %s" % _screen_name)
 
+    ## The run label clears its result when it returns, so the harness keeps
+    ## its own copy of the last board_take() result.
+    ZZ_LAST_RES = [None]
+    _zz_board_take_real = board_take
+
+    def zz_board_take(offer_id, who):
+        res = _zz_board_take_real(offer_id, who)
+        ZZ_LAST_RES[0] = res
+        return res
+
+    board_take = zz_board_take
+
     ZZ_STUDENTS = ["yuji", "megumi", "nobara", "maki", "panda", "toge"]
     ZZ_EVERYONE = ["yuji", "megumi", "nobara", "maki", "panda", "toge", "shoko", "gojo", "yaga", "utahime", "ijichi"]
 
@@ -285,8 +297,8 @@ label zz_smoke:
         check(board_take_reason(board_generate(0)[0]) == "Nobody on campus to take along", "and the card says so", board_take_reason(board_generate(0)[0]))
         roster = ["yuji", "shoko", "gojo", "yaga", "utahime", "ijichi"]
         period = "Night"
-        check("Nobody" in board_take_reason(board_generate(0)[0]) or "after dark" in board_take_reason(board_generate(0)[0]),
-              "a card says why it can't be taken", board_take_reason(board_generate(0)[0]))
+        check(board_take_reason(board_generate(0)[0]) == "Evenings: Utahime doesn't send anyone out after dark",
+              "at Night the card gives the after-dark reason first", board_take_reason(board_generate(0)[0]))
 
     ## --- tool drops wait for the armory (D10) ------------------------------------------------------------------
     python:
@@ -368,12 +380,13 @@ label zz_smoke:
               "the civilian inside fits any place and any hour (no night guard)", BOARD_TWIST_LINES["civilian"])
         check("card warned" in BOARD_TWIST_LINES["split"] and "file said one" not in BOARD_TWIST_LINES["split"].lower(),
               "the split twist agrees with the card that warned of two", BOARD_TWIST_LINES["split"])
+        check("the second" not in BOARD_TWIST_LINES["split"], "the split line doesn't say 'the second' (Last Light's word)", BOARD_TWIST_LINES["split"])
         check("Dad" not in PARTNER_LINES["panda"]["hurt"][2] and "Yaga" in PARTNER_LINES["panda"]["hurt"][2],
               "Panda calls Yaga by name", PARTNER_LINES["panda"]["hurt"][2])
         check(PARTNER_LINES["toge"]["hurt"][0].endswith("before I can thank him."), "Toge waves off my thanks", PARTNER_LINES["toge"]["hurt"][0])
         ## Expressions follow the beat: surprised at the misgrade, serious when it goes wrong.
         _sc = board_script(zz_fake_res("panda", "costly", "none", True))
-        _i_mis = [i for i, st in enumerate(_sc) if st[0] == "say" and st[2].startswith("It isn't")][0]
+        _i_mis = [i for i, st in enumerate(_sc) if st[0] == "say" and st[2].startswith("Whoever wrote the report")][0]
         _i_out = [i for i, st in enumerate(_sc) if st[0] == "say" and st[2] == BOARD_OUTCOME_LINES["costly"]][0]
         check(_sc[_i_mis - 1] == ("show", "panda", "surprised") and _sc[_i_out - 1] == ("show", "panda", "serious"),
               "the partner looks surprised at the misgrade and serious when it goes wrong", (_sc[_i_mis - 1], _sc[_i_out - 1]))
@@ -418,7 +431,9 @@ label zz_smoke:
         renpy.call_screen = _zz_call_screen_real
         TOAST_SINK[0] = None
         check(not ZZ_SCREEN_SCRIPT, "sb_do_board showed board_screen, then board_partner", ZZ_SCREEN_SCRIPT)
-        _res = _bres
+        _res = ZZ_LAST_RES[0]
+        check(_bl is None and _bres is None and _bs is None and _bp is None,
+              "after a job the labels' scratch values are cleared (saves don't carry the script)", (_bl is None, _bres is None, _bs is None, _bp is None))
         check(_res and _res["id"] == _oid and _res["partner"] == "nobara", "the job ran with Nobara", _res and (_res["id"], _res["partner"]))
         note("the Nobara job", "%s (%s, twist %s, %s): power %.1f vs %d -> %s; merit %d, yen %d, drops %s" % (
             _res["title"], grade_label(_res["grade"]), _res["twist"], "misgraded" if _res["misgraded"] else "as filed",
@@ -540,10 +555,14 @@ label zz_smoke:
     $ autoplay(False)
     python:
         TOAST_SINK[0] = None
-        check(_bres["misgraded"] and misgrade_count() == _m0 + 1, "a misgraded job counts in misgrade_count()", misgrade_count())
+        _bres_m = ZZ_LAST_RES[0]
+        check(_bres_m["misgraded"] and misgrade_count() == _m0 + 1, "a misgraded job counts in misgrade_count()", misgrade_count())
         check(has_flag("wakuri_clue"), "a misgraded job sets wakuri_clue")
         check(("Filed as Grade 4. It wasn't.", "mission", None, None) in ZZ_TOASTS, "the toast: Filed as Grade 4. It wasn't.", ZZ_TOASTS)
-        check(any(s[0] == "say" and s[1] == "mcthink" and "It isn't" in s[2] for s in board_script(_bres)), "the misgrade gets its own narration beat")
+        check(any(s[0] == "say" and s[1] == "mcthink" and s[2].endswith("It isn't.") for s in board_script(_bres_m)), "the misgrade gets its own narration beat")
+        _mis_lines = [s[2] for s in board_script(_bres_m) if s[0] == "say"]
+        check(sum(1 for l in _mis_lines if "It isn't" in l) == 1 and any(l.startswith("Whoever wrote the report") for l in _mis_lines),
+              "the misgrade beat says \"It isn't\" once (no echo)", [l for l in _mis_lines if "isn't" in l])
         check(board_log[-1]["misgraded"] and board_summary()["misgrades"] == misgrade_count(), "the log and the summary carry the misgrade")
 
     ## --- the taken card (D12) -----------------------------------------------------------------------------

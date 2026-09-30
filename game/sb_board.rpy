@@ -177,7 +177,7 @@ init -1 python:
     BOARD_TWIST_LINES = {
         "dark": "The file was right about one thing: it only moves in the dark, and somebody has broken every bulb in here.",
         "civilian": "Someone is still inside: a man in a work jacket, pressed into a corner, too frightened to answer when we call. We have to work around him.",
-        "split": "There are two of them, just as the card warned. The report inside only ever describes one; the second has been careful to stay out of it.",
+        "split": "There are two of them, just as the card warned. The report inside only ever describes one; the other has been careful to stay out of it.",
         "decoy": "The reported curse is a decoy, a husk left where it would be seen. The real one is further in, and it has been waiting.",
         "daylight": "It sleeps in daylight, and we've come in the morning. It is slow and half-formed when we find it.",
         "daylight_late": "It sleeps in daylight, but the day is getting on, and it is already awake when we find it.",
@@ -666,8 +666,8 @@ init -1 python:
             s.append(("say", None, BOARD_TWIST_LINES[key]))
         if res["misgraded"]:
             s.append(("show", who, "surprised"))
-            s.append(("say", None, "It isn't %s. It's %s, and the weight of it in the air is a whole grade past anything the card promised." % (
-                res["curse"], res["true_curse"])))
+            s.append(("say", None, "Whoever wrote the report never came this far in. It's %s, not %s, and the weight of it in the air is a whole grade past anything the card promised." % (
+                res["true_curse"], res["curse"])))
             s.append(("say", "mcthink", "Filed as %s. It isn't." % grade_label(res["grade"])))
         okey = res["outcome"]
         if okey == "withdrew" and res["twist"] == "civilian":
@@ -862,6 +862,8 @@ label sb_do_board:
                 $ _bdone = True
         else:
             $ _bdone = True
+    ## Drop the screens' answers so later saves don't carry them.
+    $ _bs = _bp = None
     return
 
 ## PLACEHOLDER — rewrite in phase 3
@@ -883,6 +885,9 @@ label run_board_mission(offer_id, who):
     $ board_pay(_bres)
     $ board_clock(_bres)
     scene expression graded_bg()
+    ## The job is paid and logged; drop its script and result so later saves
+    ## don't carry them.
+    $ _bl = _bres = None
     return
 
 
