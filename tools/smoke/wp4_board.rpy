@@ -205,29 +205,20 @@ label zz_smoke:
         check(len(board_summary()["offers"]) == 3 and board_summary()["taken"], "once she is rostered, the board appears in the summary")
 
     ## --- the board reads NPC grades through its own helper, never a global _npc_grade ---------------------------
+    ## A static check: WP2's own npc_stats calls its global _npc_grade, so a
+    ## trap on store._npc_grade can't tell the board's calls from WP2's.
     python:
         zz_open_state()
         board_refresh()
-        _zz_calls = []
-        _zz_had = hasattr(store, "_npc_grade")
-        _zz_old = getattr(store, "_npc_grade", None)
-        def _zz_trap(who):
-            _zz_calls.append(who)
-            raise RuntimeError("the board called the global _npc_grade")
-        store._npc_grade = _zz_trap
-        try:
-            _zz_rows = board_partner_rows(board_offers[0])
-            _zz_card = board_npc_card()
-            _zz_sum = board_summary()
-        finally:
-            if _zz_had:
-                store._npc_grade = _zz_old
-            else:
-                del store._npc_grade
-        check(not _zz_calls and _zz_rows and all(_board_npc_grade(w) == npc_stats(w).get("grade") for w in ZZ_STUDENTS),
-              "board grades come from npc_stats via _board_npc_grade, whatever a global _npc_grade does (WP2 has its own)",
-              (_zz_calls, len(_zz_rows)))
-        del _zz_trap
+        _zz_fns = [("_board_npc_grade", _board_npc_grade), ("board_partner_rows", board_partner_rows),
+                   ("_board_students", _board_students), ("board_npc_card", board_npc_card),
+                   ("board_summary", board_summary)]
+        _zz_bad = [n for n, fn in _zz_fns if "_npc_grade" in fn.__code__.co_names]
+        check(not _zz_bad, "no board function names the global _npc_grade (they read npc_stats via _board_npc_grade)", _zz_bad)
+        _zz_rows = board_partner_rows(board_offers[0])
+        check(_zz_rows and all(_board_npc_grade(w) == npc_stats(w).get("grade") for w in ZZ_STUDENTS),
+              "board grades come from npc_stats via _board_npc_grade, and the partner rows are filled",
+              ([(w, _board_npc_grade(w), npc_stats(w).get("grade")) for w in ZZ_STUDENTS], len(_zz_rows)))
 
     ## --- a promotion mid-week: the summary's senior_only follows my grade now ---------------------------------
     python:
@@ -522,6 +513,51 @@ label zz_smoke:
         check(all(p == "Afternoon" for w, p in _heard), "no line of the job plays after dark", _heard)
         check(period == "Night" and day == _d0 and stamina == 75, "and then the 2 periods and 25 stamina are charged once", (period, day, stamina))
         check(board_clock(_r) is False and period == "Night", "the clock is charged only once")
+
+    ## --- the clock stops where a story beat is waiting (WP11) ------------------------------------------------------
+    ## A job costs two periods; one taken in the Morning must not jump a
+    ## Noon-only beat (m_roster's st_roster), so the clock stops at Noon when a
+    ## beat is waiting there, the way the sandbox loop would find it.
+    python:
+        def zz_clock_run(beat_periods, beat_loc=None, explore=False, start="Morning"):
+            """Take and clock one job with a stand-in story beat registered;
+            returns (period, day, stamina, the loop's pick at the end, charged again?)."""
+            zz_open_state(period=start, explore_mode=explore)
+            board_refresh()
+            _d = day
+            ev("zz_beat", kind="story", loc=beat_loc, periods=beat_periods, priority=999)
+            _e = EVENTS[-1]
+            try:
+                _o = [o for o in board_offers_open() if not o["senior_only"]][0]
+                _r = board_take(_o["id"], "nobara")
+                board_pay(_r)
+                board_clock(_r)
+                _pick = None if explore_mode else pick_event("story", loc=here)
+                _again = board_clock(_r)
+            finally:
+                EVENTS.remove(_e)
+            return (period, day - _d, stamina, _pick and _pick["label"], _again)
+
+        zz_open_state()
+        check(not board_beat_waiting() and not has_event("story", loc=here),
+              "(no real story beat waits in the fixture, so the stand-in is the only one)")
+        _c = zz_clock_run(["Noon"])
+        check(_c[:4] == ("Noon", 0, 75, "zz_beat"),
+              "a Morning job stops at Noon when a Noon-only beat is waiting, and the loop then plays it", _c)
+        check(_c[4] is False, "a job stopped early is still charged once", _c)
+        _c = zz_clock_run(["Afternoon"])
+        check(_c[:4] == ("Afternoon", 0, 75, "zz_beat"),
+              "an Afternoon-only beat doesn't shorten a Morning job: 2 periods pass and the beat is there", _c)
+        _c = zz_clock_run(["Noon"], beat_loc="zz_elsewhere")
+        check(_c[:3] == ("Afternoon", 0, 75), "a Noon beat somewhere else doesn't stop the clock", _c)
+        _c = zz_clock_run(["Noon"], explore=True)
+        check(_c[:3] == ("Afternoon", 0, 75), "in explore mode (no story beats) the job takes its 2 periods", _c)
+        _c = zz_clock_run(["Afternoon"], start="Noon")
+        check(_c[:4] == ("Afternoon", 0, 75, "zz_beat"),
+              "a Noon job stops at Afternoon for an Afternoon-only beat (m_second_years, m_intensive)", _c)
+        _c = zz_clock_run(["Evening"], start="Afternoon")
+        check(_c[:4] == ("Evening", 0, 75, "zz_beat"), "an Afternoon job stops at Evening for an Evening beat", _c)
+        check(not [e for e in EVENTS if e["label"] == "zz_beat"], "(the stand-in beat is gone again)")
 
     ## --- a narration frame, for the eye ----------------------------------------------------------
     python:
