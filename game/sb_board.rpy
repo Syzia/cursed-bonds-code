@@ -261,7 +261,7 @@ init -1 python:
         i = BOARD_GRADES.index(key) - 1
         return BOARD_GRADES[i] if i >= 0 else None
 
-    def _npc_grade(who):
+    def _board_npc_grade(who):
         try:
             return npc_stats(who).get("grade")
         except Exception:
@@ -432,7 +432,7 @@ init -1 python:
 
     def _board_students():
         return [w for w in ROSTER_ORDER if w in store.roster and w not in BOARD_NOT_PARTNERS
-                and grade_rank(_npc_grade(w)) >= 0]
+                and grade_rank(_board_npc_grade(w)) >= 0]
 
     def board_introduced():
         """WP4. True once the player has met the board: mission_board_open and
@@ -448,12 +448,12 @@ init -1 python:
         if not board_introduced():
             return None
         mine = _board_player_rank()
-        above = [w for w in _board_students() if grade_rank(_npc_grade(w)) > mine]
+        above = [w for w in _board_students() if grade_rank(_board_npc_grade(w)) > mine]
         if not above:
             return None
         week = board_week_now()
         who = _board_rng("npc", week).choice(above)
-        g = grade_key(_npc_grade(who))
+        g = grade_key(_board_npc_grade(who))
         if g not in BOARD_GRADES:
             g = "s1"
         posted = [o.get("place") for o in store.board_offers]
@@ -488,7 +488,7 @@ init -1 python:
         need = bool(offer) and board_needs_senior(offer)
         rows = []
         for w in _board_students():
-            senior = grade_rank(_npc_grade(w)) > mine
+            senior = grade_rank(_board_npc_grade(w)) > mine
             if char_location(w) is None:
                 rows.append((w, False, "Off campus right now", senior))
             elif need and not senior:
@@ -1098,7 +1098,7 @@ screen board_partner(offer):
     for _i, _r in enumerate(_good[:6]):
         $ _w, _k, _why, _sen = _r
         $ _c = CAST.get(_w, {})
-        $ _g = grade_key(_npc_grade(_w))
+        $ _g = grade_key(_board_npc_grade(_w))
         $ _b = bonds.get(_w, 0)
         $ _side = "images/side/%s_neutral.png" % _w
         button:
