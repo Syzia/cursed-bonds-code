@@ -94,6 +94,9 @@ init 999 python:
                 "utahime_office": [("Board · 3 jobs", "board")],
                 "gojo_office": [("Gojo is in", "info")]}
 
+    def zz_no_markers():
+        return {}
+
     def zz_fake_missions_here(loc):
         return ["m_sunmall"] if loc == "office" else []
 
@@ -101,10 +104,53 @@ init 999 python:
         return ["m_sunmall"] if who == "yaga" else []
 
 
+    ## --- what the script says (narration and dialogue), captured -----------------
+    import builtins as zz_builtins
+    ZZ_SAID = zz_builtins.list()
+    _zz_filter0 = config.say_menu_text_filter
+
+    def zz_said_filter(t):
+        ZZ_SAID.append(t)
+        return _zz_filter0(t) if _zz_filter0 else t
+
+    config.say_menu_text_filter = zz_said_filter
+
+    def zz_said(*bits):
+        """True when some captured line contains every bit."""
+        return any(all(b in t for b in bits) for t in ZZ_SAID)
+
+    ## --- pressing the map's real buttons ---------------------------------------------
+    ## zz_press finds a button on sb_map by its id and runs the action the
+    ## screen gave it, so these checks test what the map's rows and cards do.
+    ZZ_PRESSED = zz_builtins.list()
+
+    def zz_press_fn(wid):
+        w = renpy.get_widget("sb_map", wid)
+        if w is None:
+            ZZ_PRESSED.append((wid, None, None))
+            return ("zz_missing", wid)
+        a = getattr(w, "action", None)
+        ZZ_PRESSED.append((wid, a, getattr(w, "_tooltip", None)))
+        rv = renpy.run(a)
+        return rv if rv is not None else ("zz_nothing", wid)
+
+    def zz_pressed(wid):
+        """(action, tooltip) of the last press of wid."""
+        for w, a, t in reversed(ZZ_PRESSED):
+            if w == wid:
+                return a, t
+        return None, None
+
+
 ## Returns a value from whatever interaction is running (a called screen).
 screen zz_ret(value, delay=0.4):
     zorder 200
     timer delay action [Hide("zz_ret"), Return(value)]
+
+## Presses one of sb_map's buttons (by id) inside the running interaction.
+screen zz_press(wid, delay=0.4):
+    zorder 200
+    timer delay action [Hide("zz_press"), Function(zz_press_fn, wid)]
 
 
 label zz_smoke:
@@ -307,6 +353,28 @@ label zz_smoke:
         check(gojo_today == _gt0 and here == "courtyard", "migration 15 is idempotent")
         check(any(o == 15 for o, n, f in MIGRATIONS), "migration 15 registered")
 
+        ## The whole ordered list, twice, on a legacy save.
+        fixture(save_version=0, flags={"settled_in", "roll_call"}, gojo_today={"Morning": "-"},
+                here="zz_old_gone_place", day=5, period="Noon")
+        gojo_in = False
+        _up = run_migrations()
+        _snap = lambda: (day, period, here, dict(gojo_today), gojo_in, set(districts_visited), set(flags))
+        _s1 = _snap()
+        check(_up and here == "courtyard" and set(gojo_today) == set(PERIODS),
+              "run_migrations() on a legacy save: migration 15 re-rolls Gojo and moves me", _s1)
+        run_migrations()
+        check(_snap() == _s1, "run_migrations() twice: the second pass changes nothing", (_s1, _snap()))
+        gojo_today = None
+        run_migrations()
+        check(isinstance(gojo_today, dict) and set(gojo_today) == set(PERIODS), "migration 15 re-rolls gojo_today=None", gojo_today)
+        flags.discard("settled_in")
+        here = None
+        gojo_today = {p: "-" for p in PERIODS}
+        run_migrations()
+        check(here is None, "an unsettled save with here=None keeps None", here)
+        flag("settled_in")
+        here = "courtyard"
+
     ## --- 10. the ridge veil (D15) ----------------------------------------------------------------------
     python:
         settle(day=3, period="Afternoon", here="ridge")
@@ -317,21 +385,76 @@ label zz_smoke:
               "the veil action at the ridge", registered_place_actions("ridge"))
         check("veil" not in [a[0] for a in registered_place_actions("courtyard")], "the veil action is only at the ridge")
 
+    python:
+        _vn = veil_bg("Night")
+        check(getattr(_vn, "_light_key", None) == ("ridge", "Night"), "the veil picture is graded for Night, lit as the ridge", _vn)
+        check(getattr(veil_bg("Evening"), "_light_key", None) == ("ridge", "Evening"), "the veil picture is graded for the Evening")
+        for _f in ("asked_dead", "asked_why_here", "watched_the_box"):
+            flags.discard(_f)
+        flag("asked_why_here")
+
     $ autoplay()
     $ _vp = (day, period)
+    $ del ZZ_SAID[:]
     call sb_do_veil
     $ check(has_flag("looked_at_veil_1") and not has_flag("looked_at_veil_2"), "first look: passage 1")
+    $ check(zz_said("The grass inside it doesn't move"), "passage 1: the grass, not trees, inside the veil")
     $ check((day, period) == _vp and not veil_ok(), "the veil costs no time, and once a day", (day, period))
     $ actions_today.discard("veil")
+    $ del ZZ_SAID[:]
     call sb_do_veil
     $ actions_today.discard("veil")
     $ check(has_flag("looked_at_veil_2") and not has_flag("looked_at_veil_3"), "second look: passage 2")
+    $ check(zz_said("Somebody at this school is holding it up") and not zz_said("Nine people"),
+            "passage 2 without asked_dead doesn't quote Gojo", [t for t in ZZ_SAID][:4])
+    $ check(zz_said("Today the light is flat"), "passage 2 in daylight")
+    $ del ZZ_SAID[:]
     call sb_do_veil
     $ actions_today.discard("veil")
-    $ check(has_flag("looked_at_veil_3"), "third look: passage 3 (It's facing the school.)")
+    $ check(has_flag("looked_at_veil_3"), "third look: passage 3")
+    $ check(zz_said("Something is different") and zz_said("It's facing the school."),
+            "passage 3, first time (not watched_the_box): the discovery, ending 'It's facing the school.'")
+    $ day = 5          # (5 % 3) + 1 == 3: the rotation lands on passage 3 again
+    $ del ZZ_SAID[:]
     call sb_do_veil
-    $ check((day, period) == _vp, "a fourth look rotates, still free")
+    $ actions_today.discard("veil")
+    $ check((day, period) == (5, _vp[1]), "a fourth look rotates, still free")
+    $ check(zz_said("I keep telling myself") and not zz_said("Something is different") and zz_said("It's facing the school."),
+            "passage 3 again: no second discovery, still ends 'It's facing the school.'")
+
+    ## The other tour choices, and Night.
+    python:
+        for _f in ("looked_at_veil_1", "looked_at_veil_2", "looked_at_veil_3", "asked_why_here"):
+            flags.discard(_f)
+        flag("watched_the_box")
+        flag("looked_at_veil_1")
+        flag("looked_at_veil_2")
+        del ZZ_SAID[:]
+    call sb_do_veil
+    $ actions_today.discard("veil")
+    $ check(zz_said("I keep telling myself") and not zz_said("Something is different"),
+            "watched_the_box: passage 3 is something I already know")
+    python:
+        flags.discard("looked_at_veil_2")
+        flags.discard("watched_the_box")
+        flag("asked_dead")
+        period = "Night"
+        del ZZ_SAID[:]
+    call sb_do_veil
+    $ actions_today.discard("veil")
+    $ check(zz_said("Nine people take turns holding it up, Gojo said."), "asked_dead: passage 2 quotes Gojo")
+    $ check(zz_said("After dark it is almost nothing") and not zz_said("Today the light is flat"), "passage 2 at Night")
     $ autoplay(False)
+    python:
+        renpy.scene()
+        renpy.show("ridge_veil_night", what=veil_bg("Night"))
+        shot("veil_night")
+        renpy.scene()
+        renpy.show("ridge_veil_noon", what=veil_bg("Noon"))
+        shot("veil_noon")
+        renpy.scene()
+        flags.discard("asked_dead")
+        period = "Afternoon"
 
     ## --- 11. Tokyo: the districts ------------------------------------------------------------------------
     python:
@@ -392,8 +515,39 @@ label zz_smoke:
     $ autoplay(False)
     $ check((day, period, here) == (2, "Afternoon", "gate"), "sb_trip started in the Morning under autoplay ends in the Afternoon, at the gate", (day, period, here))
     $ check(districts_visited == {"shibuya"}, "the trip is recorded in districts_visited", districts_visited)
+    $ check(zz_said("I walk down to the gate.") and zz_said("Seatbelt, please."), "a trip from the courtyard walks to the gate; the first trip's Ijichi line")
+    $ check(not hasattr(store, "_trip"), "the trip keeps no district dict in the store")
+
+    ## The "Go." / "Not today." menu, picked at random (not the autoplay shortcut).
+    python:
+        _outs = []
+    $ _zz_i = 0
+    while _zz_i < 12:
+        python:
+            day = 10 + _zz_i
+            period = "Morning"
+            here = "courtyard"
+            districts_visited = {"shibuya"}
+            del ZZ_SAID[:]
+            autoplay()
+            smoke_autoplay = False
+        call sb_trip("harajuku")
+        python:
+            autoplay(False)
+            _outs.append((period, here, "harajuku" in districts_visited, zz_said("Half a day in "),
+                          zz_said("Seatbelt, please.")))
+            _zz_i += 1
+    python:
+        _gone = [o for o in _outs if o[:3] == ("Afternoon", "gate", True)]
+        _stay = [o for o in _outs if o[:3] == ("Morning", "courtyard", False)]
+        check(len(_gone) + len(_stay) == len(_outs) and all(o[3] for o in _outs),
+              "the trip menu: every outcome is 'Go.' (Afternoon, gate, visited) or 'Not today.' (unchanged)", _outs)
+        check(_gone and _stay, "the trip menu: both choices came up in 12 tries", (len(_gone), len(_stay)))
+        check(not any(o[4] for o in _gone), "later trips play a different Ijichi line")
 
     ## A trip that can't start does nothing.
+    $ districts_visited = {"shibuya"}
+    $ here = "gate"
     $ period = "Evening"
     call sb_trip("harajuku")
     $ check(period == "Evening" and "harajuku" not in districts_visited, "no trip in the Evening")
@@ -402,37 +556,61 @@ label zz_smoke:
     call sb_trip("shinjuku")
     $ check(period == "Morning" and "shinjuku" not in districts_visited, "no trip to a locked district")
 
-    ## The car action: the Tokyo map returns a district, then the trip plays.
+    ## The car action: pressing the Yotsuka card on the Tokyo map starts the trip.
     $ day = 3
     $ period = "Noon"
     $ here = "gate"
+    $ grade = "g4"
     $ autoplay()
-    show screen zz_ret(("district", "yotsuka"))
+    show screen zz_press("district_yotsuka")
     call sb_do_car
     $ autoplay(False)
     $ check((day, period, here) == (3, "Evening", "gate") and "yotsuka" in districts_visited,
-            "the car: Tokyo map -> district -> half a day (Noon -> Evening)", (day, period, here, districts_visited))
+            "the car: pressing a district card -> half a day (Noon -> Evening)", (day, period, here, districts_visited))
 
-    ## The car action: the Campus tab walks me somewhere instead.
+    ## sb_do_car's other returns (the Campus tab's walk, cancel), fed by a
+    ## timer: these test sb_do_car's handling, not the map's buttons.
     $ period = "Morning"
     $ here = "gate"
     show screen zz_ret(("go", "courtyard"))
     call sb_do_car
-    $ check((period, here) == ("Morning", "courtyard"), "the car: a campus place walks there for free", (period, here))
+    $ check((period, here) == ("Morning", "courtyard"), "sb_do_car: a returned ('go', place) walks there for free", (period, here))
     $ here = "gate"
     show screen zz_ret(("cancel",))
     call sb_do_car
-    $ check((period, here) == ("Morning", "gate"), "the car: cancel stays put")
+    $ check((period, here) == ("Morning", "gate"), "sb_do_car: a returned cancel stays put")
 
-    ## sb_map returns what the loop expects, from both layers.
+    ## The map's real buttons, pressed inside the protected-style call.
     $ here = "gate"
     $ period = "Morning"
-    show screen zz_ret(("go", "cafeteria"))
+    $ flags.discard("storehouse_access")
+    show screen zz_press("row_cafeteria")
     call screen sb_map
-    $ check(_return == ("go", "cafeteria"), "sb_map returns to the protected call", _return)
-    show screen zz_ret(("district", "harajuku"))
+    $ check(_return == ("go", "cafeteria"), "sb_map: pressing an open row returns ('go', place) to the call", _return)
+    show screen zz_press("row_storehouse")
+    call screen sb_map
+    $ _a, _t = zz_pressed("row_storehouse")
+    $ check(_return == ("zz_nothing", "row_storehouse") and _a.__class__.__name__ == "NullAction",
+            "sb_map: a locked row's action is NullAction", (_return, _a))
+    $ check(_t == can_enter("storehouse")[1], "sb_map: a locked row's tooltip is can_enter's reason", _t)
+    show screen zz_press("row_gate")
+    call screen sb_map
+    $ _a, _t = zz_pressed("row_gate")
+    $ check(_a.__class__.__name__ == "NullAction", "sb_map: my own row does nothing", _a)
+    show screen zz_press("district_harajuku")
     call screen sb_map(layer="tokyo")
-    $ check(_return == ("district", "harajuku"), "sb_map(layer='tokyo') returns a district", _return)
+    $ check(_return == ("district", "harajuku"), "sb_map(layer='tokyo'): pressing an open district returns ('district', key)", _return)
+    show screen zz_press("district_shinjuku")
+    call screen sb_map(layer="tokyo")
+    $ _a, _t = zz_pressed("district_shinjuku")
+    $ check(_a.__class__.__name__ == "NullAction", "sb_map(layer='tokyo'): a locked district (Shinjuku at g4) does nothing", _a)
+    $ period = "Evening"
+    show screen zz_press("district_harajuku")
+    call screen sb_map(layer="tokyo")
+    $ _a, _t = zz_pressed("district_harajuku")
+    $ check(_a.__class__.__name__ == "NullAction" and _t == "Ijichi drives from the gate, mornings to afternoons.",
+            "sb_map(layer='tokyo'): an open district in the Evening does nothing and says when he drives", (_a, _t))
+    $ period = "Morning"
 
     ## --- 13. screenshots: the map ------------------------------------------------------------------------------
     ## Day 1, the way a new game sees it: six areas, who is where, Tokyo locked.
@@ -449,6 +627,8 @@ label zz_smoke:
         _s = renpy.get_screen("sb_map")
         check(_s is not None, "the campus map renders (day 1)")
         check(not tokyo_open(), "day 1: the Tokyo tab is locked")
+        check(map_place_name("utahime_office") == "Empty Office" and LOCATIONS["utahime_office"]["name"] == "Utahime's Office",
+              "before she arrives, the map calls Utahime's office 'Empty Office'")
         renpy.hide_screen("sb_map")
 
     ## A busier campus: everyone recruited, Utahime in, Gojo in, markers, noon.
@@ -466,6 +646,19 @@ label zz_smoke:
         zz_shot("map_campus_busy")
         check(renpy.get_screen("sb_map") is not None, "the campus map renders (busy, with markers)")
         renpy.hide_screen("sb_map")
+        check(map_place_name("utahime_office") == "Utahime's Office", "after she arrives, the map names her office")
+        ## A weekday Evening: the common room is the busiest row.
+        mission_markers = zz_no_markers
+        period = "Evening"
+        here = "courtyard"
+        _rows = dict((l, (h, b)) for a, x, y, rs in map_cards({}) for l, h, b in rs)
+        check(_rows["dorm_common"] == (MAP_ROW_H_MARKED, True), "a crowded row puts its people on a second line", _rows["dorm_common"])
+        _sh, _mo = map_people("dorm_common", MAP_ROW_W - 28, cap=6)
+        check(len(_sh) >= 3, "the crowded row shows at least three names", (_sh, _mo, who_is_here("dorm_common")))
+        renpy.show_screen("sb_map")
+        zz_shot("map_campus_evening")
+        renpy.hide_screen("sb_map")
+        mission_markers = zz_fake_markers
         period = "Night"
         here = "dorm"
         renpy.show_screen("sb_map")

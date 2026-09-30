@@ -60,16 +60,21 @@ init -3 python:
         _bg_tinted("city_night.png", SaturationMatrix(0.7) * BrightnessMatrix(-0.3))))
 
     ## The districts. Shibuya: the skyline, pink neon. Shinjuku: the towers
-    ## close up, cold. Harajuku: a shopfront (the konbini) in bright pink
-    ## daylight. Kawasaki: low roofs, bleached. Yotsuka: the street at home.
+    ## close up, cold. Harajuku: a daytime street (the town street, mirrored
+    ## and closer), bright pink. Kawasaki: the low roofs beside the house
+    ## in street_morning, cropped so the house is out of frame, bleached.
+    ## Yotsuka: home, the street my parents' house is on (street_morning, as
+    ## the prologue shows it the morning I leave).
     renpy.image("bg shibuya", bg_placeholder("images/bg/shibuya.png",
         _bg_tinted("city_night.png", TintMatrix("#ffbfe6") * BrightnessMatrix(0.02))))
     renpy.image("bg harajuku", bg_placeholder("images/bg/harajuku.png",
-        _bg_tinted("konbini.png", TintMatrix("#ffd6ea") * BrightnessMatrix(0.10), xzoom=-1.0)))
+        _bg_tinted("town_street.png", TintMatrix("#ffc8e4") * SaturationMatrix(1.2) * BrightnessMatrix(0.06),
+                   crop=(0, 120, 1280, 720), xysize=(1920, 1080), xzoom=-1.0)))
     renpy.image("bg shinjuku", bg_placeholder("images/bg/shinjuku.png",
         _bg_tinted("city_night.png", TintMatrix("#b4ecff") * BrightnessMatrix(-0.06),
                    crop=(760, 160, 960, 540), xysize=(1920, 1080))))
     renpy.image("bg kawasaki", bg_placeholder("images/bg/kawasaki.png",
-        _bg_tinted("town_street.png", TintMatrix("#e6e2da") * SaturationMatrix(0.7) * BrightnessMatrix(-0.04))))
+        _bg_tinted("street_morning.png", TintMatrix("#ece6da") * SaturationMatrix(0.5) * BrightnessMatrix(0.03),
+                   crop=(1180, 130, 740, 416), xysize=(1920, 1080))))
     renpy.image("bg yotsuka", bg_placeholder("images/bg/yotsuka.png",
         _bg_tinted("street_morning.png", TintMatrix("#ffe4c4"))))

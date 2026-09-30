@@ -24,7 +24,7 @@ init -1 python:
     DISTRICTS = {
         "shibuya": dict(
             name="Shibuya", kanji="渋谷",
-            desc="The busiest crossing in the world, and I'm about to be part of it.",
+            desc="The busiest crossing in the world. A thousand people, and nobody touches anybody.",
             places="The scramble crossing, the station, an arcade, a café",
             bg="bg shibuya", min_grade=None, needs_flag=None,
             locked_hint="After Ijichi's ride-along",
@@ -46,12 +46,12 @@ init -1 python:
             ]),
         "shinjuku": dict(
             name="Shinjuku", kanji="新宿",
-            desc="Neon, towers, and the jobs they don't give first-years.",
+            desc="Neon, towers, and the jobs that need a Grade 2.",
             places="Neon streets, the station, rooftops at night",
             bg="bg shinjuku", min_grade="g2", needs_flag=None,
             locked_hint="Grade 2",
             lines=[
-                "Shinjuku is lit up like it's trying to keep something out.",
+                "Even at noon Shinjuku keeps its signs lit, like it's trying to keep something out.",
                 "The station swallows people on one side and lets them out on the other, a little more tired.",
                 "Up on the roofs the signs are taller than the buildings under them. Anything could be sitting behind one.",
             ]),
@@ -73,7 +73,7 @@ init -1 python:
             locked_hint="After Ijichi's ride-along",
             lines=[
                 "Yotsuka hasn't changed. It feels like something it should have asked me about first.",
-                "I walk past the diner without looking in. Then I walk back and look in. Our booth has two strangers in it, sharing a plate of fries.",
+                "I walk past the diner without looking in. Then I walk back and look in. Two kids in school uniform have our stools at the counter, and one of them is pushing a half-finished bowl at the other.",
                 "There's a new light over the fire door in the alley behind the arcade. I don't go down it.",
             ]),
     }
@@ -117,14 +117,16 @@ init -1 python:
 ## Half a day in a district, then back at the gate (3.3). A trip that starts
 ## in the Morning ends in the Afternoon. It returns at once when the district
 ## is closed or Ijichi isn't driving now. Under the test harness's autoplay
-## (smoke_autoplay) the "Go." / "Not today." menu is taken as "Go.".
+## (smoke_autoplay) the "Go." / "Not today." menu is taken as "Go.". The map's
+## Tokyo tab can start a trip from anywhere on campus; I walk down to the gate
+## first (walking is free). Only plain values stay in the store: the district
+## is read from DISTRICTS[key] each time.
 label sb_trip(key):
     ## PLACEHOLDER — rewrite in phase 3
     ## (the arrival lines stand in for the district scenes, label district_<key>)
     if key not in DISTRICTS or not district_state(key)[0] or not trip_ok_now():
         return
-    $ _trip = DISTRICTS[key]
-    $ _trip_name = _trip["name"].split(" — ")[-1]      # "Yotsuka", not "Home — Yotsuka"
+    $ _trip_name = DISTRICTS[key]["name"].split(" — ")[-1]      # "Yotsuka", not "Home — Yotsuka"
 
     if not smoke_autoplay:
         menu:
@@ -134,18 +136,36 @@ label sb_trip(key):
             "Not today.":
                 return
 
+    if here != "gate":
+        "I walk down to the gate. Ijichi is already holding the car door."
+
     scene bg car
     with Dissolve(0.4)
-    ijichi "Seatbelt, please. And if you see anything, anything at all, you call me first. Before you do something about it. Please."
+    if not districts_visited:
+        show ijichi serious at pos_c
+        with dissolve
+        ijichi "Seatbelt, please. And if you see anything, anything at all, you call me first. Before you do something about it. Please."
+    elif day % 3 == 0:
+        show ijichi neutral at pos_c
+        with dissolve
+        ijichi "Back at the gate by the usual time, please. I've already filed the mileage."
+    elif day % 3 == 1:
+        show ijichi sad at pos_c
+        with dissolve
+        ijichi "Please don't tell Gojo-san I let you out alone. He'll want to come next time."
+    else:
+        show ijichi serious at pos_c
+        with dissolve
+        ijichi "If anything feels wrong, walk away from it first and call me second. In that order, please."
 
     ## (renpy.show skips config.show, so the sprite light is set here.)
     $ renpy.scene()
-    $ scene_light = light_for_bg(_trip["bg"])
-    $ renpy.show(_trip["bg"])
+    $ scene_light = light_for_bg(DISTRICTS[key]["bg"])
+    $ renpy.show(DISTRICTS[key]["bg"])
     with Dissolve(0.6)
     $ _trip_i = 0
-    while _trip_i < len(_trip["lines"]):
-        $ renpy.say(None, _trip["lines"][_trip_i])
+    while _trip_i < len(DISTRICTS[key]["lines"]):
+        $ renpy.say(None, DISTRICTS[key]["lines"][_trip_i])
         $ _trip_i += 1
 
     $ districts_visited.add(key)

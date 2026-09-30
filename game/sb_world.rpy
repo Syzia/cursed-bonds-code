@@ -523,6 +523,23 @@ init -2 python:
     register_place_action("veil", "Look up at the veil", "Free. Once a day.",
                           locs=("ridge",), when="veil_ok")
 
+    def veil_bg(per=None):
+        """WP1. The veil picture (bg ridge_veil) lit for the period, the way
+        graded_bg() lights the ridge outside, so a look at Night stays night.
+        Marked with _light_key ("ridge", per) so sprites are lit to match."""
+        per = per or store.period
+        key = ("ridge_veil", per)
+        if key in _BG_CACHE:
+            return _BG_CACHE[key]
+        tint, bright = OUTDOOR_GRADE.get(per, ("#ffffff", 0.0))
+        if tint == "#ffffff" and abs(bright) < 0.001:
+            d = "bg ridge_veil"
+        else:
+            d = Transform("bg ridge_veil", matrixcolor=TintMatrix(tint) * BrightnessMatrix(bright))
+            d._light_key = ("ridge", per)
+        _BG_CACHE[key] = d
+        return d
+
     ## Migration 15 (3.12) --------------------------------------------------------
 
     def _migrate_15():
@@ -589,29 +606,47 @@ init -2 python:
 ## "Look up at the veil": free, once a day, on the ridge, after the tour has
 ## shown it (flag saw_the_ridge_veil). Three short passages, in order the
 ## first three times (flags looked_at_veil_1..3), then rotating by the day.
+## The lines follow the tour: only the "dead" choice (asked_dead) heard Gojo
+## say who holds the veil, and the "say nothing" choice (watched_the_box)
+## already saw which way the body faces, so the discovery in passage 3 plays
+## once, for the others, and the rest of the time it is something I know.
 
 label sb_do_veil:
+    ## PLACEHOLDER — rewrite in phase 3
     $ actions_today.add("veil")
     $ _veil_n = next((n for n in (1, 2, 3) if not has_flag("looked_at_veil_%d" % n)), (day % 3) + 1)
+    $ _veil_new = not has_flag("looked_at_veil_%d" % _veil_n)
     $ flag("looked_at_veil_%d" % _veil_n)
-    scene bg ridge_veil
+    scene expression veil_bg()
     with Dissolve(0.6)
 
     if _veil_n == 1:
         "I look up past the rope markers."
-        "The veil sits on the top of the ridge like weather that has decided not to move: a dome, dark, faintly violet at its edges. The trees inside it stand a little too still."
+        "The veil sits on the top of the ridge like weather that has decided not to move: a dome, dark, faintly violet at its edges. The grass inside it doesn't move when the grass outside does."
         "If I let my eyes do the new thing they do, there is a shape in the middle of it. Sitting. Cross-legged, the way a monk sits."
         "I stop letting my eyes do the new thing."
 
     elif _veil_n == 2:
-        "The veil again. In daylight it is almost nothing, a smudge on the ridge, like heat over a road in summer."
-        "Nine people take turns holding it up, Gojo said. I wonder which one of them is holding it now, and whether they can feel me looking."
+        if period == "Night":
+            "The veil again. After dark it is almost nothing, a patch of the ridge where the stars don't quite reach."
+        else:
+            "The veil again. Today the light is flat and it is almost nothing, a smudge on the ridge, like heat over a road in summer."
+        if has_flag("asked_dead"):
+            "Nine people take turns holding it up, Gojo said. I wonder which one of them is holding it now, and whether they can feel me looking."
+        else:
+            "Somebody at this school is holding it up right now. I wonder who, and whether they can feel me looking."
         "The figure hasn't moved. Its hands are still in its lap, and they are still missing their fingers."
 
-    else:
+    elif _veil_new and not has_flag("watched_the_box"):
         "I look up at the veil the way I've started to, the way I check a stove I already know is off."
         "Same dome. Same held quiet. Same dry brown shape in the middle of it, sitting with its hands in its lap."
         "Something is different, and it takes me a long moment to work out what."
+        mcthink "It's facing the school."
+
+    else:
+        "I look up at the veil the way I've started to, the way I check a stove I already know is off."
+        "Same dome. Same held quiet. Same dry brown shape in the middle of it, hands in its lap."
+        "I keep telling myself it faces the valley. Out, away, at nothing in particular."
         mcthink "It's facing the school."
 
     scene expression graded_bg()

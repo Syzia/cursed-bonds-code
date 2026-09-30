@@ -101,13 +101,13 @@ init -1 python:
             return True
         return has_event("hangout", who, loc)
 
-    def map_people(loc, budget):
-        """WP1. ([(short, colour, news)], hidden): up to 3 of the people at loc
-        whose names fit in `budget` pixels, then how many more there are."""
+    def map_people(loc, budget, cap=3):
+        """WP1. ([(short, colour, news)], hidden): up to `cap` of the people at
+        loc whose names fit in `budget` pixels, then how many more there are."""
         folk = who_is_here(loc)
         shown, used = [], 0
         for w in folk:
-            if len(shown) == 3:
+            if len(shown) == cap:
                 break
             c = CAST.get(w, {})
             nm = c.get("short", w.title())
@@ -129,13 +129,51 @@ init -1 python:
         """WP1. The row's second line, from mission_markers()."""
         return "  ·  ".join(t for t, k in (marks.get(loc) or []))
 
+    def map_place_name(loc):
+        """WP1. A place's name on the map. Utahime's office reads "Empty
+        Office" until she arrives (LOCATIONS keeps the real name)."""
+        if loc == "utahime_office" and not has_flag("utahime_arrived"):
+            return "Empty Office"
+        return LOCATIONS[loc]["name"]
+
+    def map_name_budget(loc):
+        """WP1. The pixels left for names beside a place's name on its row."""
+        return MAP_ROW_W - 28 - map_text_width(map_place_name(loc), gui.display_font, 20) - 14
+
+    def map_row_below(loc, marks):
+        """WP1. True when a row shows its people on a second line: nothing
+        else is there (no markers), the row is open and not mine, and more
+        than one person wouldn't fit beside the name."""
+        if marks.get(loc) or loc == store.here or not place_access(loc)[0]:
+            return False
+        folk = who_is_here(loc)
+        return len(folk) > 1 and map_people(loc, map_name_budget(loc))[1] > 0
+
+    def map_row_action(loc):
+        """WP1. What a place's row does: ("go", loc) when it's open and not
+        where I am; a locked row does nothing (it only shows its reason)."""
+        if loc == store.here or not place_access(loc)[0]:
+            return NullAction()
+        return Return(("go", loc))
+
+    def map_district_action(key):
+        """WP1. What a district card does: ("district", key) when it's open
+        and Ijichi is driving now (trip_ok_now()), else nothing."""
+        if district_state(key)[0] and trip_ok_now():
+            return Return(("district", key))
+        return NullAction()
+
     def map_cards(marks):
-        """WP1. [(area, x, y, [(loc, row_h)])]: each card's top-left corner,
-        centred on its anchor and kept between the header and the strip."""
+        """WP1. [(area, x, y, [(loc, row_h, below)])]: each card's top-left
+        corner, centred on its anchor and kept between the header and the
+        strip. below: the row's people go on its second line."""
         out = []
         for a in AREAS:
-            rows = [(l, MAP_ROW_H_MARKED if marks.get(l) else MAP_ROW_H) for l in a["places"]]
-            h = 2 * MAP_CARD_PAD + MAP_CARD_HEAD + sum(MAP_CARD_GAP + rh for l, rh in rows)
+            rows = []
+            for l in a["places"]:
+                below = map_row_below(l, marks)
+                rows.append((l, MAP_ROW_H_MARKED if (marks.get(l) or below) else MAP_ROW_H, below))
+            h = 2 * MAP_CARD_PAD + MAP_CARD_HEAD + sum(MAP_CARD_GAP + rh for l, rh, b in rows)
             ax, ay = a["anchor"]
             y = int(ay - h / 2)
             y = max(MAP_TOP, min(y, MAP_BOTTOM - h))
@@ -284,11 +322,8 @@ screen sb_map(layer="campus"):
                     if _topen:
                         text _("Tokyo") font gui.body_medium_font size 20 color (gui.paper if view == "tokyo" else gui.dim) yalign 0.5
                     else:
-                        vbox:
-                            yalign 0.5
-                            spacing 0
-                            text _("Tokyo") font gui.body_medium_font size 18 color gui.mute
-                            text _("After Ijichi's ride-along") font gui.body_medium_font size 13 color gui.seal
+                        text _("Tokyo") font gui.body_medium_font size 20 color gui.dim yalign 0.5
+                        text _("After Ijichi's ride-along") font gui.body_medium_font size 16 color gui.seal yalign 0.5
         text _("Walking is free. Doing something takes time."):
             xalign 0.5
             color gui.dim
@@ -350,20 +385,20 @@ screen sb_map_campus():
                     if _wait:
                         text "◆ [_wait]" font gui.body_medium_font size 20 color gui.gold xalign 1.0 yalign 0.5
 
-                for _k, _rh in _rows:
-                    $ _L = LOCATIONS[_k]
+                for _k, _rh, _below in _rows:
                     $ _ok, _why, _short = place_access(_k)
                     $ _cur = (_k == here)
-                    $ _nm = _L["name"]
+                    $ _nm = map_place_name(_k)
                     $ _mk = map_markers_text(_marks, _k)
-                    $ _budget = MAP_ROW_W - 28 - map_text_width(_nm, gui.display_font, 20) - 14
+                    $ _budget = map_name_budget(_k)
                     button:
+                        id ("row_" + _k)
                         style ("sb_map_row_here" if _cur else ("sb_map_row" if _ok else "sb_map_row_locked"))
                         xsize MAP_ROW_W
                         ysize _rh
                         sensitive (not _cur)
                         tooltip (_why if not _ok else None)
-                        action (Return(("go", _k)) if _ok else NullAction())
+                        action map_row_action(_k)
                         fixed:
                             xfill True
                             yfill True
@@ -377,11 +412,14 @@ screen sb_map_campus():
                             elif not _ok:
                                 text "[_short!q]" font gui.body_medium_font size 15 color gui.seal xalign 1.0 ypos 22 yanchor 0.5
                             else:
-                                $ _shown, _more = map_people(_k, _budget)
+                                if _below:
+                                    $ _shown, _more = map_people(_k, MAP_ROW_W - 28, cap=6)
+                                else:
+                                    $ _shown, _more = map_people(_k, _budget)
                                 hbox:
                                     spacing 8
-                                    xalign 1.0
-                                    ypos 22
+                                    xalign (0.0 if _below else 1.0)
+                                    ypos (47 if _below else 22)
                                     yanchor 0.5
                                     for _sn, _sc, _news in _shown:
                                         hbox:
@@ -456,6 +494,7 @@ screen sb_map_tokyo():
         $ _seen = (_dk in districts_visited)
         $ _go = _open and _now
         button:
+            id ("district_" + _dk)
             style "sb_map_district"
             xanchor 0.5
             yanchor 0.5
@@ -463,12 +502,12 @@ screen sb_map_tokyo():
             ypos _pos[1]
             sensitive _open
             tooltip (None if _go else _("Ijichi drives from the gate, mornings to afternoons."))
-            action (Return(("district", _dk)) if _go else NullAction())
+            action map_district_action(_dk)
             vbox:
                 spacing 5
                 hbox:
                     spacing 14
-                    text _d["kanji"] font gui.display_heavy_font size 44 color (gui.seal if _go else gui.mute) yalign 0.5
+                    text _d["kanji"] font gui.display_heavy_font size 48 color (gui.seal if _go else gui.mute) yalign 0.5
                     text _d["name"] font gui.display_font size 24 color (gui.paper if _open else gui.dim) yalign 0.5
                 hbox:
                     spacing 6

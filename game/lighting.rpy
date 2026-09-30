@@ -65,9 +65,9 @@ init -10 python:
         "bg gojo_office":        ("#ffe4ee", 0.00, 1.00, 0.47),
         "bg map_tokyo":          ("#b0bbe6", -0.08, 0.85, 0.39),
         "bg shibuya":            ("#dcc4ea", -0.06, 0.90, 0.41),
-        "bg harajuku":           ("#fff0f4", 0.00, 1.00, 0.55),
+        "bg harajuku":           ("#ffeef6", 0.02, 1.00, 0.55),   # pink daylight
         "bg shinjuku":           ("#b8c8ea", -0.08, 0.85, 0.39),
-        "bg kawasaki":           ("#f0ece4", -0.02, 0.92, 0.49),
+        "bg kawasaki":           ("#f2eee6", 0.00, 0.88, 0.50),   # bleached daylight
         "bg yotsuka":            ("#fff0e0", 0.00, 1.00, 0.55),
     }
 
