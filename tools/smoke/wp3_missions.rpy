@@ -375,6 +375,17 @@ label zz_smoke:
         merit = 20
         run_migrations()
         check(merit == 20 + 5 + 30, "migration 60: no second ch5 payment after recommended_g3", merit)
+        ## A save that finished the Sun Mall before ch5 paid: migration 60 pays
+        ## the 20 and sets recommended_g3, as ch5 does, and pays it only once.
+        zz_reset()
+        flags = {"settled_in", "sunmall_done"}
+        done_events = {"st_roll_call", "st_utahime_office", "ev_mission_sunmall"}
+        run_migrations()
+        check(has_flag("recommended_g3") and "ch5_recommendation" in merit_granted and merit == 5 + 30 + 20,
+              "migration 60: the Sun Mall recommendation sets recommended_g3", (sorted(flags), merit))
+        save_version = 0
+        run_migrations()
+        check(merit == 5 + 30 + 20, "migration 60: run again, the recommendation is not paid twice", merit)
         ## Utahime met in an old save stays on the roster.
         zz_reset()
         flags = {"settled_in", "utahime_arrived"}
@@ -455,6 +466,92 @@ label zz_smoke:
         check(current_objective()["mid"] == "m_promo_g3", "stranded: the objective still points at the promotion")
         mission_state = {}
         mission_cache_clear()
+
+    ## --- 1c. a save that left the Sun Mall or a Nade mission through a recovery ---------------
+    ## play_event marks the event done before the scene, so such a save has the
+    ## event but not the closing flag the next step requires. The mission must
+    ## read as not done and be offered again (WP11, WP3-o4).
+    python:
+        zz_reset()
+        flags = {"settled_in", "roll_call", "utahime_arrived"}
+        done_events = {"st_roll_call", "st_utahime_office", "ev_mission_sunmall"}
+        roster = roster + ["utahime"]
+        run_migrations()
+        day = 10
+        mission_cache_clear()
+        check(mission_status("m_sunmall") != "done" and "m_sunmall" not in missions_done,
+              "recovered Sun Mall: m_sunmall is not done without sunmall_done", mission_status("m_sunmall"))
+        check(mission_status("m_aftermath") == "locked", "recovered Sun Mall: m_aftermath waits for it",
+              (mission_status("m_aftermath"), mission_reason("m_aftermath")))
+        check(current_objective()["mid"] == "m_sunmall", "recovered Sun Mall: the objective points at it again",
+              current_objective())
+        _zz_ok = []
+        for _d in range(10, 17):
+            for _p in PERIODS:
+                day, period = _d, _p
+                _zz_ok.append(("m_sunmall" in missions_here("office")) == ("yaga" in who_is_here("office")))
+        check(_zz_ok and all(_zz_ok),
+              "recovered Sun Mall: offered in the office exactly while Yaga is there", _zz_ok)
+        _zz_at = None
+        for _d in range(10, 17):
+            for _p in PERIODS:
+                day, period = _d, _p
+                if "yaga" in who_is_here("office"):
+                    _zz_at = (_d, _p)
+                    break
+            if _zz_at:
+                break
+        check(_zz_at is not None and "m_sunmall" in missions_here("office"),
+              "recovered Sun Mall: Yaga offers it some day that week", _zz_at)
+        ## Nade 1, the same shape: replayed through start_mission, it finishes.
+        zz_reset()
+        grade = "g3"
+        flags = {"settled_in", "roll_call", "utahime_arrived", "sunmall_done", "recommended_g3",
+                 "aftermath_done", "kurose_met", "met_second_years", "oda_letter_read", "intensive_done"}
+        done_events = {"st_roll_call", "st_utahime_office", "ev_mission_sunmall", "st_aftermath", "st_kurose",
+                       "st_second_years", "st_noise", "st_oda_letter", "st_intensive", "ms_nade_1"}
+        roster = roster + ["utahime", "maki", "panda", "toge"]
+        merit = 200
+        run_migrations()
+        day = 30
+        mission_cache_clear()
+        check(mission_status("m_nade_1") != "done" and mission_status("m_kurose_2") == "locked",
+              "recovered Nade 1: m_nade_1 is not done without nade_named, and the next step waits",
+              (mission_status("m_nade_1"), mission_status("m_kurose_2")))
+        _zz_at = None
+        for _d in range(30, 37):
+            for _p in PERIODS:
+                day, period = _d, _p
+                if "m_nade_1" in missions_here("office"):
+                    _zz_at = (_d, _p)
+                    break
+            if _zz_at:
+                break
+        check(_zz_at is not None, "recovered Nade 1: Yaga offers it again", (_zz_at, mission_status("m_nade_1"),
+              mission_reason("m_nade_1")))
+        day, period = _zz_at or (30, "Morning")
+        here = "office"
+    if _zz_at:
+        $ autoplay()
+        call start_mission("m_nade_1")
+        $ autoplay(False)
+    python:
+        check(has_flag("nade_named") and mission_status("m_nade_1") == "done"
+              and mission_status("m_kurose_2") in ("available", "waiting"),
+              "recovered Nade 1: start_mission replays it to the end and the chain moves on",
+              (sorted(flags), mission_status("m_nade_1"), mission_status("m_kurose_2")))
+        zz_reset()
+        flags = {"settled_in", "sunmall_done", "nade_named", "nade_traced", "nade_map"}
+        mission_cache_clear()
+        check(all(mission_status(m) == "done" for m in ("m_sunmall", "m_nade_1", "m_nade_2", "m_nade_3")),
+              "a save that finished them (closing flags) keeps them done")
+        zz_reset()
+        done_events = {"ms_nade_2", "ms_nade_3"}
+        flags = {"settled_in"}
+        mission_cache_clear()
+        check(mission_status("m_nade_2") != "done" and mission_status("m_nade_3") != "done",
+              "recovered Nade 2 and 3: the event alone doesn't make them done")
+        zz_reset()
 
     ## --- 2. a fresh game, day by day ----------------------------------------------------------
     python:
