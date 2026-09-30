@@ -272,6 +272,30 @@ label zz_smoke:
         check([t["text"] for t in toast_visible()] == ["Notice 5", "Notice 6", "Notice 7", "Notice 8"],
               "the next four show when the first expire; none dropped", [t["text"] for t in TOASTQ.items])
         toast_clear()
+        ## While skipping, a backlog would trickle over later screens for
+        ## minutes (the trial merge saw day 2's roll-call merit on day 6):
+        ## only the newest four are kept then, all showing.
+        _sk = config.skipping
+        config.skipping = "fast"
+        try:
+            for _i in range(12):
+                toast("Skipped %d" % (_i + 1), "grade")
+            _sk_push = [t["text"] for t in TOASTQ.items]
+            _sk_vis = [t["text"] for t in toast_visible()]
+            config.skipping = None
+            toast_clear()
+            for _i in range(10):
+                toast("Queued %d" % (_i + 1))
+            config.skipping = "fast"
+            toast_tick()
+            _sk_tick = [t["text"] for t in toast_visible()]
+        finally:
+            config.skipping = _sk
+        check(_sk_push == ["Skipped %d" % i for i in range(9, 13)] and _sk_vis == _sk_push,
+              "while skipping, only the newest four toasts are kept, all showing", (_sk_push, _sk_vis))
+        check(_sk_tick == ["Queued %d" % i for i in range(7, 11)],
+              "a backlog queued before skipping began is cut to the newest four once it does", _sk_tick)
+        toast_clear()
         add_bond("yuji", 2)
         add_bond("yuji", 2)
         _b = [t for t in TOASTQ.items if t["kind"] == "bond"]
