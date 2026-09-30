@@ -216,23 +216,38 @@ init 999 python:
     ## --- the board (WP4) ------------------------------------------------------
 
     ZZJ_BOARD = dict(
-        offers=[dict(id="w1o1", grade="g3", true_grade="g3", case="A haunting", place="a closed maternity ward in Adachi",
+        offers=[dict(id="w1o1", grade="g3", true_grade="g3", case="A haunting", place="adachi",
                      title="The Ward on the Fourth Floor", blurb="Nurses keep hearing a call bell from a sealed room.",
                      merit=18, yen=(6000, 10000), senior_only=False),
-                dict(id="w1o2", grade="g4", true_grade="g3", case="Residual clean-up", place="an apartment stairwell in Kita",
+                dict(id="w1o2", grade="g4", true_grade="g3", case="Residual clean-up", place="kita",
                      title="Stairwell, Third Landing", blurb="Something that eats light bulbs.",
                      merit=10, yen=(3000, 6000), senior_only=False),
-                dict(id="w1o3", grade="g2", true_grade="g2", case="Missing persons", place="a dead platform under Ikebukuro",
+                dict(id="w1o3", grade="g2", true_grade="g2", case="Missing persons", place="ikebukuro",
                      title="The Platform Nobody Uses", blurb="Three commuters in a month. The trains don't stop there.",
                      merit=28, yen=(10000, 15000), senior_only=True)],
         taken=[dict(taken_by="megumi", grade="g2", title="The Karaoke Box in Koenji")],
-        log=[dict(day=9, grade="g4", partner="nobara", outcome="clean", merit=10, title="A Grudge the Size of a Dog"),
-             dict(day=11, grade="g3", partner="maki", outcome="costly", merit=11, title="The School Pool in Setagaya"),
+        ## Newest first, as WP4's board_summary gives it.
+        log=[dict(day=15, grade="g3", partner="panda", outcome="withdrew", merit=0, title="Filed as Grade 3"),
              dict(day=13, grade="g4", partner="yuji", outcome="clean", merit=10, title="The Train Depot"),
-             dict(day=15, grade="g3", partner="panda", outcome="withdrew", merit=0, title="Filed as Grade 3")],
+             dict(day=11, grade="g3", partner="maki", outcome="costly", merit=11, title="The School Pool in Setagaya"),
+             dict(day=9, grade="g4", partner="nobara", outcome="clean", merit=10, title="A Grudge the Size of a Dog")],
         misgrades=1)
+    ## The stubs have no place table; WP4's real one is used when it exists.
+    if not getattr(store, "BOARD_PLACE_BY_KEY", None):
+        store.BOARD_PLACE_BY_KEY = dict(
+            adachi=dict(key="adachi", phrase="a closed maternity ward in Adachi", short="The Adachi Ward"),
+            kita=dict(key="kita", phrase="an apartment stairwell in Kita", short="The Kita Stairwell"),
+            ikebukuro=dict(key="ikebukuro", phrase="a dead platform under Ikebukuro", short="The Dead Platform"))
 
     ## --- items (WP6) -----------------------------------------------------------
+
+    def zzj_item(**kw):
+        """A fixture item with every key WP6's _item() gives a record (its
+        sync_keepsakes reads it["from_flag"] on every item)."""
+        rec = dict(name="", kind="keepsake", grade=None, special=False, sealed=None, stack=False,
+                   desc="", effect="", fx={}, source="", from_flag=None, hidden=False)
+        rec.update(kw)
+        return rec
 
     ZZJ_ITEMS = dict(
         photo=dict(name="The Photo", kind="keepsake", grade=None, desc="The four of us at the diner, last spring.", effect="", source="Packed the night I left home"),
@@ -252,7 +267,7 @@ init 999 python:
         zzj_ward_d=dict(name="Last Ward", kind="talisman", grade="g4", desc="A test ward.", effect="+5 output", source="The board"),
     )
     for _k, _v in ZZJ_ITEMS.items():
-        ITEMS.setdefault(_k, _v)
+        ITEMS.setdefault(_k, zzj_item(**_v))
 
     def zzj_can_wear(iid):
         it = ITEMS.get(iid, {})
@@ -268,18 +283,26 @@ init 999 python:
         if not zzj.no_retain:
             renpy.retain_after_load()
 
+    ## The shims return True/False as WP6's real functions do, so a picker
+    ## button that passed that value on (and so closed the journal) fails here.
     def zzj_equip_talisman(iid):
-        if iid not in store.equipped_talismans and zzj_can_wear(iid)[0]:
-            store.equipped_talismans = store.equipped_talismans + [iid]
+        if iid in store.equipped_talismans or not zzj_can_wear(iid)[0]:
+            return False
+        store.equipped_talismans = store.equipped_talismans + [iid]
         zzj_retain()
+        return True
 
     def zzj_unequip_talisman(iid):
+        if iid not in store.equipped_talismans:
+            return False
         store.equipped_talismans = [x for x in store.equipped_talismans if x != iid]
         zzj_retain()
+        return True
 
     def zzj_equip_tool(iid):
         store.equipped_tool = iid
         zzj_retain()
+        return True
 
     zzj.stub6 = "WP0 stub" in (equip_tool.__doc__ or "")
     if zzj.stub6:
@@ -637,7 +660,7 @@ label zz_smoke:
         promote("mc", "g3", quiet=True)
         promote("nobara", "g2", quiet=True)
         if not [p for p in (getattr(store, "promotions_log", None) or []) if jr_get(p, "who") == "nobara"]:
-            fixture(promotions_log=[dict(day=14, who="nobara", grade="g2", why="")])
+            fixture(promotions_log=[dict(day=16, who="nobara", grade="g2", why="")])
         refresh_vitals()
         hp = max(1, hp_max - 12)
         check(player_grade() == "g3" and talisman_slots() == 2, "rich fixture: Grade 3, two slots", (player_grade(), talisman_slots()))
@@ -663,6 +686,7 @@ label zz_smoke:
         check(jr_next("maki") == "Next: The Armory: pick your first cursed tool — Storehouse" or jr_next("maki").startswith("Next: The Armory"), "Next line with where", jr_next("maki"))
         ## Review round 3: a long Next keeps its place whole on the card.
         _nx0 = ZZJ_NEXT["nobara"]
+        _nx_m0 = ZZJ_NEXT.get("megumi")
         ZZJ_NEXT["nobara"] = ("The Teacher Ranking: a letter from someone I haven't thought about in years, and what it says", "dorm_common")
         _ln = jr_next("nobara", 74)
         _pl = jr_place_name("dorm_common")
@@ -672,9 +696,31 @@ label zz_smoke:
         _tx = zzj_texts()
         check(_ln in _tx, "the card draws the clipped Next with its place", [t for t in _tx if t.startswith("Next:")][:4])
         renpy.hide_screen("journal")
+        ## Integration round: WP3's real next_for passes WP1's whole weekly
+        ## schedule as the where; the card line still fits its two lines.
+        ZZJ_NEXT["nobara"] = ("Spend time together", "Classroom Building (mornings) · Cafeteria (noon) · Courtyard (afternoons) · Dorm Common Room (evenings) · Girls' Dormitory (nights)")
+        ZZJ_NEXT["megumi"] = ("Eat together at the Cafeteria", "Classroom Building (mornings) · Cafeteria (noon) · Training Grounds (afternoons) · Dorm Common Room (evenings) · Boys' Dormitory (nights)")
+        _ln = jr_next("nobara", 74)
+        _lm = jr_next("megumi", 74)
+        check(len(_ln) <= 74 and _ln.startswith("Next: Spend time together — Classroom Building (mornings)") and _ln.endswith(" …"),
+              "a schedule-long where keeps its first places and the whole text", _ln)
+        check(len(_lm) <= 74 and _lm.startswith("Next: Eat together at the Cafeteria — "), "a second schedule-long Next fits too", _lm)
+        renpy.show_screen("journal", "people")
+        shot("rich_people_schedule_next")
+        _tx = zzj_texts()
+        check(_ln in _tx and _lm in _tx, "the cards draw the shortened schedule lines", [t for t in _tx if t.startswith("Next:")][:4])
+        renpy.hide_screen("journal")
         ZZJ_NEXT["nobara"] = _nx0
+        ZZJ_NEXT["megumi"] = _nx_m0
+        ## Integration round: the Board tab against WP4's real shapes.
+        _bd = jr_board()
+        check([jr_get(r, "day") for r in _bd["log"]] == [15, 13, 11, 9],
+              "Board tab: LAST JOBS newest first, as board_summary gives it", [jr_get(r, "day") for r in _bd["log"]])
+        check(jr_offer_line(ZZJ_BOARD["offers"][1]) == "Residual clean-up · an apartment stairwell in Kita",
+              "Board tab: an offer's place key reads as its phrase", jr_offer_line(ZZJ_BOARD["offers"][1]))
+        check(jr_board_place("somewhere else") == "somewhere else", "a place that isn't a key shows as it is")
         _d = jr_person("nobara")
-        check(any("Promoted to Grade 2 on Day 14" == p for p in _d["promotions"]), "People detail: promotion line", _d["promotions"])
+        check(any("Promoted to Grade 2 on Day 16" == p for p in _d["promotions"]), "People detail: promotion line (promoted today, day 16)", _d["promotions"])
         check(jr_person("maki")["restricted"], "Maki's reserve reads Heavenly Restriction")
         check(jr_person("gojo")["off_scale"], "Gojo's bars run off the scale")
         _t = jr_tech()
@@ -695,8 +741,10 @@ label zz_smoke:
 
         ## Review round 1.
         _n = jr_person("nanami")
-        check(_n["name"] == "Kento Nanami" and _n["grade"] == "Grade 1 sorcerer",
-              "a JOURNAL_CAST-only person's pane: full name and role", (_n["name"], _n["grade"]))
+        _ns = npc_stats("nanami") or {}
+        _nw = grade_label(_ns["grade"]) if _ns.get("grade") else "Grade 1 sorcerer"
+        check(_n["name"] == "Kento Nanami" and _n["grade"] == _nw,
+              "a JOURNAL_CAST-only person's pane: full name, and his grade (the role when he has none)", (_n["name"], _n["grade"], _nw))
         check(jr_short("nanami") == "Nanami" and jr_short("mei_mei") == "Mei Mei" and jr_short("yuta") == "Yuta",
               "short names for JOURNAL_CAST-only people", (jr_short("nanami"), jr_short("mei_mei"), jr_short("yuta")))
         _w = jr_mission_row([m for m in ZZJ_MISSIONS if m["id"] == "m_second_years"][0])
@@ -777,6 +825,17 @@ label zz_smoke:
         lambda: zzj_nil(shot("rich_picker_many", wait=0)),
         lambda: zzj_nil(check(len(jr_pick_options("talisman", 0)) == 8, "the picker lists every talisman I own", len(jr_pick_options("talisman", 0)))),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", None), "Close", raw=True),
+        ## Integration round: WP6's real equip functions return True/False;
+        ## Unequip and Bare hands must keep the journal open all the same.
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", ("talisman", 0)), "talisman slot 1"),
+        lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_takeoff", "paper_ward"), "Unequip"),
+        lambda: zzj_nil(check(jr_worn() == [] and zzj_js()["pick"] is None and zzj_js()["tab"] == "equipment",
+                              "Unequip takes the talisman off and the journal stays open", (jr_worn(), zzj_js()["pick"]))),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", ("tool", 0)), "Change (tool)"),
+        lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_hold", None), "Bare hands"),
+        lambda: zzj_nil(check(jr_tool() is None and zzj_js()["pick"] is None, "Bare hands empties my hand and the journal stays open", jr_tool())),
+        lambda: zzj_nil(shot("rich_equipment_bare", wait=0)),
+        lambda: zzj_nil(fixture(equipped_tool="slaughter_demon", equipped_talismans=["paper_ward"])),
         zzj_done,
     ]
     show screen zzj_driver
@@ -834,8 +893,8 @@ label zz_smoke:
         check(renpy.get_screen("jjk_status") is not None, "stress: the jjk_status wrapper renders with that name")
         renpy.hide_screen("jjk_status")
         ## A long item name stays in two lines inside its tile.
-        ITEMS["zzj_long"] = dict(name="The Extraordinarily Long-Winded Keepsake of Ōsaka", kind="keepsake", grade="g4",
-                                 desc="A test item.", effect="", source="The harness")
+        ITEMS["zzj_long"] = zzj_item(name="The Extraordinarily Long-Winded Keepsake of Ōsaka", kind="keepsake", grade="g4",
+                                     desc="A test item.", effect="", source="The harness")
         inventory["zzj_long"] = 3
         renpy.show_screen("journal", "inventory")
         shot("stress_inventory_long_name")
@@ -1062,7 +1121,7 @@ label zzj_equip_roundtrip(tag, noretain):
             zzj.script[:] = [
                 lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", ("tool", 0)), "Change (tool)"),
                 lambda: zzj_nil(shot(tag + "_picker_tool", wait=0)),
-                lambda: zzj_click(lambda a: zzj_is_fn(a, "equip_tool", "slaughter_demon"), "the Slaughter Demon row"),
+                lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_hold", "slaughter_demon"), "the Slaughter Demon row"),
                 lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", ("talisman", 0)), "talisman slot 1"),
                 lambda: zzj_nil(shot(tag + "_picker_talisman", wait=0)),
                 lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_wear", 0, "paper_ward"), "the Paper Ward row"),
