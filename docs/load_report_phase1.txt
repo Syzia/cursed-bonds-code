@@ -1,5 +1,5 @@
-Load report · 2026-10-01 00:37 · wp11-trial @ 86e1004
-Saves from: /Users/hunterjolly/Desktop/JJK_worktrees/wp11/trial/game/saves
+Load report · 2026-10-01 01:11 · phase1 @ 578130c
+Saves from: /Users/hunterjolly/Desktop/JJKgame.md/game/saves
             /Users/hunterjolly/Library/RenPy/JJKgamemd-1788928056
 Slots: 11 · SAME 11 · EARLIER 0 · MOVED 0 · RECOVER 0 · UNKNOWN 0 · RAISED 0
 
@@ -115,8 +115,8 @@ auto-9
   keepsakes  Sana's hachimaki
   landed     statement game/story_arc1.rpy:234
 
-=== 1-1 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 3.4 s · Ren'Py 8.5.3.26051504
+=== 1-1 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
+# load_slot · 3.5 s · Ren'Py 8.5.3.26051504
 NOTE slot: 1-1
 NOTE saved: 2026-09-23 16:59, game version 0.1 — Prologue, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/sb_loop.rpy:27
@@ -200,7 +200,7 @@ NOTE report.where: statement game/sb_loop.rpy:27
 PASS loads without an exception
 RESULT PASS
 
-=== auto-1 · ~/Library/RenPy/JJKgamemd-1788928056
+=== auto-1 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
 # load_slot · 2.7 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-1
 NOTE saved: 2026-09-30 22:46, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
@@ -285,8 +285,8 @@ NOTE report.where: statement game/sb_loop.rpy:57
 PASS loads without an exception
 RESULT PASS
 
-=== auto-10 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
+=== auto-10 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
+# load_slot · 3.4 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-10
 NOTE saved: 2026-09-30 22:17, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch5_debrief.rpy:100
@@ -370,7 +370,7 @@ NOTE report.where: statement game/ch5_debrief.rpy:100
 PASS loads without an exception
 RESULT PASS
 
-=== auto-2 · ~/Library/RenPy/JJKgamemd-1788928056
+=== auto-2 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
 # load_slot · 2.7 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-2
 NOTE saved: 2026-09-30 22:43, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
@@ -455,8 +455,8 @@ NOTE report.where: statement game/sb_loop.rpy:57
 PASS loads without an exception
 RESULT PASS
 
-=== auto-3 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+=== auto-3 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-3
 NOTE saved: 2026-09-30 22:33, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/events_arc1.rpy:325
@@ -540,7 +540,7 @@ NOTE report.where: statement game/events_arc1.rpy:325
 PASS loads without an exception
 RESULT PASS
 
-=== auto-4 · ~/Library/RenPy/JJKgamemd-1788928056
+=== auto-4 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
 # load_slot · 3.2 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-4
 NOTE saved: 2026-09-30 22:33, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
@@ -625,8 +625,8 @@ NOTE report.where: statement game/events_arc1.rpy:404
 PASS loads without an exception
 RESULT PASS
 
-=== auto-5 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 3.1 s · Ren'Py 8.5.3.26051504
+=== auto-5 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
+# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-5
 NOTE saved: 2026-09-30 22:32, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/events_arc1.rpy:487
@@ -710,7 +710,7 @@ NOTE report.where: statement game/events_arc1.rpy:487
 PASS loads without an exception
 RESULT PASS
 
-=== auto-6 · ~/Library/RenPy/JJKgamemd-1788928056
+=== auto-6 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
 # load_slot · 2.8 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-6
 NOTE saved: 2026-09-30 22:32, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
@@ -795,7 +795,7 @@ NOTE report.where: statement game/story_arc1.rpy:507
 PASS loads without an exception
 RESULT PASS
 
-=== auto-7 · ~/Library/RenPy/JJKgamemd-1788928056
+=== auto-7 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
 # load_slot · 2.7 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-7
 NOTE saved: 2026-09-30 22:17, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
@@ -880,7 +880,7 @@ NOTE report.where: statement game/story_kurose.rpy:80
 PASS loads without an exception
 RESULT PASS
 
-=== auto-8 · ~/Library/RenPy/JJKgamemd-1788928056
+=== auto-8 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
 # load_slot · 2.7 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-8
 NOTE saved: 2026-09-30 22:17, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
@@ -965,7 +965,7 @@ NOTE report.where: statement game/story_kurose.rpy:43
 PASS loads without an exception
 RESULT PASS
 
-=== auto-9 · ~/Library/RenPy/JJKgamemd-1788928056
+=== auto-9 · game/saves + ~/Library/RenPy/JJKgamemd-1788928056 (identical)
 # load_slot · 2.8 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-9
 NOTE saved: 2026-09-30 22:17, game version 0.2 — Arc One, Ren'Py [8, 5, 3, 26051504]
