@@ -46,7 +46,7 @@ init -1 python:
              kind="friend", min_bond=40, cost=1,
              loc=("courtyard", "gate", "forest", "riverside", "ridge")),
 
-        dict(id="invite",   label="Ask them along",    hint="They'll follow you for the rest of the day.",
+        dict(id="invite",   label="Ask them along",    hint="They'll stick with me for the rest of the day.",
              kind="friend", min_bond=45, cost=0),
 
         dict(id="stargaze", label="Sit out with them", hint="The roof, and a hundred kilometres of dark.",
@@ -58,12 +58,12 @@ init -1 python:
              kind="friend", min_bond=0,  cost=1, who=("gojo",), loc=("gojo_office",),
              when="lesson_ok"),
 
-        dict(id="confide",  label="Tell them something true", hint="Something you haven't said to anyone here.",
+        dict(id="confide",  label="Tell them something true", hint="Something I haven't said to anyone here.",
              kind="friend", min_bond=65, cost=1, once=True),
 
         ## The top of the friendship track. You have spent the whole game being
         ## the one who needs things; here it goes the other way.
-        dict(id="stand",    label="They asked you for something",
+        dict(id="stand",    label="They asked me for something",
              hint="It took them a while to work up to it.",
              kind="friend", min_bond=80, cost=2, once=True,
              requires_flag="confided_"),
@@ -73,7 +73,7 @@ init -1 python:
              kind="romance", min_bond=50, min_aff=30, cost=2,
              loc=("gate", "courtyard")),
 
-        dict(id="rom_close", label="Stay a while longer", hint="Neither of you moves to go.",
+        dict(id="rom_close", label="Stay a while longer", hint="Neither of us moves to go.",
              kind="romance", min_bond=60, min_aff=45, cost=1,
              per=("Evening", "Night")),
 
@@ -83,13 +83,13 @@ init -1 python:
              kind="confession", min_bond=85, min_aff=100, cost=2, once=True),
 
         ## ---- after the confession ----------------------------------------
-        dict(id="int_night", label="Stay the night",    hint="Neither of you suggests you go.",
+        dict(id="int_night", label="Stay the night",    hint="Neither of us suggests I go.",
              kind="intimate", min_aff=110, cost=1, per=("Evening", "Night")),
 
         dict(id="int_morning", label="Wake up with them", hint="The first hour, before anyone needs anything.",
              kind="intimate", min_aff=130, cost=1, per=("Morning",)),
 
-        dict(id="int_day",  label="A day off. Just you two.", hint="No training, no missions, no map.",
+        dict(id="int_day",  label="A day off. Just the two of us.", hint="No training, no missions, no map.",
              kind="intimate", min_aff=150, cost=3),
 
         dict(id="int_after", label="Talk about after",  hint="What happens when all this is over.",
@@ -216,7 +216,7 @@ init -1 python:
         [dict(kind="do"|"mission"|"act", id, label, hint, cost, gold=False,
         romance=False)], always ending with Talk. Up to three of: their first
         mission (gold); their own action (board, lesson, car); a milestone
-        (Say it > They asked you > Tell them something true); Spend time
+        (Say it > They asked me > Tell them something true); Spend time
         together when there's a scene; one romance or intimate activity; the
         one activity that suits the place. Only available activities."""
         loc = loc or store.here
@@ -311,7 +311,8 @@ label act_lesson(who):
         "Everything stops except him. Inside my second, he tilts his head and waves."
         gojo happy "Hi."
         "I let go so fast the television flickers."
-        gojo "Don't panic. Almost nobody can do that. It just means your walls have a door in them. Let's find out where."
+        gojo "Don't panic. Almost nobody can move in there. I'm not almost nobody."
+        gojo "Still. If I can walk in, your second has a door in it. Let's find out where."
         "We spend most of an hour finding out where. I leave with a headache and the feeling that I've been measured."
 
     $ gain("control", 5)

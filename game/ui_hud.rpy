@@ -40,6 +40,14 @@ init python:
     TOAST_LIFE = 3.2        # seconds on screen once visible
     TOAST_FADE = 0.2        # slide in / fade out
     TOAST_VISIBLE = 4       # at most this many at once; the rest wait
+    TOAST_VISIBLE_PERSON = 2    # over the person view, where the card is below
+
+    def toast_limit():
+        """WP7. How many toasts show at once: four, or two over the person
+        view (the stack moves up beside MENU there, above the card)."""
+        if renpy.get_screen("sb_char"):
+            return TOAST_VISIBLE_PERSON
+        return TOAST_VISIBLE
 
     ## kind -> (kanji, gui colour name). None means "the character's colour".
     TOAST_KINDS = {
@@ -73,7 +81,7 @@ init python:
     def _toast_reveal(now):
         """Starts the clock on every toast that has just become visible."""
         changed = False
-        for t in TOASTQ.items[:TOAST_VISIBLE]:
+        for t in TOASTQ.items[:toast_limit()]:
             if t["t_shown"] is None:
                 t["t_shown"] = now
                 changed = True
@@ -91,7 +99,9 @@ init python:
                 last["amount"] += amount
                 last["text"] = _toast_text(kind, who, last["amount"])
                 if last["t_shown"] is not None:
-                    last["t_shown"] = now       # the new total gets a full read
+                    ## The new total gets a full read, without replaying the
+                    ## slide-in (the toast stays put at full alpha).
+                    last["t_shown"] = now - TOAST_FADE
                 renpy.restart_interaction()
                 return
         items.append(builtins.dict(text=builtins.str(text),
@@ -114,7 +124,7 @@ init python:
 
     def toast_visible():
         """WP7. The toasts on screen now, oldest (top) first."""
-        return [t for t in TOASTQ.items[:TOAST_VISIBLE] if t["t_shown"] is not None]
+        return [t for t in TOASTQ.items[:toast_limit()] if t["t_shown"] is not None]
 
     def toast_clear():
         """WP7. Empties the queue (after a load, so an old stack doesn't linger)."""
@@ -156,21 +166,62 @@ init python:
 
     ## The objective toast (3.10, 4.3) ---------------------------------------------
 
-    OBJECTIVE_HOLD = 4.5
+    OBJECTIVE_IN, OBJECTIVE_HOLD, OBJECTIVE_OUT = 0.3, 4.5, 0.5
+
+    ## [shown at (wall clock), delay before it slides in]. A builtins list made
+    ## at init and never reassigned: not saved, not rolled back.
+    OBJ_SHOWN = builtins.list([0.0, 0.0])
+    ## The objective text that was taken off screen before anyone could read
+    ## it (the player left the place view during its delay); shown again.
+    OBJ_UNSEEN = builtins.list([None])
+    OBJ_SEEN_AFTER = 1.0    # on screen this long (after its delay) counts as read
+
+    def objective_delay():
+        """WP7. How long objective_toast waits before sliding in: until the
+        arrival caption for the current (day, period, here) has faded, so the
+        two never cover each other (4.3). Records when it was shown."""
+        if renpy.predicting():
+            return 0.0
+        now = _hud_time.time()
+        d = 0.0
+        key = (store.day, store.period, store.here)
+        if ARRIVAL[0] == key:
+            d = max(0.0, ARRIVAL[1] + ARRIVAL_IN + ARRIVAL_HOLD + ARRIVAL_OUT - now)
+        OBJ_SHOWN[0] = now
+        OBJ_SHOWN[1] = d
+        return d
 
     def check_objective():
         """WP7. Called by the loop before the place view: if objective_text()
         changed since last_objective, slide in objective_toast and remember
         the new text. last_objective starts as None, so it shows once after
-        loading an old save. Skipped in explore mode."""
+        loading an old save. Skipped in explore mode. The toast waits for the
+        arrival caption to fade (objective_delay)."""
         if store.explore_mode:
             return
         txt = objective_text() or ""
-        if txt == getattr(store, "last_objective", None):
+        if txt == getattr(store, "last_objective", None) and OBJ_UNSEEN[0] != txt:
             return
         store.last_objective = txt
+        OBJ_UNSEEN[0] = None
         if txt:
+            ## Start the arrival caption's clock now (the place view is next),
+            ## so the toast's delay can be read from it.
+            arrival_caption()
+            objective_delay()
             renpy.show_screen("objective_toast", txt)
+
+    def objective_leave():
+        """WP7. Called by the loop as it leaves the place view: takes the
+        objective toast down so it never sits over the person view or the
+        map. If it hadn't been up long enough to read, it shows again the
+        next time the place view does."""
+        if not renpy.get_screen("objective_toast"):
+            return
+        up = _hud_time.time() - (OBJ_SHOWN[0] + OBJ_SHOWN[1])
+        if up < OBJ_SEEN_AFTER:
+            OBJ_UNSEEN[0] = getattr(store, "last_objective", None)
+        renpy.hide_screen("objective_toast")
 
 
 ## HUD styles ###################################################################
@@ -279,10 +330,12 @@ screen toasts():
 
         timer 0.1 repeat True action Function(toast_tick, _update_screens=False)
 
+        ## Over the person view the stack sits beside MENU, above the card.
+        $ _over_card = bool(renpy.get_screen("sb_char"))
         vbox:
-            xpos 1880
+            xpos (1722 if _over_card else 1880)
             xanchor 1.0
-            ypos 92
+            ypos (26 if _over_card else 92)
             spacing 8
 
             for _t in toast_visible():
@@ -318,19 +371,23 @@ screen toasts():
 
 ## Objective toast (4.3) #########################################################
 
-transform objective_slide:
+transform objective_slide(d=0.0):
     on show:
         yoffset -40 alpha 0.0
-        easein 0.3 yoffset 0 alpha 1.0
-        pause 4.5
-        linear 0.5 alpha 0.0
+        pause d
+        easein OBJECTIVE_IN yoffset 0 alpha 1.0
+        pause OBJECTIVE_HOLD
+        linear OBJECTIVE_OUT alpha 0.0
     on hide:
         linear 0.2 alpha 0.0
 
 screen objective_toast(text):
     zorder 140
 
-    frame at objective_slide:
+    ## Wait for the arrival caption to fade (4.3; they share the top left).
+    default _od = objective_delay()
+
+    frame at objective_slide(_od):
         xalign 0.5
         ypos 96
         xsize 900
@@ -353,4 +410,4 @@ screen objective_toast(text):
                         size 26
                         xmaximum 844
 
-    timer (0.3 + OBJECTIVE_HOLD + 0.5) action Hide("objective_toast")
+    timer (_od + OBJECTIVE_IN + OBJECTIVE_HOLD + OBJECTIVE_OUT) action Hide("objective_toast")

@@ -276,6 +276,11 @@ label zz_smoke:
         _b = [t for t in TOASTQ.items if t["kind"] == "bond"]
         check(len(_b) == 1 and _b[0]["amount"] == 4 and _b[0]["text"] == "Yuji  bond +4",
               "two add_bond(yuji, 2) merge into +4", [(t["kind"], t["text"]) for t in TOASTQ.items])
+        _age = _hud_time.time() - _b[0]["t_shown"]
+        _fx = Transform()
+        _toast_fx_fn(_b[0])(_fx, 0, 0)
+        check(_age >= TOAST_FADE - 0.01 and _fx.alpha == 1.0 and _fx.xoffset == 0,
+              "a merge restarts the toast's life without replaying its slide-in", (_age, _fx.alpha, _fx.xoffset))
         toast_clear()
         roster.append("maki")
         affection["maki"] = 10
@@ -417,6 +422,52 @@ label zz_smoke:
         check(any(s == "Doctor" for s in zz_texts("sb_char")), "the ungraded show their role (Doctor)")
     hide screen sb_char
 
+    ## --- the person view's worst case: it must fit on screen, Back included ----------------
+    python:
+        here = "cafeteria"
+        period = "Noon"
+        bonds["nobara"] = 72
+        affection["nobara"] = aff_cap("nobara")
+        _ntid = next(t for t in THREAD_ORDER if THREADS[t]["who"] == "nobara")
+        threads[_ntid] = 1
+        spent_today = set()
+        _zz_tall = dict(id="m_nobara_tall", title="Nobara's errand in Harajuku",
+                        objective=("She wants backup for something she refuses to explain until we're on the train, "
+                                   "and she has already bought both tickets, which is its own kind of answer."))
+        _old_mw = zz_swap("missions_with", lambda who, loc=None: [_zz_tall] if who == "nobara" else [])
+        _cs = person_choices("nobara", here)
+        note("tall card choices", [c["id"] for c in _cs])
+        check(len(_cs) == 4 and _cs[0]["kind"] == "mission", "the worst case has a mission and four choices", [c["id"] for c in _cs])
+    scene expression graded_bg()
+    show screen sb_char("nobara")
+    $ shot("person_tall_nobara", wait=0.8)
+    python:
+        _back = renpy.get_widget("sb_char", "sb_char_back")
+        _fs = [f for f in renpy.display.focus.focus_list if f.widget is not None and f.x is not None]
+        ## get_widget gives the textbutton's text; the focus is its button.
+        _bf = [f for f in _fs if f.widget is _back or getattr(f.widget, "child", None) is _back]
+        check(_bf and _bf[0].y + _bf[0].h <= 1060, "the tallest person card keeps Back on screen (ends above y 1060)",
+              [(f.x, f.y, f.w, f.h) for f in _bf])
+        _low = max([f.y + f.h for f in _fs if f.screen is not None and f.screen.screen_name[0] == "sb_char"] or [0])
+        check(_low <= 1060, "every button on the tallest card is on screen", _low)
+        check(any("know them better" in s for s in zz_texts("sb_char")), "the cap note sits on the affection row")
+        ## Toasts over the person view: two at a time, beside MENU, above the card.
+        toast_clear()
+        for _i in range(3):
+            toast("Card notice %d" % (_i + 1))
+        check([t["text"] for t in toast_visible()] == ["Card notice 1", "Card notice 2"],
+              "over the person view, two toasts at a time", [t["text"] for t in toast_visible()])
+    $ shot("person_tall_toasts", wait=0.5)
+    hide screen sb_char
+    python:
+        toast_tick()
+        check(len(toast_visible()) == 3, "back on campus, the waiting toast shows too", [t["text"] for t in toast_visible()])
+        toast_clear()
+        zz_swap("missions_with", _old_mw)
+        del threads[_ntid]
+        bonds["nobara"] = 0
+        affection["nobara"] = 0
+
     ## --- the map's HUD ----------------------------------------------------------------------
     show screen sb_map
     $ shot("map_hud", wait=0.3)
@@ -425,19 +476,47 @@ label zz_smoke:
         check(any(s == "MENU" for s in _t) and not any(s in ("MAP", "JOURNAL") for s in _t), "the map's HUD: date and MENU (D33)")
     hide screen sb_map
 
-    ## --- the objective toast --------------------------------------------------------------
+    ## --- the objective toast, and the arrival caption it waits for ---------------------------
     python:
         _old_ot = zz_swap("objective_text", lambda: "Roll call with Principal Yaga — Classroom Building, mornings")
         last_objective = None
+        here = "office"
+        period = "Morning"
+        day = 2
+        ## As the loop does it: check_objective(), then the place view.
         check_objective()
         check(renpy.get_screen("objective_toast") is not None and last_objective.startswith("Roll call"),
               "check_objective shows the new objective and remembers it")
     scene expression graded_bg()
-    $ shot("objective_toast", wait=0.8)
+    show screen sb_place
+    $ shot("arrival_plus_objective", wait=0.8)
     python:
-        renpy.hide_screen("objective_toast")
+        _t0 = arrival_caption()
+        _left = ARRIVAL[1] + ARRIVAL_IN + ARRIVAL_HOLD + ARRIVAL_OUT - OBJ_SHOWN[0]
+        check(_t0 is not None and OBJ_SHOWN[1] >= _left - 0.01,
+              "the objective toast waits until the arrival caption has faded", (OBJ_SHOWN[1], _left))
+    $ renpy.pause(3.4, hard=True)
+    $ shot("objective_toast", wait=0.4)
+    python:
+        check(arrival_caption() is None and renpy.get_screen("objective_toast") is not None,
+              "then the objective toast slides in on its own")
+        ## Leaving the place view takes it down; read by now, so it stays gone.
+        OBJ_SHOWN[0] -= 10
+        objective_leave()
+        check(renpy.get_screen("objective_toast") is None and OBJ_UNSEEN[0] is None,
+              "leaving the place view takes the objective toast down")
         check_objective()
         check(renpy.get_screen("objective_toast") is None, "the same objective doesn't show twice")
+        ## Left before it could be read: it comes back next time.
+        zz_swap("objective_text", lambda: "Report to Utahime's office")
+        check_objective()
+        objective_leave()
+        check(renpy.get_screen("objective_toast") is None and OBJ_UNSEEN[0] == "Report to Utahime's office",
+              "an objective taken down unread is remembered")
+        check_objective()
+        check(renpy.get_screen("objective_toast") is not None and OBJ_UNSEEN[0] is None,
+              "and shows again the next time the place view does")
+        renpy.hide_screen("objective_toast")
         zz_swap("objective_text", lambda: "Someone is moving into the room next to Yaga's")
         explore_mode = True
         check_objective()
@@ -448,6 +527,8 @@ label zz_smoke:
         renpy.hide_screen("objective_toast")
         zz_swap("objective_text", _old_ot)
         last_objective = None
+        day = 1
+    hide screen sb_place
 
     ## --- staging and the activities --------------------------------------------------------
     python:
@@ -530,13 +611,19 @@ label zz_smoke:
     ## release, and the retired forge
     python:
         companion = "yuji"
+        _before = (ce, period, output, control, stamina)
     $ autoplay()
     call sb_do_release
     call sb_do_temper
     $ autoplay(False)
     python:
         check(companion is None, "sb_do_release lets the companion go")
-        check(True, "sb_do_temper (retired) runs and returns")
+        check((ce, period, output, control, stamina) == _before,
+              "sb_do_temper (retired) spends nothing, takes no time, grows nothing", (_before, (ce, period, output, control, stamina)))
+        _tp = _src[_src.index("label sb_do_temper"):]
+        _tp = _tp[:_tp.index("\nlabel ")]
+        check("The forge is cold." in _tp and "Emberfall" not in _tp and "gain(" not in _tp and "advance_period" not in _tp,
+              "sb_do_temper is the two-line retired form (D31)", _tp)
 
     ## --- acceptance: the loop, driven through its real dispatch --------------------------------
     python:

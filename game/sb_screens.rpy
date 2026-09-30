@@ -165,7 +165,7 @@ init python:
         if loc == "cafeteria":
             a.append(("eat", "Eat", "Stamina. Everyone's here at noon.", 0))
         if loc == "infirmary" and "rest" not in done:
-            a.append(("rest", "Get patched up", "Shoko looks me over. Once a day.", 0))
+            a.append(("rest", "Get patched up", "Rest, and Shoko if she's in. Once a day.", 0))
         if loc == "storehouse" and not has_flag("armory_open") and "racks" not in done:
             a.append(("tools", "Look through the racks", "Look, don't take. Once a day.", 0))
         if loc == "courtyard":
@@ -325,8 +325,8 @@ style sb_link_text is text:
 
 style sb_choice_button is sb_action_button:
     xsize 780
-    yminimum 84
-    padding (22, 10, 22, 10)
+    yminimum 72
+    padding (22, 8, 22, 8)
 
 style sb_choice_gold_button is sb_choice_button:
     background Frame("gui/panel_gold.png", 4, 4)
@@ -585,39 +585,52 @@ screen sb_char(who):
 
     add person_image(who) at char_focus(_x0)
 
+    ## The card fits its worst case (a mission with a two-line hint, three
+    ## more choices, affection at the cap, a thread) with room to spare:
+    ## ymaximum keeps it on screen whatever grows.
     frame:
         style "jjk_panel"
         xpos 1000
         ypos 150
         xsize 820
-        padding (20, 24)
+        ymaximum 890
+        padding (20, 22)
 
         vbox:
-            spacing 10
+            spacing 12
 
-            text "[_nm]" font gui.display_font color _col size 46
-            if _role:
-                text "[_role]" style "jjk_label" size 20
-
-            null height 2
+            ## --- who they are, and what they're doing --------------------------
+            vbox:
+                spacing 2
+                text "[_nm]" font gui.display_font color _col size 46
+                if _role:
+                    text "[_role]" style "jjk_label" size 20
+                if _amb:
+                    text "[_amb]" italic True color gui.dim size 20
 
             ## --- bond, affection, thread -----------------------------------
-            hbox:
-                spacing 12
-                text _("BOND") style "jjk_label" yalign 0.5
-                text "[_brank]" color gui.paper size 20 yalign 0.5
-                text "([_b]/100)" style "jjk_label" yalign 0.5
-            use meter(_b, width=740, height=10, fill=_col)
-
-            if _rom and _a > 0:
+            vbox:
+                spacing 6
                 hbox:
                     spacing 12
-                    text _("AFFECTION") style "jjk_label" yalign 0.5
-                    text "[_arank]" color gui.romance size 20 yalign 0.5
-                    text "([_a]/[_cap])" style "jjk_label" yalign 0.5
-                use meter(_a, max(1, _cap), width=740, height=10, fill=gui.romance)
-                if _a >= _cap and _cap < AFF_TRUE_MAX:
-                    text _("I'd have to know them better before this goes further.") style "jjk_label"
+                    text _("BOND") style "jjk_label" yalign 0.5
+                    text "[_brank]" color gui.paper size 20 yalign 0.5
+                    text "([_b]/100)" style "jjk_label" yalign 0.5
+                use meter(_b, width=740, height=10, fill=_col)
+
+            if _rom and _a > 0:
+                $ _capped = _a >= _cap and _cap < AFF_TRUE_MAX
+                vbox:
+                    spacing 6
+                    hbox:
+                        spacing 12
+                        text _("AFFECTION") style "jjk_label" yalign 0.5
+                        text "[_arank]" color gui.romance size 20 yalign 0.5
+                        if _capped:
+                            text _("([_a]/[_cap] · I'd have to know them better)") style "jjk_label" yalign 0.5
+                        else:
+                            text "([_a]/[_cap])" style "jjk_label" yalign 0.5
+                    use meter(_a, max(1, _cap), width=740, height=10, fill=gui.romance)
 
             if _thr:
                 $ _ttitle, _tstage, _ttotal = _thr
@@ -630,55 +643,57 @@ screen sb_char(who):
                         for _k in range(_ttotal):
                             add ("gui/pip_gold.png" if _k <= _tstage else "gui/pip_off.png") yalign 0.5
 
-            if _amb:
-                text "[_amb]" italic True color gui.dim size 20
-
-            null height 6
-
             ## --- what I can do with them ------------------------------------
-            for _ch in _choices:
-                $ _gold = _ch.get("gold")
-                $ _romc = _ch.get("romance")
-                $ _ret = (("do", _ch["id"], who) if _ch["kind"] == "do" else (_ch["kind"], _ch["id"]))
-                $ _lbl = (u"♡ " + _ch["label"]) if _romc else _ch["label"]
-                $ _hint = _ch.get("hint") or ""
-                button:
-                    style ("sb_choice_gold_button" if _gold else "sb_choice_button")
-                    action Return(_ret)
-                    hbox:
-                        xfill True
-                        vbox:
-                            spacing 2
-                            xmaximum 660
-                            yalign 0.5
-                            text "[_lbl]":
-                                font gui.display_font
-                                size 26
-                                color (gui.gold if _gold else (gui.romance if _romc else gui.paper))
-                            if _hint:
-                                text "[_hint]" color gui.dim size 18
-                        if _ch.get("cost"):
-                            hbox:
-                                xalign 1.0
+            vbox:
+                spacing 8
+                for _ch in _choices:
+                    $ _gold = _ch.get("gold")
+                    $ _romc = _ch.get("romance")
+                    $ _ret = (("do", _ch["id"], who) if _ch["kind"] == "do" else (_ch["kind"], _ch["id"]))
+                    $ _lbl = (u"♡ " + _ch["label"]) if _romc else _ch["label"]
+                    $ _hint = _ch.get("hint") or ""
+                    button:
+                        style ("sb_choice_gold_button" if _gold else "sb_choice_button")
+                        action Return(_ret)
+                        hbox:
+                            xfill True
+                            vbox:
+                                spacing 2
+                                xmaximum 660
                                 yalign 0.5
-                                use sb_cost(_ch["cost"])
+                                text "[_lbl]":
+                                    font gui.display_font
+                                    size 26
+                                    color (gui.gold if _gold else (gui.romance if _romc else gui.paper))
+                                if _hint:
+                                    text "[_hint]" color gui.dim size 18
+                            if _ch.get("cost"):
+                                hbox:
+                                    xalign 1.0
+                                    yalign 0.5
+                                    use sb_cost(_ch["cost"])
 
-            ## --- footer -----------------------------------------------------
-            null height 2
-            if _inv_ok or companion == who:
-                textbutton _inv_label:
+            ## --- footer: the Closer hint, then invite and Back on one line ----
+            if _unlock:
+                text "[_unlock]" color gui.gold size 18
+            hbox:
+                xfill True
+                if _inv_ok or companion == who:
+                    textbutton _inv_label:
+                        padding (2, 2)
+                        background None
+                        text_style "sb_link_text"
+                        yalign 0.5
+                        action Return(("do", "invite", who))
+                textbutton _("Back"):
+                    id "sb_char_back"
+                    xalign 1.0
+                    yalign 0.5
                     padding (2, 2)
                     background None
                     text_style "sb_link_text"
-                    action Return(("do", "invite", who))
-            if _unlock:
-                text "[_unlock]" color gui.gold size 18
-            textbutton _("Back"):
-                padding (2, 2)
-                background None
-                text_style "sb_link_text"
-                text_size 22
-                action Return(("cancel",))
+                    text_size 22
+                    action Return(("cancel",))
 
     key "game_menu" action Return(("cancel",))
 

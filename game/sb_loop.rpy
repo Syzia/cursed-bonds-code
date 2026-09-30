@@ -26,6 +26,7 @@ label sandbox:
         $ check_objective()
         call screen sb_place
         $ _r = _return
+        $ objective_leave()
 
         if _r[0] == "map":
             call sb_travel
@@ -169,7 +170,7 @@ label sb_do_eat:
 
 label sb_do_rest:
     if "rest" in actions_today:
-        "Shoko has already patched me up today. She won't do it twice."
+        "I've already been patched up today. The infirmary doesn't do seconds."
         return
     $ actions_today.add("rest")
     if "shoko" in who_is_here():
@@ -311,7 +312,7 @@ label sb_do_hold:
 
     "Last Light. I find the instant the lights went out, the one I keep, and put my weight on it."
 
-    "Nothing moves. Not the branches, not the dust in the light, not the second hand on the clock in the corridor."
+    "Colour goes out of everything. The dust hangs where it is. One light stays warm, the way it did in the alley, and nothing else moves."
 
     "I stand in it alone for as long as I can hold it, and then I let it go, and the hour arrives exactly where it was."
 
