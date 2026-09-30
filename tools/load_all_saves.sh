@@ -13,7 +13,10 @@
 # Each slot runs tools/smoke/load_slot.rpy through tools/smoke.sh with
 # SMOKE_SAVES=1, so only read-only copies of the saves are used, in a scratch
 # project. Per-slot results go to shots/load_slot/<slot>/ (result.txt and
-# landed.png); the combined report is shots/load_report.txt.
+# landed.png); the combined report is shots/load_report.txt: the status
+# table, then a summary per slot (version, technique, grade, arc, day, roster
+# size, merit, story step, objective, keepsakes, where it landed), then each
+# slot's full result.
 #
 # Status per slot: SAME (landed where it was saved), EARLIER (its statement is
 # gone; rolled back to an older one), MOVED, RECOVER load_recover /
@@ -75,6 +78,7 @@ where_from() {
 field() { sed -n "s/^NOTE $1: //p" "$2" | head -n 1; }
 
 TABLE=""
+SUMMARY=""
 DETAILS=""
 DEAD=""
 N=0; N_SAME=0; N_EARLIER=0; N_MOVED=0; N_RECOVER=0; N_UNKNOWN=0; N_RAISED=0
@@ -110,6 +114,22 @@ for slot in $SLOTS; do
     fi
     TABLE="$TABLE$(printf '%-16s %-22s %-34s %s' "$slot" "$status" "${saved:--}" "${landed:--}")
 "
+    # The per-slot summary (WP11 task 5), from load_slot.rpy's report.* notes.
+    if [ -f "$res" ] && grep -q '^NOTE report\.' "$res"; then
+        SUMMARY="$SUMMARY
+$slot
+  version    $(field 'report\.version' "$res")
+  technique  $(field 'report\.technique' "$res") · grade $(field 'report\.grade' "$res") · arc $(field 'report\.arc' "$res") · day $(field 'report\.day' "$res")
+  roster     $(field 'report\.roster' "$res") · merit $(field 'report\.merit' "$res")
+  story step $(field 'report\.story_step' "$res")
+  objective  $(field 'report\.objective' "$res")
+  keepsakes  $(field 'report\.keepsakes' "$res")
+  landed     $(field 'report\.where' "$res")"
+    else
+        SUMMARY="$SUMMARY
+$slot
+  (no summary: $status${landed:+ · $landed})"
+    fi
     DETAILS="$DETAILS
 === $slot · $(where_from "$slot")
 $( [ -f "$res" ] && cat "$res" || echo "(no result file)")
@@ -136,6 +156,11 @@ DIRTY="$( [ -n "$(git -C "$ROOT" status --porcelain 2>/dev/null)" ] && echo ' + 
     echo
     printf '%-16s %-22s %-34s %s\n' "SLOT" "STATUS" "SAVED AT" "LANDED"
     printf '%s' "$TABLE"
+    echo
+    echo "Per slot: version, technique, grade, arc, day, roster size, merit, story step"
+    echo "(story_point, or legacy_story_point() for a save without one, then the story row"
+    echo "the objective points at), the objective, keepsakes, and where it landed."
+    printf '%s\n' "$SUMMARY"
     printf '%s\n' "$DETAILS"
 } > "$REPORT"
 
