@@ -11,6 +11,7 @@
 init 999 python:
     import os
     import random as zz_random
+    import re as zz_re
 
     ## --- a frozen copy of the world before phase 1 (commit 57eb3db) ----------
     ## The regression check compares today's char_location against this.
@@ -173,6 +174,11 @@ label zz_smoke:
         check(LOCATIONS["utahime_office"]["desc"] == "Neat, traditional, and a mission board already fuller than Yaga's ever was."
               and LOCATIONS["gojo_office"]["desc"] == "Sweets on every surface and a television the size of a door.", "office descriptions")
         check(LOCATIONS["ridge"]["desc"] == "Above the treeline, as far as the rope markers. Higher up, the veil.", "ridge description")
+        check(LOCATIONS["dorm"]["name"] == "My Room" and LOCATIONS["dorm"]["bg"] == "bg your_room", "my room: first person, bg your_room",
+              (LOCATIONS["dorm"]["name"], LOCATIONS["dorm"]["bg"]))
+        _you = [(l, k, LOCATIONS[l][k]) for l in LOCATIONS for k in ("name", "desc")
+                if zz_re.search(r"\b(you|your|you're|yours|yourself)\b", LOCATIONS[l][k], zz_re.I)]
+        check(not _you, "no place name or description says you/your (Kaito narrates in I)", _you)
         check([a["key"] for a in AREAS] == ["heart", "school", "dorms", "staff", "grounds", "mountain"], "AREAS order")
         check([a["seal"] for a in AREAS] == ["門", "校", "寮", "職", "練", "山"], "AREAS seals")
         check([a["anchor"] for a in AREAS] == [(960, 900), (420, 740), (900, 560), (1560, 440), (1560, 760), (740, 290)], "AREAS anchors")
@@ -368,16 +374,20 @@ label zz_smoke:
         _s1 = _snap()
         check(_up and here == "courtyard" and set(gojo_today) == set(PERIODS),
               "run_migrations() on a legacy save: migration 15 re-rolls Gojo and moves me", _s1)
+        check("saw_the_ridge_veil" in flags, "migration 15 gives a settled save saw_the_ridge_veil (the veil action)", flags)
         run_migrations()
         check(_snap() == _s1, "run_migrations() twice: the second pass changes nothing", (_s1, _snap()))
         gojo_today = None
         run_migrations()
         check(isinstance(gojo_today, dict) and set(gojo_today) == set(PERIODS), "migration 15 re-rolls gojo_today=None", gojo_today)
         flags.discard("settled_in")
+        flags.discard("saw_the_ridge_veil")
         here = None
         gojo_today = {p: "-" for p in PERIODS}
         run_migrations()
         check(here is None, "an unsettled save with here=None keeps None", here)
+        _migrate_15()
+        check("saw_the_ridge_veil" not in flags, "migration 15 leaves saw_the_ridge_veil to the tour on an unsettled save", flags)
         flag("settled_in")
         here = "courtyard"
 

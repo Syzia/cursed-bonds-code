@@ -35,7 +35,7 @@ init -2 python:
             indoor=True, name="Dorm Common Room", bg="bg dorm_common", x=735, y=660,
             desc="Sofa, low table, a television nobody agrees on."),
         "dorm": dict(
-            indoor=True, name="Your Room", bg="bg your_room", x=735, y=545,
+            indoor=True, name="My Room", bg="bg your_room", x=735, y=545,
             desc="A bed, a desk, and a window that faces the mountain."),
         "girls_dorm": dict(
             indoor=True, name="Girls' Dormitory", bg="bg girls_dorm", x=1175, y=545,
@@ -63,7 +63,7 @@ init -2 python:
             desc="Forty minutes of trees. Megumi comes here to find the edge of himself."),
         "riverside": dict(
             indoor=False, name="Riverside", bg="bg riverside", x=640, y=225,
-            desc="Cold, clear, and deep enough to swim if you're brave about it."),
+            desc="Cold, clear, and deep enough to swim if I'm brave about it."),
         "ridge": dict(
             indoor=False, name="Mountain Ridge", bg="bg ridge", x=1290, y=215,
             desc="Above the treeline, as far as the rope markers. Higher up, the veil."),
@@ -141,7 +141,7 @@ init -2 python:
     ## the flag is set, the table ({period: place or "-"}) replaces that
     ## character's whole routine, weekends included, and None means off
     ## campus. The last matching entry wins; story pins (schedule_overrides)
-    ## still win over it. Phase 3 adds Utahime leaving to lead Kyoto and
+    ## still win over it. Phase 4 adds Utahime leaving to lead Kyoto and
     ## Yuji's absence here; phase 1 ships it empty.
     FLAG_SCHEDULES = []
 
@@ -547,12 +547,18 @@ init -2 python:
     def _migrate_15():
         """WP1, migration 15. A save whose Gojo roll is missing a period gets
         a fresh roll (which also sets gojo_in); a settled save standing in a
-        place that no longer exists moves to the courtyard. Idempotent."""
+        place that no longer exists moves to the courtyard; a settled save
+        without saw_the_ridge_veil gets it. Idempotent."""
         gt = getattr(store, "gojo_today", None)
         if not isinstance(gt, dict) or any(p not in gt for p in PERIODS):
             roll_gojo()
         if store.here not in LOCATIONS and has_flag("settled_in"):
             store.here = "courtyard"
+        ## Every settled save went through the tour, which shows the veil
+        ## (ch2_tour sets saw_the_ridge_veil); saves settled before that flag
+        ## existed get it here, so the ridge offers "Look up at the veil".
+        if has_flag("settled_in") and not has_flag("saw_the_ridge_veil"):
+            flag("saw_the_ridge_veil")
 
     register_migration(15, _migrate_15, "Gojo's roll, a missing place")
 
@@ -614,7 +620,7 @@ init -2 python:
 ## once, for the others, and the rest of the time it is something I know.
 
 label sb_do_veil:
-    ## PLACEHOLDER — rewrite in phase 3
+    ## PLACEHOLDER — rewrite in phase 4
     $ actions_today.add("veil")
     $ _veil_n = next((n for n in (1, 2, 3) if not has_flag("looked_at_veil_%d" % n)), (day % 3) + 1)
     $ _veil_new = not has_flag("looked_at_veil_%d" % _veil_n)
