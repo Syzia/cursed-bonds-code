@@ -29,9 +29,9 @@ Where this document and older notes disagree, this document wins. Where it and t
 
 **What isn't there yet (by design):**
 
-- Board jobs are narrated and resolved automatically; real fights for them come in the combat update (phase 2).
+- Board jobs are narrated and resolved automatically; real fights for them come in the combat update (phase 3).
 - Most character missions show as "Written in a later build". Two are playable: Ijichi's ride-along and Maki's armory.
-- Talismans and cursed tools can be collected and equipped, but their effects switch on in phase 2.
+- Talismans and cursed tools can be collected and equipped, but their effects switch on in phase 3.
 - The Tokyo districts play a short arrival and bring you back.
 - New acts (the detention center, Nanami, Kyoto and the rest) appear in the journal as "Coming in a later build".
 - Art for the offices, the alley, the ridge veil and Tokyo is placeholder.
@@ -54,30 +54,30 @@ Every graft the judges recommended and every gap they found is resolved below. "
 | D6 | **Memories are recorded per save:** `config.label_callbacks` adds catalogued labels to `memories_seen` (never during a replay), plus legacy rules read from `done_events` and flags. For settled old saves, the prologue sub-labels are backfilled as seen by migration 65. Nothing is written to `persistent`. | WP5 |
 | D7 | The toast queue is a `builtins.object` / `builtins.list` created in `init python`. It is never assigned at runtime, so it is not saved and not rolled back. It is muted during replays and migrations. | WP0, WP7 |
 | D8 | **Calendar phrasing sweep.** Every deadline-bound line is listed with its replacement in section 5.4.2, including `story_arc1.rpy:264/266/324/339/349/364/418/423/450/467/494/497`, `events_arc1.rpy:1574` and `ch5_debrief.rpy:38/163–172`. Durations that aren't deadlines ("four days later", "Three weeks" of Nade's silence) stay. | WP0, WP10 |
-| D9 | **The seam between "I" and "you".** Phase 1 also converts to "I": the sandbox's own narration (`sb_loop.rpy`, `sb_smalltalk`), `st_roll_call` (reworked anyway) and every new scene, including Utahime's arrival. So the first "you" scene the player meets is the Sun Mall briefing, on day 4 at the earliest. Phase 3 converts in story order: Sun Mall/ch4/ch5 → aftermath → Kurose → second-years → noise → Oda → intensive → Nade → hangouts. | WP7, WP3, WP10 |
+| D9 | **The seam between "I" and "you".** Phase 1 also converts to "I": the sandbox's own narration (`sb_loop.rpy`, `sb_smalltalk`), `st_roll_call` (reworked anyway) and every new scene, including Utahime's arrival. So the first "you" scene the player meets is the Sun Mall briefing, on day 4 at the earliest. Phase 4 converts in story order: Sun Mall/ch4/ch5 → aftermath → Kurose → second-years → noise → Oda → intensive → Nade → hangouts. | WP7, WP3, WP10 |
 | D10 | **Storehouse vs armory.** The `storehouse_access` flag (roll call, Yaga's workshop) lets you **enter and look** ("Look through the racks", once a day). `armory_open` is set by Maki's character mission *The Armory* in Act II, as the storyboard has it, and **releases tools up to your grade**. Yaga's roll-call line becomes "Look, don't take. Nothing on those racks leaves without a grade and a reason." | WP10, WP3, WP6 |
-| D11 | **Sana's flashbacks have unlock triggers, stored as data:** *The Diner* on the first trip to Yotsuka; *The Daisy Clip* when the keepsake `daisy_clip` is in the inventory (handed out in phase 3); *The Teacher Ranking* once Oda's first letter is read. Each one's label is written in phase 3. Until then, a triggered flashback shows "Written in a later build". | WP5, WP6 |
-| D12 | **"Grade is who gets picked; they say so."** When an NPC is promoted: a toast overnight, a remark on your next Talk with them (`pending_remarks`), and a line in the People tab. While any student outranks you, Utahime's board shows a read-only card: "Grade 2 · taken by Megumi". `pick_team(n, min_key)` is provided now for phase 3 (Kyoto team, big missions). | WP2, WP3, WP4 |
-| D13 | **Utahime leaves to lead Kyoto** (Act IV, phase 3). `board_host()` switches on the flag `utahime_leads_kyoto`: the board moves to Yaga's office under Ijichi, with a line saying so. A generic `FLAG_SCHEDULES` table lets a flag replace a character's schedule. That will also be needed when Yuji "dies" in Act I. Phase 1 ships the mechanism with an empty table. | WP1, WP4 |
-| D14 | **Aftermath placement.** In phase 1 the existing `st_aftermath` (Shoko on cursed-energy debt, "the morning after Saitama") stays in Act I, the morning after the Sun Mall. When the detention center lands in phase 3, the storyboard's new Aftermath gets its own label and step. `m_aftermath` then moves to Act II with its first line rewritten; its id stays, so saves past it are unaffected. | WP3 |
-| D15 | **Sukuna seeds.** The ridge place now mentions the veil above. Gojo's ambient pose there is "sitting just outside the veil". A free, once-a-day ridge action, *Look up at the veil*, has three rotating lines; the third time, "It is facing the school." Reserved flag names for phase 3 are in section 10. | WP1 |
+| D11 | **Sana's flashbacks have unlock triggers, stored as data:** *The Diner* on the first trip to Yotsuka; *The Daisy Clip* when the keepsake `daisy_clip` is in the inventory (handed out in phase 4); *The Teacher Ranking* once Oda's first letter is read. Each one's label is written in phase 4. Until then, a triggered flashback shows "Written in a later build". | WP5, WP6 |
+| D12 | **"Grade is who gets picked; they say so."** When an NPC is promoted: a toast overnight, a remark on your next Talk with them (`pending_remarks`), and a line in the People tab. While any student outranks you, Utahime's board shows a read-only card: "Grade 2 · taken by Megumi". `pick_team(n, min_key)` is provided now for phase 4 (Kyoto team, big missions). | WP2, WP3, WP4 |
+| D13 | **Utahime leaves to lead Kyoto** (Act IV, phase 4). `board_host()` switches on the flag `utahime_leads_kyoto`: the board moves to Yaga's office under Ijichi, with a line saying so. A generic `FLAG_SCHEDULES` table lets a flag replace a character's schedule. That will also be needed when Yuji "dies" in Act I. Phase 1 ships the mechanism with an empty table. | WP1, WP4 |
+| D14 | **Aftermath placement.** In phase 1 the existing `st_aftermath` (Shoko on cursed-energy debt, "the morning after Saitama") stays in Act I, the morning after the Sun Mall. When the detention center lands in phase 4, the storyboard's new Aftermath gets its own label and step. `m_aftermath` then moves to Act II with its first line rewritten; its id stays, so saves past it are unaffected. | WP3 |
+| D15 | **Sukuna seeds.** The ridge place now mentions the veil above. Gojo's ambient pose there is "sitting just outside the veil". A free, once-a-day ridge action, *Look up at the veil*, has three rotating lines; the third time, "It is facing the school." Reserved flag names for phase 4 are in section 10. | WP1 |
 | D16 | **No grade until roll call.** `grade` defaults to `None` ("Not yet assessed"). Roll call assesses you on screen as Grade 4, with a grade card. While `grade` is `None`, caps and slots use Grade 4's numbers. | WP2, WP10 |
 | D17 | **"Gojo is in" days start after his first lesson** (flag `intensive_done`). About 1 day in 6, seeded by day, never two days running. His office is locked before that, with a note on the door ("SOON!"). | WP1 |
 | D18 | **The Grade 3 promotion is a real mission with Maki watching.** It is a fight in the training hall on the existing combat engine, against a new enemy entry `promo_g3`. Losing or withdrawing means trying again the next day. It needs 60 merit. The story alone pays 70 merit by the end of Act II, so the board is never a grind wall for the reviewer. | WP3, WP2 |
 | D19 | The Grade 2 promotion (on Nanami's word) is an unwritten row in phase 1. Grade 3 is the ceiling in normal play; the review tools can promote further. | WP3 |
-| D20 | **Every storyboard beat has a row:** detention center, infirmary, The Strongest, the secret, Nanami, cinema, Junpei, Satozakura, Kyoto arrives, team battle, the attack, baseball, new faces, Yasohachi, Mei Mei, the recommendation, Yuta's call, the sketchbook. Unwritten rows never block written ones and never complete an act or the arc. Rows have spaced `order` numbers and a `skip_if`, so beats inserted in phase 3 don't become stale objectives for saves already past them. | WP3 |
+| D20 | **Every storyboard beat has a row:** detention center, infirmary, The Strongest, the secret, Nanami, cinema, Junpei, Satozakura, Kyoto arrives, team battle, the attack, baseball, new faces, Yasohachi, Mei Mei, the recommendation, Yuta's call, the sketchbook. Unwritten rows never block written ones and never complete an act or the arc. Rows have spaced `order` numbers and a `skip_if`, so beats inserted in phase 4 don't become stale objectives for saves already past them. | WP3 |
 | D21 | NPC xp is **cumulative**; promotion thresholds are cumulative too. Stats are base + a growth bonus, so they never drop. `ACT_STUDENT_CAP` limits NPC promotions by how many acts are complete. No existing dialogue names an NPC's grade (checked), so there is nothing to contradict. | WP2 |
 | D22 | The mission status cache is cleared by `config.interact_callbacks`. The cache is exactly per interaction, so a bond gain shows a newly available character mission immediately. | WP3 |
 | D23 | `arc_one_open` sets `arc_start_day = day` (default 1). The prologue step's done-day is `arc_start_day`, so roll call waits for day 2, as it does today. | WP3, WP9 |
 | D24 | Keepsakes are granted only by `sync_keepsakes()`, which is idempotent and reads the flags. It runs as a migration and when the campus opens, not at the packing choice. One path, no double grants. | WP6 |
 | D25 | **Quick menu:** BACK · HISTORY · SKIP · AUTO · SAVE · JOURNAL · MENU. It hides itself while any screen tagged `sandbox` or `menu` is showing. The sandbox stops setting `quick_menu = False`, and migration 5 restores `quick_menu = True` for old saves. The game menu's navigation column serves as the pause menu; there is no separate `pause_menu` screen. | WP7, WP8 |
-| D26 | Small exploit fixes pulled forward: *Hold the hour*, *Get patched up* and *Look through the racks* are once a day (`actions_today`). HP refills at dawn. The rest of the combat economy is phase 2. | WP7, WP1 |
+| D26 | Small exploit fixes pulled forward: *Hold the hour*, *Get patched up* and *Look through the racks* are once a day (`actions_today`). HP refills at dawn. The rest of the combat economy is phase 3. | WP7, WP1 |
 | D27 | **Test isolation.** `tools/smoke.sh` v2 runs each harness in a **scratch copy** of the project, with `--savedir` set to a scratch folder. It never touches the owner's saves, persistent data or `.rpyc` files, and it passes or fails from a result file. Package worktrees get read-only **copies** of the owner's `game/*.rpyc`, so load tests match the real tree. | WP0 |
 | D28 | **Integration happens in the owner's folder** on branch `phase1`, after the backup (WP0 task 0). The owner plays the checkpoints there. `main` is untouched until the owner approves. | WP0, WP11 |
 | D29 | New text never contains a literal "Kaito" or "Amagiri"; it uses `[mc_name]`/`[mc_surname]`. `check_content.py --no-literal-name` enforces this. | all |
 | D30 | **Review tools** are a developer-only panel (runs from the SDK), reachable from a small HUD button in any sandbox place, not only explore mode. They run in the main context, so their changes stick. | WP11, WP7 |
 | D31 | `sb_do_temper` is kept as a two-line retired label ("The forge is cold."), not deleted, following the label policy. | WP7 |
-| D32 | Re-pointing the placeholder `bg city` scenes to the Tokyo districts is left to phase 3. The list is in section 10. | — |
+| D32 | Re-pointing the placeholder `bg city` scenes to the Tokyo districts is left to phase 4. The list is in section 10. | — |
 | D33 | The HUD on the map screen shows the date and MENU only. The person view shows the date only. JOURNAL appears on the place view. | WP7 |
 | D34 | Consecutive bond or affection toasts for the same person merge ("Yuji bond +4"). Toast kinds are colour-coded with a kanji. | WP7, WP0 |
 | D35 | A place/period **arrival caption** fades after about 3 s, replacing a permanent place label. A "running on empty" line appears when stamina is below 25. | WP7 |
@@ -142,7 +142,7 @@ The rules:
   - Change a face every few lines at most.
   - **Never** give attributes to Mom, Dad, Oda, Kurose, Nade, `voice_` or the curses: they have no image tag, and Ren'Py raises an error.
 - **Flags and stats stay put.** Every `flag()`, `gain()`, `add_bond()` and `add_aff()` stays on the same choice. Packages that rewrite a scene diff these lines before and after.
-- **Placeholders are labelled.** Every placeholder scene starts with `## PLACEHOLDER — rewrite in phase 3`.
+- **Placeholders are labelled.** Every placeholder scene starts with `## PLACEHOLDER — rewrite in phase 4` (markers written before 30 Sep 2026 say "phase 3", the old number for the story phase; WP11 updates them).
 
 ### 2.4 Code conventions
 
@@ -285,7 +285,7 @@ DISTRICTS[key] = dict(name, kanji, desc, places, bg, min_grade, needs_flag, lock
 | shibuya | Shibuya | 渋谷 | the scramble crossing, the station, an arcade, a café | `bg shibuya` | flag `ijichi_rides` |
 | harajuku | Harajuku | 原宿 | Takeshita Street; supplies and sealing talismans (later) | `bg harajuku` | `ijichi_rides` |
 | shinjuku | Shinjuku | 新宿 | neon streets, the station, rooftops at night | `bg shinjuku` | `ijichi_rides` and Grade 2 |
-| kawasaki | Kawasaki | 川崎 | the cinema, Junpei's neighbourhood | `bg kawasaki` | `ijichi_rides` and flag `kawasaki_open` (Act III, phase 3) |
+| kawasaki | Kawasaki | 川崎 | the cinema, Junpei's neighbourhood | `bg kawasaki` | `ijichi_rides` and flag `kawasaki_open` (Act III, phase 4) |
 | yotsuka | Home — Yotsuka | 四塚 | my parents' house, the diner, the alley | `bg yotsuka` | `ijichi_rides` |
 
 `lines` holds 2–3 first-person arrival lines for each district (WP1 writes them, following the writing rules in 2.3).
@@ -322,8 +322,8 @@ A trip that starts in the Morning ends in the Afternoon, at the gate.
 |---|---|---|---|---|---|---|---|
 | `g4` | Grade 4 | 0 | 100 | 40 | 1 | — | assessed at roll call |
 | `g3` | Grade 3 | 1 | 140 | 55 | 2 | 60 | then the promotion mission with Maki watching |
-| `g2` | Grade 2 | 2 | 180 | 70 | 3 | 150 | then a Grade 1's word (Nanami, phase 3) |
-| `s1` | Semi-Grade 1 | 3 | 220 | 85 | 4 | 260 | then a recommendation (phase 3) |
+| `g2` | Grade 2 | 2 | 180 | 70 | 3 | 150 | then a Grade 1's word (Nanami, phase 4) |
+| `s1` | Semi-Grade 1 | 3 | 220 | 85 | 4 | 260 | then a recommendation (phase 4) |
 | `g1` | Grade 1 | 4 | 260 | 100 | 4 | — | two Grade 1 recommendations (Arc Two) |
 | `sp` | Special Grade | 5 | None | None | 4 | — | `off_scale=True`; never reachable |
 
@@ -349,7 +349,7 @@ A trip that starts in the Morning ends in the Afternoon, at the gate.
 Related helpers:
 - `recent_promotion(who, days=3)`.
 - `pop_remark(who) -> bool`: returns and clears the pending remark.
-- `pick_team(n, min_key=None) -> [who]`: rostered students ranked by grade rank, then bond (D12, for phase 3).
+- `pick_team(n, min_key=None) -> [who]`: rostered students ranked by grade rank, then bond (D12, for phase 4).
 
 **Player numbers** stay in the existing store variables: `ce`, `ce_max`, `control`, `output`, `insight`, `hp`, `hp_max`, `stamina`.
 - `default grade = None` (D16). The value is a key from roll call on.
@@ -425,7 +425,7 @@ Related helpers:
 - `ENEMIES` grades become keys: `alley_curse` `"g1"`, `nade_curse` `"g3"`, `warehouse` `"g2"`.
 - `alley_curse` gains `rounds=4`. After round 4, `combat_enemy` sets `cb["over"] = "down"` and logs "It stops playing with you." `combat_begin` copies it as `cb["rounds"] = e.get("rounds")`.
 - New entry `promo_g3`: name "Grade 3 assessment curse", grade `"g3"`, hp 100, power 16, sprite `"curse small"`, tells heavy / fast / grab.
-- `combat_begin(key_or_dict, ally=None, flee_ok=True, bg=None)` accepts an enemy dict (for board fights in phase 2). It floors HP at half: `hp = max(hp, hp_max // 2)`.
+- `combat_begin(key_or_dict, ally=None, flee_ok=True, bg=None)` accepts an enemy dict (for board fights in phase 3). It floors HP at half: `hp = max(hp, hp_max // 2)`.
 - `combat_screen` prints `grade_label(_c["grade"])` in place of "GRADE [_grade]". When `smoke_autoplay` is set, it adds `timer 0.05 action Return((ANSWERS[_c["kind"]],))` (8.1).
 - `refresh_vitals()` is unchanged.
 
@@ -557,7 +557,7 @@ The label is `cm_<who>_<n>`, the trigger is `start` with `who`, and `where` is N
 
 | who (thread) | 1 | 2 | 3 |
 |---|---|---|---|
-| yuji (yuji_countdown) | Grandpa's Last Words: bond 30, thread ≥1 | The Basement: flag `yuji_secret` (phase 3) | A Finger Retrieval: g3, bond 50 |
+| yuji (yuji_countdown) | Grandpa's Last Words: bond 30, thread ≥1 | The Basement: flag `yuji_secret` (phase 4) | A Finger Retrieval: g3, bond 50 |
 | megumi (megumi_tsumiki) | The Hospital: bond 35, thread ≥1 | Divine Dogs: g3 | What the Zenin Wanted: bond 65 |
 | nobara (nobara_saori) | Harajuku: bond 30, flag `ijichi_rides` | Straw Doll: g3 | Saori's Letter: bond 60, thread ≥1 |
 | maki (maki_zenin) | **The Armory** (written): bond 10, flag `met_second_years` | Mai, Before Kyoto: after m_roster | Playful Cloud, on Loan: bond 70, g2 |
@@ -643,7 +643,7 @@ An offer is a plain dict: `id, grade, true_grade, case, place, curse, twist, tit
 - **Partners:** anyone rostered with an NPC grade that is not None, excluding gojo, yaga and utahime, and currently on campus. A senior partner is anyone whose grade rank is above yours. You can't go alone ("Always take someone," Utahime's rule).
 - **Cost:** 2 periods and 25 stamina. Refused in the Evening and at Night, with the line "Utahime doesn't send anyone out after dark."
 
-**Resolve** (phase 1 resolves automatically; phase 2 turns it into a fight):
+**Resolve** (phase 1 resolves automatically; phase 3 turns it into a fight):
 - power = `sorcerer_power("mc") + 0.6 * sorcerer_power(partner)`, times a factor between 0.9 and 1.1 (seeded by offer id and day).
 - difficulty = g4 30 / g3 55 / g2 80 / s1 110 for the **true** grade, plus the twist's modifier.
 - Outcome: `clean` if power ≥ difficulty; `costly` if power ≥ 0.7 × difficulty; `withdrew` otherwise.
@@ -672,12 +672,12 @@ All of it is paid exactly once per run.
 |---|---|---|---|
 | photo, hachimaki, watch | keepsake | — | from `took_photo` / `took_hachimaki` / `took_watch` |
 | oda_letter | keepsake | — | from `oda_letter_read` |
-| daisy_clip | keepsake | — | `hidden`; phase 3 hands it out; it unlocks a Sana memory (D11) |
+| daisy_clip | keepsake | — | `hidden`; phase 4 hands it out; it unlocks a Sana memory (D11) |
 | kurose_card | mission | — | from `kurose_card` |
 | kurose_photocopy | mission | — | from `kurose_leak` |
 | presigned_form | mission | — | from `nade_traced` |
 | nade_map | mission | — | from `nade_map` ("my home town circled") |
-| sealing_talisman | sealing | g4 | stacks; binds a curse for a turn (phase 2) |
+| sealing_talisman | sealing | g4 | stacks; binds a curse for a turn (phase 3) |
 | first_aid | supply | — | stacks; defined, not handed out in phase 1 |
 | slaughter_demon | tool | g4 | armory; fx `{"bleed": 3}` |
 | nunchaku | tool | g3 | armory; fx `{"chain": 1}` |
@@ -1799,6 +1799,7 @@ Wave 2 (sequential)   WP11 integration, review tools, save regression, docs
    - `tools/README.md`: the harness kit;
    - the `gen_sprite_defs.py` docstring: the image tags now exist in `jjk_defs.rpy`;
    - `docs/PLAYTEST.md`: a 20-minute owner checklist covering the checkpoints and the known placeholders.
+   - phase-number comments in `game/` (`## PLACEHOLDER — rewrite in phase 3` and the like) updated to the new numbering in section 10 (story: phase 4; combat: phase 3). Comment lines only: never a statement, a string or a `python` block's source.
 
 **Acceptance:**
 - Lint is clean on the merged tree.
@@ -1895,13 +1896,17 @@ Each checkpoint is played in the owner's folder on branch `phase1`, from the SDK
 12. **Ren'Py behaviours this design relies on,** checked in the 8.5.3 source: `load_failed()` skips defaults and callbacks (D1); `return_not_found_label` pops to one frame; `get_screen` accepts a list; `Replay(locked=)`; `call_replay` uses a clean store; `label_callbacks` exists; `side_image_only_not_showing` and `say_attribute_transition` exist; `auto_choice_delay` exists. Still to confirm in WP8's harness: `retain_after_load()` from the campus journal survives save and load. The fallback is already in place, because edits happen only in the main context.
 13. **Too many toasts.** *Mitigation:* merging, four visible at a time, a short life, and NPC growth toasting only on promotion.
 14. **Information leaves the HUD** (time of day, stamina). *Mitigation:* the arrival caption, graded backgrounds, the low-stamina line, the Stats tab. The owner should judge this in play.
-15. **Mixed voice after the prologue** until phase 3 converts the chapters. *Mitigation:* D9 moves the seam to the Sun Mall.
+15. **Mixed voice after the prologue** until phase 4 converts the chapters. *Mitigation:* D9 moves the seam to the Sun Mall.
 
 ---
 
 ## 10. Left for later phases
 
-- **Phase 2 (combat):**
+*Renumbered 30 Sep 2026, when the owner added a UI overhaul after playing checkpoints 2 and 3: phase 2 is now the **UI overhaul** (`docs/PHASE2_UI_OVERHAUL.md`), combat moves to phase 3 and the story acts to phase 4+. Every phase number in this document uses the new numbering.*
+
+- **Phase 2 (UI overhaul):** see `docs/PHASE2_UI_OVERHAUL.md`. It also takes over the storyboard's "people in their places" pictures and blinking/talking, which the storyboard had scheduled with Act I.
+
+- **Phase 3 (combat):**
   - fix the damage-and-block moves, allies using your stats, and the Nade 1 bond inversion;
   - Black Flash;
   - partner moves;
@@ -1909,7 +1914,7 @@ Each checkpoint is played in the owner's folder on branch `phase1`, from the SDK
   - board jobs as real fights (`use_combat` via `combat_begin(dict)`);
   - enemy phases;
   - the rest of the time economy.
-- **Phase 3+ (story):**
+- **Phase 4+ (story):**
   - write the unwritten rows (their ids are reserved in 3.6.1) and the character missions `cm_*`;
   - district scenes `district_<key>`;
   - Sana's flashbacks `sana_mem_*`;
