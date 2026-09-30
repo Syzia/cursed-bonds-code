@@ -233,6 +233,13 @@ label zz_smoke:
         check(_cs[0]["id"] == "car" and _cs[0]["kind"] == "act", "Ijichi at the gate offers the car", [c["id"] for c in _cs])
         _cs = person_choices("utahime", "utahime_office")
         check(_cs[0]["id"] == "board" and _cs[0]["kind"] == "act", "Utahime at her office offers the board", [c["id"] for c in _cs])
+        ## WP11 (WP5-h2): confide and stand only for the nine who have scenes.
+        _cf = {w: [a["id"] for a, ok, why in activities_for(w, "office")] for w in ("ijichi", "utahime", "yaga")}
+        check(not ({"confide", "stand"} & set(_cf["ijichi"] + _cf["utahime"])) and "confide" in _cf["yaga"],
+              "at bond 100, Ijichi and Utahime get no confide/stand (they'd play Yaga's lines); Yaga does", _cf)
+        ## WP11 (WP7-h11): the offices are real places now; no stand-in list.
+        check({"gojo_office", "utahime_office"} <= set(LOCATIONS) and not hasattr(store, "_WP7_NEW_PLACES"),
+              "both offices are in LOCATIONS; the WP7 stand-in list is gone")
         bonds = {w: 12 for w in roster}
         affection = {w: 0 for w in roster if is_romanceable(w)}
         together = []
@@ -337,6 +344,24 @@ label zz_smoke:
         store._in_replay = None
         check(len(TOASTQ.items) == _n, "no toasts during a replay")
         roster.remove("maki")
+        toast_clear()
+
+        ## WP11 (WP9-h6): the prologue's blackout holds toasts; they wait.
+        toast("Before the dark")
+        check(len(toast_visible()) == 1, "a toast shows before the blackout")
+        hide_side_images = True
+        toast("In the dark")
+        toast_tick()
+        check(toast_visible() == [] and all(t["t_shown"] is None for t in TOASTQ.items),
+              "blackout: no toast shows, and every clock stops (a shown one too)", TOASTQ.items)
+    $ renpy.pause(TOAST_LIFE + 0.4, hard=True)
+    python:
+        check([t["text"] for t in TOASTQ.items] == ["Before the dark", "In the dark"] and not zz_texts("toasts"),
+              "blackout: after a toast's lifetime both still wait, and nothing draws", ([t["text"] for t in TOASTQ.items], zz_texts("toasts")))
+        hide_side_images = False
+        toast_tick()
+        check([t["text"] for t in toast_visible()] == ["Before the dark", "In the dark"],
+              "after the blackout both show, with a full turn", [t["text"] for t in toast_visible()])
         toast_clear()
 
     ## --- the place view with four people (acceptance), toasts on top ----------------------
@@ -715,10 +740,14 @@ label zz_smoke:
         period = "Morning"
         stamina = stamina_max
         spent_today = set()
+        _before = (period, day)
     $ autoplay()
     call sb_activity("train", "yuji")
     $ autoplay(False)
     python:
+        ## WP11 (WP7-o4, WP11-r1): one period, as the card's single diamond says.
+        check((period, day) == ("Noon", _before[1]) and ACT_BY_ID["train"]["cost"] == 1,
+              "a spar charges one period (Morning -> Noon), matching its card", (_before, period, day))
         check([c for c in ZZ_CALLS if c[0] == "tt"] == [("tt", "yuji", 3, "output")],
               "a spar calls train_together(yuji, 3, output) exactly once", ZZ_CALLS)
         check(("rec", "train", "yuji") in ZZ_CALLS, "and records the act", ZZ_CALLS)
@@ -729,6 +758,12 @@ label zz_smoke:
         spent_today = set()
         _pc = [c["id"] for c in person_choices("yuji", "dojo")]
         check("train" not in _pc, "at stamina 12 the person view doesn't offer Train together", _pc)
+        ## WP11 (WP7-o5): activity_state agrees, so the journal does too.
+        check(activity_state(ACT_BY_ID["train"], "yuji", "dojo") == (False, "Too tired"),
+              "at stamina 12 activity_state calls Train together too tired", activity_state(ACT_BY_ID["train"], "yuji", "dojo"))
+        stamina = 15
+        check(activity_state(ACT_BY_ID["train"], "yuji", "dojo") == (True, None), "at stamina 15 it's available")
+        stamina = 12
         _before = (period, day)
     $ autoplay()
     call sb_activity("train", "yuji")

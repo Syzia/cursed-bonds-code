@@ -130,7 +130,7 @@ label sb_activity(aid, who):
         $ train_together(who, *TRAIN_TOGETHER[aid])
     if _a.get("once"):
         $ flag("did_%s_%s" % (aid, who))
-    if _a["cost"]:
+    if _a["cost"] and aid != "train":    ## sb_spar charges its own period
         $ advance_period(_a["cost"])
     scene expression graded_bg()
     return
