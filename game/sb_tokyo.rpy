@@ -31,12 +31,12 @@ init -1 python:
             lines=[
                 "Ijichi lets me out two streets from the scramble, because he says nobody should have to park in Shibuya.",
                 "The lights go green and a thousand people walk straight at each other without touching. I stand at the kerb and watch it happen twice before I try.",
-                "Under all of it there's a hum I couldn't hear a month ago. I decide it's the trains.",
+                "Under all of it there's a hum I couldn't hear before the alley. I decide it's the trains.",
             ]),
         "harajuku": dict(
             name="Harajuku", kanji="原宿",
             desc="Loud, sweet, and very pink. Nobara's idea of a day out.",
-            places="Takeshita Street; supplies and sealing talismans (later)",
+            places="Takeshita Street, crêpe stands, a talisman shop down a side street",
             bg="bg harajuku", min_grade=None, needs_flag=None,
             locked_hint="After Ijichi's ride-along",
             lines=[
@@ -47,7 +47,7 @@ init -1 python:
         "shinjuku": dict(
             name="Shinjuku", kanji="新宿",
             desc="Neon, towers, and the jobs that need a Grade 2.",
-            places="Neon streets, the station, rooftops at night",
+            places="Neon streets, the station, the rooftops",
             bg="bg shinjuku", min_grade="g2", needs_flag=None,
             locked_hint="Grade 2",
             lines=[
@@ -58,7 +58,7 @@ init -1 python:
         "kawasaki": dict(
             name="Kawasaki", kanji="川崎",
             desc="Across the river. Quieter than Tokyo, and not as quiet as it looks.",
-            places="The cinema, Junpei's neighbourhood",
+            places="The river, a cinema, streets I don't know yet",
             bg="bg kawasaki", min_grade=None, needs_flag="kawasaki_open",
             locked_hint="Act III",
             lines=[
@@ -138,18 +138,26 @@ label sb_trip(key):
 
     if here != "gate":
         "I walk down to the gate. Ijichi is already holding the car door."
+    ## Nobody else comes along: the car has one spare seat, and it's taken.
+    if companion:
+        $ _trip_who = CAST[companion]["short"]
+        "[_trip_who] waves me off at the gate. Ijichi only has the one spare seat, and it's full of paperwork."
+        $ companion = None
 
+    ## After the first trip his line rotates by day and period, so two trips
+    ## on one day never repeat it.
+    $ _car_line = (day * 5 + period_index()) % 3
     scene bg car
     with Dissolve(0.4)
     if not districts_visited:
         show ijichi serious at pos_c
         with dissolve
         ijichi "Seatbelt, please. And if you see anything, anything at all, you call me first. Before you do something about it. Please."
-    elif day % 3 == 0:
+    elif _car_line == 0:
         show ijichi neutral at pos_c
         with dissolve
         ijichi "Back at the gate by the usual time, please. I've already filed the mileage."
-    elif day % 3 == 1:
+    elif _car_line == 1:
         show ijichi sad at pos_c
         with dissolve
         ijichi "Please don't tell Gojo-san I let you out alone. He'll want to come next time."

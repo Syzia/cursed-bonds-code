@@ -479,7 +479,9 @@ init -2 python:
         "Dojo (mornings and noon) · Training Hall (afternoons) · Riverside
         (evenings)". Places in first-seen order."""
         if who == "gojo" and not flag_schedule("gojo")[0]:
-            return "Nowhere you can predict. His office on the days he's in."
+            if not has_flag("intensive_done"):
+                return "Nowhere I can predict."
+            return "Nowhere I can predict. His office on the days he's in."
         found, table = flag_schedule(who)
         if found and table is None:
             return "Away from campus."
@@ -623,7 +625,7 @@ label sb_do_veil:
     if _veil_n == 1:
         "I look up past the rope markers."
         "The veil sits on the top of the ridge like weather that has decided not to move: a dome, dark, faintly violet at its edges. The grass inside it doesn't move when the grass outside does."
-        "If I let my eyes do the new thing they do, there is a shape in the middle of it. Sitting. Cross-legged, the way a monk sits."
+        "If I let my eyes do the new thing they do, it's still there in the middle of it. Sitting cross-legged, the way a monk sits, exactly where Gojo showed me."
         "I stop letting my eyes do the new thing."
 
     elif _veil_n == 2:

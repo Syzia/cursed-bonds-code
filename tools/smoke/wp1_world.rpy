@@ -269,7 +269,13 @@ label zz_smoke:
         check(when_at("maki", "dojo") == "weekday mornings and noon; weekend mornings, noon and evenings", "when_at maki dojo", when_at("maki", "dojo"))
         check(when_at("yuji", "ridge") == "", "when_at: never there is empty")
         check(when_at("gojo", "gojo_office") == "on the days he's in, mornings to afternoons", "when_at gojo office", when_at("gojo", "gojo_office"))
-        check(usual_places("gojo") == "Nowhere you can predict. His office on the days he's in.", "usual_places gojo")
+        _had = has_flag("intensive_done")
+        flags.discard("intensive_done")
+        check(usual_places("gojo") == "Nowhere I can predict.", "usual_places gojo before his first lesson", usual_places("gojo"))
+        flag("intensive_done")
+        check(usual_places("gojo") == "Nowhere I can predict. His office on the days he's in.", "usual_places gojo after it", usual_places("gojo"))
+        if not _had:
+            flags.discard("intensive_done")
         check(usual_places("maki") == "Dojo (mornings and noon) · Training Hall (afternoons) · Riverside (evenings) · Girls' Dormitory (nights)",
               "usual_places maki", usual_places("maki"))
         check(usual_places("utahime").startswith("Utahime's Office (mornings to afternoons)"), "usual_places utahime", usual_places("utahime"))
@@ -399,6 +405,8 @@ label zz_smoke:
     call sb_do_veil
     $ check(has_flag("looked_at_veil_1") and not has_flag("looked_at_veil_2"), "first look: passage 1")
     $ check(zz_said("The grass inside it doesn't move"), "passage 1: the grass, not trees, inside the veil")
+    $ check(zz_said("it's still there in the middle of it", "exactly where Gojo showed me") and not zz_said("there is a shape"),
+            "passage 1 remembers the figure from the tour")
     $ check((day, period) == _vp and not veil_ok(), "the veil costs no time, and once a day", (day, period))
     $ actions_today.discard("veil")
     $ del ZZ_SAID[:]
@@ -545,6 +553,42 @@ label zz_smoke:
         check(_gone and _stay, "the trip menu: both choices came up in 12 tries", (len(_gone), len(_stay)))
         check(not any(o[4] for o in _gone), "later trips play a different Ijichi line")
 
+    ## A companion stays behind at the gate (the car has one spare seat).
+    python:
+        day = 4
+        period = "Morning"
+        here = "courtyard"
+        districts_visited = {"shibuya"}
+        companion = "yuji"
+        del ZZ_SAID[:]
+        autoplay()
+    call sb_trip("harajuku")
+    $ autoplay(False)
+    $ check(companion is None and zz_said("waves me off at the gate") and "yuji" not in who_is_here("gate"),
+            "a trip leaves the companion behind", (companion, who_is_here("gate")))
+
+    ## Two trips on one day play different Ijichi lines.
+    python:
+        _zz_lines = []
+        _IJ = ("Back at the gate by the usual time", "Please don't tell Gojo-san", "walk away from it first")
+        day = 4
+        period = "Morning"
+        here = "gate"
+        districts_visited = {"shibuya"}
+        del ZZ_SAID[:]
+        autoplay()
+    call sb_trip("harajuku")
+    python:
+        _zz_lines.append([b for b in _IJ if zz_said(b)])
+        del ZZ_SAID[:]
+    call sb_trip("yotsuka")
+    python:
+        autoplay(False)
+        _zz_lines.append([b for b in _IJ if zz_said(b)])
+        check(period == "Night" and len(_zz_lines[0]) == 1 and len(_zz_lines[1]) == 1 and _zz_lines[0] != _zz_lines[1],
+              "two trips on one day (Morning, then Afternoon) play different Ijichi lines", (period, _zz_lines))
+        companion = None
+
     ## A trip that can't start does nothing.
     $ districts_visited = {"shibuya"}
     $ here = "gate"
@@ -611,6 +655,17 @@ label zz_smoke:
     $ check(_a.__class__.__name__ == "NullAction" and _t == "Ijichi drives from the gate, mornings to afternoons.",
             "sb_map(layer='tokyo'): an open district in the Evening does nothing and says when he drives", (_a, _t))
     $ period = "Morning"
+    $ pin("ijichi", "office")
+    show screen zz_press("district_harajuku")
+    call screen sb_map(layer="tokyo")
+    $ _a, _t = zz_pressed("district_harajuku")
+    $ check(_a.__class__.__name__ == "NullAction" and _t == "Ijichi isn't at the gate right now.",
+            "sb_map(layer='tokyo'): in the morning with Ijichi elsewhere, a district says he isn't at the gate", (_a, _t))
+    $ schedule_overrides.pop(("ijichi", day, "Morning"), None)
+    python:
+        check(not any(("Junpei" in DISTRICTS[k]["places"]) or ("(later)" in DISTRICTS[k]["places"]) or ("at night" in DISTRICTS[k]["places"])
+                      for k in DISTRICT_ORDER), "the districts' places lines name nothing the player can't know or do yet",
+              [DISTRICTS[k]["places"] for k in DISTRICT_ORDER])
 
     ## --- 13. screenshots: the map ------------------------------------------------------------------------------
     ## Day 1, the way a new game sees it: six areas, who is where, Tokyo locked.

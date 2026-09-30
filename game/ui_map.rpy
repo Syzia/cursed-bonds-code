@@ -461,6 +461,8 @@ screen sb_map_campus():
 screen sb_map_tokyo():
 
     $ _now = trip_ok_now()
+    ## Why the car isn't going: out of hours, or Ijichi is elsewhere in them.
+    $ _wait = _("Ijichi isn't at the gate right now.") if period in TRIP_PERIODS else _("Ijichi drives from the gate, mornings to afternoons.")
 
     ## Jujutsu High — Ijichi's car (kept clear of the header).
     frame:
@@ -483,7 +485,7 @@ screen sb_map_tokyo():
             if _now:
                 text _("Ijichi is at the gate with the car.") size 16 color gui.gold
             else:
-                text _("Ijichi drives from the gate, mornings to afternoons.") size 16 color gui.dim
+                text _wait size 16 color gui.dim
 
     ## The districts. An open one starts a trip while Ijichi is driving; at
     ## other times it does nothing and says when he drives.
@@ -501,7 +503,7 @@ screen sb_map_tokyo():
             xpos _pos[0]
             ypos _pos[1]
             sensitive _open
-            tooltip (None if _go else _("Ijichi drives from the gate, mornings to afternoons."))
+            tooltip (None if _go else _wait)
             action map_district_action(_dk)
             vbox:
                 spacing 5
