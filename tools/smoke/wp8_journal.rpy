@@ -1,0 +1,856 @@
+## tools/smoke/wp8_journal.rpy -- WP8's harness: the journal and the engine
+## screens (docs/PHASE1_DESIGN.md, WP8 acceptance).
+##
+##   SMOKE_SHOTS=shots/wp8 tools/smoke.sh tools/smoke/wp8_journal.rpy
+##
+## (Without SMOKE_SHOTS the screenshots land in shots/wp8_journal/.)
+##
+## What it checks, each as a named check:
+##   render     every tab of the journal for a fresh state and a rich fixture
+##              (grade g3, items, promotions, memories, missions, the board),
+##              plus the detail pane, the sub-tabs, the picker, the Sana
+##              filter and the two wrappers. Screenshots go to shots/wp8/.
+##   equipment  an equipment change made through the campus journal (the
+##              picker's own buttons, in the main context) survives a save
+##              taken during that interaction and a load; the journal opened
+##              from a menu context is read-only.
+##   replay     a memory replay started from the journal (the tile's own
+##              button, from campus and from the quick menu's menu context)
+##              returns to the journal, and leaves the save's state alone.
+##   quick menu hidden on sb_place and in the journal, shown in dialogue,
+##              with the D25 buttons.
+##   portraits  every side portrait at zoom 0.8 fits inside the dialogue's
+##              300px margin; an off-screen speaker gets one; the
+##              "[mc_name]'s portrait: Hide" preference and the blackout
+##              (hide_side_images) take it away.
+##   arc two    the Begin Arc Two card returns ("arc_two",) from campus and
+##              is absent from a menu context.
+##
+## Other packages' APIs are still stubs in WP8's worktree. The rich fixture
+## fakes their data at harness level: each faked store function switches
+## between the fake (while zzj.rich is on) and whatever the game defines, so
+## the fresh-state renders use the real functions. The equipment functions are
+## faked only while WP6's are still WP0 stubs; after WP6 merges, the save and
+## load check runs against WP6's own equip_*.
+##
+## The journal is driven the way a player drives it: the `zzj_driver` screen
+## (zorder 500) runs one scripted step per timer tick during the journal's own
+## interaction, finds the journal's buttons in the displayable tree and runs
+## their actions.
+
+init 999 python:
+    import builtins
+
+    class ZZJState(builtins.object):
+        """Harness state outside the store: not saved, not rolled back."""
+        def __init__(self):
+            self.rich = False
+            self.story_complete = False
+            self.script = builtins.list()
+            self.menu_driver = False
+            self.phase = ""
+            self.no_retain = False
+            self.replays = 0
+            self.replay_flags = None
+            self.stub6 = False
+            self.after_load = None
+
+    zzj = ZZJState()
+
+    ## --- switching fakes ----------------------------------------------------
+
+    def zzj_switch(name, fake):
+        """Rebind store.<name> to call `fake` while zzj.rich, else the game's."""
+        orig = getattr(store, name)
+        def f(*a, **k):
+            return (fake if zzj.rich else orig)(*a, **k)
+        f.__name__ = name
+        f.__doc__ = getattr(orig, "__doc__", None)
+        setattr(store, name, f)
+
+    ## --- missions (WP3) -----------------------------------------------------
+
+    def zzj_m(id, kind, act, title, objective="", trigger="auto", where=None, with_who=None,
+              who=None, periods=None, merit=0, group=None):
+        return dict(id=id, kind=kind, act=act, title=title, objective=objective, trigger=trigger,
+                    where=where, with_who=with_who, who=who, periods=periods, group=group,
+                    rewards=dict(merit=merit))
+
+    ZZJ_MISSIONS = [
+        zzj_m("m_prologue", "story", "P", "The Offer and the Tour"),
+        zzj_m("m_roll_call", "story", "I", "Roll Call", "Roll call with Principal Yaga", periods=("Morning",), merit=5),
+        zzj_m("m_utahime", "story", "I", "The Room Next Door", "Someone is moving into the room next to Yaga's", periods=("Morning", "Noon", "Afternoon")),
+        zzj_m("m_sunmall", "story", "I", "The Sun Mall", "Yaga has a mission for the first-years", "start", "office", "yaga", merit=30),
+        zzj_m("m_aftermath", "story", "I", "Cursed Energy Debt", "Shoko wants to look at all four of us", periods=("Morning",), merit=5),
+        zzj_m("m_kurose", "story", "I", "Auxiliary Management", "A man from auxiliary management is waiting outside Yaga's office", periods=("Afternoon", "Evening")),
+        zzj_m("m_detention", "story", "I", "The Detention Center"),
+        zzj_m("m_aftermath_2", "story", "I", "Aftermath"),
+        zzj_m("m_infirmary", "story", "I", "The Infirmary"),
+        zzj_m("m_second_years", "story", "II", "The Second-Years", "The second-years are back from wherever they were", periods=("Afternoon",)),
+        zzj_m("m_noise", "story", "II", "Noise", "Stay on campus into the evening", periods=("Evening",), merit=10),
+        zzj_m("m_intensive", "story", "II", "Eleven Minutes", "Gojo wants eleven minutes of my time", periods=("Afternoon",)),
+        zzj_m("m_promo_g3", "promotion", "II", "Promotion: Grade 3", "Promotion fight: find Maki", "start", ("training", "dojo"), "maki"),
+        zzj_m("m_nade_1", "story", "III", "A Name", "Yaga has a name", "start", "office", "yaga", merit=25, group="The Surveyor"),
+        zzj_m("m_nade_2", "story", "III", "The Annexe", "Yaga wants the annexe looked at", "start", "office", "yaga", merit=25, group="The Surveyor"),
+        zzj_m("m_nade_3", "story", "III", "Home Town", "Yaga knows where Nade is", "start", "office", "yaga", merit=30, group="The Surveyor"),
+        zzj_m("cm_yuji_1", "character", "I", "Grandpa's Last Words", "Yuji wants to talk about his grandfather", "start", who="yuji"),
+        zzj_m("cm_megumi_1", "character", "I", "The Hospital", "Go with Megumi to the hospital", "start", who="megumi"),
+        zzj_m("cm_nobara_1", "character", "I", "Harajuku", "Nobara wants a day out, and a bag carrier", "start", who="nobara"),
+        zzj_m("cm_maki_1", "character", "II", "The Armory", "Maki is opening the racks", "start", who="maki"),
+        zzj_m("cm_gojo_1", "character", "II", "Infinity", "Gojo, in his office", "start", "gojo_office", "gojo", who="gojo"),
+        zzj_m("cm_ijichi_1", "character", "I", "Ride-Along", "A day on the job with Ijichi", "start", "gate", "ijichi", who="ijichi"),
+        zzj_m("cm_ijichi_2", "character", "II", "The Veil", "", "start", who="ijichi"),
+    ]
+    ZZJ_STATUS = dict(m_prologue="done", m_roll_call="done", m_utahime="done", m_sunmall="done",
+                      m_aftermath="done", m_kurose="available", m_detention="unwritten",
+                      m_aftermath_2="unwritten", m_infirmary="unwritten", m_second_years="waiting",
+                      m_noise="locked", m_intensive="locked", m_promo_g3="done",
+                      m_nade_1="locked", m_nade_2="locked", m_nade_3="locked",
+                      cm_yuji_1="available", cm_megumi_1="locked", cm_nobara_1="active",
+                      cm_maki_1="available", cm_gojo_1="unwritten", cm_ijichi_1="done",
+                      cm_ijichi_2="locked")
+    ZZJ_REASON = dict(m_second_years="tomorrow", m_noise="After The Second-Years",
+                      m_intensive="After Noise", m_promo_g3="Try again tomorrow",
+                      m_nade_1="After Eleven Minutes", m_nade_2="After A Name", m_nade_3="After The Annexe",
+                      cm_megumi_1="Bond 35 with Megumi", cm_ijichi_2="Needs Grade 3")
+    ZZJ_ACTS = [("P", "Prologue", "序", ""), ("I", "Grade Four", "壱", "Grade 4"),
+                ("II", "The Ones Who Stay", "弐", "Grade 4 → Grade 3"),
+                ("III", "Overtime", "参", "Grade 3 → Grade 2"),
+                ("IV", "Goodwill", "四", "Grade 2"), ("V", "Cursed Womb", "五", "Grade 2 → Grade 1")]
+
+    def zzj_missions_list(kind=None, status=None, act=None, who=None):
+        out = []
+        for m in ZZJ_MISSIONS:
+            if kind and m["kind"] != kind:
+                continue
+            if act and m["act"] != act:
+                continue
+            if who and m["who"] != who:
+                continue
+            if status and ZZJ_STATUS.get(m["id"]) != status:
+                continue
+            out.append(m)
+        return out
+
+    def zzj_act_progress(act):
+        rows = [m for m in ZZJ_MISSIONS if m["act"] == act and m["kind"] != "character"]
+        written = [m for m in rows if ZZJ_STATUS.get(m["id"]) != "unwritten"]
+        done = [m for m in written if ZZJ_STATUS.get(m["id"]) in ("done", "skipped")]
+        return (len(done), len(written), len(rows))
+
+    ZZJ_NEXT = dict(
+        yuji=("Grandpa's Last Words: he wants to talk", "cafeteria"),
+        megumi=("Spend time together", "classroom"),
+        nobara=("Harajuku: a day out, and a bag carrier", "dorm_common"),
+        maki=("The Armory: pick your first cursed tool", "storehouse"),
+        panda=("Spend time together", "courtyard"),
+        toge=("Talk", "cafeteria"),
+        gojo=("Infinity: he's in his office today", "gojo_office"),
+        utahime=("A Grade 3 job is waiting on her board", "utahime_office"),
+        shoko=("Closer: Sit out with her — at Bond 50", "infirmary"),
+        yaga=("Talk", "office"),
+        ijichi=("Talk", "gate"),
+        nanami=("Talk", None))
+
+    ## --- memories (WP5) -----------------------------------------------------
+
+    def zzj_mem(id, title, who, act, seen, hint="", bg=None, unlock=None, label=None):
+        return dict(id=id, title=title, who=who, act=act, label=label or id, args=(), seen=seen,
+                    hint=hint, unlock=unlock, bg=bg)
+
+    ZZJ_MEMORIES = [
+        zzj_mem("ch1_diner", "Nine Hundred Yen", ("sana",), "Prologue", ("label", "ch1_diner"), bg="bg diner"),
+        zzj_mem("ch1_the_thing", "The Thing She Told Me", ("sana",), "Prologue", ("label", "ch1_the_thing"), bg="bg alley"),
+        zzj_mem("ch1_gojo", "The Man in the Blindfold", ("gojo",), "Prologue", ("label", "ch1_gojo"), bg="bg alley dark"),
+        zzj_mem("chapter_one_b", "The Offer", ("gojo",), "Prologue", ("label", "chapter_one_b"), bg="bg home_living"),
+        zzj_mem("ch2_arrival", "The Strongest of Today", ("gojo", "ijichi"), "Prologue", ("label", "ch2_arrival"), bg="bg gate"),
+        zzj_mem("ch2_the_veil", "The Veil on the Ridge", ("gojo",), "Prologue", ("label", "ch2_the_veil"), bg="bg ridge_veil"),
+        zzj_mem("ch2_first_years", "Three First-Years", ("yuji", "megumi", "nobara"), "Prologue", ("label", "ch2_first_years"), bg="bg courtyard"),
+        zzj_mem("st_roll_call", "Roll Call", ("yaga",), "I", ("event", "st_roll_call"), bg="bg classroom"),
+        zzj_mem("zzj_mem_label", "The Vending Machine", ("yuji",), "Bonds", ("event", "zzj_mem_label"), bg="bg courtyard"),
+        zzj_mem("ev_nobara_1", "Somebody Remembered", ("nobara",), "Bonds", ("event", "ev_nobara_1"), hint="Nobara, on a day off."),
+        zzj_mem("ev_maki_1", "Dawn", ("maki",), "Bonds", ("event", "ev_maki_1"), hint="Maki trains at dawn."),
+        zzj_mem("sana_mem_diner", "The Diner", ("sana",), "Sana", ("label", "sana_mem_diner"),
+                hint="A trip home might bring this back.", unlock=("district", "yotsuka"), bg="bg diner"),
+        zzj_mem("sana_mem_daisy", "The Daisy Clip", ("sana",), "Sana", ("label", "sana_mem_daisy"),
+                hint="Something of hers.", unlock=("item", "daisy_clip")),
+        zzj_mem("sana_mem_ranking", "The Teacher Ranking", ("sana",), "Sana", ("label", "sana_mem_ranking"),
+                hint="Someone she ranked first.", unlock=("flag", "oda_letter_read")),
+    ]
+
+    def zzj_memory_groups(mode):
+        groups = []
+        if mode == "person":
+            keys = ["sana"] + [w for w in ("yuji", "megumi", "nobara", "maki", "gojo", "yaga", "ijichi")]
+            for w in keys:
+                ms = [m for m in ZZJ_MEMORIES if w in m["who"]]
+                if ms:
+                    groups.append((CAST[w]["name"], ms))
+        else:
+            for a in ("Prologue", "I", "II", "Bonds", "Sana"):
+                ms = [m for m in ZZJ_MEMORIES if m["act"] == a]
+                if ms:
+                    groups.append((a if a in ("Prologue", "Bonds", "Sana") else "Act " + a, ms))
+        return groups
+
+    def zzj_memory_counts():
+        seen = len([m for m in ZZJ_MEMORIES if jr_mem_state(m) == "seen"])
+        return (seen, len(ZZJ_MEMORIES))
+
+    def zzj_memory_replay(m):
+        return Replay("zzj_mem_label", scope=dict(mc_name=store.mc_name, zzj_scope_mark=True), locked=False)
+
+    ## --- the board (WP4) ------------------------------------------------------
+
+    ZZJ_BOARD = dict(
+        offers=[dict(id="w1o1", grade="g3", true_grade="g3", case="A haunting", place="a closed maternity ward in Adachi",
+                     title="The Ward on the Fourth Floor", blurb="Nurses keep hearing a call bell from a sealed room.",
+                     merit=18, yen=(6000, 10000), senior_only=False),
+                dict(id="w1o2", grade="g4", true_grade="g3", case="Residual clean-up", place="an apartment stairwell in Kita",
+                     title="Stairwell, Third Landing", blurb="Something that eats light bulbs.",
+                     merit=10, yen=(3000, 6000), senior_only=False),
+                dict(id="w1o3", grade="g2", true_grade="g2", case="Missing persons", place="a dead platform under Ikebukuro",
+                     title="The Platform Nobody Uses", blurb="Three commuters in a month. The trains don't stop there.",
+                     merit=28, yen=(10000, 15000), senior_only=True)],
+        taken=[dict(taken_by="megumi", grade="g2", title="The Karaoke Box in Koenji")],
+        log=[dict(day=9, grade="g4", partner="nobara", outcome="clean", merit=10, title="A Grudge the Size of a Dog"),
+             dict(day=11, grade="g3", partner="maki", outcome="costly", merit=11, title="The School Pool in Setagaya"),
+             dict(day=13, grade="g4", partner="yuji", outcome="clean", merit=10, title="The Train Depot"),
+             dict(day=15, grade="g3", partner="panda", outcome="withdrew", merit=0, title="Filed as Grade 3")],
+        misgrades=1)
+
+    ## --- items (WP6) -----------------------------------------------------------
+
+    ZZJ_ITEMS = dict(
+        photo=dict(name="The Photo", kind="keepsake", grade=None, desc="The four of us at the diner, last spring.", effect="", source="Packed the night I left home"),
+        sealing_talisman=dict(name="Sealing Talisman", kind="sealing", grade="g4", stack=True, desc="Binds a curse for a moment.", effect="Binds a curse for a turn", source="Utahime's board"),
+        first_aid=dict(name="First-Aid Kit", kind="supply", grade=None, stack=True, desc="Tape, gauze, and a note from Shoko.", effect="", source="The infirmary"),
+        kurose_card=dict(name="Kurose's Card", kind="mission", grade=None, desc="Auxiliary management. A mobile number, handwritten.", effect="", source="Kurose"),
+        slaughter_demon=dict(name="Slaughter Demon", kind="tool", grade="g4", desc="A short blade that cuts what a fist can't.", effect="Strikes leave a bleed", source="The armory"),
+        nunchaku=dict(name="Nunchaku", kind="tool", grade="g3", desc="Maki's recommendation for a beginner. She was smiling.", effect="Chained strikes", source="The armory"),
+        paper_ward=dict(name="Paper Ward", kind="talisman", grade="g4", desc="A folded ward that holds a little more.", effect="+10 reserve", source="Utahime"),
+        steady_hand=dict(name="Steady Hand", kind="talisman", grade="g4", desc="Makes the technique cheaper to hold.", effect="Techniques cost 10% less", source="The board"),
+        iron_seal=dict(name="Iron Seal", kind="talisman", grade="g3", desc="Hits harder, guards worse.", effect="+15% strike, -15% guard", source="The board"),
+        spark=dict(name="Spark", kind="talisman", grade="g2", desc="A wider window for a perfect strike.", effect="Black Flash window +10%", source="The board"),
+        unending_moment=dict(name="Unending Moment", kind="talisman", grade="sp", special=True, desc="Bound by story.", effect="", source="Story"),
+    )
+    for _k, _v in ZZJ_ITEMS.items():
+        ITEMS.setdefault(_k, _v)
+
+    def zzj_can_wear(iid):
+        it = ITEMS.get(iid, {})
+        if it.get("special"):
+            return (False, "Special: bound by story")
+        if grade_rank(it.get("grade")) > grade_rank(player_grade() or "g4"):
+            return (False, "Needs %s" % grade_label(it.get("grade")))
+        if len(store.equipped_talismans) >= talisman_slots():
+            return (False, "No free slot — opens at Grade 3")
+        return (True, "")
+
+    def zzj_retain():
+        if not zzj.no_retain:
+            renpy.retain_after_load()
+
+    def zzj_equip_talisman(iid):
+        if iid not in store.equipped_talismans and zzj_can_wear(iid)[0]:
+            store.equipped_talismans = store.equipped_talismans + [iid]
+        zzj_retain()
+
+    def zzj_unequip_talisman(iid):
+        store.equipped_talismans = [x for x in store.equipped_talismans if x != iid]
+        zzj_retain()
+
+    def zzj_equip_tool(iid):
+        store.equipped_tool = iid
+        zzj_retain()
+
+    zzj.stub6 = "WP0 stub" in (equip_tool.__doc__ or "")
+    if zzj.stub6:
+        store.can_wear = zzj_can_wear
+        store.equip_talisman = zzj_equip_talisman
+        store.unequip_talisman = zzj_unequip_talisman
+        store.equip_tool = zzj_equip_tool
+
+    ## --- the switches -----------------------------------------------------------
+
+    zzj_switch("missions_list", zzj_missions_list)
+    zzj_switch("mission_status", lambda id: ZZJ_STATUS.get(id, "locked"))
+    zzj_switch("mission_reason", lambda id: ZZJ_REASON.get(id, ""))
+    zzj_switch("act_progress", zzj_act_progress)
+    zzj_switch("objective_text", lambda: "A man from auxiliary management is waiting outside Yaga's office — afternoons and evenings, wherever I am")
+    zzj_switch("next_for", lambda who: ZZJ_NEXT.get(who))
+    zzj_switch("main_story_complete", lambda: zzj.story_complete)
+    zzj_switch("board_summary", lambda: ZZJ_BOARD)
+    zzj_switch("misgrade_count", lambda: 1)
+    zzj_switch("memory_groups", zzj_memory_groups)
+    zzj_switch("memory_counts", zzj_memory_counts)
+    zzj_switch("memory_replay", zzj_memory_replay)
+    zzj_switch("usual_places", lambda who: {"gojo": "Nowhere you can predict. His office on the days he's in.",
+                                             "yuji": "Cafeteria (noon) · Courtyard (afternoons) · Dorm common room (evenings)"}.get(who, "Classroom (mornings) · Cafeteria (noon)"))
+    zzj_switch("when_at", lambda who, loc: "weekday mornings to afternoons")
+    zzj_switch("gojo_in_today", lambda: True)
+    zzj_switch("recent_promotion", lambda who, days=3: who == "nobara")
+
+    def zzj_rich(on):
+        """Turn the rich fixture's fakes on or off (ACTS and MEMORIES are
+        swapped in place, and put back)."""
+        zzj.rich = on
+        if on:
+            zzj.saved_acts = builtins.list(ACTS)
+            zzj.saved_mems = builtins.list(MEMORIES)
+            ACTS[:] = ZZJ_ACTS
+            MEMORIES[:] = ZZJ_MEMORIES
+        else:
+            ACTS[:] = zzj.saved_acts
+            MEMORIES[:] = zzj.saved_mems
+
+    ## --- driving the journal ---------------------------------------------------
+
+    def zzj_buttons(screen="journal"):
+        s = renpy.get_screen(screen)
+        out = []
+        if s is None:
+            return out
+        def cb(d):
+            if isinstance(d, renpy.display.behavior.Button):
+                out.append(d)
+        s.visit_all(cb)
+        return out
+
+    def zzj_flat(a):
+        if isinstance(a, (list, tuple)):
+            r = []
+            for x in a:
+                r.extend(zzj_flat(x))
+            return r
+        return [a]
+
+    def zzj_find(pred, screen="journal", raw=False):
+        """The first button in `screen` whose action (or any action in its
+        list) satisfies pred. raw=True tests the action itself (a single
+        action, not one inside a list)."""
+        for b in zzj_buttons(screen):
+            try:
+                if raw and pred(b.action):
+                    return b
+                if not raw and any(pred(a) for a in zzj_flat(b.action)):
+                    return b
+            except Exception:
+                continue
+        return None
+
+    def zzj_is_setdict(a, key, value):
+        return type(a).__name__ == "SetDict" and a.key == key and a.value == value
+
+    def zzj_is_fn(a, fn, *args):
+        """a is Function(<the store function named fn>, *args, ...)."""
+        return (isinstance(a, Function) and a.callable is getattr(store, fn, None)
+                and tuple(a.args[:len(args)]) == args)
+
+    def zzj_js():
+        s = renpy.get_screen("journal")
+        return s.scope.get("js") if s is not None else None
+
+    def zzj_click(pred, name, raw=False):
+        """Run a journal button's action, as a click would. Returns what the
+        action returns (a Return ends the interaction)."""
+        b = zzj_find(pred, raw=raw)
+        check(b is not None, "journal has a button: " + name)
+        if b is None:
+            return None
+        return renpy.run(b.action)
+
+    def zzj_tick():
+        """One scripted step per timer tick. A step returning non-None ends
+        the interaction with that value."""
+        if not zzj.script:
+            return None
+        fn = zzj.script.pop(0)
+        try:
+            return fn()
+        except Exception as e:
+            import traceback
+            check(False, "driver step raised", traceback.format_exc())
+            zzj.script[:] = []
+            return "zzj_error"
+
+    def zzj_start_interact():
+        """Menu contexts: make sure the driver is showing there too."""
+        if zzj.menu_driver and renpy.context()._menu and not renpy.get_screen("zzj_driver"):
+            renpy.show_screen("zzj_driver")
+
+    config.start_interact_callbacks.append(zzj_start_interact)
+
+    def zzj_after_load():
+        fn = zzj.after_load
+        zzj.after_load = None
+        if fn:
+            fn()
+
+    config.after_load_callbacks.append(zzj_after_load)
+
+    def zzj_done():
+        return "zzj_done"
+
+    def zzj_nil(*values):
+        """A step that must not end the interaction, whatever it returns."""
+        return None
+
+
+screen zzj_driver():
+    zorder 500
+    timer 0.35 repeat True action Function(zzj_tick)
+
+
+## A label replayed from the journal (the fake memory_replay points here).
+label zzj_mem_label:
+    $ zzj.replays += 1
+    $ zzj.replay_flags = (bool(_in_replay), bool(getattr(store, "zzj_scope_mark", False)))
+    $ day = 999
+    $ flag("zzj_replay_changed_this")
+    "(A replayed memory.)"
+    return
+
+
+## A small label with dialogue, for the portrait and quick-menu checks.
+label zzj_dialogue:
+    show screen zzj_driver
+    yuji "The vending machine ate my coin again."
+    mc "It does that to everyone."
+    hide screen zzj_driver
+    return
+
+
+label zz_smoke:
+
+    $ fixture(mc_name="Tester", mc_surname="Harness")
+
+    ## =====================================================================
+    ## 1. Static: portraits fit the margin, the preference exists
+    ## =====================================================================
+    python:
+        _bad = []
+        _widest = (0, 0)
+        for _f in renpy.list_files():
+            if _f.startswith("images/side/") and _f.endswith(".png"):
+                _w, _h = renpy.image_size(_f)
+                _w8, _h8 = _w * 0.8, _h * 0.8
+                _widest = (max(_widest[0], _w8), max(_widest[1], _h8))
+                if 6 + _w8 > min(gui.dialogue_xpos, gui.name_xpos) or _h8 > gui.textbox_height:
+                    _bad.append((_f, _w8, _h8))
+        check(not _bad, "every side portrait at zoom 0.8 stays inside the 300px dialogue margin", _bad)
+        note("widest side portrait at 0.8", "%dx%d" % _widest)
+        check(persistent.mc_face is True, "persistent.mc_face defaults to True")
+
+    ## =====================================================================
+    ## 2. Fresh state (a new game, before the campus): every tab renders
+    ## =====================================================================
+    python:
+        for _tab in ("people", "missions", "memories", "stats", "equipment", "inventory"):
+            renpy.show_screen("journal", _tab)
+            shot("fresh_" + _tab)
+            _js = zzj_js()
+            check(_js is not None and _js["tab"] == _tab, "fresh: journal(%r) renders on its tab" % _tab)
+            renpy.hide_screen("journal")
+        check(kaito_card_image() == "images/char/mcyotsuka_neutral.png", "Stats picture before the campus: the Yotsuka outfit")
+
+    ## The wrappers.
+    python:
+        renpy.show_screen("jjk_status")
+        shot("wrapper_jjk_status")
+        check(renpy.get_screen("jjk_status") is not None, "jjk_status renders (use journal(\"stats\"))")
+        renpy.hide_screen("jjk_status")
+        renpy.show_screen("jjk_journal")
+        shot("wrapper_jjk_journal")
+        check(renpy.get_screen("jjk_journal") is not None, "jjk_journal renders (use journal(\"people\"))")
+        renpy.hide_screen("jjk_journal")
+
+    ## Settled, day 1.
+    $ settle(day=1)
+    python:
+        check(kaito_card_image() == "images/char/mc_neutral.png", "Stats picture on campus: the uniform")
+        for _tab in ("people", "stats"):
+            renpy.show_screen("journal", _tab)
+            shot("settled_" + _tab)
+            renpy.hide_screen("journal")
+        check(True, "settled: people and stats render")
+
+    ## =====================================================================
+    ## 3. The rich fixture
+    ## =====================================================================
+    python:
+        zzj_rich(True)
+        for _w in ("maki", "panda", "toge", "utahime"):
+            if _w not in roster:
+                roster.append(_w)
+        bonds.update(dict(yuji=62, megumi=41, nobara=47, maki=28, panda=22, toge=18, gojo=35,
+                          utahime=12, shoko=24, yaga=15, ijichi=30))
+        affection.update(dict(nobara=35, maki=12, shoko=8))
+        threads.update(dict(yuji_countdown=2, megumi_tsumiki=1, nobara_saori=1, maki_zenin=0, gojo_measure=1))
+        for _f in ("roll_call", "met_nanami", "sunmall_done", "mission_board_open", "utahime_arrived"):
+            flag(_f)
+        done_events.add("st_roll_call")
+        done_events.add("zzj_mem_label")
+        fixture(technique="timestop", day=16, period="Afternoon", here="courtyard", merit=84, ce=90, ce_max=130,
+                control=47, output=38, insight=31, stamina=62,
+                memories_seen={"ch1_diner": 0, "ch1_the_thing": 0, "ch1_gojo": 0, "chapter_one_b": 0,
+                               "ch2_arrival": 0, "ch2_the_veil": 0, "ch2_first_years": 0},
+                districts_visited={"yotsuka"}, yen=12000,
+                inventory=dict(photo=1, sealing_talisman=3, first_aid=2, kurose_card=1, slaughter_demon=1,
+                               nunchaku=1, paper_ward=1, steady_hand=1, iron_seal=1, spark=1),
+                equipped_tool="slaughter_demon", equipped_talismans=["paper_ward"])
+        promote("mc", "g3", quiet=True)
+        promote("nobara", "g2", quiet=True)
+        if not [p for p in (getattr(store, "promotions_log", None) or []) if jr_get(p, "who") == "nobara"]:
+            fixture(promotions_log=[dict(day=14, who="nobara", grade="g2", why="")])
+        refresh_vitals()
+        hp = max(1, hp_max - 12)
+        check(player_grade() == "g3" and talisman_slots() == 2, "rich fixture: Grade 3, two slots", (player_grade(), talisman_slots()))
+
+    python:
+        for _tab in ("people", "missions", "memories", "stats", "equipment", "inventory"):
+            renpy.show_screen("journal", _tab)
+            shot("rich_" + _tab)
+            _js = zzj_js()
+            check(_js is not None and _js["tab"] == _tab, "rich: journal(%r) renders" % _tab)
+            renpy.hide_screen("journal")
+
+    ## Data checks on the rich fixture.
+    python:
+        _cards = dict((e["who"], e) for e in journal_cast())
+        check(_cards["yuji"]["met"] and _cards["maki"]["met"], "met cards: rostered people")
+        check(_cards["nanami"]["met"] and not _cards["nanami"]["art"], "nanami met by flag, no art: the 「？」 card")
+        check(not _cards["todo"]["met"] and _cards["todo"]["hint"], "todo unmet, with his hint")
+        check(_cards["sana"]["met"], "sana always shown")
+        check(jr_grade_line("gojo") == "Off the scale", "Gojo's chip reads Off the scale", jr_grade_line("gojo"))
+        check(jr_grade_line("shoko") == "Doctor", "the ungraded show their role", jr_grade_line("shoko"))
+        check(jr_grade_line("nobara") == "Grade 2", "a promoted NPC shows the new grade", jr_grade_line("nobara"))
+        check(jr_next("maki") == "Next: The Armory: pick your first cursed tool — Storehouse" or jr_next("maki").startswith("Next: The Armory"), "Next line with where", jr_next("maki"))
+        _d = jr_person("nobara")
+        check(any("Promoted to Grade 2 on Day 14" == p for p in _d["promotions"]), "People detail: promotion line", _d["promotions"])
+        check(jr_person("maki")["restricted"], "Maki's reserve reads Heavenly Restriction")
+        check(jr_person("gojo")["off_scale"], "Gojo's bars run off the scale")
+        _t = jr_tech()
+        note("Last Light panel", "%s · %s · next: %s" % (_t["name"], _t["tier"], _t["next"]))
+        _slots = [jr_slot_opens(i) for i in range(4)]
+        check(_slots[1:] == ["Opens at Grade 3", "Opens at Grade 2", "Opens at Semi-Grade 1"], "slot cards name the grade that opens them", _slots)
+        _sg = jr_story_groups("all")
+        check([a["id"] for a, n, r in _sg] == ["P", "I", "II", "III"], "story groups by act", [a["id"] for a, n, r in _sg])
+        _i = [r for a, n, r in _sg if a["id"] == "I"][0]
+        check([r["status"] for r in _i].count("unwritten") == 3 and _i[-1]["line"] == "Coming in a later build", "unwritten rows: Coming in a later build")
+        _iii = [r for a, n, r in _sg if a["id"] == "III"][0]
+        check(_iii[0]["group"] == "The Surveyor 0/3", "group rows show The Surveyor n/3", _iii[0]["group"])
+        _av = jr_story_groups("available")
+        check(sum(len(r) for a, n, r in _av) == 2, "Available filter: available and waiting rows", [(r["id"], r["status"]) for a, n, r in _av for r in r])
+        check(jr_mem_state([m for m in ZZJ_MEMORIES if m["id"] == "sana_mem_diner"][0]) == "later", "a triggered, unwritten Sana memory: Written in a later build")
+        check(jr_mem_state([m for m in ZZJ_MEMORIES if m["id"] == "sana_mem_ranking"][0]) == "locked", "an untriggered memory stays locked")
+        check(jr_memory_counts() == (9, 14), "memory counter", jr_memory_counts())
+
+    ## Detail panes, sub-tabs, filters, links: through the journal's own buttons.
+    python:
+        renpy.show_screen("journal", "people")
+        shot("rich_people_again", wait=0.3)
+    $ zzj.script[:] = [
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "yuji"), "Yuji's card"),
+        lambda: zzj_nil(shot("rich_people_detail_yuji", wait=0)),
+        lambda: zzj_nil(check(zzj_js()["sel"] == "yuji", "clicking a met card opens the detail pane")),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "gojo"), "Gojo's card"),
+        lambda: zzj_nil(shot("rich_people_detail_gojo", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "maki"), "Maki's card"),
+        lambda: zzj_nil(shot("rich_people_detail_maki", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "nobara"), "Nobara's card"),
+        lambda: zzj_nil(shot("rich_people_detail_nobara", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_go") and a.kwargs.get("mem_who") == "nobara", "Memories with them"),
+        lambda: zzj_nil(check(zzj_js()["tab"] == "memories" and zzj_js()["mem_who"] == "nobara", "Memories with them opens the Memories tab filtered to her", dict(zzj_js()))),
+        lambda: zzj_nil(shot("rich_memories_nobara", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "people"), "People tab"),
+        lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_go") and a.kwargs.get("mem_who") == "sana", "Sana's card"),
+        lambda: zzj_nil(check(zzj_js()["tab"] == "memories" and zzj_js()["mem_who"] == "sana", "Sana's card links to Memories filtered to her")),
+        lambda: zzj_nil(shot("rich_memories_sana", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "mem_mode", "act"), "By act"),
+        lambda: zzj_nil(shot("rich_memories_by_act", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "missions"), "Missions tab"),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "mfilter", "all"), "All filter"),
+        lambda: zzj_nil(shot("rich_missions_story_all", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_toggle", zzj_js(), "collapsed", "I"), "Act I header"),
+        lambda: zzj_nil(check(zzj_js()["collapsed"].get("I") is True, "act headers collapse")),
+        lambda: zzj_nil(shot("rich_missions_story_collapsed", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "msub", "character"), "Character sub-tab"),
+        lambda: zzj_nil(shot("rich_missions_character_all", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "msub", "board"), "Board sub-tab"),
+        lambda: zzj_nil(shot("rich_missions_board", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "inventory"), "Inventory tab"),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "inv_sel", "slaughter_demon"), "an inventory tile"),
+        lambda: zzj_nil(shot("rich_inventory_selected", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "inv_cat", "talisman"), "Talismans chip"),
+        lambda: zzj_nil(check(zzj_js()["inv_cat"] == "talisman", "inventory category chips filter")),
+        lambda: zzj_nil(shot("rich_inventory_talismans", wait=0)),
+        zzj_done,
+    ]
+    show screen zzj_driver
+    $ _r = ui.interact()
+    hide screen zzj_driver
+    $ renpy.hide_screen("journal")
+    $ check(_r == "zzj_done", "the scripted walk through the journal finished", _r)
+
+    ## =====================================================================
+    ## 4. Arc Two card (D38): from campus it returns ("arc_two",)
+    ## =====================================================================
+    $ zzj.story_complete = True
+    $ zzj.script[:] = [
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "missions"), "Missions tab"),
+        lambda: zzj_nil(shot("rich_missions_arc_two", wait=0)),
+        lambda: zzj_nil(check(journal_editable(), "journal opened by `call screen` on campus is editable")),
+        lambda: zzj_click(lambda a: type(a).__name__ == "Return" and a.value == ("arc_two",), "Begin Arc Two"),
+    ]
+    show screen zzj_driver
+    call screen journal("people")
+    hide screen zzj_driver
+    $ check(_return == ("arc_two",), "Begin Arc Two returns (\"arc_two\",) to the loop", _return)
+
+    ## Return (the rail button) returns None.
+    $ zzj.script[:] = [
+        lambda: zzj_click(lambda a: type(a).__name__ == "Return" and a.value is None, "Return"),
+    ]
+    show screen zzj_driver
+    call screen journal("stats")
+    hide screen zzj_driver
+    $ check(_return not in (("arc_two",), "zzj_done", None), "the rail's Return leaves the journal (Ren'Py returns True)", _return)
+
+    ## =====================================================================
+    ## 5. Equipment through the campus journal survives save and load
+    ## =====================================================================
+    python:
+        note("equip functions", "WP6 stubs, harness fakes (with retain_after_load)" if zzj.stub6 else "WP6's own")
+    call zzj_equip_roundtrip("equip_retain", False)
+    if zzj.stub6:
+        ## The same round trip without retain_after_load, to show the check
+        ## can fail (D4's second safeguard is what keeps the change).
+        call zzj_equip_roundtrip("equip_noretain", True)
+
+    ## Menu context: read-only equipment, no Arc Two card, replay returns.
+    python:
+        fixture(equipped_tool="slaughter_demon", equipped_talismans=["paper_ward"])
+        zzj.menu_driver = True
+        zzj.script[:] = [
+            lambda: zzj_nil(check(renpy.context()._menu and not journal_editable(), "journal from a menu context is not editable")),
+            lambda: zzj_nil(shot("menu_equipment_readonly", wait=0)),
+            lambda: zzj_nil(check(zzj_find(lambda a: zzj_is_setdict(a, "pick", ("tool", 0))) is None, "menu context: no Change button")),
+            lambda: zzj_nil(check(all(not b.is_sensitive() for b in zzj_buttons() if any(zzj_is_setdict(a, "pick", ("talisman", 0)) for a in zzj_flat(b.action))), "menu context: slots are not clickable")),
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "missions"), "Missions tab"),
+            lambda: zzj_nil(check(zzj_find(lambda a: type(a).__name__ == "Return" and a.value == ("arc_two",)) is None, "menu context: no Begin Arc Two button")),
+            lambda: zzj_nil(shot("menu_missions_arc_two_note", wait=0)),
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "memories"), "Memories tab"),
+            lambda: zzj_menu_replay(),
+            lambda: zzj_nil(check(renpy.get_screen("journal") is not None and zzj_js()["tab"] == "memories", "menu context: after the replay, the journal is back on Memories")),
+            lambda: zzj_nil(shot("menu_after_replay", wait=0)),
+            lambda: zzj_click(lambda a: type(a).__name__ == "Return" and a.value is None, "Return"),
+        ]
+        zzj.replays = 0
+        _day0, _flags0 = day, set(flags)
+        ShowMenu("journal", "equipment")()
+        zzj.menu_driver = False
+        renpy.hide_screen("zzj_driver")
+        check(zzj.replays == 1, "menu context: the replay ran once", zzj.replays)
+        check(day == _day0 and flags == _flags0, "menu context: the replay left the save's state alone", (day, _day0))
+
+    ## =====================================================================
+    ## 6. A replay started from the campus journal returns to the journal
+    ## =====================================================================
+    python:
+        zzj.replays = 0
+        zzj.replay_flags = None
+        _day0, _flags0, _bonds0 = day, set(flags), dict(bonds)
+        zzj.script[:] = [
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "memories"), "Memories tab"),
+            lambda: zzj_nil(shot("campus_memories_before_replay", wait=0)),
+            lambda: zzj_replay_click("a seen memory tile"),
+            lambda: zzj_nil(check(renpy.get_screen("journal") is not None, "after the replay the journal is still showing")),
+            lambda: zzj_nil(check(zzj_js() is not None and zzj_js()["tab"] == "memories", "after the replay the journal is still on Memories")),
+            lambda: zzj_nil(shot("campus_after_replay", wait=0)),
+            zzj_done,
+        ]
+    show screen zzj_driver
+    call screen journal("people")
+    hide screen zzj_driver
+    python:
+        check(_return == "zzj_done", "campus replay: the journal interaction carried on after the replay", _return)
+        check(zzj.replays == 1, "campus replay: the memory played once", zzj.replays)
+        check(zzj.replay_flags == (True, True), "campus replay: it ran as a replay, with its scope", zzj.replay_flags)
+        check(day == _day0 and flags == _flags0 and bonds == _bonds0, "campus replay: day, flags and bonds unchanged")
+
+    ## =====================================================================
+    ## 7. Quick menu and side portraits
+    ## =====================================================================
+    python:
+        zzj_rich(False)
+        here = "cafeteria"
+        period = "Noon"
+        quick_menu = True
+        renpy.show_screen("sb_place")
+        shot("quick_menu_sb_place")
+        check(renpy.get_screen("sb_place") is not None and renpy.get_widget("quick_menu", "quick_menu_bar") is None,
+              "quick menu hidden on sb_place")
+        renpy.hide_screen("sb_place")
+        renpy.show_screen("journal", "people")
+        shot("quick_menu_journal", wait=0.3)
+        check(renpy.get_widget("quick_menu", "quick_menu_bar") is None, "quick menu hidden over the journal")
+        renpy.hide_screen("journal")
+        scene_before = None
+
+    scene expression graded_bg()
+    python:
+        zzj.say = []
+        zzj.script[:] = [
+            lambda: zzj_say_probe("yuji_offscreen"),
+            lambda: zzj_nil(shot("say_yuji_offscreen", wait=0)),
+            zzj_done,
+            lambda: zzj_say_probe("mc_face_on"),
+            lambda: zzj_nil(shot("say_mc_face_on", wait=0)),
+            zzj_done,
+        ]
+    call zzj_dialogue
+    python:
+        _p = dict(zzj.say)
+        check(_p.get("yuji_offscreen", (None,))[0] is not None, "quick menu shown in dialogue", _p.get("yuji_offscreen"))
+        check(_p.get("yuji_offscreen", (None, None, []))[2] == ["BACK", "HISTORY", "SKIP", "AUTO", "SAVE", "JOURNAL", "MENU"],
+              "quick menu: BACK · HISTORY · SKIP · AUTO · SAVE · JOURNAL · MENU", _p.get("yuji_offscreen"))
+        check(_p.get("yuji_offscreen", (None, False))[1], "an off-screen speaker gets a side portrait")
+        check(_p.get("mc_face_on", (None, False))[1], "my own portrait shows by default (mc_face on)")
+
+    ## The preference: Hide.
+    python:
+        renpy.show_screen("preferences")
+        shot("preferences_portrait_option", wait=0.3)
+        _b = zzj_find(lambda a: type(a).__name__ == "SetField" and a.field == "mc_face" and a.value is False, "preferences")
+        check(_b is not None, "Preferences has \"[mc_name]'s portrait: Hide\"")
+        if _b is not None:
+            renpy.run(_b.action)
+        check(persistent.mc_face is False, "Hide sets persistent.mc_face False", persistent.mc_face)
+        renpy.hide_screen("preferences")
+        zzj.say = []
+        zzj.script[:] = [
+            lambda: zzj_say_probe("yuji_face_off"),
+            zzj_done,
+            lambda: zzj_say_probe("mc_face_off"),
+            lambda: zzj_nil(shot("say_mc_face_off", wait=0)),
+            zzj_done,
+        ]
+    call zzj_dialogue
+    python:
+        _p = dict(zzj.say)
+        check(not _p.get("mc_face_off", (None, True))[1], "mc_face Hide: no portrait on my own lines")
+        check(_p.get("yuji_face_off", (None, False))[1], "mc_face Hide: other speakers keep theirs")
+        persistent.mc_face = True
+        hide_side_images = True
+        zzj.say = []
+        zzj.script[:] = [
+            lambda: zzj_say_probe("blackout_yuji"),
+            lambda: zzj_nil(shot("say_blackout", wait=0)),
+            zzj_done,
+            zzj_done,
+        ]
+    call zzj_dialogue
+    python:
+        _p = dict(zzj.say)
+        check(not _p.get("blackout_yuji", (None, True))[1], "hide_side_images hides every portrait (the blackout)")
+        hide_side_images = False
+
+    $ finish()
+
+
+## An equipment change through the campus journal, a save taken inside that
+## interaction (as an autosave or a quit-save would be), then a load.
+##
+## A load puts the game back at the start of the statements that followed the
+## last checkpoint, with the store as it was there, plus whatever
+## retain_after_load kept. In the loop that checkpoint is `call screen
+## sb_place`; here an explicit renpy.checkpoint() stands in for it, after the
+## equipment is cleared, so the statements a load re-runs are only the ones
+## the loop has too: the journal's `call screen`.
+label zzj_equip_roundtrip(tag, noretain):
+    python:
+        zzj.no_retain = noretain
+        zzj.phase = tag
+        fixture(equipped_tool=None, equipped_talismans=[])
+        renpy.checkpoint()
+    python:
+        if zzj.phase == tag + ":loaded":
+            ## Re-run after the load: just let the reloaded journal close.
+            zzj.script[:] = [zzj_done]
+        else:
+            zzj.script[:] = [
+                lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", ("tool", 0)), "Change (tool)"),
+                lambda: zzj_nil(shot(tag + "_picker_tool", wait=0)),
+                lambda: zzj_click(lambda a: zzj_is_fn(a, "equip_tool", "slaughter_demon"), "the Slaughter Demon row"),
+                lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", ("talisman", 0)), "talisman slot 1"),
+                lambda: zzj_nil(shot(tag + "_picker_talisman", wait=0)),
+                lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_wear", 0, "paper_ward"), "the Paper Ward row"),
+                lambda: zzj_nil(shot(tag + "_equipped", wait=0)),
+                lambda: zzj_nil(check(jr_tool() == "slaughter_demon" and jr_worn() == ["paper_ward"],
+                                      tag + ": the picker changed the equipment", (jr_tool(), jr_worn()))),
+                lambda: zzj_nil(renpy.save("9-9", "wp8 " + tag)),
+                lambda: zzj_save_then_load(tag),
+            ]
+    show screen zzj_driver
+    $ _r = ("journal", "equipment")
+    call screen journal(_r[1])
+    hide screen zzj_driver
+    $ check(zzj.phase == tag + ":loaded", tag + ": the save was loaded and the journal closed again", zzj.phase)
+    return
+
+
+init 999 python:
+
+    def zzj_save_then_load(tag):
+        """Leave the interaction as it is, wipe the equipment in memory, load
+        the save made inside the interaction, and check what came back."""
+        def after():
+            got = (jr_tool(), jr_worn())
+            want = ("slaughter_demon", ["paper_ward"])
+            if zzj.no_retain:
+                note(tag + ": without retain_after_load the load gives back", repr(got))
+                check(got != want, tag + ": (control) without retain_after_load the change is lost", got)
+            else:
+                check(got == want, tag + ": the equipment change survives a save and a load", got)
+            zzj.phase = tag + ":loaded"
+            zzj.script[:] = [zzj_done]
+        zzj.after_load = after
+        store.equipped_tool = None
+        store.equipped_talismans = []
+        renpy.load("9-9")
+
+    def zzj_replay_click(name):
+        """Click a seen memory tile. The replayed scene's lines are skipped
+        (autoplay) so the replay plays through unattended."""
+        autoplay(True)
+        try:
+            zzj_click(lambda a: type(a).__name__ == "Replay", name)
+        finally:
+            autoplay(False)
+        return None
+
+    def zzj_menu_replay():
+        return zzj_replay_click("a seen memory tile (menu context)")
+
+    def zzj_say_probe(name):
+        """During a say: is the quick menu bar there, is a side portrait
+        there, and what the quick menu's buttons say."""
+        bar = renpy.get_widget("quick_menu", "quick_menu_bar")
+        side = renpy.get_widget("say", "side_portrait")
+        labels = []
+        if bar is not None:
+            def cb(d):
+                if isinstance(d, renpy.display.behavior.Button):
+                    t = []
+                    def tc(x):
+                        if isinstance(x, renpy.text.text.Text):
+                            t.append("".join(s for s in x.text if isinstance(s, str)))
+                    d.visit_all(tc)
+                    labels.append(t[0] if t else "")
+            bar.visit_all(cb)
+        zzj.say.append((name, (bar, side is not None, labels)))
+        return None

@@ -174,8 +174,14 @@ screen say(who, what):
 
         text what id "what"
 
-    if not renpy.variant("small"):
-        add SideImage() xalign 0.0 yalign 1.0
+    ## The speaker's portrait, when they are off screen (WP8, 4.11). At zoom
+    ## 0.8 the widest portrait is 288x178, inside the 300px margin the name
+    ## and the dialogue start at, so it never overlaps the text. The prologue's
+    ## blackout hides every portrait (hide_side_images), and the player can
+    ## hide their own (Preferences, "[mc_name]'s portrait").
+    if not renpy.variant("small") and not hide_side_images:
+        if persistent.mc_face or renpy.get_say_image_tag() != "mc":
+            add SideImage() xpos 6 yalign 1.0 zoom 0.8 id "side_portrait"
 
 
 init python:
@@ -285,6 +291,11 @@ style choice_button_text is default:
 
 
 ## Quick menu ------------------------------------------------------------------
+##
+## D25: BACK · HISTORY · SKIP · AUTO · SAVE · JOURNAL · MENU. It hides itself
+## while any screen tagged sandbox (the campus) or menu (the journal, the game
+## menu) is showing, so it only appears in dialogue. MENU opens the game menu,
+## whose navigation column is the pause menu.
 
 screen quick_menu():
 
@@ -293,18 +304,17 @@ screen quick_menu():
     if quick_menu and not renpy.get_screen(("sandbox", "menu")):
 
         hbox:
+            id "quick_menu_bar"
             style_prefix "quick"
             style "quick_menu"
 
             textbutton _("BACK") action Rollback()
-            textbutton _("STATUS") action ShowMenu('jjk_status')
             textbutton _("HISTORY") action ShowMenu('history')
             textbutton _("SKIP") action Skip() alternate Skip(fast=True, confirm=True)
             textbutton _("AUTO") action Preference("auto-forward", "toggle")
             textbutton _("SAVE") action ShowMenu('save')
-            textbutton _("Q.SAVE") action QuickSave()
-            textbutton _("Q.LOAD") action QuickLoad()
-            textbutton _("MENU") action ShowMenu('preferences')
+            textbutton _("JOURNAL") action ShowMenu('journal')
+            textbutton _("MENU") action ShowMenu()
 
 init python:
     config.overlay_screens.append("quick_menu")
@@ -353,8 +363,7 @@ screen navigation():
 
         else:
 
-            textbutton _("Status") action ShowMenu("jjk_status")
-            textbutton _("Journal") action ShowMenu("jjk_journal")
+            textbutton _("Journal") action ShowMenu("journal")
             textbutton _("History") action ShowMenu("history")
             textbutton _("Save") action ShowMenu("save")
 
@@ -837,6 +846,13 @@ screen preferences():
                     textbutton _("Disable") action Preference("rollback side", "disable")
                     textbutton _("Left") action Preference("rollback side", "left")
                     textbutton _("Right") action Preference("rollback side", "right")
+
+                ## WP8 (4.11): my own side portrait beside my lines.
+                vbox:
+                    style_prefix "radio"
+                    label _("[mc_name!u]'S PORTRAIT")
+                    textbutton _("Show") action SetField(persistent, "mc_face", True)
+                    textbutton _("Hide") action SetField(persistent, "mc_face", False)
 
             use rule()
 
@@ -1354,7 +1370,10 @@ screen nvl(dialogue, items=None):
                 action i.action
                 style "nvl_button"
 
-    add SideImage() xalign 0.0 yalign 1.0
+    ## The same portrait rules as the say screen.
+    if not hide_side_images:
+        if persistent.mc_face or renpy.get_say_image_tag() != "mc":
+            add SideImage() xpos 6 yalign 1.0 zoom 0.8
 
 
 screen nvl_dialogue(dialogue):
@@ -1527,12 +1546,14 @@ screen quick_menu():
     if quick_menu and not renpy.get_screen(("sandbox", "menu")):
 
         hbox:
+            id "quick_menu_bar"
             style "quick_menu"
             style_prefix "quick"
 
             textbutton _("BACK") action Rollback()
             textbutton _("SKIP") action Skip() alternate Skip(fast=True, confirm=True)
             textbutton _("AUTO") action Preference("auto-forward", "toggle")
+            textbutton _("JOURNAL") action ShowMenu('journal')
             textbutton _("MENU") action ShowMenu()
 
 style game_menu_navigation_frame:
