@@ -281,8 +281,11 @@ init python:
 
     def jr_next(who, limit=None):
         """"Next: <text> — <where>" from next_for, or "". With limit, the
-        line is cut to about that many characters by clipping the text
-        part only, so the place (what the player acts on) stays whole."""
+        whole line is kept to that many characters (the card has room for
+        two lines). The where may be WP1's full weekly schedule ("Classroom
+        Building (mornings) · Cafeteria (noon) · ..."), so it is shortened
+        first by keeping its leading " · " parts, then the text is clipped
+        (never below 16 characters), and last the where itself is clipped."""
         try:
             nf = next_for(who)
         except Exception:
@@ -298,7 +301,17 @@ init python:
         text = "" if text is None else str(text)
         if where:
             if limit:
-                text = jr_clip(text, max(12, limit - len(where) - 9))
+                room = limit - 9                     # "Next: " and " — "
+                parts = where.split(" · ")
+                keep = len(parts)
+                while keep > 1 and len(text) + len(" · ".join(parts[:keep])) > room:
+                    keep -= 1
+                if keep < len(parts):
+                    where = " · ".join(parts[:keep]) + " …"
+                if len(text) + len(where) > room:
+                    text = jr_clip(text, max(16, room - len(where)))
+                if len(text) + len(where) > room:
+                    where = jr_clip(where, max(8, room - len(text)))
             return "Next: %s — %s" % (text, where)
         if limit:
             text = jr_clip(text, max(12, limit - 6))
@@ -611,18 +624,32 @@ init python:
         where = "At Utahime's office" if host[0] == "utahime" else "At Principal Yaga's office, with Ijichi"
         offers = list(jr_get(s, "offers", []) or [])
         taken = list(jr_get(s, "taken", []) or [])
-        log = list(jr_get(s, "log", None) or jr_get(s, "recent", None) or jr_get(s, "runs", None) or [])[-10:]
+        ## WP4 gives the log newest first (board_summary: "the last 10
+        ## runs, newest first"), which is the order the tab shows.
+        log = list(jr_get(s, "log", None) or jr_get(s, "recent", None) or jr_get(s, "runs", None) or [])[:10]
         try:
             mis = jr_get(s, "misgrades", None)
             if mis is None:
                 mis = misgrade_count()
         except Exception:
             mis = 0
-        return dict(where=where, offers=offers, taken=taken, log=list(reversed(log)),
+        return dict(where=where, offers=offers, taken=taken, log=log,
                     misgrades=mis or 0, empty=not (offers or taken or log))
 
+    def jr_board_place(key):
+        """A board place as the player reads it. WP4's offers carry a
+        BOARD_PLACES key ("kita"); show its phrase ("an apartment stairwell
+        in Kita"). Anything that isn't a known key is shown as it is."""
+        if not key:
+            return ""
+        by_key = getattr(store, "BOARD_PLACE_BY_KEY", None) or {}
+        p = by_key.get(key) if isinstance(by_key, dict) else None
+        if p:
+            return p.get("phrase") or p.get("short") or str(key)
+        return str(key)
+
     def jr_offer_line(o):
-        parts = [jr_get(o, "case"), jr_get(o, "place")]
+        parts = [jr_get(o, "case"), jr_board_place(jr_get(o, "place"))]
         return " · ".join([str(p) for p in parts if p])
 
     def jr_yen(v):
@@ -928,6 +955,18 @@ init python:
         for x in ([] if ok else ([cur] if cur else [])) + later:
             if x not in jr_worn():
                 equip_talisman(x)
+
+    def jr_hold(iid):
+        """WP8. Take a cursed tool in hand (None: bare hands) through WP6's
+        equip_tool. Returns None on purpose: WP6 returns True/False, and a
+        button action that returns anything but None ends the interaction,
+        which would close the journal (and hand the value to the caller)."""
+        equip_tool(iid)
+
+    def jr_takeoff(iid):
+        """WP8. Take a talisman off through WP6's unequip_talisman. Returns
+        None for the same reason as jr_hold."""
+        unequip_talisman(iid)
 
     def jr_inventory(cat):
         """Owned item ids in a category, by kind order then name."""
@@ -2108,7 +2147,7 @@ screen jr_picker(js):
                 if _cur:
                     textbutton (_("Bare hands") if _kind == "tool" else _("Unequip")):
                         style "jr_chip_button"
-                        action ([Function(equip_tool, None)] if _kind == "tool" else [Function(unequip_talisman, _cur)]) + [SetDict(js, "pick", None)]
+                        action ([Function(jr_hold, None)] if _kind == "tool" else [Function(jr_takeoff, _cur)]) + [SetDict(js, "pick", None)]
                 textbutton _("Close"):
                     style "jr_chip_button"
                     action SetDict(js, "pick", None)
@@ -2122,7 +2161,7 @@ screen jr_picker_rows(js, _kind, _slot, _opts):
             style "jr_row_button"
             xsize 900
             sensitive _ok
-            action ([Function(equip_tool, _id)] if _kind == "tool" else [Function(jr_wear, _slot, _id)]) + [SetDict(js, "pick", None)]
+            action ([Function(jr_hold, _id)] if _kind == "tool" else [Function(jr_wear, _slot, _id)]) + [SetDict(js, "pick", None)]
             vbox:
                 spacing 2
                 hbox:
