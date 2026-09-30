@@ -36,7 +36,7 @@ init -1 python:
         dict(key="nerima",    phrase="a drainage tunnel in Nerima",                  short="The Nerima Tunnel",      bg="bg ruin"),
         dict(key="adachi",    phrase="a closed maternity ward in Adachi",            short="The Adachi Ward",        bg="bg ruin"),
         dict(key="ikebukuro", phrase="a dead platform under Ikebukuro",              short="The Dead Platform",      bg="bg city"),
-        dict(key="setagaya",  phrase="a school pool in Setagaya, after hours",       short="The Setagaya Pool",      bg="bg veil"),
+        dict(key="setagaya",  phrase="an after-hours school pool in Setagaya",       short="The Setagaya Pool",      bg="bg veil"),
         dict(key="kita",      phrase="an apartment stairwell in Kita",               short="The Kita Stairwell",     bg="bg alley dark"),
         dict(key="shinagawa", phrase="a train depot in Shinagawa",                   short="The Shinagawa Depot",    bg="bg city"),
         dict(key="edogawa",   phrase="a riverbank underpass in Edogawa",             short="The Edogawa Underpass",  bg="bg town_street"),
@@ -49,6 +49,24 @@ init -1 python:
         "g3": ["a mimic that uses the missing person's voice", "a nest of finger-length curses", "a pool drowner"],
         "g2": ["a curse that only moves in the dark", "a platform pusher", "a thing wearing the building"],
         "s1": ["a named curse with a domain it can't close yet", "a crowd that is one curse"],
+    }
+
+    ## Which parts fit together, so a card doesn't put a school at a train
+    ## depot or a stairwell crawler in a karaoke box. A part that isn't listed
+    ## fits everywhere. Offers pick the place first, then a case and a curse
+    ## that fit it (falling back to any, if nothing fits).
+    BOARD_CASE_FITS = {                      # case -> places
+        "A school after hours": ("setagaya",),
+        "Livestock deaths": ("edogawa", "nerima"),
+    }
+    BOARD_CURSE_FITS = {                     # curse -> places
+        "a stairwell crawler": ("kita", "adachi"),
+        "a pool drowner": ("setagaya", "edogawa"),
+        "a platform pusher": ("ikebukuro", "shinagawa"),
+        "a thing wearing the building": ("adachi", "kita", "koenji", "shinagawa"),
+    }
+    BOARD_CURSE_CASE = {                     # curse -> cases
+        "a mimic that uses the missing person's voice": ("Missing persons",),
     }
 
     ## key -> (difficulty modifier, card line, weight when posting)
@@ -76,7 +94,9 @@ init -1 python:
 
     ## Drops: 30% a sealing talisman; 10% a not-yet-owned talisman of the
     ## posted grade; 5% a not-yet-owned cursed tool of the posted grade (the
-    ## storyboard's "sometimes a cursed tool"). Only when the job got done.
+    ## storyboard's "sometimes a cursed tool"), but only once Maki has opened
+    ## the armory (armory_open, D10) and only a tool at or below my grade.
+    ## Only when the job got done: a withdrawn job pays no yen and no drops.
     BOARD_SEALING = ("sealing_talisman", 0.30)
     BOARD_TALISMAN_CHANCE = 0.10
     BOARD_TALISMAN_DROPS = {"g4": ("paper_ward", "steady_hand"), "g3": ("deep_well", "iron_seal")}
@@ -108,7 +128,7 @@ init -1 python:
             win=("Yuji puts the last of it through the floor and turns round grinning, knuckles steaming.",
                  "happy", "That was so cool. The second where everything stopped? Do that again next time."),
             hurt=("Yuji sits down hard against the wall with his arm held wrong, and laughs anyway.",
-                  "sad", "I'm fine. I'm fine! ...Don't tell Shoko I said I'm fine."),
+                  "sad", "I'm fine. I'm fine! ...Don't tell Ieiri-san I said I'm fine."),
         ),
         "megumi": dict(
             arrive=("Megumi reads the file once, hands it back, and brings a Divine Dog up out of his shadow without looking at it.",
@@ -124,7 +144,7 @@ init -1 python:
             win=("Nobara taps the last nail home with her hammer and blows the hair out of her face.",
                  "happy", "Admit it. I was the best part of that."),
             hurt=("Nobara is bleeding from the hairline and far angrier about her jacket.",
-                  "angry", "This was new. Do you know what this cost? That thing is paying for it. It's dead, and it's still paying."),
+                  "angry", "This was new. Do you know what this cost? That thing is going to pay for it. Maybe not today, but it's going to pay."),
         ),
         "maki": dict(
             arrive=("Maki checks the veil, then her staff, then me, in that order.",
@@ -135,8 +155,8 @@ init -1 python:
                   "serious", "That's what happens when you let it pick the ground. Remember it."),
         ),
         "panda": dict(
-            arrive=("Panda ducks under the edge of the veil and sniffs the air.",
-                    "happy", "Smells like a Grade 4. Also like old gym socks. Could be the same thing."),
+            arrive=("Panda rolls his shoulders, looks up at the black dome over us and sniffs the air.",
+                    "happy", "Smells like a curse. Also like old gym socks. Could be the same thing."),
             win=("Panda dusts off his paws and holds one up for a high five I can't possibly refuse.",
                  "happy", "Nice work, partner. You're getting less stiff. In the head, I mean."),
             hurt=("Panda's shoulder is torn open, and there is stuffing, or something like stuffing, where there shouldn't be.",
@@ -144,7 +164,7 @@ init -1 python:
         ),
         "toge": dict(
             arrive=("Toge pulls his collar down just far enough to show the seal at the corner of his mouth, and raises a thumb. I think it means he's ready.",
-                    "neutral", "Shake."),
+                    "neutral", "Salmon."),
             win=("Toge gives me two thumbs up and a very smug pair of eyes over the collar.",
                  "happy", "Tuna mayo!"),
             hurt=("Toge coughs into his sleeve, and it comes away speckled. He spent his voice on it for me, and he waves me off before I can say so.",
@@ -165,8 +185,10 @@ init -1 python:
 
     BOARD_OUTCOME_LINES = {
         "clean": "I hold the second. The colour drains out of everything but one warm light, the curse hangs mid-lunge, and when the world starts again %s is already there to finish it.",
-        "costly": "I hold the second a beat too late. We finish it, but it takes the long way round, and it takes some of us with it.",
+        "costly": "I hold the second a beat too late. We finish it, but it takes the long way round, and it takes a piece out of both of us on the way.",
         "withdrew": "It is more than we can take. I hold the second just long enough to get %s clear, and we back out through the veil with it still screaming behind us.",
+        ## A withdrawal with someone still inside doesn't leave them there.
+        "withdrew_civilian": "It is more than we can take. I hold the second just long enough to get %s and the guard clear, and we back out through the veil with it still screaming behind us.",
     }
 
     ## The host's word when we come back: (expression, line). "misgraded"
@@ -194,6 +216,14 @@ init -1 python:
         if has_flag("utahime_leads_kyoto"):
             return ("ijichi", "office")
         return ("utahime", "utahime_office")
+
+    ## D13: said on the board itself while it is Ijichi's.
+    BOARD_MOVED_LINE = "Utahime-sensei has gone to lead Kyoto. Her board is with Ijichi in Yaga's office now, and he apologises for it."
+
+    def board_host_note():
+        """WP4. The line saying the board has moved (D13), or "" while it is
+        still Utahime's."""
+        return BOARD_MOVED_LINE if board_host()[0] != "utahime" else ""
 
     def board_open():
         """WP4. True when the board can be used here and now: the flag
@@ -237,6 +267,27 @@ init -1 python:
         except Exception:
             return None
 
+    def _board_tool_ok(tool_grade):
+        ## Tools drop only once the armory is open, and only up to my grade (D10).
+        return has_flag("armory_open") and grade_rank(tool_grade) <= _board_player_rank()
+
+    def board_drops_now(offer):
+        """WP4. What this offer can still drop for me now: the sealing
+        talisman, the grade's talismans I don't own, and (armory open, at or
+        below my grade) its tools I don't own."""
+        out = []
+        for iid in offer.get("drop", ()):
+            if iid == BOARD_SEALING[0]:
+                out.append(iid)
+            elif _board_owned(iid):
+                continue
+            elif iid in BOARD_TOOL_DROPS.get(offer.get("grade"), ()):
+                if _board_tool_ok(offer.get("grade")):
+                    out.append(iid)
+            else:
+                out.append(iid)
+        return out
+
     def board_needs_senior(offer):
         """WP4. True when a job is above my grade, so it needs a senior partner."""
         return grade_rank(offer.get("grade")) > _board_player_rank()
@@ -258,14 +309,39 @@ init -1 python:
         return (has_item(iid) or getattr(store, "equipped_tool", None) == iid
                 or iid in (getattr(store, "equipped_talismans", None) or ()))
 
+    def _board_fits(part, table, value):
+        ## A part fits unless its table lists it for other values only.
+        return part not in table or value in table[part]
+
+    def _board_pick(rng, parts, fit, avoid):
+        ## Fitting and not yet on the board; else fitting; else not on the
+        ## board; else anything.
+        for pool in ([p for p in parts if fit(p) and p not in avoid],
+                     [p for p in parts if fit(p)],
+                     [p for p in parts if p not in avoid]):
+            if pool:
+                return rng.choice(pool)
+        return rng.choice(parts)
+
+    def board_curses_for(grade, place, case):
+        """WP4. The grade's curses that fit this place and case (all of them
+        if none fit)."""
+        c = [k for k in BOARD_CURSES[grade] if _board_fits(k, BOARD_CURSE_FITS, place)
+             and _board_fits(k, BOARD_CURSE_CASE, case)]
+        return c or list(BOARD_CURSES[grade])
+
     def _board_make_offer(rng, grade, senior, oid, avoid=()):
-        """One posting at `grade`, built from the parts with rng. `avoid` holds
-        the places, cases and curses already on the board, so a week's cards
-        don't repeat one another where the parts allow."""
+        """One posting at `grade`, built from the parts with rng: the place
+        first, then a case and a curse that fit it. `avoid` holds the places,
+        cases and curses already on the board, so a week's cards don't repeat
+        one another where the parts allow."""
         places = [p for p in BOARD_PLACES if p["key"] not in avoid] or BOARD_PLACES
         place = rng.choice(places)
-        case = rng.choice([c for c in BOARD_CASES if c not in avoid] or BOARD_CASES)
-        curse = rng.choice([c for c in BOARD_CURSES[grade] if c not in avoid] or BOARD_CURSES[grade])
+        pk = place["key"]
+        case = _board_pick(rng, BOARD_CASES, lambda c: _board_fits(c, BOARD_CASE_FITS, pk), avoid)
+        curse = _board_pick(rng, BOARD_CURSES[grade],
+                            lambda k: _board_fits(k, BOARD_CURSE_FITS, pk) and _board_fits(k, BOARD_CURSE_CASE, case),
+                            avoid)
         weights = [BOARD_TWISTS[t][2] for t in BOARD_TWIST_ORDER]
         pick = rng.random() * sum(weights)
         twist = BOARD_TWIST_ORDER[-1]
@@ -362,6 +438,8 @@ init -1 python:
         """WP4. While any rostered student outranks me, one read-only card,
         dict(taken_by=who, grade, title): "Grade 2 · taken by Megumi" (D12).
         Who took it rotates by week among the students above me."""
+        if not has_flag("mission_board_open"):
+            return None
         mine = _board_player_rank()
         above = [w for w in _board_students() if grade_rank(_npc_grade(w)) > mine]
         if not above:
@@ -484,14 +562,15 @@ init -1 python:
                 c = [t for t in BOARD_TALISMAN_DROPS.get(offer["grade"], ()) if not _board_owned(t)]
                 if c:
                     drops.append(rng.choice(c))
-            if k_roll < BOARD_TOOL_CHANCE:
+            if k_roll < BOARD_TOOL_CHANCE and _board_tool_ok(offer["grade"]):
                 c = [t for t in BOARD_TOOL_DROPS.get(offer["grade"], ()) if not _board_owned(t)]
                 if c:
                     drops.append(rng.choice(c))
         misgraded = offer["true_grade"] != offer["grade"]
         true_curse = offer["curse"]
         if misgraded:
-            true_curse = _board_rng("true", offer["id"]).choice(BOARD_CURSES[offer["true_grade"]])
+            true_curse = _board_rng("true", offer["id"]).choice(
+                board_curses_for(offer["true_grade"], offer["place"], offer["case"]))
         place = BOARD_PLACE_BY_KEY.get(offer["place"], BOARD_PLACES[0])
         return dict(id=offer["id"], grade=offer["grade"], true_grade=offer["true_grade"],
                     title=offer["title"], case=offer["case"], place=offer["place"],
@@ -552,7 +631,7 @@ init -1 python:
         name = CAST.get(who, {}).get("short", who)
         lines = PARTNER_LINES.get(who) or PARTNER_LINES["yuji"]
         s = [("scene", res["bg"])]
-        s.append(("say", None, "Ijichi drops %s and me at %s and brings the veil down behind us. %s, the file says: %s." % (
+        s.append(("say", None, "Ijichi drops %s and me at %s and brings the veil down behind us. The file is marked “%s”. The report inside says %s." % (
             name, res["place_phrase"], res["case"], res["curse"])))
         pre, expr, spoken = lines["arrive"]
         s.append(("show", who, expr))
@@ -566,8 +645,11 @@ init -1 python:
         if res["misgraded"]:
             s.append(("say", None, "It isn't %s. It's %s, and the weight of it in the air is a whole grade past anything the card promised." % (
                 res["curse"], res["true_curse"])))
-            s.append(("say", "mcthink", "Filed as %s. It wasn't." % grade_label(res["grade"])))
-        out = BOARD_OUTCOME_LINES[res["outcome"]]
+            s.append(("say", "mcthink", "Filed as %s. It isn't." % grade_label(res["grade"])))
+        okey = res["outcome"]
+        if okey == "withdrew" and res["twist"] == "civilian":
+            okey = "withdrew_civilian"
+        out = BOARD_OUTCOME_LINES[okey]
         s.append(("say", None, (out % name) if "%s" in out else out))
         pre, expr, spoken = lines["win" if res["outcome"] == "clean" else "hurt"]
         s.append(("show", who, expr))
@@ -639,12 +721,22 @@ init -1 python:
                        true_grade, title, partner, outcome, merit, yen,
                        drops, misgraded)
             misgrades  misgrade_count()
-            host       board_host();  open  board_open();  week  board_week"""
-        return dict(offers=[dict(o) for o in board_offers_open()],
+            host       board_host();  open  board_open();  week  board_week
+            note       board_host_note(): the line saying the board moved (D13)
+        Offers' `drop` lists only what can still drop for me now."""
+        offers = board_offers_open()
+        if has_flag("mission_board_open") and (not store.board_offers or store.board_week != board_week_now()):
+            ## The board opened today, or a new week hasn't been posted yet:
+            ## show what goes up, without changing anything.
+            offers = board_generate(board_week_now())
+        offers = [dict(o) for o in offers]
+        for o in offers:
+            o["drop"] = board_drops_now(o)
+        return dict(offers=offers,
                     taken=board_taken_cards(),
                     log=[dict(r) for r in reversed(store.board_log[-10:])],
                     misgrades=misgrade_count(), host=board_host(),
-                    open=board_open(), week=store.board_week)
+                    open=board_open(), week=store.board_week, note=board_host_note())
 
     ## Migration 80 (3.12) ------------------------------------------------------------
 
@@ -687,6 +779,13 @@ init -1 python:
                 out.append("board: twist %r is missing" % t)
             elif t != "none" and t not in BOARD_TWIST_LINES:
                 out.append("board: twist %r has no narration" % t)
+        _all_curses = [c for g in BOARD_GRADES for c in BOARD_CURSES.get(g, ())]
+        for table, parts, vals, name in ((BOARD_CASE_FITS, BOARD_CASES, BOARD_PLACE_BY_KEY, "BOARD_CASE_FITS"),
+                                         (BOARD_CURSE_FITS, _all_curses, BOARD_PLACE_BY_KEY, "BOARD_CURSE_FITS"),
+                                         (BOARD_CURSE_CASE, _all_curses, BOARD_CASES, "BOARD_CURSE_CASE")):
+            for k, v in table.items():
+                if k not in parts or not v or any(x not in vals for x in v):
+                    out.append("board: %s[%r] names a part that doesn't exist" % (name, k))
         for p in BOARD_PLACES:
             if not renpy.has_image(p["bg"], exact=True):
                 out.append("board: place %s uses a missing image %r" % (p["key"], p["bg"]))
@@ -785,7 +884,7 @@ screen board_card(o):
     $ _tw = BOARD_TWISTS.get(o["twist"], (0, "", 0))[1]
     $ _lo, _hi = o["yen"]
     $ _money = "Merit %d  ·  ¥%s–%s" % (o["merit"], "{:,}".format(_lo), "{:,}".format(_hi))
-    $ _drops = "May drop: " + " · ".join(_board_item_name(i) for i in o["drop"])
+    $ _drops = "May drop: " + " · ".join(_board_item_name(i) for i in board_drops_now(o))
     $ _where = BOARD_PLACE_BY_KEY.get(o["place"], BOARD_PLACES[0])["phrase"]
     $ _where = _where[0].upper() + _where[1:]
     $ _senior = board_needs_senior(o)
@@ -838,8 +937,9 @@ screen board_screen():
 
     $ _host, _place = board_host()
     $ _hname = CAST.get(_host, {}).get("short", "Utahime")
-    $ _offers = board_offers_open()
+    $ _slots = list(store.board_offers)
     $ _taken = board_taken_cards()
+    $ _note = board_host_note()
 
     add board_place_bg(_place)
     add Solid(gui.ink) alpha 0.5
@@ -857,15 +957,19 @@ screen board_screen():
         vbox:
             yalign 0.5
             text "[_hname]'s board" font gui.display_font color gui.paper size 40
-            text _("Jobs at my grade. One grade up with a senior partner. Always take someone.") style "jjk_small" size 18
+            if _note:
+                text _note style "jjk_small" size 18 color gui.gold xmaximum 1220
+            else:
+                text _("Jobs at my grade. One grade up with a senior partner. Always take someone.") style "jjk_small" size 18
 
+    ## Cards stay in their slots: a taken card leaves a gap where it was.
     for _i, _x in enumerate((620, 1060, 1500)):
-        if _i < len(_offers):
+        if _i < len(_slots) and not _slots[_i].get("taken_by"):
             fixed:
                 xpos _x
                 ypos 140
                 xysize (400, 620)
-                use board_card(_offers[_i])
+                use board_card(_slots[_i])
         else:
             frame:
                 xpos _x

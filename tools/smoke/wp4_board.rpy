@@ -18,7 +18,17 @@
 init 999 python:
     import os
 
+    import time
     ZZ_STANDINS = []    # noted at the start of the run (note() can't run at init)
+
+    ## Every screenshot, with whether it was saved (shot() only notes a
+    ## failure, so the harness checks these at the end).
+    ZZ_SHOTS = {}
+    ZZ_T0 = [time.time()]
+
+    def zz_shot(name, **kw):
+        ZZ_SHOTS[name] = bool(shot(name, **kw))
+        return ZZ_SHOTS[name]
 
     def zz_mark(what):
         """Progress, written at once (a hang leaves the last step behind)."""
@@ -76,7 +86,7 @@ init 999 python:
             zz_mark("scripted " + name)
             renpy.show_screen(_screen_name, *args, **kwargs)
             if shotname:
-                shot(shotname)
+                zz_shot(shotname)
             renpy.hide_screen(_screen_name)
             return value(*args) if callable(value) else value
         abort("unscripted call screen %s" % _screen_name)
@@ -95,7 +105,7 @@ init 999 python:
                     board_log=[], board_misgrades=0, schedule_overrides={}, explore_mode=False)
         base.update(kw)
         fixture(**base)
-        for f in ("utahime_leads_kyoto", "wakuri_clue"):
+        for f in ("utahime_leads_kyoto", "wakuri_clue", "armory_open"):
             flags.discard(f)
         flag("mission_board_open")
         flag("utahime_arrived")
@@ -112,6 +122,7 @@ init 999 python:
 
 label zz_smoke:
 
+    $ ZZ_T0[0] = time.time()
     python:
         for _s in ZZ_STANDINS:
             note("stand-in", _s)
@@ -141,10 +152,30 @@ label zz_smoke:
         here = "office"
         pin("ijichi", "office")
         check(board_open(), "with utahime_leads_kyoto the board opens at Yaga's office when Ijichi is there")
+        check(board_host_note() and "Kyoto" in board_host_note() and board_summary()["note"] == board_host_note(),
+              "under Ijichi the board says it has moved (D13), on the screen and in board_summary", board_host_note())
+        board_refresh()
+        renpy.show_screen("board_screen")
+    $ zz_shot("board_screen_ijichi")
+    $ renpy.hide_screen("board_screen")
+    python:
         flags.discard("utahime_leads_kyoto")
+        check(board_host_note() == "", "and says nothing while it is Utahime's")
         schedule_overrides = {}
         here = "utahime_office"
         check(board_host() == ("utahime", "utahime_office"), "board_host() switches back without the flag")
+        board_offers = []
+        board_week = -1
+
+    ## --- the day the board opens, and a brand-new game (no board yet) -------------------------------------------
+    python:
+        zz_open_state()
+        check(board_offers == [] and len(board_summary()["offers"]) == 3 and board_offers == [] and board_week == -1,
+              "the day the board opens, board_summary already lists this week's 3 offers, and changes nothing", (len(board_summary()["offers"]), board_offers, board_week))
+        flags.discard("mission_board_open")
+        check(board_summary()["offers"] == [] and board_npc_card() is None and board_summary()["taken"] == [],
+              "in a new game (no board yet) the summary has no offers and no taken card", board_summary()["taken"])
+        flag("mission_board_open")
 
     ## --- offers: same week identical, different weeks differ ---------------------------------
     python:
@@ -186,6 +217,23 @@ label zz_smoke:
         check(_hi and all(o["true_grade"] == o["grade"] for o in _hi), "g2 postings are never misgraded", len(_hi))
         grade = "g4"
 
+    ## --- parts that fit together ---------------------------------------------------------------------------
+    python:
+        zz_open_state()
+        _misfit = []
+        for _g in ("g4", "g3", "g2"):
+            grade = _g
+            for _w in range(150):
+                for _o in board_generate(_w):
+                    _tc = board_resolve(_o, "megumi", _w * 7 + 1, "Morning")["true_curse"]
+                    for _k in (_o["curse"], _tc):
+                        if not (_board_fits(_k, BOARD_CURSE_FITS, _o["place"]) and _board_fits(_k, BOARD_CURSE_CASE, _o["case"])):
+                            _misfit.append((_w, _o["title"], _o["case"], _k))
+                    if not _board_fits(_o["case"], BOARD_CASE_FITS, _o["place"]):
+                        _misfit.append((_w, _o["title"], _o["case"]))
+        grade = "g4"
+        check(not _misfit, "every card's case and curse (and a misgrade's real curse) fit its place (450 boards)", _misfit[:4])
+
     ## --- partners -------------------------------------------------------------------------------------
     python:
         zz_open_state()
@@ -217,6 +265,27 @@ label zz_smoke:
         period = "Night"
         check("Nobody" in board_take_reason(board_generate(0)[0]) or "after dark" in board_take_reason(board_generate(0)[0]),
               "a card says why it can't be taken", board_take_reason(board_generate(0)[0]))
+
+    ## --- tool drops wait for the armory (D10) ------------------------------------------------------------------
+    python:
+        zz_open_state()
+        _g4 = [o for o in board_generate(0) if o["grade"] == "g4"][0]
+        _g3 = [o for o in board_generate(0) if o["grade"] == "g3"][0]
+        check("slaughter_demon" not in board_drops_now(_g4), "no cursed tool drops before Maki opens the armory", board_drops_now(_g4))
+        _ktool = [r for r in (board_resolve(_g4, "maki", d) for d in range(1, 400)) if "slaughter_demon" in r["drops"]]
+        check(not _ktool, "and none is ever rolled (400 runs)", len(_ktool))
+        flag("armory_open")
+        check("slaughter_demon" in board_drops_now(_g4) and "nunchaku" not in board_drops_now(_g3),
+              "with the armory open: the Grade 4 tool can drop, a Grade 3 tool can't while I'm Grade 4", (board_drops_now(_g4), board_drops_now(_g3)))
+        _ktool = [r for r in (board_resolve(_g4, "maki", d) for d in range(1, 400)) if "slaughter_demon" in r["drops"]]
+        check(_ktool, "and it does drop now (400 runs)", len(_ktool))
+        inventory = {"slaughter_demon": 1, "paper_ward": 1}
+        check("slaughter_demon" not in board_drops_now(_g4) and "paper_ward" not in board_drops_now(_g4) and "sealing_talisman" in board_drops_now(_g4),
+              "a card never lists a talisman or tool I already own", board_drops_now(_g4))
+        board_offers = [dict(_g4)]
+        board_week = 0
+        check(board_summary()["offers"][0]["drop"] == board_drops_now(_g4), "the summary's offers list only what can still drop")
+        zz_open_state()
 
     ## --- 200 trials: a g4 job with Megumi -------------------------------------------------------------
     python:
@@ -267,6 +336,13 @@ label zz_smoke:
         with open(os.path.join(zz_smoke_state.shots, "narration.txt"), "w") as _f:
             _f.write("\n".join(_nl) + "\n")
         check(_validate_board() == [], "the WP4 validator finds nothing", _validate_board())
+        _pl = [l for w in BOARD_PARTNER_KEYS for k in ("arrive", "win", "hurt") for l in (PARTNER_LINES[w][k][0], PARTNER_LINES[w][k][2])]
+        check(not [l for l in _pl if "Grade" in l], "no partner line names a grade (the job may be any grade)")
+        _wd = [s[2] for s in board_script(zz_fake_res("nobara", "withdrew", "none", False)) if s[0] == "say"]
+        check(not [l for l in _wd if "dead" in l.lower()], "a withdrawal never says the curse is dead", _wd)
+        _wc = " ".join(s[2] for s in board_script(zz_fake_res("yuji", "withdrew", "civilian", False)) if s[0] == "say")
+        check("the guard clear" in _wc, "a withdrawal with someone inside gets them out too")
+        check(PARTNER_LINES["toge"]["arrive"][2] == "Salmon.", "Toge's words are the English onigiri words")
 
     ## --- a whole job through sb_do_board: Grade 4 with Nobara -------------------------------------------------------
     python:
@@ -341,7 +417,7 @@ label zz_smoke:
         store.scene_light = light_for_bg(_res2["bg"])
         renpy.show("nobara neutral", at_list=[pos_c])
         renpy.say(nobara, [s for s in _sc if s[0] == "say" and s[1] == "nobara"][0][2], interact=False)
-    $ shot("narration_line", wait=0.4)
+    $ zz_shot("narration_line", wait=0.4)
     scene black
 
     ## --- refused in the Evening -------------------------------------------------------------------------
@@ -355,7 +431,7 @@ label zz_smoke:
         check("after dark" in _why and _why.startswith("Evenings:"), "the card says why: Evenings, not after dark", _why)
         _snap = (merit, yen, len(board_log), period, stamina, [o.get("id") for o in board_offers_open()])
         renpy.show_screen("board_screen")
-    $ shot("board_screen_evening")
+    $ zz_shot("board_screen_evening")
     $ renpy.hide_screen("board_screen")
     $ autoplay()
     call run_board_mission(_o["id"], "nobara")
@@ -396,7 +472,7 @@ label zz_smoke:
         check(_bres["misgraded"] and misgrade_count() == _m0 + 1, "a misgraded job counts in misgrade_count()", misgrade_count())
         check(has_flag("wakuri_clue"), "a misgraded job sets wakuri_clue")
         check(("Filed as Grade 4. It wasn't.", "mission", None, None) in ZZ_TOASTS, "the toast: Filed as Grade 4. It wasn't.", ZZ_TOASTS)
-        check(any(s[0] == "say" and s[1] == "mcthink" and "It wasn't" in s[2] for s in board_script(_bres)), "the misgrade gets its own narration beat")
+        check(any(s[0] == "say" and s[1] == "mcthink" and "It isn't" in s[2] for s in board_script(_bres)), "the misgrade gets its own narration beat")
         check(board_log[-1]["misgraded"] and board_summary()["misgrades"] == misgrade_count(), "the log and the summary carry the misgrade")
 
     ## --- the taken card (D12) -----------------------------------------------------------------------------
@@ -449,26 +525,30 @@ label zz_smoke:
 
     ## --- sb_do_board when closed returns at once --------------------------------------------------------------
     $ here = "courtyard"
+    $ _snap = (period, len(board_log), [dict(o) for o in board_offers], merit, stamina)
     call sb_do_board
-    $ check(True, "sb_do_board returns at once when the board is closed")
+    $ check((period, len(board_log), [dict(o) for o in board_offers], merit, stamina) == _snap, "sb_do_board returns at once when the board is closed, changing nothing")
 
     ## --- screens --------------------------------------------------------------------------------------------------
     python:
         zz_open_state(day=4, roster=list(ZZ_EVERYONE))
         board_refresh()
-        board_take(board_offers_open()[1]["id"], "yuji")
+        _mid_card = board_offers[1]
+        board_take(_mid_card["id"], "yuji")
+        _order = [o.get("id") for o in board_offers]
         store._return = None
         renpy.scene()
         renpy.show_screen("board_screen")
-    $ shot("board_screen_taken")
+    $ zz_shot("board_screen_taken")
+    $ check(board_offers[1].get("taken_by") == "mc" and [o.get("id") for o in board_offers] == _order, "a taken card keeps its slot (the others don't move)", _order)
     $ renpy.hide_screen("board_screen")
     python:
         _sen = [o for o in board_offers_open() if o["senior_only"]][0]
         renpy.show_screen("board_partner", _sen)
-    $ shot("board_partner_senior")
+    $ zz_shot("board_partner_senior")
     $ renpy.hide_screen("board_partner")
     $ renpy.show_screen("board_partner", {})
-    $ shot("board_partner_empty")
+    $ zz_shot("board_partner_empty")
     $ renpy.hide_screen("board_partner")
     python:
         grade = None
@@ -476,8 +556,16 @@ label zz_smoke:
         board_week = -1
         board_refresh()
         renpy.show_screen("board_screen")
-    $ shot("board_screen_unassessed")
+    $ zz_shot("board_screen_unassessed")
     $ renpy.hide_screen("board_screen")
-    $ check(True, "board_screen and board_partner render (screenshots in shots/wp4_board/)")
+    python:
+        _want = ["board_screen", "board_screen_taken", "board_screen_evening", "board_screen_unassessed", "board_screen_ijichi",
+                 "board_partner", "board_partner_senior", "board_partner_empty", "narration_line"]
+        _missing = []
+        for _n in _want:
+            _fn = os.path.join(zz_smoke_state.shots, _n + ".png")
+            if not ZZ_SHOTS.get(_n) or not os.path.exists(_fn) or os.path.getmtime(_fn) < ZZ_T0[0] - 1:
+                _missing.append(_n)
+        check(not _missing, "screenshots are saved (%d, all taken this run)" % len(_want), _missing)
 
     $ finish()
