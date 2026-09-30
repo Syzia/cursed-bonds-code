@@ -58,15 +58,19 @@ init -1 python:
              kind="friend", min_bond=0,  cost=1, who=("gojo",), loc=("gojo_office",),
              when="lesson_ok"),
 
+        ## Confide and stand have scenes for these nine only; anyone else
+        ## would get Yaga's lines (their own come in phase 4).
         dict(id="confide",  label="Tell them something true", hint="Something I haven't said to anyone here.",
-             kind="friend", min_bond=65, cost=1, once=True),
+             kind="friend", min_bond=65, cost=1, once=True,
+             who=("yuji", "megumi", "nobara", "maki", "panda", "toge", "shoko", "gojo", "yaga")),
 
         ## The top of the friendship track. You have spent the whole game being
         ## the one who needs things; here it goes the other way.
         dict(id="stand",    label="They asked me for something",
              hint="It took them a while to work up to it.",
              kind="friend", min_bond=80, cost=2, once=True,
-             requires_flag="confided_"),
+             requires_flag="confided_",
+             who=("yuji", "megumi", "nobara", "maki", "panda", "toge", "shoko", "gojo", "yaga")),
 
         ## ---- romance ------------------------------------------------------
         dict(id="rom_town", label="Ask them into town", hint="A whole afternoon, off the mountain.",
@@ -150,6 +154,9 @@ init -1 python:
             return False, "Nothing new"
         if a["id"] != "talk" and who in store.spent_today:
             return False, "Later"
+        ## A spar needs the stamina sb_spar asks for (15), not the usual 10.
+        if a["id"] == "train" and store.stamina < 15:
+            return False, "Too tired"
         if a["cost"] and store.stamina < 10:
             return False, "Too tired"
         return True, None
@@ -251,10 +258,8 @@ init -1 python:
                 break
 
         ## 6. The one activity that suits the place, in section 6's order.
-        ## A spar isn't offered below the stamina sb_spar needs (15).
+        ## (activity_state keeps a spar off below sb_spar's 15 stamina.)
         for aid in ("eat", "train", "swim", "stargaze", "study", "walk"):
-            if aid == "train" and store.stamina < 15:
-                continue
             if len(out) < 3 and _choice_ok(aid, who, loc):
                 out.append(_choice_do(aid))
                 break

@@ -90,9 +90,6 @@ init python:
     ## Where the stage puts 1-4 people (x centres, 4.4).
     STAGE_CENTRES = {1: [700], 2: [470, 930], 3: [330, 700, 1070], 4: [240, 540, 860, 1160]}
 
-    ## Places the 3.2 world adds (WP1); valid in the tables before it merges.
-    _WP7_NEW_PLACES = ("utahime_office", "gojo_office")
-
     def ambient_of(who, loc):
         """WP7. (caption, expression) for someone at a place, e.g.
         ("halfway through an enormous bowl", "happy") (4.4). A caption that
@@ -277,7 +274,7 @@ init python:
 
     def _validate_wp7_tables():
         out = []
-        places = set(LOCATIONS) | set(_WP7_NEW_PLACES)
+        places = set(LOCATIONS)
         for (who, loc), (cap, expr) in AMBIENT.items():
             if who not in CAST:
                 out.append("AMBIENT: %r is not a person" % who)

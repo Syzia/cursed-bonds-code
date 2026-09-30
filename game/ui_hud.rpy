@@ -44,7 +44,10 @@ init python:
 
     def toast_limit():
         """WP7. How many toasts show at once: four, or two over the person
-        view (the stack moves up beside MENU there, above the card)."""
+        view (the stack moves up beside MENU there, above the card), and
+        none through the prologue's blackout, where they wait."""
+        if getattr(store, "hide_side_images", False):
+            return 0
         if renpy.get_screen("sb_char"):
             return TOAST_VISIBLE_PERSON
         return TOAST_VISIBLE
@@ -367,6 +370,9 @@ screen sb_hud(on_map=False, person=False):
 screen toasts():
     zorder 150
 
+    ## Through the prologue's blackout (hide_side_images) toast_limit() is 0:
+    ## nothing draws, and the timer keeps every toast's clock stopped, so they
+    ## all wait and get their full turn after it (4.2).
     if not _in_replay and TOASTQ.items:
 
         timer 0.1 repeat True action Function(toast_tick, _update_screens=False)
