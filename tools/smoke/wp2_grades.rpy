@@ -132,7 +132,8 @@ label zz_smoke:
 
         ## acc: the legacy grade migration.
         for _val, _rc, _want in [(3, False, "g3"), (3, True, "g3"), (4, True, "g4"), (4, False, None),
-                                 ("g2", False, "g2"), (None, True, None), (2, True, "g4")]:
+                                 ("g2", False, "g2"), (None, False, None),
+                                 (None, True, "g4"), ("g3", True, "g3"), (2, True, "g4")]:
             grade = _val
             if _rc:
                 flag("roll_call")
@@ -363,7 +364,7 @@ label zz_smoke:
               "acc: combat_begin('alley_curse') + 4 rounds of any action -> cb['over'] == 'down'", (cb["over"], cb["round"], cb["log"], _ended_early))
         check(hp > 0, "the alley ends on the round limit, not on HP", hp)
 
-        ## An enemy dict (phase 2's board fights).
+        ## An enemy dict (phase 3's board fights).
         refresh_vitals()
         combat_begin(dict(name="Board curse", grade="g4", hp=40, power=8, sprite="curse small",
                           tells=[("It lunges.", "fast")]), "megumi", True, "bg alley")

@@ -389,9 +389,14 @@ init -1 python:
     def _migrate_20():
         """WP2, migration 20. The player's grade becomes a key: int 3 -> "g3";
         any other int (the old default 4) -> "g4" if roll call happened, else
-        None (D16). A key stays. Idempotent."""
+        None (D16). None after roll call -> "g4" too (roll call always
+        assesses). A key stays. Idempotent."""
         g = store.grade
-        if g is None or (isinstance(g, str) and g in GRADES):
+        if g is None:
+            if has_flag("roll_call"):
+                store.grade = "g4"
+            return
+        if isinstance(g, str) and g in GRADES:
             return
         if isinstance(g, int) and not isinstance(g, bool) and g == 3:
             store.grade = "g3"

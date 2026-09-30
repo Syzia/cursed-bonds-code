@@ -89,7 +89,7 @@ init -1 python:
 
     def combat_begin(key_or_dict, ally=None, flee_ok=True, bg=None):
         """WP2. Set up a fight against an ENEMIES key, or an enemy dict with
-        the same fields (board fights, phase 2). HP is refreshed and floored
+        the same fields (board fights, phase 3). HP is refreshed and floored
         at half, so no fight starts near zero."""
         if isinstance(key_or_dict, str):
             e = ENEMIES[key_or_dict]
