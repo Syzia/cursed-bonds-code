@@ -7,7 +7,7 @@
 ## posts three jobs built from parts (a case, a place, a curse, a twist): two
 ## at or below my grade and one a grade up that needs a senior partner. I take
 ## one with a partner; phase 1 narrates it and resolves it automatically
-## (phase 2 turns it into a fight), then pays merit, yen, bond and sometimes a
+## (phase 3 turns it into a fight), then pays merit, yen, bond and sometimes a
 ## drop, exactly once. About one job in six at Grade 4 or 3 is misgraded: the
 ## curse inside is a grade heavier than the card. That is Wakuri's hand.
 ##
@@ -31,7 +31,7 @@ init -1 python:
                    "A school after hours", "Unexplained injuries", "Livestock deaths"]
 
     ## phrase: how the narration says it; short: the card's title; bg: the
-    ## placeholder picture the job plays over (real art is phase 3).
+    ## placeholder picture the job plays over (real art comes later).
     BOARD_PLACES = [
         dict(key="nerima",    phrase="a drainage tunnel in Nerima",                  short="The Nerima Tunnel",      bg="bg ruin"),
         dict(key="adachi",    phrase="a closed maternity ward in Adachi",            short="The Adachi Ward",        bg="bg ruin"),
@@ -631,6 +631,8 @@ init -1 python:
         """WP4. A paid run's cost, exactly once (the `clocked` mark on its
         board_log row): 25 stamina and 2 periods. Runs after the host's
         debrief, so an Afternoon job's debrief isn't played at Night.
+        The clock stops after one period when a story beat is waiting there
+        (board_beat_waiting), so a Noon- or Afternoon-only beat isn't skipped.
         False if there is no paid row or it was already charged."""
         for r in reversed(store.board_log):
             if res and r.get("id") == res["id"]:
@@ -638,9 +640,21 @@ init -1 python:
                     return False
                 r["clocked"] = True
                 spend_stamina(BOARD_STAMINA)
-                advance_period(BOARD_PERIODS)
+                for _i in range(BOARD_PERIODS):
+                    if advance_period(1):
+                        break
+                    if _i + 1 < BOARD_PERIODS and board_beat_waiting():
+                        break   ## stop the clock where a story beat is waiting
                 return True
         return False
+
+    def board_beat_waiting():
+        """WP11. True when the sandbox loop would play a story beat here, now
+        (the same test as sb_loop's pick_event("story", loc=here), without
+        its random pick). board_clock stops a job's clock there."""
+        if store.explore_mode:
+            return False
+        return has_event("story", loc=store.here)
 
     ## Narration -----------------------------------------------------------------------
 
