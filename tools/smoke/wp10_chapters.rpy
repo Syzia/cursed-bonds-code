@@ -245,6 +245,14 @@ label zz_smoke:
         check(not _dead, "static: no-deadline finds nothing", _dead)
         check(not _grep, "static: no technique==/tname/min_day/arc = 2/min(160/min(140/grade = ", _grep)
 
+        ## WP11 (WP7-h5): the activity lines are day-1 reachable, so they are
+        ## narrated in the first person (D9). LINES is Python, which
+        ## check_content cannot see.
+        _you = re.compile(r"\byou(r|rs|rself)?\b", re.IGNORECASE)
+        _lines_you = ["%s/%s" % (k, w) for k, d in sorted(LINES.items())
+                      for w, t in sorted(d.items()) if _you.search(t)]
+        check(not _lines_you, "static: no you/your in the activity LINES table", _lines_you)
+
         _bad = []
         for n, t in sorted(_texts.items()):
             c = len(re.findall(r"(?m)^label\b", t))
@@ -532,10 +540,13 @@ label zz_smoke:
     call stage_person("yuji")
     show yuji at pos_c
     with None
+    $ _t0 = len(zz_wp10_state.texts)
     $ autoplay()
     call act_eat("yuji")
     $ autoplay(False)
     python:
+        check(zz_wp10_saw(_t0, "I get food and sit with [_n]."), "act_eat(\"yuji\"): narrated in the first person",
+              zz_wp10_state.texts[_t0:])
         check(renpy.showing("yuji"), "act_eat(\"yuji\"): Yuji is still on screen afterwards")
         check(not renpy.showing("mc"), "act_eat(\"yuji\"): mc not showing")
     $ shot("act_eat_yuji")
@@ -555,6 +566,7 @@ label zz_smoke:
         $ check(not renpy.showing("mc"), "%s(%r): mc not showing" % (_lbl, _w))
         $ _ai += 1
     $ _ai = 0
+    $ _t0 = len(zz_wp10_state.texts)
     while _ai < len(_show):
         $ _lbl, _w = _show[_ai]
         scene black
@@ -565,6 +577,22 @@ label zz_smoke:
         $ check(not renpy.showing("mc"), "%s(%r): mc not showing" % (_lbl, _w))
         $ _ai += 1
     $ shot("act_rom_town_end")
+    python:
+        check(zz_wp10_saw(_t0, "Afterwards I lie on the warm stones and let the cold come out of my hands."),
+              "act_swim: narrated in the first person")
+
+    ## act_invite, the narrated fallback branch (someone with no reply line)
+    $ _comp0 = companion
+    $ companion = None
+    $ _t0 = len(zz_wp10_state.texts)
+    $ autoplay()
+    call act_invite("yaga")
+    $ autoplay(False)
+    python:
+        check(companion == "yaga", "act_invite(\"yaga\"): companion set", companion)
+        check(zz_wp10_saw(_t0, "falls into step beside me.") and zz_wp10_saw(_t0, "will stay with me until the day ends."),
+              "act_invite: narrated in the first person")
+        companion = _comp0
 
     ## ================================================================ verdicts
     python:

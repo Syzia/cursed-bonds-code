@@ -11,60 +11,60 @@ init -1 python:
     LINES = {
         "eat": {
             "_":      "They eat like someone who has been told to and is complying.",
-            "yuji":   "Itadori eats three helpings and talks through all of them, and somehow you follow every word.",
+            "yuji":   "Itadori eats three helpings and talks through all of them, and somehow I follow every word.",
             "megumi": "Fushiguro eats in complete silence and then, at the end, says the food was good, as though filing a report.",
             "nobara": "Kugisaki rates every dish out of ten, aloud, with reasons. The rice gets a four and she will not be moved.",
-            "maki":   "Zenin eats an enormous amount very fast, notices you noticing, and does not slow down.",
-            "panda":  "Panda has brought his own crisps to a canteen. He offers you some. They are somehow the best thing on the table.",
-            "toge":   "Inumaki eats with his collar pulled down and his back to the room, and pushes the pickles onto your tray without comment.",
-            "shoko":  "Ieiri has coffee and half a bread roll and calls it lunch, and dares you with her eyes to say something.",
-            "gojo":   "Gojo has ordered four desserts and no food. He is not embarrassed. He offers you the worst one.",
-            "yaga":   "Yaga eats a set meal in eleven minutes and asks you two questions about your training, both of which you get wrong.",
+            "maki":   "Zenin eats an enormous amount very fast, notices me noticing, and does not slow down.",
+            "panda":  "Panda has brought his own crisps to a canteen. He offers me some. They are somehow the best thing on the table.",
+            "toge":   "Inumaki eats with his collar pulled down and his back to the room, and pushes the pickles onto my tray without comment.",
+            "shoko":  "Ieiri has coffee and half a bread roll and calls it lunch, and dares me with her eyes to say something.",
+            "gojo":   "Gojo has ordered four desserts and no food. He is not embarrassed. He offers me the worst one.",
+            "yaga":   "Yaga eats a set meal in eleven minutes and asks me two questions about my training, both of which I get wrong.",
         },
         "study": {
-            "_":      "You get through about nine pages between you.",
-            "yuji":   "Itadori reads a paragraph aloud four times and then explains it back to you, wrong, in a way that makes it clearer.",
-            "megumi": "Fushiguro has already read it. He waits for you to catch up without any sign of impatience, which is worse.",
+            "_":      "We get through about nine pages between us.",
+            "yuji":   "Itadori reads a paragraph aloud four times and then explains it back to me, wrong, in a way that makes it clearer.",
+            "megumi": "Fushiguro has already read it. He waits for me to catch up without any sign of impatience, which is worse.",
             "nobara": "Kugisaki highlights things aggressively and calls the author an idiot twice.",
             "maki":   "Zenin studies the way she trains — repetition, no complaining, and a small noise of contempt at anything decorative.",
             "panda":  "Panda cannot hold a pen properly and has developed an elaborate workaround involving his mouth. It works.",
-            "toge":   "Inumaki writes his questions on your page in the margin. His handwriting is very small and very neat.",
+            "toge":   "Inumaki writes his questions on my page in the margin. His handwriting is very small and very neat.",
             "shoko":  "Ieiri explains cursed energy pathways on the back of a form and it makes more sense in four minutes than the book has in a month.",
-            "gojo":   "Gojo reads over your shoulder, corrects the textbook, and refuses to explain why it's wrong.",
-            "yaga":   "Yaga does not study with you. He sets you a problem, leaves, and comes back exactly when you have finished it.",
+            "gojo":   "Gojo reads over my shoulder, corrects the textbook, and refuses to explain why it's wrong.",
+            "yaga":   "Yaga does not study with me. He sets me a problem, leaves, and comes back exactly when I have finished it.",
         },
         "swim": {
-            "_":      "They swim out further than you and come back slower.",
+            "_":      "They swim out further than I do and come back slower.",
             "yuji":   "Itadori does a bomb from the rocks and the wave reaches the far bank. He does it eleven more times.",
             "megumi": "Fushiguro swims properly, in a line, like a man completing an exercise, and then floats on his back for a long time saying nothing.",
             "nobara": "Kugisaki declares the water freezing, gets in anyway, and is furious about it for a full minute before she starts enjoying herself.",
-            "maki":   "Zenin swims to the far bank and back twice before you've got your shoes off, and is not remotely out of breath.",
-            "panda":  "Panda floats. Panda is extremely good at floating. He calls it his best technique and you can't argue.",
-            "toge":   "Inumaki won't put his face in — the collar — so he swims with his chin up, and you match him without mentioning it.",
+            "maki":   "Zenin swims to the far bank and back twice before I've got my shoes off, and is not remotely out of breath.",
+            "panda":  "Panda floats. Panda is extremely good at floating. He calls it his best technique and I can't argue.",
+            "toge":   "Inumaki won't put his face in — the collar — so he swims with his chin up, and I match him without mentioning it.",
             "shoko":  "Ieiri sits on the rocks with her feet in and her sleeves rolled, and says this is the most exercise she has taken since March.",
         },
         "walk": {
-            "_":      "You walk for a while without deciding where.",
+            "_":      "We walk for a while without deciding where.",
             "yuji":   "Itadori talks the whole way and then, somewhere near the treeline, stops talking, and the quiet is comfortable.",
-            "megumi": "Fushiguro walks slightly ahead the entire time, and every so often slows until you're level, and then does it again.",
+            "megumi": "Fushiguro walks slightly ahead the entire time, and every so often slows until I'm level, and then does it again.",
             "nobara": "Kugisaki walks fast and points at things she has opinions about, which is all things.",
-            "maki":   "Zenin names three exits from every place you pass without being asked. It's a game now. You're getting better at it.",
+            "maki":   "Zenin names three exits from every place we pass without being asked. It's a game now. I'm getting better at it.",
             "panda":  "Panda walks like a person and it is still, weeks in, briefly astonishing every time.",
-            "toge":   "Inumaki walks with you for forty minutes and says two words and it is a real conversation.",
+            "toge":   "Inumaki walks with me for forty minutes and says two words and it is a real conversation.",
             "shoko":  "Ieiri smokes half of one and puts it out, and walks with her hands in her coat, and does not once mention work.",
-            "gojo":   "Gojo walks you the long way round and pretends it's an accident. You pass the same vending machine twice.",
-            "yaga":   "Yaga walks the perimeter every evening and lets you come. He points out where the veil is thin, and where it isn't, and why.",
+            "gojo":   "Gojo walks me the long way round and pretends it's an accident. We pass the same vending machine twice.",
+            "yaga":   "Yaga walks the perimeter every evening and lets me come. He points out where the veil is thin, and where it isn't, and why.",
         },
         "stargaze": {
-            "_":      "You sit out under it and neither of you fills the silence.",
+            "_":      "We sit out under it and neither of us fills the silence.",
             "yuji":   "Itadori knows one constellation and it is wrong, and he defends it for twenty minutes.",
             "megumi": "Fushiguro says nothing for an hour and then, at the end, 'this was good,' and goes to bed.",
             "nobara": "Kugisaki says the sky's better here than at home and sounds annoyed to be admitting it.",
             "maki":   "Zenin lies flat on the concrete with her hands behind her head and her glasses folded on her chest.",
             "panda":  "Panda has brought two coffees and a blanket, because Panda always knows.",
-            "toge":   "Inumaki points at things and you guess, and you are right about half the time, and that is somehow enough.",
+            "toge":   "Inumaki points at things and I guess, and I am right about half the time, and that is somehow enough.",
             "shoko":  "Ieiri points out where Tokyo is, over the ridge, by the colour of the sky above it.",
-            "gojo":   "Gojo takes the blindfold off for about four seconds. You do not look. He notices that you did not look.",
+            "gojo":   "Gojo takes the blindfold off for about four seconds. I do not look. He notices that I did not look.",
         },
     }
 
@@ -80,7 +80,7 @@ label act_eat(who):
     ## Staged by stage_person before this runs: they stay on screen.
     $ _n = CAST[who]["short"]
     $ _l = line_for("eat", who)
-    "You get food and sit with [_n]."
+    "I get food and sit with [_n]."
     "[_l]"
     $ stamina = min(stamina_max, stamina + 25)
     $ add_bond(who, 3)
@@ -106,7 +106,7 @@ label act_swim(who):
     $ _n = CAST[who]["short"]
     $ _l = line_for("swim", who)
     "[_l]"
-    "Afterwards you lie on the warm stones and let the cold come out of your hands."
+    "Afterwards I lie on the warm stones and let the cold come out of my hands."
     $ gain("output", 2)
     $ restore_ce(12)
     $ spend_stamina(10)
@@ -165,8 +165,8 @@ label act_invite(who):
     elif who == "shoko":
         shoko "I have three hours before anyone bleeds on me. Fine."
     else:
-        "[_n] falls into step beside you."
-    "[_n] will stay with you until the day ends."
+        "[_n] falls into step beside me."
+    "[_n] will stay with me until the day ends."
     $ add_bond(who, 1, quiet=True)
     return
 
