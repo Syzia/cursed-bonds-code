@@ -1018,7 +1018,7 @@ screen board_screen():
             if _note:
                 text _note style "jjk_small" size 18 color gui.gold xmaximum 1220
             else:
-                text _("Jobs at my grade. One grade up with a senior partner. Always take someone.") style "jjk_small" size 18
+                text _("Jobs at my grade or under it. One grade up with a senior partner. Always take someone.") style "jjk_small" size 18
 
     ## Cards stay in their slots: a taken card leaves a gap where it was.
     for _i, _x in enumerate((620, 1060, 1500)):

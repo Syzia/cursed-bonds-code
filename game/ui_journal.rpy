@@ -1181,7 +1181,7 @@ screen journal(tab="people"):
                     if _in_replay:
                         pass
                     elif _k == "missions":
-                        $ _n = jr_mission_counts()
+                        $ _n = 0 if explore_mode else jr_mission_counts()
                         $ _badge = str(_n) if _n else ""
                     elif _k == "memories":
                         $ _ms = jr_memory_counts()
@@ -1246,10 +1246,11 @@ screen journal(tab="people"):
                             size 17
                             kerning 3
                             yalign 0.5
+                        ## One line only: a long objective drops to 18 px.
                         text (jr_clip(_obj, 120) if _obj else _idle):
                             font JR_DISPLAY_FONT
                             color (gui.paper if _obj else gui.dim)
-                            size 22
+                            size (22 if len(_obj) <= 104 else 18)
                             yalign 0.5
 
             fixed:
@@ -1618,10 +1619,12 @@ screen jr_missions_tab(js, editable):
 
 screen jr_story(js, editable):
 
-    $ _groups = jr_story_groups(js["mfilter"])
+    ## Explore mode plays no story, so it lists none.
+    $ _groups = [] if explore_mode else jr_story_groups(js["mfilter"])
     $ _m, _need, _nxl, _pline = jr_promotion()
     $ _mlab = jr_merit_label(_m, _need, _pline)
-    $ _complete = main_story_complete()
+    $ _begun = has_flag("arc2_started")
+    $ _complete = main_story_complete() and not _begun
 
     use jr_scroll(1520, 856, spacing=10):
 
@@ -1648,6 +1651,11 @@ screen jr_story(js, editable):
                             text_color gui.gold
                             text_size 22
                             action Return(("arc_two",))
+        elif _begun:
+            frame:
+                style "jr_panel"
+                xsize 1480
+                text _("Arc One is finished. Arc Two has begun.") style "jr_dim"
 
         ## Promotion.
         frame:
@@ -1678,7 +1686,7 @@ screen jr_story(js, editable):
                 style "jr_card_frame"
                 xsize 1480
                 padding (28, 22)
-                text (_("Nothing to show under this filter. The NEXT line above says what comes next.") if js["mfilter"] != "all" else _("The story's missions appear here as they open.")) style "jr_dim"
+                text (_("Explore mode: no story here.") if explore_mode else _("Nothing to show under this filter. The NEXT line above says what comes next.") if js["mfilter"] != "all" else _("The story's missions appear here as they open.")) style "jr_dim"
 
         for _a, _note, _rows in _groups:
             $ _aid = _a["id"]

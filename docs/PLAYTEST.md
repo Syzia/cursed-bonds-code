@@ -57,8 +57,9 @@ Two tips:
 1. **Load one of your older saves**: slot 1-1 (from before phase 1) and an
    autosave from checkpoint 3 (auto-2, day 7) are good ones. Slot 1-1 was saved
    in Explore mode, so it opens in Explore mode: no story runs there, and the
-   Journal's NEXT line reads "Explore mode: no story here". Use an autosave
-   for step 3.
+   Journal's NEXT line reads "Explore mode: no story here", and so does
+   Missions → Story (the veil of step 5 isn't offered there either). Use an
+   autosave for steps 3 and 5.
 2. It should load with no error screen. If the game can't put you back at the
    exact line, it says "This save came from an older version of the game" and
    picks up on campus, or at the start of the prologue scene you were in. Both
@@ -132,7 +133,7 @@ New in this checkpoint:
 - **The six journal tabs** read well, with nothing overlapping.
 - **The Sun Mall and Nade's first mission:** Kaito never appears on screen,
   Last Light is the only technique named, and nothing mentions "three weeks".
-- **The ridge** (new game only): *Look up at the veil* is free, once a day, and
+- **The ridge**: *Look up at the veil* is free, once a day, and
   the third look ends "It's facing the school."
 
 ---
@@ -151,8 +152,9 @@ New in this checkpoint:
   flashbacks read "Written in a later build" once unlocked.
 - **Placeholder pictures:** the alley, the ridge veil, both new offices, the
   Tokyo map and the districts are tinted versions of existing pictures.
-- **"You" after the prologue:** from the Sun Mall on, the older chapters still
-  say "you". They are converted to "I" in phase 4.
+- **"You" in the older scenes:** the Sun Mall and the chapters after it, and
+  the character scenes (a person's "new scene"), which can come up from day 1,
+  still say "you". Phase 4 converts them to "I".
 - **Arc Two** is only a card for now.
 - **Toasts can sit over the journal's top right** for a moment after a board
   job. The UI overhaul (phase 2) moves them.

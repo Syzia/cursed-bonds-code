@@ -143,6 +143,19 @@ label zz_smoke:
             check(grade == _want, "acc: grade migration %r (roll_call %s) -> %r" % (_val, _rc, _want), grade)
         flags.discard("roll_call")
 
+        ## A save that left roll call through a recovery: st_roll_call done, no
+        ## flag yet (migration 40 backfills it later). One run gives g4.
+        for _val in (None, 4):
+            _g = grade
+            grade = _val
+            flags.discard("roll_call")
+            done_events.add("st_roll_call")
+            run_migrations()
+            check(grade == "g4", "grade %r with st_roll_call done and no flag -> g4 in one run" % (_val,), (grade, sorted(flags)))
+            done_events.discard("st_roll_call")
+            flags.discard("roll_call")
+            grade = _g
+
         ## acc: migration 10 on an Emberfall fixture, twice.
         technique = "emberfall"  # legacy-technique
         control = 20

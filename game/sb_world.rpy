@@ -554,10 +554,13 @@ init -2 python:
             roll_gojo()
         if store.here not in LOCATIONS and has_flag("settled_in"):
             store.here = "courtyard"
-        ## Every settled save went through the tour, which shows the veil
-        ## (ch2_tour sets saw_the_ridge_veil); saves settled before that flag
-        ## existed get it here, so the ridge offers "Look up at the veil".
-        if has_flag("settled_in") and not has_flag("saw_the_ridge_veil"):
+        ## A settled save gets the flag, so the ridge offers "Look up at the
+        ## veil". ch2_tour sets it today; a save toured before the veil (it saw
+        ## the casket) gets it too, and passage 1's "where Gojo showed me" is
+        ## slightly off for it. Explore mode never took the tour and never
+        ## offers the veil, so it is left alone.
+        if (has_flag("settled_in") and not store.explore_mode
+                and not has_flag("saw_the_ridge_veil")):
             flag("saw_the_ridge_veil")
 
     register_migration(15, _migrate_15, "Gojo's roll, a missing place")

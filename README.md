@@ -159,7 +159,8 @@ once the whole main story is done (not reachable in normal play yet).
 From Utahime's arrival, her office has a board of graded jobs, three a week
 (new ones on Mondays): two at or below your grade and one a grade up that
 needs a senior partner. You always take someone. A job costs 2 periods and 25
-stamina and isn't offered after dark. In phase 1 it plays out on its own from
+stamina (only 1 when a story beat is waiting at the office, so it is never
+skipped) and isn't offered after dark. In phase 1 it plays out on its own from
 its parts (a case, a place, a curse, a twist and your partner's lines) and pays
 merit, yen, bond and sometimes a talisman or a tool. About one Grade 4 or 3 job
 in six is misgraded: the curse inside is heavier than the card said.
@@ -199,7 +200,8 @@ be changed when the journal is opened on campus (from the place view).
 A developer-only panel (only when run from the SDK), reached from the place
 view: add merit, promote you or a first-year, finish the next story step, raise
 every bond, open Tokyo, make Gojo in, recruit Utahime, grant every item, open
-the armory, mark the main story complete, and jump a week. Explore mode (on the
+the armory, mark the main story complete, jump a week, and look at the ridge
+veil again today. Explore mode (on the
 main menu, also developer-only) is a free roam with every door open and no
 story.
 

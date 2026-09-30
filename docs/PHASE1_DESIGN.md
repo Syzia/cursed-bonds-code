@@ -54,7 +54,7 @@ Every graft the judges recommended and every gap they found is resolved below. "
 | D6 | **Memories are recorded per save:** `config.label_callbacks` adds catalogued labels to `memories_seen` (never during a replay), plus legacy rules read from `done_events` and flags. For settled old saves, the prologue sub-labels are backfilled as seen by migration 65. Nothing is written to `persistent`. | WP5 |
 | D7 | The toast queue is a `builtins.object` / `builtins.list` created in `init python`. It is never assigned at runtime, so it is not saved and not rolled back. It is muted during replays and migrations. | WP0, WP7 |
 | D8 | **Calendar phrasing sweep.** Every deadline-bound line is listed with its replacement in section 5.4.2, including `story_arc1.rpy:264/266/324/339/349/364/418/423/450/467/494/497`, `events_arc1.rpy:1574` and `ch5_debrief.rpy:38/163–172`. Durations that aren't deadlines ("four days later", "Three weeks" of Nade's silence) stay. | WP0, WP10 |
-| D9 | **The seam between "I" and "you".** Phase 1 also converts to "I": the sandbox's own narration (`sb_loop.rpy`, `sb_smalltalk`), the activity scenes in `events_activities.rpy` except `act_confide`, `st_roll_call` (reworked anyway) and every new scene, including Utahime's arrival. So the first "you" scene the player meets is the Sun Mall briefing, on day 4 at the earliest. Phase 4 converts in story order: Sun Mall/ch4/ch5 → aftermath → Kurose → second-years → noise → Oda → intensive → Nade → hangouts. | WP7, WP3, WP10 |
+| D9 | **The seam between "I" and "you".** Phase 1 also converts to "I": the sandbox's own narration (`sb_loop.rpy`, `sb_smalltalk`), the activity scenes in `events_activities.rpy` except `act_confide`, `st_roll_call` (reworked anyway) and every new scene, including Utahime's arrival. So the story's first "you" scene is the Sun Mall briefing, on day 4 at the earliest; the character scenes (the `events_arc1` hangouts such as `ev_yuji_1` and `ev_megumi_1`, a person's "new scene") have no requirements and still say "you", so the player can meet one from day 1. Phase 4 converts in story order: Sun Mall/ch4/ch5 → aftermath → Kurose → second-years → noise → Oda → intensive → Nade → hangouts. | WP7, WP3, WP10 |
 | D10 | **Storehouse vs armory.** The `storehouse_access` flag (roll call, Yaga's workshop) lets you **enter and look** ("Look through the racks", once a day). `armory_open` is set by Maki's character mission *The Armory* in Act II, as the storyboard has it, and **releases tools up to your grade**. Yaga's roll-call line becomes "Look, don't take. Nothing on those racks leaves without a grade and a reason." | WP10, WP3, WP6 |
 | D11 | **Sana's flashbacks have unlock triggers, stored as data:** *The Diner* on the first trip to Yotsuka; *The Daisy Clip* when the keepsake `daisy_clip` is in the inventory (handed out in phase 4); *The Teacher Ranking* once Oda's first letter is read. Each one's label is written in phase 4. Until then, a triggered flashback shows "Written in a later build". | WP5, WP6 |
 | D12 | **"Grade is who gets picked; they say so."** When an NPC is promoted: a toast overnight, a remark on your next Talk with them (`pending_remarks`), and a line in the People tab. While any student outranks you, Utahime's board shows a read-only card: "Grade 2 · taken by Megumi". `pick_team(n, min_key)` is provided now for phase 4 (Kyoto team, big missions). | WP2, WP3, WP4 |
@@ -111,7 +111,7 @@ The rules:
    - in `script.rpy`: every line of `label start`;
    - in `sb_missions.rpy` (label `start_mission`): `call play_event(_sm_event)`, `call expression MISSION_BY_ID[mid]["label"]` and the `if mission_state.get(mid) == "active":` line after it;
    - in `sb_items.rpy` (label `sb_do_armory`): `call screen armory` and the `if not isinstance(_return, tuple) or not _return or _return[0] == "close":` line after it;
-   - the other phase-1 sites a save can sit on, each with the line after it: in `sb_loop.rpy` `call screen journal(_r[1])` / `$ _j = _return` and `call start_mission(_r[1])`; in `sb_board.rpy` `call screen board_screen` / `$ _bs = _return`, `call screen board_partner(board_find(_bs[1]))` / `$ _bp = _return` and `call run_board_mission(_bs[1], _bp[1])`; in `sb_tokyo.rpy` `call screen sb_map(layer="tokyo")` / `$ _car = _return`; in `sb_hooks.rpy` `call expression _next`.
+   - the other phase-1 sites a save can sit on, each with the line after it: in `sb_loop.rpy` `call screen journal(_r[1])` / `$ _j = _return` and `call start_mission(_r[1])`; in `sb_board.rpy` `call screen board_screen` / `$ _bs = _return`, `call screen board_partner(board_find(_bs[1]))` / `$ _bp = _return` and `call run_board_mission(_bs[1], _bp[1])`; in `sb_tokyo.rpy` `call screen sb_map(layer="tokyo")` / `$ _car = _return`; in `sb_hooks.rpy` `call expression _next`; in `explore.rpy` (label `dev_tools`): `call screen dev_panel`, and `call start_mission(dev_story_mid())` / `call start_mission(dev_utahime_mid())`, each with the `scene expression graded_bg()` after it.
 
    New branches go in as **new** `elif` lines, and new statements go before or after these.
 2. **Never delete a label a save could be inside.** Retired labels stay, unreachable. The only deletions this phase are unregistering `ev()` entries, which are init code, not labels.
@@ -428,7 +428,7 @@ Related helpers:
 
 - `MOVES = {"timestop": [Stutter, Held Second, Arrest]}`, with today's numbers unchanged. `moves_available()` reads `MOVES["timestop"]`. The heal, burn and ally_buff branches in `combat_player`/`combat_enemy` are deleted; stored `cb` keys are read with `.get()`.
 - `ENEMIES` grades become keys: `alley_curse` `"g1"`, `nade_curse` `"g3"`, `warehouse` `"g2"`.
-- `alley_curse` gains `rounds=4`. After round 4, `combat_enemy` sets `cb["over"] = "down"` and logs "It stops playing with me." (rule 2.3 and D9: the first "you" scene is the Sun Mall; combat text, meaning tells, move descriptions and the log, is first person). `combat_begin` copies it as `cb["rounds"] = e.get("rounds")`.
+- `alley_curse` gains `rounds=4`. After round 4, `combat_enemy` sets `cb["over"] = "down"` and logs "It stops playing with me." (rule 2.3 and D9: the story's first "you" scene is the Sun Mall, though a character scene can come earlier; combat text, meaning tells, move descriptions and the log, is first person). `combat_begin` copies it as `cb["rounds"] = e.get("rounds")`.
 - New entry `promo_g3`: name "Grade 3 assessment curse", grade `"g3"`, hp 100, power 16, sprite `"curse small"`, tells heavy / fast / grab.
 - `combat_begin(key_or_dict, ally=None, flee_ok=True, bg=None)` accepts an enemy dict (for board fights in phase 3). It floors HP at half: `hp = max(hp, hp_max // 2)`. `cb` keeps only plain values (2.1 rule 6): `bg` is the caller's image name or None (a displayable is dropped), plus `bg_loc = here` and `bg_per = period` for lighting at draw time. A sprite that isn't a string becomes `"curse small"`.
 - `combat_screen` prints `grade_label(_c["grade"])` in place of "GRADE [_grade]". When `smoke_autoplay` is set, it adds `timer 0.05 action Return((ANSWERS[_c["kind"]],))` (8.1).
@@ -514,6 +514,8 @@ mission(id, kind,            # "story" | "character" | "promotion"
 
 #### 3.6.1 The main story, from existing scenes plus new rows
 
+A start mission bound to an `ev()` (the Sun Mall, Nade 1-3) is done by its closing flag only, because `play_event` marks the event done before the scene: a save that left it through a recovery has the event but not the flag, and must read as not done so its button plays it again.
+
 Unwritten rows are **bold italic**. The labels of all written rows exist today, except the ones marked NEW (written by WP3 in `missions_stubs.rpy`).
 
 | order | id | label | trigger · where · periods | gap | gate / notes | done_if (old saves) | merit | objective (NEXT line) |
@@ -522,7 +524,7 @@ Unwritten rows are **bold italic**. The labels of all written rows exist today, 
 | **Act I · Grade Four** (band: Grade 4) |
 | 110 | m_roll_call | st_roll_call | auto · Morning | 1 | | event:st_roll_call, flag:roll_call | 5 | Roll call with Principal Yaga |
 | 120 | m_utahime | st_utahime_office NEW | auto · M/N/A | 1 | ev() priority 96 | event:st_utahime_office, flag:utahime_arrived | 0 (items: paper_ward, sealing_talisman ×2) | Someone is moving into the room next to Yaga's |
-| 130 | m_sunmall | ev_mission_sunmall | start · office · with yaga | 1 | | event:ev_mission_sunmall, flag:sunmall_done | 30 | Yaga has a mission for the first-years |
+| 130 | m_sunmall | ev_mission_sunmall | start · office · with yaga | 1 | | flag:sunmall_done | 30 | Yaga has a mission for the first-years |
 | 140 | m_aftermath | st_aftermath | auto · Morning | 1 | D14 | event:st_aftermath, flag:aftermath_done | 5 | Shoko wants to look at all four of us |
 | 150 | m_kurose | st_kurose | auto · Afternoon/Evening | 0 | | event:st_kurose, flag:kurose_met | 0 | A man from auxiliary management wants a word |
 | 160 | ***m_detention*** | — | | | | | | The detention center |
@@ -538,13 +540,13 @@ Unwritten rows are **bold italic**. The labels of all written rows exist today, 
 | 270 | m_promo_g3 | st_promotion_g3 NEW | start · training/dojo · with maki | 1 | merit 60; kind promotion | grade:g3 | 0 | Promotion fight: find Maki (Dojo mornings, Training Hall afternoons) |
 | **Act III · Overtime** (band: Grade 3 → Grade 2) |
 | 310 | ***m_nanami*** | — | | | | | | Nanami |
-| 320 | m_nade_1 | ms_nade_1 | start · office · with yaga | 1 | group "The Surveyor" | event:ms_nade_1, flag:nade_named | 25 | Yaga has a name |
+| 320 | m_nade_1 | ms_nade_1 | start · office · with yaga | 1 | group "The Surveyor" | flag:nade_named | 25 | Yaga has a name |
 | 330 | m_kurose_2 | st_kurose_2 | auto · Evening | 1 | | event:st_kurose_2, flag:kurose_leak | 0 | Something from Kurose is waiting in my room |
 | 340 | ***m_cinema*** | — | | | | | | The cinema |
 | 350 | ***m_junpei*** | — | | | | | | Junpei |
-| 360 | m_nade_2 | ms_nade_2 | start · office · with yaga | 2 | group | event:ms_nade_2, flag:nade_traced | 25 | Yaga wants the annexe looked at |
+| 360 | m_nade_2 | ms_nade_2 | start · office · with yaga | 2 | group | flag:nade_traced | 25 | Yaga wants the annexe looked at |
 | 370 | m_oda_2 | st_oda_2 | auto · Evening | 1 | optional; flag oda_answered | event:st_oda_2, flag:oda_thread_open | 0 | Oda-sensei writes back |
-| 380 | m_nade_3 | ms_nade_3 | start · office · with yaga | 2 | group | event:ms_nade_3, flag:nade_map | 30 | Yaga knows where Nade is |
+| 380 | m_nade_3 | ms_nade_3 | start · office · with yaga | 2 | group | flag:nade_map | 30 | Yaga knows where Nade is |
 | 390 | ***m_satozakura*** | — | | | | | | Satozakura High |
 | 395 | ***m_promo_g2*** | — | | | kind promotion | grade:g2 | | Grade 2, on a Grade 1's word |
 | **Act IV · Goodwill** (band: Grade 2) |
@@ -651,7 +653,7 @@ An offer is a plain dict: `id, grade, true_grade, case, place, curse, twist, tit
 - `board_open()`: flag `mission_board_open`, `here` is the host place, and the host is there this period (`char_location`). An old save carries `mission_board_open` from the retired `st_board_open`, but its board stays closed until Utahime is rostered, because an unrostered character has no location.
 - `register_place_action("board", "Mission board", "Graded jobs. Bring someone.", locs=("utahime_office", "office"), when="board_open")`.
 - **Partners:** anyone rostered with an NPC grade that is not None, excluding gojo, yaga and utahime, and currently on campus. A senior partner is anyone whose grade rank is above yours. You can't go alone ("Always take someone," Utahime's rule).
-- **Cost:** 2 periods and 25 stamina. Refused in the Evening and at Night, with the line "Utahime doesn't send anyone out after dark." The 2 periods are charged by `board_clock(res)`, the script's last step, after the host's debrief (once, via a clocked mark on the log row). An Afternoon job ends at Night, but its debrief plays in the Afternoon.
+- **Cost:** 2 periods and 25 stamina. Refused in the Evening and at Night, with the line "Utahime doesn't send anyone out after dark." The 2 periods are charged by `board_clock(res)`, the script's last step, after the host's debrief (once, via a clocked mark on the log row). An Afternoon job ends at Night, but its debrief plays in the Afternoon. `board_clock` charges one period at a time and stops after the first when a story beat is waiting at the place (`board_beat_waiting`, the loop's own `has_event("story", loc=here)`), so a Noon- or Afternoon-only beat is never jumped.
 
 **Resolve** (phase 1 resolves automatically; phase 3 turns it into a fight):
 - power = `sorcerer_power("mc") + 0.6 * sorcerer_power(partner)`, times a factor between 0.9 and 1.1 (seeded by offer id and day).
@@ -826,8 +828,8 @@ All migrations are in one ordered list. Each is idempotent and wrapped in try/ex
 |---|---|---|
 | 5 | WP0 | `quick_menu = True` (D25). If `renpy.showing("mc")`, `renpy.hide("mc")` (a stale sprite in a mid-scene save). `tname` = the save's technique name from `TECHNIQUES` ("Last Light" for an unknown technique, and for every save once WP2 leaves only timestop). If `_partner` is missing and the old `partner` is set, `_partner = partner` (a save made inside the Sun Mall mission before d06486a renamed it). |
 | 10 | WP2 | `technique` other than `"timestop"` → `"timestop"`. An Emberfall save also gets `control = max(control, output)`, so Last Light's tier doesn't drop. Sets flag `technique_was_<old>`. |
-| 15 | WP1 | If `gojo_today` is missing any period, `roll_gojo()`. If `here` is not in `LOCATIONS` and `settled_in` is set, `here = "courtyard"`. A settled save without `saw_the_ridge_veil` gets it (every settled save went through the tour, which shows the veil). |
-| 20 | WP2 | `grade`: int 3 → `"g3"`; any other int → `"g4"` if flag `roll_call`, else `None`; a key stays. |
+| 15 | WP1 | If `gojo_today` is missing any period, `roll_gojo()`. If `here` is not in `LOCATIONS` and `settled_in` is set, `here = "courtyard"`. A settled save outside Explore mode without `saw_the_ridge_veil` gets it (today's tour shows the veil; a save from before the veil tour gets it too, and passage 1's "where Gojo showed me" is slightly off for those; Explore mode never offers the veil, so it is left alone). |
+| 20 | WP2 | `grade`: int 3 → `"g3"`; any other int → `"g4"` if flag `roll_call` (or `st_roll_call` in `done_events`), else `None`; `None` → `"g4"` once roll call has happened, by the same test (roll call always assesses); a key stays. |
 | 30 | WP2 | `refresh_vitals()`; if `hp <= 0`, `hp = hp_max`. |
 | 40 | WP3 | If `settled_in` and `"ijichi"` is not in the roster, add him. If `utahime_arrived` and she's missing, add her. If `arc1_complete`, set flag `night_before_done`. A finished story scene gets the flags later steps need (`_MS_BACKFILL`): `st_roll_call` → `roll_call`, `storehouse_access`; `st_kurose` → `kurose_met`; `st_second_years` → `met_second_years`; `st_intensive` → `intensive_done`. Mission scenes are not backfilled. |
 | 50 | WP3 | If `arc != 1` and not `arc2_started`, `arc = 1`. |
@@ -1048,7 +1050,8 @@ It replaces the 16 equal pins. `default view = layer`.
   - Rows are 1480×72: a status icon (✓ done · ◆ available (gold) · ● active · ◌ waiting · — locked · a dim "Coming in a later build" for unwritten), the title, then the objective with where and when (available or waiting), the reason (locked), and the merit reward.
   - Rows in a `group` show "The Surveyor 2/3".
   - A **promotion box** shows `merit_progress()` as a bar with `next_grade_text()`.
-  - When `main_story_complete()` and `editable`, a card reads "Begin Arc Two" → `Return(("arc_two",))`. The exact warning line is in `arc_two_start`.
+  - When `main_story_complete()`, Arc Two hasn't begun (`arc2_started`) and `editable`, a card reads "Begin Arc Two" → `Return(("arc_two",))`. The exact warning line is in `arc_two_start`. Once `arc2_started` is set, a dim line reads "Arc One is finished. Arc Two has begun." instead.
+  - In Explore mode the Story list holds only "Explore mode: no story here.", and the Missions tab has no badge.
 - **Character:** one group per met person, with rows as above.
 - **Board:** "At Utahime's office", this week's offers (read-only), taken cards, the last 10 jobs (day, grade, partner, outcome, merit), and "Misgraded jobs found: N" once N ≥ 1.
 
@@ -1882,7 +1885,7 @@ Several harnesses can run at once, even from one checkout.
 ### 8.3 Save tools
 
 - `tools/smoke/load_slot.rpy` loads `SMOKE_SLOT` with `renpy.load`. A `config.label_callbacks` watcher notes whether `load_recover` or `return_recover` ran. On the first `config.start_interact_callbacks` after the load, it dumps state (3.12's fields plus `renpy.get_filename_line()`) and quits.
-- `tools/load_all_saves.sh` runs it for every `*.save` in `game/saves` and `~/Library/RenPy/JJKgamemd-1788928056` (skipping names with spaces) and writes `shots/load_report.txt`. Today that means 3 slot saves, 10 autosaves and 10 trace/reload saves.
+- `tools/load_all_saves.sh` runs it for every `*.save` in `game/saves` and `~/Library/RenPy/JJKgamemd-1788928056` (skipping names with spaces) and writes `shots/load_report.txt`. As of 1 Oct 2026 that means 11 saves (1-1 and auto-1..10); the phase-1 report is kept as `docs/load_report_phase1.txt`.
 
 ### 8.4 Static checks and validators
 
@@ -1928,7 +1931,7 @@ Each checkpoint is played in the owner's folder on branch `phase1`, from the SDK
 12. **Ren'Py behaviours this design relies on,** checked in the 8.5.3 source: `load_failed()` skips defaults and callbacks (D1); `return_not_found_label` pops to one frame; `get_screen` accepts a list; `Replay(locked=)`; `call_replay` uses a clean store; `label_callbacks` exists; `side_image_only_not_showing` and `say_attribute_transition` exist; `auto_choice_delay` exists. Still to confirm in WP8's harness: `retain_after_load()` from the campus journal survives save and load. The fallback is already in place, because edits happen only in the main context.
 13. **Too many toasts.** *Mitigation:* merging, four visible at a time, a short life, and NPC growth toasting only on promotion.
 14. **Information leaves the HUD** (time of day, stamina). *Mitigation:* the arrival caption, graded backgrounds, the low-stamina line, the Stats tab. The owner should judge this in play.
-15. **Mixed voice after the prologue** until phase 4 converts the chapters. *Mitigation:* D9 moves the seam to the Sun Mall.
+15. **Mixed voice after the prologue** until phase 4 converts the chapters. *Mitigation:* D9 moves the story's seam to the Sun Mall; the character scenes (hangouts), which can come up from day 1, still say "you" until phase 4.
 
 ---
 

@@ -287,7 +287,7 @@ label zz_smoke:
         check(len(ZZ_SINK) <= 1 and all(s[1] == "info" for s in ZZ_SINK), "aff cap toast is info", ZZ_SINK)
         del ZZ_SINK[:]
         recruit("maki")
-        check(ZZ_SINK == [("Maki Zenin joined your circle.", "info", "maki", None)], "recruit toast", ZZ_SINK)
+        check(ZZ_SINK == [("Maki Zenin joined my circle.", "info", "maki", None)], "recruit toast", ZZ_SINK)
         del ZZ_SINK[:]
         begin_together("nobara")
         check(len(ZZ_SINK) == 1 and ZZ_SINK[0][1:3] == ("aff", "nobara"), "begin_together toast", ZZ_SINK)

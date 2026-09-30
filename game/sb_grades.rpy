@@ -390,10 +390,13 @@ init -1 python:
         """WP2, migration 20. The player's grade becomes a key: int 3 -> "g3";
         any other int (the old default 4) -> "g4" if roll call happened, else
         None (D16). None after roll call -> "g4" too (roll call always
-        assesses). A key stays. Idempotent."""
+        assesses). A key stays. Idempotent. A finished st_roll_call counts as
+        roll call: migration 40 backfills the flag later, so a save that left
+        roll call through a recovery would otherwise wait a load for it."""
+        rc = has_flag("roll_call") or "st_roll_call" in store.done_events
         g = store.grade
         if g is None:
-            if has_flag("roll_call"):
+            if rc:
                 store.grade = "g4"
             return
         if isinstance(g, str) and g in GRADES:
@@ -401,7 +404,7 @@ init -1 python:
         if isinstance(g, int) and not isinstance(g, bool) and g == 3:
             store.grade = "g3"
         else:
-            store.grade = "g4" if has_flag("roll_call") else None
+            store.grade = "g4" if rc else None
 
     def _migrate_30():
         """WP2, migration 30. hp_max from today's stats; a save left at 0 HP

@@ -125,7 +125,7 @@ init -2 python:
         store.affection[who] = after
         if quiet or after == before:
             if amount > 0 and before >= cap and not quiet:
-                toast("%s — you'd have to know them better first." % CAST[who]["short"], "info", who)
+                toast("%s — I'd have to know them better first." % CAST[who]["short"], "info", who)
             return
         toast("%s  ♡ %+d" % (CAST[who]["short"], after - before), "aff", who, after - before)
         if aff_rank(after)[0] > aff_rank(before)[0]:
@@ -139,7 +139,7 @@ init -2 python:
         store.bonds.setdefault(who, 0)
         if is_romanceable(who):
             store.affection.setdefault(who, 0)
-        toast("%s joined your circle." % CAST[who]["name"], "info", who)
+        toast("%s joined my circle." % CAST[who]["name"], "info", who)
 
     def closest_partner():
         """Whoever you are actually closest to, romance first."""
