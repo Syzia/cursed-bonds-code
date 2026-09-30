@@ -32,6 +32,12 @@
 ##              rows, "once a day" said once, the merit shown once, jr_wear
 ##              keeping slot order, ō from DejaVu Sans, and stress renders
 ##              (long ranks, a long given name, a long picker that scrolls).
+##   round 2    every styled font (history, input, preferences, buttons ...)
+##              carries ō, bold bases from DejaVu Sans Bold; a given name
+##              with "[" renders on Stats and Preferences; during a replay
+##              the quick menu has no JOURNAL and the journal says it isn't
+##              kept; Maki's and Gojo's panes draw their special reserves;
+##              slot wording; long item names stay inside their tiles.
 ##
 ## Other packages' APIs are still stubs in WP8's worktree. The rich fixture
 ## fakes their data at harness level: each faked store function switches
@@ -363,6 +369,18 @@ init 999 python:
         return (isinstance(a, Function) and a.callable is getattr(store, fn, None)
                 and tuple(a.args[:len(args)]) == args)
 
+    def zzj_texts(screen="journal"):
+        """Every Text string shown in `screen`."""
+        s = renpy.get_screen(screen)
+        out = []
+        if s is None:
+            return out
+        def cb(d):
+            if isinstance(d, renpy.text.text.Text):
+                out.append("".join(x for x in d.text if isinstance(x, str)))
+        s.visit_all(cb)
+        return out
+
     def zzj_js():
         s = renpy.get_screen("journal")
         return s.scope.get("js") if s is not None else None
@@ -428,6 +446,33 @@ label zzj_mem_label:
     return
 
 
+## Review round 2: what a replay sees. Replays run in a clean store (3.9),
+## so the journal must not be offered, and says so if it is opened anyway.
+label zzj_replay_probe:
+    $ zzj.rp = builtins.dict(in_replay=bool(_in_replay), editable=journal_editable())
+    show screen zzj_driver
+    $ zzj.script[:] = [
+        lambda: zzj_say_probe("replay_say"),
+        lambda: zzj_nil(shot("replay_say", wait=0)),
+        zzj_done,
+    ]
+    "(A line in a replay.)"
+    $ zzj.script[:] = [
+        lambda: zzj_nil(shot("replay_journal", wait=0)),
+        lambda: zzj_nil(zzj.rp.update(journal_texts=zzj_texts(),
+                                      tabs_sensitive=[bool(b.is_sensitive()) for b in zzj_buttons() if zzj_is_setdict(zzj_flat(b.action)[-1], "tab", "stats")])),
+        zzj_done,
+    ]
+    call screen journal("stats")
+    python:
+        renpy.show_screen("preferences")
+        renpy.pause(0.3, hard=True)
+        zzj.rp["nav"] = zzj_texts("preferences")
+        renpy.hide_screen("preferences")
+    hide screen zzj_driver
+    return
+
+
 ## A small label with dialogue, for the portrait and quick-menu checks.
 label zzj_dialogue:
     show screen zzj_driver
@@ -460,9 +505,28 @@ label zz_smoke:
         ## The fonts have no ō: dialogue, names, choices and the journal take it
         ## (and ✓ ◌ ∞) from DejaVu Sans through macron_font().
         _fg = [style.default.font, style.say_label.font, style.choice_button_text.font, JR_DISPLAY_FONT, JR_BODY_FONT]
-        check(all(isinstance(f, FontGroup) and f.map.get(0x14D) == "DejaVuSans.ttf" and f.map.get(0x221E) == "DejaVuSans.ttf"
-                  and f.map.get(ord("a")) is None for f in _fg),
+        check(all(isinstance(f, FontGroup) and f.map.get(0x14D) in ("DejaVuSans.ttf", "DejaVuSans-Bold.ttf")
+                  and f.map.get(0x221E) == f.map.get(0x14D) and f.map.get(ord("a")) is None for f in _fg),
               "ō (U+014D) comes from DejaVu Sans in dialogue, names, choices and the journal")
+        ## Review round 2: every style that draws text, not only default.
+        _plain = []
+        for _n in ("history_text", "history_name_text", "input", "input_prompt", "pref_label_text", "radio_button_text",
+                   "check_button_text", "button_text", "label_text", "gui_text", "quick_button_text",
+                   "navigation_button_text", "game_menu_label_text", "slot_name_text", "slot_time_text",
+                   "confirm_prompt_text", "confirm_button_text", "say_dialogue", "namebox_label", "notify_text"):
+            _f = getattr(style, _n).font
+            if not (isinstance(_f, FontGroup) and _f.map.get(0x14D) in ("DejaVuSans.ttf", "DejaVuSans-Bold.ttf")):
+                _plain.append((_n, _f))
+        check(not _plain, "ō comes from DejaVu Sans in history, input, preferences, buttons and every other text style", _plain)
+        _allplain = [k for k, v in renpy.style.styles.items() if isinstance(v.font, str) and v.font in MACRON_FONTS]
+        check(not _allplain, "no style is left on a plain base font", _allplain[:10])
+        note("style fonts given their macron group", getattr(macron_styles, "changed", None))
+        check(style.say_label.font.map.get(0x14D) == "DejaVuSans-Bold.ttf" and style.history_name_text.font.map.get(0x14D) == "DejaVuSans-Bold.ttf"
+              and style.input.font.map.get(0x14D) == "DejaVuSans-Bold.ttf" and JR_BOLD_FONT.map.get(0x14D) == "DejaVuSans-Bold.ttf",
+              "bold bases (the name box, history names, input, the journal's bold) take ō from DejaVu Sans Bold")
+        check(style.default.font.map.get(0x14D) == "DejaVuSans.ttf" and style.history_text.font.map.get(0x14D) == "DejaVuSans.ttf"
+              and style.pref_label_text.font.map.get(0x14D) == "DejaVuSans.ttf",
+              "regular and medium bases take ō from DejaVu Sans")
 
     ## =====================================================================
     ## 2. Fresh state (a new game, before the campus): every tab renders
@@ -640,9 +704,11 @@ label zz_smoke:
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "gojo"), "Gojo's card"),
         lambda: zzj_nil(shot("rich_people_detail_gojo", wait=0)),
+        lambda: zzj_nil(check("∞" in zzj_texts(), "Gojo's pane draws his bars off the scale, ending in ∞", [t for t in zzj_texts() if len(t) < 4])),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "maki"), "Maki's card"),
         lambda: zzj_nil(shot("rich_people_detail_maki", wait=0)),
+        lambda: zzj_nil(check("Heavenly Restriction" in zzj_texts(), "Maki's pane shows Heavenly Restriction for her reserve")),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "nanami"), "Nanami's card"),
         lambda: zzj_nil(shot("rich_people_detail_nanami", wait=0)),
@@ -706,6 +772,44 @@ label zz_smoke:
         renpy.show_screen("journal", "stats")
         shot("stress_stats")
         check(zzj_js()["tab"] == "stats", "stress: a long given name renders")
+        renpy.hide_screen("journal")
+        ## Review round 2: the name prompt accepts "[", and a player-typed
+        ## name must never be read as an interpolation.
+        for _ni, _nm in enumerate(("Ōta", "Ren [", "[x]")):
+            fixture(mc_name=_nm)
+            renpy.show_screen("journal", "stats")
+            shot("stress_stats_name_%d" % _ni)
+            _tx = zzj_texts()
+            check(zzj_js()["tab"] == "stats" and jr_clip(_nm, 14) in _tx,
+                  "stress: the given name %r renders on Stats as typed" % _nm)
+            renpy.hide_screen("journal")
+            renpy.show_screen("preferences")
+            shot("stress_prefs_name_%d" % _ni)
+            _tx = zzj_texts("preferences")
+            check(any(t.endswith("'S PORTRAIT") for t in _tx), "stress: Preferences renders with the given name %r" % _nm,
+                  [t for t in _tx if "PORTRAIT" in t])
+            renpy.hide_screen("preferences")
+        renpy.show_screen("jjk_status")
+        shot("stress_status_wrapper_name")
+        check(renpy.get_screen("jjk_status") is not None, "stress: the jjk_status wrapper renders with that name")
+        renpy.hide_screen("jjk_status")
+        ## A long item name stays in two lines inside its tile.
+        ITEMS["zzj_long"] = dict(name="The Extraordinarily Long-Winded Keepsake of Ōsaka", kind="keepsake", grade="g4",
+                                 desc="A test item.", effect="", source="The harness")
+        inventory["zzj_long"] = 3
+        renpy.show_screen("journal", "inventory")
+        shot("stress_inventory_long_name")
+        _tx = zzj_texts()
+        _ln = [t for t in _tx if t.startswith("The Extraordinarily")]
+        check(_ln and len(_ln[0]) <= 34, "stress: a long item name is clipped for its tile", _ln)
+        renpy.hide_screen("journal")
+        del inventory["zzj_long"]
+        renpy.show_screen("journal", "equipment")
+        shot("rich_equipment_kicker")
+        _tx = zzj_texts()
+        _k = [t for t in _tx if t.startswith("TALISMANS")]
+        check(_k and _k[0] == "TALISMANS · %s at my grade" % ("1 slot" if talisman_slots() == 1 else "%d slots" % talisman_slots()),
+              "the Equipment kicker counts slots in words, no (s)", _k)
         renpy.hide_screen("journal")
         fixture(mc_name=_n0, together=_t0)
         bonds.clear(); bonds.update(_b0)
@@ -873,6 +977,24 @@ label zz_smoke:
         _p = dict(zzj.say)
         check(not _p.get("blackout_yuji", (None, True))[1], "hide_side_images hides every portrait (the blackout)")
         hide_side_images = False
+
+    ## Review round 2: the journal during a replay.
+    python:
+        zzj.say = []
+        zzj.rp = {}
+        renpy.call_replay("zzj_replay_probe", scope={})
+        _rp = zzj.rp
+        _p = dict(zzj.say)
+        check(_rp.get("in_replay") and not _rp.get("editable"), "replay: the probe ran as a replay, read-only", _rp)
+        _q = _p.get("replay_say", (None, None, []))
+        check(_q[0] is not None and "JOURNAL" not in _q[2] and "MENU" in _q[2],
+              "replay: the quick menu has no JOURNAL button", _q[2])
+        _jt = _rp.get("journal_texts", [])
+        check("The journal isn't kept during a replay." in _jt and not any(t.startswith("◆ NEXT") for t in _jt),
+              "replay: the journal says it isn't kept, instead of a wiped save", _jt[:12])
+        check(_rp.get("tabs_sensitive") == [False], "replay: the journal's tabs can't be clicked", _rp.get("tabs_sensitive"))
+        _nv = _rp.get("nav", [])
+        check("End Replay" in _nv and "Journal" not in _nv, "replay: the game menu has no Journal entry", _nv[:12])
 
     $ finish()
 

@@ -80,8 +80,8 @@ init python:
         """WP8 (D4). True when the journal was opened from campus, in the
         main context (`call screen journal`); False in a menu context (the
         quick menu or the game menu during a scene), where equipment is
-        read-only and Arc Two can't begin."""
-        return not renpy.context()._menu
+        read-only and Arc Two can't begin. Never during a replay."""
+        return not renpy.context()._menu and not _in_replay
 
     def journal_state(tab="people"):
         """WP8. A fresh view state for the journal screen."""
@@ -1082,7 +1082,9 @@ screen journal(tab="people"):
 
                 for _k, _kan, _lab in JOURNAL_TABS:
                     $ _badge = ""
-                    if _k == "missions":
+                    if _in_replay:
+                        pass
+                    elif _k == "missions":
                         $ _n = jr_mission_counts()
                         $ _badge = str(_n) if _n else ""
                     elif _k == "memories":
@@ -1094,6 +1096,7 @@ screen journal(tab="people"):
                     button:
                         style "jr_tab_button"
                         selected (_cur == _k)
+                        sensitive (not _in_replay)
                         action [SetDict(js, "sel", None), SetDict(js, "pick", None), SetDict(js, "tab", _k)]
                         fixed:
                             hbox:
@@ -1125,47 +1128,73 @@ screen journal(tab="people"):
         ypos 40
         xysize (1520, 1000)
 
-        ## ◆ NEXT
-        frame:
-            xysize (1520, 52)
-            background Frame("gui/panel_dark.png", 4, 4)
-            padding (22, 0)
+        ## A replay runs in a clean store (3.9), so the journal would show a
+        ## wiped save: say so instead.
+        if _in_replay:
+            use jr_replay_note()
+        else:
+
+            ## ◆ NEXT
+            frame:
+                xysize (1520, 52)
+                background Frame("gui/panel_dark.png", 4, 4)
+                padding (22, 0)
+                fixed:
+                    add Solid(gui.gold) xysize (1520 - 44, 2) ypos 0
+                    hbox:
+                        spacing 18
+                        yalign 0.5
+                        text "◆ NEXT":
+                            font JR_BOLD_FONT
+                            color gui.gold
+                            size 17
+                            kerning 3
+                            yalign 0.5
+                        text (jr_clip(_obj, 120) if _obj else _idle):
+                            font JR_DISPLAY_FONT
+                            color (gui.paper if _obj else gui.dim)
+                            size 22
+                            yalign 0.5
+
             fixed:
-                add Solid(gui.gold) xysize (1520 - 44, 2) ypos 0
-                hbox:
-                    spacing 18
-                    yalign 0.5
-                    text "◆ NEXT":
-                        font JR_BOLD_FONT
-                        color gui.gold
-                        size 17
-                        kerning 3
-                        yalign 0.5
-                    text (jr_clip(_obj, 120) if _obj else _idle):
-                        font JR_DISPLAY_FONT
-                        color (gui.paper if _obj else gui.dim)
-                        size 22
-                        yalign 0.5
+                ypos 72
+                xysize (1520, 928)
 
-        fixed:
-            ypos 72
-            xysize (1520, 928)
-
-            if _cur == "people":
-                use jr_people(js)
-            elif _cur == "missions":
-                use jr_missions_tab(js, editable)
-            elif _cur == "memories":
-                use jr_memories_tab(js)
-            elif _cur == "stats":
-                use jr_stats_tab()
-            elif _cur == "equipment":
-                use jr_equipment_tab(js, editable)
-            elif _cur == "inventory":
-                use jr_inventory_tab(js)
+                if _cur == "people":
+                    use jr_people(js)
+                elif _cur == "missions":
+                    use jr_missions_tab(js, editable)
+                elif _cur == "memories":
+                    use jr_memories_tab(js)
+                elif _cur == "stats":
+                    use jr_stats_tab()
+                elif _cur == "equipment":
+                    use jr_equipment_tab(js, editable)
+                elif _cur == "inventory":
+                    use jr_inventory_tab(js)
 
     if js["pick"] is not None and _cur == "equipment" and editable:
         use jr_picker(js)
+
+
+## During a replay: one panel in place of the tabs.
+screen jr_replay_note():
+    frame:
+        xalign 0.5
+        ypos 260
+        xsize 900
+        background Frame("gui/panel_dark.png", 4, 4)
+        padding (48, 40)
+        vbox:
+            spacing 16
+            text _("The journal isn't kept during a replay."):
+                font JR_DISPLAY_FONT
+                color gui.paper
+                size 34
+            text _("End the replay to see it again."):
+                font JR_BODY_FONT
+                color gui.dim
+                size 22
 
 
 ## People #######################################################################
@@ -1861,7 +1890,9 @@ screen jr_stats_tab():
                     for _nm, _col, _res, _off in _year:
                         hbox:
                             spacing 16
-                            text jr_clip(_nm, 14) color _col size 18 min_width 160 yalign 0.5
+                            ## substitute False: the player typed this name, and a
+                            ## "[" in it must not be read as an interpolation.
+                            text jr_clip(_nm, 14) substitute False color _col size 18 min_width 160 yalign 0.5
                             if _off:
                                 use jr_meter(300, 300, width=620, height=8, fill=_col, off_scale=True)
                             elif _res is not None:
@@ -1916,7 +1947,8 @@ screen jr_equipment_tab(js, editable):
                         yalign 0.5
                         action SetDict(js, "pick", ("tool", 0))
 
-        text _("TALISMANS · [_slots] slot(s) at my grade") style "jr_kicker"
+        $ _sl = _("1 slot") if _slots == 1 else (_("%d slots") % _slots)
+        text _("TALISMANS · [_sl] at my grade") style "jr_kicker"
 
         hbox:
             spacing 24
@@ -2109,7 +2141,9 @@ screen jr_inventory_tab(js):
                                     ypos 16
                                     xsize 244
                                     spacing 6
-                                    text jr_clip(_it["name"], 40) font JR_DISPLAY_FONT color gui.paper size 21 xsize 244
+                                    ## At most two lines, so the count and kind stay inside the tile.
+                                    $ _inm = jr_clip(_it["name"], 34)
+                                    text _inm font JR_DISPLAY_FONT color gui.paper size (21 if len(_inm) <= 20 else 19) xsize 244
                                     hbox:
                                         spacing 10
                                         if _c > 1:
