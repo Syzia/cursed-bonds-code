@@ -96,7 +96,7 @@ init -1 python:
           effect="Fast strikes that chain.", fx={"chain": 1},
           source="The armory.")
     _item("playful_cloud", "Playful Cloud", "tool", grade="g2",
-          desc="A three-section staff of special grade. No technique of its own: it hits as hard as whoever swings it.",
+          desc="A special-grade three-section staff, and Maki won't lend it to me before Grade 2. No technique of its own: it hits as hard as whoever swings it.",
           effect="Damage scales with raw strength.", fx={"output_scale": 1.5},
           source="Lent by Maki, at the end of her story.")
     _item("split_soul", "Split Soul Katana", "tool", grade="s1",
@@ -134,6 +134,8 @@ init -1 python:
           effect="Last Light costs less, and the held moment lasts one beat longer.",
           fx={"hold_cost": -0.15, "hold_beats": 1},
           source="Gojo's training.")
+    ## Effect text is the storyboard's, word for word. 3.8's fx has no key yet
+    ## for "the widened window lasts longer": phase 2 adds one when it applies fx.
     _item("afterglow", "Afterglow", "talisman", grade="g1",
           desc="Priced like a car. Mei Mei calls it a bargain.",
           effect="A Black Flash refills more cursed energy, and the widened window lasts longer.",
@@ -181,7 +183,9 @@ init -1 python:
 
     ## What Utahime's board can drop (3.7), checked by the validator. WP4 draws
     ## its drops from this tuple (the hand-off asks it to), so the check covers
-    ## the real drops; give_item also refuses any id that isn't in ITEMS.
+    ## the real drops. give_item still counts an id that isn't in ITEMS (WP0's
+    ## contract) without toasting it, so a drop from outside this tuple would
+    ## reach the saved inventory; readers use ITEMS.get(id).
     BOARD_DROP_ITEMS = ("sealing_talisman", "paper_ward", "steady_hand", "deep_well", "iron_seal")
 
     ## Lookups ----------------------------------------------------------------------
