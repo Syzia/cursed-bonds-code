@@ -184,7 +184,7 @@ init -1 python:
     _mem_story("st_aftermath", "Cursed-Energy Debt", "I", ("shoko",),
                "bg infirmary", "Shoko wants to look at all four of us.", flags=("aftermath_done",))
     _mem_story("st_kurose", "Four Forms and Nine Minutes", "I", (),
-               "bg office", "A man from auxiliary management is waiting outside Yaga's office.",
+               "bg office", "A man from auxiliary management wants a word.",
                flags=("kurose_met",))
 
     _mem_story("st_second_years", "Nobody Cares About the Technique", "II", ("maki", "panda", "toge", "yuji"),
@@ -193,7 +193,7 @@ init -1 python:
     ## st_noise picks its ally from who is around (who_is_here()) and plays in
     ## the evening, so a replay stands in the courtyard at Evening.
     _mem_story("st_noise", "Something Eating the Lights", "II", ("ijichi",),
-               "bg courtyard", "Stay on campus into the evening.", place=("courtyard", "Evening"))
+               "bg courtyard", "Something is wrong on campus after dark.", place=("courtyard", "Evening"))
     _mem_story("st_oda_letter", "A Letter from Oda-sensei", "II", (),
                "bg your_room night", "A letter is on its way from home.", flags=("oda_letter_read",))
     _mem_story("st_intensive", "Eleven Minutes", "II", ("gojo",),

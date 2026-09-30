@@ -718,7 +718,7 @@ All of it is paid exactly once per run. A withdrawn job pays no merit, no yen an
 - The armory releases tools whose rank is ≤ yours, once `armory_open` is set.
 
 **Registration:**
-- `register_place_action("armory", "Armory", "Cursed tools released at your grade.", locs=("storehouse",), when="armory_open_now")`.
+- `register_place_action("armory", "Armory", "Cursed tools, released up to my grade.", locs=("storehouse",), when="armory_open_now")`.
 - `label sb_do_armory` → `screen armory`.
 
 Before `armory_open`, the old storehouse action stays as "Look through the racks" (WP7, once a day, insight +1).
@@ -826,7 +826,7 @@ All migrations are in one ordered list. Each is idempotent and wrapped in try/ex
 |---|---|---|
 | 5 | WP0 | `quick_menu = True` (D25). If `renpy.showing("mc")`, `renpy.hide("mc")` (a stale sprite in a mid-scene save). `tname` = the save's technique name from `TECHNIQUES` ("Last Light" for an unknown technique, and for every save once WP2 leaves only timestop). If `_partner` is missing and the old `partner` is set, `_partner = partner` (a save made inside the Sun Mall mission before d06486a renamed it). |
 | 10 | WP2 | `technique` other than `"timestop"` → `"timestop"`. An Emberfall save also gets `control = max(control, output)`, so Last Light's tier doesn't drop. Sets flag `technique_was_<old>`. |
-| 15 | WP1 | If `gojo_today` is missing any period, `roll_gojo()`. If `here` is not in `LOCATIONS` and `settled_in` is set, `here = "courtyard"`. |
+| 15 | WP1 | If `gojo_today` is missing any period, `roll_gojo()`. If `here` is not in `LOCATIONS` and `settled_in` is set, `here = "courtyard"`. A settled save without `saw_the_ridge_veil` gets it (every settled save went through the tour, which shows the veil). |
 | 20 | WP2 | `grade`: int 3 → `"g3"`; any other int → `"g4"` if flag `roll_call`, else `None`; a key stays. |
 | 30 | WP2 | `refresh_vitals()`; if `hp <= 0`, `hp = hp_max`. |
 | 40 | WP3 | If `settled_in` and `"ijichi"` is not in the roster, add him. If `utahime_arrived` and she's missing, add her. If `arc1_complete`, set flag `night_before_done`. A finished story scene gets the flags later steps need (`_MS_BACKFILL`): `st_roll_call` → `roll_call`, `storehouse_access`; `st_kurose` → `kurose_met`; `st_second_years` → `met_second_years`; `st_intensive` → `intensive_done`. Mission scenes are not backfilled. |
@@ -1143,6 +1143,7 @@ Developer builds only, reached from `("dev",)` in the place view. It runs in the
 - set `armory_open`
 - mark the main story complete (`dev_story_complete`)
 - jump to day +7
+- the ridge veil, again today (sets `saw_the_ridge_veil`, clears `"veil"` from `actions_today`)
 - Close
 
 ---

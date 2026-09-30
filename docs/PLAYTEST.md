@@ -66,9 +66,10 @@ Two tips:
    reaches her.
 4. **People** shows your bonds as you left them. **Inventory** has the keepsake
    you packed.
-5. Old saves don't get *Look up at the veil* on the ridge: they took the old
-   tour (the casket), so they never saw the veil. Try it in the new game
-   instead (or with the Review tools' veil button, if the panel has one).
+5. The ridge (Mountain Ridge) offers *Look up at the veil* in an old save
+   too: loading a save that finished the prologue marks the veil as seen, so
+   you don't have to replay the tour for it. Once a day; the Review tools'
+   **The ridge veil, again today** button opens it again.
 
 ---
 
@@ -93,7 +94,9 @@ story you haven't finished in that save.
 The panel's other buttons, for looking around faster: +50 merit, promote me one
 grade, promote Yuji / Megumi / Nobara, finish the next story step, +20 bond
 with everyone, open Tokyo, Gojo in today, recruit Utahime (plays her scene),
-one of every item, open the armory, and jump a week ahead.
+one of every item, open the armory, jump a week ahead, and the ridge veil
+again today. The special talismans from "one of every item" can be worn only
+once the story binds them, and the Inverted Spear stays "Sealed — Arc Two".
 
 ---
 

@@ -566,7 +566,11 @@ label zz_smoke:
     ## --- stub labels --------------------------------------------------------------------------
     call stage_person("yuji")
     call stage_person("yuji", "happy")
+    ## dev_tools opens a waiting panel once settled_in is set; under
+    ## smoke_autoplay the panel closes itself, whatever the flags are.
+    $ zz_had_autoplay, smoke_autoplay = smoke_autoplay, True
     call dev_tools
+    $ smoke_autoplay = zz_had_autoplay
     call sb_trip("shibuya")
     call sb_do_car
     call sb_do_board

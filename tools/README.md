@@ -100,7 +100,7 @@ for input: it calls the loop's functions directly.
 | harness | what it checks |
 |---|---|
 | `core_flow.rpy` | The standing check every package passes: a settled game, a day of the loop (story event, three actions, three new days) and the three main screens. |
-| `wp0_stubs.rpy` | The contracts (design section 6): every shared function and screen exists with its frozen signature. On the finished tree run it with `SMOKE_STUBS_ONLY_SIGS=1`, which skips the stub-value checks. |
+| `wp0_stubs.rpy` | The contracts (design section 6): every shared function and screen exists with its frozen signature. `tools/smoke.sh tools/smoke/wp0_stubs.rpy` checks signatures, hooks and screen renders only by default; set `SMOKE_STUBS_VALUES=1` to also run the WP0 stub-value checks (these fail on the merged tree, since every stub has been replaced). `SMOKE_STUBS_ONLY_SIGS=1` is still accepted and forces signatures only. |
 | `wp1_world.rpy` | Places, areas, schedules (with a frozen copy of the old ones), the offices' locks, Gojo's in-days, Tokyo trips, the ridge veil, the map (screenshots). |
 | `wp2_grades.rpy` | Grades, caps, merit, NPC growth and promotions, Last Light, the alley fight's four rounds, the Grade 3 fight, migrations 10/20/30. |
 | `wp3_missions.rpy` | The mission registry and story chain on a fresh and an old-save fixture; the objective at every step goes to `objectives.txt` for a read-through. |

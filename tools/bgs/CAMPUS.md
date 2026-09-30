@@ -40,7 +40,7 @@ for it.
 | **Principal's Office** (`office`) | upper east | Yaga's dim hall with no windows, lit by candles and full of handmade dolls. |
 | **Storehouse** (`storehouse`) | far east, at the back | A white plaster *kura*: racks of sealed boxes and cursed tools, lit by lamps. |
 | **Dorm Common Room** (`dorm_common`) | north-west, the boys' dorm ground floor | Sofa, low table, TV, kitchenette. Modern furniture inside the old wooden building. |
-| **Your Room** (`your_room`) | north-west, the boys' dorm upstairs | Done. The window faces the mountain. |
+| **My Room** (`your_room`) | north-west, the boys' dorm upstairs | Done. The window faces the mountain. |
 | **Girls' Dormitory** (`girls_dorm`) | north-east | A long corridor of identical doors. |
 | **Rooftop** (`rooftop`) | top centre | The open wooden veranda at the top of the tall tower, looking south over every roof down the valley. There is no modern flat roof on this campus; this is the highest place a student can stand. |
 | **Forest Trail** (`forest`) | north-west, off campus | A trail through old cedars, 40 minutes long. There are no buildings on it. |
