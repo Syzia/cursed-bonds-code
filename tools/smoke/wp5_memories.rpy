@@ -16,7 +16,11 @@
 ##                flags, day and period unchanged, and raises no toasts;
 ##   sana         the three flashbacks show their hints, then "Written in a
 ##                later build" once each trigger is met;
-##   migration 65 (memory part) backfills the prologue and is idempotent.
+##   migration 65 (memory part) backfills the prologue and is idempotent, and
+##                a save loaded mid-prologue counts the rest once settled in;
+##   staging      every replay opens on a picture, and a memory with a place
+##                replays there (here and period), not where the save stands;
+##   sun mall     the chapters stay unseen while Yaga's briefing plays.
 ## Screenshots (shots/wp5_memories/): the memories by person and by act, as a
 ## harness-drawn board (the journal's real tab is WP8's), and a replayed scene.
 
@@ -29,6 +33,13 @@ init 999 python:
     ZZ_TOASTS = builtins.list()
     ZZ_INSIDE = builtins.list()
     ZZ_SWEPT = builtins.list()
+    ## Per replayed memory: whether something was on screen when its own label
+    ## began, and the here/period it began with. ZZ_CUR[0] is the memory the
+    ## main context is replaying (a builtins list, so the replay sees it).
+    ZZ_CUR = builtins.list([None])
+    ZZ_OPEN = builtins.list()
+    ## (label, chapter_four's state, chapter_five's state) as the Sun Mall plays.
+    ZZ_SUNMALL = builtins.list()
 
     ## The sweep leaves out scenes with a fight, which wait for input until
     ## WP2's smoke_autoplay timer is in combat_screen, and The Offer, whose
@@ -37,7 +48,19 @@ init 999 python:
     ZZ_SWEEP_SKIP = ("ms_nade_1", "ms_nade_2", "chapter_one_b")
 
     def zz_label_spy(name, abnormal):
-        ZZ_LABELS.append((name, bool(getattr(store, "_in_replay", None))))
+        _r = bool(getattr(store, "_in_replay", None))
+        ZZ_LABELS.append((name, _r))
+        _m = MEMORY_BY_ID.get(ZZ_CUR[0]) if ZZ_CUR[0] else None
+        if _r and _m and name == _m["label"] and not [o for o in ZZ_OPEN if o[0] == ZZ_CUR[0]]:
+            ZZ_OPEN.append((ZZ_CUR[0], bool(renpy.get_showing_tags("master")),
+                            getattr(store, "here", None), getattr(store, "period", None)))
+        if not _r and name in ("ev_mission_sunmall", "chapter_four", "chapter_five"):
+            ZZ_SUNMALL.append((name, memory_state("chapter_four"), memory_state("chapter_five")))
+
+    def zz_shot(name, wait=0.25):
+        ## A stale notification from earlier normal play isn't part of the shot.
+        renpy.hide_screen("notify")
+        shot(name, wait=wait)
 
     config.label_callbacks.append(zz_label_spy)
 
@@ -145,7 +168,37 @@ label zz_smoke:
         check(len(_v) >= 5 and any("zz_no_such_label" in p for p in _v), "validator catches a broken entry", _v)
         _missing = sorted(m["label"] for m in MEMORIES if not renpy.has_label(m["label"]))
         note("labels not in this tree yet (WP9, WP3, phase 3)", _missing)
-        check(set(_missing) <= (MEMORY_PENDING_LABELS | MEMORY_UNWRITTEN_LABELS), "only pending labels are missing", _missing)
+        check(set(_missing) <= (_mem_pending_labels() | MEMORY_UNWRITTEN_LABELS), "only pending labels are missing", _missing)
+        ## The exemption ends by itself: once one label of a package's set
+        ## exists, the rest of that set is required.
+        _wp9 = dict(MEMORY_PENDING_SETS)["WP9"]
+        _wp3 = dict(MEMORY_PENDING_SETS)["WP3"]
+        check(_mem_pending_labels(lambda l: False) == _wp9 | _wp3, "pending: both sets exempt while none of their labels exists")
+        check(_mem_pending_labels(lambda l: l == "ch2_yaga") == _wp3,
+              "pending: one WP9 sub-label landing ends the WP9 exemption", sorted(_mem_pending_labels(lambda l: l == "ch2_yaga")))
+        check(_mem_pending_labels(lambda l: l in ("ch1_diner", "st_promotion_g3")) == frozenset(),
+              "pending: nothing exempt once both packages have landed")
+        _p = [m for m in MEMORIES if m.get("place")]
+        check(all(m["place"][0] in LOCATIONS and m["place"][1] in PERIODS for m in _p),
+              "every place is a campus location and a period", [m["id"] for m in _p])
+        check(all(m["bg"] == bg_name(*m["place"]) for m in _p if m["args"]),
+              "an activity memory's tile shows its place")
+        _need_place = set("%s:%s" % (a, w) for a in ("confide", "stand") for w in
+                          ("yuji", "megumi", "nobara", "maki", "panda", "toge", "shoko", "gojo", "yaga"))
+        _need_place |= set("%s:%s" % (a, w) for a in ("rom_close", "rom_say", "int_night", "int_morning", "int_after")
+                           for w in ("nobara", "maki", "shoko"))
+        _need_place |= {"ms_nade_1", "ms_nade_2", "ms_nade_3", "st_noise"}
+        check(_need_place <= set(m["id"] for m in _p),
+              "every scene without its own opening scene, or drawing graded_bg(), has a place",
+              sorted(_need_place - set(m["id"] for m in _p)))
+        _mem("zz_bad_place", "Bad", "I", "st_roll_call", hint="h", place=("moon", "Teatime"), stage="bg nowhere")
+        _v = _validate_memories()
+        MEMORIES.pop()
+        check(any("bad place" in p for p in _v) and any("stage" in p for p in _v), "validator catches a bad place and stage", _v)
+        check(MEMORY_BY_ID["st_oda_2"]["who"] == ("yaga",) and MEMORY_BY_ID["st_noise"]["who"] == ("ijichi",)
+              and set(MEMORY_BY_ID["ms_nade_1"]["who"]) == {"yaga", "yuji", "megumi", "nobara"}
+              and "gojo" in MEMORY_BY_ID["ch1b_goodbye"]["who"] and "yuji" in MEMORY_BY_ID["st_second_years"]["who"],
+              "catalogue: cast members who speak are in the memory's people")
         check(all(renpy.has_image(m["bg"], exact=True) for m in MEMORIES), "every memory background exists")
 
     ## --- a fresh game: nothing seen, the stub contract still holds --------------------------
@@ -171,6 +224,19 @@ label zz_smoke:
         check(set(memories_seen) == {"ch1_diner", "ch1_the_thing", "ch1_gojo", "chapter_one_b", "ch1b_goodbye"}
               and set(memories_seen.values()) == {0},
               "migration 65: a save resuming at ch2_arrival has seen the steps before it", memories_seen)
+        ## A save made inside The Offer: its label ran before the save, so the
+        ## recorder never sees it. Finishing the prologue (settled_in) counts
+        ## it at once, without waiting for the next load's migration.
+        memories_seen.clear()
+        store.story_point = "chapter_one_b"
+        _migrate_65_memories()
+        check(set(memories_seen) == {"ch1_diner", "ch1_the_thing", "ch1_gojo"} and not memory_seen("chapter_one_b"),
+              "migration 65: a mid-Offer save has seen the steps before The Offer", memories_seen)
+        flag("settled_in")
+        check(all(memory_seen(l) for l in MEMORY_PROLOGUE_ORDER),
+              "mid-Offer save, prologue finished (no reload yet): The Offer and the rest count as seen",
+              [l for l in MEMORY_PROLOGUE_ORDER if not memory_seen(l)])
+        store.flags.discard("settled_in")
         store.story_point = None
         memories_seen.clear()
         _migrate_65_memories()
@@ -225,7 +291,7 @@ label zz_smoke:
               sorted(zz_ids(zz_group(_gp, "Sana"))))
         check(zz_ids(zz_group(_gp, "Utahime")) == set() and len(zz_group(_gp, "Utahime")) == 1,
               "legacy by person: Utahime not met yet, her memory unseen")
-        check(zz_ids(zz_group(_gp, MEMORY_NOBODY)) == {"ch1b_goodbye", "st_kurose"},
+        check(zz_ids(zz_group(_gp, MEMORY_NOBODY)) == {"st_kurose"},
               "legacy by person: everyone else", sorted(zz_ids(zz_group(_gp, MEMORY_NOBODY))))
 
         _ga = memory_groups("act")
@@ -245,13 +311,15 @@ label zz_smoke:
               "memory_replay is a Replay for a seen memory")
         _a = memory_replay("st_roll_call")
         check(_a.label == "mem_play" and _a.locked is False and _a.get_sensitive(), "the Replay is mem_play, locked=False (D5)")
+        check(_a.scope == {} and _a == memory_replay("st_roll_call") and _a != memory_replay("confide:yuji"),
+              "a tile's action holds only its id until it runs (cheap to build and compare)")
         check(all(isinstance(memory_replay(i), NullAction) for i in _later), "a 'later' memory can't be replayed")
         renpy.show("bg courtyard")
     show screen zz_mem_board("person")
-    $ shot("legacy_by_person")
+    $ zz_shot("legacy_by_person")
     hide screen zz_mem_board
     show screen zz_mem_board("act")
-    $ shot("legacy_by_act")
+    $ zz_shot("legacy_by_act")
     hide screen zz_mem_board
 
     ## --- memory_scope (3.9) --------------------------------------------------------------------
@@ -337,6 +405,7 @@ label zz_smoke:
     $ autoplay(False)
     python:
         check(("act_confide", True) in ZZ_LABELS, "memory_replay('confide:yuji') played act_confide('yuji') as a replay", ZZ_LABELS[:6])
+        check(_act.scope == {}, "the action drops its scope when the replay ends")
         _d = zz_same(_before, zz_snapshot())
         check(not _d, "replaying act_confide('yuji') leaves bonds, flags, day, period (and the rest) unchanged", _d)
         check(not ZZ_TOASTS, "no toasts during the act_confide replay (it adds bond and insight)", ZZ_TOASTS)
@@ -367,6 +436,25 @@ label zz_smoke:
         check(not zz_same(_before, _after) and not ZZ_TOASTS and bonds["yuji"] == 70,
               "a replay that gains bond shows it only inside the replay")
 
+    ## A screenshot of a replay whose scene sets no background of its own (as
+    ## act_confide doesn't): it opens on the memory's place, graded for its
+    ## hour, not on black, and not where the save stands.
+    python:
+        MEMORY_BY_ID["zz_open"] = dict(id="zz_open", title="Open", who=("shoko",), act="Bonds",
+                                       label="zz_replay_open", args=("shoko",), seen=[("act", "zz_open")],
+                                       hint="h", unlock=None, bg="bg infirmary night",
+                                       place=("infirmary", "Night"), stage=None)
+        seen_acts.add("zz_open")
+        del ZZ_INSIDE[:]
+        _hp = (here, period)
+    $ memory_replay("zz_open")()
+    python:
+        del MEMORY_BY_ID["zz_open"]
+        seen_acts.discard("zz_open")
+        check(ZZ_INSIDE == [("infirmary", "Night", True, "shoko")],
+              "a scene with no background of its own replays at its place (infirmary, Night)", ZZ_INSIDE)
+        check((here, period) == _hp and _hp != ("infirmary", "Night"), "the save still stands where it was", (_hp, here, period))
+
     ## Every memory whose scene is in this tree, replayed once: none raises,
     ## each plays its own label, the save is unchanged and nothing toasts.
     python:
@@ -382,7 +470,9 @@ label zz_smoke:
     $ autoplay()
     while _sweep:
         $ _sid = _sweep.pop(0)
+        $ ZZ_CUR[0] = _sid
         $ renpy.call_replay("mem_play", memory_scope(_sid))
+        $ ZZ_CUR[0] = None
         $ ZZ_SWEPT.append(_sid)
     $ autoplay(False)
     python:
@@ -394,6 +484,13 @@ label zz_smoke:
         _d = zz_same(_before, zz_snapshot())
         check(not _d, "sweep: the save (memories_seen and seen_acts too) is unchanged after every replay", _d)
         check(not ZZ_TOASTS, "sweep: no toasts in any replay", ZZ_TOASTS[:5])
+        _open = dict((o[0], o[1:]) for o in ZZ_OPEN)
+        _dark = [i for i in ZZ_SWEPT if not _open.get(i, (False,))[0]]
+        check(not _dark, "sweep: every replay has a picture up when its scene begins (none opens on black)", _dark)
+        _wrong = [(i, _open.get(i)) for i in ZZ_SWEPT if MEMORY_BY_ID[i].get("place")
+                  and tuple(_open.get(i, (None, None, None))[1:]) != tuple(MEMORY_BY_ID[i]["place"])]
+        check(not _wrong, "sweep: a memory with a place replays there (here and period), not where the save stands", _wrong[:5])
+        note("save stands at", "%s, %s; e.g. stand:megumi replayed at %s" % (here, period, _open.get("stand:megumi")))
         config.notify = _old_notify
         TOAST_SINK[0] = None
 
@@ -417,8 +514,30 @@ label zz_smoke:
         _c = memory_counts()
         note("counts after the fixture", "%d of %d found" % _c)
     show screen zz_mem_board("person")
-    $ shot("sana_triggered")
+    $ zz_shot("sana_triggered")
     hide screen zz_mem_board
+
+    ## --- the Sun Mall: nothing opens while Yaga's briefing plays ---------------------------------------
+    ## play_event marks ev_mission_sunmall done before the briefing starts;
+    ## the chapters must stay unseen until each has played.
+    $ settle(day=9, flags=[], done_events=[], memories_seen={}, seen_acts=[])
+    python:
+        flag("roll_call")
+        del ZZ_SUNMALL[:]
+        _ev = [e for e in EVENTS if e["label"] == "ev_mission_sunmall"][0]
+        check(memory_state("chapter_four") == "unseen" and memory_state("chapter_five") == "unseen",
+              "sun mall: both chapters unseen before the mission")
+    $ autoplay()
+    call play_event(_ev)
+    $ autoplay(False)
+    python:
+        check(ZZ_SUNMALL[:1] == [("ev_mission_sunmall", "unseen", "unseen")],
+              "sun mall: at Yaga's briefing (event already marked done) neither chapter is seen", ZZ_SUNMALL)
+        check(("chapter_four", "seen", "unseen") in ZZ_SUNMALL,
+              "sun mall: What Should Have Happened stays unseen while Kawagoe Sun Mall plays", ZZ_SUNMALL)
+        check(memories_seen.get("chapter_four") == 9 and memories_seen.get("chapter_five") == 9
+              and memory_state("chapter_five") == "seen", "sun mall: both chapters seen (day 9) once played",
+              (memories_seen.get("chapter_four"), memories_seen.get("chapter_five")))
 
     ## --- no persistent writes (D6) ---------------------------------------------------------------------
     python:
@@ -427,6 +546,14 @@ label zz_smoke:
         check("persistent" not in _src, "the recorder and the seen rules never touch persistent")
 
     $ finish()
+
+
+## Harness-only: like act_confide, no scene of its own: what the replay opens on.
+label zz_replay_open(who):
+    show shoko neutral at pos_c
+    $ ZZ_INSIDE.append((here, period, bool(renpy.get_showing_tags("master")), who))
+    $ shot("replay_opens_at_its_place", wait=0.4)
+    return
 
 
 ## Harness-only: a memory that shows a line and gains bond, for the replay shot.

@@ -24,8 +24,16 @@
 ##
 ## A catalogue entry:
 ##   dict(id, title, who=(), act, label, args=(), seen=[rules], hint,
-##        unlock=None, bg)
+##        unlock=None, bg, place=None, stage=None)
 ##   act      "Prologue", "I".."V", "Bonds" or "Sana"
+##   bg       the tile's picture (an image name)
+##   place    None, or (location, period): where the scene happens. A replay
+##            sets `here` and `period` to it and opens on graded_bg() of it,
+##            for scenes that draw the place they are played in (graded_bg(),
+##            who_is_here()) or that start without a scene of their own.
+##   stage    None, or the image a replay opens on when it isn't the tile's
+##            bg. Without a place, a replay opens on stage or bg; a scene
+##            that sets its own background replaces it at once.
 ##   seen     a list of rules, any of which will do:
 ##              ("label", name)      name is in memories_seen
 ##              ("event", label)     label is in done_events
@@ -75,13 +83,28 @@ init -1 python:
     ## The tile text for a memory whose scene is still to be written.
     MEMORY_LATER = "Written in a later build"
 
-    ## Labels other wave-1 packages add: the prologue's sub-labels (WP9, D39)
-    ## and the two new story scenes (WP3). The validator lets them be missing
-    ## until those packages merge; the journal shows them as "later" meanwhile.
-    MEMORY_PENDING_LABELS = frozenset([
-        "ch1_diner", "ch1_the_thing", "ch1_gojo", "ch2_arrival", "ch2_the_veil",
-        "ch2_yaga", "ch2_first_years", "st_utahime_office", "st_promotion_g3",
-    ])
+    ## Labels other wave-1 packages add, one set per package: the prologue's
+    ## sub-labels (WP9, D39) and the two new story scenes (WP3). A set is
+    ## pending only while none of its labels exists: the validator lets a
+    ## pending set be missing, and once one label of a set has landed it
+    ## requires the whole set, so the exemption ends by itself when the
+    ## package merges. The journal shows a missing label as "later".
+    MEMORY_PENDING_SETS = (
+        ("WP9", frozenset(["ch1_diner", "ch1_the_thing", "ch1_gojo", "ch2_arrival",
+                           "ch2_the_veil", "ch2_yaga", "ch2_first_years"])),
+        ("WP3", frozenset(["st_utahime_office", "st_promotion_g3"])),
+    )
+    MEMORY_PENDING_LABELS = frozenset().union(*[s for p, s in MEMORY_PENDING_SETS])
+
+    def _mem_pending_labels(has_label=None):
+        """WP5. The labels the validator may find missing right now: every
+        set of MEMORY_PENDING_SETS none of whose labels exists yet."""
+        has_label = has_label or renpy.has_label
+        out = set()
+        for pkg, labs in MEMORY_PENDING_SETS:
+            if not any(has_label(l) for l in labs):
+                out |= labs
+        return frozenset(out)
 
     ## Sana's flashbacks are written in phase 3 (D11).
     MEMORY_UNWRITTEN_LABELS = frozenset(["sana_mem_diner", "sana_mem_daisy", "sana_mem_ranking"])
@@ -98,42 +121,44 @@ init -1 python:
 
     MEMORIES = []
 
-    def _mem(id, title, act, label, who=(), args=(), seen=None, hint="", unlock=None, bg="bg black"):
+    def _mem(id, title, act, label, who=(), args=(), seen=None, hint="", unlock=None, bg="bg black",
+             place=None, stage=None):
         MEMORIES.append(dict(id=id, title=title, who=tuple(who), act=act, label=label,
                              args=tuple(args), seen=list(seen or [("label", label)]),
-                             hint=hint, unlock=unlock, bg=bg))
+                             hint=hint, unlock=unlock, bg=bg, place=place, stage=stage))
 
-    def _mem_story(label, title, act, who, bg, hint, flags=()):
+    def _mem_story(label, title, act, who, bg, hint, flags=(), place=None):
         ## A main-story row: seen once its label has played or its event is
         ## done, or (old saves) once a flag the scene sets is set.
-        _mem(label, title, act, label, who=who, bg=bg, hint=hint,
+        _mem(label, title, act, label, who=who, bg=bg, hint=hint, place=place,
              seen=[("label", label), ("event", label)] + [("flag", f) for f in flags])
 
     ## --- The prologue (D39) ------------------------------------------------------
+    ## Seen once its label plays, or once the save has settled in: every
+    ## settled save played the whole prologue, including the step an old save
+    ## was loaded in the middle of (whose label ran before the save was made).
 
-    _mem("ch1_diner", "Nine Hundred Yen", "Prologue", "ch1_diner", who=("sana",),
-         bg="bg diner", hint="The prologue.")
-    _mem("ch1_the_thing", "The Thing She Told Me", "Prologue", "ch1_the_thing", who=("sana",),
-         bg="bg alley", hint="The prologue.")
-    _mem("ch1_gojo", "The Man in the Blindfold", "Prologue", "ch1_gojo", who=("gojo",),
-         bg="bg alley dark", hint="The prologue.")
-    _mem("chapter_one_b", "The Offer", "Prologue", "chapter_one_b", who=("gojo",),
-         bg="bg alley", hint="The prologue.")
-    _mem("ch1b_goodbye", "Breakfast for Four", "Prologue", "ch1b_goodbye",
-         bg="bg home_living", hint="The prologue.")
-    _mem("ch2_arrival", "The Strongest of Today", "Prologue", "ch2_arrival", who=("gojo", "ijichi"),
-         bg="bg gate", hint="The prologue.")
-    _mem("ch2_the_veil", "The Veil on the Ridge", "Prologue", "ch2_the_veil", who=("gojo",),
-         bg="bg ridge_veil", hint="The prologue.")
-    _mem("ch2_yaga", "Why Are You Here?", "Prologue", "ch2_yaga", who=("yaga",),
-         bg="bg office", hint="The prologue.")
-    _mem("ch2_first_years", "Three First-Years", "Prologue", "ch2_first_years",
-         who=("yuji", "megumi", "nobara"), bg="bg training", hint="The prologue.")
+    def _mem_pro(label, title, who, bg, stage=None):
+        _mem(label, title, "Prologue", label, who=who, bg=bg, stage=stage, hint="The prologue.",
+             seen=[("label", label), ("flag", "settled_in")])
+
+    _mem_pro("ch1_diner", "Nine Hundred Yen", ("sana",), "bg diner")
+    _mem_pro("ch1_the_thing", "The Thing She Told Me", ("sana",), "bg alley")
+    _mem_pro("ch1_gojo", "The Man in the Blindfold", ("gojo",), "bg alley dark")
+    _mem_pro("chapter_one_b", "The Offer", ("gojo",), "bg alley")
+    ## Gojo's four lines play in the konbini, before the scene moves home.
+    _mem_pro("ch1b_goodbye", "Breakfast for Four", ("gojo",), "bg home_living", stage="bg konbini")
+    _mem_pro("ch2_arrival", "The Strongest of Today", ("gojo", "ijichi"), "bg gate")
+    _mem_pro("ch2_the_veil", "The Veil on the Ridge", ("gojo",), "bg ridge_veil")
+    _mem_pro("ch2_yaga", "Why Are You Here?", ("yaga",), "bg office")
+    _mem_pro("ch2_first_years", "Three First-Years", ("yuji", "megumi", "nobara"), "bg training")
 
     ## --- The main story: every written story row (3.6.1) --------------------------
     ## The hints are the rows' objectives. The Sun Mall row plays as two
     ## scenes, recorded through their own labels; old saves read the row's
-    ## event and flag (and, for a pre-sandbox save, the chapter's own flags).
+    ## closing flag sunmall_done and each chapter's own flags. Not the row's
+    ## event: play_event marks ev_mission_sunmall done before Yaga's briefing
+    ## starts, so the chapters would open before either has played.
 
     _mem_story("st_roll_call", "Roll Call", "I", ("yaga", "yuji", "megumi", "nobara"),
                "bg classroom", "Roll call with Principal Yaga.", flags=("roll_call",))
@@ -143,23 +168,26 @@ init -1 python:
     _mem("chapter_four", "Kawagoe Sun Mall", "I", "chapter_four",
          who=("yuji", "megumi", "nobara", "ijichi"), bg="bg city",
          hint="Yaga has a mission for the first-years.",
-         seen=[("label", "chapter_four"), ("event", "ev_mission_sunmall"), ("flag", "sunmall_done")]
+         seen=[("label", "chapter_four"), ("flag", "sunmall_done")]
               + [("flag", f) for f in ("read_wall", "ignored_wall", "scouted_corridor", "saved_civilian",
                                        "fought_first", "climax_strong", "climax_thin")])
     _mem("chapter_five", "What Should Have Happened", "I", "chapter_five",
          who=("yaga", "gojo"), bg="bg rooftop evening", hint="After the Sun Mall.",
-         seen=[("label", "chapter_five"), ("event", "ev_mission_sunmall"), ("flag", "sunmall_done")])
+         seen=[("label", "chapter_five"), ("flag", "sunmall_done")]
+              + [("flag", f) for f in ("end_committed", "end_honest", "end_turned_it_around")])
     _mem_story("st_aftermath", "Cursed-Energy Debt", "I", ("shoko",),
                "bg infirmary", "Shoko wants to look at all four of us.", flags=("aftermath_done",))
     _mem_story("st_kurose", "Four Forms and Nine Minutes", "I", (),
                "bg office", "A man from auxiliary management is waiting outside Yaga's office.",
                flags=("kurose_met",))
 
-    _mem_story("st_second_years", "Nobody Cares About the Technique", "II", ("maki", "panda", "toge"),
+    _mem_story("st_second_years", "Nobody Cares About the Technique", "II", ("maki", "panda", "toge", "yuji"),
                "bg training", "The second-years are back from wherever they were.",
                flags=("met_second_years",))
-    _mem_story("st_noise", "Something Eating the Lights", "II", (),
-               "bg courtyard", "Stay on campus into the evening.")
+    ## st_noise picks its ally from who is around (who_is_here()) and plays in
+    ## the evening, so a replay stands in the courtyard at Evening.
+    _mem_story("st_noise", "Something Eating the Lights", "II", ("ijichi",),
+               "bg courtyard", "Stay on campus into the evening.", place=("courtyard", "Evening"))
     _mem_story("st_oda_letter", "A Letter from Oda-sensei", "II", (),
                "bg your_room night", "A letter is on its way from home.", flags=("oda_letter_read",))
     _mem_story("st_intensive", "Eleven Minutes", "II", ("gojo",),
@@ -167,16 +195,18 @@ init -1 python:
     _mem("st_promotion_g3", "Grade Three, with Maki Watching", "II", "st_promotion_g3",
          who=("maki",), bg="bg training", hint="The promotion fight, once the merit is there.")
 
-    _mem_story("ms_nade_1", "Sixty-One Surveys", "III", ("yaga",),
-               "bg city", "Yaga has a name.", flags=("nade_named",))
+    ## The Nade missions open with Yaga's briefing over the office, where the
+    ## board hands them out, before their first scene.
+    _mem_story("ms_nade_1", "Sixty-One Surveys", "III", ("yaga", "yuji", "megumi", "nobara"),
+               "bg city", "Yaga has a name.", flags=("nade_named",), place=("office", "Morning"))
     _mem_story("st_kurose_2", "Under My Door", "III", (),
                "bg your_room night", "Something from Kurose is waiting in my room.", flags=("kurose_leak",))
     _mem_story("ms_nade_2", "The Annexe", "III", ("yaga",),
-               "bg ruin", "Yaga wants the annexe looked at.", flags=("nade_traced",))
-    _mem_story("st_oda_2", "Counted Twice", "III", (),
+               "bg ruin", "Yaga wants the annexe looked at.", flags=("nade_traced",), place=("office", "Morning"))
+    _mem_story("st_oda_2", "Counted Twice", "III", ("yaga",),
                "bg your_room night", "Oda-sensei writes back.", flags=("oda_thread_open",))
     _mem_story("ms_nade_3", "A Flat in Toda", "III", ("yaga",),
-               "bg town_street", "Yaga knows where Nade is.", flags=("nade_map",))
+               "bg town_street", "Yaga knows where Nade is.", flags=("nade_map",), place=("office", "Morning"))
 
     _mem_story("st_roster", "The Kyoto Roster", "IV", ("maki",),
                "bg courtyard", "The Kyoto roster is going up.")
@@ -221,77 +251,90 @@ init -1 python:
     ## noted them, or (old saves) from the flag the scene or sb_activity sets.
     ## act_int_night / _morning / _day set no flag, so for old saves they count
     ## from the first time they play in this build.
+    ##
+    ## In normal play most of these scenes borrow the place view they are
+    ## started from: act_confide, act_rom_close, act_rom_say and act_int_after
+    ## run no `scene` of their own, and act_stand, act_int_night and
+    ## act_int_morning draw graded_bg() of wherever the player stands. So each
+    ## gets a place, (location, period), where it is set: the replay stands
+    ## there, and the tile shows the same picture (bg_name() of the place).
+    ## act_rom_town and act_int_day set their own scene and keep a plain bg.
 
-    def _mem_act(aid, who, title, bg, hint, legacy=()):
+    def _mem_act(aid, who, title, hint, legacy=(), place=None, bg=None):
         _mem("%s:%s" % (aid, who), title, "Bonds", "act_" + aid, who=(who,), args=(who,),
-             bg=bg, hint=hint, seen=[("act", "%s:%s" % (aid, who))] + list(legacy))
+             bg=bg or bg_name(*place), place=place, hint=hint,
+             seen=[("act", "%s:%s" % (aid, who))] + list(legacy))
 
     def _mem_add_acts():
         ## Something true (Bond 65): the scene sets confided_<who>, sb_activity
         ## did_confide_<who>. Written for these nine.
-        for _w, _t, _b in [
-                ("yuji",   "The Whole Trick",              "bg rooftop evening"),
-                ("megumi", "The Fight I Lost",             "bg forest"),
-                ("nobara", "Under the Paper",              "bg courtyard"),
-                ("maki",   "The Boring Part",              "bg dojo"),
-                ("panda",  "The Boy in the Car",           "bg dorm_common evening"),
-                ("toge",   "Sitting Here Instead",         "bg rooftop night"),
-                ("shoko",  "The Sitting on the Roof",      "bg infirmary night"),
-                ("gojo",   "Enough, Together",             "bg rooftop night"),
-                ("yaga",   "Not Knowing Is the Condition", "bg office")]:
-            _mem_act("confide", _w, _t, _b, "Something true, told at Bond 65.",
+        for _w, _t, _p in [
+                ("yuji",   "The Whole Trick",              ("rooftop", "Evening")),
+                ("megumi", "The Fight I Lost",             ("forest", "Afternoon")),
+                ("nobara", "Under the Paper",              ("courtyard", "Afternoon")),
+                ("maki",   "The Boring Part",              ("dojo", "Morning")),
+                ("panda",  "The Boy in the Car",           ("dorm_common", "Evening")),
+                ("toge",   "Sitting Here Instead",         ("rooftop", "Night")),
+                ("shoko",  "The Sitting on the Roof",      ("infirmary", "Night")),
+                ("gojo",   "Enough, Together",             ("rooftop", "Night")),
+                ("yaga",   "Not Knowing Is the Condition", ("office", "Morning"))]:
+            _mem_act("confide", _w, _t, "Something true, told at Bond 65.", place=_p,
                      legacy=[("flag", "confided_" + _w), ("flag", "did_confide_" + _w)])
 
         ## Their ask (Bond 80): sb_activity sets did_stand_<who>.
-        for _w, _t, _b in [
-                ("yuji",   "Tell Them",                    "bg rooftop"),
-                ("megumi", "Every Three Weeks",            "bg town_street"),
-                ("nobara", "Out Loud, for Years",          "bg courtyard"),
-                ("maki",   "The Four Seconds After",       "bg dojo"),
-                ("panda",  "Two People Is the Difference", "bg dorm_common"),
-                ("toge",   "Speak Instead",                "bg rooftop"),
-                ("shoko",  "The Empty Line",               "bg infirmary"),
-                ("gojo",   "Say I'm Wrong",                "bg rooftop"),
-                ("yaga",   "The Room",                     "bg office")]:
-            _mem_act("stand", _w, _t, _b, "An ask, at Bond 80, after something true.",
+        for _w, _t, _p in [
+                ("yuji",   "Tell Them",                    ("rooftop", "Afternoon")),
+                ("megumi", "Every Three Weeks",            ("forest", "Afternoon")),
+                ("nobara", "Out Loud, for Years",          ("courtyard", "Afternoon")),
+                ("maki",   "The Four Seconds After",       ("dojo", "Morning")),
+                ("panda",  "Two People Is the Difference", ("dorm_common", "Afternoon")),
+                ("toge",   "Speak Instead",                ("rooftop", "Afternoon")),
+                ("shoko",  "The Empty Line",               ("infirmary", "Afternoon")),
+                ("gojo",   "Say I'm Wrong",                ("rooftop", "Noon")),
+                ("yaga",   "The Room",                     ("office", "Morning"))]:
+            _mem_act("stand", _w, _t, "An ask, at Bond 80, after something true.", place=_p,
                      legacy=[("flag", "did_stand_" + _w)])
 
         ## Romance and after (Nobara, Maki, Shoko). The flag prefix each scene
-        ## (or sb_activity) sets, or None.
+        ## (or sb_activity) sets, or None; then per person a title and a place
+        ## (location, period), or a plain bg for a scene that sets its own.
         for _aid, _hint, _prefix, _rows in [
                 ("rom_town", "Into town together, at ♡ 30.", "town_date_", [
                     ("nobara", "You Carry the Bags",          "bg city"),
                     ("maki",   "After the List",              "bg town_street"),
                     ("shoko",  "A Different Coffee Place",    "bg city")]),
                 ("rom_close", "Staying a while longer, at ♡ 45.", "close_", [
-                    ("nobara", "Not Going Anywhere",          "bg rooftop night"),
-                    ("maki",   "Six in the Morning",          "bg dojo"),
-                    ("shoko",  "The Lamp Turned Down",        "bg infirmary night")]),
+                    ("nobara", "Not Going Anywhere",          ("rooftop", "Night")),
+                    ("maki",   "Six in the Morning",          ("dojo", "Morning")),
+                    ("shoko",  "The Lamp Turned Down",        ("infirmary", "Night"))]),
                 ("rom_say", "Saying it, at ♡ 100.", "did_rom_say_", [
-                    ("nobara", "In a Corridor",               "bg dorm_common night"),
-                    ("maki",   "Then Ask Me",                 "bg dojo"),
-                    ("shoko",  "Pass Me That Form",           "bg infirmary")]),
+                    ("nobara", "In a Corridor",               ("dorm_common", "Night")),
+                    ("maki",   "Then Ask Me",                 ("dojo", "Afternoon")),
+                    ("shoko",  "Pass Me That Form",           ("infirmary", "Afternoon"))]),
                 ("int_night", "After saying it, at ♡ 110.", None, [
-                    ("nobara", "The Spare Futon",             "bg girls_dorm night"),
-                    ("maki",   "The Good Blanket",            "bg girls_dorm night"),
-                    ("shoko",  "The Second Bed",              "bg infirmary night")]),
+                    ("nobara", "The Spare Futon",             ("girls_dorm", "Night")),
+                    ("maki",   "The Good Blanket",            ("girls_dorm", "Night")),
+                    ("shoko",  "The Second Bed",              ("infirmary", "Night"))]),
                 ("int_morning", "After saying it, at ♡ 130.", None, [
-                    ("nobara", "Very Loud Thoughts About Tea", "bg girls_dorm"),
-                    ("maki",   "Awake Since Five",            "bg girls_dorm"),
-                    ("shoko",  "Forty Minutes",               "bg your_room")]),
+                    ("nobara", "Very Loud Thoughts About Tea", ("girls_dorm", "Morning")),
+                    ("maki",   "Awake Since Five",            ("girls_dorm", "Morning")),
+                    ("shoko",  "Forty Minutes",               ("dorm", "Morning"))]),
                 ("int_day", "After saying it, at ♡ 150.", None, [
                     ("nobara", "A Four, Like a Medal",        "bg riverside"),
                     ("maki",   "The Point of a River",        "bg riverside"),
                     ("shoko",  "Days Like Before",            "bg riverside")]),
                 ("int_after", "After saying it, at ♡ 175.", "talked_about_after_", [
-                    ("nobara", "Big Window, Terrible Rent",   "bg rooftop evening"),
-                    ("maki",   "Somewhere with a Garden",     "bg riverside evening"),
-                    ("shoko",  "An Alongside",                "bg infirmary night")])]:
-            for _w, _t, _b in _rows:
+                    ("nobara", "Big Window, Terrible Rent",   ("rooftop", "Evening")),
+                    ("maki",   "Somewhere with a Garden",     ("riverside", "Evening")),
+                    ("shoko",  "An Alongside",                ("infirmary", "Night"))])]:
+            for _w, _t, _where in _rows:
                 _legacy = [("flag", _prefix + _w)] if _prefix else []
                 if _aid == "rom_say":
                     _legacy.append(("together", _w))
-                _mem_act(_aid, _w, _t, _b, _hint, legacy=_legacy)
+                if isinstance(_where, tuple):
+                    _mem_act(_aid, _w, _t, _hint, legacy=_legacy, place=_where)
+                else:
+                    _mem_act(_aid, _w, _t, _hint, legacy=_legacy, bg=_where)
 
     _mem_add_acts()
 
@@ -468,7 +511,9 @@ init -1 python:
     def memory_scope(mem):
         """WP5. The variables a replay starts with: copies of the save's values
         (so nothing a scene does can reach the save), plus _mem_label and
-        _mem_args for label mem_play."""
+        _mem_args for label mem_play, and what the replay opens on:
+        _mem_place (the memory's place, which also sets here and period) and
+        _mem_bg (its stage or tile picture)."""
         m = _mem_lookup(mem)
         scope = {}
         for k in MEMORY_SCOPE_KEYS:
@@ -478,20 +523,30 @@ init -1 python:
                 scope[k] = _mem_copy(getattr(store, k))
         scope["_mem_label"] = m["label"] if m else None
         scope["_mem_args"] = tuple(m["args"]) if m else ()
+        place = m.get("place") if m else None
+        scope["_mem_place"] = tuple(place) if place else None
+        scope["_mem_bg"] = (m.get("stage") or m["bg"]) if m else None
+        if place:
+            scope["here"], scope["period"] = place
         return scope
 
     class MemoryReplay(Replay):
         """WP5. Replay("mem_play", scope=memory_scope(mem), locked=False). The
-        scope is copied from the save again each time the action runs, so a
-        tile replayed twice starts from the save both times."""
+        action holds only the memory's id: the scope is copied from the save
+        when the action runs (so a tile replayed twice starts from the save
+        both times) and dropped when the replay ends, so building and
+        comparing the journal's tiles stays cheap."""
 
         def __init__(self, mem_id):
-            Replay.__init__(self, "mem_play", scope=memory_scope(mem_id), locked=False)
+            Replay.__init__(self, "mem_play", scope={}, locked=False)
             self.mem_id = mem_id
 
         def __call__(self):
             self.scope = memory_scope(self.mem_id)
-            return Replay.__call__(self)
+            try:
+                return Replay.__call__(self)
+            finally:
+                self.scope = {}
 
     def memory_replay(mem):
         """WP5. The action that replays a memory: a Replay of label mem_play
@@ -531,6 +586,7 @@ init -1 python:
     def _validate_memories():
         out = []
         acts = [a for a, t in MEMORY_ACTS]
+        pending = _mem_pending_labels()
         ids = set()
         for m in MEMORIES:
             i = m["id"]
@@ -538,7 +594,7 @@ init -1 python:
                 out.append("memory %r is catalogued twice" % i)
             ids.add(i)
             lab = m["label"]
-            if (not renpy.has_label(lab) and lab not in MEMORY_PENDING_LABELS
+            if (not renpy.has_label(lab) and lab not in pending
                     and lab not in MEMORY_UNWRITTEN_LABELS):
                 out.append("memory %r: label %s does not exist" % (i, lab))
             if m["act"] not in acts:
@@ -563,6 +619,12 @@ init -1 python:
                 out.append("memory %r needs a title and a hint" % i)
             if not renpy.has_image(m["bg"], exact=True):
                 out.append("memory %r: background %r does not exist" % (i, m["bg"]))
+            p = m.get("place")
+            if p is not None and not (isinstance(p, tuple) and len(p) == 2
+                                      and p[0] in LOCATIONS and p[1] in PERIODS):
+                out.append("memory %r: bad place %r" % (i, p))
+            if m.get("stage") and not renpy.has_image(m["stage"], exact=True):
+                out.append("memory %r: stage %r does not exist" % (i, m["stage"]))
         hangouts = [m for m in MEMORIES if m["act"] == "Bonds" and not m["args"]]
         if len(hangouts) != 25:
             out.append("expected the 25 hangouts (D37), catalogued %d" % len(hangouts))
@@ -571,11 +633,18 @@ init -1 python:
     register_validator(_validate_memories)
 
 
-## WP5. Every replay enters here (Replay("mem_play", ...), D5): it calls
-## _mem_label with _mem_args, and the return ends the replay. Outside a
-## replay it just returns.
+## WP5. Every replay enters here (Replay("mem_play", ...), D5): it opens on
+## the memory's place (graded for its hour) or its picture, since a replay
+## starts with nothing on screen and several scenes borrow the view they are
+## played from; then it calls _mem_label with _mem_args, and the return ends
+## the replay. A scene that sets its own background replaces the opening one.
+## Outside a replay it just returns.
 label mem_play:
     if _in_replay and renpy.has_label(getattr(store, "_mem_label", None) or ""):
+        if getattr(store, "_mem_place", None):
+            scene expression graded_bg(_mem_place[0], _mem_place[1])
+        elif getattr(store, "_mem_bg", None):
+            scene expression _mem_bg
         call expression _mem_label pass (*_mem_args)
     return
 
