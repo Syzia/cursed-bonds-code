@@ -40,6 +40,8 @@ init -10 python:
     PLACE_LIGHT = {
         ("office", None):           ("#ffc996", -0.08, 0.90, 0.43),   # candles only
         ("storehouse", None):       ("#eedcc4", -0.06, 0.92, 0.43),   # lamps, one high window
+        ("utahime_office", None):   ("#e8eefc", -0.03, 0.95, 0.45),   # paper screens, cool daylight
+        ("gojo_office", None):      ("#ffe4ee", 0.00, 1.00, 0.47),    # the television, and sugar
         ("rooftop", "evening"):     ("#ffc7a2", -0.02, 0.97, 0.49),
         ("rooftop", "night"):       ("#a3b3e8", -0.09, 0.80, 0.39),
         ("riverside", "evening"):   ("#ffcf9e", -0.02, 0.97, 0.49),
@@ -56,11 +58,11 @@ init -10 python:
         "bg veil":               ("#c0b4dc", -0.08, 0.85, 0.39),
         "bg home_bedroom_night": ("#c6cdee", -0.06, 0.88, 0.41),
         ## The placeholder backgrounds (bg_placeholders.rpy).
-        "bg alley":              ("#c9c2dc", -0.08, 0.80, 0.41),
+        "bg alley":              ("#bcc2de", -0.08, 0.80, 0.41),
         "bg alley dark":         ("#ab9cd6", -0.14, 0.70, 0.35),
-        "bg ridge_veil":         ("#c8bce2", -0.06, 0.88, 0.41),
-        "bg utahime_office":     ("#e6eeff", -0.02, 0.96, 0.45),
-        "bg gojo_office":        ("#ffe6ee", 0.00, 1.00, 0.47),
+        "bg ridge_veil":         ("#c4b6e6", -0.08, 0.85, 0.39),
+        "bg utahime_office":     ("#e8eefc", -0.03, 0.95, 0.45),
+        "bg gojo_office":        ("#ffe4ee", 0.00, 1.00, 0.47),
         "bg map_tokyo":          ("#b0bbe6", -0.08, 0.85, 0.39),
         "bg shibuya":            ("#dcc4ea", -0.06, 0.90, 0.41),
         "bg harajuku":           ("#fff0f4", 0.00, 1.00, 0.55),
