@@ -192,13 +192,42 @@ label zz_smoke:
     ## --- an old save with mission_board_open, before Utahime's scene -----------------------------------------------
     python:
         zz_open_state(grade="g3", roster=["yuji", "megumi", "nobara", "shoko", "gojo", "yaga", "ijichi"])
+        ## A save from before her scene has no utahime_arrived either: WP3's real
+        ## migration 40 recruits her from that flag, so keep it off here.
+        flags.discard("utahime_arrived")
         run_migrations()
+        check("utahime" not in roster, "(an old save without utahime_arrived stays without her after migrations)", roster)
         check(len(board_offers) == 3, "(migration 80 still posts offers for an old save's flag)", len(board_offers))
         _s = board_summary()
         check(not board_open() and _s["offers"] == [] and _s["taken"] == [] and board_npc_card() is None,
               "before Utahime is met, the summary shows no offers and no taken card", (_s["offers"][:1], _s["taken"]))
         roster.append("utahime")
         check(len(board_summary()["offers"]) == 3 and board_summary()["taken"], "once she is rostered, the board appears in the summary")
+
+    ## --- the board reads NPC grades through its own helper, never a global _npc_grade ---------------------------
+    python:
+        zz_open_state()
+        board_refresh()
+        _zz_calls = []
+        _zz_had = hasattr(store, "_npc_grade")
+        _zz_old = getattr(store, "_npc_grade", None)
+        def _zz_trap(who):
+            _zz_calls.append(who)
+            raise RuntimeError("the board called the global _npc_grade")
+        store._npc_grade = _zz_trap
+        try:
+            _zz_rows = board_partner_rows(board_offers[0])
+            _zz_card = board_npc_card()
+            _zz_sum = board_summary()
+        finally:
+            if _zz_had:
+                store._npc_grade = _zz_old
+            else:
+                del store._npc_grade
+        check(not _zz_calls and _zz_rows and all(_board_npc_grade(w) == npc_stats(w).get("grade") for w in ZZ_STUDENTS),
+              "board grades come from npc_stats via _board_npc_grade, whatever a global _npc_grade does (WP2 has its own)",
+              (_zz_calls, len(_zz_rows)))
+        del _zz_trap
 
     ## --- a promotion mid-week: the summary's senior_only follows my grade now ---------------------------------
     python:
