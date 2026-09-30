@@ -177,6 +177,28 @@ label zz_smoke:
               "in a new game (no board yet) the summary has no offers and no taken card", board_summary()["taken"])
         flag("mission_board_open")
 
+    ## --- an old save with mission_board_open, before Utahime's scene -----------------------------------------------
+    python:
+        zz_open_state(grade="g3", roster=["yuji", "megumi", "nobara", "shoko", "gojo", "yaga", "ijichi"])
+        run_migrations()
+        check(len(board_offers) == 3, "(migration 80 still posts offers for an old save's flag)", len(board_offers))
+        _s = board_summary()
+        check(not board_open() and _s["offers"] == [] and _s["taken"] == [] and board_npc_card() is None,
+              "before Utahime is met, the summary shows no offers and no taken card", (_s["offers"][:1], _s["taken"]))
+        roster.append("utahime")
+        check(len(board_summary()["offers"]) == 3 and board_summary()["taken"], "once she is rostered, the board appears in the summary")
+
+    ## --- a promotion mid-week: the summary's senior_only follows my grade now ---------------------------------
+    python:
+        zz_open_state()
+        board_refresh()
+        check([o["senior_only"] for o in board_summary()["offers"]].count(True) == 1, "at g4 the summary has one senior-only offer")
+        grade = "g3"
+        check(not [o for o in board_summary()["offers"] if o["senior_only"]] and [o for o in board_offers if o.get("senior_only")],
+              "promoted to g3 mid-week, no summary offer asks for a senior partner (the posted cards are unchanged)",
+              [(o["grade"], o["senior_only"]) for o in board_summary()["offers"]])
+        grade = "g4"
+
     ## --- offers: same week identical, different weeks differ ---------------------------------
     python:
         _a, _b = board_generate(3), board_generate(3)
@@ -320,7 +342,7 @@ label zz_smoke:
                             if not 6 <= len(_says) <= 10:
                                 _badn.append((_who, _out, _tw, _mis, len(_says)))
                             _exprs |= set((s[1], s[2]) for s in _sc if s[0] == "show")
-                            if _tw in ("none", "civilian") or _per == "Afternoon":
+                            if True:     # every twist, for a full read-through
                                 _nl.append("== %s · %s · twist %s · %s%s" % (_who, _out, _tw, "misgraded" if _mis else "as filed", " · " + _per if _tw == "daylight" else ""))
                                 for s in _says:
                                     _nl.append("%s: %s" % (s[1] or "narration", s[2]))
@@ -341,7 +363,36 @@ label zz_smoke:
         _wd = [s[2] for s in board_script(zz_fake_res("nobara", "withdrew", "none", False)) if s[0] == "say"]
         check(not [l for l in _wd if "dead" in l.lower()], "a withdrawal never says the curse is dead", _wd)
         _wc = " ".join(s[2] for s in board_script(zz_fake_res("yuji", "withdrew", "civilian", False)) if s[0] == "say")
-        check("the guard clear" in _wc, "a withdrawal with someone inside gets them out too")
+        check("the man clear" in _wc, "a withdrawal with someone inside gets them out too")
+        check("guard" not in _wc and "night" not in BOARD_TWIST_LINES["civilian"].lower(),
+              "the civilian inside fits any place and any hour (no night guard)", BOARD_TWIST_LINES["civilian"])
+        check("card warned" in BOARD_TWIST_LINES["split"] and "file said one" not in BOARD_TWIST_LINES["split"].lower(),
+              "the split twist agrees with the card that warned of two", BOARD_TWIST_LINES["split"])
+        check("Dad" not in PARTNER_LINES["panda"]["hurt"][2] and "Yaga" in PARTNER_LINES["panda"]["hurt"][2],
+              "Panda calls Yaga by name", PARTNER_LINES["panda"]["hurt"][2])
+        check(PARTNER_LINES["toge"]["hurt"][0].endswith("before I can thank him."), "Toge waves off my thanks", PARTNER_LINES["toge"]["hurt"][0])
+        ## Expressions follow the beat: surprised at the misgrade, serious when it goes wrong.
+        _sc = board_script(zz_fake_res("panda", "costly", "none", True))
+        _i_mis = [i for i, st in enumerate(_sc) if st[0] == "say" and st[2].startswith("It isn't")][0]
+        _i_out = [i for i, st in enumerate(_sc) if st[0] == "say" and st[2] == BOARD_OUTCOME_LINES["costly"]][0]
+        check(_sc[_i_mis - 1] == ("show", "panda", "surprised") and _sc[_i_out - 1] == ("show", "panda", "serious"),
+              "the partner looks surprised at the misgrade and serious when it goes wrong", (_sc[_i_mis - 1], _sc[_i_out - 1]))
+        _sc = board_script(zz_fake_res("panda", "clean", "none", False))
+        check(("show", "panda", "serious") not in _sc and ("show", "panda", "surprised") not in _sc,
+              "a clean, as-filed job keeps the partner's own expressions")
+        ## A new rostered student without lines shows up in the validator.
+        ROSTER_ORDER.append("zz_newkid")
+        _v = _validate_board()
+        ROSTER_ORDER.remove("zz_newkid")
+        check(any("zz_newkid" in v for v in _v), "the validator names a rostered student with no PARTNER_LINES", _v)
+        ## Placeholder marker (2.3) and the 'later build' line (section 9, risk 8).
+        _src = open(os.path.join(config.gamedir, "sb_board.rpy"), encoding="utf-8").read().splitlines()
+        _li = [i for i, l in enumerate(_src) if l.startswith("label run_board_mission(")][0]
+        _mk = [i for i in range(max(0, _li - 6), _li) if _src[i].strip() == "## PLACEHOLDER — rewrite in phase 3"]
+        check(_mk, "the run is marked '## PLACEHOLDER — rewrite in phase 3' above its label", _src[max(0, _li - 6):_li])
+        _scr = "\n".join(_src[[i for i, l in enumerate(_src) if l.startswith("screen board_screen(")][0]:])
+        _scr = _scr[:_scr.find("\nscreen ", 1)]
+        check("later build" in _scr, "board_screen tells the player the fights come in a later build")
         check(PARTNER_LINES["toge"]["arrive"][2] == "Salmon.", "Toge's words are the English onigiri words")
 
     ## --- a whole job through sb_do_board: Grade 4 with Nobara -------------------------------------------------------
@@ -388,6 +439,7 @@ label zz_smoke:
               "the run toasts its rewards", ZZ_TOASTS)
         _snap = (merit, yen, dict(bonds), len(board_log), period, stamina, dict(inventory), len(ZZ_TRAIN))
         check(board_pay(_res) is False, "paying the same run again is refused")
+        check(board_clock(_res) is False, "charging the same run's time again is refused")
         check((merit, yen, dict(bonds), len(board_log), period, stamina, dict(inventory), len(ZZ_TRAIN)) == _snap, "a second board_pay changes nothing")
         check(board_find(_oid) is None, "the taken card is off the board")
         check([c for c in board_taken_cards() if c.get("taken_by") == "mc" and c.get("id") == _oid], "my taken card shows, read-only", board_taken_cards())
@@ -407,6 +459,25 @@ label zz_smoke:
               and board_offers[_slot]["id"] != _oid, "a replacement card goes up the next day", [o["id"] for o in board_offers])
         board_refresh()
         check(len(board_offers_open()) == 3, "board_refresh is idempotent within a day")
+
+    ## --- the debrief comes before the clock: an Afternoon job -------------------------------------------------------
+    python:
+        zz_open_state(period="Afternoon")
+        board_refresh()
+        _o = [o for o in board_offers_open() if not o["senior_only"]][0]
+        _d0 = day
+        _r = board_take(_o["id"], "nobara")
+        _heard = []
+        for _st in board_script(_r):
+            if _st[0] == "say":
+                _heard.append((_st[1], period))
+            elif _st[0] in ("pay", "clock"):
+                board_play(_st, _r)
+        _hostsay = [p for w, p in _heard if w == "utahime"]
+        check(_hostsay == ["Afternoon"], "an Afternoon job's debrief plays in the Afternoon, during Utahime's hours", _heard)
+        check(all(p == "Afternoon" for w, p in _heard), "no line of the job plays after dark", _heard)
+        check(period == "Night" and day == _d0 and stamina == 75, "and then the 2 periods and 25 stamina are charged once", (period, day, stamina))
+        check(board_clock(_r) is False and period == "Night", "the clock is charged only once")
 
     ## --- a narration frame, for the eye ----------------------------------------------------------
     python:

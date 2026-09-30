@@ -160,14 +160,14 @@ init -1 python:
             win=("Panda dusts off his paws and holds one up for a high five I can't possibly refuse.",
                  "happy", "Nice work, partner. You're getting less stiff. In the head, I mean."),
             hurt=("Panda's shoulder is torn open, and there is stuffing, or something like stuffing, where there shouldn't be.",
-                  "sad", "Don't look at it like that. Dad'll stitch it. He'll lecture me the whole time, but he'll stitch it."),
+                  "sad", "Don't look at it like that. Yaga'll stitch it. He'll lecture me the whole time, but he'll stitch it."),
         ),
         "toge": dict(
             arrive=("Toge pulls his collar down just far enough to show the seal at the corner of his mouth, and raises a thumb. I think it means he's ready.",
                     "neutral", "Salmon."),
             win=("Toge gives me two thumbs up and a very smug pair of eyes over the collar.",
                  "happy", "Tuna mayo!"),
-            hurt=("Toge coughs into his sleeve, and it comes away speckled. He spent his voice on it for me, and he waves me off before I can say so.",
+            hurt=("Toge coughs into his sleeve, and it comes away speckled. He spent his voice on it for me, and he waves me off before I can thank him.",
                   "sad", "...Kelp."),
         ),
     }
@@ -176,8 +176,8 @@ init -1 python:
 
     BOARD_TWIST_LINES = {
         "dark": "The file was right about one thing: it only moves in the dark, and somebody has broken every bulb in here.",
-        "civilian": "Someone is still inside: a night guard, wedged behind a door, too frightened to answer when we call. We have to work around him.",
-        "split": "There are two of them. The file said one. Files always forget the second one.",
+        "civilian": "Someone is still inside: a man in a work jacket, pressed into a corner, too frightened to answer when we call. We have to work around him.",
+        "split": "There are two of them, just as the card warned. The report inside only ever describes one; the second has been careful to stay out of it.",
         "decoy": "The reported curse is a decoy, a husk left where it would be seen. The real one is further in, and it has been waiting.",
         "daylight": "It sleeps in daylight, and we've come in the morning. It is slow and half-formed when we find it.",
         "daylight_late": "It sleeps in daylight, but the day is getting on, and it is already awake when we find it.",
@@ -188,7 +188,7 @@ init -1 python:
         "costly": "I hold the second a beat too late. We finish it, but it takes the long way round, and it takes a piece out of both of us on the way.",
         "withdrew": "It is more than we can take. I hold the second just long enough to get %s clear, and we back out through the veil with it still screaming behind us.",
         ## A withdrawal with someone still inside doesn't leave them there.
-        "withdrew_civilian": "It is more than we can take. I hold the second just long enough to get %s and the guard clear, and we back out through the veil with it still screaming behind us.",
+        "withdrew_civilian": "It is more than we can take. I hold the second just long enough to get %s and the man clear, and we back out through the veil with it still screaming behind us.",
     }
 
     ## The host's word when we come back: (expression, line). "misgraded"
@@ -434,11 +434,18 @@ init -1 python:
         return [w for w in ROSTER_ORDER if w in store.roster and w not in BOARD_NOT_PARTNERS
                 and grade_rank(_npc_grade(w)) >= 0]
 
+    def board_introduced():
+        """WP4. True once the player has met the board: mission_board_open and
+        its host rostered. An old save's mission_board_open (from the retired
+        st_board_open) shows no board anywhere until Utahime's scene."""
+        return has_flag("mission_board_open") and board_host()[0] in store.roster
+
     def board_npc_card():
         """WP4. While any rostered student outranks me, one read-only card,
         dict(taken_by=who, grade, title): "Grade 2 · taken by Megumi" (D12).
-        Who took it rotates by week among the students above me."""
-        if not has_flag("mission_board_open"):
+        Who took it rotates by week among the students above me. None until
+        the board has been introduced."""
+        if not board_introduced():
             return None
         mine = _board_player_rank()
         above = [w for w in _board_students() if grade_rank(_npc_grade(w)) > mine]
@@ -594,8 +601,9 @@ init -1 python:
 
     def board_pay(res):
         """WP4. Pay a run exactly once (keyed by its offer id in board_log):
-        merit, yen, bond, train_together, drops and the misgrade clue, then
-        the cost, 25 stamina and 2 periods. False if it was already paid."""
+        merit, yen, bond, train_together, drops and the misgrade clue. The
+        cost (25 stamina, 2 periods) is board_clock's, after the debrief, so
+        the host speaks during her hours. False if it was already paid."""
         if not res or any(r.get("id") == res["id"] for r in store.board_log):
             return False
         who = res["partner"]
@@ -617,16 +625,30 @@ init -1 python:
         train_together(who, BOARD_TRAIN_XP)
         for iid in res["drops"]:
             give_item(iid)
-        spend_stamina(BOARD_STAMINA)
-        advance_period(BOARD_PERIODS)
         return True
+
+    def board_clock(res):
+        """WP4. A paid run's cost, exactly once (the `clocked` mark on its
+        board_log row): 25 stamina and 2 periods. Runs after the host's
+        debrief, so an Afternoon job's debrief isn't played at Night.
+        False if there is no paid row or it was already charged."""
+        for r in reversed(store.board_log):
+            if res and r.get("id") == res["id"]:
+                if r.get("clocked"):
+                    return False
+                r["clocked"] = True
+                spend_stamina(BOARD_STAMINA)
+                advance_period(BOARD_PERIODS)
+                return True
+        return False
 
     ## Narration -----------------------------------------------------------------------
 
     def board_script(res):
         """WP4. A run as steps for board_play: ("scene", bg), ("show", who,
-        expr), ("hide", who), ("say", None | "mcthink" | who, text), ("pay",).
-        Seven to ten spoken lines, first person, built from the parts."""
+        expr), ("hide", who), ("say", None | "mcthink" | who, text), ("pay",),
+        ("clock",). Seven to ten spoken lines, first person, built from the
+        parts; the clock moves only after the host's debrief."""
         who = res["partner"]
         name = CAST.get(who, {}).get("short", who)
         lines = PARTNER_LINES.get(who) or PARTNER_LINES["yuji"]
@@ -643,6 +665,7 @@ init -1 python:
                 key = "daylight_late"
             s.append(("say", None, BOARD_TWIST_LINES[key]))
         if res["misgraded"]:
+            s.append(("show", who, "surprised"))
             s.append(("say", None, "It isn't %s. It's %s, and the weight of it in the air is a whole grade past anything the card promised." % (
                 res["curse"], res["true_curse"])))
             s.append(("say", "mcthink", "Filed as %s. It isn't." % grade_label(res["grade"])))
@@ -650,6 +673,8 @@ init -1 python:
         if okey == "withdrew" and res["twist"] == "civilian":
             okey = "withdrew_civilian"
         out = BOARD_OUTCOME_LINES[okey]
+        if res["outcome"] != "clean":
+            s.append(("show", who, "serious"))
         s.append(("say", None, (out % name) if "%s" in out else out))
         pre, expr, spoken = lines["win" if res["outcome"] == "clean" else "hurt"]
         s.append(("show", who, expr))
@@ -666,6 +691,7 @@ init -1 python:
         s.append(("show", host, hexpr))
         s.append(("say", host, hline))
         s.append(("hide", host))
+        s.append(("clock",))
         return s
 
     def board_place_bg(place):
@@ -706,6 +732,8 @@ init -1 python:
                 renpy.say(CHARS.get(who), step[2])
         elif kind == "pay":
             board_pay(res)
+        elif kind == "clock":
+            board_clock(res)
 
     ## The journal (and anyone else) --------------------------------------------------
 
@@ -723,17 +751,23 @@ init -1 python:
             misgrades  misgrade_count()
             host       board_host();  open  board_open();  week  board_week
             note       board_host_note(): the line saying the board moved (D13)
-        Offers' `drop` lists only what can still drop for me now."""
+        Offers' `drop` lists only what can still drop for me now, and
+        `senior_only` whether the job needs a senior partner at my grade now.
+        Before the board is introduced (board_introduced()) there are no
+        offers and no taken cards."""
         offers = board_offers_open()
-        if has_flag("mission_board_open") and (not store.board_offers or store.board_week != board_week_now()):
+        if not board_introduced():
+            offers = []
+        elif not store.board_offers or store.board_week != board_week_now():
             ## The board opened today, or a new week hasn't been posted yet:
             ## show what goes up, without changing anything.
             offers = board_generate(board_week_now())
         offers = [dict(o) for o in offers]
         for o in offers:
             o["drop"] = board_drops_now(o)
+            o["senior_only"] = board_needs_senior(o)
         return dict(offers=offers,
-                    taken=board_taken_cards(),
+                    taken=board_taken_cards() if board_introduced() else [],
                     log=[dict(r) for r in reversed(store.board_log[-10:])],
                     misgrades=misgrade_count(), host=board_host(),
                     open=board_open(), week=store.board_week, note=board_host_note())
@@ -761,7 +795,9 @@ init -1 python:
                                 ("BOARD_YEN", BOARD_YEN)):
                 if g not in table:
                     out.append("board: %s has no %s" % (name, g))
-        for w in BOARD_PARTNER_KEYS:
+        _partners = list(BOARD_PARTNER_KEYS) + [w for w in ROSTER_ORDER
+                                                if w not in BOARD_NOT_PARTNERS and w not in BOARD_PARTNER_KEYS]
+        for w in _partners:
             lines = PARTNER_LINES.get(w)
             if not lines:
                 out.append("board: partner %s has no PARTNER_LINES" % w)
@@ -828,7 +864,9 @@ label sb_do_board:
             $ _bdone = True
     return
 
+## PLACEHOLDER — rewrite in phase 3
 ## WP4. One job with one partner: narrated, resolved and paid once (3.7).
+## Phase 1 plays it out on its own; the board says fights come in a later build.
 ## The spec calls the second parameter `partner`; that name is an old store
 ## variable (read by migration 5 and legacy_story_point), so it is `who` here.
 label run_board_mission(offer_id, who):
@@ -843,6 +881,7 @@ label run_board_mission(offer_id, who):
         $ board_play(_bl[_bi], _bres)
         $ _bi += 1
     $ board_pay(_bres)
+    $ board_clock(_bres)
     scene expression graded_bg()
     return
 
@@ -997,9 +1036,10 @@ screen board_screen():
                         text board_card_line(_t) color gui.mute size 18
                         text _t["title"] color gui.mute size 16
 
-    text _("Offers change on Mondays."):
+    text _("Offers change on Mondays. For now a job plays out on its own; the fights come in a later build."):
         xpos 620
         ypos 1000
+        xmaximum 1040
         style "jjk_small"
 
     textbutton _("Close"):
