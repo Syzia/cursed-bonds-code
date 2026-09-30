@@ -54,11 +54,10 @@ init 999 python:
     ZZ_NESTED = builtins.list()
     ZZ_PREBUILT = builtins.list()
 
-    ## The sweep leaves out scenes with a fight, which wait for input until
-    ## WP2's smoke_autoplay timer is in combat_screen, and The Offer, whose
-    ## "other road" ends in renpy.full_restart() until WP9's replay guard
-    ## (5.2). WP11 can empty this once both have merged.
-    ZZ_SWEEP_SKIP = ("ms_nade_1", "ms_nade_2", "chapter_one_b")
+    ## Labels the replay sweep leaves out. Empty: WP2's autoplay timer in
+    ## combat_screen and WP9's replay guard on The Offer (5.2) let every
+    ## written memory replay unattended, fights and chapter_one_b included.
+    ZZ_SWEEP_SKIP = ()
 
     def zz_label_spy(name, abnormal):
         _r = bool(getattr(store, "_in_replay", None))
@@ -194,7 +193,7 @@ label zz_smoke:
         MEMORIES.pop()
         check(len(_v) >= 5 and any("zz_no_such_label" in p for p in _v), "validator catches a broken entry", _v)
         _missing = sorted(m["label"] for m in MEMORIES if not renpy.has_label(m["label"]))
-        note("labels not in this tree yet (WP9, WP3, phase 3)", _missing)
+        note("labels not in this tree yet (phase 4)", _missing)
         check(set(_missing) <= (_mem_pending_labels() | MEMORY_UNWRITTEN_LABELS), "only pending labels are missing", _missing)
         ## The exemption ends by itself: once one label of a package's set
         ## exists, the rest of that set is required.
@@ -540,7 +539,14 @@ label zz_smoke:
         _miss = [i for i in ZZ_SWEPT if MEMORY_BY_ID[i]["label"] not in _played]
         check(len(ZZ_SWEPT) == _nsweep and not _miss,
               "sweep: all %d replayable memories replay without an exception" % _nsweep, _miss)
-        note("sweep skipped (until WP2 and WP9 merge)", ", ".join(ZZ_SWEEP_SKIP))
+        if ZZ_SWEEP_SKIP:
+            note("sweep skipped", ", ".join(ZZ_SWEEP_SKIP))
+        _labelled = [m["id"] for m in MEMORIES if renpy.has_label(m["label"])]
+        _unswept = [i for i in _labelled if i not in ZZ_SWEPT]
+        check(not _unswept, "sweep: every memory whose label exists is replayed (none skipped)", _unswept)
+        _hard = [m["id"] for m in MEMORIES if m["label"] in ("ms_nade_1", "ms_nade_2", "chapter_one_b")]
+        check(len(_hard) == 3 and all(i in ZZ_SWEPT for i in _hard),
+              "sweep: the fights (ms_nade_1, ms_nade_2) and The Offer (chapter_one_b) replay too", _hard)
         _d = zz_same(_before, zz_snapshot())
         check(not _d, "sweep: the save (memories_seen and seen_acts too) is unchanged after every replay", _d)
         check(not ZZ_TOASTS, "sweep: no toasts in any replay", ZZ_TOASTS[:5])
