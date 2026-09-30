@@ -49,7 +49,7 @@ init -1 python:
         dict(id="invite",   label="Ask them along",    hint="They'll stick with me for the rest of the day.",
              kind="friend", min_bond=45, cost=0),
 
-        dict(id="stargaze", label="Sit out with them", hint="The roof, and a hundred kilometres of dark.",
+        dict(id="stargaze", label="Sit out with them", hint="Somewhere dark, and a hundred kilometres of sky.",
              kind="friend", min_bond=50, cost=1, loc=("rooftop", "ridge", "riverside"),
              per=("Evening", "Night")),
 
@@ -251,7 +251,10 @@ init -1 python:
                 break
 
         ## 6. The one activity that suits the place, in section 6's order.
+        ## A spar isn't offered below the stamina sb_spar needs (15).
         for aid in ("eat", "train", "swim", "stargaze", "study", "walk"):
+            if aid == "train" and store.stamina < 15:
+                continue
             if len(out) < 3 and _choice_ok(aid, who, loc):
                 out.append(_choice_do(aid))
                 break
@@ -287,9 +290,9 @@ label act_lesson(who):
         gojo "Question. When you hold a second, where does the rest of the world go?"
         mc "Nowhere. It waits."
         gojo serious "Wrong. It doesn't know it's waiting. That's the part you should find scary."
-        "He puts a sweet on the table between us and tells me to stop him picking it up. I stop the second. I can't hold it long enough to do anything with it, and when it starts again he picks the sweet up as if I hadn't."
+        "He puts a sweet on the table between us and tells me to stop him picking it up. I stop the second and reach across, and I'm still reaching when it slips out of my grip. When it starts again the sweet is in his hand, and he's holding it out to me."
         gojo happy "See? You're good. I'm just better. Eat that, it's a reward."
-        "Walking out, my control feels tighter, like something in me has been tuned half a turn."
+        "Walking out, I can feel my control sitting tighter, like something in me has been tuned half a turn."
 
     elif _v == 1:
         gojo happy "[mc_name]! Perfect timing. I was about to be bored."

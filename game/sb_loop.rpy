@@ -116,6 +116,11 @@ label sb_activity(aid, who):
         scene expression graded_bg()
         return
 
+    ## A spar needs something left in the tank; refusing it costs nothing.
+    if aid == "train" and stamina < 15:
+        "I've got nothing left in the tank. Not today."
+        return
+
     ## Everything else is a scene, then the clock.
     $ spent_today.add(who)
     call stage_person(who)
@@ -320,7 +325,7 @@ label sb_do_hold:
     $ spend_stamina(12)
     $ flag("held_an_hour")
 
-    "The period does not pass. I have it twice."
+    "The hour does not pass. I have it twice."
 
     return
 

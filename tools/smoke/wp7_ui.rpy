@@ -699,6 +699,21 @@ label zz_smoke:
               "a spar calls train_together(yuji, 3, output) exactly once", ZZ_CALLS)
         check(("rec", "train", "yuji") in ZZ_CALLS, "and records the act", ZZ_CALLS)
         del ZZ_CALLS[:]
+        here = "dojo"
+        period = "Morning"
+        stamina = 12
+        spent_today = set()
+        _pc = [c["id"] for c in person_choices("yuji", "dojo")]
+        check("train" not in _pc, "at stamina 12 the person view doesn't offer Train together", _pc)
+        _before = (period, day)
+    $ autoplay()
+    call sb_activity("train", "yuji")
+    $ autoplay(False)
+    python:
+        check(ZZ_CALLS == [] and (period, day) == _before and "yuji" not in spent_today and stamina == 12,
+              "a refused spar (stamina 12) records nothing, moves no clock and spends nobody",
+              (ZZ_CALLS, period, day, sorted(spent_today), stamina))
+        del ZZ_CALLS[:]
         here = "courtyard"
         period = "Morning"
         stamina = stamina_max
