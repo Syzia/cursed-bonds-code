@@ -143,6 +143,22 @@ label zz_smoke:
         check(any(f.endswith(".rpy") for f in renpy.list_files()), "the validator can see the scripts")
         check(_ITEM_CALL_RE.findall('give_item("zz_nope", 2) and has_item(\'paper_ward\')') == ["zz_nope", "paper_ward"],
               "the validator spots literal item ids in scripts")
+        ## WP11: the board's own drop tables (sb_board.rpy) are tied to
+        ## BOARD_DROP_ITEMS, and the validator catches a board drop it misses.
+        _bd = set([BOARD_SEALING[0]])
+        for _t in list(BOARD_TALISMAN_DROPS.values()) + list(BOARD_TOOL_DROPS.values()):
+            _bd.update(_t)
+        check(_bd == set(BOARD_ITEM_NAMES) and set(BOARD_ITEM_NAMES) <= set(BOARD_DROP_ITEMS),
+              "BOARD_DROP_ITEMS lists every drop in the board's tables", (sorted(_bd), BOARD_DROP_ITEMS))
+        check("slaughter_demon" in BOARD_DROP_ITEMS and "nunchaku" in BOARD_DROP_ITEMS,
+              "BOARD_DROP_ITEMS lists the two cursed tools the board drops", BOARD_DROP_ITEMS)
+        BOARD_ITEM_NAMES["zz_board_only"] = "ZZ"
+        try:
+            _vb = [p for p in _validate_items() if "zz_board_only" in p]
+        finally:
+            del BOARD_ITEM_NAMES["zz_board_only"]
+        check(_vb == ["board can drop 'zz_board_only' but BOARD_DROP_ITEMS doesn't list it"],
+              "the validator flags a board drop BOARD_DROP_ITEMS doesn't list", _vb)
 
     ## --- ACC 1: keepsakes from flags, exactly once across three syncs (D24) ----------------
     python:
@@ -364,6 +380,8 @@ label zz_smoke:
         check(len(_pa) == 1 and _pa[0]["label"] == "Armory" and _pa[0]["cost"] == 0
               and _pa[0]["locs"] == ("storehouse",) and _pa[0]["when"] == "armory_open_now",
               "the armory registration matches 3.8", _pa)
+        check(_pa and _pa[0].get("hint") == "Cursed tools, released up to my grade.",
+              "the armory hint is in the first person (D9)", _pa)
 
     ## --- the armory label, through its screen ------------------------------------------------
     scene expression graded_bg("storehouse")
