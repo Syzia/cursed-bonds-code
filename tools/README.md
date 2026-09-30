@@ -49,8 +49,19 @@ drag it into ComfyUI and press Run.
 - `gen_gui.py` — the GUI images, from the same palette as `gui.rpy`.
 - `fitcheck.py <background.png> yuji megumi ...` — characters standing in a
   background as the game shows them, without launching Ren'Py.
-- `smoke.sh <harness.rpy>` — runs a throwaway Ren'Py test harness and removes
-  every trace of it afterwards.
+- `smoke.sh <harness.rpy>` — runs a Ren'Py test harness in a scratch copy of
+  the project and prints PASS/FAIL lines and a `RESULT`; the real `game/` is
+  never touched. Harnesses use the helpers in `smoke/_lib.rpy` (`check`,
+  `settle`, `autoplay`, `shot`, `finish`). `smoke/wp0_stubs.rpy` and
+  `smoke/core_flow.rpy` are the standing checks; screenshots go to `shots/`.
+- `load_all_saves.sh [slot ...]` — loads every save in a scratch copy and
+  writes `shots/load_report.txt`: where each one lands (SAME, EARLIER, MOVED,
+  RECOVER) and any save that raises.
+- `check_content.py [--all | --<rule> ...] [files]` — static checks on the
+  story text: Kaito's sprite shown on screen, a technique other than Last
+  Light, Kyoto deadlines, "you" narration, the player's name written out,
+  duplicate labels. `--help` lists the rule flags.
+  `smoke/baseline_check_content.txt` is today's baseline.
 - Helpers: `raster.py` (drawing and PNG writing), `pngread.py` (PNG reading),
   `make_workflow.py` (the `Graph` and `recipe` helpers `make_base_workflow.py`
   builds on; its own inpainting workflow for expressions is superseded by
