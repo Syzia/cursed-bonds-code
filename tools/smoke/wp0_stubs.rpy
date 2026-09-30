@@ -8,9 +8,11 @@
 ## place actions, migrations, toasts, the prologue plan), and renders every
 ## stub screen once, with a screenshot of each in shots/wp0_stubs/.
 ##
-## Once a package replaces its stub, the "stub returns" checks for that
-## package no longer hold; the signature checks and the renders still must.
-## Set SMOKE_STUBS_ONLY_SIGS=1 to skip the stub-value checks.
+## By default it checks signatures, hooks and renders only: every package has
+## replaced its stub, so the "stub returns" checks no longer hold. Set
+## SMOKE_STUBS_VALUES=1 to run them too (useful only on a tree where the WP0
+## stubs are still in place). SMOKE_STUBS_ONLY_SIGS=1 is still accepted and
+## always turns them off.
 
 init 999 python:
     import inspect
@@ -186,7 +188,9 @@ init 999 python:
             return []
         return [param.name for param in p.parameters.values()]
 
-    ZZ_STUB_VALUES = (os.environ.get("SMOKE_STUBS_ONLY_SIGS", "0") != "1")
+    ## Signatures only unless SMOKE_STUBS_VALUES=1 asks for the stub-value checks.
+    ZZ_STUB_VALUES = (os.environ.get("SMOKE_STUBS_VALUES", "0") == "1"
+        and os.environ.get("SMOKE_STUBS_ONLY_SIGS", "0") != "1")
 
 
 ## A test place action's labels and a test event.
@@ -204,6 +208,12 @@ label zz_event:
 label zz_smoke:
     $ mc_name = "Tester"
     $ mc_surname = "Harness"
+
+    ## --- mode --------------------------------------------------------------------
+    python:
+        note("mode", "stub values + signatures" if ZZ_STUB_VALUES else "signatures only (SMOKE_STUBS_VALUES=1 adds stub values)")
+        check(ZZ_STUB_VALUES == (os.environ.get("SMOKE_STUBS_VALUES", "0") == "1" and os.environ.get("SMOKE_STUBS_ONLY_SIGS", "0") != "1"),
+            "stub-value checks run only when SMOKE_STUBS_VALUES=1", ZZ_STUB_VALUES)
 
     ## --- signatures (section 6) ---------------------------------------------------
     python:
