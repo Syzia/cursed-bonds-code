@@ -1543,7 +1543,7 @@ label ev_yaga_1:
             $ add_bond("yaga", 8)
             $ flag("yaga_blunt")
             yaga "..."
-            yaga "You are eleven weeks from being useful and a good deal less than that from being sent somewhere."
+            yaga "You are eleven weeks from being useful and they will send you anyway."
             yaga "Yes. To them, you are an asset with a grade on it."
             yaga "To me you are an eighteen-year-old who stood in an alley, could not save his friend, and came here anyway."
             yaga "I run a school inside an institution that would prefer a factory. Every hour you spend in here holding a bench for me is an hour you are not on a form."

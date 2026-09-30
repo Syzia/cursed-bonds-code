@@ -476,8 +476,15 @@ label zz_smoke:
         technique = "filament"
         _t0 = len(zz_wp10_state.texts)
         del zz_wp10_state.combats[:]
+    $ zz_wp10_state.say_needle = ("It comes down off the roof beams", "nade1_roof_beams")
     call zz_wp10_play("ms_nade_1", 0)
     python:
+        check("nade1_roof_beams" in zz_wp10_state.snapped, "ms_nade_1: shot at 'It comes down off the roof beams'")
+        _b = dict((t, b) for t, b in zz_wp10_state.bounds.get("nade1_roof_beams", {}).items() if t != "curse")
+        note("nade 1 roof-beams bounds", repr(_b))
+        _cx = [b[0] + b[2] / 2.0 for b in _b.values() if b]
+        check(len(_cx) == 1 and 400 < _cx[0] < 900,
+              "ms_nade_1: the partner steps aside to centre-left (pos_cl), not off to the far right", repr(_b))
         check(has_flag("nade_named") and has_flag("found_nade_marks"), "ms_nade_1: nade_named, found_nade_marks (any technique)")
         check(zz_wp10_state.combats and zz_wp10_state.combats[0][0] == "warehouse", "ms_nade_1: the warehouse fight ran", zz_wp10_state.combats)
     call zz_wp10_play("ms_nade_2", 0)
@@ -516,7 +523,7 @@ label zz_smoke:
     python:
         check(len(_hangouts) == 25, "all 25 hangouts in events_arc1 played", len(_hangouts))
         check(zz_wp10_saw(_t0, "You hold a second, out of curiosity"), "ev_megumi_1: the Last Light text, whatever the technique")
-        check(zz_wp10_saw(_t0, "a good deal less than that from being sent somewhere"), "ev_yaga_1: no 'three weeks'")
+        check(zz_wp10_saw(_t0, "eleven weeks from being useful and they will send you anyway."), "ev_yaga_1: no 'three weeks', no timeframe")
 
     ## --- acts: people stay on screen --------------------------------------------------------------------------------
     $ here = "cafeteria"

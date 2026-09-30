@@ -59,7 +59,7 @@ label ms_nade_1:
     else:
         yuji "Uh — that's not a four, right? Tell me that's not a four."
 
-    show expression _p at pos_fr
+    show expression _p at pos_cl
     with move
 
     "It comes down off the roof beams in a way that a grade 4 does not have the mass to do."
