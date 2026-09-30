@@ -307,31 +307,49 @@ label zz_smoke:
         check(not _bad, "attributes only on the 13 tagged characters", _bad)
         check(not _short, "two expression changes per speaking character per step", _short)
         check(not _early, "nobody says [mc_name] before Gojo asks", _early)
+        ## No stat popup on the black screen: every gain() between the blackout
+        ## and the reveal in ch1_alley is quiet.
+        _dark, _loud = False, []
+        for _i, _l in enumerate(zz9_read("ch1_alley.rpy"), 1):
+            if "hide_side_images = True" in _l:
+                _dark = True
+            elif "hide_side_images = False" in _l:
+                _dark = False
+            elif _dark and "gain(" in _l and "quiet=True" not in _l:
+                _loud.append(_i)
+        check(not _loud, "no stat popup in the blackout (gain is quiet)", _loud)
 
     ## --- 5. staged screenshots ---------------------------------------------------------------
     python:
         mc_name, mc_surname = "Ren", "Tachibana"
         flags.discard("settled_in")
+        ## Stat gains from the playthrough leave a notify on screen; clear it
+        ## so it never covers what a shot is for (e.g. the lamp in 04).
+        renpy.hide_screen("notify")
 
     scene bg diner
     show sana happy at pos_c
     $ sana("That's leadership. I'd follow that woman into a war.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("01_diner")
 
     $ hide_side_images = True
     scene bg black
     $ sana("There's one at the end of this alley.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("02_blackout_sana")
     $ hide_side_images = False
 
     scene bg alley dark
     show curse big at pos_loom
     $ curse2("She could see me too. She kept looking right at me.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("03_alley_dark_curse")
 
     show layer master at last_light_still
     show screen last_light_lamp
     $ narrator("One light stays on: the lamp over the fire door, caught in the instant before it went out. Warm. The only warm thing left.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("04_last_light", wait=1.2)
     python:
         check(bool(zz9_master_at()) and renpy.get_screen("last_light_lamp") is not None, "staged Last Light renders")
@@ -341,31 +359,37 @@ label zz_smoke:
     scene bg alley
     show gojo serious at pos_c
     $ mc("[mc_surname]. [mc_surname] [mc_name].", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("05_gojo_alley_mc_side")
 
     show gojo happy at pos_c
-    $ gojo("Zankō. Last Light. Somebody has to put something on the form.", interact=False)
+    $ gojo("Zank{font=DejaVuSans.ttf}ō{/font}. Last Light. Somebody has to put something on the form.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("06_offer")
 
     scene bg home_living
     show mother at pos_cl
     show father at pos_r
     $ mother("They said it was the power cut. That she fell.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("07_parents")
 
     scene bg car
     show ijichi surprised at pos_c
     $ ijichi("Oh — sorry. I should have said. Kiyotaka Ijichi.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("08_car_ijichi")
 
     scene bg ridge_veil
     show gojo serious at pos_c
     $ gojo("Don't go near it. Not the ridge path past the rope markers.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("09_ridge_veil")
 
     scene bg office
     show yaga serious at pos_c
     $ yaga("So I'll ask you directly. Why do you want to be here?", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("10_yaga")
 
     scene bg training
@@ -374,14 +398,17 @@ label zz_smoke:
     show nobara neutral at pos_c
     show megumi neutral at pos_r
     $ gojo("Right — first-years. There are three of them and now there are four of you.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("11_first_years_with_gojo")
 
     hide gojo
     $ nobara("Tomorrow you're doing something, though. I'm not running a hospice.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("12_first_years_trio")
 
     scene bg your_room
     $ narrator("My room: a bed, a desk, and a window that faces a mountain that is also, somehow, Tokyo.", interact=False)
+    $ renpy.hide_screen("notify")
     $ shot("13_arc_one_open")
 
     $ check(not renpy.showing("mc"), "mc not showing at the end")

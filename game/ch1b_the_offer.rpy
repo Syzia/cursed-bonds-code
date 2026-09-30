@@ -24,7 +24,7 @@ label chapter_one_b:
 
     gojo "You held the second the lights went out. Stopped it, and stood in it."
 
-    gojo @ happy "Zankō. Last Light. Somebody has to put something on the form."
+    gojo @ happy "Zank{font=DejaVuSans.ttf}ō{/font}. Last Light. Somebody has to put something on the form."
 
     $ flag("named_last_light")
 
@@ -154,13 +154,13 @@ label ch1b_goodbye:
             $ gain("control", 3)
             "I say I'm going away to school, and that it's a good one, and that it happened fast."
             "My mother makes me eat something. My father says {i}well{/i} four times over an hour."
-            "Nobody in the house sleeps, and nobody says so, and in the morning there is an enormous breakfast that nobody asked for."
+            "Nobody in the house sleeps, and nobody says so."
 
     scene bg home_living with fade_slow
     show mother at pos_c
     with dissolve
 
-    "In the morning my mother makes breakfast for four."
+    "On Friday morning my mother makes breakfast for four."
 
     "She lays the fourth place without thinking about it — a bowl, chopsticks, the small dish Sana always got because she liked it and said so once, three years ago, and was given it every time after."
 
@@ -182,7 +182,7 @@ label ch1b_goodbye:
 
     scene bg home_bedroom_night with fade_slow
 
-    "I pack at two in the morning."
+    "On Sunday I pack at two in the morning, in the dark, without turning the light on."
 
     menu:
         "There is room in the bag for one thing that isn't clothes."
@@ -194,7 +194,7 @@ label ch1b_goodbye:
 
         "Her hachimaki.":
             $ flag("took_hachimaki")
-            "She left it at mine in October and never asked for it back. Her name is inside the band in marker, in her handwriting."
+            "She left it at mine after sports day, three weeks ago, and never asked for it back. Her name is inside the band in marker, in her handwriting."
 
         "My father's watch.":
             $ flag("took_watch")
@@ -218,7 +218,7 @@ label ch1b_goodbye:
 
     "Then it is gone, and she smiles, and waves."
 
-    mcthink "There. Twice in one day."
+    mcthink "There. Twice now."
 
     mcthink "She's still in there. They just filed over the top of her."
 
@@ -226,7 +226,7 @@ label ch1b_goodbye:
 
     voice_ "Sorry — it's about ninety minutes."
 
-    "For something to do, I decide to count."
+    "For something to do, I decide to count the red lights we stop at."
 
     scene bg black with fade_slow
 
@@ -287,7 +287,7 @@ label ch1b_the_other_road:
 
     "I find her at the bottom of the stairs."
 
-    "Something opens in me, four months late, for the second time in my life — and this time there is nobody in the doorway with his hands in his pockets."
+    "Something opens in me, five months late, for the second time in my life — and this time there is nobody in the doorway with his hands in his pockets."
 
     scene bg black with flash_white
 

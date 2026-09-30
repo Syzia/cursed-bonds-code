@@ -200,7 +200,7 @@ label ch1_the_thing:
 
     sana sad "There's one on the platform every morning. By the third pillar. Everyone walks straight through where it is, and it just... lets them."
 
-    sana "I've been drawing them in the back of my maths book. So I'd know I'm not making it up."
+    sana "I've been drawing them in the back of my maths book. Then in a sketchbook, when the maths book ran out. With the dates. So I'd know I'm not making it up."
 
     sana "Because if I was making it up, I'd draw them different every time. And I don't."
 
@@ -236,12 +236,12 @@ label ch1_the_thing:
 
         "Say nothing. Listen.":
             $ flag("listened_first")
-            $ gain("insight", 2)
+            $ gain("insight", 2, quiet=True)
             "I listen, and I hear one thing: a soft, wet, unhurried sound, about nine metres away, that has not moved and is not breathing."
 
     "Something hits us both."
 
-    "I do not see it arrive and I never see it leave. There is simply a moment where I am standing and a moment where I am twelve feet down the alley with the whole left side of my body ringing, and the two moments are not connected by anything."
+    "I do not see it arrive and I never see it leave. There is simply a moment where I am standing and a moment where I am three metres down the alley with the whole left side of my body ringing, and the two moments are not connected by anything."
 
     scene bg black with hpunch
 
@@ -298,7 +298,7 @@ label ch1_the_thing:
 
     "And underneath the seeing — underneath the sick, total clarity of it — there is a second thing, newer, pressing outward from behind my sternum, and it has been there my whole life waiting to be given a direction."
 
-    "It is going to take me in about a second and a half. I can feel the shape of what is inside me, and I know exactly what I want it to be."
+    "The thing over her is going to take me in about a second and a half. I can feel the shape of what is inside me, and I know exactly what I want it to be."
 
     "I do not want to be faster. I do not want to be stronger. I want the second to {b}stop{/b}: the one where she was talking, the one where the lights went, the one that is arriving now."
 
@@ -309,7 +309,7 @@ label ch1_the_thing:
 
     "The alley holds. The colour goes out of it the way heat goes out of a cup."
 
-    "Dust hangs in the air as if it has been pinned there. The thing above me is exactly, perfectly still, mid-reach, four feet away."
+    "Dust hangs in the air as if it has been pinned there. The thing above me is exactly, perfectly still, mid-reach, an arm's length away."
 
     "One light stays on: the lamp over the fire door, caught in the instant before it went out. Warm. The only warm thing left."
 

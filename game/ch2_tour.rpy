@@ -47,13 +47,15 @@ label ch2_arrival:
     show ijichi neutral at pos_c
     with dissolve
 
-    "The count reaches eleven before the driver speaks."
+    "The count reaches eleven red lights before the driver speaks again."
 
     ijichi surprised "Oh — sorry. I should have said. Kiyotaka Ijichi. Assistant manager. Transport, paperwork, veils and damage reports — mostly damage reports."
 
+    ijichi neutral "Gojo-san will meet you at the gate. He's — well. He's the strongest. That isn't me being dramatic. It's on the paperwork."
+
     ijichi sad "I'm very sorry about your friend."
 
-    "He says it to the windscreen, at the correct moment, having clearly decided in advance to say it, and it lands better than most of what the adults will say to me this week."
+    "He says it to the windscreen first and then, at the correct moment, to me, having clearly decided in advance to say it, and it lands better than most of what the adults will say to me this week."
 
     scene bg gate with fade_slow
     show gojo happy at pos_c
@@ -124,7 +126,7 @@ label ch2_the_veil:
 
     if not has_flag("asked_strongest"):
         mc "Are you the strongest?"
-        mc "Everyone keeps saying it like it's a fact."
+        mc "Ijichi-san said it in the car like it was a fact."
         gojo @ happy "It is a fact."
 
     gojo serious "I'm the strongest of today."
@@ -137,11 +139,13 @@ label ch2_the_veil:
 
     gojo neutral "Come here. You're going to find out about this at some point and I'd rather it was from me and not from a rumour in the dorms."
 
+    "He takes me up the running path as far as a rope strung between two posts, and stops there, and points."
+
     scene bg ridge_veil with fade_curse
     show gojo serious at pos_c
     with dissolve
 
-    "High on the ridge, above the treeline, the air is wrong."
+    "Above us, where the ridge flattens out, the air is wrong."
 
     "It is a dome, dark and faintly violet, the size of a house, and the light that goes into it does not come back out."
 
@@ -162,6 +166,8 @@ label ch2_the_veil:
     gojo @ happy "I've got the first one. He has the second."
 
     mcthink "Has. Present tense."
+
+    gojo serious "Ryomen Sukuna. King of Curses. Twenty fingers, and not one of them is up there with him."
 
     menu:
         "The veil ripples very slightly. There is no wind up there."

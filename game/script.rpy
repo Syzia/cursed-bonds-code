@@ -67,11 +67,15 @@ label arc_one_open:
 
     scene bg your_room with fade_slow
 
+    "For about two seconds after I wake up, it is Thursday, and I am late, and Sana is going to have something to say about it. Then it isn't."
+
     "My room: a bed, a desk, and a window that faces a mountain that is also, somehow, Tokyo."
+
+    "The ridge is in the corner of the window. I don't look at it for long."
 
     mcthink "Right."
 
-    mcthink "Nobody's told me what to do today. Nobody's going to."
+    mcthink "No bell. No timetable on the door."
 
     "Gojo's version of a timetable, delivered yesterday in full, was: {i}you four do something.{/i}"
 
