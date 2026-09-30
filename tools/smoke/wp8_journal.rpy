@@ -217,13 +217,16 @@ init 999 python:
 
     ZZJ_BOARD = dict(
         offers=[dict(id="w1o1", grade="g3", true_grade="g3", case="A haunting", place="adachi",
-                     title="The Ward on the Fourth Floor", blurb="Nurses keep hearing a call bell from a sealed room.",
+                     title="The Ward on the Fourth Floor", curse="a call bell from a sealed room",
+                     blurb="A haunting. A closed maternity ward in Adachi. The report says a call bell from a sealed room.",
                      merit=18, yen=(6000, 10000), senior_only=False),
                 dict(id="w1o2", grade="g4", true_grade="g3", case="Residual clean-up", place="kita",
-                     title="Stairwell, Third Landing", blurb="Something that eats light bulbs.",
+                     title="Stairwell, Third Landing", curse="something that eats light bulbs",
+                     blurb="Residual clean-up. An apartment stairwell in Kita. The report says something that eats light bulbs.",
                      merit=10, yen=(3000, 6000), senior_only=False),
                 dict(id="w1o3", grade="g2", true_grade="g2", case="Missing persons", place="ikebukuro",
-                     title="The Platform Nobody Uses", blurb="Three commuters in a month. The trains don't stop there.",
+                     title="The Platform Nobody Uses", curse="three commuters lost in a month",
+                     blurb="Missing persons. A dead platform under Ikebukuro. The report says three commuters lost in a month.",
                      merit=28, yen=(10000, 15000), senior_only=True)],
         taken=[dict(taken_by="megumi", grade="g2", title="The Karaoke Box in Koenji")],
         ## Newest first, as WP4's board_summary gives it.
@@ -710,6 +713,29 @@ label zz_smoke:
         _tx = zzj_texts()
         check(_ln in _tx and _lm in _tx, "the cards draw the shortened schedule lines", [t for t in _tx if t.startswith("Next:")][:4])
         renpy.hide_screen("journal")
+        ## WP11: the " …" after a shortened schedule counts, and the where is
+        ## clipped before the text, so "Bond 10" keeps its number (the real
+        ## Utahime and Yaga lines).
+        ZZJ_NEXT["nobara"] = ("Eat together at Bond 10", "Utahime's Office (mornings to afternoons) · Cafeteria (evenings)")
+        ZZJ_NEXT["megumi"] = ("Eat together at Bond 10", "Principal's Office (mornings, noon and evenings) · Storehouse (afternoons)")
+        _ln = jr_next("nobara", 74)
+        _lm = jr_next("megumi", 74)
+        check(len(_ln) <= 74 and _ln.startswith("Next: Eat together at Bond 10 — Utahime's Office") and _ln.endswith("…"),
+              "a long where is clipped before the text", _ln)
+        check(len(_lm) <= 74 and _lm.startswith("Next: Eat together at Bond 10 — Principal's"), "the text keeps its number", _lm)
+        renpy.show_screen("journal", "people")
+        shot("rich_people_where_clipped")
+        _tx = zzj_texts()
+        check(_ln in _tx and _lm in _tx, "the cards draw the lines with the where clipped", [t for t in _tx if t.startswith("Next:")][:4])
+        renpy.hide_screen("journal")
+        ZZJ_NEXT["nobara"] = ("Spend time together", "Mountain Ridge (mornings) · Cafeteria (noon) · Rooftop (afternoons) · Dorm Common Room (evenings)")
+        _ln = jr_next("nobara", 74)
+        check(_ln == "Next: Spend time together — Mountain Ridge (mornings) · Cafeteria (noon) …",
+              "a second place goes in when it fits with the …", _ln)
+        ZZJ_NEXT["nobara"] = ("Spend time together", "Classroom Building (mornings) · Rooftop (noon) · Courtyard (afternoons)")
+        _ln = jr_next("nobara", 74)
+        check(len(_ln) <= 74 and _ln == "Next: Spend time together — Classroom Building (mornings) …",
+              "the … counts toward the line", (_ln, len(_ln)))
         ZZJ_NEXT["nobara"] = _nx0
         ZZJ_NEXT["megumi"] = _nx_m0
         ## Integration round: the Board tab against WP4's real shapes.
@@ -814,6 +840,13 @@ label zz_smoke:
         lambda: zzj_nil(shot("rich_missions_character_all", wait=0)),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "msub", "board"), "Board sub-tab"),
         lambda: zzj_nil(shot("rich_missions_board", wait=0)),
+        ## WP11: an offer card says the case and place once (the offer line),
+        ## then what was reported, as the board does; not WP4's blurb, which
+        ## repeats the case and place.
+        lambda: zzj_nil(check("Reported: a call bell from a sealed room" in zzj_texts()
+                              and not any(t.startswith("A haunting. A closed") for t in zzj_texts()),
+                              "Board offer cards show the report, not the blurb",
+                              [t for t in zzj_texts() if t.startswith(("Reported", "A haunting"))])),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "inventory"), "Inventory tab"),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "inv_sel", "slaughter_demon"), "an inventory tile"),
         lambda: zzj_nil(shot("rich_inventory_selected", wait=0)),
