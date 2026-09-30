@@ -85,7 +85,7 @@ Every graft the judges recommended and every gap they found is resolved below. "
 | D37 | The written hangouts are **25** `ev()` registrations (the judges' 27 and 29 were miscounts). The Kaito sprite lines are **41**: 39 `show mc` plus 2 `hide mc`, 5 of them in the prologue files and 36 elsewhere (verified with grep). | — |
 | D38 | Beginning Arc Two goes through the campus journal: `Return(("arc_two",))` → `call arc_two_start`. Evolve's `sandbox_request` variable is dropped. | WP8, WP7, WP3 |
 | D39 | The prologue is split into called sub-labels (`ch1_diner`, `ch1_the_thing`, `ch1_gojo`, `ch2_arrival`, `ch2_the_veil`, `ch2_yaga`, `ch2_first_years`). Each can be a memory and a precise resume point. | WP9 |
-| D40 | `find_events()` stops checking `min_day`/`max_day`; `ev()` still accepts them, so nothing breaks. Mission gates replace the calendar, and WP10 deletes the now-unused arguments. | WP0, WP10 |
+| D40 | `find_events()` stops checking `min_day`/`max_day`; `ev()` still accepts them, so nothing breaks. Mission gates replace the calendar, and WP10 deletes the now-unused arguments. Until WP3's gate binds every story/mission `ev()`, WP0's transitional `_calendar_gate` in `sb_events.rpy` keeps `min_day`/`max_day` for unbound events; WP3 deletes it, and WP10's `min_day` removal merges after WP3. | WP0, WP3, WP10 |
 
 ---
 
@@ -809,7 +809,7 @@ All migrations are in one ordered list. Each is idempotent and wrapped in try/ex
 
 | order | owner | what it does |
 |---|---|---|
-| 5 | WP0 | `quick_menu = True` (D25). If `renpy.showing("mc")`, `renpy.hide("mc")` (a stale sprite in a mid-scene save). `tname = "Last Light"`. |
+| 5 | WP0 | `quick_menu = True` (D25). If `renpy.showing("mc")`, `renpy.hide("mc")` (a stale sprite in a mid-scene save). `tname` = the save's technique name from `TECHNIQUES` ("Last Light" for an unknown technique, and for every save once WP2 leaves only timestop). If `_partner` is missing and the old `partner` is set, `_partner = partner` (a save made inside the Sun Mall mission before d06486a renamed it). |
 | 10 | WP2 | `technique` other than `"timestop"` → `"timestop"`. An Emberfall save also gets `control = max(control, output)`, so Last Light's tier doesn't drop. Sets flag `technique_was_<old>`. |
 | 15 | WP1 | If `gojo_today` is missing any period, `roll_gojo()`. If `here` is not in `LOCATIONS` and `settled_in` is set, `here = "courtyard"`. |
 | 20 | WP2 | `grade`: int 3 → `"g3"`; any other int → `"g4"` if flag `roll_call`, else `None`; a key stays. |
@@ -856,6 +856,7 @@ label resume_story:
 | flags | resume at |
 |---|---|
 | `settled_in` | (sandbox) |
+| the old `partner` or `_partner` is set, or any of `read_wall`, `ignored_wall`, `scouted_corridor`, `saved_civilian`, `fought_first`, `climax_strong`, `climax_thin` (an old linear-build save that reached the Sun Mall; the current build plays it only after `settled_in`) | `arc_one_open` |
 | `enrolled` | `ch2_first_years` |
 | `chose_jujutsu` | `ch2_arrival` |
 | any of `gojo_asked_why`, `gojo_asked_sana`, `gojo_asked_advice` | `chapter_one_b` |
@@ -1100,7 +1101,7 @@ A card at the centre, 900×420, `jjk_panel`:
   At 288×178, the image stays inside the 300px dialogue margin, so it never overlaps the text.
 - **Preferences:** a new `radio` vbox, "[mc_name]'s portrait", with Show / Hide (`SetField(persistent, "mc_face", True/False)`).
 - **Quick menu** (D25), both variants:
-  - `if quick_menu and not renpy.get_screen(("sandbox", "menu")):` — the list form works (`renpy/display/screen.py:1128`).
+  - `if quick_menu and not renpy.get_screen(("sandbox", "menu")):` — the list form works (`renpy/display/screen.py:1128`). WP0 already made this change in both variants (migration 5 turns the quick menu on for every load, so it had to hide over the sandbox straight away); WP8 keeps the line as it is.
   - Default variant: BACK · HISTORY · SKIP · AUTO · SAVE · JOURNAL (`ShowMenu("journal")`) · MENU (`ShowMenu()`).
   - Touch variant: BACK · SKIP · AUTO · JOURNAL · MENU.
 - **Navigation:** Status and Journal merge into one "Journal" entry → `ShowMenu("journal")`.
@@ -1549,7 +1550,8 @@ Wave 2 (sequential)   WP11 integration, review tools, save regression, docs
    - SMALLTALK for utahime and ijichi (4 lines each);
    - `PROMO_LINES`;
    - `sb_smalltalk` speaks the remark first when `pop_remark(who)`;
-   - narration converted to "I".
+   - narration converted to "I";
+   - delete WP0's transitional `_calendar_gate` (D40) once every story/mission `ev()` is bound to a mission or retired.
 9. Migrations 40, 50, 60 and 65 (the mission part). The validator:
    - every written label exists;
    - `where` and `with_who` are valid;
@@ -1758,7 +1760,7 @@ Wave 2 (sequential)   WP11 integration, review tools, save regression, docs
 1. Delete the 36 mc lines and re-stage (5.1).
 2. Remove the scene resets in the act labels and add the `show expression who at pos_c` lines (5.1).
 3. One technique (5.4.1), including the four ch4 passages, the `tname` caption and the Maki guard.
-4. The deadline sweep (5.4.2): every row in the table, `min_day` off every story/mission `ev()`, and the `st_board_open` / `ev_patrol` registrations removed (labels kept).
+4. The deadline sweep (5.4.2): every row in the table, `min_day` off every story/mission `ev()`, and the `st_board_open` / `ev_patrol` registrations removed (labels kept). Merge this after WP3: until WP3 deletes `_calendar_gate`, the `min_day` values still order the story beats (D40).
 5. Roll call reworked and converted to "I" (5.4.3).
 6. ch5: the recommendation in place of the grade.
 7. The `raise_reserve` calls.

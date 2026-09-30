@@ -25,6 +25,7 @@ label explore_campus:
     $ here = "courtyard"
     $ roll_gojo()
     $ flag("settled_in")
+    $ ensure_state()
 
     scene expression graded_bg() with fade_slow
     call sandbox
@@ -36,4 +37,13 @@ label sb_do_explore_time:
     $ explore_next_period()
     scene expression graded_bg()
     with Dissolve(0.4)
+    return
+
+
+## Review tools (4.13) ##########################################################
+##
+## WP11: the developer-only panel, reached from the place view's HUD button.
+## (WP0 stub: returns.)
+
+label dev_tools:
     return

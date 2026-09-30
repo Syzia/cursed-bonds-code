@@ -290,7 +290,7 @@ screen quick_menu():
 
     zorder 100
 
-    if quick_menu:
+    if quick_menu and not renpy.get_screen(("sandbox", "menu")):
 
         hbox:
             style_prefix "quick"
@@ -1524,7 +1524,7 @@ screen quick_menu():
 
     zorder 100
 
-    if quick_menu:
+    if quick_menu and not renpy.get_screen(("sandbox", "menu")):
 
         hbox:
             style "quick_menu"

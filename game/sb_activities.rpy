@@ -161,6 +161,22 @@ init -1 python:
                     best = (n, a["label"], why)
         return best
 
+    def person_choices(who, loc=None):
+        """WP7. Up to four ranked choices for the person view (section 6):
+        [dict(kind="do"|"mission"|"act", id, label, hint, cost, gold=False,
+        romance=False)], always ending with Talk. (WP0 stub: [].)"""
+        return []
+
+
+## Staging someone for an activity (5.1) ########################################
+##
+## WP7: puts the person on screen (their greeting face, at pos_c, over the
+## place) before Talk and every act_*, so they stay there while you talk.
+## (WP0 stub: returns.)
+
+label stage_person(who, expr=None):
+    return
+
 
 ## Who is currently tagging along ###############################################
 

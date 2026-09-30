@@ -55,6 +55,18 @@ init -10 python:
         "bg city":               ("#b0bbe6", -0.08, 0.85, 0.39),
         "bg veil":               ("#c0b4dc", -0.08, 0.85, 0.39),
         "bg home_bedroom_night": ("#c6cdee", -0.06, 0.88, 0.41),
+        ## The placeholder backgrounds (bg_placeholders.rpy).
+        "bg alley":              ("#c9c2dc", -0.08, 0.80, 0.41),
+        "bg alley dark":         ("#ab9cd6", -0.14, 0.70, 0.35),
+        "bg ridge_veil":         ("#c8bce2", -0.06, 0.88, 0.41),
+        "bg utahime_office":     ("#e6eeff", -0.02, 0.96, 0.45),
+        "bg gojo_office":        ("#ffe6ee", 0.00, 1.00, 0.47),
+        "bg map_tokyo":          ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg shibuya":            ("#dcc4ea", -0.06, 0.90, 0.41),
+        "bg harajuku":           ("#fff0f4", 0.00, 1.00, 0.55),
+        "bg shinjuku":           ("#b8c8ea", -0.08, 0.85, 0.39),
+        "bg kawasaki":           ("#f0ece4", -0.02, 0.92, 0.49),
+        "bg yotsuka":            ("#fff0e0", 0.00, 1.00, 0.55),
     }
 
     def light_for_place(loc, per):

@@ -182,12 +182,6 @@ init -2 python:
         _BG_CACHE[key] = d
         return d
 
-    ## Arc 1 runs on a deadline: the Kyoto exchange.
-    KYOTO_DAY = 22
-
-    def days_left():
-        return max(0, KYOTO_DAY - store.day)
-
     ## Clock -------------------------------------------------------------------
 
     def period_index():
@@ -219,10 +213,12 @@ init -2 python:
         store.period = PERIODS[0]
         store.talked_today = set()
         store.spent_today = set()
+        store.actions_today = set()
         store.companion = None
         store.stamina = store.stamina_max
         store.ce = store.ce_max
         roll_gojo()
+        run_new_day_hooks()     # keep last: hooks see the finished new day
 
     def roll_gojo():
         import random as _r
@@ -273,6 +269,33 @@ init -2 python:
         if loc == "storehouse" and not has_flag("storehouse_access"):
             return False, "The storehouse is sealed. You'd need Yaga to open it."
         return True, ""
+
+    ## Areas and presence helpers -----------------------------------------------
+    ## WP0 stubs with their final signatures; WP1 writes them (3.2).
+
+    AREAS = []
+
+    def area_of(loc):
+        """WP1. The AREAS key that holds the place loc, or None. (WP0 stub.)"""
+        return None
+
+    def places_in(area):
+        """WP1. The place keys in an area, in map order. (WP0 stub.)"""
+        return []
+
+    def usual_places(who):
+        """WP1. Where someone can usually be found, e.g. "Dojo (mornings) ·
+        Training Hall (afternoons)". (WP0 stub.)"""
+        return ""
+
+    def when_at(who, loc):
+        """WP1. When someone is at a place, e.g. "weekday mornings, noon and
+        evenings". (WP0 stub.)"""
+        return ""
+
+    def gojo_in_today():
+        """WP1. True on the days Gojo is in his office. (WP0 stub.)"""
+        return False
 
 
 ## Clock state #################################################################

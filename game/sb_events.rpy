@@ -46,8 +46,8 @@ init -1 python:
                 continue
             if e["arc"] > store.arc:
                 continue
-            if not (e["min_day"] <= store.day <= e["max_day"]):
-                continue
+            ## min_day / max_day are no longer read here (D40): the story waits
+            ## for you. Pacing comes from the registered gates below.
             if e["once"] and e["label"] in store.done_events:
                 continue
             w = e["who"]
@@ -60,6 +60,8 @@ init -1 python:
             if any(not has_flag(f) for f in e["requires"]):
                 continue
             if any(has_flag(f) for f in e["forbids"]):
+                continue
+            if not event_allowed(e):
                 continue
             out.append(e)
         return out
@@ -81,6 +83,25 @@ init -1 python:
     def mark_done(label):
         store.done_events.add(label)
 
+    ## Transitional (WP0 -> WP3), a deviation from D40 so a new game plays as
+    ## before. The day numbers used to pace the story from inside find_events.
+    ## Until the mission registry gates an event, its old min_day / max_day
+    ## still hold, so the story keeps its order (without this, st_roster and
+    ## st_night_before would fire on day 1); an event bound to a mission (or
+    ## retired) is left to WP3's gate.
+    ## Hand-off: WP3 deletes _calendar_gate and its register_event_gate call
+    ## once MISSION_BY_LABEL binds every story/mission ev() (WP3's validator
+    ## requires that). WP10 merges only after WP3, or keeps the min_day
+    ## arguments until WP3 is in: this gate reads them.
+    def _calendar_gate(e):
+        bound = getattr(store, "MISSION_BY_LABEL", None) or {}
+        retired = getattr(store, "RETIRED_LABELS", None) or ()
+        if e["label"] in bound or e["label"] in retired:
+            return True
+        return e.get("min_day", 0) <= store.day <= e.get("max_day", 9999)
+
+    register_event_gate(_calendar_gate)
+
 
 default done_events = set()
 
@@ -96,6 +117,7 @@ label play_event(e):
     ## so individual scenes stay free of bookkeeping.
     if e["thread"]:
         $ advance_thread(e["thread"][0], e["thread"][1])
+    $ run_event_done(e)
     return
 
 

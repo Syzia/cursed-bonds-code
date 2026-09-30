@@ -163,13 +163,9 @@ label chapter_five:
     ## This is a mid-arc debrief now, not a finale — the arc closes on the
     ## roof the night before Kyoto. Hand the player back to the campus.
 
-    $ _left = days_left()
+    mcthink "Nobody has given me a date for anything."
 
-    "[_left] days until Kyoto."
-
-    mcthink "Ten of them will be spent on a ridge getting this right."
-
-    mcthink "The rest I get to choose."
+    mcthink "So I get to choose what the days are for."
 
     scene bg black
     with fade_slow
