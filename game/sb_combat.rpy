@@ -103,7 +103,8 @@ init -1 python:
             key=key, name=e["name"], grade=(grade_key(e.get("grade")) or e.get("grade")),
             ehp=e["hp"], ehp_max=e["hp"], power=e["power"], sprite=e["sprite"],
             tells=list(e["tells"]), tell=None, kind=None,
-            ally=ally, flee_ok=flee_ok, bg=(bg or graded_bg()),
+            ally=ally, flee_ok=flee_ok, bg=bg,
+            bg_loc=store.here, bg_per=store.period,
             read=can_read(), stagger=0, freedodge=False,
             answered=False, punish=False, rounds=e.get("rounds"),
             log=[], round=1, over=None,
@@ -285,7 +286,8 @@ screen combat_screen():
     if smoke_autoplay:
         timer 0.05 action Return((ANSWERS[_c["kind"]],))
 
-    add _c["bg"]
+    ## The background is kept as a name (2.1.6); old saves may hold a displayable.
+    add (_c.get("bg") or graded_bg(_c.get("bg_loc"), _c.get("bg_per")))
     add Solid(gui.ink) alpha 0.55
 
     add _c["sprite"]:

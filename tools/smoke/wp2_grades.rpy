@@ -370,7 +370,7 @@ label zz_smoke:
         ## An old save's fight state: int grade, burn / ally_buff, no rounds.
         cb = dict(key="alley_curse", name="Something in the alley", grade=1, ehp=880, ehp_max=900, power=26,
                   sprite="curse big", tells=list(ENEMIES["alley_curse"]["tells"]), tell="It takes hold of your forearm.",
-                  kind="grab", ally=None, flee_ok=False, bg="bg alley", read=False, burn=6, stagger=0,
+                  kind="grab", ally=None, flee_ok=False, bg=Transform("bg alley", matrixcolor=BrightnessMatrix(-0.05)), read=False, burn=6, stagger=0,
                   freedodge=False, ally_buff=2, answered=False, punish=False, log=["Ember — 9."], round=4, over=None)
         hp = hp_max = 9999
         combat_player("move", dict(id="suture", name="Suture", tier=1, ce=0, desc="", scale="control", mult=0.0, heal=True))  # legacy-technique
@@ -398,6 +398,18 @@ label zz_smoke:
     $ control = 65
     $ combat_begin("promo_g3", None, True, None)
     $ check(len(moves_available()) == 3, "three moves at control 65")
+    python:
+        def _wp2_builtin(v):
+            if v is None or isinstance(v, (str, bool, int)):
+                return True
+            if isinstance(v, (list, tuple, set)):
+                return all(_wp2_builtin(x) for x in v)
+            if isinstance(v, dict):
+                return all(_wp2_builtin(k) and _wp2_builtin(x) for k, x in v.items())
+            return False
+        _bad = sorted(k for k, v in cb.items() if not _wp2_builtin(v))
+        check(not _bad and cb["bg"] is None and cb["bg_loc"] == here and cb["bg_per"] == period,
+              "2.1.6: the fight state holds only builtins (bg kept as a name, lit at draw time)", (_bad, cb.get("bg_loc"), cb.get("bg_per")))
     show screen combat_screen
     call screen zz_snap("combat_promo_g3")
     $ check(renpy.get_screen("combat_screen") is not None, "combat_screen renders (promo_g3)")
