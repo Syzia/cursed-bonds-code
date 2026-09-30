@@ -103,7 +103,7 @@ init -1 python:
     _M3 = ("Morning", "Noon", "Afternoon")
 
     ## 3.6.1 The main story -------------------------------------------------------
-    ## Orders are spaced by 10 so phase 3 can insert beats. Unwritten rows have no
+    ## Orders are spaced by 10 so phase 4 can insert beats. Unwritten rows have no
     ## label yet: they never block, and never complete an act (D20).
 
     mission("m_prologue", "story", "P", 0, "The Prologue",
@@ -128,11 +128,16 @@ init -1 python:
             label="st_utahime_office", periods=_M3, gate=dict(gap_days=1),
             done_if=("event:st_utahime_office", "flag:utahime_arrived"),
             rewards=dict(items={"paper_ward": 1, "sealing_talisman": 2}))
+    ## The start missions bound to an ev() (the Sun Mall, Nade 1-3) are done by
+    ## their closing flag only: play_event marks the event done before the
+    ## scene, so a save that left one through a recovery has the event but not
+    ## the flag the next step requires. It reads as not done, and its button
+    ## plays it again through start_mission.
     mission("m_sunmall", "story", "I", 130, "The Sun Mall",
             "Four storeys of dead escalators in Saitama, and three people missing.",
             "Yaga has a mission for the first-years",
             label="ev_mission_sunmall", trigger="start", where="office", with_who="yaga",
-            gate=dict(gap_days=1), done_if=("event:ev_mission_sunmall", "flag:sunmall_done"),
+            gate=dict(gap_days=1), done_if=("flag:sunmall_done",),
             rewards=dict(merit=30))
     mission("m_aftermath", "story", "I", 140, "The Morning After",
             "Shoko on cursed-energy debt, the morning after the Sun Mall.",
@@ -189,7 +194,7 @@ init -1 python:
             "A registered Grade 4 in Kawaguchi. It isn't.", "Yaga has a name",
             label="ms_nade_1", trigger="start", where="office", with_who="yaga",
             gate=dict(gap_days=1), group="The Surveyor",
-            done_if=("event:ms_nade_1", "flag:nade_named"), rewards=dict(merit=25))
+            done_if=("flag:nade_named",), rewards=dict(merit=25))
     mission("m_kurose_2", "story", "III", 330, "The Photocopy",
             "Something from Kurose, left in my room.",
             "Something from Kurose is waiting in my room",
@@ -205,7 +210,7 @@ init -1 python:
             "Yaga wants the annexe looked at",
             label="ms_nade_2", trigger="start", where="office", with_who="yaga",
             gate=dict(gap_days=2), group="The Surveyor",
-            done_if=("event:ms_nade_2", "flag:nade_traced"), rewards=dict(merit=25))
+            done_if=("flag:nade_traced",), rewards=dict(merit=25))
     mission("m_oda_2", "story", "III", 370, "Oda-sensei Writes Back",
             "A second letter from home.", "Oda-sensei writes back",
             label="st_oda_2", periods=("Evening",), optional=True,
@@ -215,7 +220,7 @@ init -1 python:
             "Yaga knows where Nade is.", "Yaga knows where Nade is",
             label="ms_nade_3", trigger="start", where="office", with_who="yaga",
             gate=dict(gap_days=2), group="The Surveyor",
-            done_if=("event:ms_nade_3", "flag:nade_map"), rewards=dict(merit=30))
+            done_if=("flag:nade_map",), rewards=dict(merit=30))
     mission("m_satozakura", "story", "III", 390, "Satozakura High",
             "Junpei's school.", "Satozakura High", skip_if=("event:st_roster",))
     mission("m_promo_g2", "promotion", "III", 395, "Promotion: Grade 2",
@@ -991,7 +996,7 @@ init -1 python:
         """WP3, migration 60: merit for every mission already done, paid once
         (merit_granted), and the Sun Mall recommendation (20) for a save that
         finished the Sun Mall before ch5 paid it (the new ch5 sets
-        recommended_g3 when it pays)."""
+        recommended_g3 when it pays, and so does this)."""
         mission_cache_clear()
         granted = _ms_granted()
         for m in MISSIONS:
@@ -1004,6 +1009,7 @@ init -1 python:
             granted.add("ch5_recommendation")
             if not has_flag("recommended_g3"):
                 add_merit(20, "The Sun Mall")
+            flag("recommended_g3")
         mission_cache_clear()
 
     def _migrate_65():

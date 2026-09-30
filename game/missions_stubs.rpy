@@ -24,7 +24,7 @@ init python:
 
 ## The text is timeless: an old save may meet her weeks after roll call.
 label st_utahime_office:
-    ## PLACEHOLDER — rewrite in phase 3
+    ## PLACEHOLDER — rewrite in phase 4
 
     "Ijichi catches me between one thing and the next. Someone in the staff building has asked for \"the new first-year\", and he says it like an apology."
 
@@ -84,7 +84,7 @@ label st_utahime_office:
 ################################################################################
 
 label st_promotion_g3:
-    ## PLACEHOLDER — rewrite in phase 3
+    ## PLACEHOLDER — rewrite in phase 4
 
     scene bg training with fade_slow
     show maki serious at pos_c
@@ -145,7 +145,7 @@ label st_promotion_g3:
 ################################################################################
 
 label cm_ijichi_1:
-    ## PLACEHOLDER — rewrite in phase 3
+    ## PLACEHOLDER — rewrite in phase 4
 
     scene bg gate with fade_slow
     show ijichi surprised at pos_c
@@ -199,7 +199,7 @@ label cm_ijichi_1:
 ################################################################################
 
 label cm_maki_1:
-    ## PLACEHOLDER — rewrite in phase 3
+    ## PLACEHOLDER — rewrite in phase 4
 
     scene bg storehouse with fade_slow
     show maki serious at pos_c
