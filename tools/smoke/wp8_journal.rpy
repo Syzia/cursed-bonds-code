@@ -25,6 +25,13 @@
 ##              (hide_side_images) take it away.
 ##   arc two    the Begin Arc Two card returns ("arc_two",) from campus and
 ##              is absent from a menu context.
+##   prologue   before the campus the default roster doesn't count as met
+##              (each person waits for the step that introduces them), and
+##              the portrait preference reads MY PORTRAIT until Gojo asks.
+##   details    JOURNAL_CAST-only people's panes and short names, waiting
+##              rows, "once a day" said once, the merit shown once, jr_wear
+##              keeping slot order, ō from DejaVu Sans, and stress renders
+##              (long ranks, a long given name, a long picker that scrolls).
 ##
 ## Other packages' APIs are still stubs in WP8's worktree. The rich fixture
 ## fakes their data at harness level: each faked store function switches
@@ -233,6 +240,10 @@ init 999 python:
         iron_seal=dict(name="Iron Seal", kind="talisman", grade="g3", desc="Hits harder, guards worse.", effect="+15% strike, -15% guard", source="The board"),
         spark=dict(name="Spark", kind="talisman", grade="g2", desc="A wider window for a perfect strike.", effect="Black Flash window +10%", source="The board"),
         unending_moment=dict(name="Unending Moment", kind="talisman", grade="sp", special=True, desc="Bound by story.", effect="", source="Story"),
+        zzj_ward_a=dict(name="Kantō Ward", kind="talisman", grade="g4", desc="A test ward with a macron.", effect="+5 reserve, and a long effect line that has to wrap onto a second line inside the picker row to test its height", source="The board"),
+        zzj_ward_b=dict(name="Quiet Ward", kind="talisman", grade="g4", desc="A test ward.", effect="+5 guard", source="The board"),
+        zzj_ward_c=dict(name="Thin Ward", kind="talisman", grade="g4", desc="A test ward.", effect="+5 control", source="The board"),
+        zzj_ward_d=dict(name="Last Ward", kind="talisman", grade="g4", desc="A test ward.", effect="+5 output", source="The board"),
     )
     for _k, _v in ZZJ_ITEMS.items():
         ITEMS.setdefault(_k, _v)
@@ -298,11 +309,16 @@ init 999 python:
         if on:
             zzj.saved_acts = builtins.list(ACTS)
             zzj.saved_mems = builtins.list(MEMORIES)
+            zzj.saved_tech = TECHNIQUES["timestop"]
             ACTS[:] = ZZJ_ACTS
             MEMORIES[:] = ZZJ_MEMORIES
+            ## WP2's Last Light (3.4): the macron in jp, "Once a day" in verb_desc.
+            TECHNIQUES["timestop"] = builtins.dict(zzj.saved_tech, name="Last Light", jp="残光 · Zankō",
+                verb="Hold", verb_desc="Once a day, spend most of my reserve and the hour does not pass.")
         else:
             ACTS[:] = zzj.saved_acts
             MEMORIES[:] = zzj.saved_mems
+            TECHNIQUES["timestop"] = zzj.saved_tech
 
     ## --- driving the journal ---------------------------------------------------
 
@@ -441,6 +457,12 @@ label zz_smoke:
         check(not _bad, "every side portrait at zoom 0.8 stays inside the 300px dialogue margin", _bad)
         note("widest side portrait at 0.8", "%dx%d" % _widest)
         check(persistent.mc_face is True, "persistent.mc_face defaults to True")
+        ## The fonts have no ō: dialogue, names, choices and the journal take it
+        ## (and ✓ ◌ ∞) from DejaVu Sans through macron_font().
+        _fg = [style.default.font, style.say_label.font, style.choice_button_text.font, JR_DISPLAY_FONT, JR_BODY_FONT]
+        check(all(isinstance(f, FontGroup) and f.map.get(0x14D) == "DejaVuSans.ttf" and f.map.get(0x221E) == "DejaVuSans.ttf"
+                  and f.map.get(ord("a")) is None for f in _fg),
+              "ō (U+014D) comes from DejaVu Sans in dialogue, names, choices and the journal")
 
     ## =====================================================================
     ## 2. Fresh state (a new game, before the campus): every tab renders
@@ -453,6 +475,31 @@ label zz_smoke:
             check(_js is not None and _js["tab"] == _tab, "fresh: journal(%r) renders on its tab" % _tab)
             renpy.hide_screen("journal")
         check(kaito_card_image() == "images/char/mcyotsuka_neutral.png", "Stats picture before the campus: the Yotsuka outfit")
+
+    ## Before the campus: the default roster doesn't make anyone "met" early,
+    ## the NEXT line stays neutral and the preference doesn't use the name.
+    python:
+        _c = dict((e["who"], e["met"]) for e in journal_cast())
+        check(not _c["yuji"] and not _c["gojo"] and not _c["shoko"] and _c["sana"],
+              "prologue start: rostered people are not met yet", _c)
+        check(mc_portrait_label() == "MY PORTRAIT", "prologue start: the preference reads MY PORTRAIT", mc_portrait_label())
+        check(not jr_on_campus(), "prologue start: not on campus")
+        fixture(story_point="chapter_one_b")
+        _c = dict((e["who"], e["met"]) for e in journal_cast())
+        check(_c["gojo"] and not _c["yuji"] and not _c["ijichi"], "chapter_one_b: Gojo met, the first-years not", _c)
+        check("mc_name" in mc_portrait_label(), "after Gojo asks the name, the preference uses it", mc_portrait_label())
+        fixture(story_point="ch2_first_years")
+        _c = dict((e["who"], e["met"]) for e in journal_cast())
+        check(_c["yuji"] and _c["ijichi"] and _c["yaga"] and not _c["shoko"] and not _c["maki"],
+              "ch2_first_years: first-years, Ijichi and Yaga met, Shoko not", _c)
+        renpy.show_screen("journal", "people")
+        shot("prologue_people")
+        renpy.hide_screen("journal")
+        ## An old save without story_point: its flags place it (legacy_story_point).
+        fixture(story_point=None, flags={"reached_for_her", "gojo_asked_why"})
+        _c = dict((e["who"], e["met"]) for e in journal_cast())
+        check(_c["gojo"] and not _c["yuji"], "old save in chapter_one_b (flags only): Gojo met, Yuji not", _c)
+        fixture(flags=set())
 
     ## The wrappers.
     python:
@@ -472,8 +519,11 @@ label zz_smoke:
         for _tab in ("people", "stats"):
             renpy.show_screen("journal", _tab)
             shot("settled_" + _tab)
+            _js = zzj_js()
+            check(_js is not None and _js["tab"] == _tab, "settled: journal(%r) renders" % _tab)
             renpy.hide_screen("journal")
-        check(True, "settled: people and stats render")
+        _c = dict((e["who"], e["met"]) for e in journal_cast())
+        check(_c["yuji"] and _c["shoko"] and jr_on_campus(), "settled: the roster counts as met", _c)
 
     ## =====================================================================
     ## 3. The rich fixture
@@ -497,7 +547,8 @@ label zz_smoke:
                                "ch2_arrival": 0, "ch2_the_veil": 0, "ch2_first_years": 0},
                 districts_visited={"yotsuka"}, yen=12000,
                 inventory=dict(photo=1, sealing_talisman=3, first_aid=2, kurose_card=1, slaughter_demon=1,
-                               nunchaku=1, paper_ward=1, steady_hand=1, iron_seal=1, spark=1),
+                               nunchaku=1, paper_ward=1, steady_hand=1, iron_seal=1, spark=1,
+                               zzj_ward_a=1, zzj_ward_b=1, zzj_ward_c=1, zzj_ward_d=1),
                 equipped_tool="slaughter_demon", equipped_talismans=["paper_ward"])
         promote("mc", "g3", quiet=True)
         promote("nobara", "g2", quiet=True)
@@ -546,6 +597,38 @@ label zz_smoke:
         check(jr_mem_state([m for m in ZZJ_MEMORIES if m["id"] == "sana_mem_ranking"][0]) == "locked", "an untriggered memory stays locked")
         check(jr_memory_counts() == (9, 14), "memory counter", jr_memory_counts())
 
+        ## Review round 1.
+        _n = jr_person("nanami")
+        check(_n["name"] == "Kento Nanami" and _n["grade"] == "Grade 1 sorcerer",
+              "a JOURNAL_CAST-only person's pane: full name and role", (_n["name"], _n["grade"]))
+        check(jr_short("nanami") == "Nanami" and jr_short("mei_mei") == "Mei Mei" and jr_short("yuta") == "Yuta",
+              "short names for JOURNAL_CAST-only people", (jr_short("nanami"), jr_short("mei_mei"), jr_short("yuta")))
+        _w = jr_mission_row([m for m in ZZJ_MISSIONS if m["id"] == "m_second_years"][0])
+        check(_w["status"] == "waiting" and _w["line"] == "The second-years are back from wherever they were — afternoons, wherever I am, tomorrow",
+              "a waiting row: objective, where and when, then when it opens", _w["line"])
+        _t = jr_tech()
+        check(_t["jp"] == "残光 · Zankō" and _t["verb_desc"].lower().count("once a day") == 1,
+              "Last Light: WP2's jp, and 'once a day' said once", (_t["jp"], _t["verb_desc"]))
+        _pm = jr_promotion()
+        check(jr_merit_label(*[_pm[0], _pm[1], "Merit 84/150, then a promotion mission — Maki will watch."]) == ""
+              and jr_merit_label(_pm[0], _pm[1], "") == "Merit %s / %s" % (_pm[0], _pm[1]),
+              "promotion box: the merit shows once", (_pm, next_grade_text()))
+
+        ## jr_wear keeps the other talismans where they are.
+        _eq0 = (equipped_tool, list(equipped_talismans))
+        if zzj.stub6:
+            fixture(equipped_talismans=["paper_ward", "steady_hand"])
+            jr_wear(0, "iron_seal")
+            check(jr_worn() == ["iron_seal", "steady_hand"], "replacing slot 1 keeps slot 2 in place", jr_worn())
+            jr_wear(1, "paper_ward")
+            check(jr_worn() == ["iron_seal", "paper_ward"], "replacing slot 2 keeps slot 1 in place", jr_worn())
+            jr_wear(0, "unending_moment")
+            check(jr_worn() == ["iron_seal", "paper_ward"], "a refused talisman puts everything back in order", jr_worn())
+        fixture(equipped_tool=_eq0[0], equipped_talismans=_eq0[1])
+
+        ## The pre-campus NEXT fallback is gone on campus; the rich state is on campus.
+        check(jr_on_campus(), "rich fixture: on campus")
+
     ## Detail panes, sub-tabs, filters, links: through the journal's own buttons.
     python:
         renpy.show_screen("journal", "people")
@@ -560,6 +643,9 @@ label zz_smoke:
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "maki"), "Maki's card"),
         lambda: zzj_nil(shot("rich_people_detail_maki", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "nanami"), "Nanami's card"),
+        lambda: zzj_nil(shot("rich_people_detail_nanami", wait=0)),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "nobara"), "Nobara's card"),
         lambda: zzj_nil(shot("rich_people_detail_nobara", wait=0)),
@@ -588,6 +674,11 @@ label zz_smoke:
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "inv_cat", "talisman"), "Talismans chip"),
         lambda: zzj_nil(check(zzj_js()["inv_cat"] == "talisman", "inventory category chips filter")),
         lambda: zzj_nil(shot("rich_inventory_talismans", wait=0)),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "equipment"), "Equipment tab"),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", ("talisman", 0)), "talisman slot 1"),
+        lambda: zzj_nil(shot("rich_picker_many", wait=0)),
+        lambda: zzj_nil(check(len(jr_pick_options("talisman", 0)) == 8, "the picker lists every talisman I own", len(jr_pick_options("talisman", 0)))),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "pick", None), "Close", raw=True),
         zzj_done,
     ]
     show screen zzj_driver
@@ -595,6 +686,30 @@ label zz_smoke:
     hide screen zzj_driver
     $ renpy.hide_screen("journal")
     $ check(_r == "zzj_done", "the scripted walk through the journal finished", _r)
+
+    ## Stress renders: long ranks and a promotion chip on the cards, a long
+    ## given name in "Your year", an empty picker. Screenshots only; every
+    ## one also checks it is on its tab.
+    python:
+        _b0, _a0, _t0, _n0 = dict(bonds), dict(affection), list(together), mc_name
+        bonds.update(dict(maki=100, shoko=100, nobara=100))
+        affection.update(dict(maki=100, shoko=100, nobara=100))
+        for _w in ("maki", "shoko", "nobara"):
+            if _w not in together:
+                together.append(_w)
+        affection.update(dict(maki=200, shoko=150, nobara=175))
+        renpy.show_screen("journal", "people")
+        shot("stress_people")
+        check(zzj_js()["tab"] == "people", "stress: long ranks render")
+        renpy.hide_screen("journal")
+        fixture(mc_name="Maximiliana-Alexa")
+        renpy.show_screen("journal", "stats")
+        shot("stress_stats")
+        check(zzj_js()["tab"] == "stats", "stress: a long given name renders")
+        renpy.hide_screen("journal")
+        fixture(mc_name=_n0, together=_t0)
+        bonds.clear(); bonds.update(_b0)
+        affection.clear(); affection.update(_a0)
 
     ## =====================================================================
     ## 4. Arc Two card (D38): from campus it returns ("arc_two",)

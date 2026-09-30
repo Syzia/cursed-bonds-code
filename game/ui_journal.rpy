@@ -63,6 +63,14 @@ init python:
     ## DejaVu Sans, which ships with every build.
     JR_SYMBOL_FONT = "DejaVuSans.ttf"
 
+    ## The interface fonts with ō and its kin drawn in DejaVu Sans (screens.rpy,
+    ## macron_font): the Last Light's "残光 · Zankō", and any title that
+    ## carries a macron.
+    JR_DISPLAY_FONT = macron_font(gui.display_font)
+    JR_BODY_FONT = macron_font(gui.body_font)
+    JR_MEDIUM_FONT = macron_font(gui.body_medium_font)
+    JR_BOLD_FONT = macron_font(gui.body_bold_font)
+
     JR_FX_NOTE = "Takes effect in combat from the combat update."
 
     JR_PERIOD_WORDS = {"Morning": "mornings", "Noon": "noon", "Afternoon": "afternoons",
@@ -130,14 +138,31 @@ init python:
             return words[0]
         return ", ".join(words[:-1]) + " and " + words[-1]
 
+    ## Short names for people who have a JOURNAL_CAST entry but no CAST entry
+    ## (the way the others call them), used when the entry has no "short".
+    JR_SHORT = {"nanami": "Nanami", "todo": "Todo", "miwa": "Miwa",
+                "mei_mei": "Mei Mei", "yuta": "Yuta"}
+
+    def jr_cast_entry(who):
+        """This person's JOURNAL_CAST entry, or None."""
+        for e in JOURNAL_CAST:
+            if jr_get(e, "who") == who:
+                return e
+        return None
+
     def jr_short(who):
-        """A person's short name."""
+        """A person's short name: CAST's, the JOURNAL_CAST entry's "short",
+        JR_SHORT, then the last word of the entry's full name."""
         c = CAST.get(who)
         if c:
             return c.get("short", who)
-        for e in JOURNAL_CAST:
-            if jr_get(e, "who") == who and jr_get(e, "name"):
-                return jr_get(e, "name").split()[0]
+        e = jr_cast_entry(who)
+        if jr_get(e, "short"):
+            return jr_get(e, "short")
+        if who in JR_SHORT:
+            return JR_SHORT[who]
+        if jr_get(e, "name"):
+            return jr_get(e, "name").split()[-1]
         return str(who).replace("_", " ").title()
 
     def jr_color(who):
@@ -168,7 +193,50 @@ init python:
             return True
         if kind == "flag" and len(rule) > 1:
             return has_flag(rule[1])
+        ## The default roster already holds the first-years, Gojo, Yaga,
+        ## Ijichi and Shoko, so before the campus opens a roster rule only
+        ## counts once the prologue has reached the step that introduces them.
+        if not jr_on_campus():
+            step = JR_PROLOGUE_MEET.get(who)
+            return bool(step) and jr_prologue_index() >= jr_step_index(step)
         return who in store.roster
+
+    ## The prologue step that introduces each person the default roster
+    ## already holds (anyone else waits for the campus).
+    JR_PROLOGUE_MEET = {"gojo": "ch1_gojo", "ijichi": "ch2_arrival", "yaga": "ch2_yaga",
+                        "yuji": "ch2_first_years", "megumi": "ch2_first_years",
+                        "nobara": "ch2_first_years"}
+
+    def jr_step_index(step):
+        steps = [s for s, c in PROLOGUE_STEPS]
+        return steps.index(step) if step in steps else len(steps)
+
+    def jr_prologue_index():
+        """WP8. Where this save is in the prologue, as an index into
+        PROLOGUE_STEPS: len(PROLOGUE_STEPS) once the campus is open. Reads
+        story_point, or legacy_story_point() for a save without one; a
+        chapter label counts as its first step, anything unknown as the start."""
+        steps = [s for s, c in PROLOGUE_STEPS]
+        if has_flag("settled_in"):
+            return len(steps)
+        sp = getattr(store, "story_point", None)
+        try:
+            sp = sp or legacy_story_point()
+        except Exception:
+            sp = None
+        if sp == "sandbox":
+            return len(steps)
+        if sp in steps:
+            return steps.index(sp)
+        chapters = [c for s, c in PROLOGUE_STEPS]
+        if sp in chapters:
+            return chapters.index(sp)
+        return 0
+
+    def jr_on_campus():
+        """WP8. True from arc_one_open on (settled_in, or a save the recovery
+        sends to arc_one_open)."""
+        return jr_prologue_index() >= jr_step_index("arc_one_open")
 
     def jr_has_art(who):
         return renpy.loadable("images/side/%s_neutral.png" % who)
@@ -272,14 +340,17 @@ init python:
         return "Affection can't pass %d until Bond %d" % (cap, need)
 
     def jr_person(who):
-        """WP8. Everything the People detail pane shows about someone."""
+        """WP8. Everything the People detail pane shows about someone. Name
+        and role come from the card (journal_cast), so the pane matches it
+        for people who only have a JOURNAL_CAST entry."""
         c = CAST.get(who, {})
+        card = dict((e["who"], e) for e in journal_cast()).get(who, {})
         try:
             st = npc_stats(who) or {}
         except Exception:
             st = {}
-        d = dict(who=who, name=c.get("name", jr_short(who)), color=jr_color(who),
-                 blurb=c.get("blurb", ""), grade=jr_grade_line(who),
+        d = dict(who=who, name=card.get("name") or c.get("name") or jr_short(who), color=jr_color(who),
+                 blurb=c.get("blurb", ""), grade=jr_grade_line(who, card.get("role", "")),
                  year=c.get("year", ""),
                  off_scale=bool(st.get("off_scale")), restricted=bool(st.get("restricted")),
                  note=st.get("note", "") or "",
@@ -394,9 +465,11 @@ init python:
             ww = jr_where_when(m)
             line = " — ".join([p for p in (obj, ww) if p])
         elif status == "waiting":
+            ## 3.6's waiting form: "<objective> — <where and when>, tomorrow".
             obj = jr_get(m, "objective", "") or ""
             why = mission_reason(mid) or ""
-            line = " — ".join([p for p in (obj, why) if p])
+            ww = ", ".join([q for q in (jr_where_when(m), why) if q])
+            line = " — ".join([p for p in (obj, ww) if p])
         elif status == "locked":
             line = mission_reason(mid) or "Not yet"
         elif status == "unwritten":
@@ -494,6 +567,13 @@ init python:
             m, need, nxt = (store.merit, None, None)
         line = next_grade_text() or ""
         return (m, need, grade_label(nxt) if nxt else "", line)
+
+    def jr_merit_label(m, need, line):
+        """The promotion bar's own "Merit m / need" label, or "" when the
+        next_grade_text() line under it already starts with the merit."""
+        if str(line).lstrip().lower().startswith("merit"):
+            return ""
+        return ("Merit %s / %s" % (m, need)) if need else ("Merit %s" % m)
 
     ## The board ----------------------------------------------------------------
 
@@ -687,8 +767,13 @@ init python:
             req = t["tiers"][tier][2] if tier < len(t["tiers"]) else 0
             moves.append(dict(name=mv.get("name", ""), ce=mv.get("ce", 0), desc=mv.get("desc", ""),
                               ok=ok, needs=("Unlocks at %s %d" % (t.get("tag", "Control"), req)) if not ok else ""))
+        vd = (t.get("verb_desc", "") or "").strip()
+        ## 4.7: the verb's line says it is once a day. WP2's verb_desc (3.4)
+        ## already does; add it only to one that doesn't.
+        if vd and "once a day" not in vd.lower():
+            vd += " Once a day."
         return dict(name=t.get("name", ""), jp=t.get("jp", ""), tier=tname, tier_desc=tdesc,
-                    next=nxline, verb=t.get("verb", ""), verb_desc=t.get("verb_desc", ""),
+                    next=nxline, verb=t.get("verb", ""), verb_desc=vd,
                     moves=moves)
 
     def jr_bars():
@@ -778,15 +863,21 @@ init python:
         return out
 
     def jr_wear(slot, iid):
-        """WP8. Put a talisman in a slot: take off what was there, wear the
-        new one, and put the old one back if WP6 refused the new one."""
+        """WP8. Put a talisman in a slot, through WP6's API only, keeping
+        the others where they are: take off what was in the slot and every
+        talisman after it, wear the new one, then put the later ones back in
+        their order. If WP6 refuses the new one, put everything back as it
+        was. (WP6 appends, so an empty slot is always the next one.)"""
         worn = jr_worn()
         cur = worn[slot] if slot < len(worn) else None
-        if cur:
-            unequip_talisman(cur)
+        later = worn[slot + 1:] if cur else []
+        for x in ([cur] if cur else []) + later:
+            unequip_talisman(x)
         equip_talisman(iid)
-        if cur and iid not in jr_worn():
-            equip_talisman(cur)
+        ok = iid in jr_worn()
+        for x in ([] if ok else ([cur] if cur else [])) + later:
+            if x not in jr_worn():
+                equip_talisman(x)
 
     def jr_inventory(cat):
         """Owned item ids in a category, by kind order then name."""
@@ -814,13 +905,13 @@ style jr_dim is jr_text:
     size 18
 
 style jr_kicker is text:
-    font gui.body_medium_font
+    font JR_MEDIUM_FONT
     color gui.dim
     size 16
     kerning gui.track
 
 style jr_title is text:
-    font gui.display_font
+    font JR_DISPLAY_FONT
     color gui.paper
     size 30
 
@@ -833,7 +924,7 @@ style jr_tab_button is button:
     padding (14, 0, 16, 0)
 
 style jr_tab_text is text:
-    font gui.display_font
+    font JR_DISPLAY_FONT
     color gui.dim
     hover_color gui.paper
     selected_color gui.paper
@@ -865,7 +956,7 @@ style jr_chip_button is button:
     padding (18, 8)
 
 style jr_chip_button_text is text:
-    font gui.body_medium_font
+    font JR_MEDIUM_FONT
     color gui.dim
     hover_color gui.paper
     selected_color gui.paper
@@ -877,7 +968,7 @@ style jr_link_button is button:
     padding (0, 4)
 
 style jr_link_button_text is text:
-    font gui.body_medium_font
+    font JR_MEDIUM_FONT
     color gui.gold
     hover_color gui.paper
     insensitive_color gui.mute
@@ -896,7 +987,7 @@ screen jr_chip(text, color=gui.dim, fill=None):
         padding (10, 3)
         yalign 0.5
         text "[text!u]":
-            font gui.body_bold_font
+            font JR_BOLD_FONT
             color (gui.ink if fill else color)
             size 13
             kerning 2
@@ -954,6 +1045,7 @@ screen journal(tab="people"):
     $ editable = journal_editable()
     $ _cur = js["tab"]
     $ _obj = objective_text() or ""
+    $ _idle = _("Nothing pressing. Go and see who's around.") if jr_on_campus() else _("Nothing pressing.")
 
     add gui.game_menu_background
     add Solid(gui.ink) alpha 0.86
@@ -981,7 +1073,7 @@ screen journal(tab="people"):
                     spacing 16
                     use seal("記", 44)
                     text _("Journal"):
-                        font gui.display_font
+                        font JR_DISPLAY_FONT
                         color gui.paper
                         size 40
                         yalign 0.5
@@ -1016,7 +1108,7 @@ screen journal(tab="people"):
                                     background Solid(gui.gold if _k == "missions" else gui.line2)
                                     padding (9, 2)
                                     text _badge:
-                                        font gui.body_bold_font
+                                        font JR_BOLD_FONT
                                         color (gui.ink if _k == "missions" else gui.paper)
                                         size 15
 
@@ -1044,13 +1136,13 @@ screen journal(tab="people"):
                     spacing 18
                     yalign 0.5
                     text "◆ NEXT":
-                        font gui.body_bold_font
+                        font JR_BOLD_FONT
                         color gui.gold
                         size 17
                         kerning 3
                         yalign 0.5
-                    text (jr_clip(_obj, 120) if _obj else _("Nothing pressing. Go and see who's around.")):
-                        font gui.display_font
+                    text (jr_clip(_obj, 120) if _obj else _idle):
+                        font JR_DISPLAY_FONT
                         color (gui.paper if _obj else gui.dim)
                         size 22
                         yalign 0.5
@@ -1114,7 +1206,7 @@ screen jr_person_card(js, e):
                 spacing 6
                 if e["art"]:
                     add jr_portrait(_who)
-                text _nm font gui.display_font color _col size 26
+                text _nm font JR_DISPLAY_FONT color _col size 26
                 use jr_chip(_("In memory"), gui.gold)
                 text _("Memories: [_ms] of [_mt]") style "jr_dim"
                 text _("See her memories →") style "jr_dim" color gui.gold size 17
@@ -1142,23 +1234,27 @@ screen jr_person_card(js, e):
                         xysize (324, 162)
                         add Solid(gui.panel2)
                         text "「？」" size 64 color gui.mute xalign 0.5 yalign 0.5
-                text jr_clip(_nm, 24) font gui.display_font color _col size 24
+                text jr_clip(_nm, 24) font JR_DISPLAY_FONT color _col size 24
+                ## The chip and the bond rank; the heart rank sits on its own
+                ## meter's line, so long ranks can't push past the card.
                 hbox:
                     spacing 10
                     ## D12: a recent promotion shows as a gold chip.
-                    if _promo:
-                        use jr_chip(_gl + " ↑", fill=gui.gold)
-                    else:
-                        use jr_chip(_gl, gui.dim)
-                    text _br style "jr_dim" size 15 yalign 0.5
-                    if _rom:
-                        $ _ar = aff_rank(_a)[1]
-                        text "♡ [_ar]" color gui.romance size 15 yalign 0.5
+                    if _gl:
+                        if _promo:
+                            use jr_chip(_gl + " ↑", fill=gui.gold)
+                        else:
+                            use jr_chip(_gl, gui.dim)
+                    text jr_clip(_br, 18) style "jr_dim" size 15 yalign 0.5
                 vbox:
-                    spacing 3
+                    spacing 0
                     use jr_meter(_b, 100, width=324, height=6, fill=_col)
                     if _rom:
-                        use jr_meter(_a, 100, width=324, height=4, fill=gui.romance, marker=aff_cap(_who))
+                        $ _ar = jr_clip(aff_rank(_a)[1], 16)
+                        hbox:
+                            spacing 10
+                            use jr_meter(_a, 100, width=170, height=4, fill=gui.romance, marker=aff_cap(_who))
+                            text "♡ [_ar]" color gui.romance size 15 yalign 0.5
                 if _nx:
                     text _nx color gui.gold size 16 xsize 324 line_spacing 0
 
@@ -1211,10 +1307,11 @@ screen jr_person_detail(js, who):
                     ## Name, grade, blurb.
                     vbox:
                         spacing 6
-                        text _d["name"] font gui.display_font color _col size 46
+                        text _d["name"] font JR_DISPLAY_FONT color _col size 46
                         hbox:
                             spacing 12
-                            use jr_chip(_d["grade"], gui.paper)
+                            if _d["grade"]:
+                                use jr_chip(_d["grade"], gui.paper)
                             if _d["year"] and _d["year"] != _d["grade"]:
                                 text _d["year"] style "jr_dim" yalign 0.5
                         if _d["blurb"]:
@@ -1271,7 +1368,7 @@ screen jr_person_detail(js, who):
                             spacing 6
                             hbox:
                                 spacing 12
-                                text _d["thread"][0] font gui.display_font color gui.gold size 26
+                                text _d["thread"][0] font JR_DISPLAY_FONT color gui.gold size 26
                                 if _d["thread"][2]:
                                     use jr_chip(_("Resolved"), fill=gui.stamina)
                             for _line in _d["thread"][1]:
@@ -1317,7 +1414,7 @@ screen jr_mission_line(r, w=960):
     hbox:
         spacing 12
         text r["icon"]:
-            font (JR_SYMBOL_FONT if r["symfont"] else gui.body_font)
+            font (JR_SYMBOL_FONT if r["symfont"] else JR_BODY_FONT)
             color r["color"]
             size 20
             min_width 22
@@ -1338,7 +1435,7 @@ screen jr_mission_row(r):
             yalign 0.5
             spacing 18
             text r["icon"]:
-                font (JR_SYMBOL_FONT if r["symfont"] else gui.body_font)
+                font (JR_SYMBOL_FONT if r["symfont"] else JR_BODY_FONT)
                 color r["color"]
                 size 24
                 min_width 28
@@ -1351,7 +1448,7 @@ screen jr_mission_row(r):
                 hbox:
                     spacing 14
                     text jr_clip(r["title"], 70):
-                        font gui.display_font
+                        font JR_DISPLAY_FONT
                         color (gui.mute if r["dim"] else gui.paper)
                         size 22
                     if r["group"]:
@@ -1397,6 +1494,7 @@ screen jr_story(js, editable):
 
     $ _groups = jr_story_groups(js["mfilter"])
     $ _m, _need, _nxl, _pline = jr_promotion()
+    $ _mlab = jr_merit_label(_m, _need, _pline)
     $ _complete = main_story_complete()
 
     use jr_scroll(1520, 856, spacing=10):
@@ -1412,7 +1510,7 @@ screen jr_story(js, editable):
                     vbox:
                         xsize 1100
                         spacing 4
-                        text _("Arc One is finished.") font gui.display_font color gui.gold size 30
+                        text _("Arc One is finished.") font JR_DISPLAY_FONT color gui.gold size 30
                         if editable:
                             text _("Arc Two can begin whenever I'm ready.") style "jr_text"
                         else:
@@ -1434,7 +1532,7 @@ screen jr_story(js, editable):
                 vbox:
                     spacing 6
                     text _("PROMOTION") style "jr_kicker"
-                    text (_nxl or grade_label(player_grade())) font gui.display_font color gui.paper size 28
+                    text (_nxl or grade_label(player_grade())) font JR_DISPLAY_FONT color gui.paper size 28
                 vbox:
                     yalign 0.5
                     spacing 8
@@ -1442,9 +1540,10 @@ screen jr_story(js, editable):
                         hbox:
                             spacing 16
                             use jr_meter(_m, _need, width=620, fill=gui.gold)
-                            text "Merit [_m] / [_need]" color gui.gold size 18 yalign 0.5
-                    else:
-                        text "Merit [_m]" color gui.gold size 18
+                            if _mlab:
+                                text _mlab color gui.gold size 18 yalign 0.5
+                    elif _mlab:
+                        text _mlab color gui.gold size 18
                     if _pline:
                         text _pline style "jr_dim" xsize 1000
 
@@ -1466,7 +1565,7 @@ screen jr_story(js, editable):
                     text ("+" if _closed else "−") color gui.dim size 22 yalign 0.5 min_width 16
                     if _a["kanji"]:
                         use seal(_a["kanji"], 44)
-                    text jr_act_title(_a) font gui.display_font color gui.paper size 28 yalign 0.5
+                    text jr_act_title(_a) font JR_DISPLAY_FONT color gui.paper size 28 yalign 0.5
                     if _note:
                         text "— [_note]" style "jr_dim" yalign 0.5
                     if _a["band"]:
@@ -1492,7 +1591,7 @@ screen jr_character(js):
         for _e, _rows in _groups:
             hbox:
                 spacing 14
-                text _e["name"] font gui.display_font color _e["color"] size 28
+                text _e["name"] font JR_DISPLAY_FONT color _e["color"] size 28
                 text jr_grade_line(_e["who"], _e["role"]) style "jr_dim" yalign 0.5
             for _r in _rows:
                 use jr_mission_row(_r)
@@ -1507,7 +1606,7 @@ screen jr_board_view():
         hbox:
             spacing 16
             use seal("任", 44)
-            text _b["where"] font gui.display_font color gui.paper size 30 yalign 0.5
+            text _b["where"] font JR_DISPLAY_FONT color gui.paper size 30 yalign 0.5
             if _b["misgrades"] >= 1:
                 text "· Misgraded jobs found: [_b['misgrades']]" color gui.seal size 19 yalign 0.5
 
@@ -1533,7 +1632,7 @@ screen jr_board_view():
                                 use jr_chip(grade_label(jr_get(_o, "grade")), gui.gold)
                                 if jr_get(_o, "senior_only"):
                                     use jr_chip(_("Needs a senior partner"), gui.seal)
-                            text jr_clip(jr_get(_o, "title", ""), 60) font gui.display_font color gui.paper size 22 xsize 414
+                            text jr_clip(jr_get(_o, "title", ""), 60) font JR_DISPLAY_FONT color gui.paper size 22 xsize 414
                             text jr_clip(jr_offer_line(_o), 80) style "jr_dim" size 16 xsize 414
                             if jr_get(_o, "blurb"):
                                 text jr_clip(jr_get(_o, "blurb"), 90) style "jr_dim" size 15 xsize 414 italic True
@@ -1615,7 +1714,7 @@ screen jr_memories_tab(js):
                     text _("No memories yet. Scenes I live through end up here, and I can go back to any of them.") style "jr_dim"
 
             for _title, _mems in _groups:
-                text _title font gui.display_font color gui.paper size 26
+                text _title font JR_DISPLAY_FONT color gui.paper size 26
                 hbox:
                     box_wrap True
                     box_wrap_spacing 16
@@ -1645,7 +1744,7 @@ screen jr_memory_tile(m):
                     xfill True
                     background Solid(gui.ink)
                     padding (12, 6)
-                    text jr_clip(_title, 30) font gui.display_font color gui.paper size 18
+                    text jr_clip(_title, 30) font JR_DISPLAY_FONT color gui.paper size 18
     else:
         frame:
             style "jr_card_frame"
@@ -1657,7 +1756,7 @@ screen jr_memory_tile(m):
                         xpos 14
                         ypos 14
                         spacing 6
-                        text jr_clip(_title, 30) font gui.display_font color gui.dim size 18 xsize 252
+                        text jr_clip(_title, 30) font JR_DISPLAY_FONT color gui.dim size 18 xsize 252
                         text _("Written in a later build") color gui.gold size 15
                 else:
                     text "「？」" size 40 color gui.mute xalign 0.5 ypos 14
@@ -1676,6 +1775,7 @@ screen jr_stats_tab():
 
     $ _gradeline = ("First-year · %s" % grade_label(player_grade())) if player_grade() else _("First-year · Not yet assessed")
     $ _m, _need, _nxl, _pline = jr_promotion()
+    $ _mlab = jr_merit_label(_m, _need, _pline)
     $ _t = jr_tech()
     $ _year = jr_year()
 
@@ -1694,7 +1794,7 @@ screen jr_stats_tab():
 
             vbox:
                 spacing 4
-                text "[mc_surname] [mc_name]" font gui.display_font color gui.paper size 40
+                text "[mc_surname] [mc_name]" font JR_DISPLAY_FONT color gui.paper size 40
                 text _gradeline style "jr_kicker" size 18
 
             frame:
@@ -1708,9 +1808,10 @@ screen jr_stats_tab():
                         hbox:
                             spacing 16
                             use jr_meter(_m, _need, width=620, fill=gui.gold)
-                            text "Merit [_m] / [_need]" color gui.gold size 18 yalign 0.5
-                    else:
-                        text "Merit [_m]" color gui.gold size 18
+                            if _mlab:
+                                text _mlab color gui.gold size 18 yalign 0.5
+                    elif _mlab:
+                        text _mlab color gui.gold size 18
                     if _pline:
                         text _pline style "jr_dim" xsize 880
 
@@ -1731,8 +1832,8 @@ screen jr_stats_tab():
                     spacing 4
                     hbox:
                         spacing 14
-                        text _t["name"] font gui.display_font color gui.violet2 size 30
-                        text _t["jp"] style "jr_dim" yalign 0.5
+                        text _t["name"] font JR_DISPLAY_FONT color gui.violet2 size 30
+                        text _t["jp"] style "jr_dim" yalign 0.5 font JR_BODY_FONT
                     hbox:
                         spacing 12
                         text _t["tier"] color gui.paper size 21
@@ -1742,7 +1843,7 @@ screen jr_stats_tab():
                     hbox:
                         spacing 12
                         text _t["verb"].upper() style "jr_kicker" color gui.violet2 yalign 0.5
-                        text "[_t['verb_desc']] Once a day." style "jr_dim" size 17 xsize 780
+                        text _t["verb_desc"] style "jr_dim" size 17 xsize 780
                     for _mv in _t["moves"]:
                         hbox:
                             spacing 12
@@ -1760,7 +1861,7 @@ screen jr_stats_tab():
                     for _nm, _col, _res, _off in _year:
                         hbox:
                             spacing 16
-                            text _nm color _col size 18 min_width 120 yalign 0.5
+                            text jr_clip(_nm, 14) color _col size 18 min_width 160 yalign 0.5
                             if _off:
                                 use jr_meter(300, 300, width=620, height=8, fill=_col, off_scale=True)
                             elif _res is not None:
@@ -1799,7 +1900,7 @@ screen jr_equipment_tab(js, editable):
                     if _ti:
                         hbox:
                             spacing 12
-                            text _("In my hand: [_ti['name']]") font gui.display_font color gui.paper size 28
+                            text _("In my hand: [_ti['name']]") font JR_DISPLAY_FONT color gui.paper size 28
                             if _ti["grade"]:
                                 use jr_chip(grade_label(_ti["grade"]), gui.gold)
                         if _ti["desc"]:
@@ -1807,7 +1908,7 @@ screen jr_equipment_tab(js, editable):
                         if _ti["effect"]:
                             text "[_ti['effect']] · [JR_FX_NOTE]" color gui.violet2 size 17 xsize 1160
                     else:
-                        text _("In my hand: Bare hands") font gui.display_font color gui.paper size 28
+                        text _("In my hand: Bare hands") font JR_DISPLAY_FONT color gui.paper size 28
                         text _("No cursed tool yet. The armory releases them by grade.") style "jr_dim"
                 if editable:
                     textbutton _("Change"):
@@ -1823,10 +1924,12 @@ screen jr_equipment_tab(js, editable):
                 if _i < _slots:
                     $ _id = _worn[_i] if _i < len(_worn) else None
                     $ _it = jr_item(_id) if _id else None
+                    ## Talismans fill from slot 1 (WP6 appends), so only the
+                    ## first empty slot takes a new one.
                     button:
                         style "jr_card_button"
                         xysize (352, 260)
-                        sensitive editable
+                        sensitive (editable and _i <= len(_worn))
                         action SetDict(js, "pick", ("talisman", _i))
                         vbox:
                             xpos 20
@@ -1835,16 +1938,19 @@ screen jr_equipment_tab(js, editable):
                             spacing 6
                             text ("SLOT %d" % (_i + 1)) style "jr_kicker"
                             if _it:
-                                text _it["name"] font gui.display_font color gui.paper size 24 xsize 312
+                                text _it["name"] font JR_DISPLAY_FONT color gui.paper size 24 xsize 312
                                 if _it["grade"]:
                                     use jr_chip(grade_label(_it["grade"]), gui.gold)
                                 if _it["effect"]:
                                     text _it["effect"] color gui.violet2 size 16 xsize 312
                                 text JR_FX_NOTE style "jr_dim" size 14 xsize 312
                             else:
-                                text _("Empty") font gui.display_font color gui.dim size 24
-                                if editable:
+                                text _("Empty") font JR_DISPLAY_FONT color gui.dim size 24
+                                if editable and _i == len(_worn):
                                     text _("Click to wear a talisman.") style "jr_dim" size 16
+                                elif editable:
+                                    $ _first = len(_worn) + 1
+                                    text _("Fill slot [_first] first.") style "jr_dim" size 16
                 else:
                     frame:
                         style "jr_card_frame"
@@ -1854,7 +1960,7 @@ screen jr_equipment_tab(js, editable):
                             ypos 18
                             spacing 8
                             text ("SLOT %d" % (_i + 1)) style "jr_kicker" color gui.mute
-                            text jr_slot_opens(_i) font gui.display_font color gui.mute size 24
+                            text jr_slot_opens(_i) font JR_DISPLAY_FONT color gui.mute size 24
 
 
 ## The modal picker for a slot or the tool (editable journal only).
@@ -1885,7 +1991,7 @@ screen jr_picker(js):
                 spacing 16
                 use seal("装", 44)
                 text (_("Choose a cursed tool") if _kind == "tool" else ("Choose a talisman for slot %d" % (_slot + 1))):
-                    font gui.display_font
+                    font JR_DISPLAY_FONT
                     color gui.paper
                     size 32
                     yalign 0.5
@@ -1893,31 +1999,25 @@ screen jr_picker(js):
             if not _opts:
                 text (_("I don't own a cursed tool yet.") if _kind == "tool" else _("I don't own a talisman yet.")) style "jr_dim"
 
-            viewport:
-                ysize min(560, max(1, len(_opts)) * 86)
-                xsize 908
-                mousewheel True
-                draggable True
-                has vbox
-                spacing 8
-                for _id, _ok, _why in _opts:
-                    $ _it = jr_item(_id)
-                    button:
-                        style "jr_row_button"
-                        xsize 900
-                        sensitive _ok
-                        action ([Function(equip_tool, _id)] if _kind == "tool" else [Function(jr_wear, _slot, _id)]) + [SetDict(js, "pick", None)]
-                        vbox:
-                            spacing 2
-                            hbox:
-                                spacing 12
-                                text _it["name"] font gui.display_font color (gui.paper if _ok else gui.mute) size 22
-                                if _it["grade"]:
-                                    use jr_chip(grade_label(_it["grade"]), (gui.gold if _ok else gui.mute))
-                                if _why:
-                                    text _why color (gui.dim if _ok else gui.seal) size 16 yalign 0.5
-                            if _it["effect"]:
-                                text "[_it['effect']] · [JR_FX_NOTE]" color (gui.violet2 if _ok else gui.mute) size 15 xsize 850
+            ## Five rows or fewer sit in the panel at their own height; more
+            ## scroll in a 560px list with a scrollbar.
+            if len(_opts) > 5:
+                viewport:
+                    xsize 920
+                    ysize 560
+                    scrollbars "vertical"
+                    side_spacing 10
+                    vscrollbar_xsize 10
+                    vscrollbar_unscrollable "hide"
+                    mousewheel True
+                    draggable True
+                    has vbox
+                    spacing 8
+                    use jr_picker_rows(js, _kind, _slot, _opts)
+            elif _opts:
+                vbox:
+                    spacing 8
+                    use jr_picker_rows(js, _kind, _slot, _opts)
 
             hbox:
                 spacing 14
@@ -1928,6 +2028,28 @@ screen jr_picker(js):
                 textbutton _("Close"):
                     style "jr_chip_button"
                     action SetDict(js, "pick", None)
+
+
+## The picker's rows: one button per option (a sensitive one wears it).
+screen jr_picker_rows(js, _kind, _slot, _opts):
+    for _id, _ok, _why in _opts:
+        $ _it = jr_item(_id)
+        button:
+            style "jr_row_button"
+            xsize 900
+            sensitive _ok
+            action ([Function(equip_tool, _id)] if _kind == "tool" else [Function(jr_wear, _slot, _id)]) + [SetDict(js, "pick", None)]
+            vbox:
+                spacing 2
+                hbox:
+                    spacing 12
+                    text _it["name"] font JR_DISPLAY_FONT color (gui.paper if _ok else gui.mute) size 22
+                    if _it["grade"]:
+                        use jr_chip(grade_label(_it["grade"]), (gui.gold if _ok else gui.mute))
+                    if _why:
+                        text _why color (gui.dim if _ok else gui.seal) size 16 yalign 0.5
+                if _it["effect"]:
+                    text "[_it['effect']] · [JR_FX_NOTE]" color (gui.violet2 if _ok else gui.mute) size 15 xsize 850
 
 
 ## Inventory ####################################################################
@@ -1955,7 +2077,7 @@ screen jr_inventory_tab(js):
                         padding (12, 7)
                         selected (_cat == _k)
                         action [SetDict(js, "inv_cat", _k), SetDict(js, "inv_sel", None)]
-            text _yen font gui.display_font color gui.gold size 30 xalign 1.0 yalign 0.5
+            text _yen font JR_DISPLAY_FONT color gui.gold size 30 xalign 1.0 yalign 0.5
 
         hbox:
             spacing 30
@@ -1987,7 +2109,7 @@ screen jr_inventory_tab(js):
                                     ypos 16
                                     xsize 244
                                     spacing 6
-                                    text jr_clip(_it["name"], 40) font gui.display_font color gui.paper size 21 xsize 244
+                                    text jr_clip(_it["name"], 40) font JR_DISPLAY_FONT color gui.paper size 21 xsize 244
                                     hbox:
                                         spacing 10
                                         if _c > 1:
@@ -2003,7 +2125,7 @@ screen jr_inventory_tab(js):
                     $ _it = jr_item(_sel)
                     vbox:
                         spacing 10
-                        text _it["name"] font gui.display_font color gui.paper size 32 xsize 510
+                        text _it["name"] font JR_DISPLAY_FONT color gui.paper size 32 xsize 510
                         hbox:
                             spacing 10
                             if _it["grade"]:

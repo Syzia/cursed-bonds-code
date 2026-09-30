@@ -10,7 +10,43 @@
 ## Shared helpers
 ################################################################################
 
+## The game's fonts (Shippori Mincho, Zen Kaku Gothic New) have no Latin
+## Extended-A letters, so "Zankō", "Ryōsuke", "Kantō" and "Sōma" lost their
+## ō. These font groups take those letters (and ✓ ◌ ∞) from Ren'Py's bundled
+## DejaVu Sans and everything else from the base font. Built at init -1, after
+## gui.rpy's fonts (-2) and before any style or screen that uses them.
+init -1 python:
+
+    MACRON_FONTS = {}
+
+    def macron_font(base):
+        """WP8. `base` as a FontGroup that draws U+0100-017F (ō, ū, ā ...)
+        and ✓ ◌ ∞ in DejaVu Sans. One group per base font, built at init."""
+        fg = MACRON_FONTS.get(base)
+        if fg is None:
+            fg = FontGroup()
+            fg.add("DejaVuSans.ttf", 0x0100, 0x017F)
+            for _c in (0x2713, 0x25CC, 0x221E):
+                fg.add("DejaVuSans.ttf", _c, _c)
+            fg.add(base, None, None)
+        return fg
+
+    for _mf in (gui.text_font, gui.name_text_font, gui.interface_text_font,
+                gui.display_font, gui.display_heavy_font, gui.body_font,
+                gui.body_medium_font, gui.body_bold_font):
+        MACRON_FONTS[_mf] = macron_font(_mf)
+    del _mf
+
 init python:
+
+    def mc_portrait_label():
+        """WP8 (4.11). The portrait preference's label: "[mc_name]'S
+        PORTRAIT" once Gojo has asked for the name, "MY PORTRAIT" on the
+        main menu and before that (nobody says the name before he asks).
+        The prologue position comes from the journal's jr_prologue_index()."""
+        if main_menu or jr_prologue_index() <= jr_step_index("ch1_gojo"):
+            return _("MY PORTRAIT")
+        return _("[mc_name!u]'S PORTRAIT")
 
     _speaker_cache = {}
 
@@ -68,6 +104,7 @@ screen rule(width=None):
 
 style default:
     properties gui.text_properties()
+    font macron_font(gui.text_font)
     language gui.language
 
 style input:
@@ -213,6 +250,7 @@ style namebox:
 
 style say_label:
     properties gui.text_properties("name", accent=True)
+    font macron_font(gui.name_text_font)
     xalign gui.name_xalign
     yalign 0.5
 
@@ -288,6 +326,7 @@ style choice_button is default:
 
 style choice_button_text is default:
     properties gui.text_properties("choice_button")
+    font macron_font(gui.choice_button_text_font)
 
 
 ## Quick menu ------------------------------------------------------------------
@@ -850,7 +889,7 @@ screen preferences():
                 ## WP8 (4.11): my own side portrait beside my lines.
                 vbox:
                     style_prefix "radio"
-                    label _("[mc_name!u]'S PORTRAIT")
+                    label mc_portrait_label()
                     textbutton _("Show") action SetField(persistent, "mc_face", True)
                     textbutton _("Hide") action SetField(persistent, "mc_face", False)
 
