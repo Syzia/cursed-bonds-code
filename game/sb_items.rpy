@@ -181,12 +181,15 @@ init -1 python:
     ]
     _ARMORY_KIND = dict(ARMORY_RACK)
 
-    ## What Utahime's board can drop (3.7), checked by the validator. WP4 draws
-    ## its drops from this tuple (the hand-off asks it to), so the check covers
-    ## the real drops. give_item still counts an id that isn't in ITEMS (WP0's
-    ## contract) without toasting it, so a drop from outside this tuple would
-    ## reach the saved inventory; readers use ITEMS.get(id).
-    BOARD_DROP_ITEMS = ("sealing_talisman", "paper_ward", "steady_hand", "deep_well", "iron_seal")
+    ## What Utahime's board can drop (3.7). WP4 keeps its own drop tables in
+    ## sb_board.rpy (BOARD_SEALING, BOARD_TALISMAN_DROPS, BOARD_TOOL_DROPS, all
+    ## named in BOARD_ITEM_NAMES); the validator below ties them to this tuple
+    ## and this tuple to ITEMS, so a board drop the catalogue doesn't know is
+    ## caught. give_item still counts an id that isn't in ITEMS (WP0's contract)
+    ## without toasting it, so such a drop would reach the saved inventory;
+    ## readers use ITEMS.get(id).
+    BOARD_DROP_ITEMS = ("sealing_talisman", "paper_ward", "steady_hand", "deep_well", "iron_seal",
+                        "slaughter_demon", "nunchaku")
 
     ## Lookups ----------------------------------------------------------------------
 
@@ -437,7 +440,7 @@ init -1 python:
 
     ## Registration -----------------------------------------------------------------
 
-    register_place_action("armory", "Armory", "Cursed tools released at your grade.",
+    register_place_action("armory", "Armory", "Cursed tools, released up to my grade.",
                           locs=("storehouse",), when="armory_open_now")
 
     register_new_day(sync_keepsakes, order=70)
@@ -496,6 +499,9 @@ init -1 python:
         for id in BOARD_DROP_ITEMS:
             if id not in ITEMS:
                 out.append("board drop %r is not in ITEMS" % id)
+        for id in getattr(store, "BOARD_ITEM_NAMES", {}):
+            if id not in BOARD_DROP_ITEMS:
+                out.append("board can drop %r but BOARD_DROP_ITEMS doesn't list it" % id)
         for mid, id in _mission_item_ids():
             if id not in ITEMS:
                 out.append("mission %s rewards an unknown item %r" % (mid, id))
