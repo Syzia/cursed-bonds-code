@@ -83,25 +83,6 @@ init -1 python:
     def mark_done(label):
         store.done_events.add(label)
 
-    ## Transitional (WP0 -> WP3), a deviation from D40 so a new game plays as
-    ## before. The day numbers used to pace the story from inside find_events.
-    ## Until the mission registry gates an event, its old min_day / max_day
-    ## still hold, so the story keeps its order (without this, st_roster and
-    ## st_night_before would fire on day 1); an event bound to a mission (or
-    ## retired) is left to WP3's gate.
-    ## Hand-off: WP3 deletes _calendar_gate and its register_event_gate call
-    ## once MISSION_BY_LABEL binds every story/mission ev() (WP3's validator
-    ## requires that). WP10 merges only after WP3, or keeps the min_day
-    ## arguments until WP3 is in: this gate reads them.
-    def _calendar_gate(e):
-        bound = getattr(store, "MISSION_BY_LABEL", None) or {}
-        retired = getattr(store, "RETIRED_LABELS", None) or ()
-        if e["label"] in bound or e["label"] in retired:
-            return True
-        return e.get("min_day", 0) <= store.day <= e.get("max_day", 9999)
-
-    register_event_gate(_calendar_gate)
-
 
 default done_events = set()
 
@@ -129,14 +110,18 @@ label sb_smalltalk(who):
     $ _n = _c["short"]
 
     if who in talked_today:
-        "[_n] is busy with something. You leave it."
+        "[_n] is busy with something. I leave it."
         return
 
     $ talked_today.add(who)
     $ add_bond(who, 1)
 
-    $ _lines = SMALLTALK.get(who, SMALLTALK["_default"])
-    $ _line = renpy.random.choice(_lines)
+    ## Someone promoted since we last talked says so first (D12), instead of
+    ## the small talk.
+    $ _line = promo_line(who)
+    if _line is None:
+        $ _lines = SMALLTALK.get(who, SMALLTALK["_default"])
+        $ _line = renpy.random.choice(_lines)
 
     $ renpy.say(CHARS[who], _line)
 
@@ -204,4 +189,36 @@ init -1 python:
             "Your file says your control is improving. Files are optimistic.",
             "The storehouse is not a museum. Don't touch what you can't name.",
         ],
+        "utahime": [
+            "If you're here for a job, the board is on the wall. If you're here to chat, I'm working.",
+            "Take someone with you. Every time. I don't care what the file says.",
+            "If Gojo sent you, the answer is no. If he didn't, sit up straight.",
+            "Tokyo files its jobs as if it's paying by the grade. Read the whole report before you go.",
+        ],
+        "ijichi": [
+            "Ah — good morning. Or afternoon. Sorry, I've been in the car since five.",
+            "If you need a ride anywhere, please ask. Please ask early. Please.",
+            "Gojo-san asked me to buy forty mochi. I'm told it's for a meeting.",
+            "I have three reports due, and one of them is about the other two.",
+        ],
     }
+
+    ## What a student says the first time you talk after they're promoted
+    ## (D12), in place of small talk. %(grade)s is their new grade.
+    PROMO_LINES = {
+        "yuji":   "Guess who's %(grade)s now! Me! I don't really know what it means, but Megumi said \"fine\", and I think that's his version of a party.",
+        "megumi": "%(grade)s. It's paperwork. It means they send me further away, that's all.",
+        "nobara": "%(grade)s. Don't make a face, you'll catch up. Probably.",
+        "maki":   "They moved my grade. Took them long enough. Doesn't change what time I'm in the dojo.",
+        "panda":  "%(grade)s! Yaga says he isn't proud. He said it twice, which means he is.",
+        "toge":   "Salmon! ...Tuna mayo.",
+    }
+
+    def promo_line(who):
+        """WP3. The promotion remark someone makes instead of small talk, or
+        None. Uses up the pending remark (pop_remark) only for someone who
+        has a line."""
+        if who not in PROMO_LINES or not pop_remark(who):
+            return None
+        grade = npc_stats(who).get("grade")
+        return PROMO_LINES[who] % dict(grade=grade_label(grade))
