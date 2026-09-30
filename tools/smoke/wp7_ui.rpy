@@ -21,6 +21,7 @@ init 999 python:
     ZZ_WATCH = [None]       # whose sprite ZZ_SHOWING watches
     ZZ_DRIVE = []           # what the driver answers the loop's screens with
     ZZ_DRIVE_LOG = []
+    ZZ_CALLS = []           # record_act / train_together / raise_reserve, as recorded
 
     def zz_label_cb(name, abnormal):
         ZZ_LABELS.append(name)
@@ -296,6 +297,16 @@ label zz_smoke:
         check(toast_style(TOASTQ.items[-1])[1] == CAST["yuji"]["color"], "a bond toast wears the person's colour")
         check(toast_style(dict(kind="stat", who=None))[1] == gui.violet and toast_style(dict(kind="grade", who=None))[1] == gui.gold,
               "kinds are colour-coded")
+        toast_clear()
+        renpy.notify(u"New thread — Somebody Remembered")
+        renpy.notify(u"Somebody Remembered — advanced")
+        renpy.notify("Control +2")
+        renpy.notify(u"Technique advanced — Held Breath")
+        renpy.notify("Saved.")
+        _k = [t["kind"] for t in TOASTQ.items]
+        check(_k == ["thread", "thread", "stat", "stat", "info"],
+              "renpy.notify sorts thread news (糸) and stat gains (術) from plain notices", _k)
+        toast_clear()
         store._in_replay = "zz"
         _n = len(TOASTQ.items)
         toast("muted in replay")
@@ -451,22 +462,86 @@ label zz_smoke:
         _low = max([f.y + f.h for f in _fs if f.screen is not None and f.screen.screen_name[0] == "sb_char"] or [0])
         check(_low <= 1060, "every button on the tallest card is on screen", _low)
         check(any("know them better" in s for s in zz_texts("sb_char")), "the cap note sits on the affection row")
-        ## Toasts over the person view: two at a time, beside MENU, above the card.
+    hide screen sb_char
+    ## Toasts over the person view: two at a time, beside MENU, above the card.
+    ## Four already showing on campus: the two it hides wait, and none is lost.
+    python:
         toast_clear()
-        for _i in range(3):
+        for _i in range(4):
             toast("Card notice %d" % (_i + 1))
+        check(len(toast_visible()) == 4, "four toasts up on campus", [t["text"] for t in toast_visible()])
+        _zz_seen = set(t["text"] for t in toast_visible())
+    show screen sb_char("nobara")
+    python:
+        toast_tick()
         check([t["text"] for t in toast_visible()] == ["Card notice 1", "Card notice 2"],
               "over the person view, two toasts at a time", [t["text"] for t in toast_visible()])
+        check(all(t["t_shown"] is None for t in TOASTQ.items[2:]),
+              "the toasts the person view hides stop their clocks and wait", [t["t_shown"] for t in TOASTQ.items])
     $ shot("person_tall_toasts", wait=0.5)
+    python:
+        for _t in TOASTQ.items[:2]:
+            _t["t_shown"] -= TOAST_LIFE + 0.1
+        toast_tick()
+        _zz_seen.update(t["text"] for t in toast_visible())
+        check([t["text"] for t in toast_visible()] == ["Card notice 3", "Card notice 4"],
+              "then the waiting two show over the card", [t["text"] for t in toast_visible()])
     hide screen sb_char
     python:
         toast_tick()
-        check(len(toast_visible()) == 3, "back on campus, the waiting toast shows too", [t["text"] for t in toast_visible()])
+        _zz_seen.update(t["text"] for t in toast_visible())
+        check(_zz_seen == set("Card notice %d" % (i + 1) for i in range(4)) and len(toast_visible()) == 2,
+              "every toast gets its full turn; none is lost to the person view", (sorted(_zz_seen), [t["text"] for t in TOASTQ.items]))
+        for _i in range(3):
+            toast("Late notice %d" % (_i + 1))
+        toast_tick()
+        check(len(toast_visible()) == 4, "back on campus, four at a time again", [t["text"] for t in toast_visible()])
         toast_clear()
         zz_swap("missions_with", _old_mw)
         del threads[_ntid]
+        ## At the confession ceiling the card doesn't say "know them better".
+        here = "rooftop"
+        period = "Evening"
+        bonds["nobara"] = 90
+        affection["nobara"] = 100
+        together = []
+        spent_today = set()
+        stamina = stamina_max
+        check(confession_ready("nobara"), "fixture: Nobara is ready for the confession")
+    scene expression graded_bg()
+    show screen sb_char("nobara")
+    $ shot("person_confession_ready", wait=0.5)
+    python:
+        _t = zz_texts("sb_char")
+        check(not any("know them better" in s for s in _t) and any(u"Say it" in s for s in _t),
+              "at the ceiling the card offers Say it without 'know them better'", [s for s in _t if "/" in s or "Say" in s])
+        check(any("the rest is up to me" in s for s in _t), "and says the rest is up to me")
+        bonds["nobara"] = 30
+        affection["nobara"] = aff_cap("nobara")
+        check(0 < aff_cap("nobara") < AFF_BASE_MAX, "fixture: Nobara's affection is held back by the bond", aff_cap("nobara"))
+    hide screen sb_char
+    show screen sb_char("nobara")
+    $ renpy.pause(0.1, hard=True)
+    python:
+        check(any("know them better" in s for s in zz_texts("sb_char")), "while the bond holds affection back, the note shows")
+    hide screen sb_char
+    python:
         bonds["nobara"] = 0
         affection["nobara"] = 0
+        ## Panda's courtyard caption names Toge, so it needs Toge there (4.4).
+        _r0 = list(roster)
+        for _w in ("panda", "toge"):
+            if _w not in roster:
+                roster.append(_w)
+        period = "Morning"
+        check("toge" not in who_is_here("courtyard"), "fixture: Toge isn't in the courtyard on a morning")
+        check(ambient_of("panda", "courtyard")[0] == "waiting for a sparring partner",
+              "Panda in the courtyard without Toge is waiting for a sparring partner", ambient_of("panda", "courtyard"))
+        pin("toge", "courtyard")
+        check(ambient_of("panda", "courtyard")[0] == "sparring with Toge",
+              "with Toge there, Panda is sparring with Toge", ambient_of("panda", "courtyard"))
+        schedule_overrides.pop(("toge", day, period), None)
+        roster[:] = _r0
 
     ## --- the map's HUD ----------------------------------------------------------------------
     show screen sb_map
@@ -525,8 +600,39 @@ label zz_smoke:
         check_objective()
         check(renpy.get_screen("objective_toast") is not None, "a changed objective shows")
         renpy.hide_screen("objective_toast")
+    hide screen sb_place
+    ## A save loaded onto `call screen sb_place` (an old one: last_objective
+    ## None) gets NEXT as the view appears, without the loop's check.
+    python:
+        last_objective = None
+        OBJ_UNSEEN[0] = None
+        zz_swap("objective_text", lambda: "Roll call with Principal Yaga — Classroom Building, mornings")
+    show screen sb_place
+    $ renpy.pause(0.3, hard=True)
+    python:
+        check(renpy.get_screen("objective_toast") is not None and (last_objective or "").startswith("Roll call"),
+              "the place view runs the objective check as it appears (a loaded save)", last_objective)
+        renpy.hide_screen("objective_toast")
+    hide screen sb_place
+    python:
+        ## A load counts the objective as unread, even if a waiting toast was
+        ## saved away before it slid in.
+        _objective_after_load()
+        check(OBJ_UNSEEN[0] == last_objective, "after a load the objective counts as unread", OBJ_UNSEEN[0])
+    show screen sb_place
+    $ renpy.pause(0.3, hard=True)
+    python:
+        check(renpy.get_screen("objective_toast") is not None, "so the loaded place view shows it again")
+        renpy.hide_screen("objective_toast")
+        OBJ_UNSEEN[0] = None
+    hide screen sb_place
+    show screen sb_place
+    $ renpy.pause(0.3, hard=True)
+    python:
+        check(renpy.get_screen("objective_toast") is None, "but not every time the place view appears")
         zz_swap("objective_text", _old_ot)
         last_objective = None
+        OBJ_UNSEEN[0] = None
         day = 1
     hide screen sb_place
 
@@ -561,6 +667,50 @@ label zz_smoke:
         check(not renpy.showing("yuji"), "the scene resets after the activity")
         check(PERIODS.index(period) == PERIODS.index(_p0) + 1, "the activity charged its period", (_p0, period))
         ZZ_WATCH[0] = None
+
+    ## record_act, train_together and raise_reserve are called (task 4)
+    python:
+        del ZZ_CALLS[:]
+        _o_rec = zz_swap("record_act", lambda aid, who: ZZ_CALLS.append(("rec", aid, who)))
+        _o_tt = zz_swap("train_together", lambda who, n=3, stat=None: ZZ_CALLS.append(("tt", who, n, stat)))
+        _o_rr = zz_swap("raise_reserve", lambda n: ZZ_CALLS.append(("rr", n)))
+        here = "classroom"
+        period = "Morning"
+        bonds["yuji"] = 30
+        stamina = stamina_max
+        spent_today = set()
+    $ autoplay()
+    call sb_activity("study", "yuji")
+    $ autoplay(False)
+    python:
+        check(("rec", "study", "yuji") in ZZ_CALLS, "sb_activity records the act (record_act)", ZZ_CALLS)
+        check([c for c in ZZ_CALLS if c[0] == "tt"] == [("tt", "yuji", 2, "insight")],
+              "studying together trains them too: train_together(yuji, 2, insight)", ZZ_CALLS)
+        del ZZ_CALLS[:]
+        here = "dojo"
+        period = "Morning"
+        stamina = stamina_max
+        spent_today = set()
+    $ autoplay()
+    call sb_activity("train", "yuji")
+    $ autoplay(False)
+    python:
+        check([c for c in ZZ_CALLS if c[0] == "tt"] == [("tt", "yuji", 3, "output")],
+              "a spar calls train_together(yuji, 3, output) exactly once", ZZ_CALLS)
+        check(("rec", "train", "yuji") in ZZ_CALLS, "and records the act", ZZ_CALLS)
+        del ZZ_CALLS[:]
+        here = "courtyard"
+        period = "Morning"
+        stamina = stamina_max
+    $ autoplay()
+    call sb_do_train
+    $ autoplay(False)
+    python:
+        check(ZZ_CALLS == [("rr", 1)], "training alone deepens the reserve: raise_reserve(1)", ZZ_CALLS)
+        zz_swap("record_act", _o_rec)
+        zz_swap("train_together", _o_tt)
+        zz_swap("raise_reserve", _o_rr)
+        del ZZ_CALLS[:]
 
     ## once a day: hold, rest, racks
     python:

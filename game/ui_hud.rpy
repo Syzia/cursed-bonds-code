@@ -115,6 +115,10 @@ init python:
         the next ones waiting. Restarts the interaction only on a change."""
         now = _hud_time.time()
         items = TOASTQ.items
+        ## Toasts the current limit hides (the person view shows two) stop
+        ## their clocks and wait, so none expires unseen (4.2).
+        for t in items[toast_limit():]:
+            t["t_shown"] = None
         keep = [t for t in items if t["t_shown"] is None or now - t["t_shown"] < TOAST_LIFE]
         changed = len(keep) != len(items)
         if changed:
@@ -159,8 +163,23 @@ init python:
         it."""
         return Transform(function=_toast_fx_fn(t))
 
+    import re as _hud_re
+
+    _NOTIFY_STAT = _hud_re.compile(u"^((Control|Output|Insight) \\+\\d+|Technique advanced\\b)")
+
+    def notify_kind(m):
+        """WP7. The toast kind for a renpy.notify message: thread news
+        (sb_threads) wears 糸, stat gains and technique tiers (gain()) wear
+        術, anything else is 'info'."""
+        m = builtins.str(m)
+        if m.startswith(u"New thread") or m.endswith(u"— advanced"):
+            return "thread"
+        if _NOTIFY_STAT.match(m):
+            return "stat"
+        return "info"
+
     TOAST_SINK[0] = toast_push
-    config.notify = lambda m: toast(m)
+    config.notify = lambda m: toast(m, notify_kind(m))
     config.overlay_screens.append("toasts")
     config.after_load_callbacks.append(toast_clear)
 
@@ -210,6 +229,13 @@ init python:
             arrival_caption()
             objective_delay()
             renpy.show_screen("objective_toast", txt)
+
+    def _objective_after_load():
+        ## A load counts the objective as unread: the place view shows it
+        ## again, even if a toast that was still waiting got saved away.
+        OBJ_UNSEEN[0] = getattr(store, "last_objective", None)
+
+    config.after_load_callbacks.append(_objective_after_load)
 
     def objective_leave():
         """WP7. Called by the loop as it leaves the place view: takes the

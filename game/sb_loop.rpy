@@ -288,7 +288,7 @@ label sb_do_release:
     if companion:
         $ _n = CAST[companion]["short"]
         $ companion = None
-        "[_n] peels off at the next corner with a half-wave."
+        "[_n] peels off with a half-wave and goes back to their own day."
     return
 
 

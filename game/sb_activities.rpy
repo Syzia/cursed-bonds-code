@@ -54,7 +54,7 @@ init -1 python:
              per=("Evening", "Night")),
 
         ## Gojo's lesson, on the odd day he's in his office (5.3, D17).
-        dict(id="lesson",   label="Take the lesson",   hint="He's in. He says eleven minutes. It never is.",
+        dict(id="lesson",   label="Take the lesson",   hint="He's in. He says eleven minutes. It was, once.",
              kind="friend", min_bond=0,  cost=1, who=("gojo",), loc=("gojo_office",),
              when="lesson_ok"),
 
@@ -250,13 +250,8 @@ init -1 python:
                 out.append(_choice_do(aid))
                 break
 
-        ## 6. The one activity that suits the place (after dark, the stars first).
-        order = ["eat", "train", "swim", "study", "walk"]
-        if store.period in ("Evening", "Night"):
-            order.insert(1, "stargaze")
-        else:
-            order.append("stargaze")
-        for aid in order:
+        ## 6. The one activity that suits the place, in section 6's order.
+        for aid in ("eat", "train", "swim", "stargaze", "study", "walk"):
             if len(out) < 3 and _choice_ok(aid, who, loc):
                 out.append(_choice_do(aid))
                 break
@@ -292,7 +287,7 @@ label act_lesson(who):
         gojo "Question. When you hold a second, where does the rest of the world go?"
         mc "Nowhere. It waits."
         gojo serious "Wrong. It doesn't know it's waiting. That's the part you should find scary."
-        "He puts a sweet on the table between us and tells me to stop him picking it up. I stop the second. When it starts again, the sweet is already in his hand."
+        "He puts a sweet on the table between us and tells me to stop him picking it up. I stop the second. I can't hold it long enough to do anything with it, and when it starts again he picks the sweet up as if I hadn't."
         gojo happy "See? You're good. I'm just better. Eat that, it's a reward."
         "Walking out, my control feels tighter, like something in me has been tuned half a turn."
 

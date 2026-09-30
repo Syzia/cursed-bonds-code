@@ -59,6 +59,13 @@ init python:
     ## Anyone without a row at all.
     AMBIENT_FALLBACK = ("waiting for something", "neutral")
 
+    ## Rows that name someone else: (who, place) -> (the person the caption
+    ## needs, the caption while they're not there). The schedule never puts
+    ## Toge in the courtyard when Panda is, so Panda usually waits.
+    AMBIENT_NEEDS = {
+        ("panda", "courtyard"): ("toge", ("waiting for a sparring partner", "happy")),
+    }
+
     ## How big people stand in a place, and how far up (4.4). A place not
     ## listed uses zoom 0.52 and y 0.
     PLACE_STAGING = {
@@ -88,8 +95,13 @@ init python:
 
     def ambient_of(who, loc):
         """WP7. (caption, expression) for someone at a place, e.g.
-        ("halfway through an enormous bowl", "happy") (4.4)."""
-        return AMBIENT.get((who, loc)) or AMBIENT.get((who, None)) or AMBIENT_FALLBACK
+        ("halfway through an enormous bowl", "happy") (4.4). A caption that
+        names someone else (AMBIENT_NEEDS) only shows while they're there."""
+        row = AMBIENT.get((who, loc))
+        need = AMBIENT_NEEDS.get((who, loc))
+        if row and need and need[0] not in who_is_here(loc):
+            return need[1]
+        return row or AMBIENT.get((who, None)) or AMBIENT_FALLBACK
 
     def greet_expr(who):
         """WP7. The expression someone looks up with (PERSON_GREET_EXPR)."""
@@ -275,6 +287,13 @@ init python:
                 out.append("AMBIENT (%s, %s): %r is not an expression" % (who, loc, expr))
             elif who in CAST and not renpy.has_image("%s %s" % (who, expr)):
                 out.append("AMBIENT (%s, %s): no image '%s %s'" % (who, loc, who, expr))
+        for (who, loc), (need, (cap, expr)) in AMBIENT_NEEDS.items():
+            if (who, loc) not in AMBIENT:
+                out.append("AMBIENT_NEEDS (%s, %s): no AMBIENT row" % (who, loc))
+            if need not in CAST:
+                out.append("AMBIENT_NEEDS (%s, %s): %r is not a person" % (who, loc, need))
+            if expr not in EXPRESSIONS or not renpy.has_image("%s %s" % (who, expr)):
+                out.append("AMBIENT_NEEDS (%s, %s): no image '%s %s'" % (who, loc, who, expr))
         for loc, st in PLACE_STAGING.items():
             if loc not in places:
                 out.append("PLACE_STAGING: %r is not a place" % loc)
@@ -363,6 +382,11 @@ screen sb_cost(n):
 screen sb_place():
 
     tag sandbox
+
+    ## The objective check also runs as the view appears, so a save loaded
+    ## onto this screen gets its NEXT toast straight away (3.10). It does
+    ## nothing when the objective hasn't changed.
+    on ("show", "replace") action Function(check_objective)
 
     $ _stage, _extra = stage_people(here)
     $ _xs = STAGE_CENTRES.get(len(_stage), [])
@@ -619,7 +643,10 @@ screen sb_char(who):
                 use meter(_b, width=740, height=10, fill=_col)
 
             if _rom and _a > 0:
-                $ _capped = _a >= _cap and _cap < AFF_TRUE_MAX
+                ## The note shows only while the bond is what holds affection
+                ## back; at the pre-confession ceiling the rest is up to me.
+                $ _capped = _a >= _cap and _cap < AFF_BASE_MAX
+                $ _ready = confession_ready(who)
                 vbox:
                     spacing 6
                     hbox:
@@ -628,6 +655,8 @@ screen sb_char(who):
                         text "[_arank]" color gui.romance size 20 yalign 0.5
                         if _capped:
                             text _("([_a]/[_cap] · I'd have to know them better)") style "jjk_label" yalign 0.5
+                        elif _ready:
+                            text _("([_a]/[_cap] · the rest is up to me)") style "jjk_label" yalign 0.5
                         else:
                             text "([_a]/[_cap])" style "jjk_label" yalign 0.5
                     use meter(_a, max(1, _cap), width=740, height=10, fill=gui.romance)
