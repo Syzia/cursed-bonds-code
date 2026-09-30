@@ -10,7 +10,84 @@
 ## Shared helpers
 ################################################################################
 
+## The game's fonts (Shippori Mincho, Zen Kaku Gothic New) have no Latin
+## Extended-A letters, so "Zankō", "Ryōsuke", "Kantō" and "Sōma" lost their
+## ō. These font groups take those letters (and ✓ ◌ ∞) from Ren'Py's bundled
+## DejaVu Sans (its Bold cut for the bold bases) and everything else from the
+## base font. Built at init -1, after gui.rpy's fonts (-2) and before any style
+## or screen that uses them. At init 999 every style whose font is still one of
+## the plain base files (gui.text_properties() sets many) gets its group too.
+init -1 python:
+
+    MACRON_FONTS = {}
+
+    def macron_fallback(base):
+        """WP8. The DejaVu cut that matches `base`: Bold for a bold file."""
+        if "Bold" in str(base):
+            return "DejaVuSans-Bold.ttf"
+        return "DejaVuSans.ttf"
+
+    def macron_font(base):
+        """WP8. `base` as a FontGroup that draws U+0100-017F (ō, ū, ā ...)
+        and ✓ ◌ ∞ in DejaVu Sans. One group per base font, built at init."""
+        fg = MACRON_FONTS.get(base)
+        if fg is None:
+            dv = macron_fallback(base)
+            fg = FontGroup()
+            fg.add(dv, 0x0100, 0x017F)
+            for _c in (0x2713, 0x25CC, 0x221E):
+                fg.add(dv, _c, _c)
+            fg.add(base, None, None)
+        return fg
+
+    for _mf in (gui.text_font, gui.name_text_font, gui.interface_text_font,
+                gui.display_font, gui.display_heavy_font, gui.body_font,
+                gui.body_medium_font, gui.body_bold_font):
+        MACRON_FONTS[_mf] = macron_font(_mf)
+    del _mf
+
+init 999 python:
+
+    def macron_styles():
+        """WP8. Give every style whose font (or prefixed font) is still a
+        plain base file its macron group, in place. Returns how many it
+        changed. The game's style statements are deferred (gui.init sets
+        config.defer_styles), so this runs from config.init_system_styles,
+        which Ren'Py calls right after it applies them and before it builds
+        the styles, at startup and on every GUI rebuild."""
+        n = 0
+        for _s in list(renpy.style.styles.values()):
+            for _d in (getattr(_s, "properties", None) or ()):
+                for _k in list(_d.keys()):
+                    if not _k.endswith("font") or "emoji" in _k:
+                        continue
+                    _v = _d[_k]
+                    if isinstance(_v, str) and _v in MACRON_FONTS:
+                        _d[_k] = MACRON_FONTS[_v]
+                        n += 1
+        macron_styles.changed = getattr(macron_styles, "changed", 0) + n
+        return n
+
+    def _macron_system_styles(_orig=config.init_system_styles):
+        if _orig is not None:
+            _orig()
+        try:
+            macron_styles()
+        except Exception:
+            pass
+
+    config.init_system_styles = _macron_system_styles
+
 init python:
+
+    def mc_portrait_label():
+        """WP8 (4.11). The portrait preference's label: "[mc_name]'S
+        PORTRAIT" once Gojo has asked for the name, "MY PORTRAIT" on the
+        main menu and before that (nobody says the name before he asks).
+        The rule is the journal's jr_name_known(), which the Stats tab uses too."""
+        if not jr_name_known():
+            return _("MY PORTRAIT")
+        return _("[mc_name!u]'S PORTRAIT")
 
     _speaker_cache = {}
 
@@ -68,6 +145,7 @@ screen rule(width=None):
 
 style default:
     properties gui.text_properties()
+    font macron_font(gui.text_font)
     language gui.language
 
 style input:
@@ -132,11 +210,11 @@ style frame:
 ## Reusable text roles ---------------------------------------------------------
 
 style jjk_display is text:
-    font gui.display_font
+    font macron_font(gui.display_font)
     color gui.paper
 
 style jjk_label is text:
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     color gui.dim
     size 17
     kerning gui.track
@@ -174,8 +252,14 @@ screen say(who, what):
 
         text what id "what"
 
-    if not renpy.variant("small"):
-        add SideImage() xalign 0.0 yalign 1.0
+    ## The speaker's portrait, when they are off screen (WP8, 4.11). At zoom
+    ## 0.8 the widest portrait is 288x178, inside the 300px margin the name
+    ## and the dialogue start at, so it never overlaps the text. The prologue's
+    ## blackout hides every portrait (hide_side_images), and the player can
+    ## hide their own (Preferences, "[mc_name]'s portrait").
+    if not renpy.variant("small") and not hide_side_images:
+        if persistent.mc_face or renpy.get_say_image_tag() != "mc":
+            add SideImage() xpos 6 yalign 1.0 zoom 0.8 id "side_portrait"
 
 
 init python:
@@ -207,6 +291,7 @@ style namebox:
 
 style say_label:
     properties gui.text_properties("name", accent=True)
+    font macron_font(gui.name_text_font)
     xalign gui.name_xalign
     yalign 0.5
 
@@ -248,7 +333,7 @@ style input_prompt:
 style input:
     xalign gui.dialogue_text_xalign
     xmaximum gui.dialogue_width
-    font gui.display_font
+    font macron_font(gui.display_font)
     size 40
     color gui.paper
 
@@ -282,9 +367,15 @@ style choice_button is default:
 
 style choice_button_text is default:
     properties gui.text_properties("choice_button")
+    font macron_font(gui.choice_button_text_font)
 
 
 ## Quick menu ------------------------------------------------------------------
+##
+## D25: BACK · HISTORY · SKIP · AUTO · SAVE · JOURNAL · MENU. It hides itself
+## while any screen tagged sandbox (the campus) or menu (the journal, the game
+## menu) is showing, so it only appears in dialogue. MENU opens the game menu,
+## whose navigation column is the pause menu.
 
 screen quick_menu():
 
@@ -293,18 +384,18 @@ screen quick_menu():
     if quick_menu and not renpy.get_screen(("sandbox", "menu")):
 
         hbox:
+            id "quick_menu_bar"
             style_prefix "quick"
             style "quick_menu"
 
             textbutton _("BACK") action Rollback()
-            textbutton _("STATUS") action ShowMenu('jjk_status')
             textbutton _("HISTORY") action ShowMenu('history')
             textbutton _("SKIP") action Skip() alternate Skip(fast=True, confirm=True)
             textbutton _("AUTO") action Preference("auto-forward", "toggle")
             textbutton _("SAVE") action ShowMenu('save')
-            textbutton _("Q.SAVE") action QuickSave()
-            textbutton _("Q.LOAD") action QuickLoad()
-            textbutton _("MENU") action ShowMenu('preferences')
+            if not _in_replay:
+                textbutton _("JOURNAL") action ShowMenu('journal')
+            textbutton _("MENU") action ShowMenu()
 
 init python:
     config.overlay_screens.append("quick_menu")
@@ -327,7 +418,7 @@ style quick_button:
 
 style quick_button_text:
     properties gui.text_properties("quick_button")
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     kerning gui.track
 
 
@@ -353,8 +444,8 @@ screen navigation():
 
         else:
 
-            textbutton _("Status") action ShowMenu("jjk_status")
-            textbutton _("Journal") action ShowMenu("jjk_journal")
+            if not _in_replay:
+                textbutton _("Journal") action ShowMenu("journal")
             textbutton _("History") action ShowMenu("history")
             textbutton _("Save") action ShowMenu("save")
 
@@ -385,7 +476,7 @@ style navigation_button:
 
 style navigation_button_text:
     properties gui.text_properties("navigation_button")
-    font gui.display_font
+    font macron_font(gui.display_font)
     size 34
     kerning 1.5
 
@@ -465,13 +556,13 @@ style main_menu_vbox:
     spacing 14
 
 style main_menu_kicker is main_menu_text:
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     size 21
     color gui.violet2
     kerning 6
 
 style main_menu_title is main_menu_text:
-    font gui.display_heavy_font
+    font macron_font(gui.display_heavy_font)
     size gui.title_text_size
     color gui.paper
     line_spacing -22
@@ -482,7 +573,7 @@ style main_menu_sub is main_menu_text:
     kerning 3
 
 style main_menu_kanji is text:
-    font gui.display_heavy_font
+    font macron_font(gui.display_heavy_font)
     size 400
     color "#a259ff12"
 
@@ -610,7 +701,7 @@ style game_menu_label:
     ypos 78
 
 style game_menu_label_text:
-    font gui.display_font
+    font macron_font(gui.display_font)
     size 46
     color gui.paper
 
@@ -763,7 +854,7 @@ style page_label_text:
     text_align 0.5
     layout "subtitle"
     hover_color gui.hover_color
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     size 20
     color gui.dim
     kerning gui.track
@@ -773,7 +864,7 @@ style page_button:
 
 style page_button_text:
     properties gui.text_properties("page_button")
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     size 22
 
 style slot_button:
@@ -787,7 +878,7 @@ style slot_button_text:
     properties gui.text_properties("slot_button")
 
 style slot_name_text is slot_button_text:
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     color gui.paper
     size 19
     kerning 1
@@ -837,6 +928,13 @@ screen preferences():
                     textbutton _("Disable") action Preference("rollback side", "disable")
                     textbutton _("Left") action Preference("rollback side", "left")
                     textbutton _("Right") action Preference("rollback side", "right")
+
+                ## WP8 (4.11): my own side portrait beside my lines.
+                vbox:
+                    style_prefix "radio"
+                    label mc_portrait_label()
+                    textbutton _("Show") action SetField(persistent, "mc_face", True)
+                    textbutton _("Hide") action SetField(persistent, "mc_face", False)
 
             use rule()
 
@@ -912,7 +1010,7 @@ style pref_label:
     bottom_margin 6
 
 style pref_label_text:
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     size 17
     color gui.dim
     kerning gui.track
@@ -1014,7 +1112,7 @@ style history_name:
     xsize gui.history_name_width
 
 style history_name_text:
-    font gui.display_font
+    font macron_font(gui.display_font)
     size 24
     min_width gui.history_name_width
     text_align gui.history_name_xalign
@@ -1171,7 +1269,7 @@ style help_label_text:
     size 22
     xalign 1.0
     text_align 1.0
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     color gui.dim
 
 style help_text:
@@ -1229,7 +1327,7 @@ style confirm_frame:
     yalign .5
 
 style confirm_prompt_text:
-    font gui.display_font
+    font macron_font(gui.display_font)
     size 30
     text_align 0.5
     layout "subtitle"
@@ -1244,7 +1342,7 @@ style confirm_button:
 
 style confirm_button_text:
     properties gui.text_properties("confirm_button")
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     size 22
     kerning 2
 
@@ -1290,7 +1388,7 @@ style skip_frame:
     padding gui.skip_frame_borders.padding
 
 style skip_text:
-    font gui.body_medium_font
+    font macron_font(gui.body_medium_font)
     size 18
     color gui.dim
     kerning gui.track
@@ -1354,7 +1452,10 @@ screen nvl(dialogue, items=None):
                 action i.action
                 style "nvl_button"
 
-    add SideImage() xalign 0.0 yalign 1.0
+    ## The same portrait rules as the say screen.
+    if not hide_side_images:
+        if persistent.mc_face or renpy.get_say_image_tag() != "mc":
+            add SideImage() xpos 6 yalign 1.0 zoom 0.8
 
 
 screen nvl_dialogue(dialogue):
@@ -1527,12 +1628,15 @@ screen quick_menu():
     if quick_menu and not renpy.get_screen(("sandbox", "menu")):
 
         hbox:
+            id "quick_menu_bar"
             style "quick_menu"
             style_prefix "quick"
 
             textbutton _("BACK") action Rollback()
             textbutton _("SKIP") action Skip() alternate Skip(fast=True, confirm=True)
             textbutton _("AUTO") action Preference("auto-forward", "toggle")
+            if not _in_replay:
+                textbutton _("JOURNAL") action ShowMenu('journal')
             textbutton _("MENU") action ShowMenu()
 
 style game_menu_navigation_frame:
