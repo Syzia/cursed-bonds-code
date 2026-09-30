@@ -6,11 +6,12 @@
 ################################################################################
 
 init 1 python:
-    ev("ms_nade_1", kind="mission", loc="office", min_day=10, priority=80,
+    ## Order and gaps come from the mission chain (m_nade_1..3); no dates.
+    ev("ms_nade_1", kind="mission", loc="office", priority=80,
        requires=("sunmall_done",))
-    ev("ms_nade_2", kind="mission", loc="office", min_day=14, priority=80,
+    ev("ms_nade_2", kind="mission", loc="office", priority=80,
        requires=("nade_named",))
-    ev("ms_nade_3", kind="mission", loc="office", min_day=18, priority=90,
+    ev("ms_nade_3", kind="mission", loc="office", priority=90,
        requires=("nade_traced",))
 
 
@@ -18,7 +19,7 @@ init 1 python:
 
 label ms_nade_1:
 
-    yaga "Ryōsuke Nade."
+    yaga "Ryosuke Nade."
 
     yaga "Grade 2. Fourteen years in the field, six of them in assessment. He is the man who walked around the Kawagoe Sun Mall for forty minutes and wrote {i}three{/i} on a form."
 
@@ -40,16 +41,14 @@ label ms_nade_1:
     $ _pn = CAST[_p]["short"]
 
     scene bg city with fade_hard
-    show expression _p at pos_cr
-    show mc at pos_l
+    show expression _p at pos_c
     with dissolve
 
     "The warehouse has been empty for nine years. The door is chained from the inside, which is the first thing that is wrong, because somebody chained it and then did not leave."
 
-    if technique == "timestop":
-        "You hold the room. Dust hangs. And in the held second you have time to walk the whole floor and read what the survey missed — chalk marks at the roof beams, six weeks old, where somebody measured something and did not write it down."
-        $ gain("control", 2)
-        $ flag("found_nade_marks")
+    "You hold the room. Dust hangs. And in the held second you have time to read the whole floor from the doorway — chalk marks at the roof beams, six weeks old, where somebody measured something and did not write it down."
+    $ gain("control", 2)
+    $ flag("found_nade_marks")
 
     "[_pn] gets a hand on your sleeve before you are four metres in."
 
@@ -60,7 +59,7 @@ label ms_nade_1:
     else:
         yuji "Uh — that's not a four, right? Tell me that's not a four."
 
-    show expression _p at pos_fr
+    show expression _p at pos_cl
     with move
 
     "It comes down off the roof beams in a way that a grade 4 does not have the mass to do."
@@ -112,8 +111,6 @@ label ms_nade_2:
     yaga "Go and look at the annexe. Do not engage him. Look."
 
     scene bg ruin with fade_curse
-    show mc at pos_l
-    with dissolve
 
     "The annexe is two floors of shelving and a smell of wet paper."
 
@@ -125,15 +122,10 @@ label ms_nade_2:
 
     mcthink "Somebody else fills in the grade."
 
-    if technique == "filament":
-        "Your threads find the drawer under the desk before your hands do. There is a phone in it, switched off, and a second one that is not."
-        $ gain("control", 2)
-        $ flag("found_the_phone")
-    elif technique == "timestop":
-        "You hold the annexe and go through the desk at your leisure, in a second that is not passing."
-        "A phone, switched off. A second one that is not. And on the blotter, pressed through from a sheet that is no longer there: {i}I can't keep doing eleven.{/i}"
-        $ gain("control", 3)
-        $ flag("found_the_blotter")
+    "You hold the annexe and go through the desk at your leisure, in a second that is not passing."
+    "A phone, switched off. A second one that is not. And on the blotter, pressed through from a sheet that is no longer there: {i}I can't keep doing eleven.{/i}"
+    $ gain("control", 3)
+    $ flag("found_the_blotter")
 
     "The shikigami is in the stairwell, and it has been left here, which means Nade knew somebody would come."
 
@@ -171,11 +163,10 @@ label ms_nade_3:
     yaga "Gojo will be four streets away eating something. That is as much supervision as this warrants."
 
     scene bg town_street with fade_slow
-    show nade at pos_cr
-    show mc at pos_l
+    show nade at pos_c
     with dissolve
 
-    "Ryōsuke Nade is forty-six and has not slept properly in some time. He opens the door before you knock."
+    "Ryosuke Nade is forty-six and has not slept properly in some time. He opens the door before you knock."
 
     nade "You're one of Yaga's."
 
@@ -228,7 +219,7 @@ label ms_nade_3:
 
     nade "Don't tell me his name. I've spent six years not knowing it on purpose and I'd like to keep that."
 
-    "It is a map of the Kantō region. There are eleven circles on it in red, and a twelfth in a different hand."
+    "It is a map of the Kanto region. There are eleven circles on it in red, and a twelfth in a different hand."
 
     "The twelfth is around a town you know extremely well, because you grew up in it, and the date beside it is four years before the alley."
 

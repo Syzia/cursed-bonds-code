@@ -44,18 +44,18 @@ init 1 python:
     ev("ev_yaga_2",   who="yaga",   min_bond=40)
 
     ## --- the arc's story mission ----------------------------------------------
-    ev("ev_mission_sunmall", kind="mission", loc="office", min_day=8,
+    ## Its place in the story comes from the mission chain (m_sunmall), not a
+    ## date. ev_patrol is retired (Utahime's board replaced it): its label
+    ## stays below for old saves, but it is no longer registered.
+    ev("ev_mission_sunmall", kind="mission", loc="office",
        requires=("settled_in", "roll_call"), priority=100)
-    ev("ev_patrol", kind="mission", loc="office", once=False,
-       requires=("mission_board_open",))
 
 label ev_yuji_1:
 
     scene bg rooftop
     with fade_slow
 
-    show yuji at pos_cr
-    show mc at pos_l
+    show yuji at pos_c
     with dissolve
 
     "You find Itadori on the roof of the dormitory block, doing push-ups, badly, while eating."
@@ -147,8 +147,7 @@ label ev_megumi_1:
     scene bg forest
     with fade_slow
 
-    show megumi at pos_cr
-    show mc at pos_l
+    show megumi at pos_c
     with dissolve
 
     "Fushiguro is forty minutes into the treeline behind the school, alone, doing nothing at all."
@@ -177,16 +176,9 @@ label ev_megumi_1:
             "You stand there."
             "It is, for the first four minutes, unbearable. Your brain offers you eleven conversation topics and you decline all of them."
             "At minute six, something changes."
-            if technique == "timestop":
-                "You hold a second, out of curiosity, with nothing in it to escape."
-                "The forest stops. The wind stops. Megumi stops, mid-breath, exactly as still as he was already trying to be."
-                mcthink "He was almost there on his own."
-            elif technique == "filament":
-                "Your threads drift out on their own and find the trees, the roots, the cold seam of water under the hill."
-                mcthink "It's the first time I've used it without being terrified."
-            else:
-                "The heat under your sternum stops straining outward and just... sits there, banked, patient."
-                mcthink "Oh. It doesn't have to be a fire. It can be a stove."
+            "You hold a second, out of curiosity, with nothing in it to escape."
+            "The forest stops. The wind stops. Megumi stops, mid-breath, exactly as still as he was already trying to be."
+            mcthink "He was almost there on his own."
             "At minute twenty Megumi opens his eyes."
             megumi "You didn't talk."
             mc "You were working."
@@ -239,8 +231,7 @@ label ev_nobara_1:
     scene bg city
     with fade_slow
 
-    show nobara at pos_cr
-    show mc at pos_l
+    show nobara at pos_c
     with dissolve
 
     "You do not choose to spend the afternoon with Kugisaki. Kugisaki informs you that you are spending the afternoon with her, and then a train happens."
@@ -316,8 +307,7 @@ label ev_maki_1:
     scene bg training
     with fade_slow
 
-    show maki at pos_cr
-    show mc at pos_l
+    show maki at pos_c
     with dissolve
 
     "Maki does not do conversation. Maki does repetitions, and if you happen to be in the room, conversation occasionally falls out."
@@ -471,8 +461,7 @@ label ev_panda_1:
 label ev_toge_1:
 
     scene bg rooftop with fade_slow
-    show toge at pos_cr
-    show mc at pos_l
+    show toge at pos_c
     with dissolve
 
     "Inumaki is on the roof with his hood up and his phone out, and he lifts two fingers when he sees you, which you have learned means {i}sit down{/i}."
@@ -525,8 +514,7 @@ label ev_toge_1:
 label ev_shoko_1:
 
     scene bg infirmary with fade_slow
-    show shoko at pos_cr
-    show mc at pos_l
+    show shoko at pos_c
     with dissolve
 
     "You come in for a wrist you're fairly sure is fine. Shoko Ieiri looks at it for four seconds and tells you it is not fine."
@@ -581,8 +569,7 @@ label ev_shoko_1:
 label ev_yuji_2:
 
     scene bg cafeteria with fade_slow
-    show yuji at pos_cr
-    show mc at pos_l
+    show yuji at pos_c
     with dissolve
 
     "Itadori has cooked. It is nine in the evening and there is enough food on the table for eleven people and there are two of you."
@@ -631,8 +618,7 @@ label ev_yuji_2:
 label ev_megumi_2:
 
     scene bg forest with fade_slow
-    show megumi at pos_cr
-    show mc at pos_l
+    show megumi at pos_c
     with dissolve
 
     "Megumi is sitting on a root instead of standing, which for him is practically lying down."
@@ -686,8 +672,7 @@ label ev_megumi_2:
 label ev_nobara_2:
 
     scene bg courtyard with fade_slow
-    show nobara at pos_cr
-    show mc at pos_l
+    show nobara at pos_c
     with dissolve
 
     "Kugisaki is sitting on the steps with her shoes off, and she does not look up when you sit down."
@@ -741,8 +726,7 @@ label ev_nobara_2:
 label ev_maki_2:
 
     scene bg dojo with fade_slow
-    show maki at pos_cr
-    show mc at pos_l
+    show maki at pos_c
     with dissolve
 
     "Two hours of drills and then, without any change in tone, while wiping down a blade:"
@@ -805,8 +789,7 @@ label ev_maki_2:
 label ev_shoko_2:
 
     scene bg rooftop with fade_slow
-    show shoko at pos_cr
-    show mc at pos_l
+    show shoko at pos_c
     with dissolve
 
     "Shoko is on the roof at dusk with a cigarette, which she does not hide and does not explain."
@@ -872,8 +855,7 @@ label ev_shoko_2:
 label ev_nobara_r1:
 
     scene bg riverside with fade_slow
-    show nobara at pos_cr
-    show mc at pos_l
+    show nobara at pos_c
     with dissolve
 
     "She drags you down to the water on a Sunday with a bag she will not let you look in."
@@ -929,8 +911,7 @@ label ev_nobara_r1:
 label ev_maki_r1:
 
     scene bg dojo with fade_slow
-    show maki at pos_cr
-    show mc at pos_l
+    show maki at pos_c
     with dissolve
 
     "It's past eleven and the dojo lamps are down to one, and Maki is still working, and so are you, because that is apparently what the two of you are now."
@@ -984,8 +965,7 @@ label ev_maki_r1:
 label ev_shoko_r1:
 
     scene bg infirmary with fade_slow
-    show shoko at pos_cr
-    show mc at pos_l
+    show shoko at pos_c
     with dissolve
 
     "You come in at two in the morning because you cannot sleep, and the light is on, because it always is."
@@ -1091,8 +1071,7 @@ label ev_patrol:
 label ev_yuji_3:
 
     scene bg rooftop with fade_slow
-    show yuji at pos_cr
-    show mc at pos_l
+    show yuji at pos_c
     with dissolve
 
     "He asks you up to the roof, which he has never done. Itadori doesn't ask; he arrives."
@@ -1154,8 +1133,7 @@ label ev_yuji_3:
 label ev_megumi_3:
 
     scene bg dorm_common with fade_slow
-    show megumi at pos_cr
-    show mc at pos_l
+    show megumi at pos_c
     with dissolve
 
     "The folder has been on your desk for two weeks. You have read it eleven times."
@@ -1223,8 +1201,7 @@ label ev_megumi_3:
 label ev_nobara_3:
 
     scene bg city with fade_slow
-    show nobara at pos_cr
-    show mc at pos_l
+    show nobara at pos_c
     with dissolve
 
     "Shibuya on a Saturday is four hundred thousand faces an hour, and Nobara Kugisaki is standing in the middle of the crossing looking at every single one of them."
@@ -1286,8 +1263,7 @@ label ev_nobara_3:
 label ev_shoko_3:
 
     scene bg infirmary with fade_slow
-    show shoko at pos_cr
-    show mc at pos_l
+    show shoko at pos_c
     with dissolve
 
     "You bring her coffee at four in the morning."
@@ -1352,8 +1328,7 @@ label ev_shoko_3:
 label ev_panda_2:
 
     scene bg dorm_common with fade_slow
-    show panda at pos_cr
-    show mc at pos_l
+    show panda at pos_c
     with dissolve
 
     "Panda is watching television with the sound off, which he does when he is thinking, which he does more than anyone gives him credit for."
@@ -1406,8 +1381,7 @@ label ev_panda_2:
 label ev_toge_2:
 
     scene bg ridge with fade_slow
-    show toge at pos_cr
-    show mc at pos_l
+    show toge at pos_c
     with dissolve
 
     "Inumaki goes up to the ridge at 5:40 every single morning. You have known this for weeks — it's in the schedule of the place, if you pay attention."
@@ -1466,8 +1440,7 @@ label ev_toge_2:
 label ev_gojo_1:
 
     scene expression graded_bg("courtyard") with fade_slow
-    show gojo at pos_cr
-    show mc at pos_l
+    show gojo at pos_c
     with dissolve
 
     "Finding Gojo is mostly luck. Keeping him is harder."
@@ -1528,8 +1501,7 @@ label ev_gojo_1:
 label ev_yaga_1:
 
     scene bg storehouse with fade_slow
-    show yaga at pos_cr
-    show mc at pos_l
+    show yaga at pos_c
     with dissolve
 
     "Yaga is in the back of the storehouse with a half-finished cursed corpse on the bench, and he does not send you away, which from Yaga is an invitation."
@@ -1571,7 +1543,7 @@ label ev_yaga_1:
             $ add_bond("yaga", 8)
             $ flag("yaga_blunt")
             yaga "..."
-            yaga "You are eleven weeks from being useful and three weeks from being sent somewhere."
+            yaga "You are eleven weeks from being useful and they will send you anyway."
             yaga "Yes. To them, you are an asset with a grade on it."
             yaga "To me you are an eighteen-year-old who stood in an alley, could not save his friend, and came here anyway."
             yaga "I run a school inside an institution that would prefer a factory. Every hour you spend in here holding a bench for me is an hour you are not on a form."
@@ -1584,8 +1556,7 @@ label ev_yaga_1:
 label ev_gojo_2:
 
     scene bg rooftop with fade_slow
-    show gojo at pos_cr
-    show mc at pos_l
+    show gojo at pos_c
     with dissolve
 
     "You find him on the roof at an hour when he has no business being anywhere, sitting on the railing, not eating anything."
@@ -1650,8 +1621,7 @@ label ev_gojo_2:
 label ev_yaga_2:
 
     scene bg office with fade_slow
-    show yaga at pos_cr
-    show mc at pos_l
+    show yaga at pos_c
     with dissolve
 
     "There is a photograph on the shelf behind Yaga's desk that you have looked at every time you've been in this room and never once asked about."
