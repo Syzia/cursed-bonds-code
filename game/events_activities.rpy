@@ -77,7 +77,7 @@ init -1 python:
 ################################################################################
 
 label act_eat(who):
-    scene expression graded_bg() with Dissolve(0.4)
+    ## Staged by stage_person before this runs: they stay on screen.
     $ _n = CAST[who]["short"]
     $ _l = line_for("eat", who)
     "You get food and sit with [_n]."
@@ -101,6 +101,7 @@ label act_study(who):
 
 label act_swim(who):
     scene bg riverside with Dissolve(0.5)
+    show expression who at pos_c
     $ _n = CAST[who]["short"]
     $ _l = line_for("swim", who)
     "[_l]"

@@ -8,7 +8,7 @@
 
 label act_stand(who):
 
-    scene expression graded_bg() with Dissolve(0.4)
+    ## Staged by stage_person before this runs: they stay on screen.
     $ _n = CAST[who]["short"]
 
     "[_n] has been circling something for about a week. Today they stop circling."

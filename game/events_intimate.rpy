@@ -8,7 +8,7 @@
 
 label act_int_night(who):
 
-    scene expression graded_bg() with Dissolve(0.5)
+    ## Staged by stage_person before this runs: they stay on screen.
     $ _n = CAST[who]["short"]
 
     "It gets late in the way it does when neither person is watching for it."
@@ -45,7 +45,7 @@ label act_int_night(who):
 
 label act_int_morning(who):
 
-    scene expression graded_bg() with Dissolve(0.5)
+    ## Staged by stage_person before this runs: they stay on screen.
     $ _n = CAST[who]["short"]
 
     "The first hour of the day, before anybody needs either of you for anything."
@@ -84,6 +84,7 @@ label act_int_morning(who):
 label act_int_day(who):
 
     scene bg riverside with fade_slow
+    show expression who at pos_c
     $ _n = CAST[who]["short"]
 
     "You take an entire day. No training, no board, nobody told."

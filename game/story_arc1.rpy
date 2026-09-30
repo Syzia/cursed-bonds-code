@@ -1,28 +1,28 @@
 ################################################################################
 ## Cursed Bonds — Arc 1 story spine.
 ##
-## Twenty-one days until Kyoto. These fire on the calendar, wherever you are,
-## so the arc has a shape whether or not you go looking for it.
+## Nothing here runs on a date. These beats find you wherever you are, in the
+## order the main story sets (the mission chain in sb_missions.rpy), and they
+## wait for you until you get there.
 ################################################################################
 
 init 1 python:
 
-    ev("st_roll_call",   kind="story", min_day=2,  periods=["Morning"],        priority=100)
-    ## 92, not 90: if this is still pending late it must beat st_roster, which
-    ## shares the Noon slot — otherwise the Kyoto list can go up before the
-    ## mission board has ever opened.
-    ev("st_board_open",  kind="story", min_day=4,  periods=["Morning", "Noon"], priority=92,
+    ## The order and the gaps between beats come from the mission chain;
+    ## these keep only their periods, priorities and requirements.
+    ## st_board_open is retired (Utahime's board replaced Ijichi's note): its
+    ## label stays below for old saves, but it is no longer registered.
+    ev("st_roll_call",   kind="story", periods=["Morning"],        priority=100)
+    ev("st_noise",       kind="story", periods=["Evening"],        priority=90,
        requires=("roll_call",))
-    ev("st_noise",       kind="story", min_day=6,  periods=["Evening"],        priority=90,
+    ev("st_second_years", kind="story", periods=["Afternoon"],     priority=95,
        requires=("roll_call",))
-    ev("st_second_years", kind="story", min_day=5, periods=["Afternoon"],       priority=95,
-       requires=("roll_call",))
-    ev("st_aftermath",   kind="story", periods=["Morning"],                    priority=95,
+    ev("st_aftermath",   kind="story", periods=["Morning"],        priority=95,
        requires=("sunmall_done",))
-    ev("st_intensive",   kind="story", min_day=14, periods=["Afternoon"],      priority=90,
+    ev("st_intensive",   kind="story", periods=["Afternoon"],      priority=90,
        requires=("sunmall_done",))
-    ev("st_roster",      kind="story", min_day=18, periods=["Noon"],           priority=90)
-    ev("st_night_before", kind="story", min_day=21, periods=["Evening", "Night"], priority=120)
+    ev("st_roster",      kind="story", periods=["Noon"],           priority=90)
+    ev("st_night_before", kind="story", periods=["Evening", "Night"], priority=120)
 
 
 ################################################################################
@@ -36,35 +36,48 @@ label st_roll_call:
     show nobara at pos_cr
     with dissolve
 
-    "Ijichi finds you before breakfast and says the word 'mandatory' twice, which for Ijichi is shouting."
+    "Ijichi finds me before breakfast and says the word 'mandatory' twice, which for Ijichi is shouting."
 
-    yaga "Sit."
+    yaga serious "Sit."
 
-    yaga "Three weeks from today, Kyoto sends their second and third years here for the Goodwill Event."
+    yaga "Every sorcerer in this country has a grade. It decides what you are sent to, and who is sent with you."
 
-    yaga "It is billed as an exchange. It is a fight. Two schools, one field, and a scoreboard that the higher-ups read very carefully."
+    yaga "Every year Kyoto sends their students here for the Goodwill Event. It is billed as an exchange. It is a fight."
 
-    nobara "So it's a job interview with sticks."
+    yaga "Two schools, one field, and a scoreboard that the higher-ups read very carefully."
 
-    yaga "That is the most accurate description of it I have ever heard and I would appreciate you never repeating it."
+    nobara happy "So it's a job interview with sticks."
 
-    yaga "Four first-years. Kyoto has six students and two of them have been doing this since they were eleven."
+    yaga angry "That is the most accurate description of it I have ever heard and I would appreciate you never repeating it."
 
-    yaga "You will not be ready. The question is how much not-ready."
+    yaga serious "Four first-years. Kyoto has six students and two of them have been doing this since they were eleven."
 
-    "He looks along the row and stops on you."
+    yaga "When it comes, you will not be ready. The question is how much not-ready."
 
-    yaga "[mc_surname]. Last week you didn't know cursed energy existed. In three weeks you'll be on that field."
+    "He looks along the row and stops on me."
+
+    yaga "[mc_surname]. Last week you didn't know cursed energy existed. Today you get a number."
+
+    $ promote("mc", "g4", "Assessed at roll call", quiet=True)
+    call show_grade_card("g4", "ASSESSED")
+
+    yaga neutral "Grade 4. Everyone starts somewhere. Most people start here."
+
+    yaga "Fushiguro is Grade 2. Kugisaki, Grade 3. Itadori is Grade 4 on paper, for reasons above both of us."
+
+    yuji happy "On paper. I'm taking that as a compliment."
+
+    megumi serious "Don't."
 
     menu:
-        "Everyone is looking."
+        "Everyone is looking at me."
 
-        "\"Then I've got three weeks.\"":
+        "\"Then I'd better start now.\"":
             $ add_bond("yaga", 6)
             $ gain("output", 2)
             $ flag("rollcall_defiant")
-            yaga "You do."
-            yaga "Most people your age hear the number and hear how small it is. You heard it as an amount."
+            yaga "You had better."
+            yaga "Most people your age hear a number and hear how small it is. You heard it as a starting line."
             yaga "That's the correct reading. Don't let it make you stupid."
 
         "\"What happens if I'm not ready?\"":
@@ -78,14 +91,14 @@ label st_roll_call:
         "\"Who am I fighting?\"":
             $ gain("insight", 2)
             $ flag("rollcall_tactical")
-            yaga "Good question. Wrong week for it, but good question."
+            yaga "Good question. Wrong day for it, but good question."
             yaga "Zenin will tell you about Kyoto. She knows more about them than she has ever wanted to."
 
-    yaga "Two things, then get out."
+    yaga serious "Two things, then get out."
 
-    yaga "One: the storehouse is open to you from today. Cursed tools. Take what you can name."
+    yaga "One: the storehouse is open to you from today. Look, don't take. Nothing on those racks leaves without a grade and a reason."
 
-    yaga "Two: from Thursday there'll be work on the board. Low grade. Real."
+    yaga "Two: Kyoto's teacher arrives tomorrow to prepare the Goodwill Event, and she has agreed to run the board while she is here. Low grade. Real."
 
     $ flag("roll_call")
     $ flag("storehouse_access")
@@ -251,8 +264,7 @@ label st_aftermath:
 label st_intensive:
 
     scene bg ridge with fade_slow
-    show gojo at pos_cr
-    show mc at pos_l
+    show gojo at pos_c
     with dissolve
 
     "Gojo is waiting on the ridge, which he has never once done, sitting on a rock with no sweets and no phone."
@@ -261,9 +273,9 @@ label st_intensive:
 
     "He is not smiling. Without the smile his face is very hard to look at, blindfold and all."
 
-    gojo "You've been on campus a fortnight. You've got a technique you didn't ask for and a body that hasn't caught up to it."
+    gojo "You've got a technique you didn't ask for and a body that hasn't caught up to it."
 
-    gojo "And in a week you're going to stand on a field opposite people who have had this their whole lives."
+    gojo "And one of these days you're going to stand on a field opposite people who have had this their whole lives."
 
     gojo "So here's the only thing I actually teach."
 
@@ -282,7 +294,7 @@ label st_intensive:
         "Try it now, in front of him.":
             $ gain(tech()["scales"], 8)
             $ gain("control", 3)
-            $ ce_max = min(160, ce_max + 20)
+            $ raise_reserve(20)
             $ flag("intensive_tried")
             "You do it wrong four times."
             "On the fifth you feel the difference in your chest — not a thing you are pushing out, a thing you are simply {i}being{/i} — and you hold it for nine entire seconds before it collapses."
@@ -293,7 +305,7 @@ label st_intensive:
         "\"Why are you telling me and not all four of us?\"":
             $ add_bond("gojo", 12)
             $ gain("insight", 5)
-            $ ce_max = min(160, ce_max + 12)
+            $ raise_reserve(12)
             $ flag("intensive_asked")
             gojo "..."
             gojo "Because Itadori has Sukuna doing his arithmetic for him and Fushiguro was raised in a clan that taught him this at nine."
@@ -317,11 +329,10 @@ label st_intensive:
 label st_roster:
 
     scene bg courtyard with fade_slow
-    show maki at pos_cr
-    show mc at pos_l
+    show maki at pos_c
     with dissolve
 
-    "The Kyoto roster goes up on the board outside the classroom building on a Thursday, and Maki reads it standing very still."
+    "The Kyoto roster goes up on the board outside the classroom building one noon, and Maki reads it standing very still."
 
     maki "Mai's on it."
 
@@ -336,7 +347,7 @@ label st_roster:
     maki "And I'm going to have to not react, because if I react she wins something she doesn't actually want."
 
     menu:
-        "Four days."
+        "Not long now."
 
         "\"You don't have to not react.\"":
             $ add_bond("maki", 10)
@@ -346,7 +357,7 @@ label st_roster:
             mc "Everyone's going to be watching a fight. Nobody's going to be watching whether you flinched."
             mc "Except her. And she's not looking for a flinch — she's looking for whether you're still there."
             maki "..."
-            maki "That's a horrible thing to say to someone four days out."
+            maki "That's a horrible thing to say to someone this close to it."
             maki "...Come with me. After. When I go back to that house."
             maki "Not to fight anyone. Just so there's somebody in the room who isn't a Zenin."
             mc "Yes."
@@ -361,7 +372,7 @@ label st_roster:
             maki "..."
             maki "I want her to see me win and be glad about it, in private, where nobody can hold it against her."
             maki "That's not a plan. You can't build a training week around 'and then my sister feels something'."
-            mc "You could build four days around it."
+            mc "You could build the rest of the time around it."
             maki "...Dojo. Dawn. Bring something to hit."
 
     $ advance_period()
@@ -415,12 +426,12 @@ label st_night_before:
     if _open >= 5:
         mcthink "I know all of these people now."
         mcthink "Not their techniques. {i}Them.{/i} What they're carrying and roughly how heavy it is."
-        mcthink "Three weeks ago I'd have said that was the soft part of the job."
+        mcthink "When I got here I'd have said that was the soft part of the job."
     elif _open >= 2:
         mcthink "I know some of them. Properly, I mean — past the introductions."
         mcthink "Not enough of them. There wasn't time and I spent what there was."
     else:
-        mcthink "I've been here three weeks and I've spent almost all of it alone, on a ridge, getting stronger."
+        mcthink "I've spent almost all of my time here alone, on a ridge, getting stronger."
         mcthink "Tomorrow I find out whether that was the right trade."
 
     if _done >= 3:
@@ -442,12 +453,13 @@ label st_night_before:
 
     "The light comes up over the mountains at about four and none of you have moved."
 
-    $ arc = 2
-    $ flag("arc1_complete")
+    ## Not the end of Arc One any more: the Goodwill Event is main story now
+    ## (Act IV), so this only marks the night as done.
+    $ flag("night_before_done")
 
     scene bg black with fade_slow
 
-    show screen chapter_card("END OF ARC ONE", "Three Weeks", "The Kyoto Goodwill Event — next build.")
+    show screen chapter_card("THE NIGHT BEFORE", "Goodwill", "The Kyoto Goodwill Event — coming in a later build.")
     $ renpy.pause(4.5)
     hide screen chapter_card
     with fade_slow
@@ -464,7 +476,7 @@ label st_second_years:
     show toge at pos_fr
     with dissolve
 
-    "There have been three other people on this campus all week. You have seen them at a distance, at meals, crossing the courtyard, and nobody has introduced anybody, because nobody here does that."
+    "There have been three other people on this campus since you arrived. You have seen them at a distance, at meals, crossing the courtyard, and nobody has introduced anybody, because nobody here does that."
 
     "Today one of them walks into the training hall while you are in it, carrying a naginata over one shoulder like a shopping bag."
 
@@ -491,10 +503,10 @@ label st_second_years:
     menu:
         "Maki has not put the naginata down."
 
-        "\"Why now? You've been here all week.\"":
+        "\"Why now? You've been here the whole time.\"":
             $ add_bond("maki", 6)
             $ gain("insight", 2)
-            maki "Because for the first four days you were a first-year who'd had a bad Thursday."
+            maki "Because for the first few days you were a first-year who'd had a bad Thursday."
             maki "Today you were in here at six in the morning on your own. That's different."
             maki "I'm not interested in people who've had something happen to them. I'm interested in people who get up early about it."
 

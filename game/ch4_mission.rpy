@@ -18,7 +18,6 @@ label chapter_four:
     ## The first-year you're closest to comes along (not closest_partner(), which
     ## can pick a second-year or a romance).
     $ _partner = closest_first_year()
-    $ tname = TECHNIQUES[technique]["name"]
 
     scene bg city
     with fade_slow
@@ -40,9 +39,8 @@ label chapter_four:
     with dissolve
 
     show yuji at pos_l
-    show megumi at pos_cl
-    show nobara at pos_cr
-    show mc at pos_fr
+    show megumi at pos_c
+    show nobara at pos_r
     with dissolve
 
     megumi "Split. Two teams, two floors, meet on three."
@@ -84,7 +82,6 @@ label chapter_four:
     hide yuji
     hide megumi
     hide nobara
-    hide mc
     with None
 
     "Inside, the mall smells the way the alley behind the arcade smelled, and your whole body reports for duty before your brain has finished the comparison."
@@ -94,12 +91,11 @@ label chapter_four:
     "And running through all of it, everywhere, like damp: cursed energy."
 
     if _partner == "yuji":
-        show yuji at pos_cr
+        show yuji at pos_c
     elif _partner == "megumi":
-        show megumi at pos_cr
+        show megumi at pos_c
     else:
-        show nobara at pos_cr
-    show mc at pos_l
+        show nobara at pos_c
     with dissolve
 
     if _partner == "yuji":
@@ -142,20 +138,12 @@ label chapter_four:
             "You do not look at the wall. You have decided, very deliberately, that you will look at the wall on the way out, if there is a way out."
             "It is the first cold decision you have ever made and you file the feeling away for later examination."
 
-        "Use [tname] on the corridor.":
+        "Hold the corridor with Last Light.":
             $ flag("scouted_corridor")
             $ add_ce(4)
-            if technique == "filament":
-                "You feed threads down the service corridor, a metre at a time, reading the air."
-                "Forty metres in they stop coming back."
-                mcthink "Not cut. {i}Absorbed.{/i}"
-            elif technique == "emberfall":
-                "You touch the corridor wall and leave a slow warm mark in it, a beacon you'll be able to find in the dark from anywhere in the building."
-                "Ninety seconds later you feel the heat move, because something has torn that section of wall down and carried it somewhere else."
-            else:
-                "You let the corridor replay."
-                "A man running. A woman behind him, slower, shouting a name. A security guard, three weeks earlier, walking the same route with a torch, whistling."
-                "And under all of it, on every layer, going back further than the building should be able to remember: something breathing in four-four time."
+            "You hold the second and walk into it."
+            "The service corridor waits, pinned: dust stopped in the security light, a drip halfway to the floor. You walk forty metres of it inside a moment that isn't passing."
+            "The residue doesn't thin as you go. It pools, deeper at every step, and at the far end something is breathing in four-four time, caught mid-breath like everything else."
 
     "The corridor lets out into the atrium, and the atrium is where it has been keeping them."
 
@@ -209,7 +197,8 @@ label chapter_four:
         "Kill it first. She's safest if it's dead.":
             $ flag("fought_first")
             $ add_bond("megumi", 8)
-            $ add_bond("maki", 4)
+            if "maki" in roster:
+                $ add_bond("maki", 4)
             jump ch4_fight_first
 
 
@@ -241,15 +230,9 @@ label ch4_save_first:
 
     $ add_ce(3)
 
-    if technique == "filament":
-        "You anchor a dozen threads to the balcony above and a dozen to the ground floor, and you make a line, and you put her on it."
-        "It is not elegant. She goes down the atrium in a controlled fall with your cursed energy screaming through your forearms, and she lands, and she is nineteen metres from the thing and moving."
-    elif technique == "emberfall":
-        "You put your palm flat on the escalator housing and pour everything you have into it, and the metal goes from cold to searing in four seconds."
-        "The curse puts a limb on it to climb and recoils, and while it is dealing with a staircase that is now hostile, you get her over the rail and down."
-    else:
-        "The last hour of this atrium is still playing. You know exactly which route the thing took to reach the escalator well, three times, because it took the same one every time."
-        "You take the other one. You take the one it never uses, and you take her down it, and it does not think to look there."
+    "You stop the atrium."
+    "The thing hangs off the escalator well with one limb reaching, and for one held second nothing in this building can move except you."
+    "You take her over the rail and down the far staircase, the one it would have had to turn around to see, and when the second lets go you are both already on the ground floor."
 
     "You put her behind a shuttered pharmacy on the ground floor and you tell her not to move and she says {i}I wasn't planning to{/i} with something that is almost a laugh, and that almost-laugh is going to keep you upright for the next four minutes."
 
@@ -280,12 +263,8 @@ label ch4_fight_first:
 
     "The other two, it notices."
 
-    if technique == "filament":
-        "Threads find the seam where the accumulated mass is thinnest, and you pull, and something inside it comes apart with a sound like a rope bridge."
-    elif technique == "emberfall":
-        "You leave three burns in it, deep, and they do not go out, and it starts trying to tear its own mass off to get away from them."
-    else:
-        "You have watched it swing forty times in the last four seconds. You know which shoulder drops. You put everything you have into the space it is about to be."
+    "It swings, and you stop the second on the swing."
+    "Its shoulder is already dropping, the way it has dropped every time. You put everything you have into the space where it is about to be, and let the second go."
 
     "It screams, and the whole building takes it personally, and on the third floor the woman wedged in the escalator gap makes a small sound."
 
@@ -340,16 +319,8 @@ label ch4_climax:
 
     "You step in."
 
-    if technique == "filament":
-        "Every thread you have, all of them, into one place — the knot at the centre where all the faces are pointing."
-        "You have spent eleven days learning the difference between reaching and aiming."
-        "You aim."
-    elif technique == "emberfall":
-        "You get one hand on the centre of it and you stop holding anything back."
-        "Everything you have, all at once, into a fire that will not go out and does not need you to stay and watch it."
-    else:
-        "The last four seconds of the atrium play, and play, and play, and you know exactly where it is going to be."
-        "You are already there."
+    "The second stops."
+    "The whole atrium holds, the dust, the faces, the thing with all of them pointing at you, and you walk into the space it is about to be, and you are already there when the world starts again."
 
     scene bg black
     with flash_white
@@ -360,9 +331,8 @@ label ch4_climax:
     with fade_slow
 
     show yuji at pos_l
-    show megumi at pos_cl
-    show nobara at pos_cr
-    show mc at pos_fr
+    show megumi at pos_c
+    show nobara at pos_r
     with dissolve
 
     if has_flag("saved_civilian"):
