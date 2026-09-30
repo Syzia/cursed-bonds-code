@@ -279,8 +279,10 @@ init python:
             return grade_label(st.get("grade"))
         return st.get("role") or role or CAST.get(who, {}).get("year", "")
 
-    def jr_next(who):
-        """"Next: <text> — <where>" from next_for, or ""."""
+    def jr_next(who, limit=None):
+        """"Next: <text> — <where>" from next_for, or "". With limit, the
+        line is cut to about that many characters by clipping the text
+        part only, so the place (what the player acts on) stays whole."""
         try:
             nf = next_for(who)
         except Exception:
@@ -293,8 +295,13 @@ init python:
         else:
             text, where = str(nf), None
         where = jr_place_name(where)
+        text = "" if text is None else str(text)
         if where:
+            if limit:
+                text = jr_clip(text, max(12, limit - len(where) - 9))
             return "Next: %s — %s" % (text, where)
+        if limit:
+            text = jr_clip(text, max(12, limit - 6))
         return "Next: %s" % text
 
     def jr_promotions(who):
@@ -339,6 +346,21 @@ init python:
             return "Affection opens at Bond %d" % need
         return "Affection can't pass %d until Bond %d" % (cap, need)
 
+    def jr_aff_scale(who):
+        """The heart meter's full scale: 100, or 200 once the confession has
+        lifted the cap (AFF_TRUE_MAX), so the meter keeps showing progress."""
+        try:
+            return max(AFF_BASE_MAX, aff_cap(who))
+        except Exception:
+            return AFF_BASE_MAX
+
+    def jr_aff_marker(who):
+        """Where the heart meter's cap marker goes: the bond's cap, or None
+        once together (the cap is then the meter's own end)."""
+        if is_together(who):
+            return None
+        return aff_cap(who)
+
     def jr_person(who):
         """WP8. Everything the People detail pane shows about someone. Name
         and role come from the card (journal_cast), so the pane matches it
@@ -362,6 +384,8 @@ init python:
         d["aff"] = store.affection.get(who, 0)
         d["aff_rank"] = aff_rank(d["aff"])[1]
         d["aff_cap"] = aff_cap(who) if d["romance"] else None
+        d["aff_max"] = jr_aff_scale(who)
+        d["aff_marker"] = jr_aff_marker(who) if d["romance"] else None
         d["aff_note"] = jr_aff_note(who) if d["romance"] else ""
         d["promotions"] = ["Promoted to %s on Day %s" % (grade_label(g), dy)
                            for dy, g, why in jr_promotions(who)]
@@ -794,10 +818,36 @@ init python:
              "%d / %d" % (store.stamina, store.stamina_max)),
         ]
 
+    def jr_name_known():
+        """WP8. Whether the player's name may be shown: not on the main menu,
+        and only once the save is past the ch1_gojo step, where Gojo asks
+        for it (2.3: nobody uses the name before he asks)."""
+        if main_menu:
+            return False
+        return jr_prologue_index() > jr_step_index("ch1_gojo")
+
+    def jr_is_met(who):
+        """Whether the People tab counts this person as met (their
+        JOURNAL_CAST entry's rule); someone with no entry counts as met."""
+        e = jr_cast_entry(who)
+        return True if e is None else journal_met(e)
+
+    def jr_stats_title():
+        """The Stats tab's header: "<surname> <name>", or "My journal" before
+        Gojo asks the name."""
+        if not jr_name_known():
+            return _("My journal")
+        return "%s %s" % (store.mc_surname, store.mc_name)
+
     def jr_year():
-        """The "Your year" strip: [(name, colour, reserve or None, off_scale)]."""
-        out = [(store.mc_name, CAST.get("mc", {}).get("color", gui.violet2), store.ce_max, False)]
+        """The "Your year" strip: [(name, colour, reserve or None, off_scale)].
+        The player's row reads "Me" until the name is asked; the others show
+        only once the People tab counts them as met."""
+        me = store.mc_name if jr_name_known() else _("Me")
+        out = [(me, CAST.get("mc", {}).get("color", gui.violet2), store.ce_max, False)]
         for who in ("yuji", "megumi", "nobara", "gojo"):
+            if not jr_is_met(who):
+                continue
             try:
                 st = npc_stats(who) or {}
             except Exception:
@@ -1246,16 +1296,17 @@ screen jr_person_card(js, e):
         $ _br = bond_rank(_b)[1]
         $ _rom = is_romanceable(_who)
         $ _a = affection.get(_who, 0)
-        $ _nx = jr_clip(jr_next(_who), 74)
+        $ _nx = jr_next(_who, 74)
         $ _promo = jr_recently_promoted(_who)
         button:
             style "jr_card_button"
             xysize (362, 330)
             action SetDict(js, "sel", _who)
+            ## ypos 8 and spacing 2 leave room under a two-line Next.
             vbox:
                 xpos 19
-                ypos 12
-                spacing 3
+                ypos 8
+                spacing 2
                 if e["art"]:
                     add jr_portrait(_who)
                 else:
@@ -1282,7 +1333,7 @@ screen jr_person_card(js, e):
                         $ _ar = jr_clip(aff_rank(_a)[1], 16)
                         hbox:
                             spacing 10
-                            use jr_meter(_a, 100, width=170, height=4, fill=gui.romance, marker=aff_cap(_who))
+                            use jr_meter(_a, jr_aff_scale(_who), width=170, height=4, fill=gui.romance, marker=jr_aff_marker(_who))
                             text "♡ [_ar]" color gui.romance size 15 yalign 0.5
                 if _nx:
                     text _nx color gui.gold size 16 xsize 324 line_spacing 0
@@ -1386,7 +1437,7 @@ screen jr_person_detail(js, who):
                         if _d["romance"]:
                             hbox:
                                 spacing 16
-                                use jr_meter(_d["aff"], 100, width=620, height=6, fill=gui.romance, marker=_d["aff_cap"])
+                                use jr_meter(_d["aff"], _d["aff_max"], width=620, height=6, fill=gui.romance, marker=_d["aff_marker"])
                                 text "♡ [_d['aff_rank']]" color gui.romance size 18 yalign 0.5
                             if _d["aff_note"]:
                                 text _d["aff_note"] style "jr_dim" size 16
@@ -1823,7 +1874,8 @@ screen jr_stats_tab():
 
             vbox:
                 spacing 4
-                text "[mc_surname] [mc_name]" font JR_DISPLAY_FONT color gui.paper size 40
+                ## substitute False: the player typed the name (see the year strip).
+                text jr_stats_title() substitute False font JR_DISPLAY_FONT color gui.paper size 40
                 text _gradeline style "jr_kicker" size 18
 
             frame:

@@ -548,14 +548,34 @@ label zz_smoke:
               "prologue start: rostered people are not met yet", _c)
         check(mc_portrait_label() == "MY PORTRAIT", "prologue start: the preference reads MY PORTRAIT", mc_portrait_label())
         check(not jr_on_campus(), "prologue start: not on campus")
+        ## Review round 3: the Stats tab follows the same two rules.
+        _yn = [r[0] for r in jr_year()]
+        check(jr_stats_title() == "My journal" and _yn == ["Me"], "prologue start: Stats says My journal and Me, and names nobody unmet", (jr_stats_title(), _yn))
+        renpy.show_screen("journal", "stats")
+        shot("prologue_start_stats")
+        _tx = zzj_texts()
+        _leak = [t for t in _tx if any(w in t for w in ("Tester", "Harness", "Yuji", "Megumi", "Nobara", "Gojo"))]
+        check(zzj_js()["tab"] == "stats" and "My journal" in _tx and "Me" in _tx and not _leak,
+              "prologue start: the Stats tab doesn't show the name or unmet people", _leak)
+        renpy.hide_screen("journal")
         fixture(story_point="chapter_one_b")
         _c = dict((e["who"], e["met"]) for e in journal_cast())
         check(_c["gojo"] and not _c["yuji"] and not _c["ijichi"], "chapter_one_b: Gojo met, the first-years not", _c)
         check("mc_name" in mc_portrait_label(), "after Gojo asks the name, the preference uses it", mc_portrait_label())
+        _yn = [r[0] for r in jr_year()]
+        check(jr_stats_title() == "Harness Tester" and _yn == ["Tester", "Gojo"], "chapter_one_b: Stats uses the name; the year strip shows Gojo, not the first-years", (jr_stats_title(), _yn))
+        renpy.show_screen("journal", "stats")
+        shot("chapter_one_b_stats")
+        _tx = zzj_texts()
+        check("Harness Tester" in _tx and not any(w in t for t in _tx for w in ("Yuji", "Megumi", "Nobara")),
+              "chapter_one_b: the Stats tab shows the name and Gojo only")
+        renpy.hide_screen("journal")
         fixture(story_point="ch2_first_years")
         _c = dict((e["who"], e["met"]) for e in journal_cast())
         check(_c["yuji"] and _c["ijichi"] and _c["yaga"] and not _c["shoko"] and not _c["maki"],
               "ch2_first_years: first-years, Ijichi and Yaga met, Shoko not", _c)
+        _yn = [r[0] for r in jr_year()]
+        check(_yn == ["Tester", "Yuji", "Megumi", "Nobara", "Gojo"], "ch2_first_years: the year strip names all four", _yn)
         renpy.show_screen("journal", "people")
         shot("prologue_people")
         renpy.hide_screen("journal")
@@ -641,6 +661,18 @@ label zz_smoke:
         check(jr_grade_line("shoko") == "Doctor", "the ungraded show their role", jr_grade_line("shoko"))
         check(jr_grade_line("nobara") == "Grade 2", "a promoted NPC shows the new grade", jr_grade_line("nobara"))
         check(jr_next("maki") == "Next: The Armory: pick your first cursed tool — Storehouse" or jr_next("maki").startswith("Next: The Armory"), "Next line with where", jr_next("maki"))
+        ## Review round 3: a long Next keeps its place whole on the card.
+        _nx0 = ZZJ_NEXT["nobara"]
+        ZZJ_NEXT["nobara"] = ("The Teacher Ranking: a letter from someone I haven't thought about in years, and what it says", "dorm_common")
+        _ln = jr_next("nobara", 74)
+        _pl = jr_place_name("dorm_common")
+        check(_ln.endswith(" — " + _pl) and len(_ln) <= 76 and "…" in _ln, "a long Next is clipped in its text and keeps the place", _ln)
+        renpy.show_screen("journal", "people")
+        shot("rich_people_long_next")
+        _tx = zzj_texts()
+        check(_ln in _tx, "the card draws the clipped Next with its place", [t for t in _tx if t.startswith("Next:")][:4])
+        renpy.hide_screen("journal")
+        ZZJ_NEXT["nobara"] = _nx0
         _d = jr_person("nobara")
         check(any("Promoted to Grade 2 on Day 14" == p for p in _d["promotions"]), "People detail: promotion line", _d["promotions"])
         check(jr_person("maki")["restricted"], "Maki's reserve reads Heavenly Restriction")
@@ -760,10 +792,18 @@ label zz_smoke:
         _b0, _a0, _t0, _n0 = dict(bonds), dict(affection), list(together), mc_name
         bonds.update(dict(maki=100, shoko=100, nobara=100))
         affection.update(dict(maki=100, shoko=100, nobara=100))
+        ## Review round 3: the heart meter's scale follows the cap.
+        check(jr_aff_scale("maki") == 100 and jr_aff_marker("maki") == aff_cap("maki"),
+              "before the confession the heart meter runs 0-100 with the cap marker", (jr_aff_scale("maki"), jr_aff_marker("maki")))
         for _w in ("maki", "shoko", "nobara"):
             if _w not in together:
                 together.append(_w)
         affection.update(dict(maki=200, shoko=150, nobara=175))
+        _d = jr_person("shoko")
+        check(jr_aff_scale("maki") == AFF_TRUE_MAX and jr_aff_marker("maki") is None and _d["aff_max"] == AFF_TRUE_MAX and _d["aff_marker"] is None,
+              "together: the heart meter runs 0-200 with no cap marker", (jr_aff_scale("maki"), _d["aff_max"], _d["aff_marker"]))
+        check(jr_meter_px(110, jr_aff_scale("maki"), 170) < jr_meter_px(195, jr_aff_scale("maki"), 170) < 170,
+              "together: 110 and 195 affection draw different lengths")
         renpy.show_screen("journal", "people")
         shot("stress_people")
         check(zzj_js()["tab"] == "people", "stress: long ranks render")

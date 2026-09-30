@@ -84,8 +84,8 @@ init python:
         """WP8 (4.11). The portrait preference's label: "[mc_name]'S
         PORTRAIT" once Gojo has asked for the name, "MY PORTRAIT" on the
         main menu and before that (nobody says the name before he asks).
-        The prologue position comes from the journal's jr_prologue_index()."""
-        if main_menu or jr_prologue_index() <= jr_step_index("ch1_gojo"):
+        The rule is the journal's jr_name_known(), which the Stats tab uses too."""
+        if not jr_name_known():
             return _("MY PORTRAIT")
         return _("[mc_name!u]'S PORTRAIT")
 
