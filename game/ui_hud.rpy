@@ -52,6 +52,17 @@ init python:
             return TOAST_VISIBLE_PERSON
         return TOAST_VISIBLE
 
+    def toast_room():
+        """P2 (ui_hud.rpy); P0's stub is today's behaviour. (xpos, ypos,
+        limit) as ints: where the toast stack's top right corner sits and
+        how many toasts show at once. (0, 0, 0): they wait."""
+        n = toast_limit()
+        if not n:
+            return (0, 0, 0)
+        if renpy.get_screen("sb_char"):
+            return (1722, 26, n)
+        return (1880, 92, n)
+
     ## kind -> (kanji, gui colour name). None means "the character's colour".
     TOAST_KINDS = {
         "bond":      (u"縁", None),

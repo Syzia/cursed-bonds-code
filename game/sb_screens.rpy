@@ -125,7 +125,8 @@ init python:
         they are not on the stage)."""
         on, _extra = stage_people(loc)
         if who in on:
-            return STAGE_CENTRES[len(on)][on.index(who)]
+            ## Phase 2: the slots are view_stage.rpy's (view_slots).
+            return view_slots(loc or store.here, len(on))[on.index(who)][0]
         return 700
 
     ## Missions, as the screens draw them --------------------------------------------
@@ -188,6 +189,25 @@ init python:
         a.extend(registered_place_actions(loc))
         a.append(("wait", "Wait", "Let the period pass.", 1))
         return a
+
+    def rail_actions(loc):
+        """P0 (sb_screens.rpy), final (PHASE2_DESIGN.md 6.1, D30). What the
+        place view offers here, as a list of (id, label, hint, cost, icon,
+        gold): place_actions(loc) as the night rule leaves it
+        (night_filter_actions), without the actions a visible hotspot already
+        offers (hot_covers), and then, when someone is tagging along, the
+        row ("release", "Let them go", hint, 0, "release", False), last.
+        place_actions() itself is unchanged."""
+        covered = hot_covers(loc)
+        out = []
+        for a in night_filter_actions(loc, place_actions(loc)):
+            if a[0] in covered:
+                continue
+            name = icon_for("act", a[0])
+            out.append((a[0], a[1], a[2], a[3], name, name in ICON_GOLD))
+        if store.companion:
+            out.append(("release", "Let them go", "They go back to their own day.", 0, "release", False))
+        return out
 
     ## The arrival caption (4.3, D35) ------------------------------------------------
     ##
@@ -386,14 +406,12 @@ screen sb_place():
     on ("show", "replace") action Function(check_objective)
 
     $ _stage, _extra = stage_people(here)
-    $ _xs = STAGE_CENTRES.get(len(_stage), [])
-    $ _st = PLACE_STAGING.get(here, {})
-    $ _zoom = _st.get("zoom", 0.52)
-    $ _yoff = -40 + _st.get("y", 0)
-    $ _acts = place_actions(here)
+    ## Phase 2: the card reads rail_actions (the night rule and the hotspots
+    ## reach it), and the night rule filters the missions too.
+    $ _acts = [a[:4] for a in rail_actions(here) if a[0] != "release"]
     $ _wait = [a for a in _acts if a[0] == "wait"]
     $ _acts = [a for a in _acts if a[0] != "wait"]
-    $ _missions = [] if explore_mode else [mission_view(m) for m in missions_here(here)]
+    $ _missions = [] if (explore_mode or not night_can_work()) else [_mv for _mv in [mission_view(m) for m in missions_here(here)] if night_allows("mission:" + _mv[0], (MISSION_BY_ID.get(_mv[0]) or {}).get("cost", 0))]
     $ _t0 = arrival_caption()
     $ _pname = LOCATIONS[here]["name"] if here in LOCATIONS else here
     $ _pdesc = LOCATIONS[here]["desc"] if here in LOCATIONS else ""
@@ -402,55 +420,12 @@ screen sb_place():
     add graded_bg()
     add Solid(gui.ink) alpha 0.10
 
-    ## --- the stage: the people here, clickable --------------------------------
-    for _i, _who in enumerate(_stage):
-        $ _cap, _expr = ambient_of(_who, here)
-        $ _img = person_image(_who, _expr)
-        imagebutton:
-            idle Transform(_img, zoom=_zoom)
-            hover Transform(_img, zoom=_zoom, matrixcolor=BrightnessMatrix(0.08))
-            focus_mask True
-            xcenter _xs[_i]
-            yalign 1.0
-            yoffset _yoff
-            action Return(("char", _who))
-
-    ## Nameplates go over every sprite, so a neighbour never covers one.
-    for _i, _who in enumerate(_stage):
-        $ _c = CAST[_who]
-        $ _nm = _c["short"]
-        $ _cap = ambient_of(_who, here)[0]
-        $ _job = (not explore_mode) and bool(missions_with(_who, here))
-        $ _new = has_event("hangout", _who, here)
-        button:
-            xcenter _xs[_i]
-            ypos 944
-            background Frame("gui/panel_dark.png", 4, 4)
-            hover_background Frame("gui/panel_hover.png", 4, 4)
-            padding (18, 6, 18, 8)
-            xmaximum 300
-            action Return(("char", _who))
-            vbox:
-                spacing 0
-                xalign 0.5
-                hbox:
-                    spacing 10
-                    xalign 0.5
-                    text "[_nm]" style "sb_plate_name" color _c["color"] yalign 0.5
-                    if _job:
-                        text u"「!」" font gui.display_heavy_font color gui.gold size 22 yalign 0.5
-                    if _new:
-                        frame:
-                            background Solid(gui.gold)
-                            padding (6, 2)
-                            yalign 0.5
-                            text _("NEW"):
-                                font gui.body_bold_font
-                                color gui.ink
-                                size 11
-                                kerning 2
-                if _cap:
-                    text "[_cap]" style "sb_plate_caption" xalign 0.5 text_align 0.5
+    ## --- the stage (phase 2: view_stage.rpy) and the hotspots, behind and in
+    ## front of the people (sb_hotspots.rpy) ------------------------------------
+    use hot_layer(here)
+    use view_stage(here)
+    use view_fg(here)
+    use hot_layer(here, front=True)
 
     ## More than four: a chip with the rest.
     if _extra:
@@ -574,10 +549,7 @@ screen sb_place():
 
 
 ## Person view (4.5) ############################################################
-
-transform char_focus(x0):
-    xcenter x0 yalign 1.0 yoffset -40 zoom 0.52
-    easein 0.35 xcenter 520 yoffset -20 zoom 0.66
+## (The focus transform, char_focus, moved to view_stage.rpy with the stage.)
 
 screen sb_char(who):
 
@@ -604,7 +576,7 @@ screen sb_char(who):
     add graded_bg()
     add Solid(gui.ink) alpha 0.35
 
-    add person_image(who) at char_focus(_x0)
+    use view_focus(who)
 
     ## The card fits its worst case (a mission with a two-line hint, three
     ## more choices, affection at the cap, a thread) with room to spare:

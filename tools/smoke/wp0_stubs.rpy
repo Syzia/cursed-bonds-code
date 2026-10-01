@@ -154,7 +154,7 @@ init 999 python:
         ("grade_card", ["key", "kicker"]), ("board_screen", []), ("board_partner", ["offer"]),
         ("armory", []), ("sb_hud", ["on_map", "person"]), ("toasts", []),
         ("objective_toast", ["text"]), ("sb_place", []), ("sb_char", ["who"]),
-        ("sb_map", ["layer"]), ("journal", ["tab"]), ("jjk_status", []), ("jjk_journal", []),
+        ("sb_map", ["layer", "area"]), ("journal", ["tab"]), ("jjk_status", []), ("jjk_journal", []),
     ]
 
     def zz_sig(name):

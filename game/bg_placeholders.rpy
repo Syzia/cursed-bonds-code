@@ -55,6 +55,12 @@ init -3 python:
     renpy.image("bg gojo_office", bg_placeholder("images/bg/gojo_office.png",
         _bg_tinted("dorm_common.png", TintMatrix("#ffd2e2") * BrightnessMatrix(0.03), xzoom=-1.0)))
 
+    ## The Library (phase 2, D34): the classroom's far wall, cropped so the
+    ## desks are out of frame, warmed like lamplight on old paper.
+    renpy.image("bg library", bg_placeholder("images/bg/library.png",
+        _bg_tinted("classroom.png", TintMatrix("#ffdcb0") * SaturationMatrix(0.8) * BrightnessMatrix(-0.05),
+                   crop=(120, 60, 1280, 720), xysize=(1920, 1080))))
+
     ## The Tokyo map: the skyline at night, dimmed under the cards.
     renpy.image("bg map_tokyo", bg_placeholder("images/bg/map_tokyo.png",
         _bg_tinted("city_night.png", SaturationMatrix(0.7) * BrightnessMatrix(-0.3))))

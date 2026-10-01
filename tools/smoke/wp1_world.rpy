@@ -108,6 +108,17 @@ init 999 python:
     ## --- what the script says (narration and dialogue), captured -----------------
     import builtins as zz_builtins
     ZZ_SAID = zz_builtins.list()
+
+    ## Phase 2 (D26): a trip's clock stops early where a story beat is waiting
+    ## (advance_period_soft). These trip tests call sb_trip directly, outside
+    ## the loop that would have played the beat first, so while ZZ_QUIET[0]
+    ## is set this gate holds every story beat: the trips take their half day.
+    ZZ_QUIET = zz_builtins.list([False])
+
+    def zz_quiet_gate(e):
+        return not (ZZ_QUIET[0] and e["kind"] == "story")
+
+    register_event_gate(zz_quiet_gate)
     _zz_filter0 = config.say_menu_text_filter
 
     def zz_said_filter(t):
@@ -524,6 +535,7 @@ label zz_smoke:
         flag("ijichi_rides")
 
     ## sb_trip under autoplay, from the Morning.
+    $ ZZ_QUIET[0] = True
     $ day = 2
     $ period = "Morning"
     $ here = "courtyard"
@@ -621,6 +633,25 @@ label zz_smoke:
     $ autoplay(False)
     $ check((day, period, here) == (3, "Evening", "gate") and "yotsuka" in districts_visited,
             "the car: pressing a district card -> half a day (Noon -> Evening)", (day, period, here, districts_visited))
+
+    ## Phase 2 (D26): with a story beat waiting at the gate the same trip ends
+    ## an hour early, so the beat isn't pushed to tomorrow.
+    $ ZZ_QUIET[0] = False
+    python:
+        day = 4
+        period = "Morning"
+        here = "courtyard"
+        _zz_beat = has_event("story", loc="gate")
+        autoplay()
+    call sb_trip("yotsuka")
+    python:
+        autoplay(False)
+        if _zz_beat or has_event("story", loc="gate"):
+            check((day, period, here) == (4, "Noon", "gate"),
+                  "a trip with a story beat waiting at the gate ends an hour early (Morning -> Noon)", (day, period, here))
+        else:
+            check((day, period, here) == (4, "Afternoon", "gate"),
+                  "a trip with no story beat waiting takes its half day", (day, period, here))
 
     ## sb_do_car's other returns (the Campus tab's walk, cancel), fed by a
     ## timer: these test sb_do_car's handling, not the map's buttons.

@@ -119,6 +119,12 @@ init -1 python:
         if a["kind"] == "confession":
             if not confession_ready(who):
                 return False, None
+            ## Phase 2: the night rule (sb_night.rpy). The confession returns
+            ## here, before the tests at the end, so it has its own copy.
+            if night_blocks(a["id"]):
+                return False, night_block_reason()
+            if a["cost"] and not night_allows(a["id"], a["cost"]):
+                return False, "Too late"
             return (store.stamina >= 10), (None if store.stamina >= 10 else "Too tired")
 
         ## Everything above the confession is hidden until it has happened.
@@ -159,6 +165,12 @@ init -1 python:
             return False, "Too tired"
         if a["cost"] and store.stamina < 10:
             return False, "Too tired"
+        ## Phase 2: the night rule (sb_night.rpy): closed on a rest day, or
+        ## too late to start.
+        if night_blocks(a["id"]):
+            return False, night_block_reason()
+        if a["cost"] and not night_allows(a["id"], a["cost"]):
+            return False, "Too late"
         return True, None
 
     def activities_for(who, loc=None):
@@ -230,7 +242,11 @@ init -1 python:
         out = []
 
         ## 1. A mission they can give.
-        ms = [] if store.explore_mode else missions_with(who, loc)
+        ## (Phase 2: none on a rest day, and only the ones the night allows.)
+        ms = [] if (store.explore_mode or not night_can_work()) else [
+            m for m in missions_with(who, loc)
+            if night_allows("mission:" + mission_view(m)[0],
+                            (MISSION_BY_ID.get(mission_view(m)[0]) or {}).get("cost", 0))]
         if ms:
             mid, title, hint = mission_view(ms[0])
             out.append(dict(kind="mission", id=mid, label=title, hint=hint, cost=0,
@@ -266,6 +282,10 @@ init -1 python:
 
         ## 7. Talk, always, last.
         out.append(_choice_do("talk"))
+
+        ## Phase 2: every choice carries its icon name (ui_icons.rpy).
+        for c in out:
+            c["icon"] = icon_for(c["kind"], c["id"])
         return out
 
 
@@ -277,7 +297,7 @@ init -1 python:
 
 label stage_person(who, expr=None):
     scene expression graded_bg()
-    $ renpy.show(person_image(who, expr), at_list=[pos_c])
+    $ view_enter(who, expr)
     with Dissolve(0.3)
     return
 

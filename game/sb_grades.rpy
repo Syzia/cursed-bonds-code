@@ -475,6 +475,102 @@ init -1 python:
     register_validator(_validate_grades)
 
 
+## Grade colours (phase 2: PHASE2_DESIGN.md D15, D16, 4.8) #####################
+##
+## P0 wrote these, final; the sites that use them belong to their owners (4.8).
+## One colour a tier: Semi-Grade 1 shares Grade 1's red. Special Grade is a
+## slow oil-slick sheen (gui/grade_sheen.png, panned by the wall clock) on a
+## dark base; until that strip exists the fill is a flat gui.grade_sp.
+
+init -1 python:
+    import time as _grade_time
+
+    GRADE_TIER = {"g4": "g4", "g3": "g3", "g2": "g2", "s1": "g1", "g1": "g1", "sp": "sp"}
+
+    GRADE_SHEEN = "gui/grade_sheen.png"     # 1024x64, tileable
+    GRADE_SHEEN_LOOP = 14.0                 # seconds for one pass
+
+    def grade_tier(v):
+        """P0 (sb_grades.rpy), final. The colour tier of a grade: "g4", "g3",
+        "g2", "g1" (Grade 1 and Semi-Grade 1) or "sp"; None when ungraded.
+        v is a grade key, a legacy enemy int (0 is Special Grade) or None."""
+        return GRADE_TIER.get(grade_key(v))
+
+    def grade_color(v):
+        """P0 (sb_grades.rpy), final. The grade's colour as a hex str;
+        gui.dim when ungraded. Special Grade gives gui.grade_sp, for the
+        places where only a string fits."""
+        t = grade_tier(v)
+        if t is None:
+            return gui.dim
+        return getattr(gui, "grade_" + t)
+
+    def grade_is_special(v):
+        """P0 (sb_grades.rpy), final. bool: True for Special Grade."""
+        return grade_tier(v) == "sp"
+
+    def grade_has_sheen():
+        """P0 (sb_grades.rpy). bool: the Special Grade strip is on disk."""
+        return bool(renpy.loadable(GRADE_SHEEN))
+
+    def grade_sheen_fn(trans, st, at):
+        """P0 (sb_grades.rpy). The transform function that pans the sheen: a
+        512-wide window slides along the strip once every GRADE_SHEEN_LOOP
+        seconds, by the wall clock. Returns VIEW_TICK as the redraw delay,
+        or None (and a still strip) when view_motion() is False. Top-level,
+        so nothing that carries it is a closure (R10)."""
+        if not view_motion():
+            trans.crop = (0, 0, 512, 64)
+            return None
+        f = (_grade_time.time() % GRADE_SHEEN_LOOP) / GRADE_SHEEN_LOOP
+        trans.crop = (int(1024 * f), 0, 512, 64)
+        return VIEW_TICK
+
+    def grade_fill(v):
+        """P0 (sb_grades.rpy), final. A displayable that fills a grade chip:
+        the tier's flat colour; the sheen on its dark base for Special Grade
+        (flat gui.grade_sp until gui/grade_sheen.png exists); the ghost
+        panel when ungraded. Build it in the line that uses it and never
+        store it: screen scope is saved (R10)."""
+        t = grade_tier(v)
+        if t is None:
+            return Frame("gui/panel_ghost.png", 4, 4)
+        if t != "sp":
+            return Solid(getattr(gui, "grade_" + t))
+        if not grade_has_sheen():
+            return Solid(gui.grade_sp)
+        ## Two copies side by side, so the sliding window never runs off the end.
+        strip = Tile(GRADE_SHEEN, xysize=(2048, 64))
+        return Fixed(Solid(gui.grade_sp_base),
+                     Frame(Transform(strip, function=grade_sheen_fn, crop=(0, 0, 512, 64), alpha=0.85)))
+
+    def grade_text_color(v):
+        """P0 (sb_grades.rpy). The colour of a chip's text: dark on a flat
+        fill, light on the Special Grade sheen, dim when ungraded."""
+        t = grade_tier(v)
+        if t is None:
+            return gui.dim
+        if t == "sp" and grade_has_sheen():
+            return gui.paper
+        return gui.ink
+
+
+## P0 (sb_grades.rpy), final. A filled chip with the grade's name: "GRADE 2".
+## v is a grade key, a legacy int or None; text replaces the name ("Off the
+## scale", a role for someone with no grade); dim=True draws it at alpha 0.45.
+screen grade_chip(v, size=13, text=None, dim=False):
+    $ _grade_txt = (text or grade_label(v)).upper()
+    frame at Transform(alpha=(0.45 if dim else 1.0)):
+        background grade_fill(v)
+        padding (10, 3)
+        text _grade_txt:
+            substitute False
+            font gui.body_bold_font
+            color grade_text_color(v)
+            size size
+            kerning 1
+
+
 ## Grade card (4.10) ############################################################
 
 ## WP2. The ASSESSED / PROMOTED card, centred, 900x420.

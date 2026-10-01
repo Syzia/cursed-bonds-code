@@ -1135,7 +1135,7 @@ label start_mission(mid):
             $ complete_mission(mid)
     $ _sm_event = None
     if MISSION_BY_ID[mid]["cost"]:
-        $ advance_period(MISSION_BY_ID[mid]["cost"])
+        $ advance_period_soft(MISSION_BY_ID[mid]["cost"])
     return
 
 

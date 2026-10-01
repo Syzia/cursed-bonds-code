@@ -535,6 +535,8 @@ init -1 python:
 
     def board_take_reason(offer):
         """WP4. Why a card can't be taken right now, in the player's words, or ""."""
+        if not night_can_work():        ## phase 2: a rest day (sb_night.rpy)
+            return night_block_reason() or "Not today"
         if store.period in ("Evening", "Night"):
             return "Evenings: %s doesn't send anyone out after dark" % _board_host_name()
         if store.stamina < BOARD_STAMINA:
@@ -549,6 +551,8 @@ init -1 python:
 
     def board_refusal(offer, who):
         """WP4. The narration line that stops a run, or "" when it can go."""
+        if not night_can_work():        ## phase 2: a rest day (sb_night.rpy)
+            return night_block_reason() or "Not today."
         if not offer:
             return "That card is already off the board."
         if store.period in ("Evening", "Night"):

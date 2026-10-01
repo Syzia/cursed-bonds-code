@@ -18,11 +18,17 @@ label sandbox:
 
         $ ensure_state()
 
+        ## Phase 2 (D21): the day turned while I was away from my room. Walk
+        ## home first, so a waiting beat is picked for my room.
+        if night_pending():
+            call night_carry_home
+
         ## A story beat can be waiting at this location.
         $ _story = None if explore_mode else pick_event("story", loc=here)
         if _story:
             call play_event(_story)
 
+        $ view_sync_light()
         $ check_objective()
         call screen sb_place
         $ _r = _return
@@ -37,6 +43,9 @@ label sandbox:
         elif _r[0] == "act":
             call expression "sb_do_" + _r[1]
 
+        elif _r[0] == "hot":
+            call hot_use(_r[1])
+
         elif _r[0] == "mission":
             call start_mission(_r[1])
 
@@ -45,6 +54,8 @@ label sandbox:
             $ _j = _return
             if isinstance(_j, tuple) and _j and _j[0] == "arc_two":
                 call arc_two_start
+            elif isinstance(_j, tuple) and _j and _j[0] == "go":
+                call rule_walk_to(_j[1])
 
         elif _r[0] == "dev":
             call dev_tools
@@ -68,11 +79,15 @@ label sb_travel:
 
     elif _m[0] == "district":
         call sb_trip(_m[1])
+
+    elif _m[0] == "night":
+        call night_out(_m[1])
     return
 
 
 label sb_person(who):
 
+    $ view_before_person(who)
     call screen sb_char(who)
     $ _p = _return
 
@@ -97,6 +112,7 @@ label sb_activity(aid, who):
         call stage_person(who)
         call sb_smalltalk(who)
         scene expression graded_bg()
+        $ view_after_scene()
         return
 
     if aid == "hang":
@@ -108,12 +124,14 @@ label sb_activity(aid, who):
         else:
             "Nothing comes of it today."
         scene expression graded_bg()
+        $ view_after_scene()
         return
 
     if aid == "invite":
         call stage_person(who)
         call act_invite(who)
         scene expression graded_bg()
+        $ view_after_scene()
         return
 
     ## A spar needs something left in the tank; refusing it costs nothing.
@@ -131,8 +149,9 @@ label sb_activity(aid, who):
     if _a.get("once"):
         $ flag("did_%s_%s" % (aid, who))
     if _a["cost"] and aid != "train":    ## sb_spar charges its own period
-        $ advance_period(_a["cost"])
+        $ advance_period_soft(_a["cost"])
     scene expression graded_bg()
+    $ view_after_scene()
     return
 
 

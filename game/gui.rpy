@@ -39,6 +39,21 @@ define gui.gold         = '#ffd166'   # new / attention
 define gui.stamina      = '#77e0a0'
 define gui.romance      = '#ff8fb0'
 
+## Grade colours (phase 2, D15): Grade 4 green, Grade 3 blue, Grade 2 purple,
+## Grade 1 and Semi-Grade 1 red. Special Grade is an oil-slick sheen on a dark
+## base (gui/grade_sheen.png); grade_sp is its colour where only a string fits.
+## Read through grade_color() / grade_fill() / screen grade_chip (sb_grades.rpy).
+define gui.grade_g4      = '#4fbf7a'
+define gui.grade_g3      = '#4a90e2'
+define gui.grade_g2      = '#9b5de5'
+define gui.grade_g1      = '#e5383b'
+define gui.grade_sp      = '#9fe8d8'
+define gui.grade_sp_base = '#16121f'
+
+## Words under icons (phase 2, D8): "auto" shows an icon's word while it has no
+## picture (images/icons/ic_<name>.png); "always" and "never" are the other values.
+define gui.icon_words    = "auto"
+
 ## Stock gui.* names, mapped onto the palette so every default style follows.
 define gui.accent_color         = gui.violet
 define gui.idle_color           = gui.dim

@@ -936,6 +936,14 @@ screen preferences():
                     textbutton _("Show") action SetField(persistent, "mc_face", True)
                     textbutton _("Hide") action SetField(persistent, "mc_face", False)
 
+                ## Phase 2 (D17): the looping motion (the Special Grade sheen,
+                ## breathing, the glow on things in a room). view_motion() reads it.
+                vbox:
+                    style_prefix "radio"
+                    label _("MOTION")
+                    textbutton _("On") action SetField(persistent, "motion", True)
+                    textbutton _("Off") action SetField(persistent, "motion", False)
+
             use rule()
 
             hbox:
@@ -1354,16 +1362,20 @@ screen skip_indicator():
     zorder 100
     style_prefix "skip"
 
-    frame:
+    ## Phase 2 (D13): scenes only. Hidden while a `sandbox` or `menu` screen
+    ## is up (the map, the journal, the place view), as the quick menu is.
+    if not renpy.get_screen(("sandbox", "menu")):
 
-        hbox:
-            spacing 10
+        frame:
 
-            text _("SKIPPING") style "skip_text"
+            hbox:
+                spacing 10
 
-            text "▸" at delayed_blink(0.0, 1.0) style "skip_triangle"
-            text "▸" at delayed_blink(0.2, 1.0) style "skip_triangle"
-            text "▸" at delayed_blink(0.4, 1.0) style "skip_triangle"
+                text _("SKIPPING") style "skip_text"
+
+                text "▸" at delayed_blink(0.0, 1.0) style "skip_triangle"
+                text "▸" at delayed_blink(0.2, 1.0) style "skip_triangle"
+                text "▸" at delayed_blink(0.4, 1.0) style "skip_triangle"
 
 
 transform delayed_blink(delay, cycle):

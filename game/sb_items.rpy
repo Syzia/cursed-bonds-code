@@ -447,6 +447,85 @@ init -1 python:
     register_event_done(lambda e: sync_keepsakes())
     register_migration(70, sync_keepsakes, "keepsakes and mission items from flags (WP6)")
 
+    ## Requirements (phase 2: PHASE2_DESIGN.md D27, D28, 4.9) -----------------------
+    ##
+    ## A side table, so ITEMS records keep their twelve fields.
+    ## id -> [requirement], each one of
+    ##   ("grade", key)          my grade is at least this
+    ##   ("arc", n)              the story has reached arc n
+    ##   ("flag", name, words)   a story flag; words is how the checklist says it
+    ##   ("stat", name, n)       control, output or insight is at least n
+    ## P0 wrote the empty table, the two stubs and the validator; P4a fills the
+    ## tool rows and the two Grade 1 talismans, and sb_market.rpy adds its four
+    ## with ITEM_REQS.update(...).
+
+    ITEM_REQS = {}
+
+    ITEM_REQ_STATS = ("control", "output", "insight")
+
+    def item_requirements(id):
+        """P4a (sb_items.rpy); P0's stub returns []. A list of (str, bool):
+        each requirement of an item as a line and whether I meet it."""
+        return []
+
+    def item_requirements_met(id):
+        """P4a (sb_items.rpy); P0's stub returns True. bool: I meet every
+        requirement of the item."""
+        return True
+
+    def item_validate_reqs():
+        """P0 (sb_items.rpy), final (D27). A list of str findings over every
+        row of ITEM_REQS, whichever file added it: the item exists; each
+        requirement is one of the four kinds; a Control or Output threshold
+        is reachable under the item's own grade cap (GRADES[grade]["stat"]);
+        an Insight threshold is at most 100; a flag has words. [] while the
+        table is empty. A registered validator: lint prints each finding."""
+        out = []
+        for id in sorted(ITEM_REQS):
+            it = ITEMS.get(id)
+            if it is None:
+                out.append("ITEM_REQS: %r is not an item" % (id,))
+                continue
+            reqs = ITEM_REQS[id]
+            if not isinstance(reqs, (list, tuple)):
+                out.append("ITEM_REQS[%r] must be a list of requirements" % (id,))
+                continue
+            g = grade_key(it.get("grade"))
+            cap = GRADES[g]["stat"] if g else None
+            for r in reqs:
+                if not isinstance(r, (list, tuple)) or not r:
+                    out.append("ITEM_REQS[%r]: %r is not a requirement" % (id, r))
+                    continue
+                kind = r[0]
+                if kind == "grade":
+                    if len(r) != 2 or r[1] not in GRADES:
+                        out.append("ITEM_REQS[%r]: %r is not a grade requirement" % (id, r))
+                elif kind == "arc":
+                    if len(r) != 2 or not isinstance(r[1], int) or isinstance(r[1], bool) or r[1] < 1:
+                        out.append("ITEM_REQS[%r]: %r is not an arc requirement" % (id, r))
+                elif kind == "flag":
+                    if len(r) != 3 or not (isinstance(r[1], str) and r[1]):
+                        out.append("ITEM_REQS[%r]: %r is not a flag requirement" % (id, r))
+                    elif not (isinstance(r[2], str) and r[2].strip()):
+                        out.append("ITEM_REQS[%r]: the flag %r has no words" % (id, r[1]))
+                elif kind == "stat":
+                    if (len(r) != 3 or r[1] not in ITEM_REQ_STATS
+                            or not isinstance(r[2], int) or isinstance(r[2], bool)):
+                        out.append("ITEM_REQS[%r]: %r is not a stat requirement" % (id, r))
+                    elif r[1] == "insight":
+                        if r[2] > 100:
+                            out.append("ITEM_REQS[%r]: Insight %d is above 100" % (id, r[2]))
+                    elif cap is not None and r[2] > cap:
+                        out.append("ITEM_REQS[%r]: %s %d is above %s's cap of %d"
+                                   % (id, r[1].capitalize(), r[2], grade_label(g), cap))
+                    elif r[2] > 100:
+                        out.append("ITEM_REQS[%r]: %s %d is above 100" % (id, r[1].capitalize(), r[2]))
+                else:
+                    out.append("ITEM_REQS[%r]: unknown requirement kind %r" % (id, kind))
+        return out
+
+    register_validator(item_validate_reqs)
+
     ## The validator (lint) ---------------------------------------------------------
 
     _ITEM_FIELDS = ("name", "kind", "grade", "special", "sealed", "stack", "desc",

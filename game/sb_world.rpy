@@ -67,31 +67,47 @@ init -2 python:
         "ridge": dict(
             indoor=False, name="Mountain Ridge", bg="bg ridge", x=1290, y=215,
             desc="Above the treeline, as far as the rope markers. Higher up, the veil."),
+        ## Phase 2 (D34): a new room in the School Building. x/y sit beside the
+        ## classroom building on map_campus.png.
+        "library": dict(
+            indoor=True, name="Library", bg="bg library", x=250, y=640,
+            desc="Shelves to the ceiling and a smell of dust and ink. Nobody talks above a murmur."),
     }
 
     LOC_ORDER = ["gate", "courtyard", "classroom", "cafeteria", "training", "dojo",
                  "dorm_common", "dorm", "girls_dorm", "rooftop", "infirmary",
                  "office", "utahime_office", "gojo_office", "storehouse",
-                 "forest", "riverside", "ridge"]
+                 "forest", "riverside", "ridge", "library"]
 
     ## Areas (3.2, WP1) ----------------------------------------------------------
     ## The map's six cards, in order. anchor is the card centre on
     ## map_campus.png. Every LOCATIONS key belongs to exactly one area (the
     ## validator checks it).
+    ##
+    ## Phase 2 (6.1): every row also has bg (the area's own picture, for the
+    ## map's second level), blurb (one first-person line) and spots
+    ## ({loc: (x, y)}, the room pins on that picture). P0 laid the keys;
+    ## P1 fills them and draws the pictures.
 
     AREAS = [
         dict(key="heart",    name="Courtyard & Gate",  seal="門",
-             places=["gate", "courtyard"],                              anchor=(960, 900)),
+             places=["gate", "courtyard"],                              anchor=(960, 900),
+             bg="bg area_heart", blurb="", spots={}),
         dict(key="school",   name="Classrooms",        seal="校",
-             places=["classroom", "cafeteria", "infirmary"],            anchor=(420, 740)),
+             places=["classroom", "cafeteria", "infirmary", "library"], anchor=(420, 740),
+             bg="bg area_school", blurb="", spots={}),
         dict(key="dorms",    name="Dormitories",       seal="寮",
-             places=["dorm", "dorm_common", "girls_dorm", "rooftop"],   anchor=(900, 560)),
+             places=["dorm", "dorm_common", "girls_dorm", "rooftop"],   anchor=(900, 560),
+             bg="bg area_dorms", blurb="", spots={}),
         dict(key="staff",    name="Staff Building",    seal="職",
-             places=["office", "utahime_office", "gojo_office"],        anchor=(1560, 440)),
+             places=["office", "utahime_office", "gojo_office"],        anchor=(1560, 440),
+             bg="bg area_staff", blurb="", spots={}),
         dict(key="grounds",  name="Training Grounds",  seal="練",
-             places=["training", "dojo", "storehouse"],                 anchor=(1560, 760)),
+             places=["training", "dojo", "storehouse"],                 anchor=(1560, 760),
+             bg="bg area_grounds", blurb="", spots={}),
         dict(key="mountain", name="The Mountain",      seal="山",
-             places=["forest", "riverside", "ridge"],                   anchor=(740, 290)),
+             places=["forest", "riverside", "ridge"],                   anchor=(740, 290),
+             bg="bg area_mountain", blurb="", spots={}),
     ]
 
     AREA_BY_KEY = {a["key"]: a for a in AREAS}
@@ -259,6 +275,38 @@ init -2 python:
         renpy.restart_interaction()
         return rolled
 
+    def advance_period_soft(n=1, loc=None):
+        """P0 (sb_world.rpy), final (PHASE2_DESIGN.md D26). Move the clock
+        forward up to n periods, one at a time. Returns True if the day
+        rolled over, as advance_period does.
+
+        It stops early, with steps left, when a story beat is waiting at
+        `loc` (default: where I stand; the Tokyo trip passes "gate", where it
+        is about to put me), and when it arrives at Night. The time it didn't
+        charge is forgiven, silently. Called at Night it rolls the day
+        exactly as advance_period does. The waiting-beat test is
+        has_event("story", loc=...), as board_beat_waiting's, never
+        pick_event (which draws from renpy.random). Explore mode has no
+        story: there it is advance_period(n)."""
+        if store.explore_mode:
+            return advance_period(n)
+        rolled = False
+        for i in range(n):
+            idx = period_index()
+            if idx >= len(PERIODS) - 1:
+                rolled = True
+                new_day()
+            else:
+                store.period = PERIODS[idx + 1]
+            if i + 1 >= n:
+                break
+            if period_index() >= len(PERIODS) - 1:
+                break       ## Night, with steps left: a long activity can't carry me past bedtime
+            if has_event("story", loc=(loc or store.here)):
+                break       ## stop the clock where a story beat is waiting
+        renpy.restart_interaction()
+        return rolled
+
     def new_day():
         """Everything that resets, resets here — not in the sleep action, so a
         day that rolls over because you waited through Night behaves the same.
@@ -398,6 +446,13 @@ init -2 python:
     def pin(who, loc, day=None, per=None):
         """Force a character somewhere — used by story events."""
         store.schedule_overrides[(who, day or store.day, per or store.period)] = loc
+
+    def person_now(who):
+        """P1 (sb_world.rpy); P0's stub says "Off campus" for everyone. Where
+        someone is right now, for the journal: dict(place=key or None,
+        name=str, doing=str, reachable=bool, hidden=bool, with_me=bool).
+        Never None."""
+        return dict(place=None, name="Off campus", doing="", reachable=False, hidden=False, with_me=False)
 
     ## Access ------------------------------------------------------------------
 

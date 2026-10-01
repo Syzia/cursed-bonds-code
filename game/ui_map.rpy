@@ -180,6 +180,11 @@ init -1 python:
             out.append((a, int(ax - MAP_CARD_W / 2), y, rows))
         return out
 
+    def map_spots(key):
+        """P1 (ui_map.rpy); P0's stub returns {}. dict {loc: (x, y)}: where
+        an area's rooms are pinned on its picture."""
+        return {}
+
     def map_who_where(who):
         """WP1. A Find someone chip's hover line: "Yuji — Cafeteria" or "Yuji — Off campus"."""
         name = CAST.get(who, {}).get("short", who.title())
@@ -264,7 +269,9 @@ style sb_map_district is button:
 
 ## The map ######################################################################
 
-screen sb_map(layer="campus"):
+## Phase 2 (4.0): `area` opens the map on one area's rooms. P0 added the
+## parameter; P1 builds the second level, and until then it is not used.
+screen sb_map(layer="campus", area=None):
 
     tag sandbox
 
@@ -274,6 +281,9 @@ screen sb_map(layer="campus"):
 
     $ _topen = tokyo_open()
     $ _tip = GetTooltip()
+    ## Phase 2: a tuple tooltip belongs to the hover label (ui_icons.rpy); this
+    ## frame draws only the map's own plain-string ones.
+    $ _tip = _tip if isinstance(_tip, str) else None
 
     ## Ground ---------------------------------------------------------------------
     if view == "tokyo":

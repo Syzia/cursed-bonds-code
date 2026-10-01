@@ -323,6 +323,12 @@ init python:
             text = jr_clip(text, max(12, limit - 6))
         return "Next: %s" % text
 
+    def jr_story_rows(who):
+        """P3 (ui_journal.rpy); P0's stub returns []. A person's story as a
+        list of dict(kind, title, line, state, where, next): their thread's
+        stages and their missions, in order, for the person page."""
+        return []
+
     def jr_promotions(who):
         """[(day, grade key, why)] from promotions_log, oldest first."""
         out = []
