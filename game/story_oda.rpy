@@ -8,10 +8,11 @@
 
 init 1 python:
     ## Priority 84: yields to the incident, to Kurose's follow-up and to every
-    ## calendar beat. A letter can wait for a quiet evening.
-    ev("st_oda_letter", kind="story", min_day=9, periods=["Evening"],
+    ## other story beat. A letter can wait for a quiet evening. Order and gaps
+    ## come from the mission chain (m_oda_letter, m_oda_2).
+    ev("st_oda_letter", kind="story", periods=["Evening"],
        priority=84, requires=("kurose_met",))
-    ev("st_oda_2", kind="story", min_day=15, periods=["Evening"],
+    ev("st_oda_2", kind="story", periods=["Evening"],
        priority=86, requires=("oda_answered",))
 
 
@@ -101,7 +102,7 @@ label st_oda_2:
 
     oda "In the last four years, nine students in this prefecture have transferred out at short notice, mid-term, to schools the paperwork does not name."
 
-    oda "Two of them I taught. One of them was a boy called Sōma with terrible handwriting who was not remotely academic, and the notice describes a specialist bursary."
+    oda "Two of them I taught. One of them was a boy called Soma with terrible handwriting who was not remotely academic, and the notice describes a specialist bursary."
 
     oda "Three of the nine are recorded as having died within the following eighteen months. The causes are ordinary and the reports are thorough."
 

@@ -46,8 +46,8 @@ init -1 python:
                 continue
             if e["arc"] > store.arc:
                 continue
-            if not (e["min_day"] <= store.day <= e["max_day"]):
-                continue
+            ## min_day / max_day are no longer read here (D40): the story waits
+            ## for you. Pacing comes from the registered gates below.
             if e["once"] and e["label"] in store.done_events:
                 continue
             w = e["who"]
@@ -60,6 +60,8 @@ init -1 python:
             if any(not has_flag(f) for f in e["requires"]):
                 continue
             if any(has_flag(f) for f in e["forbids"]):
+                continue
+            if not event_allowed(e):
                 continue
             out.append(e)
         return out
@@ -96,6 +98,7 @@ label play_event(e):
     ## so individual scenes stay free of bookkeeping.
     if e["thread"]:
         $ advance_thread(e["thread"][0], e["thread"][1])
+    $ run_event_done(e)
     return
 
 
@@ -107,14 +110,18 @@ label sb_smalltalk(who):
     $ _n = _c["short"]
 
     if who in talked_today:
-        "[_n] is busy with something. You leave it."
+        "[_n] is busy with something. I leave it."
         return
 
     $ talked_today.add(who)
     $ add_bond(who, 1)
 
-    $ _lines = SMALLTALK.get(who, SMALLTALK["_default"])
-    $ _line = renpy.random.choice(_lines)
+    ## Someone promoted since we last talked says so first (D12), instead of
+    ## the small talk.
+    $ _line = promo_line(who)
+    if _line is None:
+        $ _lines = SMALLTALK.get(who, SMALLTALK["_default"])
+        $ _line = renpy.random.choice(_lines)
 
     $ renpy.say(CHARS[who], _line)
 
@@ -182,4 +189,39 @@ init -1 python:
             "Your file says your control is improving. Files are optimistic.",
             "The storehouse is not a museum. Don't touch what you can't name.",
         ],
+        "utahime": [
+            "If you're here for a job, the board is on the wall. If you're here to chat, I'm working.",
+            "Take someone with you. Every time. I don't care what the file says.",
+            "If Gojo sent you, the answer is no. If he didn't, sit up straight.",
+            "Read the whole report before you go. Tokyo's files have a habit of being one grade kind.",
+        ],
+        "ijichi": [
+            "Ah — good morning. Or afternoon. Sorry, I've been in the car since five.",
+            "If Gojo-san asks where I am, you haven't seen me. Please. You haven't.",
+            "Gojo-san asked me to buy forty mochi. I'm told it's for a meeting.",
+            "I have three reports due, and one of them is about the other two.",
+        ],
     }
+
+    ## What a student says the first time you talk after they're promoted
+    ## (D12), in place of small talk. %(grade)s is their new grade.
+    ## maki and toge can't be promoted with today's NPC_BASE caps (Maki is
+    ## held at Grade 4, Toge is already semi-grade 1): their lines are
+    ## unreachable for now and kept so every student has one.
+    PROMO_LINES = {
+        "yuji":   "Guess who's %(grade)s now! Me! I don't really know what it means, but Megumi said \"fine\", and I think that's his version of a party.",
+        "megumi": "%(grade)s. It's paperwork. It means they send me further away, that's all.",
+        "nobara": "%(grade)s. Don't make a face, you'll catch up. Probably.",
+        "maki":   "%(grade)s. Somebody in Kyoto is going to choke on that. Good.",
+        "panda":  "%(grade)s! Yaga says he isn't proud. He said it twice, which means he is.",
+        "toge":   "Salmon! ...Tuna mayo.",
+    }
+
+    def promo_line(who):
+        """WP3. The promotion remark someone makes instead of small talk, or
+        None. Uses up the pending remark (pop_remark) only for someone who
+        has a line."""
+        if who not in PROMO_LINES or not pop_remark(who):
+            return None
+        grade = npc_stats(who).get("grade")
+        return PROMO_LINES[who] % dict(grade=grade_label(grade))

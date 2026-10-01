@@ -4,28 +4,32 @@
 ################################################################################
 
 ## Characters ##################################################################
+##
+## image="<tag>" ties a speaker to their sprite tag: say-with-attributes
+## (`yuji happy "..."`) changes their face, and when they are not on screen
+## their side portrait shows beside the line.
 
-define mc      = Character("[mc_name]", color="#c9a6ff")
+define mc      = Character("[mc_name]", color="#c9a6ff", image="mc")
 define mcthink = Character(None, what_prefix="{i}", what_suffix="{/i}", what_color="#c8c2d8")
 
 ## The player names him when Gojo asks in the alley; these cover a fresh start.
 default mc_name    = "Kaito"
 default mc_surname = "Amagiri"
 
-define yuji    = Character("Yuji",    color="#ff8fa3")
-define megumi  = Character("Megumi",  color="#8fb0ff")
-define nobara  = Character("Nobara",  color="#ffb066")
-define maki    = Character("Maki",    color="#77e0a0")
-define panda   = Character("Panda",   color="#e6e6f0")
-define toge    = Character("Toge",    color="#bfe3ea")
-define gojo    = Character("Gojo",    color="#8ed6ff")
-define yaga    = Character("Principal Yaga", color="#b0b8c8")
-define ijichi  = Character("Ijichi",  color="#9aa0b0")
-define shoko   = Character("Shoko",   color="#e0c8b0")
-define utahime = Character("Utahime", color="#c9a0d8")
+define yuji    = Character("Yuji",    color="#ff8fa3", image="yuji")
+define megumi  = Character("Megumi",  color="#8fb0ff", image="megumi")
+define nobara  = Character("Nobara",  color="#ffb066", image="nobara")
+define maki    = Character("Maki",    color="#77e0a0", image="maki")
+define panda   = Character("Panda",   color="#e6e6f0", image="panda")
+define toge    = Character("Toge",    color="#bfe3ea", image="toge")
+define gojo    = Character("Gojo",    color="#8ed6ff", image="gojo")
+define yaga    = Character("Principal Yaga", color="#b0b8c8", image="yaga")
+define ijichi  = Character("Ijichi",  color="#9aa0b0", image="ijichi")
+define shoko   = Character("Shoko",   color="#e0c8b0", image="shoko")
+define utahime = Character("Utahime", color="#c9a0d8", image="utahime")
 
 ## Pre-campus cast
-define sana    = Character("Sana",        color="#ffd27a")
+define sana    = Character("Sana",        color="#ffd27a", image="sana")
 define mother  = Character("Mom",         color="#d8c8b8")
 define oda     = Character("Oda-sensei",  color="#a9a2b8")
 define kurose  = Character("Kurose",      color="#8f8aa0")
@@ -33,6 +37,11 @@ define nade    = Character("Nade",        color="#9a8f7a")
 
 define curse2  = Character("???",     color="#ff5f8a")
 define voice_  = Character("Voice",   color="#8f8aa0")
+
+## A side portrait only for a speaker who is not on screen, and a quick
+## dissolve when a line changes someone's face.
+define config.side_image_only_not_showing = True
+define config.say_attribute_transition = Dissolve(0.12)
 
 
 ## Backgrounds #################################################################
@@ -150,5 +159,5 @@ init 1 python:
     CHARS = {
         "yuji": yuji, "megumi": megumi, "nobara": nobara, "maki": maki,
         "panda": panda, "toge": toge, "shoko": shoko, "gojo": gojo,
-        "yaga": yaga, "utahime": utahime,
+        "yaga": yaga, "utahime": utahime, "ijichi": ijichi, "sana": sana,
     }

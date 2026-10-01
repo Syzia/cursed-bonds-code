@@ -35,7 +35,7 @@ label chapter_five:
 
     "He looks at the file in his hands for a moment longer than he needs to."
 
-    yaga "[mc_surname]. A fortnight ago you did not know cursed energy existed."
+    yaga "[mc_surname]. Not long ago you did not know cursed energy existed."
 
     if has_flag("saved_civilian"):
         yaga "You put yourself between a grade two and a civilian on a four-second decision."
@@ -46,18 +46,24 @@ label chapter_five:
         yaga "It was correct. It was also the call that puts a civilian in a gap for another ninety seconds, and you will be carrying that around for a while, and you should."
         yaga "Not forever. But you should."
 
-    if tech_stat() >= 40:
-        $ grade = 3
-        if "maki" in roster:
-            yaga "Your cursed energy has come along faster than your file predicted. Zenin's doing, I assume."
-        else:
-            yaga "Your cursed energy has come along faster than your file predicted."
-        yaga "Effective immediately: Grade 4 to Grade 3."
-        yaga "That is not a reward. That is a heavier assignment list."
+    ## A recommendation, not a promotion: Grade 3 is earned on the board and
+    ## in the promotion fight with Maki watching (D18). Old saves promoted
+    ## here by the old chapter keep their grade (migration 20).
+    if "maki" in roster:
+        yaga "Your cursed energy has come along faster than your file predicted. Zenin's doing, I assume."
     else:
-        $ grade = 4
-        yaga "Your control is still where a new student's should be, which is where it should be, because you are new."
-        yaga "You stay Grade 4. Nobody in this room thinks less of you for it, and the two of us are the only people in this room."
+        yaga "Your cursed energy has come along faster than your file predicted."
+    yaga "I am putting your name forward for Grade 3."
+    yaga "That is not a promotion. It is a recommendation, and it is worth exactly what you do with it. Earn it on Iori's board, and then in front of a witness."
+
+    ## Paid once: the "ch5_recommendation" key is the one migration 60 checks
+    ## before paying the same 20 to old saves.
+    python:
+        if "ch5_recommendation" not in getattr(store, "merit_granted", ()):
+            add_merit(20, "The Sun Mall")
+            if hasattr(store, "merit_granted"):
+                store.merit_granted.add("ch5_recommendation")
+    $ flag("recommended_g3")
 
     if total_bond() >= 90:
         $ flag("strong_class")
@@ -74,11 +80,10 @@ label chapter_five:
     scene bg rooftop evening
     with fade_slow
 
-    show gojo at pos_cr
-    show mc at pos_l
+    show gojo at pos_c
     with dissolve
 
-    gojo "So! Yaga did the whole 'this is not a reward' thing, right? He loves that one."
+    gojo "So! Yaga did the whole 'this is not a promotion' thing, right? He loves that one."
 
     mc "You were listening."
 
@@ -143,9 +148,6 @@ label chapter_five:
     scene bg rooftop evening
     with slowdissolve
 
-    show mc at pos_c
-    with dissolve
-
     "You stay on the roof for a while."
 
     "The other week you were frightened of an alley. You are still frightened of the alley. You have simply added several other things."
@@ -158,18 +160,14 @@ label chapter_five:
     else:
         "Below you, in the courtyard, three first-years are arguing about something you can't hear."
         "You watch them for a while, from up here, and then you go down."
-        mcthink "Still time. Not much, but still time."
+        mcthink "They're not going anywhere. Neither am I."
 
     ## This is a mid-arc debrief now, not a finale — the arc closes on the
     ## roof the night before Kyoto. Hand the player back to the campus.
 
-    $ _left = days_left()
+    mcthink "Nobody has given me a date for anything."
 
-    "[_left] days until Kyoto."
-
-    mcthink "Ten of them will be spent on a ridge getting this right."
-
-    mcthink "The rest I get to choose."
+    mcthink "So I get to choose what the days are for."
 
     scene bg black
     with fade_slow

@@ -8,8 +8,7 @@
 label act_rom_town(who):
 
     scene bg city with fade_slow
-    show expression who at pos_cr
-    show mc at pos_l
+    show expression who at pos_c
     with dissolve
 
     $ _n = CAST[who]["short"]
@@ -47,6 +46,7 @@ label act_rom_town(who):
     $ add_aff(who, 10)
     $ flag("town_date_" + who)
     scene bg gate with fade_slow
+    show expression who at pos_c
     return
 
 

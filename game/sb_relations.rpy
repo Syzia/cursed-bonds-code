@@ -5,7 +5,7 @@
 init -2 python:
 
     ROSTER_ORDER = ["yuji", "megumi", "nobara", "maki", "panda", "toge",
-                    "shoko", "gojo", "yaga"]
+                    "shoko", "gojo", "yaga", "utahime", "ijichi"]
 
     ## romance=True means an Affection track exists alongside Bond.
     CAST = {
@@ -36,6 +36,16 @@ init -2 python:
         "yaga": dict(name="Masamichi Yaga", short="Yaga", color="#b0b8c8", romance=False,
                      year="Principal",
                      blurb="Principal. Builds cursed corpses. Does not build excuses."),
+        "utahime": dict(name="Utahime Iori", short="Utahime", color="#c9a0d8", romance=False,
+                        year="Kyoto teacher",
+                        blurb="Kyoto's teacher, in Tokyo early for the Goodwill Event. Runs a board of graded jobs. Do not mention Gojo."),
+        "ijichi": dict(name="Kiyotaka Ijichi", short="Ijichi", color="#9aa0b0", romance=False,
+                       year="Assistant manager",
+                       blurb="Assistant manager. Drives the car, raises the veils, apologises for both."),
+        ## Not a campus character: the journal's memorial card.
+        "sana": dict(name="Sana Torii", short="Sana", color="#ffd27a", romance=False,
+                     year="In memory",
+                     blurb="She saw them first."),
     }
 
     BOND_RANKS = [(0, "Stranger"), (20, "Acquaintance"), (40, "Comrade"),
@@ -93,7 +103,7 @@ init -2 python:
 
     def begin_together(who):
         store.together.append(who)
-        renpy.notify("%s — together" % CAST[who]["short"])
+        toast("%s — together" % CAST[who]["short"], "aff", who)
 
     def add_bond(who, amount, quiet=False):
         before = store.bonds.get(who, 0)
@@ -101,9 +111,9 @@ init -2 python:
         store.bonds[who] = after
         if quiet or after == before:
             return
-        renpy.notify("%s  bond %+d" % (CAST[who]["short"], after - before))
+        toast("%s  bond %+d" % (CAST[who]["short"], after - before), "bond", who, after - before)
         if bond_rank(after)[0] > bond_rank(before)[0]:
-            renpy.notify("%s — %s" % (CAST[who]["short"], bond_rank(after)[1]))
+            toast("%s — %s" % (CAST[who]["short"], bond_rank(after)[1]), "bond_rank", who)
 
     def add_aff(who, amount, quiet=False):
         """Affection is capped by bond; overflow is silently discarded."""
@@ -115,11 +125,11 @@ init -2 python:
         store.affection[who] = after
         if quiet or after == before:
             if amount > 0 and before >= cap and not quiet:
-                renpy.notify("%s — you'd have to know them better first." % CAST[who]["short"])
+                toast("%s — I'd have to know them better first." % CAST[who]["short"], "info", who)
             return
-        renpy.notify("%s  ♡ %+d" % (CAST[who]["short"], after - before))
+        toast("%s  ♡ %+d" % (CAST[who]["short"], after - before), "aff", who, after - before)
         if aff_rank(after)[0] > aff_rank(before)[0]:
-            renpy.notify("%s — %s" % (CAST[who]["short"], aff_rank(after)[1]))
+            toast("%s — %s" % (CAST[who]["short"], aff_rank(after)[1]), "aff", who)
 
     def recruit(who):
         """Add someone to the roster. They start appearing on the map."""
@@ -129,7 +139,7 @@ init -2 python:
         store.bonds.setdefault(who, 0)
         if is_romanceable(who):
             store.affection.setdefault(who, 0)
-        renpy.notify("%s joined your circle." % CAST[who]["name"])
+        toast("%s joined my circle." % CAST[who]["name"], "info", who)
 
     def closest_partner():
         """Whoever you are actually closest to, romance first."""
@@ -158,7 +168,7 @@ init -2 python:
 
 ## The second-years are introduced by a story beat, not on day one — three
 ## first-years land as a core group first.
-default roster    = ["yuji", "megumi", "nobara", "shoko", "gojo", "yaga"]
+default roster    = ["yuji", "megumi", "nobara", "shoko", "gojo", "yaga", "ijichi"]
 default bonds     = {}
 default affection = {}
 default flags     = set()

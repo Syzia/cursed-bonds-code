@@ -7,9 +7,10 @@
 ################################################################################
 
 init 1 python:
-    ev("st_kurose", kind="story", min_day=3, periods=["Afternoon", "Evening"],
+    ## Order and gaps come from the mission chain (m_kurose, m_kurose_2).
+    ev("st_kurose", kind="story", periods=["Afternoon", "Evening"],
        priority=98, requires=("roll_call",))
-    ev("st_kurose_2", kind="story", min_day=12, periods=["Evening"],
+    ev("st_kurose_2", kind="story", periods=["Evening"],
        priority=88, requires=("kurose_met",))
 
 
