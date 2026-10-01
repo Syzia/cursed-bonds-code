@@ -63,7 +63,7 @@ This plan starts from the winning design ("evolve in place": screens keep their 
 - **The Gojo night** (D23): whatever a full day of training would have given (the lesson, four sessions on the ridge and Hold the hour), plus 6 Control and 3 reserve; at most once every 10 days. From Control 30 that is +29 Control and +12 reserve, against a best day's +23 and +9. Whether it may pass my grade's ceiling is ruling 5 above.
 - **The day after a Gojo night:** Train, Practice, "Train together", Gojo's lesson, Hold the hour and swimming are all closed. Studying, eating, talking, cards, fishing and the computer stay, but nothing raises Control or Output that day: the Library's barrier-craft shelf gives only its Insight, and the first fish of the day gives no Control.
 - **The night in Tokyo** (D24): ¥1,500 for the club; half stamina and 70% cursed energy the next morning; not two nights running. Visiting only the market still costs the morning, not the ¥1,500.
-- **Market prices:** ¥9,000 to ¥45,000 for its four talismans. **Would you like one Special Grade talisman that only the market sells?** It is one more row and one more picture-free item; it is not built unless you say so.
+- **Market prices:** ¥9,000 to ¥45,000 for its four talismans. **No Special Grade talisman is sold there** (the owner's answer, 1 Oct 2026: none for now; more talismans will be added later).
 - **The map moves me on the second click,** not the first (your note said "once you go to that area"; a click on an area only opens it).
 - **Small things:** Library study gives Insight +4 (a desk gives +3); the vending machine is ¥150 for 10 stamina, once a day.
 
