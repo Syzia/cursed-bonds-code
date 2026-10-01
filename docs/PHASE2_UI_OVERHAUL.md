@@ -125,7 +125,7 @@ Already promised by the storyboard, now moved here.
 
 - **Hotspots:** clickable objects in the background of a place, each with an icon and a hover label. This is the framework the next three ideas sit on, and it takes "little interactive things" anywhere on the map.
 - **The bedroom computer** is a small fake internet. Kaito can look things up: Sukuna, Gojo, cursed techniques, and the great clans (Gojo, Kamo, Zen'in). Some missions send him there to research something first. The clan pages are seeds for a later arc.
-- **Games in the common room** when people are there. The owner's shortlist: chess, blackjack, poker (both for yen, against the others), memory, or something as simple as tic-tac-toe. The design picks what to build first (section 5, answer 4).
+- **Games in the common room** when people are there: **blackjack and poker first** (the owner's decision), both for yen against whoever is present. Chess, memory and tic-tac-toe are on the shortlist for later.
 - **Fishing at the riverside.** The owner left the design open ("a gimmick, or trying to catch the biggest fish"): the design proposes it (section 5, answer 5).
 - **The Library** is a new place in the School Building, for studying.
 - In this phase: build the hotspot framework plus a first version of each of these.
@@ -185,7 +185,7 @@ Already promised by the storyboard, now moved here.
    - Exception: going to Tokyo, with the option to party at nightclubs. That also has a negative effect on the following day.
    - The Black Market is found there too. It sells special talismans, and maybe different outfits for characters.
 3. **The bedroom computer:** fake internet access, where Kaito can research things like Sukuna, Gojo, cursed techniques, and clans like the Gojo, Kamo and Zen'in, as a part of missions. The clans tie into a later arc.
-4. **The board game:** options are chess, blackjack, poker against the others with the in-game currency, and memory; or something simpler like tic-tac-toe. The owner hasn't picked; the design recommends.
+4. **The board game:** the owner's shortlist was chess, blackjack, poker against the others with the in-game currency, memory, or something simpler like tic-tac-toe. **Decided (1 Oct 2026): blackjack and poker first,** both played for yen against whoever is in the common room. Chess, memory and tic-tac-toe can follow later.
 5. **Fishing:** it could be added at the riverside. The owner can't think of more than a gimmick or trying to catch the biggest fish, and asked for a proposal.
 6. **Story replays with several people:** they appear in the memories of each person in them. A separate story-replay section would also be fine.
 7. **Grade colours:** a semi-grade takes the same colour as its grade. All Special Grade items and people get the oil slick.
