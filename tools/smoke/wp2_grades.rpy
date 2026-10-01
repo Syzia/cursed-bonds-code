@@ -27,7 +27,7 @@ init 999 python:
         else:
             TOAST_SINK[0] = ZZ_SINK_WAS[0]
 
-    def zz_texts(kind=None):
+    def zz_toast_texts(kind=None):
         return [t[0] for t in ZZ_TOASTS if kind is None or t[1] == kind]
 
     ZZ_STUDENTS = ["yuji", "megumi", "nobara", "maki", "panda", "toge"]
@@ -120,7 +120,7 @@ label zz_smoke:
         add_merit(30, "The Sun Mall")
         add_merit(5)
         check(merit == 35, "add_merit adds", merit)
-        check(zz_texts("grade") == ["Merit +30 — The Sun Mall", "Merit +5"], "add_merit toasts (kind grade)", ZZ_TOASTS)
+        check(zz_toast_texts("grade") == ["Merit +30 — The Sun Mall", "Merit +5"], "add_merit toasts (kind grade)", ZZ_TOASTS)
         zz_capture(False)
         merit = 0
 
@@ -227,13 +227,13 @@ label zz_smoke:
         control = 47
         gain("control", 5)
         check(control == 47, "acc: at g4, a control of 47 is never lowered", control)
-        _cap_toasts = [t for t in zz_texts("stat") if "limit" in t]
+        _cap_toasts = [t for t in zz_toast_texts("stat") if "limit" in t]
         check(_cap_toasts == ["Control is at the Grade 4 limit — a promotion lifts it"] and "cap:control" in actions_today,
               "the cap toast comes once a day per stat", ZZ_TOASTS)
-        check("Control +5" in zz_texts("stat"), "gain toasts the stat (kind stat)", ZZ_TOASTS)
+        check("Control +5" in zz_toast_texts("stat"), "gain toasts the stat (kind stat)", ZZ_TOASTS)
         output = 39
         gain("output", 3)
-        check(output == 40 and len([t for t in zz_texts() if "limit" in t]) == 2, "output has its own cap toast", ZZ_TOASTS)
+        check(output == 40 and len([t for t in zz_toast_texts() if "limit" in t]) == 2, "output has its own cap toast", ZZ_TOASTS)
         actions_today = set()
         del ZZ_TOASTS[:]
         gain("output", 2, quiet=True)
@@ -269,7 +269,7 @@ label zz_smoke:
               "acc: promote('mc', 'g3') -> talisman_slots() == 2 and grade_cap('stat') == 55", (grade, talisman_slots(), grade_cap("stat")))
         check(grade_cap("reserve") == 140, "Grade 3's reserve cap", grade_cap("reserve"))
         check(promote("mc", "g4") is False and grade == "g3", "promote never lowers the player", grade)
-        check(zz_texts("grade") == ["Promoted to Grade 3"], "the player's promotion toast", ZZ_TOASTS)
+        check(zz_toast_texts("grade") == ["Promoted to Grade 3"], "the player's promotion toast", ZZ_TOASTS)
         check(promotions_log[-1]["who"] == "mc" and promotions_log[-1]["grade"] == "g3" and len(promotions_log) == 1, "promotions_log", promotions_log)
         del ZZ_TOASTS[:]
         grade = None

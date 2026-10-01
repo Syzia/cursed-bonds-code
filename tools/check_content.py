@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static content checks for phase 1 (docs/PHASE1_DESIGN.md, section 8.4).
+"""Static content checks (docs/PHASE1_DESIGN.md 8.4; docs/PHASE2_DESIGN.md 2.2).
 
     python3 tools/check_content.py [--all | RULE FLAGS ...] [FILES ...]
 
@@ -37,8 +37,46 @@ Rules (flags):
                       the same label elsewhere. (Files outside game/, such as
                       smoke harnesses, are compared with game/ only, not with
                       each other: they are installed one at a time.)
+  --dup-globals       A top-level name defined twice (phase 2, R2). Read from
+                      every .rpy under game/: `NAME =`, `def` and `class`
+                      directly inside an `init ... python:` block, and every
+                      `define`, `default`, `screen`, `style`, `transform`,
+                      `image` and `label`. Store names (python names, define,
+                      default, transform), screens, styles, images and labels
+                      are five separate namespaces. A style is a finding only
+                      when two files define it (`style x is y`, then
+                      `style x:`, in one file is the usual way to write one).
+                      A harness (a file outside
+                      game/) is compared with game/, with tools/smoke/_lib.rpy
+                      and with itself, never with another harness.
+  --prefixes          A game name that is not in the baseline of today's names
+                      (tools/smoke/baseline_globals.txt) must start with one
+                      of its file's prefixes in tools/prefixes.json, or be on
+                      that file's exception list (R1). A file with no row may
+                      gain no new name. `$ x = ...` temporaries in labels are
+                      checked too, unless x is a store variable some file
+                      defines.
+  --harness-names     Every top-level name in tools/smoke/*.rpy starts with
+                      zz / ZZ (the names phase 1 left are in the baseline).
+                      When no harness is among FILES, tools/smoke/ is read.
+  --art-names         Two files under game/images/ with one base name (Ren'Py
+                      names an image after it, whatever the folder).
+  --action-returns    Every `Function(` inside a `screen` block or a `def`
+                      body in a game file must be `Function(ui_do, ...)` or
+                      name a function listed in tools/none_ok.txt (R4): a
+                      button's function that returns anything but None ends
+                      the interaction.
   --all               Every rule. This is also the default when no rule flag
                       is given.
+  --no-baseline       List the findings tools/smoke/baseline_check_content.txt
+                      already records as well. By default a finding whose
+                      file, rule and text are in that file is counted on
+                      stderr, not listed (line numbers are not compared).
+  --write-baseline    Write tools/smoke/baseline_globals.txt and
+                      tools/smoke/baseline_check_content.txt from the tree as
+                      it stands (game/ and tools/smoke/). P0a ran this once,
+                      before phase 2 changed a game file; the two files are
+                      frozen after that.
 
 FILES are .rpy files or folders (searched for .rpy). With none, every .rpy
 under game/ is checked.
@@ -47,15 +85,22 @@ Examples:
     python3 tools/check_content.py --all game/*.rpy
     python3 tools/check_content.py --narration-person --include-phase4 game/story_arc1.rpy
     python3 tools/check_content.py --no-literal-name game/sb_board.rpy
+    python3 tools/check_content.py --all game/*.rpy tools/smoke/*.rpy
 """
 
 import argparse
+import json
 import os
 import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GAME = os.path.join(ROOT, "game")
+SMOKE = os.path.join(ROOT, "tools", "smoke")
+BASELINE_FINDINGS = os.path.join(SMOKE, "baseline_check_content.txt")
+BASELINE_GLOBALS = os.path.join(SMOKE, "baseline_globals.txt")
+PREFIXES = os.path.join(ROOT, "tools", "prefixes.json")
+NONE_OK = os.path.join(ROOT, "tools", "none_ok.txt")
 
 RULES = [
     "no-mc-on-screen",
@@ -64,6 +109,11 @@ RULES = [
     "narration-person",
     "no-literal-name",
     "dup-labels",
+    "dup-globals",
+    "prefixes",
+    "harness-names",
+    "art-names",
+    "action-returns",
 ]
 
 MC_ON_SCREEN = re.compile(r"^\s*(show|hide)\s+mc\b")
@@ -77,7 +127,7 @@ ITALIC = re.compile(r"\{i\}.*?(\{/i\}|$)")
 LITERAL_NAME = re.compile(r"Kaito|Amagiri")
 NAME_ASSIGN = re.compile(r"\bmc_(sur)?name\s*=(?!=)")
 LABEL_DEF = re.compile(r"^\s*label\s+([A-Za-z_.][\w.]*)")
-PYTHON_HEADER = re.compile(r"^(init(\s+[-+]?\d+)?\s+)?python\b")
+PYTHON_HEADER = re.compile(r"^(init(\s+[-+]?\d+)?\s+)?python\b(.*)$")
 # The narrator's string may be followed by say arguments or a transition.
 SAY_TAIL = re.compile(r"^(with\b|\(|id\b|nointeract\b)")
 
@@ -124,7 +174,7 @@ class Line(object):
     """One physical line, as the scanner saw it."""
 
     __slots__ = ("n", "raw", "code", "strings", "first_string", "rest",
-                 "continuation", "blocks")
+                 "continuation", "blocks", "bare")
 
     def __init__(self, n, raw):
         self.n = n
@@ -135,6 +185,7 @@ class Line(object):
         self.rest = ""           # code after that first string
         self.continuation = False  # inside brackets or a string from above
         self.blocks = ()         # enclosing blocks, outermost first: (kind, name)
+        self.bare = raw          # the code with every string literal blanked
 
 
 def scan(text):
@@ -152,16 +203,19 @@ def scan(text):
         i = 0
         L = len(raw)
         comment_at = None
+        spans = []          # (start, end) of the string literals on this line
         if open_quote:
             end = raw.find(open_quote)
             while end > 0 and raw[end - 1] == "\\" and len(open_quote) == 1:
                 end = raw.find(open_quote, end + 1)
             if end < 0:
                 ln.strings.append(raw)
+                spans.append((0, L))
                 i = L
             else:
                 ln.strings.append(raw[:end])
                 i = end + len(open_quote)
+                spans.append((0, i))
                 open_quote = None
         while i < L:
             c = raw[i]
@@ -180,10 +234,12 @@ def scan(text):
                     j += 1
                 if j >= L:
                     ln.strings.append(raw[i + len(q):])
+                    spans.append((i, L))
                     open_quote = q
                     i = L
                     break
                 ln.strings.append(raw[i + len(q):j])
+                spans.append((i, j + len(q)))
                 if ln.first_string is None and not raw[:i].strip():
                     ln.first_string = (i, j + len(q))
                 i = j + len(q)
@@ -195,6 +251,11 @@ def scan(text):
             i += 1
         if comment_at is not None:
             ln.code = raw[:comment_at]
+        bare = list(ln.code)
+        for a, b in spans:
+            for k in range(a, min(b, len(bare))):
+                bare[k] = " "
+        ln.bare = "".join(bare)
         if ln.first_string is not None:
             ln.rest = ln.code[ln.first_string[1]:].strip()
 
@@ -214,8 +275,15 @@ def scan(text):
 
 def block_kind(stripped):
     """(kind, name) of a block header such as `label start:` or `menu:`."""
-    if PYTHON_HEADER.match(stripped):
-        return ("python", "")
+    m = PYTHON_HEADER.match(stripped)
+    if m:
+        # The name says which store the block fills: "" for the default one,
+        # the name after `in`, or "-" for `hide` (its names are thrown away).
+        tail = m.group(3)
+        if re.search(r"\bhide\b", tail):
+            return ("python", "-")
+        st = re.search(r"\bin\s+([A-Za-z_][\w.]*)", tail)
+        return ("python", st.group(1) if st else "")
     if stripped.startswith(('"', "'")):
         return ("choice", "")
     m = re.match(r"([A-Za-z_]\w*)\s*([A-Za-z_.][\w.]*)?", stripped)
@@ -307,6 +375,261 @@ def label_defs(path, lines):
     return out
 
 
+# --- phase 2: names (R1, R2) ----------------------------------------------------
+
+DEFINE_DEF = re.compile(r"^(define|default)\s+(?:[-+]?\d+\s+)?([A-Za-z_][\w.]*)\s*=(?!=)")
+SCREEN_DEF = re.compile(r"^screen\s+([A-Za-z_]\w*)")
+STYLE_DEF = re.compile(r"^style\s+([A-Za-z_]\w*)")
+TRANSFORM_DEF = re.compile(r"^transform\s+([A-Za-z_]\w*)")
+IMAGE_DEF = re.compile(r"^(?:image|layeredimage)\s+([^=:]+?)\s*[=:]")
+PY_DEF = re.compile(r"^(?:def|class)\s+([A-Za-z_]\w*)")
+PY_ASSIGN = re.compile(r"^([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*(?::[^=]+)?=(?!=)")
+DOLLAR_ASSIGN = re.compile(r"^\$\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*=(?!=)")
+FUNCTION_CALL = re.compile(r"(?<![\w.])Function\(")
+
+# Variables Ren'Py itself owns; a label may set them without owning the name.
+RENPY_VARS = {
+    "_return", "_window", "_skipping", "_rollback", "_dismiss_pause", "_game_menu_screen",
+    "_confirm_quit", "_autosave", "_history", "_window_auto", "_side_image", "_quit_slot",
+    "quick_menu", "save_name", "mouse_visible", "suppress_overlay", "main_menu",
+}
+
+
+def file_key(path):
+    """A file's name as the baselines and tools/prefixes.json write it:
+    `game/x.rpy`, `tools/smoke/x.rpy`. A copy outside the repository (a
+    scratch project, a worktree with its own tools/) keeps the same key."""
+    real = os.path.realpath(path)
+    root = os.path.realpath(ROOT)
+    if real.startswith(root + os.sep):
+        return os.path.relpath(real, root).replace(os.sep, "/")
+    parent = os.path.basename(os.path.dirname(real))
+    if parent == "game":
+        return "game/" + os.path.basename(real)
+    if parent == "smoke":
+        return "tools/smoke/" + os.path.basename(real)
+    return real.replace(os.sep, "/")
+
+
+def is_game(path):
+    return file_key(path).startswith("game/")
+
+
+def top_level(ln):
+    """True for a statement at the top of a file or directly inside `init:`."""
+    return all(k == "init" for k, _ in ln.blocks)
+
+
+def definitions(path, lines):
+    """[(namespace, name, Line)] for every top-level name a file defines.
+    Namespaces: store (python names, define, default, transform), screen,
+    style, image, label."""
+    out = []
+    for ln in lines:
+        if ln.continuation:
+            continue
+        code = ln.code.strip()
+        if not code:
+            continue
+        if top_level(ln):
+            m = DEFINE_DEF.match(code)
+            if m:
+                out.append(("store", m.group(2), ln))
+                continue
+            for ns, rx in (("screen", SCREEN_DEF), ("style", STYLE_DEF),
+                           ("store", TRANSFORM_DEF), ("image", IMAGE_DEF)):
+                m = rx.match(code)
+                if m:
+                    out.append((ns, " ".join(m.group(1).split()), ln))
+                    break
+            continue
+        kind, store = ln.blocks[-1]
+        if kind == "python" and store != "-" and all(k == "init" for k, _ in ln.blocks[:-1]):
+            # Directly inside an init python block (not in a def, class or if).
+            pre = (store + ".") if store else ""
+            m = PY_DEF.match(code)
+            if m:
+                out.append(("store", pre + m.group(1), ln))
+                continue
+            m = PY_ASSIGN.match(code)
+            if m:
+                for name in m.group(1).split(","):
+                    out.append(("store", pre + name.strip(), ln))
+    for name, ln in label_defs(path, lines):
+        out.append(("label", name, ln))
+    out.sort(key=lambda d: d[2].n)
+    return out
+
+
+def label_temporaries(path, lines):
+    """[(name, Line)] for every plain `$ name = ...` (and `name = ...` in a
+    python block) inside a label."""
+    out = []
+    for ln in lines:
+        if ln.continuation or label_of(ln) is None:
+            continue
+        kinds = [k for k, _ in ln.blocks]
+        code = ln.code.strip()
+        if any(k in NON_SCRIPT_BLOCKS and k != "python" for k in kinds):
+            continue
+        if "python" in kinds:
+            if kinds[-1] != "python":
+                continue
+            m = PY_ASSIGN.match(code)
+        else:
+            m = DOLLAR_ASSIGN.match(code)
+        if m:
+            for name in m.group(1).split(","):
+                out.append((name.strip(), ln))
+    return out
+
+
+class Baseline(object):
+    """tools/smoke/baseline_globals.txt: the names the tree had before phase 2.
+    Tab-separated rows, `kind  namespace  name  file`:
+      def  a top-level name (--prefixes and --harness-names leave it alone)
+      dup  one definition site of a name that was already defined twice
+      tmp  a label temporary (namespace is `-`)"""
+
+    def __init__(self, path=BASELINE_GLOBALS):
+        self.defs = set()       # (ns, name, file)
+        self.dups = {}          # (ns, name, file) -> count
+        self.tmps = set()       # (name, file)
+        self.found = os.path.isfile(path)
+        if not self.found:
+            return
+        with open(path, encoding="utf-8") as f:
+            for raw in f:
+                raw = raw.rstrip("\n")
+                if not raw or raw.startswith("#"):
+                    continue
+                parts = raw.split("\t")
+                if len(parts) != 4:
+                    continue
+                kind, ns, name, fk = parts
+                if kind == "def":
+                    self.defs.add((ns, name, fk))
+                elif kind == "dup":
+                    self.dups[(ns, name, fk)] = self.dups.get((ns, name, fk), 0) + 1
+                elif kind == "tmp":
+                    self.tmps.add((name, fk))
+
+
+def load_prefixes(path=PREFIXES):
+    if not os.path.isfile(path):
+        return {"files": {}, "exceptions": [], "harness": ["zz", "ZZ"]}
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_none_ok(path=NONE_OK):
+    """The first column of tools/none_ok.txt: what `Function(` may name."""
+    out = set()
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8") as f:
+            for raw in f:
+                if raw.strip() and not raw.startswith("#"):
+                    out.add(raw.rstrip("\n").split("\t")[0].strip())
+    return out
+
+
+def has_prefix(name, prefixes):
+    """A name carries a prefix when it starts with it, leading underscores
+    aside, or with its capitals (`toast_` also allows `TOAST_`). For
+    `gui.x` and `persistent.x` the part after the dot may carry it."""
+    cands = [name.lstrip("_")]
+    if " " in name:
+        cands.append(name.replace(" ", "_"))    # an image: `night sky` carries `night_`
+    head, dot, tail = name.partition(".")
+    if dot and head in ("gui", "persistent"):
+        cands.append(tail.lstrip("_"))
+    for c in cands:
+        for p in prefixes:
+            if c.startswith(p) or c.startswith(p.upper()):
+                return True
+    return False
+
+
+def prefix_problem(ns, name, fk, cfg):
+    """Why a new name in file fk breaks R1, or None."""
+    for e in cfg.get("exceptions", []):
+        if e.get("name") == name and e.get("file") == fk and e.get("namespace", ns) == ns:
+            return None
+    prefixes = cfg.get("files", {}).get(fk)
+    if prefixes is None:
+        return "%s has no row in tools/prefixes.json, so it may gain no new name" % fk
+    if has_prefix(name, prefixes):
+        return None
+    if ns == "label":
+        bare = name.lstrip("_")
+        # sb_do_<action id>, where the action id carries the file's prefix,
+        # and mg_<game id> for a minigame's label.
+        if bare.startswith("sb_do_") and has_prefix(bare[len("sb_do_"):], prefixes):
+            return None
+        if bare.startswith("mg_"):
+            return None
+    return "does not start with one of %s's prefixes (%s)" % (fk, ", ".join(prefixes))
+
+
+def rule_action_returns(path, lines, allowed):
+    """[(Line, the function named)] for each `Function(` in a screen or a def
+    that names neither ui_do nor a tools/none_ok.txt function."""
+    for ln in lines:
+        if not any(k in ("screen", "def") for k, _ in ln.blocks):
+            continue
+        for m in FUNCTION_CALL.finditer(ln.bare):
+            rest = ln.bare[m.end():]
+            depth = 0
+            arg = ""
+            for ch in rest:
+                if ch in "([{":
+                    depth += 1
+                elif ch in ")]}":
+                    if depth == 0:
+                        break
+                    depth -= 1
+                elif ch == "," and depth == 0:
+                    break
+                arg += ch
+            arg = arg.strip()
+            if arg != "ui_do" and arg not in allowed:
+                yield ln, arg
+
+
+def art_names(images):
+    """{base name: [paths]} for the names two or more files under images share."""
+    seen = {}
+    for d, _dirs, files in os.walk(images):
+        for f in sorted(files):
+            if f.startswith(".") or "." not in f:
+                continue
+            stem = f.rsplit(".", 1)[0].lower()
+            seen.setdefault(stem, []).append(os.path.join(d, f))
+    return {k: v for k, v in seen.items() if len(v) > 1}
+
+
+def finding_key(path, rule, text):
+    if len(text) > 200:
+        text = text[:197] + "..."
+    return (file_key(path), rule, text)
+
+
+def load_known(path=BASELINE_FINDINGS):
+    """{(file, rule, text): count} from tools/smoke/baseline_check_content.txt
+    (the output format, `file:line: rule: text`; the line is not compared)."""
+    known = {}
+    if not os.path.isfile(path):
+        return known
+    rx = re.compile(r"^(.*?):(\d+): ([a-z0-9-]+): (.*)$")
+    with open(path, encoding="utf-8") as f:
+        for raw in f:
+            m = rx.match(raw.rstrip("\n"))
+            if m and m.group(3) in RULES:
+                k = (m.group(1), m.group(3), m.group(4))
+                known[k] = known.get(k, 0) + 1
+    return known
+
+
 # --- driver --------------------------------------------------------------------
 
 def read_lines(path, cache):
@@ -347,10 +670,163 @@ def shown(path):
     return path if rel.startswith("..") else rel
 
 
+def global_findings(files, chosen, cache):
+    """The findings of --dup-globals, --prefixes, --harness-names, --art-names
+    and --action-returns, as (path, line, rule, text)."""
+    out = []
+    base = Baseline()
+    cfg = load_prefixes()
+    game_files = collect([GAME])
+    lib = os.path.join(SMOKE, "_lib.rpy")
+
+    def defs_of(path):
+        return definitions(path, read_lines(path, cache))
+
+    game_defs = {}      # (ns, name) -> [(path, Line)]
+    for path in game_files:
+        for ns, name, ln in defs_of(path):
+            game_defs.setdefault((ns, name), []).append((path, ln))
+    lib_defs = {}
+    if os.path.isfile(lib):
+        for ns, name, ln in defs_of(lib):
+            lib_defs.setdefault((ns, name), []).append((lib, ln))
+
+    harnesses = [p for p in files if not is_game(p)]
+    if "harness-names" in chosen and not harnesses and os.path.isdir(SMOKE):
+        harnesses = collect([SMOKE])
+
+    if "dup-globals" in chosen:
+        for path in files:
+            real = os.path.realpath(path)
+            fk = file_key(path)
+            own = {}
+            for ns, name, ln in defs_of(path):
+                own.setdefault((ns, name), []).append(ln)
+            for (ns, name), lns in sorted(own.items(), key=lambda kv: kv[1][0].n):
+                if ns == "label" and "dup-labels" in chosen:
+                    continue    # that rule reports it; once is enough
+                others = [(p, l) for p, l in game_defs.get((ns, name), [])
+                          if os.path.realpath(p) != real]
+                if not is_game(path) and real != os.path.realpath(lib):
+                    others += lib_defs.get((ns, name), [])
+                if ns == "style":
+                    # `style x is y` and then `style x:` in one file is how
+                    # Ren'Py styles are written; a style is a finding only
+                    # when two files define it.
+                    lns = lns[:1]
+                if len(lns) < 2 and not others:
+                    continue
+                # Every site of a name defined twice is a finding, less the
+                # sites the baseline already holds for this file.
+                spare = base.dups.get((ns, name, fk), 0)
+                for ln in lns[spare:]:
+                    where = ["%s:%d" % (shown(p), l.n) for p, l in others]
+                    where += ["%s:%d" % (shown(path), l.n) for l in lns if l is not ln]
+                    out.append((path, ln.n, "dup-globals", "%s %s is also defined at %s" % (
+                        ns, name, ", ".join(where))))
+
+    if "prefixes" in chosen:
+        store_names = set(name for (ns, name) in game_defs if ns == "store")
+        store_names |= set(name for (ns, name, _f) in base.defs if ns == "store")
+        for path in files:
+            if not is_game(path):
+                continue
+            fk = file_key(path)
+            lines = read_lines(path, cache)
+            for ns, name, ln in defs_of(path):
+                if (ns, name, fk) in base.defs:
+                    continue
+                if ns == "store" and name.startswith("config."):
+                    continue    # an engine setting, not a name of ours
+                why = prefix_problem(ns, name, fk, cfg)
+                if why:
+                    out.append((path, ln.n, "prefixes", "%s %s %s" % (ns, name, why)))
+            seen = set()
+            for name, ln in label_temporaries(path, lines):
+                if name in seen or name in store_names or name in RENPY_VARS or (name, fk) in base.tmps:
+                    continue
+                seen.add(name)
+                why = prefix_problem("tmp", name, fk, cfg)
+                if why:
+                    out.append((path, ln.n, "prefixes", "label temporary %s %s" % (name, why)))
+
+    if "harness-names" in chosen:
+        marks = tuple(cfg.get("harness", ["zz", "ZZ"]))
+        for path in harnesses:
+            fk = file_key(path)
+            for ns, name, ln in defs_of(path):
+                if (ns, name, fk) in base.defs or name.lstrip("_").startswith(marks):
+                    continue
+                out.append((path, ln.n, "harness-names", "%s %s does not start with %s" % (
+                    ns, name, " / ".join(marks))))
+
+    if "art-names" in chosen:
+        images = os.path.join(GAME, "images")
+        for stem, paths in sorted(art_names(images).items()):
+            for p in paths[1:]:
+                out.append((p, 1, "art-names", "the image name %s is also %s" % (
+                    stem, ", ".join(shown(q) for q in paths if q != p))))
+
+    if "action-returns" in chosen:
+        allowed = load_none_ok()
+        for path in files:
+            if not is_game(path):
+                continue
+            for ln, arg in rule_action_returns(path, read_lines(path, cache), allowed):
+                out.append((path, ln.n, "action-returns",
+                            "Function(%s ...) is not ui_do or in tools/none_ok.txt: %s" % (arg, ln.raw.strip())))
+    return out
+
+
+def write_baselines(cache):
+    """--write-baseline: the names and the findings of the tree as it stands."""
+    files = collect([GAME, SMOKE])
+    game_files = [p for p in files if is_game(p)]
+    all_defs = {p: definitions(p, read_lines(p, cache)) for p in files}
+    game_defs = {}
+    for p in game_files:
+        for ns, name, ln in all_defs[p]:
+            game_defs.setdefault((ns, name), []).append(p)
+    lib = os.path.realpath(os.path.join(SMOKE, "_lib.rpy"))
+    lib_names = set((ns, name) for p in files if os.path.realpath(p) == lib
+                    for ns, name, ln in all_defs[p])
+    store_names = set(name for (ns, name) in game_defs if ns == "store")
+    rows = []
+    for p in files:
+        fk = file_key(p)
+        counts = {}
+        for ns, name, ln in all_defs[p]:
+            counts[(ns, name)] = counts.get((ns, name), 0) + 1
+        for (ns, name), n in sorted(counts.items()):
+            rows.append(("def", ns, name, fk))
+            elsewhere = [q for q in game_defs.get((ns, name), []) if os.path.realpath(q) != os.path.realpath(p)]
+            if not is_game(p) and os.path.realpath(p) != lib and (ns, name) in lib_names:
+                elsewhere.append(lib)
+            if ns == "style":
+                n = 1
+            if n > 1 or elsewhere:
+                rows.extend([("dup", ns, name, fk)] * n)
+        if is_game(p):
+            for name in sorted(set(nm for nm, ln in label_temporaries(p, read_lines(p, cache)))):
+                if name not in store_names and name not in RENPY_VARS:
+                    rows.append(("tmp", "-", name, fk))
+    with open(BASELINE_GLOBALS, "w", encoding="utf-8") as f:
+        f.write("# tools/smoke/baseline_globals.txt -- the names the tree had before phase 2\n"
+                "# changed a game file (written by `tools/check_content.py --write-baseline`\n"
+                "# at P0a; frozen). Tab-separated: kind, namespace, name, file.\n"
+                "#   def  a top-level name: --prefixes and --harness-names leave it alone\n"
+                "#   dup  one definition site of a name that was already defined twice:\n"
+                "#        --dup-globals leaves that many sites in that file alone\n"
+                "#   tmp  a `$ name = ...` temporary in a label: --prefixes leaves it alone\n")
+        for r in sorted(set(r for r in rows if r[0] != "dup")) + sorted(r for r in rows if r[0] == "dup"):
+            f.write("\t".join(r) + "\n")
+    return len(rows)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(
         prog="check_content.py",
-        description="Static content checks (PHASE1_DESIGN.md 8.4).",
+        description="Static content checks (PHASE1_DESIGN.md 8.4, PHASE2_DESIGN.md 2.2).",
         epilog="Prints file:line: rule: text; exits 1 on findings.")
     ap.add_argument("--all", action="store_true", help="every rule (the default)")
     for r in RULES:
@@ -358,12 +834,24 @@ def main(argv=None):
     ap.add_argument("--include-phase4", action="store_true",
                     help="also list the narration-person findings that section 5.4 "
                          "exempts (the PHASE4_YOU table)")
+    ap.add_argument("--no-baseline", action="store_true",
+                    help="also list the findings tools/smoke/baseline_check_content.txt records")
+    ap.add_argument("--write-baseline", action="store_true",
+                    help="write baseline_globals.txt and baseline_check_content.txt "
+                         "from the tree as it stands (P0a only)")
     ap.add_argument("files", nargs="*", help=".rpy files or folders (default: game/)")
     args = ap.parse_args(argv)
 
     chosen = [r for r in RULES if getattr(args, r.replace("-", "_"))]
     if args.all or not chosen:
         chosen = list(RULES)
+
+    cache = {}
+    if args.write_baseline:
+        n_rows = write_baselines(cache)
+        chosen = list(RULES)
+        args.files = [GAME, SMOKE]
+        args.no_baseline = True
 
     files = collect(args.files or [GAME])
     missing = [p for p in files if not os.path.isfile(p)]
@@ -372,7 +860,6 @@ def main(argv=None):
             print("check_content.py: no such file: " + p, file=sys.stderr)
         return 2
 
-    cache = {}
     findings = []   # (path, line, rule, text)
     exempt = {}     # file -> narration-person lines exempted by PHASE4_YOU
     per_line_rules = [
@@ -409,12 +896,45 @@ def main(argv=None):
                     findings.append((path, ln.n, "dup-labels", "label %s is also defined at %s" % (
                         name, ", ".join("%s:%d" % (shown(p), l.n) for p, l in others))))
 
+    findings.extend(global_findings(files, chosen, cache))
+
     order = {os.path.realpath(p): i for i, p in enumerate(files)}
-    findings.sort(key=lambda f: (order.get(os.path.realpath(f[0]), 0), f[1], RULES.index(f[2])))
-    for path, n, rule, text in findings:
+    findings.sort(key=lambda f: (order.get(os.path.realpath(f[0]), len(order)), f[1], RULES.index(f[2])))
+
+    def out_line(path, n, rule, text):
         if len(text) > 200:
             text = text[:197] + "..."
-        print("%s:%d: %s: %s" % (shown(path), n, rule, text))
+        return "%s:%d: %s: %s" % (file_key(path) if args.write_baseline else shown(path), n, rule, text)
+
+    if args.write_baseline:
+        with open(BASELINE_FINDINGS, "w", encoding="utf-8") as f:
+            f.write("# tools/smoke/baseline_check_content.txt -- the findings of\n"
+                    "# `tools/check_content.py --all game/ tools/smoke/` that the tree had before\n"
+                    "# phase 2 changed a game file (written by --write-baseline at P0a; frozen).\n"
+                    "# A finding with the same file, rule and text is counted, not listed; line\n"
+                    "# numbers are not compared. --no-baseline lists them. (Names have their own\n"
+                    "# baseline, baseline_globals.txt.)\n")
+            for path, n, rule, text in findings:
+                f.write(out_line(path, n, rule, text) + "\n")
+        print("check_content: wrote %s (%d rows) and %s (%d findings)" % (
+            shown(BASELINE_GLOBALS), n_rows, shown(BASELINE_FINDINGS), len(findings)), file=sys.stderr)
+        return 0
+
+    known_n = 0
+    if not args.no_baseline:
+        known = load_known()
+        kept = []
+        for f in findings:
+            k = finding_key(f[0], f[2], f[3])
+            if known.get(k, 0) > 0:
+                known[k] -= 1
+                known_n += 1
+            else:
+                kept.append(f)
+        findings = kept
+
+    for path, n, rule, text in findings:
+        print(out_line(path, n, rule, text))
 
     if exempt:
         n_ex = sum(exempt.values())
@@ -423,6 +943,9 @@ def main(argv=None):
               "--include-phase4 lists them)" % (
                   n_ex, "" if n_ex == 1 else "s",
                   len(exempt), "" if len(exempt) == 1 else "s"), file=sys.stderr)
+    if known_n:
+        print("check_content: note: %d finding%s already in %s (--no-baseline lists them)" % (
+            known_n, "" if known_n == 1 else "s", shown(BASELINE_FINDINGS)), file=sys.stderr)
 
     counts = {}
     for f in findings:

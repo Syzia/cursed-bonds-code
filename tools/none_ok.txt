@@ -1,0 +1,35 @@
+# tools/none_ok.txt -- the functions a button may call directly (PHASE2_DESIGN.md
+# 2.2, R4). One line each: the name as it is written after `Function(`, a tab,
+# then an example call.
+#
+# tools/check_content.py --action-returns flags every `Function(` in a screen
+# or a def body of a game file that is neither `Function(ui_do, ...)` nor names
+# a line here. tools/smoke/p2_contracts.rpy runs every example in a settled
+# fixture, each in a fresh one, and fails unless it returns None (a button's
+# function that returns anything else ends the interaction and hands the value
+# to the label that called the screen).
+#
+# An example that uses `key` is run once for every key of DEV_FUNCS, so the
+# `DEV_FUNCS[key]` line covers every review button, present and future, as the
+# panel itself calls it. A new review function needs no line of its own.
+#
+# Frozen after wave 0: a wave package's button calls its own function through
+# `Function(ui_do, fn, ...)` instead of adding a line.
+toast_tick	toast_tick()
+check_objective	check_objective()
+jr_go	jr_go(journal_state(), tab="stats")
+jr_toggle	jr_toggle(journal_state(), "collapsed", "act1")
+jr_wear	jr_wear(0, "paper_ward")
+jr_hold	jr_hold(None)
+jr_takeoff	jr_takeoff("paper_ward")
+dev_merit	dev_merit()
+dev_promote	dev_promote("mc")
+dev_bond	dev_bond()
+dev_tokyo	dev_tokyo()
+dev_gojo_in	dev_gojo_in()
+dev_items	dev_items()
+dev_armory	dev_armory()
+dev_complete	dev_complete()
+dev_week	dev_week()
+dev_veil	dev_veil()
+DEV_FUNCS[key]	dev_action(key)()

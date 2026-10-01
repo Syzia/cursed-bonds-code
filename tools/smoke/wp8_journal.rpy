@@ -655,11 +655,16 @@ label zz_smoke:
                 control=47, output=38, insight=31, stamina=62,
                 memories_seen={"ch1_diner": 0, "ch1_the_thing": 0, "ch1_gojo": 0, "chapter_one_b": 0,
                                "ch2_arrival": 0, "ch2_the_veil": 0, "ch2_first_years": 0},
-                districts_visited={"yotsuka"}, yen=12000,
-                inventory=dict(photo=1, sealing_talisman=3, first_aid=2, kurose_card=1, slaughter_demon=1,
-                               nunchaku=1, paper_ward=1, steady_hand=1, iron_seal=1, spark=1,
-                               zzj_ward_a=1, zzj_ward_b=1, zzj_ward_c=1, zzj_ward_d=1),
-                equipped_tool="slaughter_demon", equipped_talismans=["paper_ward"])
+                districts_visited={"yotsuka"}, yen=12000)
+        ## The inventory is built with its owner's function: fixture() refuses
+        ## a shaped variable (PHASE2 R5).
+        store.inventory = {}
+        for _zzj_id, _zzj_n in (("photo", 1), ("sealing_talisman", 3), ("first_aid", 2), ("kurose_card", 1),
+                                ("slaughter_demon", 1), ("nunchaku", 1), ("paper_ward", 1), ("steady_hand", 1),
+                                ("iron_seal", 1), ("spark", 1), ("zzj_ward_a", 1), ("zzj_ward_b", 1),
+                                ("zzj_ward_c", 1), ("zzj_ward_d", 1)):
+            give_item(_zzj_id, _zzj_n, quiet=True)
+        fixture(equipped_tool="slaughter_demon", equipped_talismans=["paper_ward"])
         promote("mc", "g3", quiet=True)
         promote("nobara", "g2", quiet=True)
         if not [p for p in (getattr(store, "promotions_log", None) or []) if jr_get(p, "who") == "nobara"]:

@@ -112,11 +112,17 @@ init 999 python:
     def zz_open_state(**kw):
         """A Grade 4 player on a Monday morning in Utahime's office, board open."""
         base = dict(day=1, period="Morning", here="utahime_office", grade="g4", technique="timestop",
-                    control=12, output=10, insight=10, stamina=100, merit=0, yen=0, inventory={},
-                    roster=list(ZZ_EVERYONE), bonds={}, npc_state={}, board_offers=[], board_week=-1, board_npc=None,
-                    board_log=[], board_misgrades=0, schedule_overrides={}, explore_mode=False)
+                    control=12, output=10, insight=10, stamina=100, merit=0, yen=0,
+                    roster=list(ZZ_EVERYONE), bonds={}, board_week=-1, board_npc=None,
+                    board_misgrades=0, schedule_overrides={}, explore_mode=False)
         base.update(kw)
         fixture(**base)
+        ## The shaped variables are emptied directly: fixture() refuses them
+        ## (PHASE2 R5), and an empty container has no shape to get wrong.
+        store.inventory = {}
+        store.npc_state = {}
+        store.board_offers = []
+        store.board_log = []
         for f in ("utahime_leads_kyoto", "wakuri_clue", "armory_open"):
             flags.discard(f)
         flag("mission_board_open")

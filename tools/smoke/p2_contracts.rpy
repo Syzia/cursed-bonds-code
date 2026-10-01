@@ -39,6 +39,7 @@ init 999 python:
     import copy
     import json
     import os
+    import re
     import struct
     import zlib
 
@@ -271,6 +272,66 @@ init 999 python:
     ZZ_P0_BOOT = builtins.list([None])
     ZZ_P0_NOW = builtins.dict()
 
+    ## The tooling half's own pieces ---------------------------------------------
+
+    ## icon_glyph is P0b's style (ui_icons.rpy). Until it exists the helpers
+    ## are tried on a stand-in of the same name; afterwards on the real one.
+    try:
+        style.icon_glyph
+    except Exception:
+        style.icon_glyph = Style(style.default)
+    style.zz_tool_glyph_child = Style(style.icon_glyph)
+
+    ZZ_TOOL_TICKS = builtins.list([0])
+
+    def zz_tool_tick():
+        ZZ_TOOL_TICKS[0] += 1
+
+    def zz_none_ok_rows():
+        """[(name, example)] from tools/none_ok.txt."""
+        rows = []
+        with open(os.path.join(zz_root(), "tools", "none_ok.txt"), encoding="utf-8") as f:
+            for raw in f:
+                raw = raw.rstrip("\n")
+                if not raw.strip() or raw.startswith("#"):
+                    continue
+                name, _tab, example = raw.partition("\t")
+                rows.append((name.strip(), example.strip()))
+        return rows
+
+    def zz_none_ok_run(example, **names):
+        """Run one example on a fresh settled fixture; what it returned."""
+        zz_p0_fixture("rich")
+        return eval(example, store.__dict__, builtins.dict(names))
+
+
+## The screen the measuring helpers are tried on. Nine words, three buttons.
+screen zz_tool():
+    frame:
+        pos (100, 200)
+        background Solid("#07060cd8")
+        padding (20, 20)
+        vbox:
+            spacing 6
+            text "Three plain words"
+            text "+2 ◆ 1"
+            text "{b}Bold{/b} and {color=#f66}red{/color}"
+            text u"縁" style "icon_glyph"
+            text u"Glyph 任" style "zz_tool_glyph_child"
+            text u"縁 kanji"
+            textbutton "Go now" id "zz_tool_a" action NullAction() tooltip ("Go now", "zz_tool_a")
+            use zz_tool_inner
+    button:
+        id "zz_tool_b"
+        pos (700, 400)
+        xysize (120, 50)
+        background Solid("#7b2fd6")
+        action NullAction()
+    timer 0.05 repeat True action Function(zz_tool_tick)
+
+screen zz_tool_inner():
+    textbutton "Inner" id "zz_tool_c" action NullAction()
+
 
 label zz_smoke:
 
@@ -350,5 +411,147 @@ label zz_smoke:
                 _zz_ok, _zz_why = zz_png_same(os.path.join(zz_smoke_state.shots, "p0_%s.png" % _zz_n),
                                               os.path.join(_zz_base_dir, "baseline_shots", "%s.png" % _zz_n))
                 check(_zz_ok, "baseline: the %s view is pixel-identical to baseline_shots/%s.png" % (_zz_n, _zz_n), _zz_why)
+
+    ## --- 2. the measuring helpers of _lib.rpy --------------------------------------
+    python:
+        zz_p0_fixture("rich")
+        period = "Noon"
+        here = "cafeteria"
+        zz_p0_quiet_view()
+    scene expression graded_bg()
+    show yuji happy at pos_c
+    show screen zz_tool
+    python:
+        _zz_w = zz_words("zz_tool")
+        check(_zz_w == ["Three", "plain", "words", "Bold", "and", "red", "kanji", "Go", "now", "Inner"],
+              "zz_words: letter-bearing tokens, tags stripped, icon_glyph texts skipped, used screens counted", _zz_w)
+        _zz_t = zz_texts("zz_tool")
+        check("Three plain words" in _zz_t and "+2 ◆ 1" in _zz_t and u"縁" in _zz_t and "Inner" in _zz_t
+              and "Not on this screen" not in _zz_t, "zz_texts: every Text's string, glyphs included", _zz_t)
+        check(zz_buttons("zz_tool") == 3, "zz_buttons: three focusable widgets (one in a used screen)", zz_buttons("zz_tool"))
+        check(zz_rect("zz_tool", "zz_tool_b") == (700, 400, 120, 50), "zz_rect: a button's rectangle by id",
+              zz_rect("zz_tool", "zz_tool_b"))
+        _zz_ra = zz_rect("zz_tool", "zz_tool_a")
+        _zz_rc = zz_rect("zz_tool", "zz_tool_c")
+        check(_zz_ra is not None and _zz_rc is not None and _zz_ra[0] == 120 and _zz_ra[2] > 40
+              and _zz_rc[1] > _zz_ra[1], "zz_rect: a textbutton, and one inside a used screen", (_zz_ra, _zz_rc))
+        check(zz_rect("zz_tool", "zz_no_such_id") is None and zz_rect("zz_no_such_screen", "zz_tool_b") is None
+              and zz_buttons("zz_no_such_screen") == 0 and zz_words("zz_no_such_screen") == [],
+              "the helpers answer None / 0 / [] for what isn't there")
+        _zz_n = zz_calls("zz_tool_tick", 0.6)
+        check(4 <= _zz_n <= 14 and zz_tool_tick.__name__ == "zz_tool_tick",
+              "zz_calls: a 0.05 s timer is counted over 0.6 s, and the function is put back", _zz_n)
+        check("yuji" in zz_layer_tags("master") and "zz_tool" in zz_layer_tags("screens")
+              and "yuji" not in zz_layer_tags("screens"), "zz_layer_tags: what a layer shows",
+              (zz_layer_tags("master"), zz_layer_tags("screens")))
+
+        ## The worst case, on the helper screen (with a button hovered) and on
+        ## the place view as it is today.
+        _zz_ok = zz_worst("zz_tool", hover="zz_tool_a")
+        _zz_foc = renpy.display.focus.get_focused()
+        check(_zz_ok and os.path.isfile(os.path.join(zz_smoke_state.shots, "worst_zz_tool.png")),
+              "zz_worst: the screenshot is written")
+        check(_zz_foc is not None and _zz_foc is renpy.get_displayable("zz_tool", "zz_tool_a", base=True),
+              "zz_worst(hover=...): that button holds the focus", _zz_foc)
+        check(not TOASTQ.items and not renpy.get_screen("objective_toast") and not config.skipping
+              and renpy.get_screen("zz_tool"), "zz_worst: toasts, banner and skipping are put back; the screen stays")
+        renpy.hide_screen("zz_tool")
+        renpy.hide("yuji")
+        zz_p0_quiet_view()
+        _zz_ok = zz_worst("sb_place")
+        check(_zz_ok and renpy.get_screen("sb_place"), "zz_worst(sb_place): the place view's worst case is on file")
+        renpy.hide_screen("sb_place")
+
+    ## --- 3. fixture() is strict (R5) -----------------------------------------------
+    python:
+        zz_p0_fixture("fresh")
+        _zz_day = day
+        try:
+            fixture(day=_zz_day + 5, zz_no_such_variable=1)
+            _zz_err = None
+        except ZZFixtureError as _zz_e:
+            _zz_err = str(_zz_e)
+        check(_zz_err and "zz_no_such_variable" in _zz_err and day == _zz_day
+              and not hasattr(store, "zz_no_such_variable"),
+              "fixture() fails on an unknown name and sets nothing", (_zz_err, day))
+        _zz_refused = []
+        for _zz_k in ZZ_SHAPED:
+            try:
+                fixture(**{_zz_k: {}})
+            except ZZFixtureError:
+                _zz_refused.append(_zz_k)
+        check(_zz_refused == list(ZZ_SHAPED) and set(ZZ_SHAPED) >= {
+            "board_offers", "board_log", "npc_state", "inventory", "mission_state", "cb",
+            "cards_state", "fish_state", "fish_log", "pc_requests"},
+            "fixture() refuses every shaped variable (R5)", _zz_refused)
+        try:
+            fixture(day=_zz_day + 5, inventory={"paper_ward": 1})
+        except ZZFixtureError:
+            pass
+        check(day == _zz_day and not has_item("paper_ward"), "a refused fixture() sets none of its other names")
+        fixture(day=_zz_day + 1, flags=["zz_flag"], here="dojo")
+        check(day == _zz_day + 1 and flags == {"zz_flag"} and here == "dojo",
+              "fixture() still sets plain variables, a list becoming a set", (day, flags, here))
+
+    ## --- 4. tools/none_ok.txt: every example returns None (R4) ---------------------
+    python:
+        if zz_root() is None:
+            check(False, "none_ok.txt: SMOKE_ROOT is not set (an old tools/smoke.sh?)")
+        else:
+            _zz_rows = zz_none_ok_rows()
+            _zz_names = [r[0] for r in _zz_rows]
+            check({"toast_tick", "check_objective", "jr_go", "jr_toggle", "jr_wear", "jr_hold", "jr_takeoff",
+                   "dev_promote", "DEV_FUNCS[key]"} <= set(_zz_names) and len(set(_zz_names)) == len(_zz_names),
+                  "none_ok.txt lists the phase-1 button functions, each once", _zz_names)
+            _zz_bad = []
+            _zz_ran = 0
+            for _zz_name, _zz_ex in _zz_rows:
+                if not _zz_ex:
+                    _zz_bad.append((_zz_name, "no example"))
+                    continue
+                if re.search(r"\bkey\b", _zz_ex):
+                    ## One run for every review button, as the panel calls it.
+                    for _zz_key in sorted(DEV_FUNCS):
+                        _zz_rv = zz_none_ok_run(_zz_ex, key=_zz_key)
+                        _zz_ran += 1
+                        if _zz_rv is not None:
+                            _zz_bad.append((_zz_name, _zz_key, _zz_rv))
+                else:
+                    if not callable(getattr(store, _zz_name, None)):
+                        _zz_bad.append((_zz_name, "not a store function"))
+                        continue
+                    _zz_rv = zz_none_ok_run(_zz_ex)
+                    _zz_ran += 1
+                    if _zz_rv is not None:
+                        _zz_bad.append((_zz_name, _zz_rv))
+            check(not _zz_bad, "every none_ok.txt example returns None in a fresh settled fixture (%d calls)" % _zz_ran, _zz_bad)
+
+            ## Every review button, through dev_action(key): a scene button
+            ## returns its key to dev_tools; every other one runs a function
+            ## that returns None.
+            _zz_bad = []
+            for _zz_key, _zz_title in DEV_BUTTONS:
+                zz_p0_fixture("rich")
+                _zz_a = dev_action(_zz_key)
+                if _zz_key in DEV_SCENES:
+                    if not (isinstance(_zz_a, Return) and _zz_a.value == _zz_key):
+                        _zz_bad.append((_zz_key, "a scene button returns its key", _zz_a))
+                elif not isinstance(_zz_a, Function):
+                    _zz_bad.append((_zz_key, "not a Function", _zz_a))
+                elif _zz_a() is not None:
+                    _zz_bad.append((_zz_key, "did not return None"))
+            check(not _zz_bad and set(DEV_FUNCS) <= set(k for k, t in DEV_BUTTONS),
+                  "dev_action(key) for every review button (%d) returns None, or its key for a scene" % len(DEV_BUTTONS),
+                  _zz_bad)
+            zz_p0_fixture("rich")
+            toast_clear()
+
+    ## ================================================================================
+    ## The contracts half (P0b, task 13) goes below this line: ZZ_RETURNS for every
+    ## function row of 6.1, the owning files, the registries, aa_zz_order.rpy
+    ## (add `## smoke-with: aa_zz_order.rpy` to this file's header to switch it on),
+    ## the layout dump. Start from zz_p0_fixture("fresh") or ("rich"): the checks
+    ## above leave the store as their last fixture set it.
+    ## ================================================================================
 
     $ finish()

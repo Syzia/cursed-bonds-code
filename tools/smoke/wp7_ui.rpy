@@ -32,29 +32,7 @@ init 999 python:
 
     config.label_callbacks.append(zz_label_cb)
 
-    def zz_texts(screen_name):
-        """Every string drawn by a shown screen (after an interaction)."""
-        out = []
-        seen = set()
-
-        def walk(d, depth):
-            if d is None or depth > 80 or id(d) in seen:
-                return
-            seen.add(id(d))
-            if isinstance(d, renpy.text.text.Text):
-                try:
-                    out.append(d.get_all_text())
-                except Exception:
-                    out.append(" ".join(x for x in d.text if isinstance(x, str)))
-            try:
-                kids = d.visit() or []
-            except Exception:
-                kids = []
-            for k in kids:
-                walk(k, depth + 1)
-
-        walk(renpy.get_screen(screen_name), 0)
-        return out
+    ## zz_texts(screen) is the library's (tools/smoke/_lib.rpy).
 
     def zz_has_text(screen_name, s):
         return any(s in t for t in zz_texts(screen_name))
