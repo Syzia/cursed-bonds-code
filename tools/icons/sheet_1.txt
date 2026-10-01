@@ -1,0 +1,33 @@
+# Icon sheet 1 of 3: the names on it, left to right, top row first (6 x 5 cells).
+# Generated from ICONS (game/ui_icons.rpy) by: python3 tools/make_icon_workflow.py --names
+# Read by tools/make_icon_workflow.py (what to ask for) and tools/cut_icons.py (what to cut).
+map
+journal
+menu
+back
+close
+stay
+stamina_low
+moon
+skip
+people
+missions
+stats
+equipment
+inventory
+story
+memories
+now
+go
+area_heart
+area_school
+area_dorms
+area_staff
+area_grounds
+area_mountain
+campus
+tokyo
+district
+lock
+news
+place_gate
