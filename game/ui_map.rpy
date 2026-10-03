@@ -8,7 +8,7 @@
 ## Two levels, one screen. A screen variable, `zone`, says which is up:
 ##
 ##   Campus, level 1   "Jujutsu High": the six AREAS as markers (icon, name, up
-##                     to three faces, what is waiting there, YOU ARE HERE).
+##                     to three faces, what is waiting there, I'M HERE).
 ##                     Clicking one only opens it.
 ##   Campus, level 2   screen map_area(key): the area's own picture with one
 ##                     pin per room. Clicking a pin walks there: ("go", loc).
@@ -735,7 +735,7 @@ screen sb_map_campus():
                     if _map_moons.get(_k):
                         add icon("moon", 24) yalign 0.5
                     if _cur:
-                        text _("YOU ARE HERE") style "jjk_label" size 13 kerning 1.0 color gui.violet2 yalign 0.5
+                        text _("I'M HERE") style "jjk_label" size 13 kerning 1.0 color gui.violet2 yalign 0.5
 
 
 ## Campus, level 2: one area's picture, a pin for each of its rooms.
