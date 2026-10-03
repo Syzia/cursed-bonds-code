@@ -1,8 +1,11 @@
 ################################################################################
 ## Cursed Bonds — the journal.
 ##
-## WP8 (phase 1, PHASE1_DESIGN.md 4.7). One full-screen journal with six tabs:
-## People, Missions, Memories, Stats, Equipment and Inventory.
+## WP8 (phase 1, PHASE1_DESIGN.md 4.7), rebuilt by P3 in phase 2
+## (PHASE2_DESIGN.md 4.7). One full-screen journal with five tabs: People,
+## Missions, Stats, Equipment and Inventory. Memories live in People: each
+## person's page holds where they are right now, their story, and every scene
+## shared with them; the Me page holds the main story's scenes and my records.
 ##
 ##   screen journal(tab="people")   tag menu, its own chrome (not game_menu)
 ##   screen jjk_status()            use journal("stats")   (kept: old callers)
@@ -11,8 +14,9 @@
 ## How it is opened (D4):
 ##   - on campus, through the loop: Return(("journal", tab)) from the place
 ##     view, then `call screen journal(tab)` in the main context. Only there
-##     is it `editable`: equipment can change and Arc Two can begin
-##     (Return(("arc_two",))).
+##     is it `editable`: equipment can change, Arc Two can begin
+##     (Return(("arc_two",))) and a person's page offers "Go there"
+##     (Return(("go", loc)), which the loop hands to rule_walk_to).
 ##   - from the quick menu or the game menu during a scene: ShowMenu("journal"),
 ##     a menu context. The Equipment tab is read-only there.
 ##
@@ -20,7 +24,11 @@
 ## API (grades WP2, missions WP3, board WP4, memories WP5, items WP6, world
 ## WP1). The helpers below are tolerant of the shapes those return (a record
 ## may be a dict or an object; a mission list may hold ids or records), so the
-## journal keeps drawing whatever order the packages merge in.
+## journal keeps drawing whatever order the packages merge in. Phase 2's
+## packages are read only through their contract functions (6.1, 6.2):
+## person_now, grade_chip, item_requirements, and the leads and records
+## functions of the computer, the river and the card table. Never their
+## tables or their saved variables.
 ##
 ## The journal's view state (tab, selection, filters) is one dict held in the
 ## screen, `js`, rather than separate screen variables. The tab bodies are
@@ -45,7 +53,6 @@ init python:
     JOURNAL_TABS = [
         ("people",    "人", "People"),
         ("missions",  "任", "Missions"),
-        ("memories",  "憶", "Memories"),
         ("stats",     "力", "Stats"),
         ("equipment", "装", "Equipment"),
         ("inventory", "品", "Inventory"),
@@ -83,13 +90,38 @@ init python:
         read-only and Arc Two can't begin. Never during a replay."""
         return not renpy.context()._menu and not _in_replay
 
+    ## The sub-panes: a person's page, the Stats tab, the Me page.
+    JR_PERSON_SUBS = [("story", "Their story"), ("memories", "Memories")]
+    JR_STATS_SUBS = [("overview", "Overview"), ("light", "Last Light"), ("year", "My year")]
+    JR_ME_SUBS = [("story", "My story"), ("records", "Records")]
+
     def journal_state(tab="people"):
-        """WP8. A fresh view state for the journal screen."""
+        """WP8. A fresh view state for the journal screen. Phase 2 (4.7):
+        the Memories tab is gone, so "memories" opens People (a save whose
+        loop is about to open ("journal", "memories") lands there). `sel`
+        is None, a person, or "me"; psub, ssub and msub2 are the chips of a
+        person's page, the Stats tab and the Me page. mem_mode and mem_who
+        stay in the dict, unused."""
+        if tab == "memories":
+            tab = "people"
         if tab not in [t[0] for t in JOURNAL_TABS]:
             tab = "people"
         return dict(tab=tab, sel=None, mfilter="available", msub="story",
                     mem_mode="person", mem_who=None, inv_cat="all", inv_sel=None,
-                    pick=None, collapsed={})
+                    pick=None, collapsed={}, psub="story", ssub="overview", msub2="story")
+
+    def jr_fix(js):
+        """P3. Brings a view state made by an older build up to date, in
+        place: a save taken inside the journal keeps its screen's `js`, which
+        may be on the Memories tab and has none of the phase 2 keys. Returns
+        the tab to draw."""
+        if js.get("tab") not in [t[0] for t in JOURNAL_TABS]:
+            js["tab"] = "people"
+        for k, v in (("psub", "story"), ("ssub", "overview"), ("msub2", "story"),
+                     ("sel", None), ("pick", None), ("collapsed", None)):
+            if k not in js:
+                js[k] = {} if k == "collapsed" else v
+        return js["tab"]
 
     def jr_toggle(js, key, item):
         """Flip js[key][item] (the collapsed act headers)."""
@@ -300,6 +332,13 @@ init python:
             text, where = str(nf), None
         where = jr_place_name(where)
         text = "" if text is None else str(text)
+        ## Wave 0's hand-off: while the roll-call gate holds this person's
+        ## next scene, next_for skips it and offers the next unlock ("Eat
+        ## together at Bond 10") or "Talk". Say what is really next.
+        if text in jr_next_fallbacks(who):
+            held = jr_next_hangout(who)
+            if held and held[1] == "held":
+                return "Next: Spend time together — %s" % (held[2][:1].lower() + held[2][1:])
         if where:
             if limit:
                 room = limit - 9                     # "Next: " and " — "
@@ -323,11 +362,369 @@ init python:
             text = jr_clip(text, max(12, limit - 6))
         return "Next: %s" % text
 
+    ## What the roll-call gate is waiting for, in words (RULE_HANGOUT_AFTER).
+    JR_GATE_WORDS = {"roll_call": "After roll call", "sunmall_done": "After the Sun Mall"}
+
+    def jr_next_fallbacks(who):
+        """P3. The two lines next_for gives when it found neither a mission
+        nor a scene: the next unlock, and "Talk"."""
+        out = ["Talk"]
+        try:
+            nu = next_unlock(who)
+        except Exception:
+            nu = None
+        if nu:
+            out.append("%s at %s" % (nu[1], nu[2]))
+        return out
+
+    def jr_next_hangout(who):
+        """P3. The next scene behind "Spend time together" with someone, as
+        (event, state, words), or None when every one has played. state is
+        "open" (it plays the next time I spend time with them), "held" (the
+        roll-call gate is holding it; words says until when), "need" (words
+        is what it needs: "Bond 35", "Bond 50 and ♡ 20") or "later" (it
+        waits for the story). A scene I can have now comes first, then the
+        one that asks the least."""
+        if who not in CAST:
+            return None
+        b = store.bonds.get(who, 0)
+        a = store.affection.get(who, 0)
+        found = []
+        for e in EVENTS:
+            if e["kind"] != "hangout" or e["who"] != who or not e["once"]:
+                continue
+            if e["label"] in store.done_events or e["arc"] > store.arc or b >= e["max_bond"]:
+                continue
+            needs = []
+            if b < e["min_bond"]:
+                needs.append("Bond %d" % e["min_bond"])
+            if a < e["min_aff"]:
+                needs.append("♡ %d" % e["min_aff"])
+            if any(not has_flag(f) for f in e["requires"]) or any(has_flag(f) for f in e["forbids"]):
+                state, words = "later", "Later in the story"
+            elif needs:
+                state, words = "need", " and ".join(needs)
+            elif not rule_hangout_gate(e):
+                state, words = "held", JR_GATE_WORDS.get(RULE_HANGOUT_AFTER, "Soon")
+            else:
+                state, words = "open", ""
+            rank = {"open": 0, "held": 0, "need": 1, "later": 2}[state]
+            found.append(((rank, 1 if e["min_aff"] else 0, e["min_bond"], e["min_aff"]), (e, state, words)))
+        if not found:
+            return None
+        found.sort(key=lambda r: r[0])
+        return found[0][1]
+
+    def jr_thread_id(who):
+        """P3. The id of this person's thread, or None."""
+        for tid in THREAD_ORDER:
+            if THREADS[tid]["who"] == who:
+                return tid
+        return None
+
+    def jr_now(who):
+        """P3. person_now(who) (P1's contract), with every key present
+        whatever it returned."""
+        d = dict(place=None, name="Off campus", doing="", reachable=False, hidden=False, with_me=False)
+        try:
+            d.update(person_now(who) or {})
+        except Exception:
+            pass
+        return d
+
+    def jr_now_line(pn):
+        """P3. The "Right now" line: the place's name and what they're doing
+        ("Cafeteria — halfway through an enormous bowl"), or the name alone."""
+        name = str(pn.get("name") or "")
+        doing = str(pn.get("doing") or "")
+        return ("%s — %s" % (name, doing)) if (name and doing) else (name or doing)
+
+    def jr_can_go(pn):
+        """P3. Whether the page offers "Go there": only in the campus
+        journal, only for a place I can reach, and not for where I already
+        stand."""
+        return bool(journal_editable() and pn.get("reachable") and pn.get("place")
+                    and not pn.get("with_me") and pn.get("place") != store.here)
+
+    def jr_card_place(who):
+        """P3. The one dim line on a People card: where they are right now
+        ("Cafeteria", "With me", "Off campus"); "Elsewhere" for a room I
+        can't enter. "" for Sana, and mid-scene, where "right now" means
+        nothing."""
+        if who == "sana" or not journal_editable():
+            return ""
+        pn = jr_now(who)
+        if pn.get("hidden"):
+            return "Elsewhere"
+        return jr_clip(pn.get("name") or "", 26)
+
+    def jr_card_tip(who):
+        """P3. A People card's hover label: jr_next(who) on two lines, what
+        is next and then where ("Next: Spend time together" / "Cafeteria
+        (noon) · ..."). "" when there is nothing next."""
+        return jr_next(who).replace(" — ", "\n", 1)
+
+    def jr_card_new(who):
+        """P3. The gold dot on a People card: a mission with them can be
+        started, or a new scene with them is ready."""
+        if store.explore_mode or who not in CAST or not journal_editable():
+            return False
+        try:
+            for m in jr_missions(kind="character", who=who):
+                if mission_status(jr_get(m, "id")) in ("available", "active"):
+                    return True
+            return bool(has_event("hangout", who))
+        except Exception:
+            return False
+
+    def jr_story_where(who):
+        """P3. Where the next step of someone's story happens, in words:
+        where they are now when I can walk there, else where they usually
+        are. Never empty."""
+        pn = jr_now(who)
+        if journal_editable() and pn.get("with_me"):
+            return "with me now"
+        if journal_editable() and pn.get("place") and not pn.get("hidden"):
+            return "%s, right now" % pn.get("name")
+        try:
+            usual = usual_places(who) or ""
+        except Exception:
+            usual = ""
+        first = usual.split(" · ")[0].strip()
+        if not first:
+            return "around campus"
+        return ("usually " + first) if "(" in first else first
+
+    def jr_story_row(kind, title="", line="", state="", where="", next=False, **more):
+        d = dict(kind=kind, title=title, line=line, state=state, where=where, next=next)
+        d.update(more)
+        return d
+
     def jr_story_rows(who):
-        """P3 (ui_journal.rpy); P0's stub returns []. A person's story as a
-        list of dict(kind, title, line, state, where, next): their thread's
-        stages and their missions, in order, for the person page."""
-        return []
+        """P3 (ui_journal.rpy). A person's story as a list of
+        dict(kind, title, line, state, where, next), for their page (4.7).
+
+        kind "heading": the thread's title (state "done" once resolved).
+        kind "stage":   a thread line I have learned (state "done").
+        kind "mission": one of their missions; state is "done", "next",
+                        "available", "waiting", "locked" or "closed".
+        kind "step":    the next thing to do when it isn't a mission
+                        ("Spend time together", line "Bond 35").
+        kind "later":   every unwritten mission, as one row.
+
+        Order: the heading; what is done (stages in order, each followed by
+        the mission it unlocks, then the other missions in act order); the
+        one row with next=True, which says where; what is still closed; the
+        "later build" row. A stage not learned yet is not listed."""
+        rows = []
+        if who == "sana":
+            return rows
+        tid = jr_thread_id(who)
+        cur = thread_stage(tid) if tid else -1
+        ms = [jr_mrec(m) for m in jr_missions(kind="character", who=who)]
+        if tid:
+            T = THREADS[tid]
+            rows.append(jr_story_row("heading", title=T["title"],
+                                     state=("done" if thread_done(tid) else ("open" if cur >= 0 else "locked"))))
+        slotted, free = {}, []
+        for m in ms:
+            g = jr_get(jr_get(m, "gate", None) or {}, "thread")
+            if tid and g and g[0] == tid:
+                slotted.setdefault(g[1], []).append(m)
+            else:
+                free.append(m)
+        order = []
+        if tid:
+            for i, line in enumerate(THREADS[tid]["stages"]):
+                if i <= cur:
+                    order.append(("stage", line))
+                for m in slotted.get(i, []):
+                    order.append(("mission", m))
+        for m in free:
+            order.append(("mission", m))
+
+        done, ready, closed, later = [], [], [], 0
+        for kind, x in order:
+            if kind == "stage":
+                done.append(jr_story_row("stage", line=x, state="done"))
+                continue
+            mid = jr_get(x, "id")
+            try:
+                status = mission_status(mid)
+            except Exception:
+                status = "locked"
+            title = jr_get(x, "title", mid) or mid
+            if status == "unwritten":
+                later += 1
+            elif status in ("done", "skipped"):
+                done.append(jr_story_row("mission", title=title, state="done", id=mid,
+                                         line=("Passed by" if status == "skipped" else "")))
+            elif status in ("available", "active"):
+                ready.append(jr_story_row("mission", title=title, state="available", id=mid,
+                                          line=jr_get(x, "objective", "") or "",
+                                          where=jr_where_when(x) or jr_story_where(who)))
+            elif status == "closed":
+                closed.append(jr_story_row("mission", title=title, state="closed", id=mid,
+                                           line="Closed when Arc Two began"))
+            else:
+                try:
+                    why = mission_reason(mid) or ""
+                except Exception:
+                    why = ""
+                closed.append(jr_story_row("mission", title=title, state=status, id=mid,
+                                           line=why or "Not yet"))
+
+        nxt = None
+        if ready:
+            nxt = ready.pop(0)
+        else:
+            h = jr_next_hangout(who)
+            if h:
+                nxt = jr_story_row("step", title="Spend time together", line=h[2],
+                                   where=jr_story_where(who))
+            else:
+                try:
+                    nu = next_unlock(who) if who in CAST else None
+                except Exception:
+                    nu = None
+                if nu:
+                    nxt = jr_story_row("step", title=nu[1], line=nu[2], where=jr_story_where(who))
+        if nxt:
+            nxt["next"] = True
+            nxt["state"] = "next"
+        rows.extend(done)
+        if nxt:
+            rows.append(nxt)
+        rows.extend(ready)
+        rows.extend(closed)
+        if later:
+            rows.append(jr_story_row("later", state="later",
+                                     line=("1 more chapter in a later build" if later == 1
+                                           else "%d more chapters in a later build" % later)))
+        return rows
+
+    ## The People grid ------------------------------------------------------------
+
+    def jr_people_cards():
+        """P3. The cards of the People grid, in order: Me, everyone met in
+        JOURNAL_CAST order, then Sana. Each is a journal_cast() dict; the Me
+        card is dict(who="me", ...). A card may carry "key", its button's id
+        (jr_card_<key>), when two cards show one person."""
+        cast = journal_cast()
+        me = dict(who="me", name=(store.mc_name if jr_name_known() else "Me"),
+                  color=CAST.get("mc", {}).get("color", gui.violet2), role="", hint="",
+                  met=True, art=True)
+        return ([me] + [e for e in cast if e["met"] and e["who"] != "sana"]
+                + [e for e in cast if e["who"] == "sana"])
+
+    def jr_people_unmet():
+        """P3. The JOURNAL_CAST people not met yet, for the bottom row."""
+        return [e for e in journal_cast() if not e["met"] and e["who"] != "sana"]
+
+    def jr_face(who, size=72):
+        """P3. A square face, size x size: WP1's face_chip for a person; for
+        "me", the same crop of my own side portrait (the Yotsuka outfit until
+        the campus opens)."""
+        if who != "me":
+            return face_chip(who, size)
+        path = "images/side/mc_neutral.png" if has_flag("settled_in") else "images/side/mcyotsuka_neutral.png"
+        if not renpy.loadable(path):
+            return Text("？", font=gui.display_font, size=int(size * 0.6), color=gui.mute)
+        return Transform(path, crop=(124, 0, 112, 112), xysize=(size, size))
+
+    def jr_grade_chip(who, role=""):
+        """P3. What a person's grade chip shows, as (grade key or None, text
+        or None): Gojo's is ("sp", "Off the scale") on the Special fill; the
+        ungraded get (None, their role); nobody with neither gets (None, None)."""
+        try:
+            st = npc_stats(who) or {}
+        except Exception:
+            st = {}
+        if st.get("off_scale"):
+            return ("sp", "Off the scale")
+        if st.get("grade"):
+            return (st.get("grade"), None)
+        text = st.get("role") or role or CAST.get(who, {}).get("year", "")
+        return (None, text or None)
+
+    ## A person's page, the Me page ---------------------------------------------------
+
+    def jr_page_memories(who):
+        """P3. The tiles on someone's page: WP5's memories_with(who), each a
+        memory_entry() (so an unseen tile has its `text`, which never names
+        someone not met)."""
+        try:
+            return [m for m in (memories_with(who) or []) if m]
+        except Exception:
+            return jr_memories_with(who)
+
+    def jr_me_groups():
+        """P3. [(act title, [entry])] for the Me page's "My story": WP5's
+        memory_groups("act") without the Bonds group (those are on the
+        people's own pages). It holds the scenes nobody else is in."""
+        out = []
+        for title, mems in jr_memory_groups("act"):
+            mems = [m for m in mems if jr_get(m, "act") != "Bonds"]
+            if mems:
+                out.append((title, mems))
+        return out
+
+    def jr_records():
+        """P3. The Me page's Records, read through three contract functions
+        only: [(heading, [line])], a section with nothing in it left out."""
+        out = []
+        try:
+            pages = [str(t) for t in (pc_records() or [])]
+        except Exception:
+            pages = []
+        if pages:
+            out.append(("PAGES I'VE READ", pages))
+        try:
+            fish = list(fish_records() or [])
+        except Exception:
+            fish = []
+        lines = []
+        for r in fish:
+            if isinstance(r, (tuple, list)) and len(r) >= 2:
+                lines.append("%s — %s" % (r[0], ("%s cm" % r[1]) if r[1] else "not caught yet"))
+        if lines:
+            out.append(("THE RECORD BOOK", lines))
+        try:
+            won = int((cards_records() or {}).get("today", 0) or 0)
+        except Exception:
+            won = 0
+        if won:
+            out.append(("AT THE CARD TABLE", ["%s today: ¥%s" % ("Won" if won > 0 else "Lost", "{:,}".format(abs(won)))]))
+        return out
+
+    def jr_leads():
+        """P3. The Missions tab's leads, from pc_leads() (P6's contract):
+        one line each, "Look up what was on the ridge — my computer"."""
+        out = []
+        try:
+            leads = list(pc_leads() or [])
+        except Exception:
+            leads = []
+        for l in leads:
+            note = ""
+            if isinstance(l, (tuple, list)):
+                note = str(l[1]) if len(l) > 1 and l[1] else ""
+            elif l:
+                note = str(l)
+            note = note.strip() or "Something to look up"
+            if "computer" not in note.lower():
+                note += " — my computer"
+            out.append(note)
+        return out
+
+    def jr_reqs(iid):
+        """P3. item_requirements(iid) (P4a's contract) as a list of
+        (line, met): the checklist under a tool or a talisman. [] when the
+        item asks for nothing."""
+        try:
+            return [(str(r[0]), bool(r[1])) for r in (item_requirements(iid) or [])]
+        except Exception:
+            return []
 
     def jr_promotions(who):
         """[(day, grade key, why)] from promotions_log, oldest first."""
@@ -930,7 +1327,15 @@ init python:
         if kind == "tool":
             cur = jr_tool()
             for iid in items_in("tool"):
-                out.append((iid, iid != cur, "In my hand" if iid == cur else ""))
+                if iid == cur:
+                    out.append((iid, False, "In my hand"))
+                    continue
+                ## 4.7: the picker says why WP6 won't let me hold one.
+                try:
+                    ok, why = can_hold(iid)
+                except Exception:
+                    ok, why = (True, "")
+                out.append((iid, bool(ok), why or ""))
             return out
         worn = jr_worn()
         cur = worn[slot] if slot < len(worn) else None
@@ -1040,6 +1445,15 @@ style jr_card_frame is frame:
     background Frame("gui/panel_ghost.png", 4, 4)
     padding (0, 0)
 
+style jr_unmet_button is button:
+    background Frame("gui/panel_ghost.png", 4, 4)
+    hover_background Frame("gui/panel_hover.png", 4, 4)
+    padding (0, 0)
+
+style jr_strength_button is button:
+    background Solid("#07060cb0")
+    padding (14, 10)
+
 style jr_panel is frame:
     background Frame("gui/panel.png", 4, 4)
     padding (28, 22)
@@ -1144,7 +1558,8 @@ screen journal(tab="people"):
 
     ## D4: editable only when opened from campus, in the main context.
     $ editable = journal_editable()
-    $ _cur = js["tab"]
+    ## jr_fix: a save taken inside an older journal keeps its own `js`.
+    $ _cur = jr_fix(js)
     ## Explore mode never fires the story, so it shows no story goal.
     $ _obj = "" if explore_mode else (objective_text() or "")
     $ _idle = _("Explore mode: no story here.") if explore_mode else (_("Nothing pressing. Go and see who's around.") if jr_on_campus() else _("Nothing pressing."))
@@ -1153,9 +1568,9 @@ screen journal(tab="people"):
     add Solid(gui.ink) alpha 0.86
 
     ## Esc and right-click: close the picker or the detail pane, else leave.
-    if js["pick"] is not None:
+    if js.get("pick") is not None:
         key "game_menu" action SetDict(js, "pick", None)
-    elif js["sel"] is not None and _cur == "people":
+    elif js.get("sel") is not None and _cur == "people":
         key "game_menu" action SetDict(js, "sel", None)
     else:
         key "game_menu" action Return()
@@ -1171,17 +1586,23 @@ screen journal(tab="people"):
         fixed:
             vbox:
                 spacing 14
-                hbox:
-                    spacing 16
-                    use seal("記", 44)
-                    text _("Journal"):
-                        font JR_DISPLAY_FONT
-                        color gui.paper
-                        size 40
+                ## 44 high, so the first tab sits at y 148 (4.7).
+                fixed:
+                    xysize (260, 44)
+                    hbox:
                         yalign 0.5
+                        spacing 16
+                        add icon("journal", 44) yalign 0.5
+                        text _("Journal"):
+                            font JR_DISPLAY_FONT
+                            color gui.paper
+                            size 40
+                            yalign 0.5
                 use rule(260)
                 null height 10
 
+                ## Five tabs (4.7): the first at y 148, then every 86 px. The
+                ## rail is a table of contents, so each icon keeps its word.
                 for _k, _kan, _lab in JOURNAL_TABS:
                     $ _badge = ""
                     if _in_replay:
@@ -1189,13 +1610,11 @@ screen journal(tab="people"):
                     elif _k == "missions":
                         $ _n = 0 if explore_mode else jr_mission_counts()
                         $ _badge = str(_n) if _n else ""
-                    elif _k == "memories":
-                        $ _ms = jr_memory_counts()
-                        $ _badge = ("%d" % _ms[0]) if _ms[1] else ""
                     elif _k == "inventory":
                         $ _n = jr_inv_count("all")
                         $ _badge = str(_n) if _n else ""
                     button:
+                        id "jr_tab_" + _k
                         style "jr_tab_button"
                         selected (_cur == _k)
                         sensitive (not _in_replay)
@@ -1204,7 +1623,7 @@ screen journal(tab="people"):
                             hbox:
                                 spacing 14
                                 yalign 0.5
-                                use seal(_kan, 44)
+                                add icon(icon_for("tab", _k), 44) yalign 0.5
                                 text _lab style "jr_tab_text" yalign 0.5
                             if _badge:
                                 frame:
@@ -1218,6 +1637,7 @@ screen journal(tab="people"):
                                         size 15
 
             textbutton _("Return"):
+                id "jr_return"
                 style "return_button"
                 xpos 0
                 yalign 1.0
@@ -1267,10 +1687,8 @@ screen journal(tab="people"):
                     use jr_people(js)
                 elif _cur == "missions":
                     use jr_missions_tab(js, editable)
-                elif _cur == "memories":
-                    use jr_memories_tab(js)
                 elif _cur == "stats":
-                    use jr_stats_tab()
+                    use jr_stats_tab(js)
                 elif _cur == "equipment":
                     use jr_equipment_tab(js, editable)
                 elif _cur == "inventory":
@@ -1302,118 +1720,181 @@ screen jr_replay_note():
 
 ## People #######################################################################
 
+## The grid (4.7): cards 288x196, five across (5 x 288 + 4 x 20 = 1520), in a
+## viewport. Thirteen cards are three rows; all seventeen people and Me are
+## four (844 px), inside the 928 px body. The bar sits in the margin right of
+## the body and shows only when the cards are taller than it.
 screen jr_people(js):
 
-    if js["sel"] is not None:
-        use jr_person_detail(js, js["sel"])
+    $ _sel = js.get("sel")
+
+    if _sel == "me":
+        use jr_me_detail(js)
+
+    elif _sel is not None:
+        use jr_person_detail(js, _sel)
 
     else:
-        use jr_scroll(1520, 928):
-            ## 4 columns of 362: the box wraps at the viewport's width.
-            hbox:
-                box_wrap True
-                box_wrap_spacing 16
-                spacing 16
-                for _e in journal_cast():
-                    use jr_person_card(js, _e)
+        $ _unmet = jr_people_unmet()
+        viewport:
+            id "jr_people_vp"
+            xysize (1520, 928)
+            mousewheel True
+            draggable True
+            pagekeys True
+            vbox:
+                spacing 20
+                hbox:
+                    box_wrap True
+                    box_wrap_spacing 20
+                    spacing 20
+                    for _e in jr_people_cards():
+                        use jr_person_card(js, _e)
+                if _unmet:
+                    vbox:
+                        spacing 8
+                        text _("NOT MET YET") style "jr_kicker" size 14
+                        hbox:
+                            spacing 12
+                            for _e in _unmet:
+                                use jr_unmet_chip(_e)
+        vbar:
+            value YScrollValue("jr_people_vp")
+            xpos 1528
+            xsize 10
+            ysize 928
+            unscrollable "hide"
 
 
+## One card. At rest: the face, the name, the grade chip, the bond bar and one
+## dim line with where they are right now. Hover: "Next: ...".
 screen jr_person_card(js, e):
 
     $ _who = e["who"]
+    $ _key = "jr_card_" + str(e.get("key") or _who)
     $ _col = e["color"]
-    $ _nm = e["name"]
 
-    if _who == "sana":
-        $ _mems = jr_memories_with("sana")
-        $ _ms = len([m for m in _mems if jr_mem_state(m) == "seen"])
-        $ _mt = len(_mems)
+    if _who == "me":
+        $ _g = player_grade()
         button:
+            id _key
             style "jr_card_button"
-            xysize (362, 330)
-            action Function(jr_go, js, tab="memories", mem_mode="person", mem_who="sana", sel=None)
-            vbox:
-                xpos 19
-                ypos 14
-                spacing 6
-                if e["art"]:
-                    add jr_portrait(_who)
-                text _nm font JR_DISPLAY_FONT color _col size 26
-                use jr_chip(_("In memory"), gui.gold)
-                text _("Memories: [_ms] of [_mt]") style "jr_dim"
-                text _("See her memories →") style "jr_dim" color gui.gold size 17
-
-    elif e["met"]:
-        $ _gl = jr_grade_line(_who, e["role"])
-        $ _b = bonds.get(_who, 0)
-        $ _br = bond_rank(_b)[1]
-        $ _rom = is_romanceable(_who)
-        $ _a = affection.get(_who, 0)
-        $ _nx = jr_next(_who, 74)
-        $ _promo = jr_recently_promoted(_who)
-        button:
-            style "jr_card_button"
-            xysize (362, 330)
-            action SetDict(js, "sel", _who)
-            ## ypos 8 and spacing 2 leave room under a two-line Next.
-            vbox:
-                xpos 19
-                ypos 8
-                spacing 2
-                if e["art"]:
-                    add jr_portrait(_who)
-                else:
-                    fixed:
-                        xysize (324, 162)
-                        add Solid(gui.panel2)
-                        text "「？」" size 64 color gui.mute xalign 0.5 yalign 0.5
-                text jr_clip(_nm, 24) font JR_DISPLAY_FONT color _col size 24
-                ## The chip and the bond rank; the heart rank sits on its own
-                ## meter's line, so long ranks can't push past the card.
+            xysize (288, 196)
+            action [SetDict(js, "msub2", "story"), SetDict(js, "sel", "me")]
+            tooltip (_("Me\nThe story so far, and what I've kept a record of."), _key)
+            fixed:
                 hbox:
-                    spacing 10
-                    ## D12: a recent promotion shows as a gold chip.
-                    if _gl:
-                        if _promo:
-                            use jr_chip(_gl + " ↑", fill=gui.gold)
+                    xpos 20
+                    ypos 22
+                    spacing 14
+                    fixed:
+                        xysize (72, 72)
+                        add Solid(gui.panel2)
+                        add jr_face("me", 72)
+                    vbox:
+                        yalign 0.5
+                        spacing 8
+                        ## substitute False: the player typed this name.
+                        text jr_clip(e["name"], 11) substitute False font JR_DISPLAY_FONT color _col size 24
+                        if _g:
+                            use grade_chip(_g, 13)
                         else:
-                            use jr_chip(_gl, gui.dim)
-                    text jr_clip(_br, 18) style "jr_dim" size 15 yalign 0.5
-                vbox:
-                    spacing 0
-                    use jr_meter(_b, 100, width=324, height=6, fill=_col)
-                    if _rom:
-                        $ _ar = jr_clip(aff_rank(_a)[1], 16)
-                        hbox:
-                            spacing 10
-                            use jr_meter(_a, jr_aff_scale(_who), width=170, height=4, fill=gui.romance, marker=jr_aff_marker(_who))
-                            text "♡ [_ar]" color gui.romance size 15 yalign 0.5
-                if _nx:
-                    text _nx color gui.gold size 16 xsize 324 line_spacing 0
+                            use grade_chip(None, 13, text=_("Not yet assessed"))
+                add Solid(gui.line) xpos 20 ypos 119 xysize (248, 1)
+                text _("My story") style "jr_dim" size 15 xpos 20 ypos 144
+
+    elif _who == "sana":
+        button:
+            id _key
+            style "jr_card_button"
+            xysize (288, 196)
+            action [SetDict(js, "psub", "memories"), SetDict(js, "sel", "sana")]
+            fixed:
+                hbox:
+                    xpos 20
+                    ypos 22
+                    spacing 14
+                    fixed:
+                        xysize (72, 72)
+                        add Solid(gui.panel2)
+                        add jr_face(_who, 72)
+                    vbox:
+                        yalign 0.5
+                        spacing 8
+                        text CAST.get("sana", {}).get("short", "Sana") font JR_DISPLAY_FONT color _col size 24
+                        use jr_chip(_("In memory"), gui.gold)
+                add Solid(gui.line) xpos 20 ypos 119 xysize (248, 1)
 
     else:
-        frame:
-            style "jr_card_frame"
-            xysize (362, 330)
-            vbox:
-                xpos 19
-                ypos 14
-                spacing 10
+        $ _gk, _gt = jr_grade_chip(_who, e["role"])
+        $ _promo = jr_recently_promoted(_who)
+        $ _gtxt = ((_gt or grade_label(_gk)) + " ↑") if (_promo and _gk) else _gt
+        $ _b = bonds.get(_who, 0)
+        $ _nx = jr_card_tip(_who)
+        $ _pl = jr_card_place(_who)
+        $ _nm = jr_short(_who)
+        button:
+            id _key
+            style "jr_card_button"
+            xysize (288, 196)
+            action [SetDict(js, "psub", "story"), SetDict(js, "sel", _who)]
+            tooltip ((_nx, _key) if _nx else None)
+            fixed:
+                hbox:
+                    xpos 20
+                    ypos 22
+                    spacing 14
+                    fixed:
+                        xysize (72, 72)
+                        add Solid(gui.panel2)
+                        add jr_face(_who, 72) xalign 0.5 yalign 0.5
+                    vbox:
+                        yalign 0.5
+                        spacing 8
+                        text jr_clip(_nm, 11) font JR_DISPLAY_FONT color _col size 24
+                        if _gk or _gtxt:
+                            use grade_chip(_gk, (13 if len(_gtxt or "") <= 14 else 11), text=_gtxt)
                 fixed:
-                    xysize (324, 162)
-                    add Solid(gui.panel2)
-                    if e["art"]:
-                        add jr_portrait(_who, black=True)
-                    else:
-                        text "「？」" size 72 color gui.mute xalign 0.5 yalign 0.5
-                text _("Not yet met") style "jr_kicker"
-                text e["hint"] style "jr_dim" xsize 324 size 18
+                    xpos 20
+                    ypos 116
+                    xysize (248, 14)
+                    use jr_meter(_b, 100, width=248, height=6, fill=_col)
+                if _pl:
+                    text _pl style "jr_dim" size 15 xpos 20 ypos 144
+                ## Something new with them: a mission, or a scene that is ready.
+                if jr_card_new(_who):
+                    text "●" color gui.gold size 14 xpos 256 ypos 10
 
 
+## Someone not met yet: a 72x72 silhouette; the hint is the hover label.
+screen jr_unmet_chip(e):
+    $ _key = "jr_unmet_" + str(e["who"])
+    button:
+        id _key
+        style "jr_unmet_button"
+        xysize (72, 72)
+        action NullAction()
+        tooltip ((_("Not met yet") + "\n" + (e["hint"] or "")), _key)
+        if e["art"]:
+            add face_chip(e["who"], 72) at Transform(matrixcolor=TintMatrix("#000000"), alpha=0.85)
+        else:
+            text "？" font gui.display_font size 40 color gui.mute xalign 0.5 yalign 0.5
+
+
+## A person's page (4.7): the sprite left; the header, "Right now", and two
+## chips over one pane (their story, or the memories shared with them).
 screen jr_person_detail(js, who):
 
     $ _d = jr_person(who)
     $ _col = _d["color"]
+    $ _sana = (who == "sana")
+    $ _live = journal_editable()
+    $ _pn = jr_now(who)
+    $ _mems = jr_page_memories(who)
+    $ _seen = len([m for m in _mems if jr_mem_state(m) == "seen"])
+    $ _sub = "memories" if _sana else js.get("psub", "story")
+    $ _gk, _gt = jr_grade_chip(who, _d["grade"])
+    $ _hover = "\n".join([t for t in (_d["blurb"], _d["note"]) if t])
 
     frame:
         style "jr_panel_dark"
@@ -1421,123 +1902,355 @@ screen jr_person_detail(js, who):
         padding (0, 0)
         fixed:
 
-            ## The raw sprite, unlit.
+            ## Left, x 0 to 420: the raw sprite, unlit, at zoom 0.5.
             fixed:
-                xpos 10
-                xysize (440, 928)
+                xpos 0
+                xysize (420, 928)
                 if renpy.loadable(_d["sprite"]):
                     add _d["sprite"] zoom 0.5 xalign 0.5 yalign 1.0 yoffset -10
                 else:
                     text "「？」" size 120 color gui.mute xalign 0.5 yalign 0.5
 
-            fixed:
-                xpos 470
-                ypos 24
-                xysize (1030, 890)
-
-                use jr_scroll(1030, 890):
-
-                    ## Name, grade, blurb.
-                    vbox:
-                        spacing 6
-                        text _d["name"] font JR_DISPLAY_FONT color _col size 46
-                        hbox:
-                            spacing 12
-                            if _d["grade"]:
-                                use jr_chip(_d["grade"], gui.paper)
-                            if _d["year"] and _d["year"] != _d["grade"]:
-                                text _d["year"] style "jr_dim" yalign 0.5
-                        if _d["blurb"]:
-                            text _d["blurb"] style "jr_text" xsize 960 italic True
-                        for _p in _d["promotions"]:
-                            text _p color gui.gold size 18
-
-                    ## Strength.
-                    if _d["has_stats"]:
+                ## Strength, kept from phase 1 in a small block over the
+                ## sprite's head room. Their blurb and note are its hover label.
+                if _d["has_stats"]:
+                    button:
+                        id "jr_strength"
+                        style "jr_strength_button"
+                        xpos 20
+                        ypos 20
+                        xsize 380
+                        action NullAction()
+                        tooltip ((_hover, "jr_strength") if _hover else None)
                         vbox:
-                            spacing 8
-                            text _("STRENGTH") style "jr_kicker"
+                            spacing 5
+                            text _("STRENGTH") style "jr_kicker" size 13
                             hbox:
-                                spacing 16
-                                text _("Reserve") style "jr_dim" min_width 120 yalign 0.5
+                                spacing 10
+                                text _("Reserve") style "jr_dim" size 15 min_width 70 yalign 0.5
                                 if _d["restricted"]:
-                                    text _("Heavenly Restriction") color gui.gold size 18 yalign 0.5
+                                    text _("Heavenly Restriction") color gui.gold size 15 yalign 0.5
                                 elif _d["off_scale"]:
-                                    use jr_meter(300, 300, width=620, fill=_col, off_scale=True)
+                                    use jr_meter(300, 300, width=180, height=6, fill=_col, off_scale=True)
                                 elif _d["reserve"] is not None:
-                                    use jr_meter(_d["reserve"], 300, width=620, fill=_col)
-                                    text "[_d['reserve']]" style "jr_dim" yalign 0.5
+                                    use jr_meter(_d["reserve"], 300, width=220, height=6, fill=_col)
+                                    text "[_d['reserve']]" style "jr_dim" size 14 yalign 0.5
                             for _lab, _k in ((_("Control"), "control"), (_("Output"), "output")):
                                 hbox:
-                                    spacing 16
-                                    text _lab style "jr_dim" min_width 120 yalign 0.5
+                                    spacing 10
+                                    text _lab style "jr_dim" size 15 min_width 70 yalign 0.5
                                     if _d["off_scale"]:
-                                        use jr_meter(100, 100, width=620, fill=_col, off_scale=True)
+                                        use jr_meter(100, 100, width=180, height=6, fill=_col, off_scale=True)
                                     elif _d[_k] is not None:
-                                        use jr_meter(_d[_k], 100, width=620, fill=_col)
-                                        text str(_d[_k]) style "jr_dim" yalign 0.5
-                            if _d["note"]:
-                                text _d["note"] style "jr_dim" size 16 italic True
+                                        use jr_meter(_d[_k], 100, width=220, height=6, fill=_col)
+                                        text str(_d[_k]) style "jr_dim" size 14 yalign 0.5
 
-                    ## Bond and affection.
-                    vbox:
-                        spacing 8
-                        text _("BOND") style "jr_kicker"
+            ## Header, x 450, y 24: name, grade chip, year.
+            hbox:
+                xpos 450
+                ypos 24
+                spacing 16
+                text _d["name"] font JR_DISPLAY_FONT color _col size 40 yalign 0.5
+                vbox:
+                    yalign 0.5
+                    if _sana:
+                        use jr_chip(_("In memory"), gui.gold)
+                    elif _gk or _gt:
+                        use grade_chip(_gk, 15, text=_gt)
+                if _d["year"] and _d["year"] != _d["grade"]:
+                    text _d["year"] style "jr_dim" size 17 yalign 0.5
+
+            ## y 84: the bond bar, 620x10, with the rank and number under it;
+            ## the heart bar at x 1100 when it applies; then the promotions.
+            if not _sana:
+                fixed:
+                    xpos 450
+                    ypos 84
+                    xysize (1040, 44)
+                    use jr_meter(_d["bond"], 100, width=620, height=10, fill=_col)
+                    hbox:
+                        ypos 20
+                        spacing 24
+                        text "[_d['bond_rank']] · [_d['bond']]" style "jr_dim" size 16
+                        for _p in _d["promotions"][-1:]:
+                            text _p style "jr_dim" size 16
+                    if _d["romance"]:
+                        fixed:
+                            xpos 650
+                            xysize (390, 44)
+                            use jr_meter(_d["aff"], _d["aff_max"], width=380, height=6, fill=gui.romance, marker=_d["aff_marker"])
+                            hbox:
+                                ypos 20
+                                spacing 14
+                                text "♡ [_d['aff_rank']]" color gui.romance size 16
+                                if _d["aff_note"]:
+                                    text _d["aff_note"] style "jr_dim" size 14 yalign 0.5
+
+                ## Right now, (450, 140), 1040x112.
+                frame:
+                    xpos 450
+                    ypos 140
+                    xysize (1040, 112)
+                    background Frame("gui/panel.png", 4, 4)
+                    padding (20, 7, 16, 5)
+                    fixed:
+                        vbox:
+                            spacing 0
+                            xsize 900
+                            text (_("RIGHT NOW") if _live else _("USUALLY")) style "jr_kicker" size 13
+                            ## Mid-scene the first line is left out: "right
+                            ## now" means nothing inside a scene.
+                            if _live:
+                                text jr_clip(jr_now_line(_pn), 84) color gui.paper size 22
+                            $ _us = (_("In his office today.") if _d["office_today"] else jr_clip(_d["usual"] or _("Around campus."), 104))
+                            if _live:
+                                text (_("Usually: ") + _us) style "jr_dim" size 16
+                            else:
+                                text _us color gui.paper size 18
+                            $ _ul = unlock_line(who) if who in CAST else ""
+                            if _ul:
+                                text _ul color gui.gold size 16
+                        if jr_can_go(_pn):
+                            fixed:
+                                xalign 1.0
+                                yalign 0.5
+                                xysize (76, 70)
+                                use icon_btn("go", Return(("go", _pn["place"])), tip=(_("Go there") + "\n" + jr_place_name(_pn["place"])), size=52, wid="jr_go_btn")
+
+            ## Two chips at (450, 270).
+            hbox:
+                xpos 450
+                ypos (270 if not _sana else 96)
+                spacing 10
+                if not _sana:
+                    textbutton _("Their story"):
+                        id "jr_psub_story"
+                        style "jr_chip_button"
+                        selected (_sub == "story")
+                        action SetDict(js, "psub", "story")
+                textbutton ("Memories %d/%d" % (_seen, len(_mems))):
+                    id "jr_psub_memories"
+                    style "jr_chip_button"
+                    selected (_sub == "memories")
+                    action SetDict(js, "psub", "memories")
+
+            ## One pane, 1040x584, at (450, 320).
+            fixed:
+                xpos 450
+                ypos (320 if not _sana else 150)
+                xysize (1040, (584 if not _sana else 754))
+                if _sub == "memories":
+                    use jr_scroll(1040, (584 if not _sana else 754)):
+                        if not _mems:
+                            text _("Nothing shared yet. Scenes I live through with them end up here.") style "jr_dim"
                         hbox:
+                            box_wrap True
+                            box_wrap_spacing 16
                             spacing 16
-                            use jr_meter(_d["bond"], 100, width=620, fill=_col)
-                            text "[_d['bond_rank']] · [_d['bond']]" style "jr_dim" yalign 0.5
-                        if _d["romance"]:
-                            hbox:
-                                spacing 16
-                                use jr_meter(_d["aff"], _d["aff_max"], width=620, height=6, fill=gui.romance, marker=_d["aff_marker"])
-                                text "♡ [_d['aff_rank']]" color gui.romance size 18 yalign 0.5
-                            if _d["aff_note"]:
-                                text _d["aff_note"] style "jr_dim" size 16
-
-                    ## Their thread.
-                    if _d["thread"]:
-                        vbox:
-                            spacing 6
-                            hbox:
-                                spacing 12
-                                text _d["thread"][0] font JR_DISPLAY_FONT color gui.gold size 26
-                                if _d["thread"][2]:
-                                    use jr_chip(_("Resolved"), fill=gui.stamina)
-                            for _line in _d["thread"][1]:
-                                hbox:
-                                    spacing 12
-                                    add "gui/pip_small.png" ypos 8
-                                    text _line style "jr_text" size 19 xsize 940
-
-                    ## Their missions.
-                    if _d["missions"]:
-                        vbox:
-                            spacing 6
-                            text _("THEIR STORY") style "jr_kicker"
-                            for _r in _d["missions"]:
-                                use jr_mission_line(_r, 960)
-
-                    ## Where they are.
-                    vbox:
-                        spacing 4
-                        text _("USUALLY") style "jr_kicker"
-                        if _d["office_today"]:
-                            text _("In his office today.") color gui.gold size 19
-                        text (_d["usual"] or _("Around campus.")) style "jr_text" size 19 xsize 960
-
-                    ## Memories.
-                    if _d["mem_total"]:
-                        textbutton _("Memories with them ([_d['mem_seen']]) →"):
-                            style "jr_link_button"
-                            action Function(jr_go, js, tab="memories", mem_mode="person", mem_who=who, sel=None)
+                            for _m in _mems:
+                                use jr_memory_tile(_m)
+                else:
+                    use jr_scroll(1040, 584, spacing=10):
+                        use jr_story_list(jr_story_rows(who), 1000)
 
             textbutton _("← Back"):
+                id "jr_back"
                 style "jr_chip_button"
                 xalign 1.0
                 xoffset -24
                 ypos 20
                 action SetDict(js, "sel", None)
+
+
+## A person's story as a list of chapters (jr_story_rows): what is done, the
+## NEXT row on a gold rail, what is still closed, and one "later build" row.
+screen jr_story_list(rows, w=1000):
+
+    if not rows:
+        text _("Nothing written for them yet.") style "jr_dim"
+
+    for _r in rows:
+
+        if _r["kind"] == "heading":
+            hbox:
+                spacing 12
+                text _r["title"] font JR_DISPLAY_FONT color gui.gold size 26
+                if _r["state"] == "done":
+                    vbox:
+                        yalign 0.5
+                        use jr_chip(_("Resolved"), fill=gui.stamina)
+
+        elif _r["next"]:
+            frame:
+                xsize w
+                background Frame("gui/panel.png", 4, 4)
+                padding (0, 0)
+                hbox:
+                    add Solid(gui.gold) xsize 4 ysize 74
+                    vbox:
+                        xpos 18
+                        yalign 0.5
+                        xsize (w - 60)
+                        spacing 2
+                        hbox:
+                            spacing 14
+                            text "NEXT":
+                                font JR_BOLD_FONT
+                                color gui.gold
+                                size 13
+                                kerning 2
+                                yalign 0.6
+                            text jr_clip(_r["title"], 60) font JR_DISPLAY_FONT color gui.paper size 22
+                        text jr_clip(" · ".join([p for p in (_r["line"], _r["where"]) if p]), 110) style "jr_dim" size 16
+
+        elif _r["kind"] == "stage":
+            hbox:
+                spacing 12
+                text "✓" font JR_SYMBOL_FONT color gui.stamina size 17 min_width 22 ypos 3
+                text _r["line"] style "jr_text" size 18 xsize (w - 50)
+
+        elif _r["kind"] == "later":
+            hbox:
+                spacing 12
+                text "·" color gui.mute size 20 min_width 22
+                text _r["line"] color gui.mute size 16 yalign 0.5
+
+        else:
+            $ _ic, _ck, _sf = JR_STATUS_ICON.get(_r["state"], ("—", "mute", False))
+            $ _dimmed = _r["state"] not in ("done", "available")
+            hbox:
+                spacing 12
+                text _ic:
+                    font (JR_SYMBOL_FONT if _sf else JR_BODY_FONT)
+                    color getattr(gui, _ck)
+                    size 17
+                    min_width 22
+                    ypos 3
+                vbox:
+                    spacing 0
+                    text jr_clip(_r["title"], 60) font JR_DISPLAY_FONT color (gui.mute if _dimmed else gui.paper) size 20
+                    $ _sl = " · ".join([p for p in (_r["line"], _r["where"]) if p])
+                    if _sl:
+                        text jr_clip(_sl, 110) style "jr_dim" size 15 color (gui.mute if _dimmed else gui.dim)
+
+
+## The Me page (4.7): the journal portrait left; My story (the main story's
+## scenes by act, with the ones nobody else is in) and Records.
+screen jr_me_detail(js):
+
+    $ _sub = js.get("msub2", "story")
+    $ _g = player_grade()
+    $ _groups = jr_me_groups()
+    $ _all = [m for t, ms in _groups for m in ms]
+    $ _seen = len([m for m in _all if jr_mem_state(m) == "seen"])
+
+    frame:
+        style "jr_panel_dark"
+        xysize (1520, 928)
+        padding (0, 0)
+        fixed:
+
+            fixed:
+                xpos 0
+                xysize (420, 928)
+                add kaito_card_image() zoom 0.5 xalign 0.5 yalign 1.0 yoffset -10
+
+            hbox:
+                xpos 450
+                ypos 24
+                spacing 16
+                ## substitute False: the player typed the name.
+                text jr_stats_title() substitute False font JR_DISPLAY_FONT color gui.paper size 40 yalign 0.5
+                vbox:
+                    yalign 0.5
+                    if _g:
+                        use grade_chip(_g, 15)
+                    else:
+                        use grade_chip(None, 15, text=_("Not yet assessed"))
+                text _("First-year") style "jr_dim" size 17 yalign 0.5
+
+            hbox:
+                xpos 450
+                ypos 96
+                spacing 10
+                for _k, _lab in JR_ME_SUBS:
+                    textbutton (_lab + ("  %d/%d" % (_seen, len(_all)) if _k == "story" else "")):
+                        id "jr_msub2_" + _k
+                        style "jr_chip_button"
+                        selected (_sub == _k)
+                        action SetDict(js, "msub2", _k)
+                null width 20
+                textbutton _("Stats →"):
+                    id "jr_me_stats"
+                    style "jr_link_button"
+                    yalign 0.5
+                    action Function(jr_go, js, tab="stats", sel=None)
+
+            fixed:
+                xpos 450
+                ypos 150
+                xysize (1040, 754)
+                use jr_scroll(1040, 754):
+                    if _sub == "records":
+                        use jr_records_pane()
+                    else:
+                        if not _groups:
+                            text _("Nothing yet. Scenes I live through end up here, and I can go back to any of them.") style "jr_dim"
+                        for _title, _ms in _groups:
+                            text _title font JR_DISPLAY_FONT color gui.paper size 24
+                            hbox:
+                                box_wrap True
+                                box_wrap_spacing 16
+                                spacing 16
+                                for _m in _ms:
+                                    use jr_memory_tile(_m)
+
+            textbutton _("← Back"):
+                id "jr_back"
+                style "jr_chip_button"
+                xalign 1.0
+                xoffset -24
+                ypos 20
+                action SetDict(js, "sel", None)
+
+
+## Records (4.7): what I've read on the computer, the record book, today's
+## card winnings. A section with nothing in it is not drawn.
+screen jr_records_pane():
+    $ _recs = jr_records()
+    if not _recs:
+        text _("Nothing on record yet.") style "jr_dim"
+    for _head, _lines in _recs:
+        vbox:
+            spacing 6
+            text _head style "jr_kicker"
+            for _l in _lines:
+                hbox:
+                    spacing 12
+                    add "gui/pip_small.png" ypos 8
+                    text jr_clip(_l, 90) substitute False style "jr_text" size 19
+
+
+## The requirement checklist of a tool or a talisman (item_requirements): one
+## chip a line, ticked or crossed. Nothing when the item asks for nothing.
+screen jr_req_chips(iid, w=510):
+    $ _reqs = jr_reqs(iid)
+    if _reqs:
+        ## xmaximum, not xsize: a wrapping box that must fill its width
+        ## spreads its children across it.
+        hbox:
+            xmaximum w
+            box_wrap True
+            box_wrap_spacing 6
+            spacing 8
+            for _line, _ok in _reqs:
+                frame:
+                    background Frame("gui/panel_ghost.png", 4, 4)
+                    padding (9, 3)
+                    hbox:
+                        spacing 6
+                        text ("✓" if _ok else "✗") font JR_SYMBOL_FONT color (gui.stamina if _ok else gui.seal) size 13 yalign 0.5
+                        text _line substitute False color (gui.dim if _ok else gui.seal) size 13 yalign 0.5
 
 
 ## Missions #####################################################################
@@ -1596,9 +2309,31 @@ screen jr_missions_tab(js, editable):
 
     $ _sub = js["msub"]
     $ _f = js["mfilter"]
+    ## Leads (4.7, D31): what the story has asked me to look up, first on the
+    ## tab, only while there is one. The lists under it give up its height.
+    $ _leads = jr_leads()
+    $ _lshow = _leads[:3]
+    $ _lh = (48 + 30 * len(_lshow) + (24 if len(_leads) > 3 else 0)) if _leads else 0
+    $ _h = 856 - ((_lh + 14) if _leads else 0)
 
     vbox:
         spacing 14
+
+        if _leads:
+            frame:
+                xysize (1520, _lh)
+                background Frame("gui/panel_dark.png", 4, 4)
+                padding (20, 10)
+                vbox:
+                    spacing 4
+                    text _("LEADS") style "jr_kicker" size 14
+                    for _l in _lshow:
+                        hbox:
+                            spacing 12
+                            add icon("pc_open", 26) yalign 0.5
+                            text jr_clip(_l, 120) substitute False style "jr_dim" size 18 yalign 0.5
+                    if len(_leads) > 3:
+                        text ("and %d more" % (len(_leads) - 3)) color gui.mute size 15
 
         hbox:
             spacing 10
@@ -1616,14 +2351,14 @@ screen jr_missions_tab(js, editable):
                         action SetDict(js, "mfilter", _k)
 
         if _sub == "story":
-            use jr_story(js, editable)
+            use jr_story(js, editable, _h)
         elif _sub == "character":
-            use jr_character(js)
+            use jr_character(js, _h)
         else:
-            use jr_board_view()
+            use jr_board_view(_h)
 
 
-screen jr_story(js, editable):
+screen jr_story(js, editable, h=856):
 
     ## Explore mode plays no story, so it lists none.
     $ _groups = [] if explore_mode else jr_story_groups(js["mfilter"])
@@ -1632,7 +2367,7 @@ screen jr_story(js, editable):
     $ _begun = has_flag("arc2_started")
     $ _complete = main_story_complete() and not _begun
 
-    use jr_scroll(1520, 856, spacing=10):
+    use jr_scroll(1520, h, spacing=10):
 
         ## Arc Two (D38): only from campus.
         if _complete:
@@ -1715,11 +2450,11 @@ screen jr_story(js, editable):
                     use jr_mission_row(_r)
 
 
-screen jr_character(js):
+screen jr_character(js, h=856):
 
     $ _groups = jr_character_groups(js["mfilter"])
 
-    use jr_scroll(1520, 856, spacing=10):
+    use jr_scroll(1520, h, spacing=10):
 
         if not _groups:
             frame:
@@ -1737,15 +2472,15 @@ screen jr_character(js):
                 use jr_mission_row(_r)
 
 
-screen jr_board_view():
+screen jr_board_view(h=856):
 
     $ _b = jr_board()
 
-    use jr_scroll(1520, 856):
+    use jr_scroll(1520, h):
 
         hbox:
             spacing 16
-            use seal("任", 44)
+            add icon("board", 44) yalign 0.5
             text _b["where"] font JR_DISPLAY_FONT color gui.paper size 30 yalign 0.5
             if _b["misgrades"] >= 1:
                 text "· Misgraded jobs found: [_b['misgrades']]" color gui.seal size 19 yalign 0.5
@@ -1769,7 +2504,7 @@ screen jr_board_view():
                             spacing 6
                             hbox:
                                 spacing 10
-                                use jr_chip(grade_label(jr_get(_o, "grade")), gui.gold)
+                                use grade_chip(jr_get(_o, "grade"), 13)
                                 if jr_get(_o, "senior_only"):
                                     use jr_chip(_("Needs a senior partner"), gui.seal)
                             text jr_clip(jr_get(_o, "title", ""), 60) font JR_DISPLAY_FONT color gui.paper size 22 xsize 414
@@ -1792,7 +2527,9 @@ screen jr_board_view():
                         padding (20, 12)
                         hbox:
                             spacing 12
-                            use jr_chip(grade_label(jr_get(_t, "grade")), gui.mute)
+                            vbox:
+                                yalign 0.5
+                                use grade_chip(jr_get(_t, "grade"), 13, dim=True)
                             text jr_clip(jr_get(_t, "title", ""), 40) color gui.mute size 18 yalign 0.5
                             ## A job I took reads "me and Nobara" (board_card_line's words).
                             $ _tb = jr_get(_t, "taken_by")
@@ -1815,56 +2552,11 @@ screen jr_board_view():
                         text _l[4] color gui.gold size 18
 
 
-## Memories #####################################################################
+## Memory tiles #################################################################
 
-screen jr_memories_tab(js):
-
-    $ _mode = js["mem_mode"]
-    $ _who = js["mem_who"]
-    $ _groups = jr_memory_groups(_mode, _who)
-    $ _seen, _total = jr_memory_counts()
-
-    vbox:
-        spacing 14
-
-        hbox:
-            spacing 10
-            textbutton _("By person"):
-                style "jr_chip_button"
-                selected (_mode == "person" and not _who)
-                action [SetDict(js, "mem_who", None), SetDict(js, "mem_mode", "person")]
-            textbutton _("By act"):
-                style "jr_chip_button"
-                selected (_mode == "act" and not _who)
-                action [SetDict(js, "mem_who", None), SetDict(js, "mem_mode", "act")]
-            if _who:
-                $ _wn = jr_short(_who)
-                textbutton "[_wn]  ×":
-                    style "jr_chip_button"
-                    selected True
-                    action SetDict(js, "mem_who", None)
-            null width 30
-            text "[_seen] of [_total] found" color gui.gold size 20 yalign 0.5
-
-        use jr_scroll(1520, 856):
-
-            if not _groups:
-                frame:
-                    style "jr_card_frame"
-                    xsize 1480
-                    padding (28, 22)
-                    text _("No memories yet. Scenes I live through end up here, and I can go back to any of them.") style "jr_dim"
-
-            for _title, _mems in _groups:
-                text _title font JR_DISPLAY_FONT color gui.paper size 26
-                hbox:
-                    box_wrap True
-                    box_wrap_spacing 16
-                    spacing 16
-                    for _m in _mems:
-                        use jr_memory_tile(_m)
-
-
+## One memory, 280x158 (a person's page and the Me page; the Memories tab is
+## gone, 4.7). A seen one replays; an unseen one is a dark tile with the
+## entry's own `text` (WP5's memory_entry), which never names someone not met.
 screen jr_memory_tile(m):
 
     $ _st = jr_mem_state(m)
@@ -1902,7 +2594,7 @@ screen jr_memory_tile(m):
                         text _("Written in a later build") color gui.gold size 15
                 else:
                     text "「？」" size 40 color gui.mute xalign 0.5 ypos 14
-                    text jr_clip(jr_get(m, "hint", "") or "", 70):
+                    text jr_clip(jr_get(m, "text", None) or jr_get(m, "hint", "") or "", 70):
                         style "jr_dim"
                         size 15
                         xpos 14
@@ -1913,13 +2605,13 @@ screen jr_memory_tile(m):
 
 ## Stats ########################################################################
 
-screen jr_stats_tab():
+## Lighter (4.7): the portrait left; right, the name, then three chips and one
+## pane at a time: Overview (the grade line, the promotion bar, six bars),
+## Last Light, My year.
+screen jr_stats_tab(js=None):
 
+    $ _sub = (js or {}).get("ssub", "overview")
     $ _gradeline = ("First-year · %s" % grade_label(player_grade())) if player_grade() else _("First-year · Not yet assessed")
-    $ _m, _need, _nxl, _pline = jr_promotion()
-    $ _mlab = jr_merit_label(_m, _need, _pline)
-    $ _t = jr_tech()
-    $ _year = jr_year()
 
     ## Left: the full picture, unlit.
     fixed:
@@ -1932,86 +2624,122 @@ screen jr_stats_tab():
         xpos 540
         xysize (980, 928)
 
-        use jr_scroll(980, 928, spacing=12):
+        vbox:
+            spacing 18
 
+            ## substitute False: the player typed the name (see the year strip).
+            text jr_stats_title() substitute False font JR_DISPLAY_FONT color gui.paper size 40
+
+            hbox:
+                spacing 10
+                for _k, _lab in JR_STATS_SUBS:
+                    textbutton _lab:
+                        id "jr_ssub_" + _k
+                        style "jr_chip_button"
+                        selected (_sub == _k)
+                        action (SetDict(js, "ssub", _k) if js is not None else NullAction())
+
+            if _sub == "light":
+                use jr_stats_light()
+            elif _sub == "year":
+                use jr_stats_year()
+            else:
+                use jr_stats_overview(_gradeline)
+
+
+screen jr_stats_overview(gradeline):
+
+    $ _m, _need, _nxl, _pline = jr_promotion()
+    $ _mlab = jr_merit_label(_m, _need, _pline)
+
+    vbox:
+        spacing 22
+
+        text gradeline style "jr_kicker" size 18
+
+        frame:
+            style "jr_panel"
+            xsize 940
+            padding (24, 16)
             vbox:
-                spacing 4
-                ## substitute False: the player typed the name (see the year strip).
-                text jr_stats_title() substitute False font JR_DISPLAY_FONT color gui.paper size 40
-                text _gradeline style "jr_kicker" size 18
-
-            frame:
-                style "jr_panel"
-                xsize 940
-                padding (24, 12)
-                vbox:
-                    spacing 8
-                    text (_("PROMOTION — ") + _nxl.upper() if _nxl else _("PROMOTION")) style "jr_kicker"
-                    if _need:
-                        hbox:
-                            spacing 16
-                            use jr_meter(_m, _need, width=620, fill=gui.gold)
-                            if _mlab:
-                                text _mlab color gui.gold size 18 yalign 0.5
-                    elif _mlab:
-                        text _mlab color gui.gold size 18
-                    if _pline:
-                        text _pline style "jr_dim" xsize 880
-
-            vbox:
-                spacing 4
-                for _lab, _v, _mx, _cap, _fill, _vt in jr_bars():
+                spacing 8
+                text (_("PROMOTION — ") + _nxl.upper() if _nxl else _("PROMOTION")) style "jr_kicker"
+                if _need:
                     hbox:
                         spacing 16
-                        text _lab style "jr_dim" min_width 150 yalign 0.5
-                        use jr_meter(_v, _mx, width=620, fill=_fill, marker=_cap)
-                        text _vt style "jr_dim" size 16 yalign 0.5
+                        use jr_meter(_m, _need, width=620, fill=gui.gold)
+                        if _mlab:
+                            text _mlab color gui.gold size 18 yalign 0.5
+                elif _mlab:
+                    text _mlab color gui.gold size 18
+                if _pline:
+                    text _pline style "jr_dim" xsize 880
 
-            frame:
-                style "jr_panel"
-                xsize 940
-                padding (24, 12)
-                vbox:
-                    spacing 4
-                    hbox:
-                        spacing 14
-                        text _t["name"] font JR_DISPLAY_FONT color gui.violet2 size 30
-                        text _t["jp"] style "jr_dim" yalign 0.5 font JR_BODY_FONT
-                    hbox:
-                        spacing 12
-                        text _t["tier"] color gui.paper size 21
-                        text "— [_t['tier_desc']]" style "jr_dim" size 17 yalign 0.5 xsize 640
-                    if _t["next"]:
-                        text _("Next: [_t['next']]") style "jr_dim" size 17
-                    hbox:
-                        spacing 12
-                        text _t["verb"].upper() style "jr_kicker" color gui.violet2 yalign 0.5
-                        text _t["verb_desc"] style "jr_dim" size 17 xsize 780
-                    for _mv in _t["moves"]:
-                        hbox:
-                            spacing 12
-                            text _mv["name"] color (gui.paper if _mv["ok"] else gui.mute) size 18 min_width 150
-                            text "[_mv['ce']] CE" color (gui.violet if _mv["ok"] else gui.mute) size 16 min_width 64 yalign 0.5
-                            text (_mv["desc"] if _mv["ok"] else _mv["needs"]) color (gui.dim if _mv["ok"] else gui.mute) size 16 xsize 640 yalign 0.5
+        vbox:
+            spacing 14
+            for _lab, _v, _mx, _cap, _fill, _vt in jr_bars():
+                hbox:
+                    spacing 16
+                    text _lab style "jr_dim" min_width 150 yalign 0.5
+                    use jr_meter(_v, _mx, width=620, fill=_fill, marker=_cap)
+                    text _vt style "jr_dim" size 16 yalign 0.5
 
-            frame:
-                style "jr_panel"
-                xsize 940
-                padding (24, 12)
-                vbox:
-                    spacing 2
-                    text _("MY YEAR · CURSED ENERGY RESERVE, 0–300") style "jr_kicker"
-                    for _nm, _col, _res, _off in _year:
-                        hbox:
-                            spacing 16
-                            ## substitute False: the player typed this name, and a
-                            ## "[" in it must not be read as an interpolation.
-                            text jr_clip(_nm, 14) substitute False color _col size 18 min_width 160 yalign 0.5
-                            if _off:
-                                use jr_meter(300, 300, width=620, height=8, fill=_col, off_scale=True)
-                            elif _res is not None:
-                                use jr_meter(_res, 300, width=620, height=8, fill=_col)
-                                text str(_res) style "jr_dim" size 16 yalign 0.5
+
+screen jr_stats_light():
+
+    $ _t = jr_tech()
+
+    frame:
+        style "jr_panel"
+        xsize 940
+        padding (24, 18)
+        vbox:
+            spacing 10
+            hbox:
+                spacing 14
+                text _t["name"] font JR_DISPLAY_FONT color gui.violet2 size 30
+                text _t["jp"] style "jr_dim" yalign 0.5 font JR_BODY_FONT
+            hbox:
+                spacing 12
+                text _t["tier"] color gui.paper size 21
+                text "— [_t['tier_desc']]" style "jr_dim" size 17 yalign 0.5 xsize 640
+            if _t["next"]:
+                text _("Next: [_t['next']]") style "jr_dim" size 17
+            hbox:
+                spacing 12
+                text _t["verb"].upper() style "jr_kicker" color gui.violet2 yalign 0.5
+                text _t["verb_desc"] style "jr_dim" size 17 xsize 780
+            null height 4
+            for _mv in _t["moves"]:
+                hbox:
+                    spacing 12
+                    text _mv["name"] color (gui.paper if _mv["ok"] else gui.mute) size 18 min_width 150
+                    text "[_mv['ce']] CE" color (gui.violet if _mv["ok"] else gui.mute) size 16 min_width 64 yalign 0.5
+                    text (_mv["desc"] if _mv["ok"] else _mv["needs"]) color (gui.dim if _mv["ok"] else gui.mute) size 16 xsize 640 yalign 0.5
+
+
+screen jr_stats_year():
+
+    $ _year = jr_year()
+
+    frame:
+        style "jr_panel"
+        xsize 940
+        padding (24, 18)
+        vbox:
+            spacing 10
+            text _("MY YEAR · CURSED ENERGY RESERVE, 0–300") style "jr_kicker"
+            for _nm, _col, _res, _off in _year:
+                hbox:
+                    spacing 16
+                    ## substitute False: the player typed this name, and a
+                    ## "[" in it must not be read as an interpolation.
+                    text jr_clip(_nm, 14) substitute False color _col size 18 min_width 160 yalign 0.5
+                    if _off:
+                        use jr_meter(300, 300, width=620, height=8, fill=_col, off_scale=True)
+                    elif _res is not None:
+                        use jr_meter(_res, 300, width=620, height=8, fill=_col)
+                        text str(_res) style "jr_dim" size 16 yalign 0.5
 
 
 ## Equipment ####################################################################
@@ -2047,11 +2775,14 @@ screen jr_equipment_tab(js, editable):
                             spacing 12
                             text _("In my hand: [_ti['name']]") font JR_DISPLAY_FONT color gui.paper size 28
                             if _ti["grade"]:
-                                use jr_chip(grade_label(_ti["grade"]), gui.gold)
+                                vbox:
+                                    yalign 0.5
+                                    use grade_chip(_ti["grade"], 13)
                         if _ti["desc"]:
                             text _ti["desc"] style "jr_dim" xsize 1160
                         if _ti["effect"]:
                             text "[_ti['effect']] · [JR_FX_NOTE]" color gui.violet2 size 17 xsize 1160
+                        use jr_req_chips(_tool, 1160)
                     else:
                         text _("In my hand: Bare hands") font JR_DISPLAY_FONT color gui.paper size 28
                         text _("No cursed tool yet. The armory releases them by grade.") style "jr_dim"
@@ -2073,8 +2804,9 @@ screen jr_equipment_tab(js, editable):
                     ## Talismans fill from slot 1 (WP6 appends), so only the
                     ## first empty slot takes a new one.
                     button:
+                        id "jr_slot_%d" % _i
                         style "jr_card_button"
-                        xysize (352, 260)
+                        xysize (352, 300)
                         sensitive (editable and _i <= len(_worn))
                         action SetDict(js, "pick", ("talisman", _i))
                         vbox:
@@ -2086,10 +2818,11 @@ screen jr_equipment_tab(js, editable):
                             if _it:
                                 text _it["name"] font JR_DISPLAY_FONT color gui.paper size 24 xsize 312
                                 if _it["grade"]:
-                                    use jr_chip(grade_label(_it["grade"]), gui.gold)
+                                    use grade_chip(_it["grade"], 13)
                                 if _it["effect"]:
                                     text _it["effect"] color gui.violet2 size 16 xsize 312
                                 text JR_FX_NOTE style "jr_dim" size 14 xsize 312
+                                use jr_req_chips(_id, 312)
                             else:
                                 text _("Empty") font JR_DISPLAY_FONT color gui.dim size 24
                                 if editable and _i == len(_worn):
@@ -2100,7 +2833,7 @@ screen jr_equipment_tab(js, editable):
                 else:
                     frame:
                         style "jr_card_frame"
-                        xysize (352, 260)
+                        xysize (352, 300)
                         vbox:
                             xpos 20
                             ypos 18
@@ -2135,7 +2868,7 @@ screen jr_picker(js):
             spacing 14
             hbox:
                 spacing 16
-                use seal("装", 44)
+                add icon("equipment", 44) yalign 0.5
                 text (_("Choose a cursed tool") if _kind == "tool" else ("Choose a talisman for slot %d" % (_slot + 1))):
                     font JR_DISPLAY_FONT
                     color gui.paper
@@ -2181,6 +2914,7 @@ screen jr_picker_rows(js, _kind, _slot, _opts):
     for _id, _ok, _why in _opts:
         $ _it = jr_item(_id)
         button:
+            id "jr_pick_" + str(_id)
             style "jr_row_button"
             xsize 900
             sensitive _ok
@@ -2191,11 +2925,15 @@ screen jr_picker_rows(js, _kind, _slot, _opts):
                     spacing 12
                     text _it["name"] font JR_DISPLAY_FONT color (gui.paper if _ok else gui.mute) size 22
                     if _it["grade"]:
-                        use jr_chip(grade_label(_it["grade"]), (gui.gold if _ok else gui.mute))
+                        vbox:
+                            yalign 0.5
+                            use grade_chip(_it["grade"], 13, dim=(not _ok))
                     if _why:
                         text _why color (gui.dim if _ok else gui.seal) size 16 yalign 0.5
                 if _it["effect"]:
                     text "[_it['effect']] · [JR_FX_NOTE]" color (gui.violet2 if _ok else gui.mute) size 15 xsize 850
+                ## The checklist (4.7): what the tool or talisman asks of me.
+                use jr_req_chips(_id, 850)
 
 
 ## Inventory ####################################################################
@@ -2263,7 +3001,9 @@ screen jr_inventory_tab(js):
                                         if _c > 1:
                                             text "× [_c]" color gui.paper size 18 yalign 0.5
                                         if _it["grade"]:
-                                            use jr_chip(grade_label(_it["grade"]), gui.gold)
+                                            vbox:
+                                                yalign 0.5
+                                                use grade_chip(_it["grade"], 13)
                                     text dict(JR_INV_CATS).get(_it["kind"], "") style "jr_dim" size 15
 
             frame:
@@ -2277,7 +3017,9 @@ screen jr_inventory_tab(js):
                         hbox:
                             spacing 10
                             if _it["grade"]:
-                                use jr_chip(grade_label(_it["grade"]), gui.gold)
+                                vbox:
+                                    yalign 0.5
+                                    use grade_chip(_it["grade"], 13)
                             text dict(JR_INV_CATS).get(_it["kind"], "") style "jr_dim" size 16 yalign 0.5
                             if inventory.get(_sel, 0) > 1:
                                 $ _selc = inventory.get(_sel, 0)
@@ -2289,6 +3031,9 @@ screen jr_inventory_tab(js):
                         if _it["effect"]:
                             text "[_it['effect']]" color gui.violet2 size 17 xsize 510
                             text JR_FX_NOTE style "jr_dim" size 15 xsize 510
+                        ## The checklist (4.7), for a tool or a talisman.
+                        if _it["kind"] in ("tool", "talisman"):
+                            use jr_req_chips(_sel, 510)
                 else:
                     text _("Choose something to look at it.") style "jr_dim" xalign 0.5 yalign 0.5
 

@@ -8,15 +8,20 @@
 ## What it checks, each as a named check:
 ##   render     every tab of the journal for a fresh state and a rich fixture
 ##              (grade g3, items, promotions, memories, missions, the board),
-##              plus the detail pane, the sub-tabs, the picker, the Sana
-##              filter and the two wrappers. Screenshots go to shots/wp8/.
+##              plus a person's page, the sub-tabs, the picker, Sana's page,
+##              the Me page and the two wrappers. Screenshots go to shots/wp8/.
+##              (Phase 2, P3: five tabs. Memories are on the people's pages
+##              and the Me page; the Stats tab shows one pane at a time; a
+##              card's Next line is its hover label. tools/smoke/p2_journal.rpy
+##              holds the new journal's own acceptance.)
 ##   equipment  an equipment change made through the campus journal (the
 ##              picker's own buttons, in the main context) survives a save
 ##              taken during that interaction and a load; the journal opened
 ##              from a menu context is read-only.
-##   replay     a memory replay started from the journal (the tile's own
-##              button, from campus and from the quick menu's menu context)
-##              returns to the journal, and leaves the save's state alone.
+##   replay     a memory replay started from the journal (a tile on a
+##              person's page, from campus and from the quick menu's menu
+##              context) returns to the journal, on that page, and leaves the
+##              save's state alone.
 ##   quick menu hidden on sb_place and in the journal, shown in dialogue,
 ##              with the D25 buttons.
 ##   portraits  every side portrait at zoom 0.8 fits inside the dialogue's
@@ -411,6 +416,20 @@ init 999 python:
         s = renpy.get_screen("journal")
         return s.scope.get("js") if s is not None else None
 
+    def zzj_sub(**kw):
+        """Phase 2: after show_screen("journal", ...), set view-state keys
+        (the Stats pane, a person's page). The next shot() draws them."""
+        renpy.pause(0.15, hard=True, modal=False)
+        zzj_js().update(kw)
+
+    def zzj_tip(who):
+        """Phase 2: a People card's hover label as one line: the text of its
+        (text, key) tooltip, whose two lines are jr_next's two halves. None
+        when the card has none."""
+        b = renpy.get_displayable("journal", "jr_card_" + who, base=True) if renpy.get_screen("journal") else None
+        tip = getattr(b, "_tooltip", None)
+        return tip[0].replace("\n", " — ", 1) if isinstance(tip, tuple) and tip else None
+
     def zzj_click(pred, name, raw=False):
         """Run a journal button's action, as a click would. Returns what the
         action returns (a Return ends the interaction)."""
@@ -558,12 +577,17 @@ label zz_smoke:
     ## 2. Fresh state (a new game, before the campus): every tab renders
     ## =====================================================================
     python:
-        for _tab in ("people", "missions", "memories", "stats", "equipment", "inventory"):
+        for _tab in ("people", "missions", "stats", "equipment", "inventory"):
             renpy.show_screen("journal", _tab)
             shot("fresh_" + _tab)
             _js = zzj_js()
             check(_js is not None and _js["tab"] == _tab, "fresh: journal(%r) renders on its tab" % _tab)
             renpy.hide_screen("journal")
+        ## Phase 2: the Memories tab is gone; its name opens People.
+        renpy.show_screen("journal", "memories")
+        shot("fresh_memories_is_people")
+        check(zzj_js()["tab"] == "people" and len(JOURNAL_TABS) == 5, "fresh: journal('memories') opens People (five tabs)", zzj_js()["tab"])
+        renpy.hide_screen("journal")
         check(kaito_card_image() == "images/char/mcyotsuka_neutral.png", "Stats picture before the campus: the Yotsuka outfit")
 
     ## Before the campus: the default roster doesn't make anyone "met" early,
@@ -578,6 +602,7 @@ label zz_smoke:
         _yn = [r[0] for r in jr_year()]
         check(jr_stats_title() == "My journal" and _yn == ["Me"], "prologue start: Stats says My journal and Me, and names nobody unmet", (jr_stats_title(), _yn))
         renpy.show_screen("journal", "stats")
+        zzj_sub(ssub="year")
         shot("prologue_start_stats")
         _tx = zzj_texts()
         _leak = [t for t in _tx if any(w in t for w in ("Tester", "Harness", "Yuji", "Megumi", "Nobara", "Gojo"))]
@@ -591,6 +616,7 @@ label zz_smoke:
         _yn = [r[0] for r in jr_year()]
         check(jr_stats_title() == "Harness Tester" and _yn == ["Tester", "Gojo"], "chapter_one_b: Stats uses the name; the year strip shows Gojo, not the first-years", (jr_stats_title(), _yn))
         renpy.show_screen("journal", "stats")
+        zzj_sub(ssub="year")
         shot("chapter_one_b_stats")
         _tx = zzj_texts()
         check("Harness Tester" in _tx and not any(w in t for t in _tx for w in ("Yuji", "Megumi", "Nobara")),
@@ -674,11 +700,17 @@ label zz_smoke:
         check(player_grade() == "g3" and talisman_slots() == 2, "rich fixture: Grade 3, two slots", (player_grade(), talisman_slots()))
 
     python:
-        for _tab in ("people", "missions", "memories", "stats", "equipment", "inventory"):
+        for _tab in ("people", "missions", "stats", "equipment", "inventory"):
             renpy.show_screen("journal", _tab)
             shot("rich_" + _tab)
             _js = zzj_js()
             check(_js is not None and _js["tab"] == _tab, "rich: journal(%r) renders" % _tab)
+            renpy.hide_screen("journal")
+        for _sub in ("light", "year"):
+            renpy.show_screen("journal", "stats")
+            zzj_sub(ssub=_sub)
+            shot("rich_stats_" + _sub)
+            check(zzj_js()["tab"] == "stats" and zzj_js()["ssub"] == _sub, "rich: the Stats tab's %s pane renders" % _sub)
             renpy.hide_screen("journal")
 
     ## Data checks on the rich fixture.
@@ -699,10 +731,13 @@ label zz_smoke:
         _ln = jr_next("nobara", 74)
         _pl = jr_place_name("dorm_common")
         check(_ln.endswith(" — " + _pl) and len(_ln) <= 76 and "…" in _ln, "a long Next is clipped in its text and keeps the place", _ln)
+        ## Phase 2: the Next line is the card's hover label, whole (the hover
+        ## label wraps); at rest the card prints none of it.
         renpy.show_screen("journal", "people")
         shot("rich_people_long_next")
         _tx = zzj_texts()
-        check(_ln in _tx, "the card draws the clipped Next with its place", [t for t in _tx if t.startswith("Next:")][:4])
+        check(zzj_tip("nobara") == jr_next("nobara") and zzj_tip("nobara").endswith(" — " + _pl) and not [t for t in _tx if t.startswith("Next:")],
+              "the card's hover label is the Next line with its place; at rest the card prints none", zzj_tip("nobara"))
         renpy.hide_screen("journal")
         ## Integration round: WP3's real next_for passes WP1's whole weekly
         ## schedule as the where; the card line still fits its two lines.
@@ -715,8 +750,9 @@ label zz_smoke:
         check(len(_lm) <= 74 and _lm.startswith("Next: Eat together at the Cafeteria — "), "a second schedule-long Next fits too", _lm)
         renpy.show_screen("journal", "people")
         shot("rich_people_schedule_next")
-        _tx = zzj_texts()
-        check(_ln in _tx and _lm in _tx, "the cards draw the shortened schedule lines", [t for t in _tx if t.startswith("Next:")][:4])
+        check(zzj_tip("nobara") == jr_next("nobara") and zzj_tip("megumi") == jr_next("megumi")
+              and zzj_tip("nobara").startswith("Next: Spend time together — Classroom Building (mornings)"),
+              "the cards' hover labels carry the schedule lines", (zzj_tip("nobara"), zzj_tip("megumi")))
         renpy.hide_screen("journal")
         ## WP11: the " …" after a shortened schedule counts, and the where is
         ## clipped before the text, so "Bond 10" keeps its number (the real
@@ -730,8 +766,8 @@ label zz_smoke:
         check(len(_lm) <= 74 and _lm.startswith("Next: Eat together at Bond 10 — Principal's"), "the text keeps its number", _lm)
         renpy.show_screen("journal", "people")
         shot("rich_people_where_clipped")
-        _tx = zzj_texts()
-        check(_ln in _tx and _lm in _tx, "the cards draw the lines with the where clipped", [t for t in _tx if t.startswith("Next:")][:4])
+        check(zzj_tip("nobara") == jr_next("nobara") and zzj_tip("megumi").startswith("Next: Eat together at Bond 10 — Principal's"),
+              "the cards' hover labels keep the text's number", (zzj_tip("nobara"), zzj_tip("megumi")))
         renpy.hide_screen("journal")
         ZZJ_NEXT["nobara"] = ("Spend time together", "Mountain Ridge (mornings) · Cafeteria (noon) · Rooftop (afternoons) · Dorm Common Room (evenings)")
         _ln = jr_next("nobara", 74)
@@ -826,14 +862,19 @@ label zz_smoke:
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "nobara"), "Nobara's card"),
         lambda: zzj_nil(shot("rich_people_detail_nobara", wait=0)),
-        lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_go") and a.kwargs.get("mem_who") == "nobara", "Memories with them"),
-        lambda: zzj_nil(check(zzj_js()["tab"] == "memories" and zzj_js()["mem_who"] == "nobara", "Memories with them opens the Memories tab filtered to her", dict(zzj_js()))),
+        ## Phase 2: the memories with someone are a chip on their page.
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "psub", "memories"), "the Memories chip"),
+        lambda: zzj_nil(check(zzj_js()["tab"] == "people" and zzj_js()["sel"] == "nobara" and zzj_js()["psub"] == "memories",
+                              "the Memories chip shows her memories on her own page", dict(zzj_js()))),
         lambda: zzj_nil(shot("rich_memories_nobara", wait=0)),
-        lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "people"), "People tab"),
-        lambda: zzj_click(lambda a: zzj_is_fn(a, "jr_go") and a.kwargs.get("mem_who") == "sana", "Sana's card"),
-        lambda: zzj_nil(check(zzj_js()["tab"] == "memories" and zzj_js()["mem_who"] == "sana", "Sana's card links to Memories filtered to her")),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "sana"), "Sana's card"),
+        lambda: zzj_nil(check(zzj_js()["tab"] == "people" and zzj_js()["sel"] == "sana" and "IN MEMORY" in zzj_texts()
+                              and "RIGHT NOW" not in zzj_texts(), "Sana's card opens her page: In memory, her memories, no Right now")),
         lambda: zzj_nil(shot("rich_memories_sana", wait=0)),
-        lambda: zzj_click(lambda a: zzj_is_setdict(a, "mem_mode", "act"), "By act"),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", None), "Back", raw=True),
+        lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "me"), "the Me card"),
+        lambda: zzj_nil(check(zzj_js()["sel"] == "me" and any(t.startswith("My story") for t in zzj_texts()), "the Me card opens the Me page: the story by act")),
         lambda: zzj_nil(shot("rich_memories_by_act", wait=0)),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "missions"), "Missions tab"),
         lambda: zzj_click(lambda a: zzj_is_setdict(a, "mfilter", "all"), "All filter"),
@@ -907,6 +948,7 @@ label zz_smoke:
         renpy.hide_screen("journal")
         fixture(mc_name="Maximiliana-Alexa")
         renpy.show_screen("journal", "stats")
+        zzj_sub(ssub="year")
         shot("stress_stats")
         check(zzj_js()["tab"] == "stats", "stress: a long given name renders")
         renpy.hide_screen("journal")
@@ -915,6 +957,7 @@ label zz_smoke:
         for _ni, _nm in enumerate(("Ōta", "Ren [", "[x]")):
             fixture(mc_name=_nm)
             renpy.show_screen("journal", "stats")
+            zzj_sub(ssub="year")
             shot("stress_stats_name_%d" % _ni)
             _tx = zzj_texts()
             check(zzj_js()["tab"] == "stats" and jr_clip(_nm, 14) in _tx,
@@ -999,9 +1042,12 @@ label zz_smoke:
             lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "missions"), "Missions tab"),
             lambda: zzj_nil(check(zzj_find(lambda a: type(a).__name__ == "Return" and a.value == ("arc_two",)) is None, "menu context: no Begin Arc Two button")),
             lambda: zzj_nil(shot("menu_missions_arc_two_note", wait=0)),
-            lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "memories"), "Memories tab"),
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "people"), "People tab"),
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "yuji"), "Yuji's card"),
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "psub", "memories"), "the Memories chip"),
             lambda: zzj_menu_replay(),
-            lambda: zzj_nil(check(renpy.get_screen("journal") is not None and zzj_js()["tab"] == "memories", "menu context: after the replay, the journal is back on Memories")),
+            lambda: zzj_nil(check(renpy.get_screen("journal") is not None and zzj_js()["tab"] == "people" and zzj_js()["sel"] == "yuji"
+                                  and zzj_js()["psub"] == "memories", "menu context: after the replay, the journal is back on Yuji's memories")),
             lambda: zzj_nil(shot("menu_after_replay", wait=0)),
             lambda: zzj_click(lambda a: type(a).__name__ == "Return" and a.value is None, "Return"),
         ]
@@ -1021,11 +1067,13 @@ label zz_smoke:
         zzj.replay_flags = None
         _day0, _flags0, _bonds0 = day, set(flags), dict(bonds)
         zzj.script[:] = [
-            lambda: zzj_click(lambda a: zzj_is_setdict(a, "tab", "memories"), "Memories tab"),
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "sel", "yuji"), "Yuji's card"),
+            lambda: zzj_click(lambda a: zzj_is_setdict(a, "psub", "memories"), "the Memories chip"),
             lambda: zzj_nil(shot("campus_memories_before_replay", wait=0)),
             lambda: zzj_replay_click("a seen memory tile"),
             lambda: zzj_nil(check(renpy.get_screen("journal") is not None, "after the replay the journal is still showing")),
-            lambda: zzj_nil(check(zzj_js() is not None and zzj_js()["tab"] == "memories", "after the replay the journal is still on Memories")),
+            lambda: zzj_nil(check(zzj_js() is not None and zzj_js()["sel"] == "yuji" and zzj_js()["psub"] == "memories",
+                                  "after the replay the journal is still on Yuji's memories")),
             lambda: zzj_nil(shot("campus_after_replay", wait=0)),
             zzj_done,
         ]

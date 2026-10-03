@@ -13,46 +13,46 @@ init -1 python:
             stages=[
                 "He is the loudest person here and something underneath him is very quiet.",
                 "He stopped moving for one second on the roof. Something enormous is underneath.",
-                "He told you the half he never says out loud: he expects to go first.",
-                "You promised to be there. He said you couldn't promise that. You did it anyway.",
+                "He told me the half he never says out loud: he expects to go first.",
+                "I promised to be there. He said I couldn't promise that. I did it anyway.",
             ]),
         "megumi_tsumiki": dict(
             who="megumi", title="An Unsolved Problem",
             stages=[
                 "He watches the exits in every room and won't say what he's watching for.",
                 "His step-sister Tsumiki has been cursed asleep for a year.",
-                "He gave you the folder. Every note he has, in handwriting like a code.",
-                "You found something in it that he had stopped being able to see.",
+                "He gave me the folder. Every note he has, in handwriting like a code.",
+                "I found something in it that he had stopped being able to see.",
             ]),
         "nobara_saori": dict(
             who="nobara", title="Somebody Remembered",
             stages=[
-                "She decided she liked you inside a week and won't be asked why.",
+                "She decided she liked me inside a week and won't be asked why.",
                 "Saori. The city girl her village decided about until she left.",
-                "You've started looking at faces in Tokyo too. She noticed.",
+                "I've started looking at faces in Tokyo too. She noticed.",
                 "One person remembering out loud. That was the whole plan.",
             ]),
         "maki_zenin": dict(
             who="maki", title="Make Them Look",
             stages=[
-                "Dawn, the dojo, and a standing appointment you didn't agree to.",
-                "Heavenly Restriction. You worked it out without being told.",
+                "Dawn, the dojo, and a standing appointment I didn't agree to.",
+                "Heavenly Restriction. I worked it out without being told.",
                 "Mai. A twin at Kyoto who hates her in public and might not mean it.",
-                "She asked you to be there when she goes back. That is not a small ask.",
+                "She asked me to be there when she goes back. That is not a small ask.",
             ]),
         "panda_made": dict(
             who="panda", title="Something That Could Say No",
             stages=[
                 "He does welfare checks at eight in the evening with crisps.",
                 "Cursed corpse. Yaga built him a personality and then had to live with it.",
-                "He told you about the two he had before him. He doesn't tell people that.",
+                "He told me about the two he had before him. He doesn't tell people that.",
             ]),
         "toge_voice": dict(
             who="toge", title="Six Words",
             stages=[
                 "Salmon, tuna, tuna mayo, bonito flakes, mustard leaf, kelp.",
-                "You've started getting them right more often than wrong.",
-                "He said a real word to you, on purpose, aimed at nothing.",
+                "I've started getting them right more often than wrong.",
+                "He said a real word to me, on purpose, aimed at nothing.",
             ]),
         "shoko_remembers": dict(
             who="shoko", title="The One Who Was There",
@@ -64,9 +64,9 @@ init -1 python:
         "gojo_measure": dict(
             who="gojo", title="Taking Your Measure",
             stages=[
-                "He recruited you off one night in an alley and has been unreadable since.",
-                "He's been testing you the whole time. You finally noticed.",
-                "He taught you something real, without the show. Once.",
+                "He recruited me off one night in an alley and has been unreadable since.",
+                "He's been testing me the whole time. I finally noticed.",
+                "He taught me something real, without the show. Once.",
             ]),
     }
 
