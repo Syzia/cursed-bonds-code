@@ -1,0 +1,8 @@
+{
+  "spots": {
+    "classroom": [670, 400],
+    "cafeteria": [1270, 380],
+    "infirmary": [560, 790],
+    "library": [1300, 720]
+  }
+}

@@ -84,33 +84,76 @@ init -2 python:
     ## map_campus.png. Every LOCATIONS key belongs to exactly one area (the
     ## validator checks it).
     ##
-    ## Phase 2 (6.1): every row also has bg (the area's own picture, for the
-    ## map's second level), blurb (one first-person line) and spots
-    ## ({loc: (x, y)}, the room pins on that picture). P0 laid the keys;
-    ## P1 fills them and draws the pictures.
+    ## Phase 2 (6.1, 4.1): every row also has bg (the area's own picture, for
+    ## the map's second level), blurb (one first-person line, the marker's
+    ## hover) and spots ({loc: (x, y)}: where each room's pin sits on that
+    ## picture, 1920x1080). spots are the code's defaults; a sidecar,
+    ## game/layout/area_<key>.json, moves them without a script change
+    ## (map_spots in ui_map.rpy reads both).
 
     AREAS = [
         dict(key="heart",    name="Courtyard & Gate",  seal="門",
              places=["gate", "courtyard"],                              anchor=(960, 900),
-             bg="bg area_heart", blurb="", spots={}),
-        dict(key="school",   name="Classrooms",        seal="校",
+             bg="bg area_heart",
+             blurb="The stone path up from the torii, and the yard everything else hangs off.",
+             spots={"courtyard": (960, 460), "gate": (960, 820)}),
+        dict(key="school",   name="School Building",   seal="校",
              places=["classroom", "cafeteria", "infirmary", "library"], anchor=(420, 740),
-             bg="bg area_school", blurb="", spots={}),
+             bg="bg area_school",
+             blurb="Built for a few hundred students. There are four of us, and it echoes.",
+             spots={"classroom": (520, 380), "cafeteria": (1300, 420),
+                    "infirmary": (620, 760), "library": (1340, 780)}),
         dict(key="dorms",    name="Dormitories",       seal="寮",
              places=["dorm", "dorm_common", "girls_dorm", "rooftop"],   anchor=(900, 560),
-             bg="bg area_dorms", blurb="", spots={}),
+             bg="bg area_dorms",
+             blurb="Where I sleep, and where everyone ends up by evening.",
+             spots={"rooftop": (960, 260), "dorm": (480, 440),
+                    "girls_dorm": (1440, 440), "dorm_common": (960, 640)}),
         dict(key="staff",    name="Staff Building",    seal="職",
              places=["office", "utahime_office", "gojo_office"],        anchor=(1560, 440),
-             bg="bg area_staff", blurb="", spots={}),
+             bg="bg area_staff",
+             blurb="The principal's hall and the offices beside it. I knock first.",
+             spots={"office": (960, 340), "utahime_office": (520, 660), "gojo_office": (1400, 660)}),
         dict(key="grounds",  name="Training Grounds",  seal="練",
              places=["training", "dojo", "storehouse"],                 anchor=(1560, 760),
-             bg="bg area_grounds", blurb="", spots={}),
+             bg="bg area_grounds",
+             blurb="The hall, the dojo and the storehouse. Most of my bruises come from here.",
+             spots={"training": (620, 420), "dojo": (1320, 420), "storehouse": (960, 780)}),
         dict(key="mountain", name="The Mountain",      seal="山",
              places=["forest", "riverside", "ridge"],                   anchor=(740, 290),
-             bg="bg area_mountain", blurb="", spots={}),
+             bg="bg area_mountain",
+             blurb="Trees, cold water, and the ridge above them. It's further up than it looks.",
+             spots={"ridge": (960, 280), "forest": (480, 700), "riverside": (1380, 640)}),
     ]
 
     AREA_BY_KEY = {a["key"]: a for a in AREAS}
+
+    ## An area's stand-in picture (4.1), until images/bg/area_<key>.png is
+    ## painted: a 720x405 piece of map_campus.png around the area's anchor,
+    ## kept inside the 1920x1080 picture, enlarged and darkened.
+    WORLD_AREA_PIECE = (720, 405)
+
+    def world_area_crop(key):
+        """P1. (x, y, w, h): the piece of map_campus.png that stands in for
+        an area's picture, around its anchor and clamped to the picture (the
+        heart's anchor at y 900 would otherwise run off the bottom)."""
+        ax, ay = AREA_BY_KEY[key]["anchor"]
+        w, h = WORLD_AREA_PIECE
+        x = max(0, min(1920 - w, int(ax - w // 2)))
+        y = max(0, min(1080 - h, int(ay - h // 2)))
+        return (x, y, w, h)
+
+    def world_area_standin(key):
+        """P1. The stand-in for an area's picture (world_area_crop, enlarged
+        to 1920x1080 and darkened)."""
+        return Transform("images/bg/map_campus.png", crop=world_area_crop(key),
+                         xysize=(1920, 1080), matrixcolor=TintMatrix("#d0d0d0"))
+
+    def world_area_bg(key):
+        """P1. What `bg area_<key>` shows: images/bg/area_<key>.png when it
+        exists, else the stand-in (bg_placeholders.rpy defines the six
+        images from this)."""
+        return bg_placeholder("images/bg/area_%s.png" % key, world_area_standin(key))
 
     ## Schedules ---------------------------------------------------------------
     ## Weekday routine. "-" means the character is off campus this period.
@@ -143,7 +186,8 @@ init -2 python:
     ## Weekends shake the board up.
     WEEKEND = {
         "yuji":   {"Morning": "dorm_common", "Afternoon": "riverside", "Evening": "cafeteria"},
-        "megumi": {"Morning": "forest",      "Afternoon": "ridge"},
+        ## Phase 2 (D34): Megumi reads in the Library on weekend afternoons.
+        "megumi": {"Morning": "forest",      "Afternoon": "library"},
         "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
         "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
         "panda":  {"Afternoon": "riverside"},
@@ -448,11 +492,34 @@ init -2 python:
         store.schedule_overrides[(who, day or store.day, per or store.period)] = loc
 
     def person_now(who):
-        """P1 (sb_world.rpy); P0's stub says "Off campus" for everyone. Where
-        someone is right now, for the journal: dict(place=key or None,
-        name=str, doing=str, reachable=bool, hidden=bool, with_me=bool).
-        Never None."""
-        return dict(place=None, name="Off campus", doing="", reachable=False, hidden=False, with_me=False)
+        """P1 (sb_world.rpy). Where someone is right now, for the journal's
+        "Right now" line and its "Go there" button (D6): dict(place=key or
+        None, name=str, doing=str, reachable=bool, hidden=bool,
+        with_me=bool). Never None.
+
+          tagging along     place=here, name "With me", with_me=True
+          in an open room   place=its key, name the room's, doing the
+                            caption ambient_of gives; reachable unless it is
+                            the room I'm standing in
+          in a room I can't enter (place_access refuses)
+                            hidden=True, name "Somewhere I can't go right
+                            now"; place is None, so no caller can walk
+                            there or say where it is
+          anything else     (off campus, not met) name is "Off campus"."""
+        out = dict(place=None, name="Off campus", doing="", reachable=False, hidden=False, with_me=False)
+        if store.companion and who == store.companion and store.here in LOCATIONS:
+            out.update(place=store.here, name="With me", doing="tagging along", with_me=True)
+            return out
+        loc = char_location(who)
+        if loc is None or loc not in LOCATIONS:
+            return out
+        if not place_access(loc)[0]:
+            out.update(name="Somewhere I can't go right now", hidden=True)
+            return out
+        doing = ambient_of(who, loc)[0] or ""
+        out.update(place=loc, name=LOCATIONS[loc]["name"], doing=str(doing),
+                   reachable=bool(loc != store.here))
+        return out
 
     ## Access ------------------------------------------------------------------
 
@@ -654,6 +721,13 @@ init -2 python:
             base = tuple(info["bg"].split())
             if not renpy.has_image(base, exact=True):
                 out.append("place %r: no image %r" % (l, info["bg"]))
+        for a in AREAS:
+            if not renpy.has_image(tuple(a["bg"].split()), exact=True):
+                out.append("area %r: no image %r" % (a["key"], a["bg"]))
+            if not a["blurb"]:
+                out.append("area %r has no blurb" % a["key"])
+            if sorted(a["spots"]) != sorted(a["places"]):
+                out.append("area %r: spots and places disagree" % a["key"])
         for k in DISTRICT_ORDER:
             if k not in DISTRICTS:
                 out.append("DISTRICT_ORDER lists unknown district %r" % k)
