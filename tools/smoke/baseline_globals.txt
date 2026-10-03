@@ -9,6 +9,10 @@
 # `if` / `for` / `try` in an init python block; the phase-1 names it then
 # found (_id, _kw, weekday_full, wp4_board's sorcerer_power twice, and the loop
 # names _mf, _k and _v) were added.
+# Review round 2 (wave 0) taught it `import x as NAME`, chained and bracketed
+# targets, `with ... as NAME` and `store.NAME =`; the phase-1 names it then
+# found (four module aliases in game files, wp8_journal's five stand-ins for
+# game functions, wp1_world's zz_re beside _lib.rpy's) were added.
 def	image	bg black	game/jjk_defs.rpy
 def	image	bg cafeteria	game/jjk_defs.rpy
 def	image	bg car	game/jjk_defs.rpy
@@ -2054,3 +2058,18 @@ dup	screen	quick_menu	game/screens.rpy
 dup	store	board_take	tools/smoke/wp4_board.rpy
 dup	store	sorcerer_power	tools/smoke/wp4_board.rpy
 dup	store	train_together	tools/smoke/wp4_board.rpy
+def	store	_items_re	game/sb_items.rpy
+def	store	_mem_copy_mod	game/sb_memories.rpy
+def	store	_sb_time	game/sb_screens.rpy
+def	store	_gojo_builtins	game/sb_world.rpy
+def	store	BOARD_PLACE_BY_KEY	tools/smoke/wp8_journal.rpy
+dup	store	BOARD_PLACE_BY_KEY	tools/smoke/wp8_journal.rpy
+def	store	can_wear	tools/smoke/wp8_journal.rpy
+dup	store	can_wear	tools/smoke/wp8_journal.rpy
+def	store	equip_talisman	tools/smoke/wp8_journal.rpy
+dup	store	equip_talisman	tools/smoke/wp8_journal.rpy
+def	store	unequip_talisman	tools/smoke/wp8_journal.rpy
+dup	store	unequip_talisman	tools/smoke/wp8_journal.rpy
+def	store	equip_tool	tools/smoke/wp8_journal.rpy
+dup	store	equip_tool	tools/smoke/wp8_journal.rpy
+dup	store	zz_re	tools/smoke/wp1_world.rpy

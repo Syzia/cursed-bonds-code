@@ -52,7 +52,10 @@
 #      traceback.txt / errors.txt are kept next to the result.
 #
 # Nothing is ever written into the real game/ folder, so several harnesses can
-# run at once, even from one checkout.
+# run at once, even from one checkout. That holds when game/cache (or a folder
+# of scripts) is a symbolic link as well: such a link is followed and its
+# contents are copied. Still, never set up a worktree or a scratch root with
+# game/cache linked to another tree's.
 set -u
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -116,7 +119,9 @@ for f in "$ROOT"/game/*; do
         # Asset folders are symlinked. A folder holding scripts is copied
         # instead, or Ren'Py would compile into the real tree through the link.
         if [ -n "$(find -H "$f" \( -name '*.rpy' -o -name '*.rpym' -o -name '*.rpyc' -o -name '*.rpymc' \) -print -quit)" ]; then
-            cp -Rp "$f" "$G/$b"
+            # -L: a link (the folder itself, or one inside it) is followed and
+            # its contents copied, never the link.
+            cp -RpL "$f" "$G/$b"
         else
             ln -s "$f" "$G/$b"
         fi
@@ -128,7 +133,11 @@ for f in "$ROOT"/game/*; do
     fi
 done
 # The bytecode cache only saves start-up time; the copy is private to this run.
-[ -d "$ROOT/game/cache" ] && cp -Rp "$ROOT/game/cache" "$G/cache"
+# -L: when game/cache is a link (a worktree or a scratch root that borrows
+# another tree's cache), its contents are copied. Copying the link itself
+# would let Ren'Py write its caches through it into that other tree.
+[ -d "$ROOT/game/cache" ] && cp -RpL "$ROOT/game/cache" "$G/cache"
+[ -L "$G/cache" ] && die "the scratch game/cache is a link; refusing to run"
 
 cp "$LIB" "$G/zz_smoke_lib.rpy"
 cp "$HARNESS" "$G/zz_smoke.rpy"

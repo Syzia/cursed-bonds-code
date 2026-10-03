@@ -41,7 +41,10 @@ Rules (flags):
                       every .rpy under game/: `NAME =`, `def` and `class`
                       at the top level of an `init ... python:` block (under
                       its own `if`, `for`, `try` ... too; a header may span
-                      several lines), and every
+                      several lines; every target of `a = b = 1` and
+                      `(a, b) = ...`, `store.NAME =`, `import x as NAME`,
+                      `from x import y as NAME` and `with ... as NAME:`
+                      count; a plain `import x` does not), and every
                       `define`, `default`, `screen`, `style`, `transform`,
                       `image` and `label`. Store names (python names, define,
                       default, transform), screens, styles, images and labels
@@ -68,7 +71,10 @@ Rules (flags):
                       name a function listed in tools/none_ok.txt (R4): a
                       button's function that returns anything but None ends
                       the interaction. A name on the line after `Function(`
-                      is read as well.
+                      is read as well, and so are `store.Function(` and
+                      `renpy.store.Function(`. `Function` handed on without
+                      a call (`F = Function`) is a finding anywhere in a
+                      game file: what F( ... ) runs could not be read.
   --all               Every rule. This is also the default when no rule flag
                       is given.
   --no-baseline       List the findings tools/smoke/baseline_check_content.txt
@@ -402,7 +408,14 @@ PY_FOR = re.compile(r"^for\s+([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s+in\b")
 DOLLAR_ASSIGN = re.compile(r"^\$\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*=(?!=)")
 # Python blocks that do not make a new scope.
 PY_TRANSPARENT = {"if", "elif", "else", "try", "except", "finally", "with", "for", "while"}
-FUNCTION_CALL = re.compile(r"(?<![\w.])Function\(")
+PY_NAME = re.compile(r"^[A-Za-z_]\w*$")
+PY_STORE_ATTR = re.compile(r"^(?:renpy\.)?store\.([A-Za-z_]\w*)$")
+PY_AS = re.compile(r"\bas\s+([A-Za-z_]\w*)")
+# `Function(`, also written `store.Function(` or `renpy.store.Function(`;
+# never another object's method (`x.Function(`).
+FUNCTION_CALL = re.compile(r"(?<![\w.])(?:renpy\.store\.|store\.)?Function\(")
+# `Function` with no call after it: handed on under another name.
+FUNCTION_ALIAS = re.compile(r"(?<![\w.])(?:renpy\.store\.|store\.)?Function\b(?!\s*\()")
 
 # Variables Ren'Py itself owns; a label may set them without owning the name.
 RENPY_VARS = {
@@ -430,6 +443,70 @@ def file_key(path):
 
 def is_game(path):
     return file_key(path).startswith("game/")
+
+
+def py_bound_names(bare):
+    """The names one python statement binds at its own level, read from its
+    first line with the string literals blanked out: `import x as NAME`,
+    `from x import y as NAME`, `with ... as NAME:`, `for NAME in`, and every
+    target of an assignment (`a = b = 1`, `(a, b) = ...`, `a: int = 1`,
+    `store.a = 1`). A plain `import x` binds a module's own name and is left
+    alone; so is an augmented assignment, which defines nothing new."""
+    code = bare.strip()
+    if re.match(r"^import\s", code) or re.match(r"^from\s+[\w.]+\s+import\b", code):
+        return PY_AS.findall(code)
+    if re.match(r"^with\b", code):
+        return PY_AS.findall(code)
+    m = PY_FOR.match(code)
+    if m:
+        return [n.strip() for n in m.group(1).split(",")]
+    if re.match(r"^(?:if|elif|else|while|try|except|finally|def|class|return|yield|assert|del|raise|"
+                r"global|nonlocal|pass|lambda|print)\b", code):
+        return []
+    # Cut the line at every `=` outside brackets that is an assignment.
+    parts = []
+    depth = 0
+    start = 0
+    for i, ch in enumerate(code):
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth = max(0, depth - 1)
+        elif ch == "=" and depth == 0:
+            before = code[i - 1] if i else ""
+            after = code[i + 1] if i + 1 < len(code) else ""
+            if after == "=" or before == "=":
+                continue            # ==
+            if before in "<>!":
+                continue            # <=, >=, !=
+            if before in "+-*/%&|^@:~":
+                return []           # augmented, or a walrus
+            parts.append(code[start:i])
+            start = i + 1
+    out = []
+    for target in parts:
+        target = target.strip()
+        # An annotation: `name: type`.
+        d = 0
+        for i, ch in enumerate(target):
+            if ch in "([{":
+                d += 1
+            elif ch in ")]}":
+                d -= 1
+            elif ch == ":" and d == 0:
+                target = target[:i].strip()
+                break
+        if len(target) > 1 and target[0] + target[-1] in ("()", "[]"):
+            target = target[1:-1]
+        for name in target.split(","):
+            name = name.strip().lstrip("*").strip()
+            if PY_NAME.match(name):
+                out.append(name)
+            else:
+                m = PY_STORE_ATTR.match(name)
+                if m:
+                    out.append(m.group(1))
+    return out
 
 
 def top_level(ln):
@@ -475,10 +552,8 @@ def definitions(path, lines):
             if m:
                 out.append(("store", pre + m.group(1), ln))
                 continue
-            m = PY_ASSIGN.match(code) or PY_FOR.match(code)
-            if m:
-                for name in m.group(1).split(","):
-                    out.append(("store", pre + name.strip(), ln))
+            for name in py_bound_names(ln.bare):
+                out.append(("store", pre + name, ln))
     for name, ln in label_defs(path, lines):
         out.append(("label", name, ln))
     out.sort(key=lambda d: d[2].n)
@@ -599,6 +674,10 @@ def rule_action_returns(path, lines, allowed):
     """[(Line, the function named)] for each `Function(` in a screen or a def
     that names neither ui_do nor a tools/none_ok.txt function."""
     for at, ln in enumerate(lines):
+        # `F = Function`, anywhere in the file: calls made through the other
+        # name could not be read, so the alias itself is the finding.
+        if FUNCTION_ALIAS.search(ln.bare) and not re.match(r"\s*(?:from|import)\b", ln.bare):
+            yield ln, None
         if not any(k in ("screen", "def") for k, _ in ln.blocks):
             continue
         for m in FUNCTION_CALL.finditer(ln.bare):
@@ -804,6 +883,11 @@ def global_findings(files, chosen, cache):
             if not is_game(path):
                 continue
             for ln, arg in rule_action_returns(path, read_lines(path, cache), allowed):
+                if arg is None:
+                    out.append((path, ln.n, "action-returns",
+                                "Function is passed on without being called (an alias hides what it "
+                                "runs from this rule): %s" % ln.raw.strip()))
+                    continue
                 out.append((path, ln.n, "action-returns",
                             "Function(%s ...) is not ui_do or in tools/none_ok.txt: %s" % (arg, ln.raw.strip())))
     return out

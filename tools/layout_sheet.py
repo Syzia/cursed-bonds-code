@@ -445,8 +445,12 @@ def check_shapes(kind, data, path, fg=False):
             if not isinstance(pts, list) or not all(numbers(q, (2,)) for q in pts):
                 bad("%r must be a list of [x, y] points" % variant)
         return
-    spots = data.get("spots", {})
+    allowed = ("spots",) if kind in ("hot", "area") else ("slots", "poses")
+    for k in data:
+        if k not in allowed:
+            bad("unknown key %r (a %s sidecar holds %s)" % (k, kind, " and ".join(allowed)))
     if kind in ("hot", "area"):
+        spots = data.get("spots", {})
         if not isinstance(spots, dict):
             bad("spots must be an object, {\"<id>\": [x, y]}")
         for k, v in spots.items():
@@ -457,8 +461,12 @@ def check_shapes(kind, data, path, fg=False):
     if not isinstance(slots, dict):
         bad("slots must be an object, {\"<n>\": [[xcenter, yoffset, zoom, far], ...]}")
     for n, rows in slots.items():
+        if n not in ("1", "2", "3", "4"):
+            bad("slots[%r]: the key is how many people stand there, \"1\" to \"4\"" % n)
         if not isinstance(rows, list) or not all(numbers(r, (3, 4)) for r in rows):
             bad("slots[%r] must be a list of [xcenter, yoffset, zoom] or [xcenter, yoffset, zoom, far]" % n)
+        if len(rows) != int(n):
+            bad("slots[%r] must hold %s slot%s, not %d" % (n, n, "" if n == "1" else "s", len(rows)))
     if not isinstance(poses, dict):
         bad("poses must be an object, {\"<who>\": [x, y, w, h]}")
     for k, v in poses.items():

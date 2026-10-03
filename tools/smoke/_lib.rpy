@@ -42,7 +42,8 @@
 ##   smoke_env(name, default=None) reads an environment variable (SMOKE_SLOT...)
 ##
 ## Measuring helpers (phase 2). Each renders first when called from script (a
-## short hard pause), so it sees the screens as they are now:
+## short hard pause), so it sees the screens as they are now. They work over a
+## modal screen too (their waits, and shot()'s, are not held by one):
 ##   zz_render(seconds=0.15)       one real interaction, skipping suspended
 ##   zz_rect(screen, wid)          (x, y, w, h) of the button with `id wid` on
 ##                                 a shown screen, from the focus list of the
@@ -148,7 +149,9 @@ init 999 python:
             config.skipping = None
             zz_smoke_state.autoplay = False
             try:
-                renpy.pause(wait, hard=True)
+                ## modal=False: a modal screen must not hold the wait open
+                ## (config.modal_blocks_pause is True by default).
+                renpy.pause(wait, hard=True, modal=False)
             finally:
                 config.skipping, zz_smoke_state.autoplay = skipping, auto
         try:
@@ -302,7 +305,9 @@ init 999 python:
         config.skipping = None
         zz_smoke_state.autoplay = False
         try:
-            renpy.pause(seconds, hard=True)
+            ## modal=False: over a modal screen (pc_screen, fish_screen, the
+            ## review panel) a timed pause would otherwise never end.
+            renpy.pause(seconds, hard=True, modal=False)
         finally:
             config.skipping, zz_smoke_state.autoplay = skipping, auto
 
@@ -445,7 +450,7 @@ init 999 python:
         try:
             ## A bare timed interaction: a pause statement would be dismissed
             ## by the skipping before a frame with the indicator was drawn.
-            renpy.ui.pausebehavior(0.4, False)
+            renpy.ui.pausebehavior(0.4, False, modal=False)
             renpy.ui.interact(mouse="pause", type="pause", roll_forward=None)
             ok = shot(name, wait=0)
         finally:

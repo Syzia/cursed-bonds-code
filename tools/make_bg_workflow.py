@@ -230,6 +230,8 @@ if __name__ == "__main__":
             raise SystemExit("no prompt for %r in tools/bgs/prompts/" % n)
     wf, count = build(names, seed)
     out = os.path.join(IMAGES, out_name)
+    if not os.path.isdir(os.path.dirname(out)):
+        raise SystemExit("no folder %s (make it first, or give --out another name)" % os.path.dirname(out))
     json.dump(wf, open(out, "w"), indent=1)
     print("rows      %s (%d each)" % (", ".join(names), CANDIDATES))
     print("cost      %d pictures, about $%.2f" % (count, count * COST))

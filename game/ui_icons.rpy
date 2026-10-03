@@ -311,14 +311,20 @@ screen icon_btn(name, action, tip=None, size=52, w=None, gold=False, selected=Fa
 ## The hover label (4.3, D10): always shown, above everything. It draws only a
 ## tuple tooltip (text, key), beside the hovered button, on the left when there
 ## is room. "Title\nhint": the first line large, the rest small and dim.
+## Over the style sample's icon rows it sits above the icon instead: on the
+## left it would hide the neighbouring icon the owner is comparing.
 screen hover_label():
     zorder 190
 
-    $ _hover_t = icon_tip_parts(GetTooltip())
+    $ _hover_tip = GetTooltip()
+    $ _hover_t = icon_tip_parts(_hover_tip)
+    $ _hover_side = "left"
+    if isinstance(_hover_tip, tuple) and len(_hover_tip) > 1 and str(_hover_tip[1]).startswith(("sample_auto_", "sample_always_", "sample_never_")):
+        $ _hover_side = "top"
     if _hover_t:
         nearrect:
             focus "tooltip"
-            preferred_side "left"
+            preferred_side _hover_side
             frame:
                 background Frame("gui/panel_dark.png", 4, 4)
                 padding (14, 8)

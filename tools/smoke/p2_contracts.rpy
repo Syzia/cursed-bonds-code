@@ -48,6 +48,10 @@
 ##      today's window (p0_place.png and p0_person.png as this harness's
 ##      tooling half writes them when run on a copy of the tree at 1d3a9db)
 ##      and the strict run compares with those instead.
+##      tools/smoke/baseline_shots/1818x1022/ holds such a pair, taken in
+##      review round 1 from a scratch rebuild of the tree at 1d3a9db (its dump
+##      equalled baseline_p0.json): give SMOKE_P0_SHOTS its absolute path when
+##      the window is 1818x1022.
 ##   2. The measuring helpers of _lib.rpy, on a small screen of this file.
 ##   3. fixture(): an unknown name fails, a shaped variable is refused (R5).
 ##   4. tools/none_ok.txt: every example returns None in a settled fixture, and
@@ -730,6 +734,16 @@ screen zz_tool():
 screen zz_tool_inner():
     textbutton "Inner" id "zz_tool_c" action NullAction()
 
+## A modal screen, for the helpers' waits (pc_screen and fish_screen are modal).
+screen zz_tool_modal():
+    modal True
+    button:
+        id "zz_tool_m"
+        pos (900, 600)
+        xysize (100, 40)
+        background Solid("#2f7bd6")
+        action NullAction()
+
 
 label zz_smoke:
 
@@ -839,6 +853,18 @@ label zz_smoke:
         check(zz_rect("zz_tool", "zz_no_such_id") is None and zz_rect("zz_no_such_screen", "zz_tool_b") is None
               and zz_buttons("zz_no_such_screen") == 0 and zz_words("zz_no_such_screen") == [],
               "the helpers answer None / 0 / [] for what isn't there")
+        ## Over a modal screen, with Ren'Py's default (a modal screen holds a
+        ## timed pause open) put back for the span: the helpers' own waits
+        ## still end, or this run stops at the watchdog.
+        config.modal_blocks_pause = True
+        renpy.show_screen("zz_tool_modal")
+        _zz_rm = zz_rect("zz_tool_modal", "zz_tool_m")
+        _zz_sm = shot("modal_helper")
+        renpy.hide_screen("zz_tool_modal")
+        zz_render()
+        config.modal_blocks_pause = False
+        check(_zz_rm == (900, 600, 100, 40) and _zz_sm,
+              "the measuring helpers and shot() work over a modal screen", (_zz_rm, _zz_sm))
         _zz_n = zz_calls("zz_tool_tick", 0.6)
         check(4 <= _zz_n <= 14 and zz_tool_tick.__name__ == "zz_tool_tick",
               "zz_calls: a 0.05 s timer is counted over 0.6 s, and the function is put back", _zz_n)
@@ -1144,6 +1170,13 @@ label zz_smoke:
             roster.append("yuji")
         companion = "yuji"
         _zz_rects = view_person_rects("dorm")
+        ## Wherever the room's slots put them (P5 moves the slots): the desk
+        ## hotspot goes to the middle of the first person for this check.
+        _zz_hd = [h for h in HOT_SPOTS if h["id"] == "zz_desk"][0]
+        _zz_was = (_zz_hd["x"], _zz_hd["y"])
+        if _zz_rects:
+            _zz_hd["x"] = _zz_rects[0][0] + _zz_rects[0][2] // 2
+            _zz_hd["y"] = _zz_rects[0][1] + _zz_rects[0][3] // 2
         _zz_rail = rail_actions("dorm")
         check(len(_zz_rects) == len(stage_people("dorm")[0]) >= 1
               and "zz_desk" not in [h["id"] for h in hot_spots_for("dorm")]
@@ -1155,6 +1188,7 @@ label zz_smoke:
               "rail_actions with a companion ends in the release row", _zz_rail[-1:])
         check(view_person_rects("dorm") == view_slot_rects("dorm", len(stage_people("dorm")[0])) or True,
               "view_person_rects: one rectangle a person on stage", view_person_rects("dorm"))
+        _zz_hd["x"], _zz_hd["y"] = _zz_was
         companion = None
         check(not rail_actions("dorm") or rail_actions("dorm")[-1][0] != "release", "…and without one it doesn't")
 
@@ -1244,7 +1278,10 @@ label zz_smoke:
         ## (aa_zz_order.rpy registers zz_tv at (300, 300), never visible; here its `when` is lifted.)
         _zz_tv = [h for h in HOT_SPOTS if h["id"] == "zz_tv"][0]
         _zz_tv["when"] = None
-        _zz_rows = [h for h in hot_spots_for("dorm_common") if h["id"] == "zz_tv"]
+        ## (With nobody on stage: where people stand in this room is P5's to
+        ## change, and this check is about the point alone.)
+        _zz_rows = [h for h in zz_with(dict(view_person_rects=lambda loc: []), lambda: hot_spots_for("dorm_common"))
+                    if h["id"] == "zz_tv"]
         check(len(_zz_rows) == 1 and (_zz_rows[0]["x"], _zz_rows[0]["y"]) == (1420, 520)
               and (_zz_tv["x"], _zz_tv["y"]) == (300, 300),
               "hot_<place>.json moves a hotspot's point", _zz_rows)
@@ -1599,7 +1636,12 @@ label zz_smoke:
             here = "cafeteria"
             mission_cache_clear()
             zz_p0_quiet_view()
-            register_hotspot("zz_save_spot", "cafeteria", 1500, 520, "look", lines=["Saved."], label="A test spot")
+            ## A point nobody on stage covers, wherever this room's slots put
+            ## them (P5 moves the slots): the first clear one of these.
+            _zz_pts = ((1500, 520), (1620, 700), (120, 700), (960, 240), (300, 240), (1620, 420), (120, 420))
+            _zz_people = view_person_rects(here)
+            _zz_pt = ([p for p in _zz_pts if not any(hot_overlap(hot_rect(*p), r) for r in _zz_people)] or _zz_pts[:1])[0]
+            register_hotspot("zz_save_spot", "cafeteria", _zz_pt[0], _zz_pt[1], "look", lines=["Saved."], label="A test spot")
     scene expression graded_bg()
     show screen sb_place
     $ zz_render(0.4)

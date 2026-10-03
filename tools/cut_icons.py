@@ -27,12 +27,19 @@ swapped. Then:
   --only a,b     install just these names (to take most icons from one version
                  of a sheet and a few from the other)
   --out <dir>    install into another folder (tests)
+  --any-sheet    cut even when the render's file name says another sheet than
+                 the names file (a render that was renamed)
+
+The render's name carries its sheet number (`icons_sheet1_a_...`), and so does
+the names file (`sheet_1.txt`). When both do and they differ it stops before
+cutting anything: sheet 1's picture cut by sheet 3's names would install every
+icon under the wrong name.
 
 It stops, installing nothing, if a named cell is empty. A drawing that touches
 its cell's edge is reported (it may have been cut off), but still installed.
 Pure Python: raster.py and pngread.py.
 """
-import sys, os
+import sys, os, re
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pngread import load
@@ -140,10 +147,18 @@ def main(argv):
 
     only, dest = opt("--only"), opt("--out")
     dry = "--dry" in argv
+    any_sheet = "--any-sheet" in argv
     args = [a for a in argv if not a.startswith("--")]
-    if len(args) != 2 or [a for a in argv if a.startswith("--") and a != "--dry"]:
+    if len(args) != 2 or [a for a in argv if a.startswith("--") and a not in ("--dry", "--any-sheet")]:
         print(__doc__); raise SystemExit(1)
     sheet_png, names_file = os.path.expanduser(args[0]), args[1]
+    said = re.search(r"sheet_?(\d+)", os.path.basename(sheet_png))
+    want = re.search(r"sheet_?(\d+)", os.path.basename(names_file))
+    if said and want and int(said.group(1)) != int(want.group(1)) and not any_sheet:
+        raise SystemExit("%s looks like sheet %s, but %s is sheet %s -- nothing cut "
+                         "(--any-sheet if the render was renamed)" % (
+                             os.path.basename(sheet_png), said.group(1),
+                             os.path.basename(names_file), want.group(1)))
     names = read_sheet(names_file)
     known = set(icon_names())
     if len(names) > COLS * ROWS:
