@@ -194,6 +194,7 @@ Already promised by the storyboard, now moved here.
 **Approved (1 Oct 2026).** The owner read the plan (`docs/PHASE2_DESIGN.md` and the visual plan page) and approved it as written, and the build starts.
 - The four checkpoint-A calls (night strictness, when character scenes start, two-hour activities, the look of icons and chips) take the plan's defaults unless the owner changes them at checkpoint A.
 - **No Special Grade talisman at the Black Market for now.** More talismans will be added later, after this phase's set.
+- **The Gojo night may push past the ceiling (decided 3 Oct 2026).** It can leave Control up to 6 above the grade's ceiling, and the reserve with it, so the night is offered at every grade whenever it is due.
 
 **Still open from phase 1's review** (the design proposes a default for each):
 - Two-slot activities (sparring, a heart-to-heart, a Tokyo trip) can skip past a story beat that only happens at noon, so it comes a day late.
