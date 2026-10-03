@@ -36,7 +36,7 @@ init -1 python:
              who=("yuji", "megumi", "maki", "panda", "toge", "nobara")),
 
         dict(id="study",    label="Study together",    hint="Four hundred pages, two people.",
-             kind="friend", min_bond=25, cost=1, loc=("classroom", "dorm_common", "dorm")),
+             kind="friend", min_bond=25, cost=1, loc=("classroom", "dorm_common", "dorm", "library")),
 
         dict(id="swim",     label="Swim together",     hint="The water is snowmelt cold.",
              kind="friend", min_bond=35, cost=1, loc=("riverside",),
