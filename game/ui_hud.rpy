@@ -117,13 +117,13 @@ init python:
     def hud_chips():
         """P2 (ui_hud.rpy). The status chips beside the date, as a list of
         (icon name, hover text, id): the moon while night_tag() says
-        something (a rest day, a rough morning), stamina_low below 25
+        something (a rest day, a rough morning), in night_tag()'s own
+        words and nothing added (P4b's carry the whole sentence),
+        stamina_low below 25
         stamina, skip while the player is skipping (4.2, D13)."""
         out = []
         tag = night_tag()
         if tag:
-            if not night_can_work():
-                tag = u"%s — no missions or training today" % tag
             out.append(("moon", tag, "hud_chip_moon"))
         if store.stamina < 25 and not store.explore_mode:
             out.append(("stamina_low", "Running on empty. Eat or sleep.", "hud_chip_stamina"))
