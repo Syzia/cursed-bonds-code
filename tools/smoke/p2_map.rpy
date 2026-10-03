@@ -23,6 +23,7 @@ init 999 python:
     import os
     import time as zz_time
     import builtins as zz_builtins
+    import json as zz_json
 
     ## The stand-in path for an area's picture: renpy.loadable says no for
     ## one file while bg area_grounds's displayable is built again.
@@ -172,6 +173,12 @@ init 999 python:
     def zz_moon_mountain():
         return {"mountain": "moon"}
 
+    zz_who_is_here0 = who_is_here
+
+    def zz_crowd(loc):
+        """Five people in whichever room is asked about."""
+        return ["yuji", "megumi", "nobara", "panda", "shoko"]
+
     def zz_night_yes(key):
         return (True, "")
 
@@ -292,6 +299,53 @@ label zz_smoke:
         _zz_hits = [(a, b) for a in _zz_rects for b in _zz_rects if a < b and _zz_rects[a] and _zz_rects[b]
                     and (area_of(a) or a[5:]) == (area_of(b) or b[5:]) and zz_overlap(_zz_rects[a], _zz_rects[b])]
         check(all(_zz_rects.values()) and not _zz_hits, "no pin overlaps another pin of its area, or Back", (_zz_hits, [k for k, v in _zz_rects.items() if not v]))
+
+        ## The game's own sidecars (the overlay above replaces area_school.json
+        ## in the scratch copy, so the shipped points are read from the tree).
+        _zz_close = []
+        _zz_out = []
+        _zz_miss = []
+        for _zz_a in AREAS:
+            _zz_raw = zz_source("game/layout/area_%s.json" % _zz_a["key"])
+            if _zz_raw is None:
+                _zz_miss.append(_zz_a["key"])
+                continue
+            _zz_pts = zz_json.loads(_zz_raw).get("spots", {})
+            if sorted(_zz_pts) != sorted(_zz_a["places"]):
+                _zz_miss.append((_zz_a["key"], sorted(_zz_pts)))
+            for _zz_l, (_zz_x, _zz_y) in _zz_pts.items():
+                if not (MAP_PIN_FRAME[0] <= _zz_x <= MAP_PIN_FRAME[2] and MAP_PIN_FRAME[1] <= _zz_y <= MAP_PIN_FRAME[3]):
+                    _zz_out.append((_zz_l, _zz_x, _zz_y))
+                for _zz_m, (_zz_x2, _zz_y2) in _zz_pts.items():
+                    if _zz_l < _zz_m and abs(_zz_x - _zz_x2) < MAP_PIN_W and abs(_zz_y - _zz_y2) < 120:
+                        _zz_close.append((_zz_l, _zz_m))
+        check(not _zz_miss and not _zz_out and not _zz_close,
+              "the shipped sidecars: every room of each area has a point inside the frame, and no two pins of an area "
+              "are closer than 240 px across and 120 px down", (_zz_miss, _zz_out, _zz_close))
+        _zz_wide = [(l, map_text_width(n, gui.display_font, map_fit(n, 22, MAP_PIN_W - 24)) + 20)
+                    for l in LOCATIONS for n in (LOCATIONS[l]["name"], "Empty Office")]
+        check(all(w <= MAP_PIN_W for l, w in _zz_wide), "every pin's name plate fits inside the pin's %d px button" % MAP_PIN_W,
+              [x for x in _zz_wide if x[1] > MAP_PIN_W])
+
+        ## A crowd on a pin near the left edge: its hover label opens on the
+        ## right, so the faces are drawn on the left of the tile.
+        who_is_here = zz_crowd
+        zz_map(area="mountain")
+        _zz_fx, _zz_fy = map_spots("mountain")["forest"]
+        _zz_rx, _zz_ry = map_spots("mountain")["riverside"]
+        _zz_fb = zz_widget("faces_forest")
+        _zz_rb = zz_widget("faces_riverside")
+        check(_zz_fx < MAP_FACES_LEFT_X and _zz_fb is not None and _zz_fb.style.xanchor == 1.0 and _zz_fb.style.xpos == _zz_fx - 46
+              and len(zz_faces(_zz_fb)) == 3 and "+2" in zz_strings(_zz_fb),
+              "five people on the Forest Trail: the faces box ends at x - 46, left of the tile, clear of a label on the right "
+              "(nothing of it is past x + 120)", (_zz_fx, _zz_fb and (_zz_fb.style.xpos, _zz_fb.style.xanchor)))
+        check(_zz_rx >= MAP_FACES_LEFT_X and _zz_rb is not None and not _zz_rb.style.xanchor and _zz_rb.style.xpos == _zz_rx + 46,
+              "a pin on the right keeps its faces on the right of the tile", (_zz_rx, _zz_rb and (_zz_rb.style.xpos, _zz_rb.style.xanchor)))
+        renpy.set_focus("sb_map", "row_forest")
+        zz_render(0.5)
+        shot("crowd_forest_hover", wait=0)
+        who_is_here = zz_who_is_here0
+        renpy.hide_screen("sb_map")
 
         ## My own room, and a locked one.
         here = "cafeteria"
@@ -543,6 +597,17 @@ label zz_smoke:
               "night_out_ok patched to (False, 'Not two nights running'): district_night exists, returns nothing and shows the reason", _zz_t)
         zz_map(layer="tokyo")
         check(not [k for k in DISTRICT_ORDER if "moon" in zz_icons(zz_widget("district_" + k))], "no moon on a district whose night can't start")
+
+        ## A closed district opened by argument: no second level, no night.
+        night_out_ok = zz_night_yes
+        grade = "g4"
+        zz_map(layer="tokyo", area="shinjuku")
+        check(district_state("shinjuku")[0] is False and map_night_state("shinjuku") == (False, False, "")
+              and zz_widget("district_night") is None and zz_widget("district_go") is None
+              and zz_ids("district_") == sorted("district_" + k for k in DISTRICT_ORDER),
+              "sb_map(layer='tokyo', area='shinjuku') at Grade 4: the five districts, no district_go and no district_night",
+              (district_state("shinjuku"), map_night_state("shinjuku"), zz_ids("district_")))
+        grade = "g2"
     python:
         night_out_ok = zz_night_out_ok0
 
@@ -667,16 +732,22 @@ label zz_smoke:
         check(isinstance(_zz_tipnow, tuple) and _zz_tipnow[1] == "area_school" and any(AREA_BY_KEY["school"]["blurb"] in s for s in _zz_lab)
               and _zz_z["hover_label"] > _zz_z["toasts"] > _zz_z["sb_map"],
               "the hover label is drawn by hover_label, above the map and the toasts (zorder %r)" % (_zz_z,), (_zz_tipnow, _zz_lab))
+        ## Measured on the screens themselves, with the map still up: a
+        ## queued toast and the objective banner must both draw nothing.
         toast("A reward", "stat")
-        zz_render(0.3)
+        renpy.show_screen("objective_toast", "A banner over the map")
+        zz_render(0.7)
         _zz_room = toast_room()
-        toast_clear()
+        _zz_drawn = (zz_texts("toasts"), zz_texts("objective_toast"))
         if _zz_room == (0, 0, 0):
-            check(True, "zz_worst('sb_map'): no toast is drawn over the map (toast_room() is (0, 0, 0))")
+            check(renpy.get_screen("sb_map") is not None and not any("A reward" in s for s in _zz_drawn[0]) and not _zz_drawn[1],
+                  "zz_worst('sb_map'): no toast and no objective banner is drawn over the map", _zz_drawn)
         else:
             note("zz_worst('sb_map'): no toast drawn",
                  "waits for P2: toast_room() is still wave 0's stub over the map (%r), so toasts (and the objective banner) "
-                 "draw over the map until P2's lanes are in" % (_zz_room,))
+                 "draw over the map until P2's lanes are in; drawn now: %r" % (_zz_room, _zz_drawn))
+        renpy.hide_screen("objective_toast")
+        toast_clear()
         renpy.hide_screen("sb_map")
         zz_map(area="dorms")
         renpy.set_focus("sb_map", "row_dorm_common")
@@ -744,7 +815,9 @@ label zz_smoke:
 
     ## --- 13. a save on the map ---------------------------------------------------------------
     ## Screen scope is saved (R10): a save taken with an area open must
-    ## pickle, and reload onto that area's pins.
+    ## pickle. This is a SHOWN map, whose scope is kept across a load; the
+    ## game's own `call screen sb_map` is re-run on load with a fresh scope,
+    ## so a player's save made with an area open reloads on level 1.
     python:
         renpy.hide_screen("sb_map")
         persistent.motion = _zz_motion0
@@ -773,6 +846,6 @@ label zz_smoke:
         zz_render(0.4)
         check(ZZ_SAVE[0] == 2 and renpy.get_screen("sb_map") is not None and zz_zone() == "dorms"
               and zz_ids("row_") == sorted("row_" + l for l in places_in("dorms")),
-              "...and it reloads onto that area's pins (nothing un-picklable is in the map's scope)", (ZZ_SAVE[0], zz_ids("row_")))
+              "...and a shown map reloads with its scope (nothing un-picklable is in the map's scope)", (ZZ_SAVE[0], zz_ids("row_")))
         renpy.hide_screen("sb_map")
         finish()

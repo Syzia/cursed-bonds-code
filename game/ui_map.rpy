@@ -208,6 +208,9 @@ init -1 python:
     MAP_DISC = 72
     MAP_FACE = 36
     MAP_FACE_CAP = 3
+    ## A pin left of this x has its hover label on its right (hover_label
+    ## has no room on the left), so its faces go on the left of the tile.
+    MAP_FACES_LEFT_X = 700
 
     ## Tokyo's second level: what a district has, as display-only pins
     ## ("Later build"). {district: [dict(id, name, icon, x, y, note)]}.
@@ -269,7 +272,9 @@ init -1 python:
         """P1. The level-2 key that is really open: `zone` when it is an
         area (campus) or a district (Tokyo), else None (level 1)."""
         if view == "tokyo":
-            return zone if zone in DISTRICTS else None
+            ## A closed district has no second level, however the map was
+            ## opened (a caller's area= included).
+            return zone if zone in DISTRICTS and district_state(zone)[0] else None
         return zone if zone in AREA_BY_KEY else None
 
     def map_title(view, zone):
@@ -373,8 +378,11 @@ init -1 python:
         """P1. (shown, ok, reason) for a district's "A night in ..." button:
         shown only in a night district, in the Evening or at Night, and only
         when night_out_ok(key) has something to say (the stub's (False, "")
-        hides it, so an unbuilt night out leaves no dead button)."""
+        hides it, so an unbuilt night out leaves no dead button). Never in a
+        district that is still closed."""
         if key not in MAP_NIGHT_DISTRICTS or store.period not in ("Evening", "Night"):
+            return (False, False, "")
+        if not district_state(key)[0]:
             return (False, False, "")
         ok, reason = night_out_ok(key)
         return (bool(ok or reason), bool(ok), reason or "")
@@ -780,7 +788,7 @@ screen map_area(key):
                 frame:
                     style "map_pin_plate"
                     xalign 0.5
-                    text "[_nm!q]" style "map_pin_name" color (gui.violet2 if _cur else (gui.paper if _ok else gui.mute))
+                    text "[_nm!q]" style "map_pin_name" size map_fit(_nm, 22, MAP_PIN_W - 24) color (gui.violet2 if _cur else (gui.paper if _ok else gui.mute))
 
         ## Badges on the tile's corners: locked, or something new.
         if not _ok:
@@ -788,9 +796,23 @@ screen map_area(key):
         elif map_pin_news(_l, _marks):
             add icon("news", 30, True) xanchor 0.5 yanchor 0.5 xpos (_x + 34) ypos (_y - 32)
 
-        ## Who is there, beside the tile.
-        if _faces:
+        ## Who is there, beside the tile: on its right, or on its left when
+        ## the hover label will open on the right (a pin near the left edge).
+        if _faces and _x < MAP_FACES_LEFT_X:
             hbox:
+                id ("faces_" + _l)
+                xpos (_x - 46)
+                xanchor 1.0
+                ypos _y
+                yanchor 0.5
+                spacing 4
+                if _more:
+                    text "+[_more]" style "map_more" yalign 0.5 xoffset -4 color gui.paper
+                for _w in _faces:
+                    add face_chip(_w, MAP_FACE)
+        elif _faces:
+            hbox:
+                id ("faces_" + _l)
                 xpos (_x + 46)
                 ypos _y
                 yanchor 0.5
