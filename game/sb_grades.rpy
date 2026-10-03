@@ -611,13 +611,22 @@ screen grade_card(key, kicker):
                 color gui.dim
                 size 26
 
+            ## Phase 2 (4.8): the grade in its own colour; Special Grade sits
+            ## on a rule of the sheen.
             text "[_gl]":
                 xalign 0.5
                 font gui.display_font
-                color gui.paper
+                color grade_color(key or "g4")
                 size 64
 
-            use rule(560)
+            if grade_is_special(key):
+                frame:
+                    xalign 0.5
+                    xysize (560, 6)
+                    padding (0, 0)
+                    background grade_fill(key)
+            else:
+                use rule(560)
 
             text "[_opens]":
                 xalign 0.5

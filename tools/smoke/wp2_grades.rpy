@@ -473,6 +473,9 @@ label zz_smoke:
     call screen zz_snap("combat_ungraded_enemy")
     $ _gshown = renpy.get_screen("combat_screen").scope.get("_grade")
     $ check(_gshown == "Ungraded", "an enemy with no grade reads 'Ungraded', not the player's 'Not yet assessed'", _gshown)
+    ## Phase 2 (P4a, 4.8): the header is a grade chip left of "ROUND n".
+    $ _ghead = zz_texts("combat_screen")
+    $ check("UNGRADED" in _ghead and "ROUND 1" in _ghead and "NOT YET ASSESSED" not in _ghead, "phase 2: the combat header is a chip (UNGRADED) and ROUND n", [t for t in _ghead if "ROUND" in t or "GRADE" in t])
     hide screen combat_screen
 
     ## --- the fights through the combat label, under autoplay ----------------------------------------
@@ -502,6 +505,9 @@ label zz_smoke:
     hide screen grade_card
     show screen grade_card("g3", "PROMOTED")
     $ shot("grade_card_promoted")
+    ## Phase 2 (P4a, 4.8): the 64 px label takes the grade's colour.
+    $ _gcol = [tuple(d.style.color) for d in zz_text_nodes("grade_card") if zz_text_string(d) == "Grade 3"]
+    $ check(_gcol == [tuple(renpy.easy.color(grade_color("g3")))] and grade_color("g3") == gui.grade_g3, "phase 2: the grade card's label is in the grade's colour", _gcol)
     hide screen grade_card
     show screen grade_card(None, "ASSESSED")
     $ shot("grade_card_none")

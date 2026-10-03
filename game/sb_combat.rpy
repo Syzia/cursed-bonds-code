@@ -311,10 +311,15 @@ screen combat_screen():
             xalign 0.5
             color gui.seal
             size 34
-        text "[_grade!u] · ROUND [_round]":
+        ## Phase 2 (4.8): the curse's grade as a chip, left of the round.
+        hbox:
             xalign 0.5
-            color gui.dim
-            size 18
+            spacing 12
+            use grade_chip(_c.get("grade"), 16, text=_grade)
+            text "ROUND [_round]":
+                yalign 0.5
+                color gui.dim
+                size 18
         use meter(_c["ehp"], _c["ehp_max"], width=620, height=14, fill=gui.seal)
 
     ## the telegraph — the whole game is here
