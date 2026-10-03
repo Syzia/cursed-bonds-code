@@ -253,9 +253,12 @@ label zz_smoke:
         period = "Noon"
         roll_gojo()
         zz_map()
-        check(any("YOU ARE HERE" in s for s in zz_strings(zz_widget("area_heart")))
-              and not any("YOU ARE HERE" in s for a in AREAS if a["key"] != "heart" for s in zz_strings(zz_widget("area_" + a["key"]))),
-              "YOU ARE HERE is on my area's marker only")
+        check(any("I'M HERE" in s for s in zz_strings(zz_widget("area_heart")))
+              and not any("I'M HERE" in s for a in AREAS if a["key"] != "heart" for s in zz_strings(zz_widget("area_" + a["key"]))),
+              "I'M HERE is on my area's marker only")
+        ## Kaito narrates in "I": no second-person words on the map's levels.
+        _zz_you = [s for s in zz_texts("sb_map") if zz_re.search(r"\b(you|your|you.re)\b", s, zz_re.I)]
+        check(not _zz_you, "the campus map says nothing in the second person (the marker reads I'M HERE)", _zz_you)
         check(zz_press("area_school") is None and zz_zone() == "school" and here == "courtyard",
               "pressing an area marker returns nothing: it opens the area and I stay where I am", (zz_zone(), here))
         zz_render(0.5)
@@ -739,9 +742,16 @@ label zz_smoke:
         zz_render(0.7)
         _zz_room = toast_room()
         _zz_drawn = (zz_texts("toasts"), zz_texts("objective_toast"))
+        ## P2's objective_toast hides the banner with `showif hud_banner_ok()`:
+        ## its words stay in the screen tree while nothing is drawn, so the
+        ## banner is judged by P2's own test, not by the tree. Before P2 is
+        ## in (no hud_banner_ok), an empty tree is the only proof there is.
+        _zz_bok = getattr(store, "hud_banner_ok", None)
+        _zz_nobanner = (not _zz_bok()) if callable(_zz_bok) else (not _zz_drawn[1])
         if _zz_room == (0, 0, 0):
-            check(renpy.get_screen("sb_map") is not None and not any("A reward" in s for s in _zz_drawn[0]) and not _zz_drawn[1],
-                  "zz_worst('sb_map'): no toast and no objective banner is drawn over the map", _zz_drawn)
+            check(renpy.get_screen("sb_map") is not None and not any("A reward" in s for s in _zz_drawn[0]) and _zz_nobanner,
+                  "zz_worst('sb_map'): no toast is drawn over the map and hud_banner_ok() is False (no objective banner)",
+                  (_zz_drawn, callable(_zz_bok)))
         else:
             note("zz_worst('sb_map'): no toast drawn",
                  "waits for P2: toast_room() is still wave 0's stub over the map (%r), so toasts (and the objective banner) "
