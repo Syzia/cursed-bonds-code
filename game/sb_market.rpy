@@ -95,10 +95,10 @@ init -1 python:
 
     def market_state(r):
         """P4b. (state, reason) of a stock row: ("buy", ""),
-        ("sold", "Sold") or ("poor", "Can't afford it")."""
-        it = ITEMS.get(r["item"]) or {}
-        if r["once"] and (r["item"] in store.market_bought
-                          or (not it.get("stack") and has_item(r["item"]))):
+        ("sold", "Sold") or ("poor", "Can't afford it"). Sold means bought
+        here (market_bought), not merely owned: the review tools' "Grant one
+        of every item" leaves the table as it was."""
+        if r["once"] and r["item"] in store.market_bought:
             return ("sold", "Sold")
         if store.yen < r["price"]:
             return ("poor", "Can't afford it")
@@ -217,16 +217,27 @@ style market_chip is text:
     size 15
 
 
-## One requirement of a talisman, ticked or not (D27).
+## One requirement of a talisman, as the armory and the journal draw it
+## (D27, 4.16): a tick in paper when it is met, a cross in seal red when not.
+## The mark is its own text in DejaVu Sans: the game's fonts and their font
+## group have no cross.
 screen market_req(line, met):
     frame:
         background Frame("gui/panel_ghost.png", 4, 4)
         padding (10, 3)
         yalign 0.5
-        text (("✓ " if met else "") + line):
-            style "market_chip"
-            substitute False
-            color (gui.gold if met else gui.dim)
+        hbox:
+            spacing 6
+            text ("✓" if met else "✗"):
+                font "DejaVuSans.ttf"
+                size 15
+                yalign 0.5
+                color (gui.paper if met else gui.seal)
+            text line:
+                style "market_chip"
+                substitute False
+                yalign 0.5
+                color (gui.paper if met else gui.seal)
 
 
 ## The table: one row per stock item, with Buy or why not. Returns

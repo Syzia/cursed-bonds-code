@@ -479,6 +479,9 @@ label sb_do_night_gojo:
     if not night_gojo_ok():
         return
 
+    ## the ridge as it is tonight, behind the menu
+    scene expression graded_bg()
+
     if not smoke_autoplay:
         menu:
             "A whole night with Gojo. Tomorrow I won't be fit for missions or training."
@@ -518,6 +521,9 @@ label night_out(key):
     ## PLACEHOLDER — rewrite in phase 4
     if not night_out_ok(key)[0]:
         return
+
+    ## where I am, as it is tonight, behind the first line and the menu
+    scene expression graded_bg()
 
     $ _night_name = DISTRICTS[key]["name"].split(" — ")[-1]
     $ _night_cover = "{:,}".format(NIGHT_OUT["cover"])
