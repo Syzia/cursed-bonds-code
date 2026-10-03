@@ -158,6 +158,24 @@ init 999 python:
     def zz_n_stop():
         autoplay(False)
 
+    def zz_n_bg_watch():
+        """Record every graded_bg() call as (loc, per, here, period) in
+        zz_n.keep["bg"] until zz_n_bg_unwatch()."""
+        orig = store.graded_bg
+        seen = builtins.list()
+
+        def zz_n_bg(loc=None, per=None):
+            seen.append((loc, per, store.here, store.period))
+            return orig(loc, per)
+
+        zz_n.keep["bg_orig"] = orig
+        zz_n.keep["bg"] = seen
+        store.graded_bg = zz_n_bg
+
+    def zz_n_bg_unwatch():
+        store.graded_bg = zz_n.keep.pop("bg_orig")
+        return zz_n.keep.pop("bg")
+
     ## --- fixtures ----------------------------------------------------------------
 
     def zz_n_snapshot():
@@ -1041,10 +1059,15 @@ label zz_n_e4:
         zz_n.keep["st"] = (day, control, ce_max, here)
         zz_n.picks = ["Not tonight."]
         del zz_n.menus[:]
+        zz_n_bg_watch()
         zz_n_play(menus=True)
     call sb_do_night_gojo
     python:
         zz_n_stop()
+        _zz_bg = zz_n_bg_unwatch()
+        check(_zz_bg == [(None, None, here, period)] and period == PERIODS[-1],
+              "F: the Gojo night's menu plays over tonight's picture of where I am (one `scene expression graded_bg()` "
+              "before the menu), not whatever the last scene left", _zz_bg)
         check(zz_n.keep["st"] == (day, control, ce_max, here) and night_can_work() and len(zz_n.menus) == 1
               and zz_n.menus[0][1] == "Not tonight.",
               "F: 'Not tonight.' at the Gojo night's menu changes nothing", (zz_n.menus, day, control))
@@ -1384,10 +1407,15 @@ label zz_n_e4:
         zz_n.picks = ["Not enough yen", "Head home"]
         del zz_n.menus[:]
         zz_n.keep["t"] = len(zz_n.texts)
+        zz_n_bg_watch()
         zz_n_play(menus=True)
     call night_out("shibuya")
     python:
         zz_n_stop()
+        _zz_bg = zz_n_bg_unwatch()
+        check(_zz_bg == [(None, None, "gate", "Evening")],
+              "J: the first line and the arrival menu play over tonight's picture of where I am (one `scene expression "
+              "graded_bg()` before them), not whatever the last scene left", _zz_bg)
         check(len(zz_n.menus) == 2 and zz_n.menus[0][1].endswith("Not enough yen") and zz_n.menus[1][1] == "Head home"
               and not any(c == "The Black Market" for c in zz_n.menus[0][0])
               and not any(c.startswith("The club") and "Not enough" not in c for c in zz_n.menus[0][0])
@@ -1520,6 +1548,22 @@ label zz_n_e4:
               and market_bought == builtins.set(r["item"] for r in MARKET_STOCK if r["once"]),
               "K: a once-only row then reads 'Sold' and can't be bought again; sealing talismans and first aid can", market_rows())
         check(market_buy("first_aid") and item_count("first_aid") == 2, "K: a supply stacks: a second kit is a second kit")
+
+        ## the review tools' "Grant one of every item" (explore.rpy dev_items)
+        zz_n_fix("rich", grade="g3", yen=100000)
+        _zz_once = [r["item"] for r in MARKET_STOCK if r["once"]]
+        for _zz_i in all_item_ids(include_hidden=True):
+            give_item(_zz_i, quiet=True)
+        _zz_rows = dict((r[0], r) for r in market_rows())
+        _zz_y = yen
+        _zz_got = [market_buy(i) for i in _zz_once]
+        _zz_rows2 = dict((r[0], r) for r in market_rows())
+        check(_zz_once and all(has_item(i) for i in _zz_once) and all(_zz_rows[i][2] == "buy" for i in _zz_once)
+              and all(_zz_got) and yen == _zz_y - sum(market_row(i)["price"] for i in _zz_once)
+              and all(_zz_rows2[i][2:] == ("sold", "Sold") for i in _zz_once)
+              and all(item_count(i) == 1 for i in _zz_once if not ITEMS[i]["stack"]),
+              "K: owning a talisman some other way (the review tools' 'Grant one of every item') does not mark it Sold: "
+              "it can still be bought once, and only then reads Sold", (_zz_rows, _zz_got, _zz_rows2))
         check(bound_specials == _zz_bs and not any(ITEMS[r["item"]]["special"] for r in MARKET_STOCK)
               and not any(i in [r["item"] for r in MARKET_STOCK] for i in ("unending_moment", "the_zone", "finger_wrap")),
               "K: MARKET_STOCK holds no item with special=True, and bound_specials is unchanged by any purchase")
@@ -1614,9 +1658,17 @@ label zz_n_e4:
         renpy.show_screen("market_screen")
         _zz_texts = zz_texts("market_screen")
         shot("market_reqs")
-        check("✓ Grade 3" in _zz_texts and "Insight 35" in _zz_texts,
-              "K: each talisman row shows its requirement chips, ticked or not (item_requirements stood in for)",
+        check("Grade 3" in _zz_texts and "Insight 35" in _zz_texts and "✓" in _zz_texts and "✗" in _zz_texts,
+              "K: each talisman row shows its requirement chips, ticked or crossed (item_requirements stood in for)",
               [t for t in _zz_texts if len(t) < 24])
+        _zz_chips = [(zz_text_string(d), Color(d.style.color).hexcode) for d in zz_text_nodes("market_screen")
+                     if zz_text_string(d) in ("✓", "✗", "Grade 3", "Insight 35")]
+        _zz_paper, _zz_seal = Color(gui.paper).hexcode, Color(gui.seal).hexcode
+        check(_zz_chips and all(c == (_zz_paper if t in ("✓", "Grade 3") else _zz_seal) for t, c in _zz_chips)
+              and len([t for t, c in _zz_chips if t == "✗"]) == len([t for t, c in _zz_chips if t == "Insight 35"])
+              and len([t for t, c in _zz_chips if t == "✓"]) == len([t for t, c in _zz_chips if t == "Grade 3"]),
+              "K: a met requirement is '✓ …' in paper, an unmet one '✗ …' in seal red, as the armory and the journal draw them (4.16)",
+              _zz_chips)
         renpy.hide_screen("market_screen")
         store.item_requirements = zz_n.keep["ir"]
         note("K: the requirement chips", "item_requirements() is P4a's (a stub returning [] in this worktree): the chips show once "
