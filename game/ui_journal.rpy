@@ -39,6 +39,9 @@
 
 init python:
 
+    import re
+    import unicodedata
+
     ## The Stats tab's full picture ---------------------------------------------
 
     def kaito_card_image():
@@ -77,6 +80,14 @@ init python:
     JR_BODY_FONT = macron_font(gui.body_font)
     JR_MEDIUM_FONT = macron_font(gui.body_medium_font)
     JR_BOLD_FONT = macron_font(gui.body_bold_font)
+
+    ## The clutter budget (4.0): a person's page holds at most this many
+    ## words at rest. A learned story line that doesn't fit is cut to its
+    ## first JR_LEAD_WORDS words, and the whole line is its hover label.
+    JR_PAGE_WORDS = 70
+    JR_LEAD_WORDS = 4
+    JR_LEAD_MIN = 2
+    JR_TAG_RE = re.compile(r"\{[^{}]*\}")
 
     JR_FX_NOTE = "Takes effect in combat from the combat update."
 
@@ -602,6 +613,95 @@ init python:
                                      line=("1 more chapter in a later build" if later == 1
                                            else "%d more chapters in a later build" % later)))
         return rows
+
+    ## The page's word budget (4.0) ---------------------------------------------
+
+    def jr_is_word(tok):
+        """P3. A token that holds a Latin letter: "+2" and "◆ 1" are not
+        words (4.0's rule for the clutter budget)."""
+        for ch in tok:
+            if ch.isalpha() and unicodedata.name(ch, "").startswith("LATIN"):
+                return True
+        return False
+
+    def jr_word_count(*texts):
+        """P3. How many words the given strings put on the screen, text tags
+        left out."""
+        n = 0
+        for t in texts:
+            if not t:
+                continue
+            plain = JR_TAG_RE.sub(" ", str(t).replace("{{", " "))
+            n += len([k for k in plain.split() if jr_is_word(k)])
+        return n
+
+    def jr_lead(line, n):
+        """P3. The first n words of a line and an ellipsis ("He is the
+        loudest…"); the ellipsis alone when n is 0."""
+        out, words = [], 0
+        for tok in str(line or "").split():
+            if words >= n:
+                break
+            out.append(tok)
+            if jr_is_word(tok):
+                words += 1
+        return (" ".join(out).rstrip(",.;:") + "…") if out else "…"
+
+    def jr_story_sub(r):
+        """P3. The small line under a story row's title: its line and where."""
+        return jr_clip(" · ".join([p for p in (r["line"], r["where"]) if p]), 110)
+
+    def jr_story_fit(rows, room):
+        """P3. jr_story_rows' rows as the page draws them at rest, inside a
+        budget of `room` words (4.0: a person's page holds 70). Every row
+        stays a row. Each copy gains:
+          "show"  what a learned stage line prints at rest: the whole line
+                  while there is room, the newest first; else its first
+                  words and an ellipsis;
+          "tip"   the whole text for the hover label when the row is cut
+                  short ("" when it is not);
+          "sub"   the small line of a mission or step row ("" when folded
+                  into the hover label).
+        The NEXT row is never cut. The frozen rows are not changed."""
+        out = [dict(r, show=r.get("line", ""), tip="", sub="") for r in rows]
+        title = ""
+        used = 0
+        for r in out:
+            if r["kind"] == "heading":
+                title = r["title"]
+                used += jr_word_count(r["title"]) + (1 if r["state"] == "done" else 0)
+            elif r["kind"] == "later":
+                used += jr_word_count(r["line"])
+            elif r["kind"] != "stage":
+                r["sub"] = jr_story_sub(r)
+                used += jr_word_count(jr_clip(r["title"], 60), r["sub"]) + (1 if r["next"] else 0)
+        if not out:
+            return out
+        ## Too much even before the story's own lines: the other chapters
+        ## keep their titles and move their small lines to the hover label,
+        ## from the bottom up.
+        for r in reversed(out):
+            if used <= room:
+                break
+            if r["kind"] in ("mission", "step") and not r["next"] and r["sub"]:
+                used -= jr_word_count(r["sub"])
+                r["tip"] = "%s\n%s" % (r["title"], r["sub"])
+                r["sub"] = ""
+        left = max(0, room - used)
+        stages = [r for r in out if r["kind"] == "stage"]
+        for j, r in enumerate(reversed(stages)):
+            older = len(stages) - j - 1
+            w = jr_word_count(r["line"])
+            spare = left - JR_LEAD_MIN * older
+            if w <= spare:
+                left -= w
+                continue
+            ## What is left is shared out, the newest line served first.
+            k = max(0, min(JR_LEAD_WORDS, max(spare, left // (older + 1))))
+            r["show"] = jr_lead(r["line"], k)
+            r["tip"] = "%s\n%s" % (title or "Their story", r["line"])
+            left -= jr_word_count(r["show"])
+        return out
 
     ## The People grid ------------------------------------------------------------
 
@@ -1181,7 +1281,8 @@ init python:
         return seen, total
 
     def jr_mem_thumb(m):
-        """The tile's thumbnail: the memory's background, 280x158."""
+        """The tile's thumbnail: the memory's background, 280x158. Cropped:
+        a 16:9 picture made to cover the tile comes out a pixel too wide."""
         bg = jr_get(m, "bg")
         d = None
         if bg:
@@ -1191,7 +1292,7 @@ init python:
                 d = bg
         if d is None:
             return Solid(gui.panel2, xysize=(280, 158))
-        return Transform(d, xysize=(280, 158), fit="cover")
+        return Crop((0, 0, 280, 158), Transform(d, xysize=(280, 158), fit="cover"))
 
     def journal_replay_action(m):
         """WP8. What a seen memory tile does: WP5's memory_replay(m)."""
@@ -1453,6 +1554,11 @@ style jr_unmet_button is button:
 style jr_strength_button is button:
     background Solid("#07060cb0")
     padding (14, 10)
+
+## A button that is only there to carry a hover label.
+style jr_plain_button is button:
+    background None
+    padding (0, 0)
 
 style jr_panel is frame:
     background Frame("gui/panel.png", 4, 4)
@@ -1883,6 +1989,12 @@ screen jr_unmet_chip(e):
 
 ## A person's page (4.7): the sprite left; the header, "Right now", and two
 ## chips over one pane (their story, or the memories shared with them).
+##
+## The page holds at most JR_PAGE_WORDS words at rest (4.0). What it prints
+## outside the story list is counted first, and jr_story_fit fits the list
+## into the rest. Three things wait on hover so the story keeps its room:
+## "Usually: ..." while I can see where they are (the Right now block), what
+## holds the heart bar back, and the whole of a story line cut short.
 screen jr_person_detail(js, who):
 
     $ _d = jr_person(who)
@@ -1895,6 +2007,23 @@ screen jr_person_detail(js, who):
     $ _sub = "memories" if _sana else js.get("psub", "story")
     $ _gk, _gt = jr_grade_chip(who, _d["grade"])
     $ _hover = "\n".join([t for t in (_d["blurb"], _d["note"]) if t])
+
+    ## What the page prints outside the story list, worked out here so the
+    ## list can be fitted into what is left of the 70 words (4.0).
+    $ _year = _d["year"] if (_d["year"] and _d["year"] != _d["grade"]) else ""
+    $ _pl = jr_promotions(who)
+    $ _prom = (_("Promoted Day %s") % _pl[-1][0]) if _pl else ""
+    $ _heart = ("♡ " + _d["aff_rank"]) if _d["romance"] else ""
+    ## I can see where they are: the place has a name I'm allowed to know.
+    $ _seen_now = bool(_live and (_pn.get("with_me") or (_pn.get("place") and not _pn.get("hidden"))))
+    $ _now = jr_clip(jr_now_line(_pn), 84) if _live else ""
+    $ _us = (_("In his office today.") if _d["office_today"] else jr_clip(_d["usual"] or _("Around campus."), 104))
+    $ _ul = unlock_line(who) if who in CAST else ""
+    $ _chip_mem = "Memories %d/%d" % (_seen, len(_mems))
+    $ _words = jr_word_count(_d["name"], (_gt or (grade_label(_gk) if _gk else "")), _year, _d["bond_rank"], _prom, _heart,
+                             _("RIGHT NOW"), _now, ("" if _seen_now else (_("Usually: ") + _us)), _ul, _("Their story"), _chip_mem, _("← Back"))
+    if _d["has_stats"]:
+        $ _words += 4 + (2 if _d["restricted"] else 0)
 
     frame:
         style "jr_panel_dark"
@@ -1957,8 +2086,8 @@ screen jr_person_detail(js, who):
                         use jr_chip(_("In memory"), gui.gold)
                     elif _gk or _gt:
                         use grade_chip(_gk, 15, text=_gt)
-                if _d["year"] and _d["year"] != _d["grade"]:
-                    text _d["year"] style "jr_dim" size 17 yalign 0.5
+                if _year:
+                    text _year style "jr_dim" size 17 yalign 0.5
 
             ## y 84: the bond bar, 620x10, with the rank and number under it;
             ## the heart bar at x 1100 when it applies; then the promotions.
@@ -1972,19 +2101,23 @@ screen jr_person_detail(js, who):
                         ypos 20
                         spacing 24
                         text "[_d['bond_rank']] · [_d['bond']]" style "jr_dim" size 16
-                        for _p in _d["promotions"][-1:]:
-                            text _p style "jr_dim" size 16
+                        ## The latest promotion; the chip by the name says
+                        ## which grade.
+                        if _prom:
+                            text _prom style "jr_dim" size 16
                     if _d["romance"]:
-                        fixed:
+                        ## The heart bar. What holds it back ("Affection
+                        ## can't pass 40 until Bond 50") is its hover label.
+                        button:
+                            id "jr_heart"
+                            style "jr_plain_button"
                             xpos 650
                             xysize (390, 44)
-                            use jr_meter(_d["aff"], _d["aff_max"], width=380, height=6, fill=gui.romance, marker=_d["aff_marker"])
-                            hbox:
-                                ypos 20
-                                spacing 14
-                                text "♡ [_d['aff_rank']]" color gui.romance size 16
-                                if _d["aff_note"]:
-                                    text _d["aff_note"] style "jr_dim" size 14 yalign 0.5
+                            action NullAction()
+                            tooltip (((_heart + "\n" + _d["aff_note"]), "jr_heart") if _d["aff_note"] else None)
+                            fixed:
+                                use jr_meter(_d["aff"], _d["aff_max"], width=380, height=6, fill=gui.romance, marker=_d["aff_marker"])
+                                text _heart color gui.romance size 16 ypos 20
 
                 ## Right now, (450, 140), 1040x112.
                 frame:
@@ -1994,22 +2127,30 @@ screen jr_person_detail(js, who):
                     background Frame("gui/panel.png", 4, 4)
                     padding (20, 7, 16, 5)
                     fixed:
-                        vbox:
-                            spacing 0
+                        ## While I can see where they are, "Usually: ..." is
+                        ## this block's hover label; when I can't (off
+                        ## campus, a room I can't enter, mid-scene) it is
+                        ## printed, because it is then the way to find them.
+                        button:
+                            id "jr_now"
+                            style "jr_plain_button"
                             xsize 900
-                            text (_("RIGHT NOW") if _live else _("USUALLY")) style "jr_kicker" size 13
-                            ## Mid-scene the first line is left out: "right
-                            ## now" means nothing inside a scene.
-                            if _live:
-                                text jr_clip(jr_now_line(_pn), 84) color gui.paper size 22
-                            $ _us = (_("In his office today.") if _d["office_today"] else jr_clip(_d["usual"] or _("Around campus."), 104))
-                            if _live:
-                                text (_("Usually: ") + _us) style "jr_dim" size 16
-                            else:
-                                text _us color gui.paper size 18
-                            $ _ul = unlock_line(who) if who in CAST else ""
-                            if _ul:
-                                text _ul color gui.gold size 16
+                            action NullAction()
+                            tooltip (((_("Usually") + "\n" + _us), "jr_now") if _seen_now else None)
+                            vbox:
+                                spacing 0
+                                xsize 900
+                                text (_("RIGHT NOW") if _live else _("USUALLY")) style "jr_kicker" size 13
+                                ## Mid-scene the first line is left out: "right
+                                ## now" means nothing inside a scene.
+                                if _live:
+                                    text _now color gui.paper size 22
+                                if not _live:
+                                    text _us color gui.paper size 18
+                                elif not _seen_now:
+                                    text (_("Usually: ") + _us) style "jr_dim" size 16
+                                if _ul:
+                                    text _ul color gui.gold size 16
                         if jr_can_go(_pn):
                             fixed:
                                 xalign 1.0
@@ -2028,7 +2169,7 @@ screen jr_person_detail(js, who):
                         style "jr_chip_button"
                         selected (_sub == "story")
                         action SetDict(js, "psub", "story")
-                textbutton ("Memories %d/%d" % (_seen, len(_mems))):
+                textbutton _chip_mem:
                     id "jr_psub_memories"
                     style "jr_chip_button"
                     selected (_sub == "memories")
@@ -2051,7 +2192,7 @@ screen jr_person_detail(js, who):
                                 use jr_memory_tile(_m)
                 else:
                     use jr_scroll(1040, 584, spacing=10):
-                        use jr_story_list(jr_story_rows(who), 1000)
+                        use jr_story_list(jr_story_fit(jr_story_rows(who), JR_PAGE_WORDS - _words), 1000)
 
             textbutton _("← Back"):
                 id "jr_back"
@@ -2062,8 +2203,10 @@ screen jr_person_detail(js, who):
                 action SetDict(js, "sel", None)
 
 
-## A person's story as a list of chapters (jr_story_rows): what is done, the
-## NEXT row on a gold rail, what is still closed, and one "later build" row.
+## A person's story as a list of chapters (jr_story_rows, fitted to the
+## page's word budget by jr_story_fit): what is done, the NEXT row on a gold
+## rail, what is still closed, and one "later build" row. A row cut short to
+## keep the page calm shows the rest as its hover label.
 screen jr_story_list(rows, w=1000):
 
     if not rows:
@@ -2101,13 +2244,25 @@ screen jr_story_list(rows, w=1000):
                                 kerning 2
                                 yalign 0.6
                             text jr_clip(_r["title"], 60) font JR_DISPLAY_FONT color gui.paper size 22
-                        text jr_clip(" · ".join([p for p in (_r["line"], _r["where"]) if p]), 110) style "jr_dim" size 16
+                        text _r["sub"] style "jr_dim" size 16
+
+        elif _r["kind"] == "stage" and _r["tip"]:
+            ## An earlier line, cut short: the whole of it on hover.
+            button:
+                id "jr_stage_%d" % rows.index(_r)
+                style "jr_plain_button"
+                action NullAction()
+                tooltip (_r["tip"], "jr_stage_%d" % rows.index(_r))
+                hbox:
+                    spacing 12
+                    text "✓" font JR_SYMBOL_FONT color gui.stamina size 17 min_width 22 ypos 3
+                    text _r["show"] style "jr_dim" size 18
 
         elif _r["kind"] == "stage":
             hbox:
                 spacing 12
                 text "✓" font JR_SYMBOL_FONT color gui.stamina size 17 min_width 22 ypos 3
-                text _r["line"] style "jr_text" size 18 xsize (w - 50)
+                text _r["show"] style "jr_text" size 18 xsize (w - 50)
 
         elif _r["kind"] == "later":
             hbox:
@@ -2116,22 +2271,37 @@ screen jr_story_list(rows, w=1000):
                 text _r["line"] color gui.mute size 16 yalign 0.5
 
         else:
-            $ _ic, _ck, _sf = JR_STATUS_ICON.get(_r["state"], ("—", "mute", False))
-            $ _dimmed = _r["state"] not in ("done", "available")
-            hbox:
-                spacing 12
-                text _ic:
-                    font (JR_SYMBOL_FONT if _sf else JR_BODY_FONT)
-                    color getattr(gui, _ck)
-                    size 17
-                    min_width 22
-                    ypos 3
-                vbox:
-                    spacing 0
-                    text jr_clip(_r["title"], 60) font JR_DISPLAY_FONT color (gui.mute if _dimmed else gui.paper) size 20
-                    $ _sl = " · ".join([p for p in (_r["line"], _r["where"]) if p])
-                    if _sl:
-                        text jr_clip(_sl, 110) style "jr_dim" size 15 color (gui.mute if _dimmed else gui.dim)
+            if _r["tip"]:
+                ## Its small line folded away: the whole of it on hover.
+                button:
+                    id "jr_chapter_%d" % rows.index(_r)
+                    style "jr_plain_button"
+                    action NullAction()
+                    tooltip (_r["tip"], "jr_chapter_%d" % rows.index(_r))
+                    use jr_story_chapter(_r)
+            else:
+                use jr_story_chapter(_r)
+
+
+## One chapter of a story that isn't a learned line or the NEXT row: a
+## mission, done, open or still closed.
+screen jr_story_chapter(r):
+
+    $ _ic, _ck, _sf = JR_STATUS_ICON.get(r["state"], ("—", "mute", False))
+    $ _dimmed = r["state"] not in ("done", "available")
+    hbox:
+        spacing 12
+        text _ic:
+            font (JR_SYMBOL_FONT if _sf else JR_BODY_FONT)
+            color getattr(gui, _ck)
+            size 17
+            min_width 22
+            ypos 3
+        vbox:
+            spacing 0
+            text jr_clip(r["title"], 60) font JR_DISPLAY_FONT color (gui.mute if _dimmed else gui.paper) size 20
+            if r["sub"]:
+                text r["sub"] style "jr_dim" size 15 color (gui.mute if _dimmed else gui.dim)
 
 
 ## The Me page (4.7): the journal portrait left; My story (the main story's

@@ -27,8 +27,17 @@
 ##                 picker, the Equipment panels and the Inventory panel.
 ##  10. leads      first on the Missions tab when there is one; absent otherwise.
 ##  11. stats      one pane at a time under three chips.
-##  12. worst      zz_worst screenshots of every full view; no toast over the
-##                 journal (a NOTE until P2's toast_room() is in, 7.3).
+##  12. worst      zz_worst screenshots of every full view. No toast over the
+##                 journal: the journal is tagged `menu`, which is what 4.2's
+##                 toast_room() tests, and with 4.2's value for that row no
+##                 toast is drawn and none is lost. With this tree's own
+##                 toast_room() the line is a check once it returns (0, 0, 0)
+##                 and a NOTE while it is still wave 0's stub (P2's file).
+##  13. budget     4.0: a person's page holds at most 70 words at rest, for
+##                 every person, at every stage of their story, whether I can
+##                 see where they are, can't, or am mid-scene. Every learned
+##                 line is still a row; one cut short carries the whole line
+##                 as its hover label.
 ##
 ## Memories are built with their owner's constructors (_mem / memory_entry,
 ## R5); items with give_item; grades with promote. Other packages' contract
@@ -159,6 +168,13 @@ init 999 python:
             return builtins.dict(place=place, name=name, doing=doing, reachable=reachable,
                                  hidden=hidden, with_me=with_me)
         return f
+
+    def zz_now_longest(who):
+        """person_now as P1 will answer it for someone I can walk to: the
+        longest place name on campus and that person's longest caption."""
+        doing = builtins.max([row[0] for (w, loc), row in AMBIENT.items() if w == who] or [AMBIENT_FALLBACK[0]], key=len)
+        return builtins.dict(place="dorm_common", name=LOCATIONS["dorm_common"]["name"], doing=doing,
+                             reachable=True, hidden=False, with_me=False)
 
     def zz_tick():
         if not zz_st.script:
@@ -498,7 +514,14 @@ label zz_smoke:
         zz_open("people", sel="yuji", psub="story")
         shot("page_yuji_story")
         check(zz_has("Cafeteria — halfway through an enormous bowl"), "Right now equals person_now(who)'s name and doing")
-        check(any(t.startswith("Usually: ") for t in zz_texts("journal")), "the second line is Usually: ...")
+        ## While I can see where they are, "Usually: ..." is the panel's hover
+        ## label (the page's word budget, 4.0); when I can't, it is printed.
+        _zz_tip = getattr(zz_widget("jr_now"), "_tooltip", None)
+        check(isinstance(_zz_tip, builtins.tuple) and _zz_tip[0] == "Usually\n" + jr_clip(usual_places("yuji"), 104) and _zz_tip[1] == "jr_now"
+              and not any(t.startswith("Usually: ") for t in zz_texts("journal")),
+              "while I can see where they are, Usually is the Right now panel's hover label", _zz_tip)
+        renpy.set_focus("journal", "jr_now")
+        shot("page_yuji_usually_hover")
         check(zz_has(unlock_line("yuji")) if unlock_line("yuji") else True, "the third line is the Closer hint", unlock_line("yuji"))
         _zz_go = zz_widget("jr_go_btn")
         check(_zz_go is not None and journal_editable() and ("go", "cafeteria") in zz_return_values(),
@@ -511,6 +534,10 @@ label zz_smoke:
             check(zz_widget("jr_go_btn") is None and not [v for v in zz_return_values() if v is not None]
                   and zz_has(_zz_fn("yuji")["name"]),
                   "no go button when " + _zz_case + ", and the line is person_now's", zz_return_values())
+            _zz_printed = any(t.startswith("Usually: ") for t in zz_texts("journal"))
+            _zz_tip = getattr(zz_widget("jr_now"), "_tooltip", None)
+            check((not _zz_printed and _zz_tip) if _zz_case == "with me" else (_zz_printed and not _zz_tip),
+                  "when " + _zz_case + ", the second line Usually: ... is " + ("on hover" if _zz_case == "with me" else "printed"), (_zz_printed, _zz_tip))
         ## The grid's one line.
         zz_patch("person_now", zz_now("cafeteria", "Cafeteria", "halfway through an enormous bowl"))
         check(jr_card_place("yuji") == "Cafeteria", "a card's place line is person_now's name")
@@ -677,13 +704,6 @@ label zz_smoke:
               and _zz_tip[0].replace("\n", " — ", 1) == jr_next("megumi") and _zz_tip[0].startswith("Next: ")
               and _zz_tip[1] == "jr_card_megumi", "a card's hover label is its Next line, as a (text, key) tooltip", _zz_tip)
         check("Next: " not in " ".join(zz_texts("journal")), "at rest no card prints its Next line")
-        ## A person's page, measured the same way (the 4.0 budget is 70).
-        zz_patch("person_now", zz_now("cafeteria", "Cafeteria", "halfway through an enormous bowl"))
-        for _zz_who in ("megumi", "yuji", "gojo"):
-            renpy.show_screen("jr_person_detail", journal_state(), _zz_who)
-            note("words on %s's page (budget 70)" % _zz_who, "%d: %s" % (len(zz_words("jr_person_detail")), " ".join(zz_words("jr_person_detail"))))
-            renpy.hide_screen("jr_person_detail")
-        zz_unpatch("person_now")
         renpy.hide_screen("journal")
 
         ## 26 cards: the list jr_people reads, patched.
@@ -885,18 +905,131 @@ label zz_smoke:
             _zz_ok = zz_worst("journal", _zz_tab, hover=_zz_hover, name=_zz_name)
             zz_unpatch("journal_state")
             check(_zz_ok and zz_js()["tab"] == _zz_tab, "zz_worst screenshot: " + _zz_name)
-        ## R6: toasts wait while the journal is up. toast_room() is P2's.
+        ## R6: toasts wait while the journal is up. The lanes are P2's
+        ## (toast_room() in ui_hud.rpy, 4.2); the journal's half is to be
+        ## what that function tests for: a screen tagged `menu`.
+        zz_open("people")
+        check(renpy.get_screen("menu") is renpy.get_screen("journal") and renpy.get_screen("journal") is not None,
+              "the journal is the screen tagged menu while it is up (what 4.2's toast_room() tests)")
+        renpy.hide_screen("journal")
+        ## With 4.2's value for that row, (0, 0, 0), nothing is drawn over
+        ## the journal and nothing is lost.
+        zz_patch("toast_room", lambda: (0, 0, 0))
+        zz_patch("toast_limit", lambda: 0)
+        _zz_ok = zz_worst("journal", "people", name="worst_journal_lanes")
+        toast("A reward", "item")
+        zz_render(0.5)
+        check(_zz_ok and toast_visible() == [] and len(TOASTQ.items) == 1 and TOASTQ.items[0]["t_shown"] is None,
+              "with toast_room() at 4.2's (0, 0, 0) for a menu screen, no toast is drawn over the journal and the queued one waits",
+              (toast_visible(), len(TOASTQ.items)))
+        zz_unpatch("toast_room", "toast_limit")
+        ## With this tree's own toast_room().
         toast_clear()
         toast("A reward", "item")
         zz_open("people")
         _zz_room = toast_room()
         if _zz_room == (0, 0, 0):
-            check(toast_visible() == [] or not toast_visible(), "zz_worst(\"journal\"): no toast is drawn over the journal")
+            check(not toast_visible(), "zz_worst(\"journal\"): no toast is drawn over the journal")
         else:
-            note("zz_worst(\"journal\"): no toast drawn",
-                 "DEFERRED to P8 (7.3): toast_room() is still wave 0's stub %r here, so toasts draw over the journal until P2's lanes are merged" % (_zz_room,))
+            note("zz_worst(\"journal\"): no toast drawn, with this tree's toast_room()",
+                 "NOT YET: toast_room() is still wave 0's stub %r in ui_hud.rpy (P2's file, frozen for P3), so toasts draw over the journal here; this line is a check on the merged tree" % (_zz_room,))
         toast_clear()
         zz_unpatch()
         renpy.hide_screen("journal")
+
+    ## =====================================================================
+    ## 13. The page's word budget (last: it walks every story to its end)
+    ## =====================================================================
+    python:
+        ## 13. The page's budget (4.0): at most 70 words at rest. Everyone,
+        ## at every stage of their story (-1: not opened), with the bond,
+        ## the heart bar and a promotion that go with it, in three views.
+        gui.icon_words = "never"
+        _zz_over, _zz_most, _zz_lost, _zz_n = builtins.list(), (0, ""), builtins.list(), 0
+        for _zz_stage in (-1, 0, 1, 2, 3):
+            for _zz_tid in THREAD_ORDER:
+                if _zz_stage < 0:
+                    threads.pop(_zz_tid, None)
+                else:
+                    threads[_zz_tid] = min(_zz_stage, len(THREADS[_zz_tid]["stages"]) - 1)
+            for _zz_e in JOURNAL_CAST:
+                bonds[_zz_e["who"]] = 15 + 20 * (_zz_stage + 1)
+                if is_romanceable(_zz_e["who"]):
+                    affection[_zz_e["who"]] = 60
+            if _zz_stage == 1:
+                for _zz_w in ("yuji", "megumi", "nobara"):
+                    promote(_zz_w, "g2", quiet=True)
+            for _zz_mode, _zz_fn, _zz_live in (("seen", zz_now_longest, True),
+                                               ("hidden", zz_now("gojo_office", "Somewhere I can't go right now", reachable=False, hidden=True), True),
+                                               ("mid-scene", zz_now_longest, False)):
+                zz_patch("person_now", _zz_fn)
+                if not _zz_live:
+                    zz_patch("journal_editable", lambda: False)
+                for _zz_e in JOURNAL_CAST:
+                    _zz_who = _zz_e["who"]
+                    ## Someone with no thread has no stages: first and last only.
+                    if not jr_thread_id(_zz_who) and _zz_stage not in (-1, 3):
+                        continue
+                    renpy.show_screen("jr_person_detail", journal_state(), _zz_who)
+                    _zz_w = zz_words("jr_person_detail")
+                    _zz_n += 1
+                    _zz_most = max(_zz_most, (len(_zz_w), "%s, stage %d, %s" % (_zz_who, _zz_stage, _zz_mode)))
+                    if len(_zz_w) > 70:
+                        _zz_over.append((_zz_who, _zz_stage, _zz_mode, len(_zz_w)))
+                    ## Every learned line is still a row: printed whole, or
+                    ## cut short with the whole line as its hover label.
+                    _zz_tid = jr_thread_id(_zz_who)
+                    if _zz_tid and _zz_stage >= 0:
+                        ## (the tree zz_words has just rendered)
+                        _zz_tx = [zz_text_string(d) for d in zz_text_nodes("jr_person_detail")]
+                        _zz_tips = [b._tooltip[0] for b in zz_btns("jr_person_detail")
+                                    if isinstance(getattr(b, "_tooltip", None), builtins.tuple)]
+                        for _zz_line in THREADS[_zz_tid]["stages"][:thread_stage(_zz_tid) + 1]:
+                            if not (_zz_line in _zz_tx or any(t.endswith("\n" + _zz_line) for t in _zz_tips)):
+                                _zz_lost.append((_zz_who, _zz_stage, _zz_mode, _zz_line))
+                        if len([t for t in _zz_tx if t == "✓"]) < thread_stage(_zz_tid) + 1:
+                            _zz_lost.append((_zz_who, _zz_stage, _zz_mode, "rows"))
+                    renpy.hide_screen("jr_person_detail")
+                zz_unpatch("person_now", "journal_editable")
+        note("the wordiest person page of %d measured" % _zz_n, _zz_most)
+        check(_zz_n == 3 * (5 * len(THREAD_ORDER) + 2 * (len(JOURNAL_CAST) - len(THREAD_ORDER))) and not _zz_over,
+              "a person's page holds at most 70 words at rest: everyone, every story stage, seen / hidden / mid-scene (4.0)", _zz_over)
+        check(not _zz_lost, "on every one of those pages each learned stage line is a row, whole or with the whole line on hover", _zz_lost[:6])
+        ## The fitting itself.
+        threads["yuji_countdown"] = 3
+        _zz_rows = jr_story_rows("yuji")
+        _zz_wide, _zz_tight = jr_story_fit(_zz_rows, 500), jr_story_fit(_zz_rows, 0)
+        check(len(_zz_wide) == len(_zz_tight) == len(_zz_rows)
+              and all(r["show"] == r["line"] and not r["tip"] for r in _zz_wide if r["kind"] == "stage")
+              and all(r["tip"].endswith("\n" + r["line"]) and r["show"] == "…" for r in _zz_tight if r["kind"] == "stage")
+              and [r for r in _zz_tight if r["next"]][0]["sub"] == [r for r in _zz_wide if r["next"]][0]["sub"] != ""
+              and all("show" not in r for r in _zz_rows),
+              "jr_story_fit keeps every row: whole lines with room, cut lines with their hover label without; the NEXT row is never cut", _zz_tight)
+        _zz_mid = jr_story_fit(_zz_rows, jr_word_count(*[r["title"] for r in _zz_rows]) + 40)
+        _zz_st = [r for r in _zz_mid if r["kind"] == "stage"]
+        check(_zz_st[-1]["show"] == _zz_st[-1]["line"] and _zz_st[0]["tip"] and _zz_st[0]["show"].endswith("…"),
+              "when room is short the newest learned line is the one printed whole", [(r["show"], bool(r["tip"])) for r in _zz_st])
+        check(jr_word_count("{b}+2{/b} ◆ 1 Bond 35 · the Cafeteria") == 3 and jr_lead("He is the loudest person here", 3) == "He is the…",
+              "jr_word_count counts as 4.0 does; jr_lead cuts at a word")
+        ## A cut line's hover label, and the heart bar's.
+        zz_patch("person_now", zz_now_longest)
+        bonds["nobara"] = 95
+        affection["nobara"] = 60
+        threads["nobara_saori"] = 3
+        zz_open("people", sel="nobara", psub="story")
+        _zz_cut = [b for b in zz_btns() if str(getattr(b, "id", "")).startswith("jr_stage_")]
+        check(_zz_cut and all(isinstance(b._tooltip, builtins.tuple) and b._tooltip[0].startswith("Somebody Remembered\n") and b._tooltip[1] == b.id for b in _zz_cut),
+              "a cut line is a row whose hover label is the thread's title and the whole line", [getattr(b, "_tooltip", None) for b in _zz_cut])
+        if _zz_cut:
+            renpy.set_focus("journal", _zz_cut[0].id)
+        shot("page_nobara_story_cut_hover")
+        _zz_tip = getattr(zz_widget("jr_heart"), "_tooltip", None)
+        check(zz_has("♡ " + aff_rank(60)[1]) and (jr_aff_note("nobara") == "" or (isinstance(_zz_tip, builtins.tuple) and _zz_tip[0].endswith(jr_aff_note("nobara"))))
+              and not zz_has(jr_aff_note("nobara") or "zz none"),
+              "the heart bar prints its rank; what holds it back is its hover label", (_zz_tip, jr_aff_note("nobara")))
+        check(zz_has("Promoted Day %s" % jr_promotions("nobara")[-1][0]), "the promotions line is the latest promotion's day", jr_promotions("nobara"))
+        renpy.hide_screen("journal")
+        zz_unpatch("person_now")
+        gui.icon_words = "auto"
 
     $ finish()
