@@ -195,6 +195,7 @@ Already promised by the storyboard, now moved here.
 - The four checkpoint-A calls (night strictness, when character scenes start, two-hour activities, the look of icons and chips) take the plan's defaults unless the owner changes them at checkpoint A.
 - **No Special Grade talisman at the Black Market for now.** More talismans will be added later, after this phase's set.
 - **The Gojo night may push past the ceiling (decided 3 Oct 2026).** It can leave Control up to 6 above the grade's ceiling, and the reserve with it, so the night is offered at every grade whenever it is due.
+- **Checkpoint A passed (4 Oct 2026).** The owner played the wave 0 build: it plays fine. No ruling was changed, so the defaults stand: a strict Night, character scenes after roll call, two-hour activities ending early for a waiting story scene, and icons without words once they have pictures (`gui.icon_words = "auto"`). Art batch 1 (88 icons, the Tokyo map, the six area maps) is installed.
 
 **Still open from phase 1's review** (the design proposes a default for each):
 - Two-slot activities (sparring, a heart-to-heart, a Tokyo trip) can skip past a story beat that only happens at noon, so it comes a day late.
