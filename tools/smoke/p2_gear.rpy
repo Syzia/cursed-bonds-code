@@ -41,6 +41,9 @@ init 999 python:
             promote("mc", key, quiet=True)
         toast_clear()
 
+    def zz_gear_boom(*a, **kw):
+        return 1 // 0
+
     def zz_gear_raise(stat, to):
         """Raise a stat to a value through gain, a point at a time."""
         for _i in range(400):
@@ -301,6 +304,80 @@ label zz_smoke:
         check(armory_checklist("nunchaku") == [("Grade 3", True)] and armory_checklist("slaughter_demon") == [("Grade 4", True)]
               and armory_checklist("playful_cloud") == item_requirements("playful_cloud"),
               "the armory's checklist for a tool with no row is its grade", armory_checklist("nunchaku"))
+        ## Review round 1: an owned tool with no row never shows a cross (can_hold allows it).
+        zz_gear_state("g4")
+        _zz_before = armory_checklist("nunchaku")
+        give_item("nunchaku", quiet=True)
+        check(_zz_before == [("Grade 3", False)] and armory_checklist("nunchaku") == [("Grade 3", True)]
+              and can_hold("nunchaku") == (True, ""),
+              "the armory's stand-in line is a cross below the grade, and a tick once I own the tool",
+              (_zz_before, armory_checklist("nunchaku"), can_hold("nunchaku")))
+
+    ## --- Review round 1: a rearrange never loses a talisman worn under D28 --------------------------
+    python:
+        zz_gear_state("g1", control=62)
+        zz_gear_raise("control", 80)
+        for _zz_t in ("paper_ward", "afterglow", "steady_hand"):
+            give_item(_zz_t, quiet=True)
+        equip_talisman("paper_ward")
+        equip_talisman("afterglow")
+        gain("control", -60, quiet=True)
+        check(control == 20 and equipped_talismans == ["paper_ward", "afterglow"] and not item_requirements_met("afterglow"),
+              "an old-save state: Afterglow worn in slot 2 with its checklist unmet", (control, equipped_talismans))
+        ## What the journal's jr_wear does for slot 0: take off the slot and the later ones, wear the new one, put the later ones back.
+        unequip_talisman("paper_ward")
+        unequip_talisman("afterglow")
+        _zz_new = equip_talisman("steady_hand")
+        _zz_plain = equip_talisman("afterglow")
+        _zz_mid = builtins.list(equipped_talismans)
+        _zz_back = item_wear_again("afterglow")
+        check(_zz_new and not _zz_plain and _zz_mid == ["steady_hand"] and _zz_back
+              and equipped_talismans == ["steady_hand", "afterglow"] and item_wear_again("afterglow")
+              and equipped_talismans == ["steady_hand", "afterglow"],
+              "item_wear_again puts a talisman back whatever its checklist says (equip_talisman alone would not)",
+              (_zz_new, _zz_plain, _zz_mid, _zz_back, equipped_talismans))
+        unequip_talisman("afterglow")
+        check(can_wear("afterglow") == (False, "Control 80 · I have 20") and item_wear_check("afterglow") == can_wear("afterglow")
+              and item_wear_check("afterglow", checklist=False) == (True, ""),
+              "can_wear itself still asks the checklist", can_wear("afterglow"))
+        zz_gear_state("g4", control=30)
+        give_item("afterglow", quiet=True)
+        give_item("black_sun", quiet=True)
+        _zz_none2 = "zz_nothing"
+        check(not item_wear_again("afterglow") and not item_wear_again(_zz_none2) and equipped_talismans == []
+              and item_wear_check("afterglow", checklist=False) == (False, "Needs Grade 1"),
+              "item_wear_again keeps every other test of can_wear (grade, kind)", (equipped_talismans,))
+        zz_gear_state("g1", control=30)
+        give_item("paper_ward", quiet=True)
+        give_item("steady_hand", quiet=True)
+        give_item("deep_well", quiet=True)
+        give_item("iron_seal", quiet=True)
+        give_item("afterglow", quiet=True)
+        for _zz_t in ("paper_ward", "steady_hand", "deep_well", "iron_seal"):
+            equip_talisman(_zz_t)
+        check(len(equipped_talismans) == talisman_slots() and not item_wear_again("afterglow")
+              and "afterglow" not in equipped_talismans,
+              "item_wear_again keeps the slot test", (equipped_talismans, talisman_slots()))
+        toast_clear()
+
+    ## --- Review round 1: a bad checklist row reads "?", a real error is not hidden --------------------
+    python:
+        zz_gear_state("g4")
+        check(item_req_line(("stat", "control")) == ("?", False) and item_req_line(("zz_kind", 1)) == ("?", False)
+              and item_req_line(("stat", "zz_no_such_stat", 5)) == ("?", False) and item_req_line(None) == ("?", False),
+              "a malformed requirement (short row, unknown kind, unknown stat, not a row) reads '?' and unmet")
+        _zz_saved_label = store.grade_label
+        _zz_raised = False
+        try:
+            store.grade_label = zz_gear_boom
+            try:
+                item_req_line(("grade", "g2"))
+            except ZeroDivisionError:
+                _zz_raised = True
+        finally:
+            store.grade_label = _zz_saved_label
+        check(_zz_raised and item_req_line(("grade", "g2")) == ("Grade 2", False),
+              "an error that is not a malformed row is raised, not turned into '?'", _zz_raised)
 
     ## --- ACC 5: the catalogue is untouched -----------------------------------------------------------
     python:

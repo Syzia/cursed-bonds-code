@@ -22,6 +22,7 @@
 ##                        hand and a talisman not already worn (D28: nothing
 ##                        I already hold or wear is taken away)
 ##   armory_checklist     the lines the armory draws under a tool
+##   item_wear_again      put a talisman back after a rearrange (D28)
 ################################################################################
 
 init -1 python:
@@ -318,6 +319,12 @@ init -1 python:
         A talisman I already wear answers "Already worn" before any of that,
         so the checklist never takes one off (D28). To swap, take one off
         first."""
+        return item_wear_check(id)
+
+    def item_wear_check(id, checklist=True):
+        """P4a (sb_items.rpy). can_wear's tests, as (ok, reason). With
+        checklist=False the last one (the ITEM_REQS checklist) is not asked:
+        that is for item_wear_again, never for putting one on anew."""
         it = ITEMS.get(id)
         if it is None or it["kind"] != "talisman":
             return (False, "Not a talisman")
@@ -336,7 +343,7 @@ init -1 python:
             return (False, "Not in my inventory")
         if len(store.equipped_talismans) >= talisman_slots():
             return (False, _slot_reason())
-        why = item_unmet_reason(id)
+        why = item_unmet_reason(id) if checklist else ""
         if why:
             return (False, why)
         return (True, "")
@@ -345,6 +352,21 @@ init -1 python:
         """WP6. Wear a talisman in the next free slot. True if it went on;
         False (nothing changed) when can_wear(id) refuses."""
         if not can_wear(id)[0]:
+            return False
+        store.equipped_talismans.append(id)
+        renpy.retain_after_load()
+        return True
+
+    def item_wear_again(id):
+        """P4a (sb_items.rpy). Put BACK a talisman that was only taken off to
+        rearrange the slots (the journal's jr_wear): equip_talisman, except
+        that its checklist is not asked, so a talisman I already wore is
+        never lost to a line I no longer meet (D28). Every other test of
+        can_wear still applies. True if it is worn afterwards. Not for
+        putting a talisman on anew: that is equip_talisman."""
+        if id in store.equipped_talismans:
+            return True
+        if not item_wear_check(id, checklist=False)[0]:
             return False
         store.equipped_talismans.append(id)
         renpy.retain_after_load()
@@ -447,9 +469,11 @@ init -1 python:
 
     def armory_return(id):
         """WP6. Hang an armory tool back on its rack. Story tools stay mine.
-        If it was in my hand, the next tool I own (in rack order) takes its
-        place, so my hand is only empty when I own no other tool. True if
-        returned."""
+        If it was in my hand, the next tool I own and can hold (in rack order)
+        takes its place, so my hand is only empty when I own no other tool
+        that can_hold allows. (A tool kept in hand under D28 and then put
+        down for another does not come back by itself: its checklist is
+        asked again.) True if returned."""
         if _ARMORY_KIND.get(id) != "armory" or not has_item(id):
             return False
         was_held = store.equipped_tool == id
@@ -510,8 +534,10 @@ init -1 python:
     def item_req_line(r):
         """P4a (sb_items.rpy). One requirement as (line, met): "Grade 2",
         "Arc Two", a flag's words, "Output 50", and for a stat I'm short of
-        "Output 50 · I have 32". A row that is none of the four kinds reads
-        as unmet (the validator reports it)."""
+        "Output 50 · I have 32". A row that is none of the four kinds, or is
+        the wrong shape, reads "?" and unmet (the validator reports it at
+        lint; with config.developer it is printed too). Any other error is
+        not hidden."""
         try:
             kind = r[0]
             if kind == "grade":
@@ -526,8 +552,10 @@ init -1 python:
                 if have >= r[2]:
                     return (line, True)
                 return ("%s · I have %d" % (line, have), False)
-        except Exception:
+        except (IndexError, TypeError, AttributeError):
             pass
+        if config.developer:
+            print("P4a item_req_line: bad requirement %r" % (r,))
         return ("?", False)
 
     def item_requirements(id):
@@ -564,14 +592,15 @@ init -1 python:
     def armory_checklist(id):
         """P4a (sb_items.rpy). The (line, met) pairs the armory draws under a
         tool: item_requirements(id), or, for a tool with no row, the one
-        thing the racks ask: its grade."""
+        thing the racks ask: its grade. A tool I already own never shows a
+        cross there (can_hold lets me hold it whatever my grade)."""
         rows = item_requirements(id)
         if rows:
             return rows
         g = ITEMS.get(id, {}).get("grade")
         if g is None:
             return []
-        return [(grade_label(g), _my_rank() >= grade_rank(g))]
+        return [(grade_label(g), has_item(id) or _my_rank() >= grade_rank(g))]
 
     def item_validate_reqs():
         """P0 (sb_items.rpy), final (D27). A list of str findings over every

@@ -336,7 +336,8 @@ label zz_smoke:
         give_item("slaughter_demon", quiet=True)
         check(equipped_tool == "nunchaku", "a second tool doesn't take the hand", equipped_tool)
         check(equip_tool("slaughter_demon") and equipped_tool == "slaughter_demon", "equip_tool swaps the tool")
-        check(not equip_tool("playful_cloud") and equipped_tool == "slaughter_demon", "an unowned tool can't be held")
+        check(can_hold("playful_cloud") == (False, "Not in my inventory") and not equip_tool("playful_cloud")
+              and equipped_tool == "slaughter_demon", "an unowned tool can't be held", can_hold("playful_cloud"))
         give_item("inverted_spear", quiet=True)
         check(can_hold("inverted_spear") == (False, "Sealed — Arc Two") and not equip_tool("inverted_spear"),
               "a sealed tool can't be held")
