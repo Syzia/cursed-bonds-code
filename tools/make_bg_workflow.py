@@ -16,7 +16,12 @@ tools/bgs/prompts/<name>.txt plus a shared style paragraph, steered by crops of
 the anime at strength 0.50. Outdoor locations use style.txt and four exterior
 crops; rooms (INTERIORS) use style_interior.txt and interior crops; a few places
 add a reference or a lighting paragraph of their own (LOCATION_REFS,
-LOCATION_STYLE). Krea 2 is a paid partner node, about $0.035 a picture; nothing
+LOCATION_STYLE). The bird's-eye pictures (the six area_* maps and map_tokyo)
+use style_aerial.txt, which has no eye-level camera and no horizon; the areas
+are steered by the anime's one aerial shot of the campus, and the Tokyo map by
+its words alone (every reference is a temple). --out phase2/areas.json writes
+the workflow under that name, inside JJK Game images, instead of
+backgrounds.json. Krea 2 is a paid partner node, about $0.035 a picture; nothing
 runs on this Mac's GPU. Where each place is and what it looks out on:
 tools/bgs/CAMPUS.md.
 """
@@ -38,7 +43,8 @@ STYLE_REFS = ["style_ref_3_bridge.png", "style_ref_4_pagodas.png",
 # saved as bg_<name> installs straight into the right slot.
 INTERIORS = {"classroom", "cafeteria", "training", "dojo", "dorm_common",
              "your_room", "your_room_night", "girls_dorm", "infirmary",
-             "office", "storehouse"}
+             "office", "storehouse",
+             "library", "utahime_office", "gojo_office"}
 INTERIOR_REFS = ["style_ref_7_room_interior.png", "style_ref_5_hall_front.png"]
 
 # The wild places get the anime's nature shots instead of its buildings, so no
@@ -58,9 +64,23 @@ LOCATION_REFS = {
                 "style_ref_4_pagodas.png", "style_ref_11_mountain_sky.png"],
     "office": ["style_ref_8_hall_interior.png", "style_ref_7_room_interior.png"],
     "forest": NATURE_REFS, "riverside": NATURE_REFS, "ridge": NATURE_REFS,
+    # The Tokyo overview: no reference at all. Every crop is a temple or a
+    # forest, and the prompt asks for neither.
+    "map_tokyo": [],
 }
-# Rooms lit by lamps or candles instead of daylight through windows.
-LOCATION_STYLE = {"office": "style_dim.txt", "storehouse": "style_dim.txt"}
+# The six area maps (phase 2): bird's-eye pictures, steered only by the
+# anime's aerial shot of the campus. The eye-level crops would pull the
+# camera back down to the ground.
+AERIALS = ["area_heart", "area_school", "area_dorms", "area_staff",
+           "area_grounds", "area_mountain"]
+for _a in AERIALS:
+    LOCATION_REFS[_a] = ["style_ref_6_campus_aerial.png"]
+# Rooms lit by lamps or candles instead of daylight through windows; and the
+# bird's-eye pictures, whose paragraph has no eye-level camera or horizon.
+LOCATION_STYLE = {"office": "style_dim.txt", "storehouse": "style_dim.txt",
+                  "map_tokyo": "style_aerial.txt"}
+for _a in AERIALS:
+    LOCATION_STYLE[_a] = "style_aerial.txt"
 STRENGTH = 0.50
 assert 0 < STRENGTH <= 1.0, "Krea's API rejects style-reference strength above 1.0"
 CANDIDATES = 2
@@ -68,7 +88,9 @@ COST = 0.035
 
 
 def refs_for(name):
-    return LOCATION_REFS.get(name) or (INTERIOR_REFS if name in INTERIORS else STYLE_REFS)
+    if name in LOCATION_REFS:
+        return LOCATION_REFS[name]      # may be empty: no style reference at all
+    return INTERIOR_REFS if name in INTERIORS else STYLE_REFS
 
 
 def bg_prompt(name):
@@ -152,9 +174,13 @@ def build(names, seed=1000):
         key = tuple(refs_for(n))
         if key in chains:
             continue
+        if not key:
+            chains[key] = None      # no reference: the row's input stays empty
+            continue
         label = {tuple(STYLE_REFS): "Outdoor", tuple(INTERIOR_REFS): "Indoor",
-                 tuple(NATURE_REFS): "Nature"}.get(key) or n.replace("_", " ").capitalize()
-        chains[key] = make_chain(list(key), -1260 - 700 * len(chains), label)
+                 tuple(NATURE_REFS): "Nature",
+                 ("style_ref_6_campus_aerial.png",): "Aerial"}.get(key) or n.replace("_", " ").capitalize()
+        chains[key] = make_chain(list(key), -1260 - 700 * len([c for c in chains.values() if c]), label)
 
     row_h = 560
     for r, name in enumerate(names):
@@ -166,7 +192,8 @@ def build(names, seed=1000):
             n = add("Krea2ImageNode", (k * 820, y), (400, 360), title="%s (%d)" % (name, k + 1),
                     widgets=[text, "Krea 2 Medium", "16:9", "1K", "medium", "", 0.35,
                              seed + r * 10 + k, "fixed"])
-            wire(chains[tuple(refs_for(name))], n, "model.style_reference")
+            if chains[tuple(refs_for(name))] is not None:
+                wire(chains[tuple(refs_for(name))], n, "model.style_reference")
             s = add("SaveImage", (k * 820 + 420, y), (380, 360), widgets=["bg_%s" % name])
             wire(n, s, "images")
         groups.append((name.replace("_", " ").upper(), y))
@@ -188,6 +215,13 @@ if __name__ == "__main__":
         i = argv.index("--seed")
         seed = int(argv[i + 1])
         del argv[i:i + 2]
+    out_name = "backgrounds.json"
+    if "--out" in argv:
+        i = argv.index("--out")
+        out_name = argv[i + 1]
+        if not out_name.endswith(".json") or os.path.isabs(out_name) or ".." in out_name.split("/"):
+            raise SystemExit("--out needs a name ending in .json, inside %s (phase2/areas.json)" % IMAGES)
+        del argv[i:i + 2]
     names = [a for a in argv if not a.startswith("--")]
     if not names:
         print(__doc__); raise SystemExit(1)
@@ -195,7 +229,7 @@ if __name__ == "__main__":
         if not os.path.exists(os.path.join(ROOT, "tools", "bgs", "prompts", n + ".txt")):
             raise SystemExit("no prompt for %r in tools/bgs/prompts/" % n)
     wf, count = build(names, seed)
-    out = os.path.join(IMAGES, "backgrounds.json")
+    out = os.path.join(IMAGES, out_name)
     json.dump(wf, open(out, "w"), indent=1)
     print("rows      %s (%d each)" % (", ".join(names), CANDIDATES))
     print("cost      %d pictures, about $%.2f" % (count, count * COST))

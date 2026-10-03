@@ -121,7 +121,7 @@ init -5 python:
             seen.add(h["id"])
             row = builtins.dict((k, h[k]) for k in HOT_KEYS)
             p = points.get(h["id"])
-            if isinstance(p, (builtins.list, builtins.tuple)) and len(p) == 2:
+            if isinstance(p, (builtins.list, builtins.tuple)) and len(p) == 2 and hot_number(p[0]) and hot_number(p[1]):
                 row["x"], row["y"] = p[0], p[1]
             if h["kind"] == "act":
                 a = acts.get(h["act"])
@@ -199,9 +199,38 @@ init -5 python:
 
     ## The validator (4.10) --------------------------------------------------------
 
+    def hot_point_findings(h, x, y, where=""):
+        """P0. Lint findings for one hotspot's point: inside HOT_BOUNDS,
+        clear of the toast and banner lanes (R6) and, for a standalone,
+        clear of where people stand by default. `where` names the source
+        when it is not the registered point (" (sidecar hot_dorm.json)")."""
+        out = []
+        hid = h["id"]
+        x0, y0, x1, y1 = HOT_BOUNDS
+        if not (x0 <= x <= x1 and y0 <= y <= y1):
+            out.append("hotspot %r: (%d, %d) is outside x %d to %d, y %d to %d%s" % (hid, x, y, x0, x1, y0, y1, where))
+        r = hot_rect(x, y)
+        if any(hot_overlap(r, lane) for lane in HOT_LANES):
+            out.append("hotspot %r: (%d, %d) sits in the toast lane or the banner lane%s" % (hid, x, y, where))
+        if h["kind"] == "standalone" and h["place"] in LOCATIONS:
+            ## It has no column row to fall back to: keep it clear of
+            ## where one to four people stand by default.
+            for n in (1, 2, 3, 4):
+                if any(hot_overlap(r, p) for p in view_slot_rects(h["place"], n)):
+                    out.append("hotspot %r: (%d, %d) is where someone stands with %d in the room%s" % (hid, x, y, n, where))
+                    break
+        return out
+
+    def hot_number(v):
+        """P0. bool: v is a plain number (a sidecar's JSON may hold anything)."""
+        return isinstance(v, (int, float)) and not isinstance(v, bool)
+
     def hot_validate():
         """P0 (sb_hotspots.rpy). Lint findings for the hotspot and minigame
-        registries, a duplicate id among them (R2)."""
+        registries, a duplicate id among them (R2), and for the points the
+        sidecars game/layout/hot_<place>.json put in their place (D5): the
+        sidecar is where the final positions live, so its points pass the
+        same tests as the registered ones."""
         out = []
         seen = builtins.set()
         for h in HOT_SPOTS:
@@ -232,19 +261,30 @@ init -5 python:
             except Exception:
                 out.append("hotspot %r: its point is not two numbers" % hid)
                 continue
-            x0, y0, x1, y1 = HOT_BOUNDS
-            if not (x0 <= x <= x1 and y0 <= y <= y1):
-                out.append("hotspot %r: (%d, %d) is outside x %d to %d, y %d to %d" % (hid, x, y, x0, x1, y0, y1))
-            r = hot_rect(x, y)
-            if any(hot_overlap(r, lane) for lane in HOT_LANES):
-                out.append("hotspot %r: (%d, %d) sits in the toast lane or the banner lane" % (hid, x, y))
-            if h["kind"] == "standalone" and h["place"] in LOCATIONS:
-                ## It has no column row to fall back to: keep it clear of
-                ## where one to four people stand by default.
-                for n in (1, 2, 3, 4):
-                    if any(hot_overlap(r, p) for p in view_slot_rects(h["place"], n)):
-                        out.append("hotspot %r: (%d, %d) is where someone stands with %d in the room" % (hid, x, y, n))
-                        break
+            out.extend(hot_point_findings(h, x, y))
+        ## The sidecars: hot_spots_for() draws a hotspot at the sidecar's point.
+        for place in builtins.sorted(builtins.set(h["place"] for h in HOT_SPOTS) | builtins.set(LOCATIONS)):
+            data = rule_layout("hot_" + str(place))
+            if not data:
+                continue
+            where = " (sidecar hot_%s.json)" % place
+            spots = data.get("spots")
+            if not isinstance(spots, builtins.dict):
+                out.append("hot_%s.json: it must hold {\"spots\": {\"<hotspot id>\": [x, y]}}" % place)
+                continue
+            rows = builtins.dict()
+            for h in HOT_SPOTS:
+                if h["place"] == place:
+                    rows.setdefault(h["id"], h)
+            for hid in builtins.sorted(spots):
+                pt = spots[hid]
+                if hid not in rows:
+                    out.append("hotspot %r: no hotspot of that id is registered in %s%s" % (hid, place, where))
+                elif not (isinstance(pt, (builtins.list, builtins.tuple)) and len(pt) == 2
+                          and hot_number(pt[0]) and hot_number(pt[1])):
+                    out.append("hotspot %r: its point is not two numbers%s" % (hid, where))
+                else:
+                    out.extend(hot_point_findings(rows[hid], int(pt[0]), int(pt[1]), where))
         seen = builtins.set()
         for g in MG_GAMES:
             if g["id"] in seen:

@@ -5,6 +5,10 @@
 #   dup  one definition site of a name that was already defined twice:
 #        --dup-globals leaves that many sites in that file alone
 #   tmp  a `$ name = ...` temporary in a label: --prefixes leaves it alone
+# Review round 1 (wave 0) taught the scanner to read names under a top-level
+# `if` / `for` / `try` in an init python block; the phase-1 names it then
+# found (_id, _kw, weekday_full, wp4_board's sorcerer_power twice, and the loop
+# names _mf, _k and _v) were added.
 def	image	bg black	game/jjk_defs.rpy
 def	image	bg cafeteria	game/jjk_defs.rpy
 def	image	bg car	game/jjk_defs.rpy
@@ -862,8 +866,11 @@ def	store	_find_speaker_color	game/screens.rpy
 def	store	_gojo_chain	game/sb_world.rpy
 def	store	_gojo_draw	game/sb_world.rpy
 def	store	_grows	game/sb_grades.rpy
+def	store	_id	game/sb_missions.rpy
 def	store	_item	game/sb_items.rpy
 def	store	_jr_rule	game/ui_journal.rpy
+def	store	_k	tools/smoke/wp8_journal.rpy
+def	store	_kw	game/sb_missions.rpy
 def	store	_loc_ok	game/sb_events.rpy
 def	store	_macron_system_styles	game/screens.rpy
 def	store	_mem	game/sb_memories.rpy
@@ -878,6 +885,7 @@ def	store	_mem_pending_labels	game/sb_memories.rpy
 def	store	_mem_pro	game/sb_memories.rpy
 def	store	_mem_rule	game/sb_memories.rpy
 def	store	_mem_story	game/sb_memories.rpy
+def	store	_mf	game/screens.rpy
 def	store	_mget	game/sb_screens.rpy
 def	store	_migrate_10	game/sb_grades.rpy
 def	store	_migrate_15	game/sb_world.rpy
@@ -934,6 +942,7 @@ def	store	_toast_fx_fn	game/ui_hud.rpy
 def	store	_toast_reveal	game/ui_hud.rpy
 def	store	_toast_text	game/ui_hud.rpy
 def	store	_toast_trim_skipping	game/ui_hud.rpy
+def	store	_v	tools/smoke/wp8_journal.rpy
 def	store	_validate_board	game/sb_board.rpy
 def	store	_validate_grades	game/sb_grades.rpy
 def	store	_validate_items	game/sb_items.rpy
@@ -1542,6 +1551,7 @@ def	store	small	game/gui.rpy
 def	store	smoke_autoplay	game/sb_hooks.rpy
 def	store	smoke_env	tools/smoke/_lib.rpy
 def	store	sorcerer_power	game/sb_grades.rpy
+def	store	sorcerer_power	tools/smoke/wp4_board.rpy
 def	store	speaker_color	game/screens.rpy
 def	store	spend_ce	game/sb_energy.rpy
 def	store	spend_stamina	game/sb_energy.rpy
@@ -1589,6 +1599,7 @@ def	store	veil_bg	game/sb_world.rpy
 def	store	veil_ok	game/sb_world.rpy
 def	store	voice_	game/jjk_defs.rpy
 def	store	weekday	game/sb_world.rpy
+def	store	weekday_full	game/ui_hud.rpy
 def	store	when_at	game/sb_world.rpy
 def	store	who_is_here	game/sb_world.rpy
 def	store	yaga	game/jjk_defs.rpy
@@ -2041,4 +2052,5 @@ tmp	-	key	game/sb_grades.rpy
 dup	screen	quick_menu	game/screens.rpy
 dup	screen	quick_menu	game/screens.rpy
 dup	store	board_take	tools/smoke/wp4_board.rpy
+dup	store	sorcerer_power	tools/smoke/wp4_board.rpy
 dup	store	train_together	tools/smoke/wp4_board.rpy

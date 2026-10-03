@@ -39,7 +39,9 @@ Rules (flags):
                       each other: they are installed one at a time.)
   --dup-globals       A top-level name defined twice (phase 2, R2). Read from
                       every .rpy under game/: `NAME =`, `def` and `class`
-                      directly inside an `init ... python:` block, and every
+                      at the top level of an `init ... python:` block (under
+                      its own `if`, `for`, `try` ... too; a header may span
+                      several lines), and every
                       `define`, `default`, `screen`, `style`, `transform`,
                       `image` and `label`. Store names (python names, define,
                       default, transform), screens, styles, images and labels
@@ -65,7 +67,8 @@ Rules (flags):
                       body in a game file must be `Function(ui_do, ...)` or
                       name a function listed in tools/none_ok.txt (R4): a
                       button's function that returns anything but None ends
-                      the interaction.
+                      the interaction. A name on the line after `Function(`
+                      is read as well.
   --all               Every rule. This is also the default when no rule flag
                       is given.
   --no-baseline       List the findings tools/smoke/baseline_check_content.txt
@@ -76,7 +79,10 @@ Rules (flags):
                       tools/smoke/baseline_check_content.txt from the tree as
                       it stands (game/ and tools/smoke/). P0a ran this once,
                       before phase 2 changed a game file; the two files are
-                      frozen after that.
+                      frozen after that, so the flag alone writes nothing: it
+                      lists the rows the names baseline would gain and lose
+                      and exits 2. Only with --i-am-p0a-or-p8 as well are the
+                      two files replaced (P8, at the end of the phase).
 
 FILES are .rpy files or folders (searched for .rpy). With none, every .rpy
 under game/ is checked.
@@ -197,6 +203,7 @@ def scan(text):
     open_quote = None   # '"', "'", '\"\"\"' or "'''" carried from the line above
     depth = 0
     stack = []          # [(indent, kind, name)]
+    pending = None      # (indent, code) of a statement still open in brackets
     for n, raw in enumerate(text.splitlines(), 1):
         ln = Line(n, raw)
         ln.continuation = bool(open_quote) or depth > 0
@@ -267,8 +274,15 @@ def scan(text):
             ln.blocks = tuple((k, nm) for _, k, nm in stack)
             if stripped.endswith(":") and depth == 0 and not open_quote:
                 stack.append((indent,) + block_kind(stripped))
+            # A header spread over several lines (`def f(a,` / `b):`) opens
+            # its block on the line that closes the brackets.
+            pending = (indent, stripped) if (depth > 0 or open_quote) else None
         else:
             ln.blocks = tuple((k, nm) for _, k, nm in stack)
+            if pending is not None and depth == 0 and not open_quote:
+                if stripped.endswith(":"):
+                    stack.append((pending[0],) + block_kind(pending[1]))
+                pending = None
         lines.append(ln)
     return lines
 
@@ -384,7 +398,10 @@ TRANSFORM_DEF = re.compile(r"^transform\s+([A-Za-z_]\w*)")
 IMAGE_DEF = re.compile(r"^(?:image|layeredimage)\s+([^=:]+?)\s*[=:]")
 PY_DEF = re.compile(r"^(?:def|class)\s+([A-Za-z_]\w*)")
 PY_ASSIGN = re.compile(r"^([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*(?::[^=]+)?=(?!=)")
+PY_FOR = re.compile(r"^for\s+([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s+in\b")
 DOLLAR_ASSIGN = re.compile(r"^\$\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*=(?!=)")
+# Python blocks that do not make a new scope.
+PY_TRANSPARENT = {"if", "elif", "else", "try", "except", "finally", "with", "for", "while"}
 FUNCTION_CALL = re.compile(r"(?<![\w.])Function\(")
 
 # Variables Ren'Py itself owns; a label may set them without owning the name.
@@ -443,15 +460,22 @@ def definitions(path, lines):
                     out.append((ns, " ".join(m.group(1).split()), ln))
                     break
             continue
-        kind, store = ln.blocks[-1]
-        if kind == "python" and store != "-" and all(k == "init" for k, _ in ln.blocks[:-1]):
-            # Directly inside an init python block (not in a def, class or if).
+        # Python's own `if`, `try`, `for` ... at the top of an init python
+        # block define top-level names too; a def or a class does not.
+        blocks = list(ln.blocks)
+        while blocks and blocks[-1][0] in PY_TRANSPARENT:
+            blocks.pop()
+        if not blocks:
+            continue
+        kind, store = blocks[-1]
+        if kind == "python" and store != "-" and all(k == "init" for k, _ in blocks[:-1]):
+            # At the top level of an init python block (not in a def or class).
             pre = (store + ".") if store else ""
             m = PY_DEF.match(code)
             if m:
                 out.append(("store", pre + m.group(1), ln))
                 continue
-            m = PY_ASSIGN.match(code)
+            m = PY_ASSIGN.match(code) or PY_FOR.match(code)
             if m:
                 for name in m.group(1).split(","):
                     out.append(("store", pre + name.strip(), ln))
@@ -574,11 +598,18 @@ def prefix_problem(ns, name, fk, cfg):
 def rule_action_returns(path, lines, allowed):
     """[(Line, the function named)] for each `Function(` in a screen or a def
     that names neither ui_do nor a tools/none_ok.txt function."""
-    for ln in lines:
+    for at, ln in enumerate(lines):
         if not any(k in ("screen", "def") for k, _ in ln.blocks):
             continue
         for m in FUNCTION_CALL.finditer(ln.bare):
             rest = ln.bare[m.end():]
+            if not rest.strip():
+                # `Function(` and then a line break: the name is on the next
+                # line that holds any code.
+                for nxt in lines[at + 1:at + 6]:
+                    if nxt.bare.strip():
+                        rest = nxt.bare
+                        break
             depth = 0
             arg = ""
             for ch in rest:
@@ -765,7 +796,7 @@ def global_findings(files, chosen, cache):
         for stem, paths in sorted(art_names(images).items()):
             for p in paths[1:]:
                 out.append((p, 1, "art-names", "the image name %s is also %s" % (
-                    stem, ", ".join(shown(q) for q in paths if q != p))))
+                    stem, ", ".join(file_key(q) for q in paths if q != p))))
 
     if "action-returns" in chosen:
         allowed = load_none_ok()
@@ -778,8 +809,10 @@ def global_findings(files, chosen, cache):
     return out
 
 
-def write_baselines(cache):
-    """--write-baseline: the names and the findings of the tree as it stands."""
+def write_baselines(cache, really=True):
+    """--write-baseline: the names and the findings of the tree as it stands.
+    With really=False nothing is written: the rows the names baseline would
+    gain and lose are printed instead."""
     files = collect([GAME, SMOKE])
     game_files = [p for p in files if is_game(p)]
     all_defs = {p: definitions(p, read_lines(p, cache)) for p in files}
@@ -810,6 +843,20 @@ def write_baselines(cache):
             for name in sorted(set(nm for nm, ln in label_temporaries(p, read_lines(p, cache)))):
                 if name not in store_names and name not in RENPY_VARS:
                     rows.append(("tmp", "-", name, fk))
+    if not really:
+        old = set()
+        if os.path.isfile(BASELINE_GLOBALS):
+            with open(BASELINE_GLOBALS, encoding="utf-8") as f:
+                old = set(tuple(r.rstrip("\n").split("\t")) for r in f
+                          if r.strip() and not r.startswith("#"))
+        new = set(rows)
+        for mark, group in (("+", sorted(new - old)), ("-", sorted(old - new))):
+            for r in group:
+                print("  %s %s" % (mark, "  ".join(r)), file=sys.stderr)
+        print("check_content: %d row%s would be added to %s and %d removed" % (
+            len(new - old), "" if len(new - old) == 1 else "s", shown(BASELINE_GLOBALS),
+            len(old - new)), file=sys.stderr)
+        return len(rows)
     with open(BASELINE_GLOBALS, "w", encoding="utf-8") as f:
         f.write("# tools/smoke/baseline_globals.txt -- the names the tree had before phase 2\n"
                 "# changed a game file (written by `tools/check_content.py --write-baseline`\n"
@@ -839,6 +886,9 @@ def main(argv=None):
     ap.add_argument("--write-baseline", action="store_true",
                     help="write baseline_globals.txt and baseline_check_content.txt "
                          "from the tree as it stands (P0a only)")
+    ap.add_argument("--i-am-p0a-or-p8", dest="really_write", action="store_true",
+                    help="the second flag --write-baseline needs before it replaces "
+                         "the two frozen baselines")
     ap.add_argument("files", nargs="*", help=".rpy files or folders (default: game/)")
     args = ap.parse_args(argv)
 
@@ -847,6 +897,15 @@ def main(argv=None):
         chosen = list(RULES)
 
     cache = {}
+    if args.write_baseline and not args.really_write:
+        # The baselines are frozen: a package that rewrote them would bless
+        # its own findings. Show what would change and stop.
+        print("check_content.py: --write-baseline would replace the two frozen baselines:\n"
+              "  %s\n  %s\nNothing was written. Only P0a and P8 do this; they add "
+              "--i-am-p0a-or-p8." % (shown(BASELINE_GLOBALS), shown(BASELINE_FINDINGS)),
+              file=sys.stderr)
+        write_baselines(cache, really=False)
+        return 2
     if args.write_baseline:
         n_rows = write_baselines(cache)
         chosen = list(RULES)

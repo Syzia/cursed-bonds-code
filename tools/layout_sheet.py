@@ -429,6 +429,43 @@ def read_json(path, what):
     return data
 
 
+def numbers(v, counts):
+    """True when v is a list of numbers whose length is one of counts."""
+    return (isinstance(v, list) and len(v) in counts
+            and all(isinstance(q, (int, float)) and not isinstance(q, bool) for q in v))
+
+
+def check_shapes(kind, data, path, fg=False):
+    """Stop with a plain message, not a traceback, when a sidecar (or a
+    foreground file) doesn't have the shape the header gives."""
+    def bad(what):
+        raise SystemExit("%s: %s" % (path, what))
+    if fg:
+        for variant, pts in data.items():
+            if not isinstance(pts, list) or not all(numbers(q, (2,)) for q in pts):
+                bad("%r must be a list of [x, y] points" % variant)
+        return
+    spots = data.get("spots", {})
+    if kind in ("hot", "area"):
+        if not isinstance(spots, dict):
+            bad("spots must be an object, {\"<id>\": [x, y]}")
+        for k, v in spots.items():
+            if not numbers(v, (2,)):
+                bad("spots[%r] must be [x, y]" % k)
+        return
+    slots, poses = data.get("slots", {}), data.get("poses", {})
+    if not isinstance(slots, dict):
+        bad("slots must be an object, {\"<n>\": [[xcenter, yoffset, zoom, far], ...]}")
+    for n, rows in slots.items():
+        if not isinstance(rows, list) or not all(numbers(r, (3, 4)) for r in rows):
+            bad("slots[%r] must be a list of [xcenter, yoffset, zoom] or [xcenter, yoffset, zoom, far]" % n)
+    if not isinstance(poses, dict):
+        bad("poses must be an object, {\"<who>\": [x, y, w, h]}")
+    for k, v in poses.items():
+        if not numbers(v, (4,)):
+            bad("poses[%r] must be [x, y, w, h]" % k)
+
+
 def main(argv):
     def opt(flag):
         if flag in argv:
@@ -464,6 +501,7 @@ def main(argv):
             raise SystemExit("no sidecar at %s" % path)
         if os.path.exists(path):
             side = read_json(path, "the sidecar")
+            check_shapes(kind, side, short(path))
             notes.append("sidecar %s" % short(path))
     if not side:
         notes.append("the code's numbers (no sidecar)")
@@ -480,6 +518,7 @@ def main(argv):
             raise SystemExit("no foreground file at %s" % path)
         if os.path.exists(path):
             fg = read_json(path, "the foreground file")
+            check_shapes(kind, fg, short(path), fg=True)
             notes.append("foreground %s" % short(path))
         sheet = view_sheet(key, code, side, fg, bgs, notes)
 

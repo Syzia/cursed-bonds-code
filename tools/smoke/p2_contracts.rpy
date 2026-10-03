@@ -25,10 +25,29 @@
 ##        place_actions   every baseline row still there, in order (new rows
 ##                        and new rooms are listed as NOTE lines)
 ##        armory_tools    equal
-##        sb_char         equal
+##        sb_char         the same Return values for every person (in any
+##                        order: P2 moves `invite` to the card's footer)
 ##        person_choices  equal on the seven fields the baseline has (a new
-##                        key on a choice, such as `icon`, is a NOTE)
-##        screenshots     pixel-identical
+##                        key on a choice, such as `icon`, is a NOTE). Once
+##                        night_exists(), the Night rows are left out: the
+##                        night rule takes costed choices away there (P4b)
+##        screenshots     wave 0 only (see SMOKE_P0_STRICT)
+##
+##      SMOKE_P0_STRICT=1 is wave 0's own run: "the game looks and plays as
+##      before" in full. It adds four hard checks that later packages break by
+##      design, which is why they are NOTE lines in every other run:
+##        - the two screenshots are pixel-identical to baseline_shots/
+##          (P2 redraws the HUD, the action card and the person card; P5 the
+##          stage);
+##        - sb_char's Return values are in the baseline's tree order;
+##        - person_choices is equal at Night as well;
+##        - the toast timer keeps ticking while toasts wait over the sample.
+##      The baseline screenshots are 2666x1499, the window of the Mac they were
+##      taken on. A window of another size cannot be compared with them: point
+##      SMOKE_P0_SHOTS at a folder holding place.png and person.png taken in
+##      today's window (p0_place.png and p0_person.png as this harness's
+##      tooling half writes them when run on a copy of the tree at 1d3a9db)
+##      and the strict run compares with those instead.
 ##   2. The measuring helpers of _lib.rpy, on a small screen of this file.
 ##   3. fixture(): an unknown name fails, a shaped variable is refused (R5).
 ##   4. tools/none_ok.txt: every example returns None in a settled fixture, and
@@ -74,6 +93,18 @@ init 999 python:
               "sunmall_done", "armory_open", "mission_board_open", "utahime_arrived",
               "intensive_done", "ijichi_rides"),
     )
+
+    ## Wave 0's own run (the header says what it adds).
+    ZZ_P0_STRICT = os.environ.get("SMOKE_P0_STRICT") == "1"
+
+    def zz_p0_check(cond, name, detail=""):
+        """A check in wave 0's strict run; a NOTE that says whether it still
+        holds in every other run."""
+        if ZZ_P0_STRICT:
+            return check(cond, name, detail)
+        note(name, "still holds" if cond else "no longer holds (wave 0 only; expected once P2, P4b or P5 is in): %s"
+             % zz_smoke_one_line(detail)[:300])
+        return bool(cond)
 
     def zz_root():
         """The repository the harness was started from (smoke.sh exports it),
@@ -275,20 +306,34 @@ init 999 python:
             check(n["armory_tools"] == b["armory_tools"], "baseline %s: armory_tools() is unchanged" % kind,
                   [r for r in n["armory_tools"] if r not in b["armory_tools"]][:4])
             bad = []
+            bad_night = []
             for key in builtins.sorted(b["person_choices"]):
                 old = b["choice_lists"][b["person_choices"][key]]
                 i = n["person_choices"].get(key)
                 new = n["choice_lists"][i] if i is not None else None
                 if new != old:
-                    bad.append((key, old, new))
-            check(not bad, "baseline %s: person_choices is unchanged (%d person x room x period)"
-                  % (kind, len(b["person_choices"])), bad[:3])
+                    (bad_night if key.endswith("|Night") else bad).append((key, old, new))
+            n_night = builtins.sum(1 for key in b["person_choices"] if key.endswith("|Night"))
+            if ZZ_P0_STRICT or not night_exists():
+                check(not bad and not bad_night, "baseline %s: person_choices is unchanged (%d person x room x period)"
+                      % (kind, len(b["person_choices"])), (bad + bad_night)[:3])
+            else:
+                check(not bad, "baseline %s: person_choices is unchanged outside Night (%d person x room x period)"
+                      % (kind, len(b["person_choices"]) - n_night), bad[:3])
+                note("baseline %s: person_choices at Night" % kind,
+                     "%d of %d rows differ from the baseline (the night rule is in)" % (len(bad_night), n_night))
             if n["choice_keys"] != b["choice_keys"]:
                 note("baseline %s: person_choices keys added" % kind,
                      builtins.sorted(set(n["choice_keys"]) - set(b["choice_keys"])))
-        check(now["sb_char"] == base["sb_char"], "baseline: sb_char returns the same tuples for every person",
-              [(w, now["sb_char"].get(w), base["sb_char"][w]) for w in base["sb_char"]
-               if now["sb_char"].get(w) != base["sb_char"][w]][:3])
+        def loose(row):
+            return row and (row.get("here"), builtins.sorted(row.get("returns") or [], key=repr))
+        diff = [(w, now["sb_char"].get(w), base["sb_char"][w]) for w in base["sb_char"]
+                if loose(now["sb_char"].get(w)) != loose(base["sb_char"][w])]
+        check(not diff and set(now["sb_char"]) == set(base["sb_char"]),
+              "baseline: sb_char returns the same tuples for every person", diff[:3])
+        zz_p0_check(now["sb_char"] == base["sb_char"], "baseline: sb_char's buttons are in the baseline's order",
+                    [(w, now["sb_char"].get(w), base["sb_char"][w]) for w in base["sb_char"]
+                     if now["sb_char"].get(w) != base["sb_char"][w]][:3])
         check(now["shots"] == base["shots"], "baseline: the two screenshots show the same fixture",
               (now["shots"], base["shots"]))
 
@@ -760,10 +805,13 @@ label zz_smoke:
             check(set(_zz_base) >= {"fresh", "rich", "sb_char", "shots"}, "the baseline file loads", sorted(_zz_base))
             ## Through JSON, so tuples and lists compare alike.
             zz_p0_compare(_zz_base, json.loads(json.dumps(ZZ_P0_NOW)))
+            ## Wave 0 only (the header): later packages redraw both views.
+            _zz_shots_dir = smoke_env("SMOKE_P0_SHOTS") or os.path.join(_zz_base_dir, "baseline_shots")
             for _zz_n in ("place", "person"):
                 _zz_ok, _zz_why = zz_png_same(os.path.join(zz_smoke_state.shots, "p0_%s.png" % _zz_n),
-                                              os.path.join(_zz_base_dir, "baseline_shots", "%s.png" % _zz_n))
-                check(_zz_ok, "baseline: the %s view is pixel-identical to baseline_shots/%s.png" % (_zz_n, _zz_n), _zz_why)
+                                              os.path.join(_zz_shots_dir, "%s.png" % _zz_n))
+                zz_p0_check(_zz_ok, "baseline: the %s view is pixel-identical to %s/%s.png"
+                            % (_zz_n, os.path.basename(_zz_shots_dir), _zz_n), _zz_why)
 
     ## --- 2. the measuring helpers of _lib.rpy --------------------------------------
     python:
@@ -1193,11 +1241,34 @@ label zz_smoke:
         ## The hotspot sidecar moves a hotspot's point; the view sidecar doesn't.
         period = "Morning"
         here = "dorm_common"
-        register_hotspot("zz_tv", "dorm_common", 300, 300, "look", lines=["Static."], label="A test TV")
+        ## (aa_zz_order.rpy registers zz_tv at (300, 300), never visible; here its `when` is lifted.)
+        _zz_tv = [h for h in HOT_SPOTS if h["id"] == "zz_tv"][0]
+        _zz_tv["when"] = None
         _zz_rows = [h for h in hot_spots_for("dorm_common") if h["id"] == "zz_tv"]
-        check(len(_zz_rows) == 1 and (_zz_rows[0]["x"], _zz_rows[0]["y"]) == (1420, 520),
+        check(len(_zz_rows) == 1 and (_zz_rows[0]["x"], _zz_rows[0]["y"]) == (1420, 520)
+              and (_zz_tv["x"], _zz_tv["y"]) == (300, 300),
               "hot_<place>.json moves a hotspot's point", _zz_rows)
-        zz_hot_drop("zz_tv")
+        ## The validator reads the sidecar's points too (R6): the sidecar is
+        ## where the final positions are set.
+        _zz_side = RULE_LAYOUT["hot_dorm_common"]
+        _zz_found = []
+        for _zz_spots in ({"zz_tv": [1500, 200]}, {"zz_tv": [30, 600]}, {"zz_tv": ["a", 2]}, {"zz_tv": [300, 300, 4]},
+                          {"zz_tv": [1420, 520], "zz_no_such_spot": [600, 600]}, "zz_not_a_dict"):
+            RULE_LAYOUT["hot_dorm_common"] = {"spots": _zz_spots}
+            _zz_found.append(hot_validate())
+        RULE_LAYOUT["hot_dorm_common"] = _zz_side
+        check(len(_zz_found[0]) == 1 and "lane" in _zz_found[0][0] and "sidecar hot_dorm_common.json" in _zz_found[0][0],
+              "a sidecar point inside the toast lane is one finding", _zz_found[0])
+        check(len(_zz_found[1]) == 1 and "outside" in _zz_found[1][0]
+              and len(_zz_found[2]) == 1 and "not two numbers" in _zz_found[2][0]
+              and len(_zz_found[3]) == 1 and "not two numbers" in _zz_found[3][0]
+              and len(_zz_found[4]) == 1 and "zz_no_such_spot" in _zz_found[4][0]
+              and len(_zz_found[5]) == 1 and "spots" in _zz_found[5][0],
+              "…and so is one out of bounds, one that is not two numbers, an id nobody registered, and a file of the wrong shape",
+              _zz_found[1:])
+        check(hot_validate() == [], "with the overlay's own sidecar back the validator is clean", hot_validate())
+        _zz_tv["when"] = "zz_order_never"
+        del _zz_tv
 
         _zz_def = zz_layout_defaults()
         check(set(_zz_def["slots"]) == set(LOC_ORDER) and all(
@@ -1466,8 +1537,16 @@ label zz_smoke:
         check(zz_rect("icon_sample", "sample_auto_train") is not None and zz_rect("icon_sample", "sample_close") is not None,
               "the style sample draws its icon buttons", zz_rect("icon_sample", "sample_auto_train"))
         _zz_w = zz_words("icon_sample")
-        check("Train" in _zz_w and not any(u"技" in t for t in _zz_w) and u"技" in zz_texts("icon_sample"),
-              "a stand-in icon's kanji is in the style icon_glyph (zz_words skips it); its word is counted")
+        ## The first sample icon that still has no picture (art batch 1 installs
+        ## pictures for most of them; a picture has no kanji to look for).
+        _zz_n = next((n for n in ICON_SAMPLE if not icon_has_art(n)), None)
+        if _zz_n is None:
+            note("the style sample", "every sample icon has its picture: no stand-in kanji left to check")
+        else:
+            _zz_g = ICONS[_zz_n][0]
+            check(not any(_zz_g in t for t in _zz_w) and _zz_g in zz_texts("icon_sample"),
+                  "a stand-in icon's kanji is in the style icon_glyph (zz_words skips it)", (_zz_n, _zz_g))
+        check("Train" in _zz_w, "an icon's word is counted on the row that always shows words", _zz_w[:20])
         renpy.set_focus("icon_sample", "sample_auto_train")
         zz_render(0.3)
         _zz_before = zz_texts("hover_label")
@@ -1475,10 +1554,17 @@ label zz_smoke:
         _zz_left = len(TOASTQ.items)
         _zz_after = zz_texts("hover_label")
         _zz_tip = GetTooltip()
-        check(_zz_queued == 8 and _zz_left >= 4 and _zz_ticks >= 20 and _zz_before == ["Train"] and _zz_after == ["Train"]
+        check(_zz_queued == 8 and _zz_left >= 4 and _zz_before == ["Train"] and _zz_after == ["Train"]
               and _zz_tip == ("Train", "sample_auto_train"),
-              "the hover label holds across %d toast-timer ticks, with four toasts up" % _zz_ticks,
+              "the hover label holds for 3.6 seconds with eight toasts queued (%d toast-timer ticks)" % _zz_ticks,
               (_zz_queued, _zz_left, _zz_ticks, _zz_before, _zz_after, _zz_tip))
+        ## While toasts draw over the sample (wave 0) the timer must be seen
+        ## ticking; once they wait here (P2: toast_room() is (0, 0, 0)) the
+        ## screen may stop its timer.
+        if toast_room()[2] or ZZ_P0_STRICT:
+            check(_zz_ticks >= 20, "the toast timer ticked at least 20 times under the hover label", _zz_ticks)
+        else:
+            note("the toast timer under the hover label", "%d ticks while toasts wait over the sample" % _zz_ticks)
         _zz_r = zz_rect("icon_sample", "sample_auto_train")
         shot("hover_sample", wait=0)
         renpy.set_focus("icon_sample", "sample_choice")

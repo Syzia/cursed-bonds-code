@@ -17,7 +17,8 @@ brightness as its alpha, so the black sheet becomes clear. The game picks an
 icon up by its file name (`icon()` in game/ui_icons.rpy); nothing in the
 script changes.
 
-It always writes a preview, `shots/art/icons_<names file>.png`: every icon as
+It always writes a preview, `shots/art/icons_<names file>__<render>.png`
+(`icons_sheet_1__icons_sheet1_a_00001_.png`), one per render: every icon as
 cut, on the game's dark panel, with its name under it. Look at it before
 keeping the icons: the model can draw the wrong thing in a cell, or two cells
 swapped. Then:
@@ -172,7 +173,10 @@ def main(argv):
         cells.append((name, icon, state))
 
     stem = os.path.splitext(os.path.basename(names_file))[0]
-    shot = os.path.join(ROOT, "shots", "art", "icons_%s.png" % stem)
+    # Named after the render too, so version A's preview is still there after
+    # version B is cut (the two are compared, and a few icons taken from B).
+    render = os.path.splitext(os.path.basename(sheet_png))[0]
+    shot = os.path.join(ROOT, "shots", "art", "icons_%s__%s.png" % (stem, render))
     preview(cells, shot, "%s  cut by %s  (large, and at 40 px)" % (os.path.basename(sheet_png), stem))
     print("sheet     %s  %dx%d" % (os.path.basename(sheet_png), im.w, im.h))
     print("preview -> %s" % shot)

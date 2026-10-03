@@ -20,8 +20,13 @@
 ## that ZZ_ORDER_HOTSPOT is in the hotspot registry and ZZ_ORDER_GAME in the
 ## minigame registry.
 ##
-## The two rows are inert: the hotspot is a look hotspot whose `when` is
+## The rows are inert: each hotspot is a look hotspot whose `when` is
 ## never true, so it is never visible, and nothing offers the game.
+##
+## ZZ_ORDER_TV is the hotspot that p2_contracts.rpy's overlay sidecar
+## (tools/smoke/assets/p2_contracts/game/layout/hot_dorm_common.json) moves:
+## the validator reports a sidecar id that no registered hotspot carries, so
+## the row has to exist from init on.
 
 init python:
 
@@ -35,6 +40,9 @@ init python:
     register_hotspot(ZZ_ORDER_HOTSPOT, "dorm", 960, 600, "look",
                      lines=["Nothing here. The init-order check put this line in."],
                      label="Init-order check", when="zz_order_never")
+    ZZ_ORDER_TV = "zz_tv"
+    register_hotspot(ZZ_ORDER_TV, "dorm_common", 300, 300, "look",
+                     lines=["Static."], label="A test TV", when="zz_order_never")
     register_minigame(ZZ_ORDER_GAME, "Init-order check", "act", min_people=1)
 
 

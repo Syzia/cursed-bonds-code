@@ -181,6 +181,11 @@ init -3 python:
         row = ICONS.get(name)
         return row[1] if row else str(name)
 
+    ## The twelve icons on the style sample's rows: one-word names, so every
+    ## button in a row is the same height in the two word modes.
+    ICON_SAMPLE = ("map", "journal", "menu", "train", "study", "eat",
+                   "sleep", "talk", "wait", "mission", "look", "fish_cast")
+
     def icon_for(kind, id):
         """P0 (ui_icons.rpy), final. The icon name (a str, never None) for a
         place action ("act"), an activity ("do"), a journal tab ("tab"), a
@@ -352,7 +357,9 @@ screen icon_sample():
         style "jjk_panel"
         xpos 110
         ypos 60
-        xsize 1700
+        ## 110 to 1400: clear of the toast stack (x 1420 to 1880), which still
+        ## draws over this screen until toast_room() makes toasts wait here.
+        xsize 1290
         padding (40, 30)
 
         vbox:
@@ -371,9 +378,8 @@ screen icon_sample():
                     text _icon_note style "jjk_label"
                     hbox:
                         spacing 10
-                        for _icon_n in ("map", "journal", "menu", "train", "study", "eat",
-                                        "sleep", "talk", "hang", "mission", "pc_open", "fish_cast"):
-                            use icon_btn(_icon_n, NullAction(), size=52, w=120,
+                        for _icon_n in ICON_SAMPLE:
+                            use icon_btn(_icon_n, NullAction(), size=52, w=90,
                                          wid="sample_%s_%s" % (_icon_mode, _icon_n),
                                          words=(None if _icon_mode == "auto" else _icon_mode))
 
