@@ -14,6 +14,15 @@
 ##
 ## Tool and talisman effects are stored in `fx` now and switched on by the
 ## combat update (phase 3). Nothing here changes a fight yet.
+##
+## Phase 2 (P4a; PHASE2_DESIGN.md D27, D28, 4.8, 4.9):
+##   ITEM_REQS            what a tool or talisman asks of me, a side table
+##   item_requirements / item_requirements_met / item_first_unmet
+##   can_hold / can_wear  also ask the checklist, for a tool not already in my
+##                        hand and a talisman not already worn (D28: nothing
+##                        I already hold or wear is taken away)
+##   armory_checklist     the lines the armory draws under a tool
+##   item_wear_again      put a talisman back after a rearrange (D28)
 ################################################################################
 
 init -1 python:
@@ -305,7 +314,17 @@ init -1 python:
         order they are checked: "Not a talisman", "Already worn",
         "Sealed — Arc Two", "Special: bound by story", "Needs Grade 2",
         "A special is already worn", "Not in my inventory",
-        "No free slot — opens at Grade 3". To swap, take one off first."""
+        "No free slot — opens at Grade 3", and last (phase 2) the first line
+        of its checklist that I don't meet, e.g. "Control 80 · I have 62".
+        A talisman I already wear answers "Already worn" before any of that,
+        so the checklist never takes one off (D28). To swap, take one off
+        first."""
+        return item_wear_check(id)
+
+    def item_wear_check(id, checklist=True):
+        """P4a (sb_items.rpy). can_wear's tests, as (ok, reason). With
+        checklist=False the last one (the ITEM_REQS checklist) is not asked:
+        that is for item_wear_again, never for putting one on anew."""
         it = ITEMS.get(id)
         if it is None or it["kind"] != "talisman":
             return (False, "Not a talisman")
@@ -324,12 +343,30 @@ init -1 python:
             return (False, "Not in my inventory")
         if len(store.equipped_talismans) >= talisman_slots():
             return (False, _slot_reason())
+        why = item_unmet_reason(id) if checklist else ""
+        if why:
+            return (False, why)
         return (True, "")
 
     def equip_talisman(id):
         """WP6. Wear a talisman in the next free slot. True if it went on;
         False (nothing changed) when can_wear(id) refuses."""
         if not can_wear(id)[0]:
+            return False
+        store.equipped_talismans.append(id)
+        renpy.retain_after_load()
+        return True
+
+    def item_wear_again(id):
+        """P4a (sb_items.rpy). Put BACK a talisman that was only taken off to
+        rearrange the slots (the journal's jr_wear): equip_talisman, except
+        that its checklist is not asked, so a talisman I already wore is
+        never lost to a line I no longer meet (D28). Every other test of
+        can_wear still applies. True if it is worn afterwards. Not for
+        putting a talisman on anew: that is equip_talisman."""
+        if id in store.equipped_talismans:
+            return True
+        if not item_wear_check(id, checklist=False)[0]:
             return False
         store.equipped_talismans.append(id)
         renpy.retain_after_load()
@@ -345,8 +382,10 @@ init -1 python:
 
     def can_hold(id):
         """WP6. (ok, reason) for taking a cursed tool in hand: "Not a cursed
-        tool", "Sealed — Arc Two", "Not in my inventory". None (bare hands)
-        is always fine."""
+        tool", "Sealed — Arc Two", "Not in my inventory", then (phase 2) the
+        first line of its checklist that I don't meet ("Needs Grade 2",
+        "Output 50 · I have 32"). The tool already in my hand is never asked
+        (D28). None (bare hands) is always fine."""
         if id is None:
             return (True, "")
         it = ITEMS.get(id)
@@ -356,6 +395,10 @@ init -1 python:
             return (False, "Sealed — " + it["sealed"])
         if not has_item(id):
             return (False, "Not in my inventory")
+        if store.equipped_tool != id:
+            why = item_unmet_reason(id)
+            if why:
+                return (False, why)
         return (True, "")
 
     def equip_tool(id):
@@ -379,7 +422,10 @@ init -1 python:
         state: take | owned | sealed ("Sealed until Grade 3") | story ("Story
         reward") | arcii ("Sealed — Arc Two"). A tool sealed until Arc Two reads
         arcii even if I own it (review tools can grant it); any other owned
-        tool is "owned", and its reason says whether it is in my hand."""
+        tool is "owned", and its reason says whether it is in my hand.
+        Phase 2 (4.9): a rack tool my grade could carry is still "sealed"
+        while its checklist has an unmet line, and that line is the reason
+        (an unmet grade still reads "Sealed until Grade 3")."""
         out = []
         mine = _my_rank()
         for id, rack in ARMORY_RACK:
@@ -393,7 +439,13 @@ init -1 python:
             elif grade_rank(it["grade"]) > mine:
                 out.append((id, "sealed", "Sealed until " + grade_label(it["grade"])))
             else:
-                out.append((id, "take", ""))
+                unmet = item_first_unmet(id)
+                if unmet is None:
+                    out.append((id, "take", ""))
+                elif unmet[0][0] == "grade":
+                    out.append((id, "sealed", "Sealed until " + unmet[1]))
+                else:
+                    out.append((id, "sealed", unmet[1]))
         return out
 
     def armory_state(id):
@@ -417,9 +469,11 @@ init -1 python:
 
     def armory_return(id):
         """WP6. Hang an armory tool back on its rack. Story tools stay mine.
-        If it was in my hand, the next tool I own (in rack order) takes its
-        place, so my hand is only empty when I own no other tool. True if
-        returned."""
+        If it was in my hand, the next tool I own and can hold (in rack order)
+        takes its place, so my hand is only empty when I own no other tool
+        that can_hold allows. (A tool kept in hand under D28 and then put
+        down for another does not come back by itself: its checklist is
+        asked again.) True if returned."""
         if _ARMORY_KIND.get(id) != "armory" or not has_item(id):
             return False
         was_held = store.equipped_tool == id
@@ -455,23 +509,98 @@ init -1 python:
     ##   ("arc", n)              the story has reached arc n
     ##   ("flag", name, words)   a story flag; words is how the checklist says it
     ##   ("stat", name, n)       control, output or insight is at least n
-    ## P0 wrote the empty table, the two stubs and the validator; P4a fills the
-    ## tool rows and the two Grade 1 talismans, and sb_market.rpy adds its four
-    ## with ITEM_REQS.update(...).
+    ## P0 wrote the validator; P4a the rows (the three tools and the two Grade 1
+    ## talismans) and the functions that read them; sb_market.rpy adds its
+    ## four with ITEM_REQS.update(...).
 
-    ITEM_REQS = {}
+    ITEM_REQS = {
+        ## Cursed tools (D27).
+        "inverted_spear": [("arc", 2), ("grade", "sp"),
+                           ("flag", "spear_unsealed", "The seal broken"),
+                           ("flag", "yaga_signature", "Yaga's signature")],
+        "playful_cloud": [("grade", "g2"), ("stat", "output", 50)],
+        "split_soul": [("grade", "s1"), ("stat", "insight", 60)],
+        ## The two Grade 1 talismans (D27). The market's four are added by
+        ## sb_market.rpy.
+        "afterglow": [("grade", "g1"), ("stat", "control", 80)],
+        "black_sun": [("grade", "g1"), ("stat", "output", 80)],
+    }
 
     ITEM_REQ_STATS = ("control", "output", "insight")
 
+    ## How a checklist names an arc.
+    ITEM_ARC_NAMES = {1: "Arc One", 2: "Arc Two", 3: "Arc Three"}
+
+    def item_req_line(r):
+        """P4a (sb_items.rpy). One requirement as (line, met): "Grade 2",
+        "Arc Two", a flag's words, "Output 50", and for a stat I'm short of
+        "Output 50 · I have 32". A row that is none of the four kinds, or is
+        the wrong shape, reads "?" and unmet (the validator reports it at
+        lint; with config.developer it is printed too). Any other error is
+        not hidden."""
+        try:
+            kind = r[0]
+            if kind == "grade":
+                return (grade_label(r[1]), _my_rank() >= grade_rank(r[1]) >= 0)
+            if kind == "arc":
+                return (ITEM_ARC_NAMES.get(r[1], "Arc %s" % (r[1],)), store.arc >= r[1])
+            if kind == "flag":
+                return (str(r[2]), has_flag(r[1]))
+            if kind == "stat":
+                have = getattr(store, r[1])
+                line = "%s %d" % (r[1].capitalize(), r[2])
+                if have >= r[2]:
+                    return (line, True)
+                return ("%s · I have %d" % (line, have), False)
+        except (IndexError, TypeError, AttributeError):
+            pass
+        if config.developer:
+            print("P4a item_req_line: bad requirement %r" % (r,))
+        return ("?", False)
+
     def item_requirements(id):
-        """P4a (sb_items.rpy); P0's stub returns []. A list of (str, bool):
-        each requirement of an item as a line and whether I meet it."""
-        return []
+        """P4a (sb_items.rpy). A list of (str, bool): each requirement of an
+        item as a line and whether I meet it, in the order of its ITEM_REQS
+        row. [] for an item with no row."""
+        return [item_req_line(r) for r in ITEM_REQS.get(id, ())]
 
     def item_requirements_met(id):
-        """P4a (sb_items.rpy); P0's stub returns True. bool: I meet every
-        requirement of the item."""
-        return True
+        """P4a (sb_items.rpy). bool: I meet every requirement of the item
+        (True for an item with no row)."""
+        return all(ok for line, ok in item_requirements(id))
+
+    def item_first_unmet(id):
+        """P4a (sb_items.rpy). The first requirement I don't meet, as
+        (requirement, line), or None when I meet them all."""
+        for r in ITEM_REQS.get(id, ()):
+            line, ok = item_req_line(r)
+            if not ok:
+                return (r, line)
+        return None
+
+    def item_unmet_reason(id):
+        """P4a (sb_items.rpy). Why can_hold / can_wear refuse on the
+        checklist: the first unmet line, or "" when there is none. An unmet
+        grade reads "Needs Grade 2", as can_wear's own grade test does."""
+        unmet = item_first_unmet(id)
+        if unmet is None:
+            return ""
+        if unmet[0] and unmet[0][0] == "grade":
+            return "Needs " + unmet[1]
+        return unmet[1]
+
+    def armory_checklist(id):
+        """P4a (sb_items.rpy). The (line, met) pairs the armory draws under a
+        tool: item_requirements(id), or, for a tool with no row, the one
+        thing the racks ask: its grade. A tool I already own never shows a
+        cross there (can_hold lets me hold it whatever my grade)."""
+        rows = item_requirements(id)
+        if rows:
+            return rows
+        g = ITEMS.get(id, {}).get("grade")
+        if g is None:
+            return []
+        return [(grade_label(g), has_item(id) or _my_rank() >= grade_rank(g))]
 
     def item_validate_reqs():
         """P0 (sb_items.rpy), final (D27). A list of str findings over every
@@ -624,17 +753,17 @@ label sb_do_armory:
 
 style armory_row is frame:
     background Frame("gui/panel_dark.png", 4, 4)
-    padding (26, 12)
+    padding (26, 7)
     xfill True
 
 style armory_name is text:
     font gui.display_font
     color gui.paper
-    size 30
+    size 27
 
 style armory_desc is text:
     color gui.dim
-    size 20
+    size 19
 
 style armory_effect is text:
     font gui.body_medium_font
@@ -649,6 +778,34 @@ style armory_state is text:
     text_align 1.0
 
 
+style armory_req_frame is frame:
+    background Frame("gui/panel_ghost.png", 4, 4)
+    padding (10, 2)
+
+style armory_req_text is text:
+    font gui.body_medium_font
+    size 16
+
+## P4a. One line of a checklist as a chip: a tick and the line in paper when
+## I meet it, a cross and the line in seal red when I don't. The marks need
+## the symbol font (JR_SYMBOL_FONT, ui_journal.rpy).
+screen armory_req(line, met):
+    frame:
+        style "armory_req_frame"
+        hbox:
+            spacing 6
+            text ("✓" if met else "✗"):
+                font JR_SYMBOL_FONT
+                size 15
+                yalign 0.5
+                color (gui.paper if met else gui.seal)
+            text line:
+                style "armory_req_text"
+                substitute False
+                yalign 0.5
+                color (gui.paper if met else gui.seal)
+
+
 ## The racks: one row per tool, with Take / Return or why not. Returns
 ## ("take", id), ("return", id) or ("close",).
 screen armory():
@@ -658,6 +815,7 @@ screen armory():
     $ _rows = armory_tools()
     $ _hand = item_name(equipped_tool) if equipped_tool else "Bare hands"
     $ _mine = grade_label(player_grade() or "g4").upper()
+    $ _mykey = grade_key(player_grade()) or "g4"
 
     add graded_bg("storehouse")
     add Solid(gui.ink) alpha 0.62
@@ -667,14 +825,14 @@ screen armory():
     frame:
         style "jjk_panel"
         xpos 110
-        ypos 36
+        ypos 30
         xsize 1700
 
         vbox:
-            spacing 10
+            spacing 5
 
             fixed:
-                ysize 84
+                ysize 76
                 hbox:
                     spacing 18
                     yalign 0.5
@@ -687,7 +845,11 @@ screen armory():
                     xalign 1.0
                     yalign 0.5
                     spacing 4
-                    text "MY GRADE  ·  " + _mine style "jjk_label" xalign 1.0 color gui.gold
+                    hbox:
+                        xalign 1.0
+                        spacing 12
+                        text "MY GRADE" style "jjk_label" yalign 0.5 color gui.gold
+                        use grade_chip(_mykey, 14)
                     text "In my hand: " + _hand style "jjk_value" size 22 xalign 1.0
 
             use rule()
@@ -696,6 +858,7 @@ screen armory():
                 $ _it = ITEMS[_id]
                 $ _open = _st in ("take", "owned")
                 $ _rack = _ARMORY_KIND.get(_id)
+                $ _reqs = armory_checklist(_id)
 
                 frame:
                     style "armory_row"
@@ -705,29 +868,35 @@ screen armory():
                         spacing 28
                         yalign 0.5
 
+                        ## The tool's grade, in its colour; dim while sealed (4.8).
                         frame:
-                            background Frame("gui/panel_ghost.png", 4, 4)
+                            background None
                             xsize 190
                             yalign 0.5
-                            padding (10, 10)
-                            text grade_label(_it["grade"]).upper():
-                                style "jjk_label"
-                                size 16
+                            padding (0, 0)
+                            hbox:
                                 xalign 0.5
-                                text_align 0.5
-                                color (gui.gold if _open else gui.mute)
+                                use grade_chip(_it["grade"], 15, dim=(_st in ("sealed", "arcii")))
 
                         vbox:
                             xsize 990
                             yalign 0.5
-                            spacing 4
+                            spacing 2
                             text _it["name"] style "armory_name" color (gui.paper if (_open or _st == "story") else gui.dim)
                             text _it["desc"] style "armory_desc"
                             text _it["effect"] style "armory_effect"
+                            ## The checklist (4.9): what it asks of me, ticked or not.
+                            if _reqs:
+                                hbox:
+                                    box_wrap True
+                                    box_wrap_spacing 4
+                                    spacing 8
+                                    for _line, _met in _reqs:
+                                        use armory_req(_line, _met)
 
                         fixed:
                             xsize 290
-                            ysize 92
+                            ysize 86
                             yalign 0.5
                             if _st == "take":
                                 textbutton "Take":
