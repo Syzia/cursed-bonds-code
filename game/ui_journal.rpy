@@ -82,11 +82,14 @@ init python:
     JR_BOLD_FONT = macron_font(gui.body_bold_font)
 
     ## The clutter budget (4.0): a person's page holds at most this many
-    ## words at rest. A learned story line that doesn't fit is cut to its
-    ## first JR_LEAD_WORDS words, and the whole line is its hover label.
+    ## words at rest. A learned story line that doesn't fit prints its short
+    ## name from THREADS ("The roof"), or, when it has none, its first
+    ## JR_LEAD_WORDS words (never fewer than JR_LEAD_MIN); the whole line is
+    ## its hover label.
     JR_PAGE_WORDS = 70
     JR_LEAD_WORDS = 4
     JR_LEAD_MIN = 2
+    JR_FOLD_WORDS = 2                   # "3 earlier lines"
     JR_TAG_RE = re.compile(r"\{[^{}]*\}")
 
     JR_FX_NOTE = "Takes effect in combat from the combat update."
@@ -122,10 +125,11 @@ init python:
                     pick=None, collapsed={}, psub="story", ssub="overview", msub2="story")
 
     def jr_fix(js):
-        """P3. Brings a view state made by an older build up to date, in
-        place: a save taken inside the journal keeps its screen's `js`, which
-        may be on the Memories tab and has none of the phase 2 keys. Returns
-        the tab to draw."""
+        """P3. A guard for a view state that lacks the phase 2 keys or names
+        a tab that is gone (one handed in by a harness, say): it is brought
+        up to date in place. A load does not need it: it runs `call screen
+        journal(tab)` again, so `js` is a fresh journal_state(tab), which is
+        what sends "memories" to People. Returns the tab to draw."""
         if js.get("tab") not in [t[0] for t in JOURNAL_TABS]:
             js["tab"] = "people"
         for k, v in (("psub", "story"), ("ssub", "overview"), ("msub2", "story"),
@@ -506,6 +510,19 @@ init python:
             return "around campus"
         return ("usually " + first) if "(" in first else first
 
+    def jr_mission_where(m, who):
+        """P3. Where a mission that can be started happens, for the NEXT
+        row: its own place and time; for one that starts wherever its giver
+        is, where that person is (jr_story_where), not "wherever Maki is"."""
+        if jr_get(m, "where") is None and jr_get(m, "trigger", "auto") != "auto":
+            return jr_story_where(who)
+        return jr_where_when(m) or jr_story_where(who)
+
+    def jr_stage_short(tid, i):
+        """P3. The short name of a thread's stage ("The roof"), or ""."""
+        names = THREADS.get(tid, {}).get("short") or []
+        return names[i] if 0 <= i < len(names) else ""
+
     def jr_story_row(kind, title="", line="", state="", where="", next=False, **more):
         d = dict(kind=kind, title=title, line=line, state=state, where=where, next=next)
         d.update(more)
@@ -516,7 +533,8 @@ init python:
         dict(kind, title, line, state, where, next), for their page (4.7).
 
         kind "heading": the thread's title (state "done" once resolved).
-        kind "stage":   a thread line I have learned (state "done").
+        kind "stage":   a thread line I have learned (state "done"); it
+                        carries "short", its name in a word or two.
         kind "mission": one of their missions; state is "done", "next",
                         "available", "waiting", "locked" or "closed".
         kind "step":    the next thing to do when it isn't a mission
@@ -548,7 +566,7 @@ init python:
         if tid:
             for i, line in enumerate(THREADS[tid]["stages"]):
                 if i <= cur:
-                    order.append(("stage", line))
+                    order.append(("stage", (i, line)))
                 for m in slotted.get(i, []):
                     order.append(("mission", m))
         for m in free:
@@ -557,7 +575,8 @@ init python:
         done, ready, closed, later = [], [], [], 0
         for kind, x in order:
             if kind == "stage":
-                done.append(jr_story_row("stage", line=x, state="done"))
+                done.append(jr_story_row("stage", line=x[1], state="done",
+                                         short=jr_stage_short(tid, x[0])))
                 continue
             mid = jr_get(x, "id")
             try:
@@ -573,7 +592,7 @@ init python:
             elif status in ("available", "active"):
                 ready.append(jr_story_row("mission", title=title, state="available", id=mid,
                                           line=jr_get(x, "objective", "") or "",
-                                          where=jr_where_when(x) or jr_story_where(who)))
+                                          where=jr_mission_where(x, who)))
             elif status == "closed":
                 closed.append(jr_story_row("mission", title=title, state="closed", id=mid,
                                            line="Closed when Arc Two began"))
@@ -591,8 +610,11 @@ init python:
         else:
             h = jr_next_hangout(who)
             if h:
-                nxt = jr_story_row("step", title="Spend time together", line=h[2],
-                                   where=jr_story_where(who))
+                ## Once their thread is resolved the next scene is not
+                ## another chapter of it.
+                nxt = jr_story_row("step", line=h[2], where=jr_story_where(who),
+                                   title=("More time together" if (tid and thread_done(tid))
+                                          else "Spend time together"))
             else:
                 try:
                     nu = next_unlock(who) if who in CAST else None
@@ -600,6 +622,16 @@ init python:
                     nu = None
                 if nu:
                     nxt = jr_story_row("step", title=nu[1], line=nu[2], where=jr_story_where(who))
+        if nxt is None:
+            ## Nothing to do but wait: the first mission still locked is
+            ## the NEXT row (4.7: the first row not done), with what it
+            ## waits for and where it will be.
+            for r in closed:
+                if r["state"] != "closed":
+                    closed.remove(r)
+                    r["where"] = jr_story_where(who)
+                    nxt = r
+                    break
         if nxt:
             nxt["next"] = True
             nxt["state"] = "next"
@@ -637,7 +669,9 @@ init python:
 
     def jr_lead(line, n):
         """P3. The first n words of a line and an ellipsis ("He is the
-        loudest…"); the ellipsis alone when n is 0."""
+        loudest…"). Never fewer than JR_LEAD_MIN words: a row is never a
+        bare ellipsis."""
+        n = max(JR_LEAD_MIN, n)
         out, words = [], 0
         for tok in str(line or "").split():
             if words >= n:
@@ -647,22 +681,59 @@ init python:
                 words += 1
         return (" ".join(out).rstrip(",.;:") + "…") if out else "…"
 
+    def jr_usual_first(us):
+        """P3. The first of someone's usual places ("Dojo (mornings and
+        noon) …"), with an ellipsis when there are more."""
+        parts = str(us or "").split(" · ")
+        return parts[0] + (" …" if len(parts) > 1 else "")
+
+    def jr_text_width(s, font, size):
+        """P3. How wide a string draws, in pixels (0 if it can't be
+        measured)."""
+        try:
+            return Text(s, font=font, size=size, substitute=False, layout="nobreak").size()[0]
+        except Exception:
+            return 0
+
+    def jr_fit_name(s, font, size, floor, width):
+        """P3. A name that must fit `width` pixels, as (text, size): drawn
+        smaller, down to `floor`, and then clipped a letter at a time."""
+        s = str(s or "")
+        while size > floor and jr_text_width(s, font, size) > width:
+            size -= 2
+        n = len(s)
+        out = s
+        while n > 4 and jr_text_width(out, font, size) > width:
+            n -= 1
+            out = jr_clip(s, n)
+        return out, size
+
     def jr_story_sub(r):
         """P3. The small line under a story row's title: its line and where."""
         return jr_clip(" · ".join([p for p in (r["line"], r["where"]) if p]), 110)
 
+    def jr_story_brief(r):
+        """P3. A learned line in a word or two, for when the whole of it
+        doesn't fit: its short name, else its first JR_LEAD_MIN words."""
+        return r.get("short") or jr_lead(r["line"], JR_LEAD_MIN)
+
     def jr_story_fit(rows, room):
         """P3. jr_story_rows' rows as the page draws them at rest, inside a
-        budget of `room` words (4.0: a person's page holds 70). Every row
-        stays a row. Each copy gains:
+        budget of `room` words (4.0: a person's page holds 70). Each copy
+        gains:
           "show"  what a learned stage line prints at rest: the whole line
-                  while there is room, the newest first; else its first
-                  words and an ellipsis;
+                  while there is room, the newest first; else its short
+                  name ("The roof"), or its first words and an ellipsis
+                  when it has none;
           "tip"   the whole text for the hover label when the row is cut
                   short ("" when it is not);
           "sub"   the small line of a mission or step row ("" when folded
                   into the hover label).
-        The NEXT row is never cut. The frozen rows are not changed."""
+        Every row stays a row, with one exception: when even the short
+        names don't fit, the oldest learned lines become one row, "3 earlier
+        lines" ("fold": 3), whose hover label lists them whole. A row is
+        never a bare ellipsis. The NEXT row is never cut. The frozen rows
+        are not changed."""
         out = [dict(r, show=r.get("line", ""), tip="", sub="") for r in rows]
         title = ""
         used = 0
@@ -688,19 +759,34 @@ init python:
                 r["tip"] = "%s\n%s" % (r["title"], r["sub"])
                 r["sub"] = ""
         left = max(0, room - used)
+        head = title or "Their story"
         stages = [r for r in out if r["kind"] == "stage"]
-        for j, r in enumerate(reversed(stages)):
-            older = len(stages) - j - 1
+        costs = [jr_word_count(jr_story_brief(r)) for r in stages]
+        ## Not even the short names fit: fold the oldest lines into one row.
+        fold = 0
+        while fold < len(stages) and sum(costs[fold:]) + (JR_FOLD_WORDS if fold else 0) > left:
+            fold += 1
+        if fold:
+            gone = stages[:fold]
+            row = dict(gone[0], line="", short="", fold=fold,
+                       show=("1 earlier line" if fold == 1 else "%d earlier lines" % fold),
+                       tip="\n".join([head] + [g["line"] for g in gone]))
+            out[out.index(gone[0])] = row
+            out = [r for r in out if not any(r is g for g in gone)]
+            stages, costs = stages[fold:], costs[fold:]
+            left = max(0, left - JR_FOLD_WORDS)
+        ## The newest line is served first; an older one keeps at least its
+        ## short name.
+        for j in range(len(stages) - 1, -1, -1):
+            r = stages[j]
+            spare = left - sum(costs[:j])
             w = jr_word_count(r["line"])
-            spare = left - JR_LEAD_MIN * older
             if w <= spare:
                 left -= w
                 continue
-            ## What is left is shared out, the newest line served first.
-            k = max(0, min(JR_LEAD_WORDS, max(spare, left // (older + 1))))
-            r["show"] = jr_lead(r["line"], k)
-            r["tip"] = "%s\n%s" % (title or "Their story", r["line"])
-            left -= jr_word_count(r["show"])
+            r["show"] = r.get("short") or jr_lead(r["line"], min(JR_LEAD_WORDS, spare))
+            r["tip"] = "%s\n%s" % (head, r["line"])
+            left = max(0, left - jr_word_count(r["show"]))
         return out
 
     ## The People grid ------------------------------------------------------------
@@ -1664,7 +1750,8 @@ screen journal(tab="people"):
 
     ## D4: editable only when opened from campus, in the main context.
     $ editable = journal_editable()
-    ## jr_fix: a save taken inside an older journal keeps its own `js`.
+    ## jr_fix: a guard for a `js` without the phase 2 keys (a load builds a
+    ## fresh one from journal_state(tab)).
     $ _cur = jr_fix(js)
     ## Explore mode never fires the story, so it shows no story goal.
     $ _obj = "" if explore_mode else (objective_text() or "")
@@ -2016,12 +2103,17 @@ screen jr_person_detail(js, who):
     $ _heart = ("♡ " + _d["aff_rank"]) if _d["romance"] else ""
     ## I can see where they are: the place has a name I'm allowed to know.
     $ _seen_now = bool(_live and (_pn.get("with_me") or (_pn.get("place") and not _pn.get("hidden"))))
-    $ _now = jr_clip(jr_now_line(_pn), 84) if _live else ""
-    $ _us = (_("In his office today.") if _d["office_today"] else jr_clip(_d["usual"] or _("Around campus."), 104))
+    ## 72 characters is one line of the 900 px block at size 22.
+    $ _now = jr_clip(jr_now_line(_pn), 72) if _live else ""
+    $ _us = jr_clip(_d["usual"] or _("Around campus."), 104)
+    $ _today = _("In his office today.") if _d["office_today"] else ""
+    ## When I can't see where they are, the first of their usual places is
+    ## printed (the rest on hover); mid-scene, all of them.
+    $ _line2 = "" if _seen_now else (_today or (_us if not _live else (_("Usually: ") + jr_usual_first(_us))))
     $ _ul = unlock_line(who) if who in CAST else ""
     $ _chip_mem = "Memories %d/%d" % (_seen, len(_mems))
     $ _words = jr_word_count(_d["name"], (_gt or (grade_label(_gk) if _gk else "")), _year, _d["bond_rank"], _prom, _heart,
-                             _("RIGHT NOW"), _now, ("" if _seen_now else (_("Usually: ") + _us)), _ul, _("Their story"), _chip_mem, _("← Back"))
+                             (_("RIGHT NOW") if _live else _("USUALLY")), _now, _line2, _ul, _("Their story"), _chip_mem, _("← Back"))
     if _d["has_stats"]:
         $ _words += 4 + (2 if _d["restricted"] else 0)
 
@@ -2128,15 +2220,18 @@ screen jr_person_detail(js, who):
                     padding (20, 7, 16, 5)
                     fixed:
                         ## While I can see where they are, "Usually: ..." is
-                        ## this block's hover label; when I can't (off
-                        ## campus, a room I can't enter, mid-scene) it is
-                        ## printed, because it is then the way to find them.
+                        ## this block's hover label. When I can't (off
+                        ## campus, a room I can't enter) the first of their
+                        ## usual places is printed, because it is then the
+                        ## way to find them, and the rest stay on hover.
+                        ## On a day Gojo is in, "In his office today."
+                        ## takes that line. Mid-scene the list is whole.
                         button:
                             id "jr_now"
                             style "jr_plain_button"
                             xsize 900
                             action NullAction()
-                            tooltip (((_("Usually") + "\n" + _us), "jr_now") if _seen_now else None)
+                            tooltip (((_("Usually") + "\n" + _us), "jr_now") if (_live and (_seen_now or _line2 != _("Usually: ") + _us)) else None)
                             vbox:
                                 spacing 0
                                 xsize 900
@@ -2146,9 +2241,9 @@ screen jr_person_detail(js, who):
                                 if _live:
                                     text _now color gui.paper size 22
                                 if not _live:
-                                    text _us color gui.paper size 18
-                                elif not _seen_now:
-                                    text (_("Usually: ") + _us) style "jr_dim" size 16
+                                    text _line2 color gui.paper size 18
+                                elif _line2:
+                                    text _line2 style "jr_dim" size 16
                                 if _ul:
                                     text _ul color gui.gold size 16
                         if jr_can_go(_pn):
@@ -2183,7 +2278,7 @@ screen jr_person_detail(js, who):
                 if _sub == "memories":
                     use jr_scroll(1040, (584 if not _sana else 754)):
                         if not _mems:
-                            text _("Nothing shared yet. Scenes I live through with them end up here.") style "jr_dim"
+                            text (_("Nothing yet. What I remember of her ends up here.") if _sana else _("Nothing shared yet. Scenes I live through with them end up here.")) style "jr_dim"
                         hbox:
                             box_wrap True
                             box_wrap_spacing 16
@@ -2313,6 +2408,7 @@ screen jr_me_detail(js):
     $ _groups = jr_me_groups()
     $ _all = [m for t, ms in _groups for m in ms]
     $ _seen = len([m for m in _all if jr_mem_state(m) == "seen"])
+    $ _name, _nsize = jr_fit_name(jr_stats_title(), JR_DISPLAY_FONT, 40, 28, 600)
 
     frame:
         style "jr_panel_dark"
@@ -2329,15 +2425,17 @@ screen jr_me_detail(js):
                 xpos 450
                 ypos 24
                 spacing 16
-                ## substitute False: the player typed the name.
-                text jr_stats_title() substitute False font JR_DISPLAY_FONT color gui.paper size 40 yalign 0.5
+                ## substitute False: the player typed the name. A long one
+                ## is drawn smaller, then clipped, so the chip and the year
+                ## stay left of the Back chip.
+                text _name substitute False font JR_DISPLAY_FONT color gui.paper size _nsize yalign 0.5 layout "nobreak"
                 vbox:
                     yalign 0.5
                     if _g:
                         use grade_chip(_g, 15)
                     else:
                         use grade_chip(None, 15, text=_("Not yet assessed"))
-                text _("First-year") style "jr_dim" size 17 yalign 0.5
+                text _("1st year") style "jr_dim" size 17 yalign 0.5
 
             hbox:
                 xpos 450

@@ -35,9 +35,12 @@
 ##                 and a NOTE while it is still wave 0's stub (P2's file).
 ##  13. budget     4.0: a person's page holds at most 70 words at rest, for
 ##                 every person, at every stage of their story, whether I can
-##                 see where they are, can't, or am mid-scene. Every learned
-##                 line is still a row; one cut short carries the whole line
-##                 as its hover label.
+##                 see where they are, can't, or am mid-scene; and, for
+##                 the eight with a story, with the stub's "Off campus" and
+##                 with them beside me. Every learned line is still a row
+##                 (printed whole, or by its short name with the whole line
+##                 on hover, or folded with the oldest into "n earlier
+##                 lines"); no row is a bare ellipsis.
 ##
 ## Memories are built with their owner's constructors (_mem / memory_entry,
 ## R5); items with give_item; grades with promote. Other packages' contract
@@ -485,6 +488,53 @@ label zz_smoke:
         renpy.hide_screen("journal")
         bonds["nobara"] = 24
         threads["nobara_saori"] = 0
+        ## A mission that starts wherever its giver is names where that is
+        ## (cm_maki_1 has no place of its own).
+        _zz_keep4 = (bonds.get("maki", 0), bonds.get("ijichi", 0), set(flags))
+        flag("met_second_years")
+        bonds["maki"] = 12
+        note("cm_maki_1", mission_status("cm_maki_1"))
+        _zz_next = [r for r in jr_story_rows("maki") if r["next"]]
+        check(mission_status("cm_maki_1") in ("available", "active") and len(_zz_next) == 1 and _zz_next[0]["kind"] == "mission"
+              and _zz_next[0].get("id") == "cm_maki_1" and _zz_next[0]["where"] == jr_story_where("maki")
+              and "wherever" not in _zz_next[0]["where"],
+              "a mission Maki can give now is the NEXT row, and its where is a place, not \"wherever Maki is\"", _zz_next)
+        zz_patch("person_now", zz_now("dojo", "Dojo"))
+        check([r for r in jr_story_rows("maki") if r["next"]][0]["where"] == "Dojo, right now", "(and where she is now, when I can see it)",
+              [r for r in jr_story_rows("maki") if r["next"]])
+        zz_patch("person_now", zz_now("courtyard", "With me", with_me=True))
+        check([r for r in jr_story_rows("maki") if r["next"]][0]["where"] == "with me now", "(or with me now)")
+        zz_unpatch("person_now")
+        ## A mission with its own place keeps it.
+        check(jr_mission_where(MISSION_BY_ID["cm_ijichi_1"], "ijichi") == jr_where_when(MISSION_BY_ID["cm_ijichi_1"])
+              and jr_mission_where(MISSION_BY_ID["cm_ijichi_1"], "ijichi").startswith(LOCATIONS["gate"]["name"]),
+              "a mission with a place of its own keeps it", jr_mission_where(MISSION_BY_ID["cm_ijichi_1"], "ijichi"))
+        ## Nothing to do but wait: the first locked mission is the NEXT row.
+        zz_patch("jr_next_hangout", lambda who: None)
+        zz_patch("next_unlock", lambda who: None)
+        _zz_st0 = mission_status("cm_ijichi_1")
+        zz_patch("mission_status", lambda mid, _o=mission_status: ("locked" if mid == "cm_ijichi_1" else _o(mid)))
+        _zz_rows = jr_story_rows("ijichi")
+        _zz_next = [r for r in _zz_rows if r["next"]]
+        check(len(_zz_next) == 1 and _zz_next[0]["kind"] == "mission" and _zz_next[0].get("id") == "cm_ijichi_1"
+              and _zz_next[0]["state"] == "next" and _zz_next[0]["where"] and _zz_next[0]["line"],
+              "when all that is left is a locked mission, it is the NEXT row, with what it waits for and where", _zz_rows)
+        zz_patch("mission_status", lambda mid, _o=zz_st.patched["mission_status"]: ("closed" if mid == "cm_ijichi_1" else _o(mid)))
+        check(not [r for r in jr_story_rows("ijichi") if r["next"]], "a mission closed by Arc Two is never the NEXT row",
+              jr_story_rows("ijichi"))
+        zz_unpatch("jr_next_hangout", "next_unlock", "mission_status")
+        bonds["maki"], bonds["ijichi"] = _zz_keep4[0], _zz_keep4[1]
+        flags.clear(); flags.update(_zz_keep4[2])
+        ## A resolved thread: the next scene is not another chapter of it.
+        _zz_keep4 = (threads.get("nobara_saori"), bonds["nobara"])
+        threads["nobara_saori"] = len(THREADS["nobara_saori"]["stages"]) - 1
+        _zz_rows = jr_story_rows("nobara")
+        _zz_steps = [r for r in _zz_rows if r["kind"] == "step"]
+        check(_zz_rows[0]["state"] == "done" and (not _zz_steps or _zz_steps[0]["title"] != "Spend time together"),
+              "once a thread is resolved the step is not titled Spend time together", _zz_steps)
+        if jr_next_hangout("nobara"):
+            check(_zz_steps and _zz_steps[0]["title"] == "More time together" and _zz_steps[0]["next"], "it reads More time together", _zz_steps)
+        threads["nobara_saori"], bonds["nobara"] = _zz_keep4
         ## Someone with no thread and nothing written still gets a page.
         check(isinstance(jr_story_rows("nanami"), builtins.list) and len([r for r in jr_story_rows("nanami") if r["kind"] == "later"]) <= 1
               and jr_story_rows("sana") == [], "a JOURNAL_CAST-only person's story is a list; Sana's is empty", jr_story_rows("nanami"))
@@ -509,7 +559,7 @@ label zz_smoke:
         ## The stub (or P1's real function): the page prints what it says.
         _zz_pn = person_now("yuji")
         zz_open("people", sel="yuji", psub="story")
-        check(zz_has(jr_clip(jr_now_line(jr_now("yuji")), 84)), "Right now prints person_now(who) as it is today", (_zz_pn, [t for t in zz_texts("journal")][:12]))
+        check(zz_has(jr_clip(jr_now_line(jr_now("yuji")), 72)), "Right now prints person_now(who) as it is today", (_zz_pn, [t for t in zz_texts("journal")][:12]))
         zz_patch("person_now", zz_now("cafeteria", "Cafeteria", "halfway through an enormous bowl"))
         zz_open("people", sel="yuji", psub="story")
         shot("page_yuji_story")
@@ -534,10 +584,32 @@ label zz_smoke:
             check(zz_widget("jr_go_btn") is None and not [v for v in zz_return_values() if v is not None]
                   and zz_has(_zz_fn("yuji")["name"]),
                   "no go button when " + _zz_case + ", and the line is person_now's", zz_return_values())
-            _zz_printed = any(t.startswith("Usually: ") for t in zz_texts("journal"))
+            _zz_printed = [t for t in zz_texts("journal") if t.startswith("Usually: ")]
             _zz_tip = getattr(zz_widget("jr_now"), "_tooltip", None)
-            check((not _zz_printed and _zz_tip) if _zz_case == "with me" else (_zz_printed and not _zz_tip),
-                  "when " + _zz_case + ", the second line Usually: ... is " + ("on hover" if _zz_case == "with me" else "printed"), (_zz_printed, _zz_tip))
+            _zz_us = jr_clip(usual_places("yuji"), 104)
+            check(isinstance(_zz_tip, builtins.tuple) and _zz_tip[0] == "Usually\n" + _zz_us
+                  and (not _zz_printed if _zz_case == "with me" else
+                       (_zz_printed == ["Usually: " + _zz_us.split(" · ")[0] + " …"] and " · " in _zz_us)),
+                  "when " + _zz_case + ", Usually is " + ("on hover only" if _zz_case == "with me" else "printed as the first usual place, with the whole list on hover"),
+                  (_zz_printed, _zz_tip))
+        ## A long caption stays on one line: the Closer line keeps its place.
+        zz_patch("person_now", zz_now("dorm_common", LOCATIONS["dorm_common"]["name"], "halfway through explaining a film nobody else here has seen or ever will see, at length"))
+        zz_open("people", sel="nobara", psub="story")
+        _zz_nd = zz_node(jr_clip(jr_now_line(jr_now("nobara")), 72))
+        shot("page_now_long")
+        check(_zz_nd is not None and len(jr_clip(jr_now_line(jr_now("nobara")), 72)) == 72
+              and renpy.render(_zz_nd, 900, 200, 0, 0).height < 40,
+              "a long Right now line is clipped to one line (72 characters)", _zz_nd and renpy.render(_zz_nd, 900, 200, 0, 0).height)
+        ## A day Gojo is in: "In his office today." stands alone, and his
+        ## usual places are the hover label.
+        zz_patch("gojo_in_today", lambda: True)
+        zz_patch("person_now", zz_now(None, "Off campus", reachable=False))
+        zz_open("people", sel="gojo", psub="story")
+        _zz_tip = getattr(zz_widget("jr_now"), "_tooltip", None)
+        check(zz_has("In his office today.") and not zz_any("Usually: ") and isinstance(_zz_tip, builtins.tuple)
+              and _zz_tip[0] == "Usually\n" + jr_clip(usual_places("gojo"), 104),
+              "on a day Gojo is in, the line reads In his office today. (no Usually:), and his usual places are on hover", _zz_tip)
+        zz_unpatch("gojo_in_today")
         ## The grid's one line.
         zz_patch("person_now", zz_now("cafeteria", "Cafeteria", "halfway through an enormous bowl"))
         check(jr_card_place("yuji") == "Cafeteria", "a card's place line is person_now's name")
@@ -654,6 +726,11 @@ label zz_smoke:
         _zz_you = re.compile(r"\b(you|your|yours|yourself|you're|you've|you'd|you'll)\b", re.I)
         _zz_bad = [(t, l) for t in THREAD_ORDER for l in THREADS[t]["stages"] if _zz_you.search(l)]
         check(not _zz_bad, "no thread stage line contains \"you\" or \"your\"", _zz_bad)
+        _zz_bad = [(t, l) for t in THREAD_ORDER for l in [THREADS[t]["title"]] + THREADS[t]["short"] if _zz_you.search(l)]
+        check(not _zz_bad, "nor does a thread's title or a stage's short name", _zz_bad)
+        check(all(len(THREADS[t]["short"]) == len(THREADS[t]["stages"]) and all(1 <= jr_word_count(n) <= 2 for n in THREADS[t]["short"])
+                  and len(set(THREADS[t]["short"])) == len(THREADS[t]["short"]) for t in THREAD_ORDER),
+              "every stage has a short name of one or two words", [(t, THREADS[t]["short"]) for t in THREAD_ORDER])
         check(sum(len(THREADS[t]["stages"]) for t in THREAD_ORDER) == 28 and all(len(THREADS[t]["stages"]) in (3, 4) for t in THREAD_ORDER),
               "the threads keep their stage counts (only the index is saved)")
 
@@ -692,11 +769,20 @@ label zz_smoke:
         check(len(zz_btns("journal")) >= 18 and len([b for b in zz_btns("journal") if getattr(b, "id", "") and str(b.id).startswith("jr_card_")]) == 18,
               "one button a card")
         ## Gojo's chip.
+        ## (what the card draws: the key it hands grade_fill; the card
+        ## alone, so the grid behind it doesn't answer for it)
+        renpy.hide_screen("journal")
+        zz_render()
+        _zz_fills = builtins.list()
+        zz_patch("grade_fill", lambda v, _o=grade_fill: (_zz_fills.append(v), _o(v))[1])
         renpy.show_screen("jr_person_card", journal_state(), [e for e in _zz_cards if e["who"] == "gojo"][0])
         _zz_tx = zz_texts("jr_person_card")
         renpy.hide_screen("jr_person_card")
-        check("OFF THE SCALE" in _zz_tx and jr_grade_chip("gojo") == ("sp", "Off the scale") and grade_is_special("sp"),
-              "Gojo's chip reads OFF THE SCALE on the Special fill", _zz_tx)
+        zz_unpatch("grade_fill")
+        zz_open("people")
+        check("OFF THE SCALE" in _zz_tx and jr_grade_chip("gojo") == ("sp", "Off the scale") and grade_is_special("sp")
+              and _zz_fills and all(grade_tier(v) == "sp" for v in _zz_fills),
+              "Gojo's chip reads OFF THE SCALE on the Special fill (the card asks grade_fill for the Special tier)", (_zz_tx, _zz_fills))
         check(jr_grade_line("gojo") == "Off the scale", "jr_grade_line(\"gojo\") is still \"Off the scale\"", jr_grade_line("gojo"))
         ## Hover: the Next line is the card's tooltip, as a (text, key) tuple.
         _zz_tip = getattr(zz_widget("jr_card_megumi"), "_tooltip", None)
@@ -946,6 +1032,10 @@ label zz_smoke:
         ## the heart bar and a promotion that go with it, in three views.
         gui.icon_words = "never"
         _zz_over, _zz_most, _zz_lost, _zz_n = builtins.list(), (0, ""), builtins.list(), 0
+        _zz_bare, _zz_folds, _zz_shorts = builtins.list(), builtins.list(), 0
+        _zz_fold_re = re.compile(r"^(\d+) earlier lines?$")
+        _zz_stub_now = person_now
+        _zz_extra = [THREADS[t]["who"] for t in THREAD_ORDER] + ["ijichi", "nanami"]
         for _zz_stage in (-1, 0, 1, 2, 3):
             for _zz_tid in THREAD_ORDER:
                 if _zz_stage < 0:
@@ -959,9 +1049,16 @@ label zz_smoke:
             if _zz_stage == 1:
                 for _zz_w in ("yuji", "megumi", "nobara"):
                     promote(_zz_w, "g2", quiet=True)
+            ## Before roll call the gate words the NEXT row "After roll call".
+            _zz_rc = (set(flags), set(done_events))
+            if _zz_stage == -1:
+                flags.discard("roll_call")
+                done_events.discard("st_roll_call")
             for _zz_mode, _zz_fn, _zz_live in (("seen", zz_now_longest, True),
                                                ("hidden", zz_now("gojo_office", "Somewhere I can't go right now", reachable=False, hidden=True), True),
-                                               ("mid-scene", zz_now_longest, False)):
+                                               ("mid-scene", zz_now_longest, False),
+                                               ("stub", _zz_stub_now, True),
+                                               ("with me", zz_now("courtyard", "With me", with_me=True), True)):
                 zz_patch("person_now", _zz_fn)
                 if not _zz_live:
                     zz_patch("journal_editable", lambda: False)
@@ -969,6 +1066,9 @@ label zz_smoke:
                     _zz_who = _zz_e["who"]
                     ## Someone with no thread has no stages: first and last only.
                     if not jr_thread_id(_zz_who) and _zz_stage not in (-1, 3):
+                        continue
+                    ## The two extra views: the eight with a story and two others.
+                    if _zz_mode in ("stub", "with me") and _zz_who not in _zz_extra:
                         continue
                     renpy.show_screen("jr_person_detail", journal_state(), _zz_who)
                     _zz_w = zz_words("jr_person_detail")
@@ -985,32 +1085,67 @@ label zz_smoke:
                         _zz_tips = [b._tooltip[0] for b in zz_btns("jr_person_detail")
                                     if isinstance(getattr(b, "_tooltip", None), builtins.tuple)]
                         for _zz_line in THREADS[_zz_tid]["stages"][:thread_stage(_zz_tid) + 1]:
-                            if not (_zz_line in _zz_tx or any(t.endswith("\n" + _zz_line) for t in _zz_tips)):
+                            if not (_zz_line in _zz_tx or any(("\n" + _zz_line) in t for t in _zz_tips)):
                                 _zz_lost.append((_zz_who, _zz_stage, _zz_mode, _zz_line))
-                        if len([t for t in _zz_tx if t == "✓"]) < thread_stage(_zz_tid) + 1:
+                        ## A row each, but for the oldest folded into one.
+                        _zz_f = [int(_zz_fold_re.match(t).group(1)) for t in _zz_tx if _zz_fold_re.match(t)]
+                        if _zz_f:
+                            _zz_folds.append((_zz_who, _zz_stage, _zz_mode, _zz_f[0]))
+                        if len(_zz_f) > 1 or len([t for t in _zz_tx if t == "✓"]) + sum(_zz_f) - len(_zz_f) < thread_stage(_zz_tid) + 1:
                             _zz_lost.append((_zz_who, _zz_stage, _zz_mode, "rows"))
+                        _zz_shorts += len([t for t in _zz_tx if t in THREADS[_zz_tid]["short"]])
+                        if [t for t in _zz_tx if t.strip() in ("…", "...", "✓ …") or (t.endswith("…") and not jr_word_count(t))]:
+                            _zz_bare.append((_zz_who, _zz_stage, _zz_mode))
                     renpy.hide_screen("jr_person_detail")
                 zz_unpatch("person_now", "journal_editable")
+            flags.clear(); flags.update(_zz_rc[0])
+            done_events.clear(); done_events.update(_zz_rc[1])
         note("the wordiest person page of %d measured" % _zz_n, _zz_most)
-        check(_zz_n == 3 * (5 * len(THREAD_ORDER) + 2 * (len(JOURNAL_CAST) - len(THREAD_ORDER))) and not _zz_over,
-              "a person's page holds at most 70 words at rest: everyone, every story stage, seen / hidden / mid-scene (4.0)", _zz_over)
-        check(not _zz_lost, "on every one of those pages each learned stage line is a row, whole or with the whole line on hover", _zz_lost[:6])
+        check(_zz_n == 3 * (5 * len(THREAD_ORDER) + 2 * (len(JOURNAL_CAST) - len(THREAD_ORDER))) + 2 * (5 * len(THREAD_ORDER) + 2 * 2) and not _zz_over,
+              "a person's page holds at most 70 words at rest: everyone, every story stage, seen / hidden / mid-scene; the eight with a story and two others also with the stub's person_now and with me (4.0)", _zz_over)
+        check(not _zz_lost, "on every one of those pages each learned stage line is there: whole, or by its short name with the whole line on hover, or folded with the oldest", _zz_lost[:6])
+        check(not _zz_bare, "no row on any of those pages is a bare ellipsis", _zz_bare[:6])
+        note("pages where the oldest lines are folded into one row", (len(_zz_folds), _zz_folds[:8]))
+        note("short names printed across those pages", _zz_shorts)
         ## The fitting itself.
         threads["yuji_countdown"] = 3
         _zz_rows = jr_story_rows("yuji")
         _zz_wide, _zz_tight = jr_story_fit(_zz_rows, 500), jr_story_fit(_zz_rows, 0)
-        check(len(_zz_wide) == len(_zz_tight) == len(_zz_rows)
+        _zz_fixed = sum(jr_word_count(jr_clip(r["title"], 60), jr_story_sub(r)) + 1 for r in _zz_rows if r["next"]) \
+            + sum(jr_word_count(r["title"]) + 1 for r in _zz_rows if r["kind"] == "heading") \
+            + sum(jr_word_count(r["line"]) for r in _zz_rows if r["kind"] == "later")
+        _zz_names = jr_story_fit(_zz_rows, _zz_fixed + 8)
+        _zz_all = THREADS["yuji_countdown"]["stages"]
+        check(len(_zz_wide) == len(_zz_names) == len(_zz_rows)
               and all(r["show"] == r["line"] and not r["tip"] for r in _zz_wide if r["kind"] == "stage")
-              and all(r["tip"].endswith("\n" + r["line"]) and r["show"] == "…" for r in _zz_tight if r["kind"] == "stage")
+              and [r["show"] for r in _zz_names if r["kind"] == "stage"] == THREADS["yuji_countdown"]["short"]
+              and all(r["tip"] == "The Countdown\n" + r["line"] for r in _zz_names if r["kind"] == "stage")
               and [r for r in _zz_tight if r["next"]][0]["sub"] == [r for r in _zz_wide if r["next"]][0]["sub"] != ""
               and all("show" not in r for r in _zz_rows),
-              "jr_story_fit keeps every row: whole lines with room, cut lines with their hover label without; the NEXT row is never cut", _zz_tight)
-        _zz_mid = jr_story_fit(_zz_rows, jr_word_count(*[r["title"] for r in _zz_rows]) + 40)
+              "jr_story_fit keeps every row: whole lines with room; short names with the whole line on hover without; the NEXT row is never cut",
+              [(r["show"], r["tip"]) for r in _zz_names])
+        _zz_fd = [r for r in _zz_tight if r["kind"] == "stage"]
+        check(len(_zz_fd) == 1 and _zz_fd[0]["show"] == "4 earlier lines" and _zz_fd[0]["fold"] == 4
+              and _zz_fd[0]["tip"] == "\n".join(["The Countdown"] + _zz_all) and len(_zz_tight) == len(_zz_rows) - 3,
+              "with no room at all the learned lines fold into one row, \"4 earlier lines\", whose hover label lists them whole", _zz_fd)
+        _zz_fd = [r for r in jr_story_fit(_zz_rows, _zz_fixed + 6) if r["kind"] == "stage"]
+        check([r["show"] for r in _zz_fd] == ["2 earlier lines"] + THREADS["yuji_countdown"]["short"][2:]
+              and _zz_fd[0]["tip"] == "\n".join(["The Countdown"] + _zz_all[:2]),
+              "with room for some, only the oldest fold", [(r["show"], r["tip"]) for r in _zz_fd])
+        check(not any(r["show"].strip() in ("", "…") for n in range(0, 80) for r in jr_story_fit(_zz_rows, n) if r["kind"] == "stage"),
+              "at no budget is a row empty or a bare ellipsis")
+        _zz_mid = jr_story_fit(_zz_rows, _zz_fixed + 22)
         _zz_st = [r for r in _zz_mid if r["kind"] == "stage"]
-        check(_zz_st[-1]["show"] == _zz_st[-1]["line"] and _zz_st[0]["tip"] and _zz_st[0]["show"].endswith("…"),
+        check(_zz_st[-1]["show"] == _zz_st[-1]["line"] and _zz_st[0]["tip"] and _zz_st[0]["show"] == "Something quiet",
               "when room is short the newest learned line is the one printed whole", [(r["show"], bool(r["tip"])) for r in _zz_st])
-        check(jr_word_count("{b}+2{/b} ◆ 1 Bond 35 · the Cafeteria") == 3 and jr_lead("He is the loudest person here", 3) == "He is the…",
-              "jr_word_count counts as 4.0 does; jr_lead cuts at a word")
+        check(jr_word_count("{b}+2{/b} ◆ 1 Bond 35 · the Cafeteria") == 3 and jr_lead("He is the loudest person here", 3) == "He is the…"
+              and jr_lead("He is the loudest person here", 0) == "He is…" and jr_usual_first("Dojo (mornings) · Riverside (evenings)") == "Dojo (mornings) …"
+              and jr_usual_first("Around campus.") == "Around campus.",
+              "jr_word_count counts as 4.0 does; jr_lead cuts at a word and never below two; jr_usual_first keeps the first place")
+        ## A stage with no short name falls back to its first words.
+        _zz_nos = jr_story_fit([dict(r, short="") for r in _zz_rows], _zz_fixed + 8)
+        check([r["show"] for r in _zz_nos if r["kind"] == "stage"] == [jr_lead(l, 2) for l in _zz_all],
+              "a line with no short name is cut to its first two words", [r["show"] for r in _zz_nos if r["kind"] == "stage"])
         ## A cut line's hover label, and the heart bar's.
         zz_patch("person_now", zz_now_longest)
         bonds["nobara"] = 95
@@ -1020,6 +1155,9 @@ label zz_smoke:
         _zz_cut = [b for b in zz_btns() if str(getattr(b, "id", "")).startswith("jr_stage_")]
         check(_zz_cut and all(isinstance(b._tooltip, builtins.tuple) and b._tooltip[0].startswith("Somebody Remembered\n") and b._tooltip[1] == b.id for b in _zz_cut),
               "a cut line is a row whose hover label is the thread's title and the whole line", [getattr(b, "_tooltip", None) for b in _zz_cut])
+        check(not any(t.endswith("…") for t in zz_texts("journal")) and any(t in THREADS["nobara_saori"]["short"] for t in zz_texts("journal")),
+              "her cut lines print their short names, with no ellipsis", [t for t in zz_texts("journal") if t.endswith("…")])
+        check(zz_has("More time together") or not jr_next_hangout("nobara"), "her resolved story's NEXT row reads More time together")
         if _zz_cut:
             renpy.set_focus("journal", _zz_cut[0].id)
         shot("page_nobara_story_cut_hover")
@@ -1028,8 +1166,45 @@ label zz_smoke:
               and not zz_has(jr_aff_note("nobara") or "zz none"),
               "the heart bar prints its rank; what holds it back is its hover label", (_zz_tip, jr_aff_note("nobara")))
         check(zz_has("Promoted Day %s" % jr_promotions("nobara")[-1][0]), "the promotions line is the latest promotion's day", jr_promotions("nobara"))
+        ## The tightest page: Maki, her story finished, in a room I can't
+        ## enter (her nights, once P1's person_now is in).
+        zz_patch("person_now", zz_now("girls_dorm", "Somewhere I can't go right now", reachable=False, hidden=True))
+        threads["maki_zenin"] = 3
+        zz_open("people", sel="maki", psub="story")
+        shot("page_maki_hidden")
+        _zz_tx = zz_texts("journal")
+        check(not any(t.strip() == "…" for t in _zz_tx) and all((n in _zz_tx) != (l in _zz_tx) for n, l in zip(THREADS["maki_zenin"]["short"], THREADS["maki_zenin"]["stages"]) if n != "Heavenly Restriction")
+              and any(t.startswith("Usually: ") and t.endswith(" …") for t in _zz_tx),
+              "Maki in a room I can't enter, story finished: four named rows, no bare ellipsis, the first usual place printed", _zz_tx)
         renpy.hide_screen("journal")
         zz_unpatch("person_now")
+        ## The Me page: "1st year" as on everyone's page; a name as long as
+        ## the prompt allows stays left of the Back chip, with the chip and
+        ## the year.
+        _zz_nm = (mc_name, mc_surname)
+        zz_open("people", sel="me")
+        check(zz_has("1st year") and not zz_has("First-year"), "the Me page says 1st year, as every other page does")
+        mc_name, mc_surname = "W" * 16, "M" * 16
+        zz_open("people", sel="me")
+        shot("me_long_name")
+        _zz_back = zz_rect("journal", "jr_back")
+        _zz_yr = zz_node("1st year")
+        _zz_fit = jr_fit_name(jr_stats_title(), JR_DISPLAY_FONT, 40, 28, 600)
+        check(_zz_fit[1] == 28 and _zz_fit[0].endswith("…") and jr_text_width(_zz_fit[0], JR_DISPLAY_FONT, 28) <= 600
+              and zz_has(_zz_fit[0]) and _zz_yr is not None,
+              "a name as long as the prompt allows is drawn smaller and clipped to 600 px, and the year is still drawn", _zz_fit)
+        mc_name, mc_surname = "Bo", "Li"
+        check(jr_fit_name(jr_stats_title(), JR_DISPLAY_FONT, 40, 28, 600) == (jr_stats_title(), 40), "a short name is left alone")
+        mc_name, mc_surname = _zz_nm
+        ## Sana's page with nothing on it speaks of her, not of "them".
+        zz_patch("jr_page_memories", lambda who: [])
+        zz_open("people", sel="sana")
+        check(zz_has("Nothing yet. What I remember of her ends up here.") and not zz_any("with them"),
+              "Sana's empty page says what I remember of her")
+        zz_open("people", sel="yuji", psub="memories")
+        check(zz_has("Nothing shared yet. Scenes I live through with them end up here."), "anyone else's empty Memories pane keeps its line")
+        zz_unpatch("jr_page_memories")
+        renpy.hide_screen("journal")
         gui.icon_words = "auto"
 
     $ finish()

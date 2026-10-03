@@ -3,6 +3,10 @@
 ##
 ## A thread is one person's unfinished business. Events advance it; the journal
 ## shows the player what they've opened and what's still hanging.
+##
+## `stages` are the lines I learn, in order; `short` names each of them in a
+## word or two, for a person's page when the whole line doesn't fit (the whole
+## line is then the hover label). Only the stage index is saved.
 ################################################################################
 
 init -1 python:
@@ -10,6 +14,7 @@ init -1 python:
     THREADS = {
         "yuji_countdown": dict(
             who="yuji", title="The Countdown",
+            short=["Something quiet", "The roof", "Going first", "The promise"],
             stages=[
                 "He is the loudest person here and something underneath him is very quiet.",
                 "He stopped moving for one second on the roof. Something enormous is underneath.",
@@ -18,6 +23,7 @@ init -1 python:
             ]),
         "megumi_tsumiki": dict(
             who="megumi", title="An Unsolved Problem",
+            short=["The exits", "Tsumiki", "The folder", "Fresh eyes"],
             stages=[
                 "He watches the exits in every room and won't say what he's watching for.",
                 "His step-sister Tsumiki has been cursed asleep for a year.",
@@ -26,6 +32,7 @@ init -1 python:
             ]),
         "nobara_saori": dict(
             who="nobara", title="Somebody Remembered",
+            short=["No reasons", "Saori", "Tokyo faces", "Out loud"],
             stages=[
                 "She decided she liked me inside a week and won't be asked why.",
                 "Saori. The city girl her village decided about until she left.",
@@ -34,6 +41,7 @@ init -1 python:
             ]),
         "maki_zenin": dict(
             who="maki", title="Make Them Look",
+            short=["Dawn appointment", "Heavenly Restriction", "Mai", "Going back"],
             stages=[
                 "Dawn, the dojo, and a standing appointment I didn't agree to.",
                 "Heavenly Restriction. I worked it out without being told.",
@@ -42,6 +50,7 @@ init -1 python:
             ]),
         "panda_made": dict(
             who="panda", title="Something That Could Say No",
+            short=["Welfare checks", "Yaga's work", "Two before"],
             stages=[
                 "He does welfare checks at eight in the evening with crisps.",
                 "Cursed corpse. Yaga built him a personality and then had to live with it.",
@@ -49,6 +58,7 @@ init -1 python:
             ]),
         "toge_voice": dict(
             who="toge", title="Six Words",
+            short=["Six fillings", "Getting fluent", "One word"],
             stages=[
                 "Salmon, tuna, tuna mayo, bonito flakes, mustard leaf, kelp.",
                 "I've started getting them right more often than wrong.",
@@ -56,13 +66,15 @@ init -1 python:
             ]),
         "shoko_remembers": dict(
             who="shoko", title="The One Who Was There",
+            short=["No rota", "Suguru Geto", "Somebody asked"],
             stages=[
                 "Four people in the country can heal. There is no rota.",
                 "Suguru Geto. Eleven years, and nobody has asked her how she is about it.",
                 "She stopped pretending she didn't need anyone to ask.",
             ]),
         "gojo_measure": dict(
-            who="gojo", title="Taking Your Measure",
+            who="gojo", title="Taking My Measure",
+            short=["The alley", "The test", "No show"],
             stages=[
                 "He recruited me off one night in an alley and has been unreadable since.",
                 "He's been testing me the whole time. I finally noticed.",
