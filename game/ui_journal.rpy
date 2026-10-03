@@ -430,6 +430,21 @@ init python:
         found.sort(key=lambda r: r[0])
         return found[0][1]
 
+    def jr_closer(who):
+        """P3. The page's "Closer: ..." line. It is unlock_line(who), except
+        while the roll-call gate holds this person's next scene: then
+        nothing with them gets closer before roll call, and the line says
+        so, as the story's NEXT row does ("Closer: after roll call")."""
+        if who not in CAST:
+            return ""
+        nh = jr_next_hangout(who)
+        if nh and nh[1] == "held":
+            return "Closer: %s%s" % (nh[2][:1].lower(), nh[2][1:])
+        try:
+            return unlock_line(who) or ""
+        except Exception:
+            return ""
+
     def jr_thread_id(who):
         """P3. The id of this person's thread, or None."""
         for tid in THREAD_ORDER:
@@ -2117,7 +2132,7 @@ screen jr_person_detail(js, who):
     ## When I can't see where they are, the first of their usual places is
     ## printed (the rest on hover); mid-scene, all of them.
     $ _line2 = "" if _seen_now else (_today or (_us if not _live else (_("Usually: ") + jr_usual_first(_us))))
-    $ _ul = unlock_line(who) if who in CAST else ""
+    $ _ul = jr_closer(who)
     $ _chip_mem = "Memories %d/%d" % (_seen, len(_mems))
     $ _words = jr_word_count(_d["name"], (_gt or (grade_label(_gk) if _gk else "")), _year, _d["bond_rank"], _prom, _heart,
                              (_("RIGHT NOW") if _live else _("USUALLY")), _now, _line2, _ul, _("Their story"), _chip_mem, _("← Back"))
