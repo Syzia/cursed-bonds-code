@@ -446,6 +446,13 @@ label zz_smoke:
         check(not stage_people(here)[0] and "Nobody here right now." in zz_texts("sb_place"),
               "an empty place says nobody is here, and no more than that (phase 2)", zz_texts("sb_place"))
     hide screen sb_place
+    $ here = "dorm"
+    show screen sb_place
+    python:
+        zz_render(0.2)
+        check(not stage_people(here)[0] and "Nobody here right now." not in zz_texts("sb_place"),
+              "but not in my own room", zz_texts("sb_place"))
+    hide screen sb_place
 
     ## --- the person view ---------------------------------------------------------------------
     python:
@@ -616,11 +623,21 @@ label zz_smoke:
         _left = ARRIVAL[1] + ARRIVAL_IN + ARRIVAL_HOLD + ARRIVAL_OUT - OBJ_SHOWN[0]
         check(_t0 is not None and OBJ_SHOWN[1] >= _left - 0.01,
               "the objective toast waits until the arrival caption has faded", (OBJ_SHOWN[1], _left))
+        ## ... and by what is drawn, not only by the number: the banner's
+        ## slide is still at alpha 0 while the caption is up.
+        _ob = []
+        renpy.get_screen("objective_toast").visit_all(
+            lambda d: _ob.append(d.state.alpha) if isinstance(d, renpy.display.transform.ATLTransform) else None)
+        check(_ob and _ob[0] == 0.0, "while the arrival caption is up the objective banner is not drawn", _ob)
     $ renpy.pause(3.4, hard=True)
     $ shot("objective_toast", wait=0.4)
     python:
         check(arrival_caption() is None and renpy.get_screen("objective_toast") is not None,
               "then the objective toast slides in on its own")
+        _ob = []
+        renpy.get_screen("objective_toast").visit_all(
+            lambda d: _ob.append(d.state.alpha) if isinstance(d, renpy.display.transform.ATLTransform) else None)
+        check(_ob and _ob[0] == 1.0, "and is fully drawn once the caption has faded", _ob)
         ## Leaving the place view takes it down; read by now, so it stays gone.
         OBJ_SHOWN[0] -= 10
         objective_leave()

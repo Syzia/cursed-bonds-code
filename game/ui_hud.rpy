@@ -326,6 +326,10 @@ init python:
             ## so the toast's delay can be read from it.
             arrival_caption()
             objective_delay()
+            ## Taken down first, so it is shown fresh: a banner that came back
+            ## with a loaded save would otherwise be replaced in place, keep
+            ## its finished slide, and sit on the arrival caption.
+            renpy.hide_screen("objective_toast")
             renpy.show_screen("objective_toast", txt)
 
     def _objective_after_load():
@@ -512,8 +516,12 @@ screen toasts():
 
 ## Objective toast (4.3) #########################################################
 
+## `appear` as well as `show`: the banner sits inside a `showif`, and a showif
+## child whose condition holds as its screen first shows is sent `appear`.
+## Without it the delay and the slide never ran, and the banner sat on the
+## arrival caption.
 transform objective_slide(d=0.0):
-    on show:
+    on show, appear:
         yoffset -40 alpha 0.0
         pause d
         easein OBJECTIVE_IN yoffset 0 alpha 1.0

@@ -151,6 +151,41 @@ init 999 python:
         """True when two (x, y, w, h) rectangles overlap."""
         return a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]
 
+    def zz_hud_toasts():
+        """(x, y, w, h) of the toast stack as drawn (the frames' own sizes
+        from the last render, 8 px apart, under toast_room()'s corner), or
+        None when none is drawn."""
+        zz_render()
+        sc = renpy.get_screen("toasts")
+        hs = []
+
+        def each(d):
+            ws = getattr(d, "window_size", None)
+            if isinstance(d, renpy.display.layout.Window) and ws and int(round(ws[0])) == 460:
+                hs.append(int(round(ws[1])))
+
+        if sc is not None:
+            sc.visit_all(each)
+        if not hs:
+            return None
+        x, y, _n = toast_room()
+        return (x - 460, y, 460, sum(hs) + 8 * (len(hs) - 1))
+
+    def zz_hud_banner():
+        """(alpha, yoffset) of the objective banner's slide as drawn now, or
+        None when the screen is not up."""
+        zz_render()
+        sc = renpy.get_screen("objective_toast")
+        out = []
+
+        def each(d):
+            if isinstance(d, renpy.display.transform.ATLTransform):
+                out.append((round(d.state.alpha, 2), d.state.yoffset))
+
+        if sc is not None:
+            sc.visit_all(each)
+        return out[0] if out else None
+
     def zz_hud_tip(w):
         """A displayable's tooltip, as the engine reads it when it is focused."""
         try:
@@ -384,6 +419,7 @@ label zz_smoke:
     ## --- 3. the column offers exactly rail_actions and the missions ------------------
     python:
         _zz_seen_m = set()
+        _zz_most_rows = 0
         _zz_bad = []
         _zz_n = 0
         ## By the functions, on both fixtures.
@@ -411,9 +447,19 @@ label zz_smoke:
                             _zz_bad.append(("release last", _zz_kind, _zz_comp, _zz_loc, _zz_per))
                         if sorted(r for c in rail_columns(_zz_rows) for r in c) != sorted(_zz_rows):
                             _zz_bad.append(("columns lose a row", _zz_loc, _zz_per))
+                        _zz_most_rows = max(_zz_most_rows, len(_zz_rows))
+                        ## Two columns at most, with pictures and with stand-in
+                        ## words: a third would stand on the stage (4.4).
+                        for _zz_la in (ZZ_HUD_LOADABLE[0], zz_hud_no_art):
+                            renpy.loadable = _zz_la
+                            if len(rail_columns(_zz_rows)) > RAIL_COLUMNS:
+                                _zz_bad.append(("a third column", _zz_loc, _zz_per, len(_zz_rows)))
+                        renpy.loadable = ZZ_HUD_LOADABLE[0]
         check(not _zz_bad, "rail_rows: the missions first, then rail_actions in order, the release row last with a companion "
               "(%d room x period x companion x fixture)" % _zz_n, _zz_bad[:4])
         check(_zz_seen_m, "at least one room offered a mission in the column", sorted(_zz_seen_m))
+        check(RAIL_COLUMNS == 2 and _zz_most_rows <= RAIL_MAX + RAIL_MAX - 1,
+              "no room x period needs a third column (the most tiles anywhere: %d; room for 15)" % _zz_most_rows)
 
         ## By the screen itself, as drawn, on the rich fixture.
         zz_hud_fixture("rich")
@@ -524,6 +570,11 @@ label zz_smoke:
         _zz_lane = (TOAST_LANE[0], TOAST_LANE[1], TOAST_LANE[2] - TOAST_LANE[0], TOAST_LANE[3] - TOAST_LANE[1])
         check(all(_zz_r) and not any(zz_hud_meets(r, _zz_lane) for r in _zz_r) and min(r[1] for r in _zz_r) >= 360,
               "nine actions, four toasts: no tile meets the toast lane and none rises above y 360", _zz_r)
+        _zz_drawn = zz_hud_toasts()
+        check(_zz_drawn is not None and _zz_drawn[:3] == (1330, 92, 460)
+              and not any(zz_hud_meets(r, _zz_drawn) for r in _zz_r)
+              and _zz_drawn[1] + _zz_drawn[3] <= RAIL_TOP_INNER,
+              "no tile meets the four toasts as drawn (they end above the second column's top line, y 430)", _zz_drawn)
         _zz_xs = sorted(set(r[0] for r in _zz_r))
         check(_zz_xs == [1726, 1808] and sum(1 for r in _zz_r if r[0] == 1808) == 8
               and max(r[1] + r[3] for r in _zz_r) == 1040 and all(r[1] >= RAIL_TOP_INNER for r in _zz_r if r[0] == 1726),
@@ -549,12 +600,16 @@ label zz_smoke:
               and all(r[1] >= RAIL_TOP_INNER for r in _zz_r if r[0] < 1808),
               "stand-in icons with their words: at most six to a column, none above y 360, clear of the toast lane",
               (_zz_r, [len(c) for c in _zz_cols]))
-        check(all(r[3] <= rail_height(row[1], row[4]) for r, row in zip(_zz_r, _zz_rows)),
-              "rail_height() is never less than a tile's drawn height", [(r[3], rail_height(row[1], row[4])) for r, row in zip(_zz_r, _zz_rows)])
+        check(all(r[3] <= rail_height(row[1], row[4], rail_word(row)) for r, row in zip(_zz_r, _zz_rows)),
+              "rail_height() is never less than a tile's drawn height",
+              [(r[3], rail_height(row[1], row[4], rail_word(row))) for r, row in zip(_zz_r, _zz_rows)])
         check(not any(zz_hud_meets(a, b) for i, a in enumerate(_zz_r) for b in _zz_r[:i]), "no two stand-in tiles overlap")
         _zz_t, _zz_w = zz_hud_under("sb_place", "rail_column")
         check("Wait" in _zz_t and u"？" not in zz_texts("sb_place"),
               "the stand-in tiles carry their words, and no icon is a question mark", _zz_t)
+        check(len(set(_zz_t)) == len(_zz_rows) and all(rail_word(r) in _zz_t for r in _zz_rows)
+              and "Harness action 0" in _zz_t and "Do it" not in _zz_t,
+              "a tile's word is its action's own name, so no two tiles read the same", _zz_t)
         shot("place_standin_nine", wait=0.2)
         gui.icon_words = "never"
         zz_render(0.2)
@@ -611,7 +666,7 @@ label zz_smoke:
             if _zz_chip_text not in _zz_t:
                 _zz_bad.append((_zz_who, "no chip %r" % _zz_chip_text))
             _zz_back = zz_rect("sb_char", "sb_char_back")
-            if not _zz_back or _zz_back[1] < 190 or _zz_back[1] + _zz_back[3] > 1040 or _zz_back[0] < 1180:
+            if not _zz_back or _zz_back[1] < RAIL_CARD_Y or _zz_back[1] + _zz_back[3] > 1040 or _zz_back[0] < 1180:
                 _zz_bad.append((_zz_who, "Back at %r" % (_zz_back,)))
             renpy.hide_screen("sb_char")
     python:
@@ -650,14 +705,25 @@ label zz_smoke:
     python:
         zz_render(0.6)
         _zz_r = [zz_rect("sb_char", "sb_char_%d" % i) for i in range(4)] + [zz_rect("sb_char", "sb_char_invite"), zz_rect("sb_char", "sb_char_back")]
-        check(all(_zz_r) and all(r[2] == 600 and r[0] == 1200 for r in _zz_r[:4]) and min(r[1] for r in _zz_r) >= 190
+        check(all(_zz_r) and all(r[2] == 600 and r[0] == 1200 for r in _zz_r[:4]) and min(r[1] for r in _zz_r) >= RAIL_CARD_Y
               and max(r[1] + r[3] for r in _zz_r) <= 1040 and max(r[0] + r[2] for r in _zz_r) <= 1820,
-              "the card's four choices are 600 wide, inside x 1180 to 1820, from y 190 down, all on screen", _zz_r)
+              "the card's four choices are 600 wide, inside x 1180 to 1820, from y 250 down, all on screen", _zz_r)
         _zz_tip = zz_hud_tip(zz_hud_wid("sb_char", "sb_char_0"))
         check(_zz_tip == (u"Nobara's errand in Harajuku\nShe wants backup for something she refuses to explain until we're on the train.", "sb_char_0"),
               "a choice's hint is its hover label", _zz_tip)
         check(not any("refuses to explain" in s for s in zz_texts("sb_char")), "and is no longer written on the card")
         shot("person_full_card", wait=0.2)
+        ## Two three-line toasts beside Menu still end above the card.
+        toast_clear()
+        toast("Back on the rack: the Slaughter Demon; in my hand: the Playful Cloud, three sections and all of them heavy", "item")
+        toast("Nobara — I'd have to know them better first, and that is going to take more than one afternoon in town", "info")
+        zz_render(0.5)
+        _zz_drawn = zz_hud_toasts()
+        check(RAIL_CARD_Y == 250 and len(toast_visible()) == 2 and _zz_drawn is not None and _zz_drawn[3] > 180
+              and _zz_drawn[1] + _zz_drawn[3] <= RAIL_CARD_Y,
+              "two three-line toasts over the person view end above the card (y 250)", _zz_drawn)
+        shot("person_long_toasts", wait=0.2)
+        toast_clear()
         renpy.hide_screen("sb_char")
         zz_hud_swap("missions_with", _zz_o_mw)
 
@@ -836,6 +902,31 @@ label zz_smoke:
               (TOAST_LANE, _zz_banner))
     scene expression graded_bg()
     python:
+        ## The banner waits for the arrival caption (4.3): read what is
+        ## drawn, as the loop shows it (check_objective, then the place view).
+        zz_hud_quiet()
+        _zz_o_ot = zz_hud_swap("objective_text", lambda: "Harness: wait for the arrival caption")
+        day += 1
+        store.last_objective = None
+        check_objective()
+        renpy.show_screen("sb_place")
+        zz_render(1.0)
+        _zz_b1 = zz_hud_banner()
+        check(arrival_caption() is not None and _zz_b1 is not None and _zz_b1[0] == 0.0,
+              "while the arrival caption is up the objective banner is not drawn (alpha 0)", _zz_b1)
+        shot("banner_waits", wait=0)
+        zz_render(3.2)
+        _zz_b2 = zz_hud_banner()
+        check(arrival_caption() is None and _zz_b2 is not None and _zz_b2 == (1.0, 0),
+              "once the caption has faded the banner has slid in (alpha 1)", _zz_b2)
+        shot("banner_after_caption", wait=0)
+        renpy.hide_screen("objective_toast")
+        renpy.hide_screen("sb_place")
+        zz_hud_swap("objective_text", _zz_o_ot)
+        store.last_objective = objective_text() or ""
+        ## zz_worst shows the banner itself: no caption in its way.
+        arrival_caption()
+        ARRIVAL[1] -= 10
         _zz_ok = zz_worst("sb_place", hover="rail_wait")
         check(_zz_ok and renpy.get_screen("sb_place") and os.path.isfile(os.path.join(zz_smoke_state.shots, "worst_sb_place.png")),
               "zz_worst(sb_place): four toasts, the banner, skipping, a tile hovered: on file")
@@ -901,6 +992,10 @@ label zz_smoke:
         _zz_o = list(AMBIENT_STORY)
         AMBIENT_STORY.append(("nobody", "nowhere", "thread:yuji:9", "", "smug"))
         check(len(_validate_wp7_tables()) >= 4, "the validator reports a bad AMBIENT_STORY row", _validate_wp7_tables())
+        AMBIENT_STORY[:] = _zz_o
+        AMBIENT_STORY.append(("shoko", "infirmary", "grade:shoko:g2", "never", "neutral"))
+        check(any("no grade" in f for f in _validate_wp7_tables()) and len(_validate_wp7_tables()) == 1,
+              "the validator reports a grade condition on someone with no grade", _validate_wp7_tables())
         AMBIENT_STORY[:] = _zz_o
 
     ## --- the stand-in path, and the icon names P2's files use ---------------------------

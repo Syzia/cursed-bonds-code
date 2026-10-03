@@ -275,6 +275,8 @@ init python:
     RAIL_TOP_INNER = 430
     RAIL_MAX = 8            # tiles in a column
     RAIL_MAX_WORDS = 6      # while icons show their words underneath
+    RAIL_COLUMNS = 2        # a third column would stand on the stage (x 40 to 1700)
+    RAIL_CARD_Y = 250       # the person view's card: its top edge
 
     def rail_tip(label, hint="", cost=0):
         """P2 (sb_screens.rpy). A hover label's text: "Train\nPush my cursed
@@ -321,14 +323,24 @@ init python:
             out.append((("act", aid), name, gold, rail_tip(label, hint, cost), cost, wid("rail_%s" % aid)))
         return out
 
-    def rail_height(name, pips=0):
+    def rail_word(row):
+        """P2 (sb_screens.rpy). The word under a tile while icons show their
+        words: an action's own name (the first line of its hover text:
+        "Practice", not the icon's "Train"), so two actions that share an
+        icon read differently; a mission keeps the icon's word."""
+        if row[0][0] == "act":
+            return row[3].split("\n")[0]
+        return icon_label(row[1])
+
+    def rail_height(name, pips=0, word=None):
         """P2 (sb_screens.rpy). How tall one tile is, at most: 72, or more
         while icons show their words: the icon, its diamonds, and 20 px for
-        each line of the word (a 72 px tile fits about nine letters a line)."""
+        each line of the word (`word`, or the icon's own; a 72 px tile fits
+        about nine letters a line)."""
         if not icon_words_shown(name):
             return RAIL_TILE
         lines, used = 1, 0
-        for word in icon_label(name).split():
+        for word in (word or icon_label(name)).split():
             if used and used + 1 + len(word) > 9:
                 lines += 1
                 used = 0
@@ -340,12 +352,14 @@ init python:
         the screen's edge first; each keeps the rows' order, and the last
         rows (Wait, "Let them go") stay at the foot of the edge column. A
         column takes eight tiles (six while words show) and never more
-        than fit under its top line (RAIL_TOP, RAIL_TOP_INNER)."""
+        than fit under its top line (RAIL_TOP, RAIL_TOP_INNER). There is
+        room for two columns (fifteen tiles): a third would stand on the
+        stage, and p2_hud fails a room that needs one."""
         cap = RAIL_MAX_WORDS if any(icon_words_shown(r[1]) for r in rows) else RAIL_MAX
         cols, cur, used = [], [], 0
         for r in reversed(rows):
             room = RAIL_BOTTOM - (RAIL_TOP_INNER if cols else RAIL_TOP)
-            h = rail_height(r[1], r[4])
+            h = rail_height(r[1], r[4], rail_word(r))
             if cur and (len(cur) >= cap or used + RAIL_GAP + h > room):
                 cols.append(cur[::-1])
                 cur, used = [], 0
@@ -490,6 +504,9 @@ init python:
             elif bits[0] == "grade" and len(bits) == 3:
                 if bits[2] not in GRADES or not (bits[1] == "mc" or bits[1] in NPC_BASE):
                     out.append("AMBIENT_STORY (%s, %s): %r names no grade" % (who, loc, cond))
+                elif bits[1] != "mc" and NPC_BASE[bits[1]].get("grade") is None:
+                    ## Shoko, Ijichi: grade_rank(None) is -1, so the row could never hold.
+                    out.append("AMBIENT_STORY (%s, %s): %r names someone with no grade" % (who, loc, cond))
             elif len(bits) != 1 or not cond:
                 out.append("AMBIENT_STORY (%s, %s): %r is not a flag, thread:<who>:<n> or grade:<who>:<key>" % (who, loc, cond))
         for loc, st in PLACE_STAGING.items():
@@ -580,7 +597,7 @@ screen sb_cost(n):
 ## diamonds under it. (icon_btn itself is as tall as its icon plus its
 ## diamonds, so a column of them would be uneven.) While icons show their
 ## words the tile grows downward by the word's lines.
-screen rail_btn(name, action, tip, wid, gold=False, pips=0):
+screen rail_btn(name, action, tip, wid, gold=False, pips=0, word=None):
     button:
         id wid
         style "icon_btn_button"
@@ -600,7 +617,7 @@ screen rail_btn(name, action, tip, wid, gold=False, pips=0):
                     for _rail_k in range(pips):
                         add "gui/pip_small.png"
             if icon_words_shown(name):
-                text icon_label(name):
+                text (word or icon_label(name)):
                     style "icon_btn_word"
                     substitute False
                     xalign 0.5
@@ -664,8 +681,9 @@ screen sb_place():
                     tooltip (rail_tip(CAST[_w]["short"], ambient_of(_w, here)[0]), "rail_more_" + _w)
                     action Return(("char", _w))
 
-    ## Nobody home.
-    if not _stage:
+    ## Nobody home. (Not said in my own room, where it is the only line on
+    ## the screen and I am the one who is there.)
+    if not _stage and here != "dorm":
         frame:
             xcenter 700
             ycenter 640
@@ -704,8 +722,9 @@ screen sb_place():
             vbox:
                 yalign 1.0
                 spacing RAIL_GAP
-                for _ret, _ic, _gold, _tip, _pips, _wid in _col:
-                    use rail_btn(_ic, Return(_ret), _tip, _wid, gold=_gold, pips=_pips)
+                for _row in _col:
+                    $ _ret, _ic, _gold, _tip, _pips, _wid = _row
+                    use rail_btn(_ic, Return(_ret), _tip, _wid, gold=_gold, pips=_pips, word=rail_word(_row))
 
     use sb_hud
 
@@ -733,13 +752,14 @@ screen sb_char(who):
 
     use view_focus(who)
 
-    ## The card starts at y 190: two toasts sit above it, beside Menu.
+    ## The card starts at y 250: two toasts sit above it, beside Menu, and
+    ## two three-line ones (26 + 97 + 8 + 97) still end above it.
     frame:
         style "jjk_panel"
         xpos 1180
-        ypos 190
+        ypos RAIL_CARD_Y
         xsize 640
-        ymaximum 850
+        ymaximum 1040 - RAIL_CARD_Y
         padding (20, 20)
 
         vbox:
