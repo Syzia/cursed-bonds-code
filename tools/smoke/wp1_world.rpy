@@ -4,6 +4,13 @@
 ##
 ##   tools/smoke.sh tools/smoke/wp1_world.rpy
 ##
+## Phase 2 (P1): the map has two levels. A room's pin (row_<loc>) is on its
+## area's view, so the harness opens the map on that area (sb_map(area=...))
+## before pressing it; a district marker only opens the district, so a trip is
+## two presses (district_<key>, then district_go). Hover lines are tuples
+## (text, key). Megumi's weekend afternoon is the Library (the frozen copy
+## below follows it).
+##
 ## Every acceptance bullet is a named check. Screenshots of both map layers go
 ## to shots/wp1/ (as well as this harness's own shots/wp1_world/), with more
 ## of the placeholder backgrounds and the map in other states.
@@ -15,6 +22,7 @@ init 999 python:
 
     ## --- a frozen copy of the world before phase 1 (commit 57eb3db) ----------
     ## The regression check compares today's char_location against this.
+    ## Phase 2 changed one row on purpose: Megumi, weekend Afternoon -> library.
     ZZ_OLD_SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "dorm_common"},
@@ -37,7 +45,7 @@ init 999 python:
     }
     ZZ_OLD_WEEKEND = {
         "yuji":   {"Morning": "dorm_common", "Afternoon": "riverside", "Evening": "cafeteria"},
-        "megumi": {"Morning": "forest",      "Afternoon": "ridge"},
+        "megumi": {"Morning": "forest",      "Afternoon": "library"},
         "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
         "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
         "panda":  {"Afternoon": "riverside"},
@@ -136,6 +144,16 @@ init 999 python:
     ## screen gave it, so these checks test what the map's rows and cards do.
     ZZ_PRESSED = zz_builtins.list()
 
+    def zz_run_on_map(a):
+        """Run a button's action with sb_map as the current screen, as a
+        real click does: SetScreenVariable writes to renpy.current_screen(),
+        and a timer on another screen would otherwise write to its own."""
+        renpy.display.screen.push_current_screen(renpy.get_screen("sb_map"))
+        try:
+            return renpy.run(a)
+        finally:
+            renpy.display.screen.pop_current_screen()
+
     def zz_press_fn(wid):
         w = renpy.get_widget("sb_map", wid)
         if w is None:
@@ -143,8 +161,25 @@ init 999 python:
             return ("zz_missing", wid)
         a = getattr(w, "action", None)
         ZZ_PRESSED.append((wid, a, getattr(w, "_tooltip", None)))
-        rv = renpy.run(a)
+        rv = zz_run_on_map(a)
         return rv if rv is not None else ("zz_nothing", wid)
+
+    def zz_open_fn(wid):
+        """Press a marker that only opens its level (it returns nothing, and
+        the interaction goes on)."""
+        w = renpy.get_widget("sb_map", wid)
+        a = getattr(w, "action", None) if w is not None else None
+        ZZ_PRESSED.append((wid, a, getattr(w, "_tooltip", None)))
+        if w is None:
+            return ("zz_missing", wid)
+        rv = zz_run_on_map(a)
+        if rv is not None:
+            return rv           ## phase 1's map returned here; phase 2's must not
+        return None
+
+    def zz_tip_text(t):
+        """The words of a hover line: the first element of a (text, key) tuple."""
+        return t[0] if isinstance(t, tuple) and len(t) == 2 else None
 
     def zz_pressed(wid):
         """(action, tooltip) of the last press of wid."""
@@ -160,9 +195,15 @@ screen zz_ret(value, delay=0.4):
     timer delay action [Hide("zz_ret"), Return(value)]
 
 ## Presses one of sb_map's buttons (by id) inside the running interaction.
-screen zz_press(wid, delay=0.4):
+## With first=<id>, that marker is pressed first (it opens its level and
+## returns nothing), then wid half a second later.
+screen zz_press(wid, delay=0.4, first=None):
     zorder 200
-    timer delay action [Hide("zz_press"), Function(zz_press_fn, wid)]
+    if first:
+        timer delay action Function(zz_open_fn, first)
+        timer (delay + 0.5) action [Hide("zz_press"), Function(zz_press_fn, wid)]
+    else:
+        timer delay action [Hide("zz_press"), Function(zz_press_fn, wid)]
 
 
 label zz_smoke:
@@ -622,17 +663,20 @@ label zz_smoke:
     call sb_trip("shinjuku")
     $ check(period == "Morning" and "shinjuku" not in districts_visited, "no trip to a locked district")
 
-    ## The car action: pressing the Yotsuka card on the Tokyo map starts the trip.
+    ## The car action: opening Yotsuka on the Tokyo map and pressing "Ride
+    ## with Ijichi" starts the trip (phase 2: two presses).
     $ day = 3
     $ period = "Noon"
     $ here = "gate"
     $ grade = "g4"
     $ autoplay()
-    show screen zz_press("district_yotsuka")
+    show screen zz_press("district_go", first="district_yotsuka")
     call sb_do_car
     $ autoplay(False)
     $ check((day, period, here) == (3, "Evening", "gate") and "yotsuka" in districts_visited,
-            "the car: pressing a district card -> half a day (Noon -> Evening)", (day, period, here, districts_visited))
+            "the car: a district marker, then district_go -> half a day (Noon -> Evening)", (day, period, here, districts_visited))
+    $ check(zz_pressed("district_yotsuka")[0].__class__.__name__ == "SetScreenVariable",
+            "the car: the district marker itself only opens the district", zz_pressed("district_yotsuka"))
 
     ## Phase 2 (D26): with a story beat waiting at the gate the same trip ends
     ## an hour early, so the beat isn't pushed to tomorrow.
@@ -665,43 +709,58 @@ label zz_smoke:
     call sb_do_car
     $ check((period, here) == ("Morning", "gate"), "sb_do_car: a returned cancel stays put")
 
-    ## The map's real buttons, pressed inside the protected-style call.
+    ## The map's real buttons, pressed inside the protected-style call. A
+    ## room's pin is on its area's view (phase 2), so the map opens there.
     $ here = "gate"
     $ period = "Morning"
     $ flags.discard("storehouse_access")
     show screen zz_press("row_cafeteria")
+    call screen sb_map(area=area_of("cafeteria"))
+    $ check(_return == ("go", "cafeteria"), "sb_map: pressing an open room's pin returns ('go', place) to the call", _return)
+    show screen zz_press("row_cafeteria", first="area_school")
     call screen sb_map
-    $ check(_return == ("go", "cafeteria"), "sb_map: pressing an open row returns ('go', place) to the call", _return)
+    $ check(_return == ("go", "cafeteria") and zz_pressed("area_school")[0].__class__.__name__ == "SetScreenVariable",
+            "sb_map: from the six areas, an area marker then a pin: two presses to anywhere", (_return, zz_pressed("area_school")))
+    show screen zz_press("row_cafeteria")
+    call screen sb_map
+    $ check(_return == ("zz_missing", "row_cafeteria"), "sb_map: the six areas show no room pins", _return)
     show screen zz_press("row_storehouse")
-    call screen sb_map
+    call screen sb_map(area=area_of("storehouse"))
     $ _a, _t = zz_pressed("row_storehouse")
     $ check(_return == ("zz_nothing", "row_storehouse") and _a.__class__.__name__ == "NullAction",
-            "sb_map: a locked row's action is NullAction", (_return, _a))
-    $ check(_t == can_enter("storehouse")[1], "sb_map: a locked row's tooltip is can_enter's reason", _t)
+            "sb_map: a locked pin's action is NullAction", (_return, _a))
+    $ check(isinstance(_t, tuple) and _t[1] == "row_storehouse" and can_enter("storehouse")[1] in zz_tip_text(_t),
+            "sb_map: a locked pin's hover line holds can_enter's reason", _t)
     show screen zz_press("row_gate")
-    call screen sb_map
+    call screen sb_map(area=area_of("gate"))
     $ _a, _t = zz_pressed("row_gate")
-    $ check(_a.__class__.__name__ == "NullAction", "sb_map: my own row does nothing", _a)
+    $ check(_a.__class__.__name__ == "NullAction", "sb_map: my own pin does nothing", _a)
+    show screen zz_press("district_go", first="district_harajuku")
+    call screen sb_map(layer="tokyo")
+    $ check(_return == ("district", "harajuku"),
+            "sb_map(layer='tokyo'): an open district, then district_go, returns ('district', key)", _return)
     show screen zz_press("district_harajuku")
     call screen sb_map(layer="tokyo")
-    $ check(_return == ("district", "harajuku"), "sb_map(layer='tokyo'): pressing an open district returns ('district', key)", _return)
+    $ check(_return == ("zz_nothing", "district_harajuku"),
+            "sb_map(layer='tokyo'): a district marker returns nothing by itself (it opens the district)", _return)
     show screen zz_press("district_shinjuku")
     call screen sb_map(layer="tokyo")
     $ _a, _t = zz_pressed("district_shinjuku")
     $ check(_a.__class__.__name__ == "NullAction", "sb_map(layer='tokyo'): a locked district (Shinjuku at g4) does nothing", _a)
+    $ check("Grade 2" in (zz_tip_text(_t) or ""), "sb_map(layer='tokyo'): a locked district's hover line says why", _t)
     $ period = "Evening"
-    show screen zz_press("district_harajuku")
+    show screen zz_press("district_go", first="district_harajuku")
     call screen sb_map(layer="tokyo")
-    $ _a, _t = zz_pressed("district_harajuku")
-    $ check(_a.__class__.__name__ == "NullAction" and _t == "Ijichi drives from the gate, mornings to afternoons.",
-            "sb_map(layer='tokyo'): an open district in the Evening does nothing and says when he drives", (_a, _t))
+    $ _a, _t = zz_pressed("district_go")
+    $ check(_a.__class__.__name__ == "NullAction" and "Ijichi drives from the gate, mornings to afternoons." in (zz_tip_text(_t) or ""),
+            "sb_map(layer='tokyo'): in the Evening district_go does nothing and says when he drives", (_a, _t))
     $ period = "Morning"
     $ pin("ijichi", "office")
-    show screen zz_press("district_harajuku")
+    show screen zz_press("district_go", first="district_harajuku")
     call screen sb_map(layer="tokyo")
-    $ _a, _t = zz_pressed("district_harajuku")
-    $ check(_a.__class__.__name__ == "NullAction" and _t == "Ijichi isn't at the gate right now.",
-            "sb_map(layer='tokyo'): in the morning with Ijichi elsewhere, a district says he isn't at the gate", (_a, _t))
+    $ _a, _t = zz_pressed("district_go")
+    $ check(_a.__class__.__name__ == "NullAction" and "Ijichi isn't at the gate right now." in (zz_tip_text(_t) or ""),
+            "sb_map(layer='tokyo'): in the morning with Ijichi elsewhere, district_go says he isn't at the gate", (_a, _t))
     $ schedule_overrides.pop(("ijichi", day, "Morning"), None)
     python:
         check(not any(("Junpei" in DISTRICTS[k]["places"]) or ("(later)" in DISTRICTS[k]["places"]) or ("at night" in DISTRICTS[k]["places"])
