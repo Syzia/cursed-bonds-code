@@ -428,7 +428,7 @@ label zz_smoke:
             if weekday_full() == "Wednesday":
                 break
         stamina = 20
-        _zz_o_tag = zz_hud_swap("night_tag", lambda: "Worn out")
+        _zz_o_tag = zz_hud_swap("night_tag", lambda: u"Worn out — no missions or training today")
         _zz_o_work = zz_hud_swap("night_can_work", lambda: False)
         _zz_o_skip = renpy.is_skipping
         renpy.is_skipping = lambda: True
@@ -454,6 +454,8 @@ label zz_smoke:
         check(_zz_t == {"hud_chip_moon": u"Worn out — no missions or training today",
                         "hud_chip_stamina": "Running on empty. Eat or sleep.", "hud_chip_skip": "Skipping"},
               "the chips' hover labels (a rest day, low stamina, skipping)", _zz_t)
+        check(hud_chips()[0][1] == night_tag() and hud_chips()[0][1].count("no missions or training today") == 1,
+              "the moon chip says night_tag()'s words as they come, the rest-day clause once", hud_chips()[0])
         check(not any("running on empty" in s for s in zz_texts("sb_place")),
               "the running-on-empty line is no longer above the actions")
         shot("hud_chips", wait=0.2)
@@ -465,7 +467,7 @@ label zz_smoke:
         explore_mode = True
         check([c[0] for c in hud_chips()] == [], "explore mode shows no stamina chip", hud_chips())
         explore_mode = False
-        note("the moon chip", "checked with night_tag() and night_can_work() swapped; P4b's real words arrive with its night rule (7.3)")
+        note("the moon chip", "checked with night_tag() swapped for P4b's real words (NIGHT_TAGS: the rest day's is the whole sentence) and night_can_work() False")
 
     ## --- 2. a hover label on every button, each key unique on its screen ------------
     python:
