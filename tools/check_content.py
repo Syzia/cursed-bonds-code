@@ -44,7 +44,9 @@ Rules (flags):
                       several lines; every target of `a = b = 1` and
                       `(a, b) = ...`, `store.NAME =`, `import x as NAME`,
                       `from x import y as NAME` and `with ... as NAME:`
-                      count; a plain `import x` does not), and every
+                      count, in every statement of `a = 1; b = 2`; a
+                      plain `import x` does not, nor does `except ... as
+                      NAME:`, which Python unbinds again), and every
                       `define`, `default`, `screen`, `style`, `transform`,
                       `image` and `label`. Store names (python names, define,
                       default, transform), screens, styles, images and labels
@@ -411,9 +413,10 @@ PY_TRANSPARENT = {"if", "elif", "else", "try", "except", "finally", "with", "for
 PY_NAME = re.compile(r"^[A-Za-z_]\w*$")
 PY_STORE_ATTR = re.compile(r"^(?:renpy\.)?store\.([A-Za-z_]\w*)$")
 PY_AS = re.compile(r"\bas\s+([A-Za-z_]\w*)")
-# `Function(`, also written `store.Function(` or `renpy.store.Function(`;
+# `Function(` (or `Function (`), also written `store.Function(` or
+# `renpy.store.Function(`;
 # never another object's method (`x.Function(`).
-FUNCTION_CALL = re.compile(r"(?<![\w.])(?:renpy\.store\.|store\.)?Function\(")
+FUNCTION_CALL = re.compile(r"(?<![\w.])(?:renpy\.store\.|store\.)?Function\s*\(")
 # `Function` with no call after it: handed on under another name.
 FUNCTION_ALIAS = re.compile(r"(?<![\w.])(?:renpy\.store\.|store\.)?Function\b(?!\s*\()")
 
@@ -445,13 +448,42 @@ def is_game(path):
     return file_key(path).startswith("game/")
 
 
+def py_statements(bare):
+    """One line of python cut at every `;` outside brackets (`a = 1; b = 2`).
+    `bare` has its string literals blanked, so a `;` in a string is no cut."""
+    parts = []
+    depth = 0
+    start = 0
+    for i, ch in enumerate(bare):
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth = max(0, depth - 1)
+        elif ch == ";" and depth == 0:
+            parts.append(bare[start:i])
+            start = i + 1
+    parts.append(bare[start:])
+    return [p for p in parts if p.strip()]
+
+
 def py_bound_names(bare):
-    """The names one python statement binds at its own level, read from its
-    first line with the string literals blanked out: `import x as NAME`,
-    `from x import y as NAME`, `with ... as NAME:`, `for NAME in`, and every
-    target of an assignment (`a = b = 1`, `(a, b) = ...`, `a: int = 1`,
+    """The names a line of python binds at its own level, read from its
+    first line with the string literals blanked out; every statement of
+    `a = 1; b = 2` is read."""
+    out = []
+    for part in py_statements(bare):
+        out.extend(py_bound_names_one(part))
+    return out
+
+
+def py_bound_names_one(bare):
+    """The names one python statement binds at its own level: `import x as
+    NAME`, `from x import y as NAME`, `with ... as NAME:`, `for NAME in`, and
+    every target of an assignment (`a = b = 1`, `(a, b) = ...`, `a: int = 1`,
     `store.a = 1`). A plain `import x` binds a module's own name and is left
-    alone; so is an augmented assignment, which defines nothing new."""
+    alone; so is an augmented assignment, which defines nothing new; so is
+    `except ... as NAME:`, because Python unbinds that name when the block
+    ends, so it never stays in the store."""
     code = bare.strip()
     if re.match(r"^import\s", code) or re.match(r"^from\s+[\w.]+\s+import\b", code):
         return PY_AS.findall(code)

@@ -470,7 +470,7 @@ screen dev_panel():
 
             hbox:
                 spacing 24
-                text _("The two story buttons play their scenes, then return to campus.") style "dev_note" yalign 0.5 xsize 1040
+                text _("The two story buttons play their scenes, then return to campus. Style sample opens a page of icons and chips.") style "dev_note" yalign 0.5 xsize 1040
                 textbutton _("Close"):
                     id "dev_close"
                     style "sb_hud_nav_button"

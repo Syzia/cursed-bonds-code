@@ -1186,7 +1186,7 @@ label zz_smoke:
               and _zz_rail[-1][4] == "release" and _zz_rail[-1][5] is False and zz_is_str(_zz_rail[-1][2]) and _zz_rail[-1][2]
               and [a[0] for a in _zz_rail].count("release") == 1 and zz_rows6(_zz_rail),
               "rail_actions with a companion ends in the release row", _zz_rail[-1:])
-        check(view_person_rects("dorm") == view_slot_rects("dorm", len(stage_people("dorm")[0])) or True,
+        check(len(view_person_rects("dorm")) == len(stage_people("dorm")[0]),
               "view_person_rects: one rectangle a person on stage", view_person_rects("dorm"))
         _zz_hd["x"], _zz_hd["y"] = _zz_was
         companion = None
