@@ -16,8 +16,9 @@
 ##   7. toast_room() over every kind of screen; toasts that wait keep
 ##   8. the toast lane and the banner never meet; the worst-case screenshots
 ##   9. ambient_of: a 2-tuple everywhere, and a caption that follows the story
-## and then the stand-in path (no icon pictures) and the icon names P2's files
-## use. Screenshots go to shots/p2_hud/: worst_sb_place.png, worst_sb_char.png
+## and then the stand-in path (no icon pictures), the icon names P2's files
+## use, and last a save made with the objective banner drawn, loaded again
+## (the banner waits for the arrival caption after a load too). Screenshots go to shots/p2_hud/: worst_sb_place.png, worst_sb_char.png
 ## and the others named below.
 ##
 ## The two fixtures are p2_contracts.rpy's ("fresh": day 3; "rich": day 9,
@@ -292,6 +293,84 @@ init 999 python:
 
     ZZ_HUD_LOADABLE = builtins.list([renpy.loadable])
 
+    ## The last section: save on the place view with the banner drawn, load,
+    ## and read the banner again. It runs from a timer inside the real loop
+    ## (label sandbox), because a load restarts the script where it was saved.
+    ZZ_HUD_LOAD = builtins.list([0, 0, 0])      # phase, loads seen, ticks
+
+    def zz_hud_loaded():
+        if ZZ_HUD_LOAD[0]:
+            ZZ_HUD_LOAD[1] += 1
+
+    config.after_load_callbacks.append(zz_hud_loaded)
+
+    def zz_hud_sweep():
+        """Drop this harness's own scratch variables (_zz_...) from the
+        store: an open file or a lambda among them cannot go into a save."""
+        for k in [k for k in builtins.list(vars(store)) if k.startswith("_zz_")]:
+            delattr(store, k)
+
+    def zz_hud_banner_now():
+        """zz_hud_banner() without the render (for use inside an interaction)."""
+        sc = renpy.get_screen("objective_toast")
+        out = []
+
+        def each(d):
+            if isinstance(d, renpy.display.transform.ATLTransform):
+                out.append((round(d.state.alpha, 2), d.state.yoffset))
+
+        if sc is not None:
+            sc.visit_all(each)
+        return out[0] if out else None
+
+    def zz_hud_load_step():
+        L = ZZ_HUD_LOAD
+        if not L[0] or len(renpy.game.contexts) != 1:
+            return None
+        L[2] += 1
+        if L[2] > 75:
+            check(False, "the save / load section runs to its end", (builtins.list(L), zz_hud_banner_now(), store.here))
+            finish()
+        b = zz_hud_banner_now()
+        ## First a turn of the real loop (a person and back), so the save is
+        ## made as the owner makes one: with a finished interaction behind
+        ## it, which is where a load starts running from.
+        if L[0] == 1:
+            if renpy.get_screen("sb_place"):
+                L[0] = 11
+                return ("char", stage_people(store.here)[0][0])
+            return None
+        if L[0] == 11:
+            if renpy.get_screen("sb_char"):
+                L[0] = 12
+                return ("cancel",)
+            return None
+        if not renpy.get_screen("sb_place"):
+            return None
+        if L[0] == 12:
+            if b != (1.0, 0) or arrival_caption() is not None:
+                return None
+            check(True, "fixture: in the loop, back on the place view, the banner is fully drawn when the save is made")
+            renpy.take_screenshot()
+            renpy.save("zz_hud_banner")
+            L[0], L[2] = 2, 0
+            renpy.load("zz_hud_banner")
+        elif L[0] == 2:
+            check(L[1] == 1 and (store.day, store.period, store.here) == (9, "Noon", "cafeteria"),
+                  "the save loads onto the same place view", (L[1], store.day, store.period, store.here))
+            check(arrival_caption() is not None and b is not None and b[0] == 0.0,
+                  "after a load the banner waits for the arrival caption again (alpha 0)", b)
+            _tags = [t for t in renpy.get_showing_tags("screens") if t == "objective_toast"]
+            check(len(_tags) == 1, "one banner screen after the load", _tags)
+            shot("banner_after_load", wait=0)
+            L[0] = 3
+        elif L[0] == 3:
+            if arrival_caption() is not None or b != (1.0, 0):
+                return None
+            check(True, "once the caption has faded after the load, the banner has slid in (alpha 1)")
+            finish()
+        return None
+
     config.overlay_screens.append("zz_hud_probe")
 
 
@@ -299,6 +378,8 @@ screen zz_hud_probe():
     zorder 200
     if ZZ_HUD_WANT[0]:
         timer 0.3 repeat True action Function(zz_hud_probe_fn)
+    if ZZ_HUD_LOAD[0]:
+        timer 0.4 repeat True action Function(zz_hud_load_step)
 
 
 label zz_smoke:
@@ -310,6 +391,7 @@ label zz_smoke:
         if _zz_root and os.path.isfile(os.path.join(_zz_root, "tools", "smoke", "baseline_p0.json")):
             with open(os.path.join(_zz_root, "tools", "smoke", "baseline_p0.json"), encoding="utf-8") as _zz_f:
                 _zz_base = json.load(_zz_f)
+            del _zz_f       # an open file may not reach the rollback log (the last section saves)
         check(_zz_base is not None and {"fresh", "rich", "sb_char"} <= set(_zz_base),
               "the baseline file loads (tools/smoke/baseline_p0.json)", _zz_root)
 
@@ -408,6 +490,14 @@ label zz_smoke:
         check(_zz_extra and all(("rail_more_" + w) in _zz_keys for w in _zz_extra) and "hud_dev" in _zz_keys
               and "hud_chip_stamina" in _zz_keys,
               "the overflow chip's names, Review tools and a status chip carry hover labels too", sorted(_zz_keys))
+        ## The "+N" chip stands between the fourth person and the column.
+        _zz_mr = [zz_rect("sb_place", "rail_more_" + w) for w in _zz_extra]
+        _zz_people = view_slot_rects(here, len(_zz_stage))
+        check(all(_zz_mr) and not any(zz_hud_meets(r, p) for r in _zz_mr for p in _zz_people)
+              and min(r[0] for r in _zz_mr) >= RAIL_MORE_POS[0] and max(r[0] + r[2] for r in _zz_mr) <= 1700
+              and max(r[1] + r[3] for r in _zz_mr) == RAIL_MORE_POS[1] == 1040,
+              "the +N chip's names stand on no sprite: right of the fourth person, left of x 1700, on the bottom line",
+              (_zz_mr, _zz_people))
         renpy.hide_screen("sb_place")
         renpy.show_screen("sb_char", _zz_stage[0])
         zz_render(0.5)
@@ -611,6 +701,31 @@ label zz_smoke:
               and "Harness action 0" in _zz_t and "Do it" not in _zz_t,
               "a tile's word is its action's own name, so no two tiles read the same", _zz_t)
         shot("place_standin_nine", wait=0.2)
+
+        ## Fourteen tiles with long names and words showing would need a
+        ## third column, on the stage: the column drops its words instead.
+        for _zz_i in range(5):
+            register_place_action("zz_hud_long_%d" % _zz_i, "A long harness action name number %d" % _zz_i,
+                                  "Only in this harness.", cost=1, locs=("courtyard",))
+        _zz_rows14 = rail_rows(here)
+        _zz_cols14, _zz_words14 = rail_layout(_zz_rows14)
+        check(len(_zz_rows14) == 14 and len(rail_columns(_zz_rows14)) > RAIL_COLUMNS,
+              "fixture: fourteen tiles with their words would need a third column",
+              [len(c) for c in rail_columns(_zz_rows14)])
+        check(len(_zz_cols14) == RAIL_COLUMNS and _zz_words14 is False
+              and sorted(r for c in _zz_cols14 for r in c) == sorted(_zz_rows14),
+              "rail_layout: two columns, the words dropped, no tile lost", [len(c) for c in _zz_cols14])
+        check(rail_layout(_zz_rows) == (rail_columns(_zz_rows), True), "rail_layout keeps the words while two columns hold them")
+        zz_render(0.3)
+        _zz_r14 = [zz_rect("sb_place", r[5]) for r in _zz_rows14]
+        _zz_t14, _zz_w14 = zz_hud_under("sb_place", "rail_column")
+        check(all(_zz_r14) and sorted(set(r[0] for r in _zz_r14)) == [1726, 1808] and _zz_w14 == []
+              and all(r[3] == RAIL_TILE for r in _zz_r14) and min(r[1] for r in _zz_r14) >= 360
+              and all(r[1] >= RAIL_TOP_INNER for r in _zz_r14 if r[0] == 1726)
+              and not any(zz_hud_meets(a, b) for i, a in enumerate(_zz_r14) for b in _zz_r14[:i]),
+              "as drawn: fourteen 72 px tiles in two columns, no words, none on the stage (x under 1726)",
+              (_zz_r14, _zz_w14))
+        shot("place_standin_fourteen", wait=0.2)
         gui.icon_words = "never"
         zz_render(0.2)
         _zz_t, _zz_w = zz_hud_under("sb_place", "rail_column")
@@ -1037,4 +1152,20 @@ label zz_smoke:
         _zz_all = set(r[1] for k in ("fresh", "rich") for l in LOC_ORDER for r in [("", icon_for("act", a["id"])) for a in PLACE_ACTIONS])
         check(_zz_all <= set(ICONS), "every registered place action maps to an icon", sorted(_zz_all))
 
-    $ finish()
+    ## --- a save made with the banner drawn, loaded again ---------------------------------
+    ## (zz_hud_load_step drives it from here and calls finish().)
+    python:
+        zz_hud_fixture("rich")
+        period = "Noon"
+        here = "cafeteria"
+        mission_cache_clear()
+        toast_clear()
+        renpy.hide_screen("objective_toast")
+        ARRIVAL[0] = None
+        OBJ_UNSEEN[0] = None
+        store.last_objective = None
+        check(bool(objective_text()) and not explore_mode, "fixture: there is an objective to show", objective_text())
+        ZZ_HUD_LOAD[:] = [1, 0, 0]
+        zz_hud_sweep()
+    scene expression graded_bg()
+    jump sandbox

@@ -277,6 +277,7 @@ init python:
     RAIL_MAX_WORDS = 6      # while icons show their words underneath
     RAIL_COLUMNS = 2        # a third column would stand on the stage (x 40 to 1700)
     RAIL_CARD_Y = 250       # the person view's card: its top edge
+    RAIL_MORE_POS = (1400, 1040)    # the "+N" chip: its bottom left corner
 
     def rail_tip(label, hint="", cost=0):
         """P2 (sb_screens.rpy). A hover label's text: "Train\nPush my cursed
@@ -332,12 +333,13 @@ init python:
             return row[3].split("\n")[0]
         return icon_label(row[1])
 
-    def rail_height(name, pips=0, word=None):
+    def rail_height(name, pips=0, word=None, words=True):
         """P2 (sb_screens.rpy). How tall one tile is, at most: 72, or more
         while icons show their words: the icon, its diamonds, and 20 px for
         each line of the word (`word`, or the icon's own; a 72 px tile fits
-        about nine letters a line)."""
-        if not icon_words_shown(name):
+        about nine letters a line). `words` False: the column has dropped
+        its words (rail_layout), so 72."""
+        if not words or not icon_words_shown(name):
             return RAIL_TILE
         lines, used = 1, 0
         for word in (word or icon_label(name)).split():
@@ -347,19 +349,20 @@ init python:
             used += len(word) + (1 if used else 0)
         return max(RAIL_TILE, 8 + 50 + (14 if pips else 0) + 2 + 20 * lines)
 
-    def rail_columns(rows):
+    def rail_columns(rows, words=True):
         """P2 (sb_screens.rpy). rail_rows() split into columns, the one at
         the screen's edge first; each keeps the rows' order, and the last
         rows (Wait, "Let them go") stay at the foot of the edge column. A
         column takes eight tiles (six while words show) and never more
         than fit under its top line (RAIL_TOP, RAIL_TOP_INNER). There is
         room for two columns (fifteen tiles): a third would stand on the
-        stage, and p2_hud fails a room that needs one."""
-        cap = RAIL_MAX_WORDS if any(icon_words_shown(r[1]) for r in rows) else RAIL_MAX
+        stage, and p2_hud fails a room that needs one. `words` False
+        lays the tiles out without their words (rail_layout)."""
+        cap = RAIL_MAX_WORDS if words and any(icon_words_shown(r[1]) for r in rows) else RAIL_MAX
         cols, cur, used = [], [], 0
         for r in reversed(rows):
             room = RAIL_BOTTOM - (RAIL_TOP_INNER if cols else RAIL_TOP)
-            h = rail_height(r[1], r[4], rail_word(r))
+            h = rail_height(r[1], r[4], rail_word(r), words)
             if cur and (len(cur) >= cap or used + RAIL_GAP + h > room):
                 cols.append(cur[::-1])
                 cur, used = [], 0
@@ -368,6 +371,18 @@ init python:
         if cur:
             cols.append(cur[::-1])
         return cols
+
+    def rail_layout(rows):
+        """P2 (sb_screens.rpy). (columns, words): rail_columns(rows), and
+        whether the tiles carry their words. While icons show words the
+        tiles are taller, and long names can ask for a third column, which
+        would stand on the stage: the column then drops its words (the
+        hover label still names each tile) so that fifteen tiles fit in
+        two columns, as they do with pictures."""
+        cols = rail_columns(rows)
+        if len(cols) > RAIL_COLUMNS:
+            return rail_columns(rows, words=False), False
+        return cols, True
 
     def rail_chip(who):
         """P2 (sb_screens.rpy). (grade key or None, text or None) for the
@@ -597,7 +612,7 @@ screen sb_cost(n):
 ## diamonds under it. (icon_btn itself is as tall as its icon plus its
 ## diamonds, so a column of them would be uneven.) While icons show their
 ## words the tile grows downward by the word's lines.
-screen rail_btn(name, action, tip, wid, gold=False, pips=0, word=None):
+screen rail_btn(name, action, tip, wid, gold=False, pips=0, word=None, words=True):
     button:
         id wid
         style "icon_btn_button"
@@ -616,7 +631,7 @@ screen rail_btn(name, action, tip, wid, gold=False, pips=0, word=None):
                     spacing 3
                     for _rail_k in range(pips):
                         add "gui/pip_small.png"
-            if icon_words_shown(name):
+            if words and icon_words_shown(name):
                 text (word or icon_label(name)):
                     style "icon_btn_word"
                     substitute False
@@ -642,7 +657,8 @@ screen sb_place():
     $ _stage, _extra = stage_people(here)
     ## Phase 2: the column is rail_rows(here): the missions the night allows,
     ## then rail_actions (the night rule and the hotspots reach it).
-    $ _rail = rail_columns(rail_rows(here))
+    ## (rail_layout drops the tiles' words rather than open a third column.)
+    $ _rail, _rail_words = rail_layout(rail_rows(here))
     $ _t0 = arrival_caption()
     $ _pname = LOCATIONS[here]["name"] if here in LOCATIONS else here
     $ _pdesc = LOCATIONS[here]["desc"] if here in LOCATIONS else ""
@@ -658,11 +674,14 @@ screen sb_place():
     use view_fg(here)
     use hot_layer(here, front=True)
 
-    ## More than four: a chip with the rest.
+    ## More than four: a chip with the rest, at the foot of the screen
+    ## between the fourth person (whose sprite ends at x 1358) and the
+    ## icon column.
     if _extra:
         $ _more = "+%d" % len(_extra)
         vbox:
-            pos (1300, 900)
+            id "rail_more"
+            pos RAIL_MORE_POS
             yanchor 1.0
             spacing 4
             frame:
@@ -724,7 +743,7 @@ screen sb_place():
                 spacing RAIL_GAP
                 for _row in _col:
                     $ _ret, _ic, _gold, _tip, _pips, _wid = _row
-                    use rail_btn(_ic, Return(_ret), _tip, _wid, gold=_gold, pips=_pips, word=rail_word(_row))
+                    use rail_btn(_ic, Return(_ret), _tip, _wid, gold=_gold, pips=_pips, word=rail_word(_row), words=_rail_words)
 
     use sb_hud
 
