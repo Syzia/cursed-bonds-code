@@ -547,10 +547,20 @@ label zz_smoke:
         check(jr_next("megumi") == "Next: Spend time together — after roll call", "before roll call a card's Next says after roll call", jr_next("megumi"))
         _zz_h = [r for r in jr_story_rows("megumi") if r["next"]]
         check(len(_zz_h) == 1 and _zz_h[0]["line"] == "After roll call", "and so does the story's NEXT row", _zz_h)
+        ## The page's Closer line agrees with it (it used to read "Closer:
+        ## Eat together — at Bond 10" over a NEXT row saying After roll call).
+        check(jr_closer("megumi") == "Closer: after roll call", "before roll call the Closer line says after roll call too", jr_closer("megumi"))
+        zz_open("people", sel="megumi", psub="story")
+        shot("page_megumi_before_roll_call")
+        check(zz_has("Closer: after roll call") and [t for t in zz_texts("journal") if t.startswith("After roll call")]
+              and not [t for t in zz_texts("journal") if t.startswith("Closer: ") and " at Bond" in t],
+              "and the page prints it: Right now and the NEXT row say one thing", [t for t in zz_texts("journal") if "loser" in t or "roll call" in t])
         flags.clear(); flags.update(_zz_keep[0])
         done_events.clear(); done_events.update(_zz_keep[1])
         check(jr_next("megumi").startswith("Next: Spend time together — ") and "roll call" not in jr_next("megumi"),
               "after roll call the Next line is the scene and where", jr_next("megumi"))
+        check(jr_closer("megumi") == unlock_line("megumi") and "roll call" not in jr_closer("megumi"),
+              "after roll call the Closer line is unlock_line again", (jr_closer("megumi"), unlock_line("megumi")))
 
     ## =====================================================================
     ## 5. Right now, and the go button
@@ -572,7 +582,7 @@ label zz_smoke:
               "while I can see where they are, Usually is the Right now panel's hover label", _zz_tip)
         renpy.set_focus("journal", "jr_now")
         shot("page_yuji_usually_hover")
-        check(zz_has(unlock_line("yuji")) if unlock_line("yuji") else True, "the third line is the Closer hint", unlock_line("yuji"))
+        check(zz_has(jr_closer("yuji")) if jr_closer("yuji") else True, "the third line is the Closer hint", jr_closer("yuji"))
         _zz_go = zz_widget("jr_go_btn")
         check(_zz_go is not None and journal_editable() and ("go", "cafeteria") in zz_return_values(),
               "the go button is there in the campus journal when reachable, returning (\"go\", loc)", zz_return_values())
