@@ -825,6 +825,19 @@ label zz_n_e4:
         _zz_said = zz_n_carry_said(zz_n.keep["t"])
         check(here == "dorm" and _zz_said == [NIGHT_CARRY_LINES["heart"]],
               "E: ...and the loop ends with here == 'dorm' and one carry line", (here, _zz_said))
+        ## the line is the place's own before its area's
+        _zz_bad = []
+        for _zz_p, _zz_k in (("girls_dorm", "girls_dorm"), ("rooftop", "dorms"), ("dorm_common", "dorms"),
+                             ("ridge", "mountain"), ("office", "staff"), ("no_such_place", "")):
+            night_carried = _zz_p
+            if night_carry_line() != NIGHT_CARRY_LINES[_zz_k]:
+                _zz_bad.append((_zz_p, night_carry_line()))
+        night_carried = ""
+        check(not _zz_bad and NIGHT_CARRY_LINES["dorms"] != NIGHT_CARRY_LINES["girls_dorm"],
+              "E: the corridor line is the girls' dormitory's alone: the rooftop and the common room get the area's line, "
+              "and an unknown place the fallback", _zz_bad)
+        note("E: a beat picked by the loop", "the loop picks a story beat after it asks night_pending() (sb_loop.rpy), so a "
+             "Night beat that rolls the day would be walked home one action late; no Arc One beat does (hand-off to P8)")
         note("E: board jobs", "not a case: the board refuses in the Evening and at Night (board_take_reason)")
 
     ############################################################################
@@ -864,10 +877,16 @@ label zz_n_e4:
                     except Exception as _zz_e:
                         _zz_bad.append((_zz_g, _zz_c, repr(_zz_e)))
                         continue
-                    if _zz_d != (_zz_c < _zz_ceil + NIGHT_GOJO["past_cap"]):
+                    ## under 100 the night is due until Control sits past_cap
+                    ## above the ceiling; at a ceiling of 100 only while it
+                    ## can still beat a day (it never takes Control past 100)
+                    _zz_top = _zz_ceil + NIGHT_GOJO["past_cap"]
+                    _zz_want = (_zz_c < _zz_top) if _zz_top <= 100 else (100 - _zz_c > night_day_best())
+                    if _zz_d != _zz_want:
                         _zz_bad.append((_zz_g, _zz_res, _zz_c, _zz_d))
         check(not _zz_bad, "F: with past_cap 6 a night is due at every grade and every Control, at the Control and reserve "
-              "ceilings too, and not once Control sits 6 above the ceiling; Special Grade does not raise", _zz_bad[:6])
+              "ceilings too, and not once Control sits 6 above the ceiling; at a ceiling of 100 only while a night still beats a day; "
+              "Special Grade does not raise", _zz_bad[:6])
 
         ## past_cap 0, against the rule written out
         NIGHT_GOJO["past_cap"] = 0
@@ -1326,6 +1345,9 @@ label zz_n_e4:
               (yen, here, day, stamina, stamina_max, ce, ce_max, night_tag()))
         check(bonds["yuji"] == _zz_bond + NIGHT_OUT["bond"] and companion is None,
               "J: whoever came along gains Bond +%d" % NIGHT_OUT["bond"], (bonds["yuji"], _zz_bond))
+        check(len(zz_n_said(zz_n.keep["t"], "pulls me onto the floor")) == 1
+              and zz_n_said(zz_n.keep["t"], "finds a wall to stand against") == [],
+              "J: Yuji is one of the two who pull me onto the floor")
         check("market_open" not in zz_n.labels and zz_n.menus == [] and zz_n.market_seen == 0
               and len(zz_n_said(zz_n.keep["t"], "I take the wrong stairs")) == 1,
               "J: autoplay takes Home at the second (after-club) menu: the market is found, not opened", (zz_n.menus, zz_n.labels[-6:]))
@@ -1414,6 +1436,9 @@ label zz_n_e4:
         ## the club, then the market at the second menu
         zz_n_fix("rich", grade="g3", period=PERIODS[-1], here="dorm", yen=3000)
         zz_n.picks = ["The club", "The Black Market"]
+        companion = "megumi"
+        zz_n.keep["mb"] = bonds["megumi"]
+        zz_n.keep["t"] = len(zz_n.texts)
         zz_n.market_plan = [("buy", "first_aid"), ("close",)]
         zz_n.market_seen = 0
         del zz_n.menus[:]
@@ -1425,6 +1450,11 @@ label zz_n_e4:
     python:
         zz_n_stop()
         zz_n.market_plan = None
+        check(len(zz_n_said(zz_n.keep["t"], "finds a wall to stand against")) == 1
+              and zz_n_said(zz_n.keep["t"], "pulls me onto the floor") == []
+              and bonds["megumi"] == zz_n.keep["mb"] + NIGHT_OUT["bond"],
+              "J: anyone else who comes along gets the quiet line, and the same Bond +%d" % NIGHT_OUT["bond"],
+              (bonds["megumi"], zz_n.keep["mb"]))
         check(len(zz_n.menus) == 2 and zz_n.menus[1][0] == ["The Black Market", "Home"] and zz_n.menus[1][1] == "The Black Market"
               and zz_n.labels.count("market_open") == 1 and zz_n.market_seen == 2
               and yen == 3000 - NIGHT_OUT["cover"] - zz_n.keep["price"] and item_count("first_aid") == 1

@@ -58,13 +58,15 @@ init -1 python:
     NIGHT_DISTRICTS = ("shibuya", "shinjuku")
     NIGHT_OUT_PERIODS = ("Evening", "Night")
 
-    ## What I say when the loop walks me home, by the area the day turned in
-    ## ("" is anywhere else: a story scene off the campus).
+    ## What I say when the loop walks me home, by where the day turned: a
+    ## place's own line first, then its area's ("" is anywhere else: a story
+    ## scene off the campus).
     NIGHT_CARRY_LINES = {
         "heart":    "The gate lamps are still lit when I cross the courtyard. I'm in my room before the first bell.",
         "school":   "The school building is dark, and my footsteps are the loudest thing in it. I walk back to my room.",
-        "dorms":    "I let myself out before the corridor wakes.",
-        "staff":    "The staff building's windows go dark behind me, one at a time. I walk back to my room.",
+        "dorms":    "The dormitory is a row of closed doors and one that isn't. Mine. I'm through it before anyone is up.",
+        "girls_dorm": "I let myself out before the corridor wakes.",
+        "staff":    "The staff building's lamps are still on from last night, and nobody is left to turn them off. I walk back to my room as it gets light.",
         "grounds":  "The dew is already down on the training grounds. I get to my room as it turns light.",
         "mountain": "The path down the mountain is easier to find than it has any right to be. I'm in my room before the sun is.",
         "":         "It's morning before I notice. I walk back to my room.",
@@ -109,8 +111,9 @@ init -1 python:
 
     def night_carry_line():
         """P4b. str: what I say on the walk home, for where the day turned."""
-        area = area_of(store.night_carried or store.here) or ""
-        return NIGHT_CARRY_LINES.get(area) or NIGHT_CARRY_LINES[""]
+        place = store.night_carried or store.here
+        return (NIGHT_CARRY_LINES.get(place) or NIGHT_CARRY_LINES.get(area_of(place) or "")
+                or NIGHT_CARRY_LINES[""])
 
     def night_can_work():
         """P4b. bool: missions, board jobs and training can be started today
@@ -261,11 +264,13 @@ init -1 python:
 
     def night_gojo_beats():
         """P4b. bool: from where I stand, the night would leave me with more
-        Control than a real day of training could (D23)."""
+        Control than a real day of training could (D23). The night never
+        takes Control past 100, so at a ceiling of 100 it is due only while
+        there is more than a day's room left."""
         g = NIGHT_GOJO
         ceiling = grade_cap("stat") or 100
         best = night_day_best()
-        night = min(best + g["over"], ceiling + g["past_cap"] - store.control)
+        night = min(best + g["over"], min(100, ceiling + g["past_cap"]) - store.control)
         real = min(best, max(0, ceiling - store.control))
         if not night > real:
             return False
@@ -435,8 +440,8 @@ init -1 python:
         if NIGHT_OUT["market"] not in NIGHT_DISTRICTS:
             out.append("NIGHT_OUT: the market's district %r has no night out" % (NIGHT_OUT["market"],))
         for a in sorted(NIGHT_CARRY_LINES):
-            if a and a not in AREA_BY_KEY:
-                out.append("NIGHT_CARRY_LINES: %r is not an area" % (a,))
+            if a and a not in AREA_BY_KEY and a not in LOCATIONS:
+                out.append("NIGHT_CARRY_LINES: %r is not an area or a place" % (a,))
         for a in AREAS:
             if a["key"] not in NIGHT_CARRY_LINES:
                 out.append("NIGHT_CARRY_LINES: no line for the area %r" % (a["key"],))
@@ -540,7 +545,7 @@ label night_out(key):
     with Dissolve(0.6)
 
     if _night_pick == "market":
-        "The stairs behind the club are where I left them. Nobody at this door asks for money."
+        "Past the club's door, one flight further down. Nobody at this one asks for money."
         call market_open
         $ _night_pick = "market_done"
 
@@ -550,7 +555,10 @@ label night_out(key):
         "The bass comes up through the floor and into my teeth. For a few hours nobody in the room knows what I am, and nothing in it needs exorcising."
         if _night_who and _night_who in CAST:
             $ _night_who_name = CAST[_night_who]["short"]
-            "[_night_who_name] pulls me onto the floor twice and laughs at me both times. Neither of us has looked this well all week."
+            if _night_who in ("yuji", "nobara"):
+                "[_night_who_name] pulls me onto the floor twice and laughs at me both times. Neither of us has looked this well all week."
+            else:
+                "[_night_who_name] finds a wall to stand against and I stand against it too. Somewhere in the second hour we both stop watching the door."
             $ add_bond(_night_who, NIGHT_OUT["bond"])
         if key == NIGHT_OUT["market"] and market_exists() and not has_flag("market_found"):
             "On the way out I take the wrong stairs. One floor further down a man sits at a folding table under a paper lantern, with talismans laid out in front of him like playing cards."
