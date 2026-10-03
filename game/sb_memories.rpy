@@ -3,8 +3,9 @@
 ##
 ## WP5 owns this file (PHASE1_DESIGN.md 3.9, D5, D6, D11).
 ##
-## The journal's Memories tab replays any scene this save has seen. Three
-## things live here:
+## The journal replays any scene this save has seen (since phase 2 from each
+## person's page and the Me page; the Memories tab is gone). Three things
+## live here:
 ##
 ##   MEMORIES          the catalogue: every scene that can be relived, with
 ##                     who is in it, which act it belongs to, how to tell
@@ -86,8 +87,8 @@ init -1 python:
     MEMORY_LATER = "Written in a later build"
 
     ## The hint on an unseen Bonds tile with someone the player hasn't met,
-    ## so the tab doesn't name them before the People tab does.
-    MEMORY_UNMET_HINT = "Someone you haven't met yet."
+    ## so a person's page doesn't name them before the People tab does.
+    MEMORY_UNMET_HINT = "Someone I haven't met yet."
 
     ## Labels other wave-1 packages add, one set per package: the prologue's
     ## sub-labels (WP9, D39) and the two new story scenes (WP3). A set is
