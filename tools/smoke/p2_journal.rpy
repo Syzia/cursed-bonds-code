@@ -603,12 +603,19 @@ label zz_smoke:
         ## A day Gojo is in: "In his office today." stands alone, and his
         ## usual places are the hover label.
         zz_patch("gojo_in_today", lambda: True)
-        zz_patch("person_now", zz_now(None, "Off campus", reachable=False))
+        zz_patch("person_now", zz_now("gojo_office", "Somewhere I can't go right now", reachable=False, hidden=True))
         zz_open("people", sel="gojo", psub="story")
         _zz_tip = getattr(zz_widget("jr_now"), "_tooltip", None)
         check(zz_has("In his office today.") and not zz_any("Usually: ") and isinstance(_zz_tip, builtins.tuple)
               and _zz_tip[0] == "Usually\n" + jr_clip(usual_places("gojo"), 104),
               "on a day Gojo is in, the line reads In his office today. (no Usually:), and his usual places are on hover", _zz_tip)
+        ## ... but never beside "Off campus" (no place at all, which is also
+        ## wave 0's person_now stub): the two would contradict each other.
+        zz_patch("person_now", zz_now(None, "Off campus", reachable=False))
+        zz_open("people", sel="gojo", psub="story")
+        check(zz_has("Off campus") and not zz_has("In his office today.") and zz_any("Usually: "),
+              "on a day Gojo is in but has no place (Off campus), In his office today. is not printed; the first usual place is", zz_texts("journal"))
+        shot("page_gojo_today_offcampus")
         zz_unpatch("gojo_in_today")
         ## The grid's one line.
         zz_patch("person_now", zz_now("cafeteria", "Cafeteria", "halfway through an enormous bowl"))
@@ -1033,6 +1040,7 @@ label zz_smoke:
         gui.icon_words = "never"
         _zz_over, _zz_most, _zz_lost, _zz_n = builtins.list(), (0, ""), builtins.list(), 0
         _zz_bare, _zz_folds, _zz_shorts = builtins.list(), builtins.list(), 0
+        _zz_mixed = builtins.list()
         _zz_fold_re = re.compile(r"^(\d+) earlier lines?$")
         _zz_stub_now = person_now
         _zz_extra = [THREADS[t]["who"] for t in THREAD_ORDER] + ["ijichi", "nanami"]
@@ -1068,7 +1076,9 @@ label zz_smoke:
                     if not jr_thread_id(_zz_who) and _zz_stage not in (-1, 3):
                         continue
                     ## The two extra views: the eight with a story and two others.
-                    if _zz_mode in ("stub", "with me") and _zz_who not in _zz_extra:
+                    ## (at the first and last stage only, to keep the run
+                    ## well inside the default timeout).
+                    if _zz_mode in ("stub", "with me") and (_zz_who not in _zz_extra or _zz_stage not in (-1, 3)):
                         continue
                     renpy.show_screen("jr_person_detail", journal_state(), _zz_who)
                     _zz_w = zz_words("jr_person_detail")
@@ -1094,6 +1104,11 @@ label zz_smoke:
                         if len(_zz_f) > 1 or len([t for t in _zz_tx if t == "✓"]) + sum(_zz_f) - len(_zz_f) < thread_stage(_zz_tid) + 1:
                             _zz_lost.append((_zz_who, _zz_stage, _zz_mode, "rows"))
                         _zz_shorts += len([t for t in _zz_tx if t in THREADS[_zz_tid]["short"]])
+                        ## Whole lines are the newest run: nothing older than
+                        ## a line shown by its short name prints whole.
+                        _zz_wh = [(l in _zz_tx) for l in THREADS[_zz_tid]["stages"][:thread_stage(_zz_tid) + 1]]
+                        if _zz_wh != sorted(_zz_wh):
+                            _zz_mixed.append((_zz_who, _zz_stage, _zz_mode, _zz_wh))
                         if [t for t in _zz_tx if t.strip() in ("…", "...", "✓ …") or (t.endswith("…") and not jr_word_count(t))]:
                             _zz_bare.append((_zz_who, _zz_stage, _zz_mode))
                     renpy.hide_screen("jr_person_detail")
@@ -1101,10 +1116,11 @@ label zz_smoke:
             flags.clear(); flags.update(_zz_rc[0])
             done_events.clear(); done_events.update(_zz_rc[1])
         note("the wordiest person page of %d measured" % _zz_n, _zz_most)
-        check(_zz_n == 3 * (5 * len(THREAD_ORDER) + 2 * (len(JOURNAL_CAST) - len(THREAD_ORDER))) + 2 * (5 * len(THREAD_ORDER) + 2 * 2) and not _zz_over,
-              "a person's page holds at most 70 words at rest: everyone, every story stage, seen / hidden / mid-scene; the eight with a story and two others also with the stub's person_now and with me (4.0)", _zz_over)
+        check(_zz_n == 3 * (5 * len(THREAD_ORDER) + 2 * (len(JOURNAL_CAST) - len(THREAD_ORDER))) + 2 * 2 * (len(THREAD_ORDER) + 2) and not _zz_over,
+              "a person's page holds at most 70 words at rest: everyone, every story stage, seen / hidden / mid-scene; the eight with a story and two others also with the stub's person_now and with me, at the first and last stage (4.0)", _zz_over)
         check(not _zz_lost, "on every one of those pages each learned stage line is there: whole, or by its short name with the whole line on hover, or folded with the oldest", _zz_lost[:6])
         check(not _zz_bare, "no row on any of those pages is a bare ellipsis", _zz_bare[:6])
+        check(not _zz_mixed, "on every one of those pages the whole lines are the newest run: no line printed whole sits above one shown by its short name", _zz_mixed[:6])
         note("pages where the oldest lines are folded into one row", (len(_zz_folds), _zz_folds[:8]))
         note("short names printed across those pages", _zz_shorts)
         ## The fitting itself.

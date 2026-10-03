@@ -724,7 +724,8 @@ init python:
           "show"  what a learned stage line prints at rest: the whole line
                   while there is room, the newest first; else its short
                   name ("The roof"), or its first words and an ellipsis
-                  when it has none;
+                  when it has none. Whole lines are always the newest
+                  run: nothing older than a cut line prints whole;
           "tip"   the whole text for the hover label when the row is cut
                   short ("" when it is not);
           "sub"   the small line of a mission or step row ("" when folded
@@ -776,14 +777,18 @@ init python:
             stages, costs = stages[fold:], costs[fold:]
             left = max(0, left - JR_FOLD_WORDS)
         ## The newest line is served first; an older one keeps at least its
-        ## short name.
+        ## short name. Once a line has had to take its short name, every
+        ## older one does too, so the whole lines are always the newest run
+        ## and the list never reads name, sentence, name.
+        cut = False
         for j in range(len(stages) - 1, -1, -1):
             r = stages[j]
             spare = left - sum(costs[:j])
             w = jr_word_count(r["line"])
-            if w <= spare:
+            if w <= spare and not cut:
                 left -= w
                 continue
+            cut = True
             r["show"] = r.get("short") or jr_lead(r["line"], min(JR_LEAD_WORDS, spare))
             r["tip"] = "%s\n%s" % (head, r["line"])
             left = max(0, left - jr_word_count(r["show"]))
@@ -2106,7 +2111,9 @@ screen jr_person_detail(js, who):
     ## 72 characters is one line of the 900 px block at size 22.
     $ _now = jr_clip(jr_now_line(_pn), 72) if _live else ""
     $ _us = jr_clip(_d["usual"] or _("Around campus."), 104)
-    $ _today = _("In his office today.") if _d["office_today"] else ""
+    ## "In his office today." needs a place to stand on: beside "Off campus"
+    ## (no place at all) it would contradict the line above it.
+    $ _today = _("In his office today.") if (_d["office_today"] and (not _live or _pn.get("place"))) else ""
     ## When I can't see where they are, the first of their usual places is
     ## printed (the rest on hover); mid-scene, all of them.
     $ _line2 = "" if _seen_now else (_today or (_us if not _live else (_("Usually: ") + jr_usual_first(_us))))
@@ -2217,7 +2224,7 @@ screen jr_person_detail(js, who):
                     ypos 140
                     xysize (1040, 112)
                     background Frame("gui/panel.png", 4, 4)
-                    padding (20, 7, 16, 5)
+                    padding (20, 4, 16, 5)
                     fixed:
                         ## While I can see where they are, "Usually: ..." is
                         ## this block's hover label. When I can't (off
@@ -2239,7 +2246,9 @@ screen jr_person_detail(js, who):
                                 ## Mid-scene the first line is left out: "right
                                 ## now" means nothing inside a scene.
                                 if _live:
-                                    text _now color gui.paper size 22
+                                    ## Three lines: the first gives a little so
+                                    ## the last clears the panel's border.
+                                    text _now color gui.paper size (20 if (_line2 and _ul) else 22)
                                 if not _live:
                                     text _line2 color gui.paper size 18
                                 elif _line2:
