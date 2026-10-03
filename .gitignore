@@ -17,6 +17,10 @@
 /files.txt
 /image_cache.txt
 /log.txt
+# iCloud's duplicate copies of the above ("log 2.txt")
+/log *.txt
+/errors *.txt
+/traceback *.txt
 /save_dump.txt
 /traceback.txt
 
