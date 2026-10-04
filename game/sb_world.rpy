@@ -86,10 +86,10 @@ init -2 python:
             desc="Wide stone steps below the principal's hall. I stand up straighter here without meaning to."),
         "training_yard": dict(
             indoor=False, name="Training Yard", bg="bg training_yard", x=1480, y=790,
-            desc="Bare dirt and striking posts between the hall, the dojo and the storehouse. I hear someone hitting something before I see them."),
+            desc="Bare dirt and striking posts between the hall, the dojo and the storehouse. I usually hear this place before I see it."),
         "trailhead": dict(
             indoor=False, name="Mountain Path", bg="bg trailhead", x=960, y=330,
-            desc="Where the stone path gives out and the mountain starts. I go level into the forest, down to the river, or up the steps to the ridge."),
+            desc="Where the stone path gives out and the mountain starts. I can go level into the forest, down to the river, or up the steps to the ridge."),
     }
 
     LOC_ORDER = ["gate", "courtyard", "classroom", "cafeteria", "training", "dojo",

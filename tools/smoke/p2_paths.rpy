@@ -473,6 +473,7 @@ label zz_smoke:
         _zz_row = [r for r in path_exits("training_yard") if r["to"] == "storehouse"][0]
         check(_zz_why and _zz_row["locked_reason"] == _zz_why and _zz_row["label"] == _zz_why,
               "an exit to a locked place: path_exits gives the lock's reason", _zz_row)
+        check(_zz_row["icon"] == "place_storehouse", "path_exits keeps the destination's icon for a locked exit (only the hotspot is drawn as the lock)", _zz_row["icon"])
         check(zz_tip("hot_go_training_yard__storehouse") == _zz_why, "its hover label is the lock's reason", zz_tip("hot_go_training_yard__storehouse"))
         check("lock" in zz_icons(zz_hot("hot_go_training_yard__storehouse")) and "place_storehouse" not in zz_icons(zz_hot("hot_go_training_yard__storehouse"))
               and "place_dojo" in zz_icons(zz_hot("hot_go_training_yard__dojo")),
@@ -894,6 +895,20 @@ label zz_smoke:
         check(char_location("nobara", "Afternoon") == "courtyard" and char_location("yuji", "Afternoon") == "courtyard"
               and char_location("ijichi", "Morning") == "gate",
               "the courtyard and the gate keep their people (Yuji and Nobara in the afternoon, Ijichi and the car)")
+        ## The courtyard's commonest crowd: two people. The gate exit stays in
+        ## the picture and its hover label opens right of both name tags (the
+        ## second tag ends at about x 1032 with wave 0's stage).
+        zz_place("courtyard", "Afternoon")
+        renpy.set_focus("sb_place", "hot_go_courtyard__gate")
+        zz_render(0.4)
+        _zz_hr = zz_hover_rect()
+        check(who_is_here("courtyard") == ["yuji", "nobara"] or sorted(who_is_here("courtyard")) == ["nobara", "yuji"],
+              "a weekday afternoon in the courtyard: Yuji and Nobara", who_is_here("courtyard"))
+        check(zz_hot("hot_go_courtyard__gate") is not None and _zz_hr is not None and _zz_hr[0] >= 1040 and _zz_hr[0] + _zz_hr[2] <= 1300,
+              "with two people the gate exit is in the picture and its hover label is right of both name tags (hover check: needs the pointer)", _zz_hr)
+        shot("courtyard_two_people_hover_gate", wait=0)
+        renpy.hide_screen("sb_place")
+        period = "Noon"
         day = 9
         roll_gojo()
         note("phase1_all (30 days), wp3_missions, and the 11 saves", "run outside this harness: tools/smoke.sh and tools/load_all_saves.sh")

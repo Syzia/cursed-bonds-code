@@ -87,7 +87,7 @@ init python:
     PATH_EXITS = {
         ## Courtyard & Gate -------------------------------------------------------
         "gate":           [("courtyard", 960, 280)],        # through the torii, up to the hall
-        "courtyard":      [("gate", 1180, 985),             # back down the flagstones (right of a lone person's name tag)
+        "courtyard":      [("gate", 1300, 985),             # back down the flagstones (right of two people's name tags)
                            ("school_yard", 84, 600),        # past the west hall's veranda
                            ("dorm_yard", 960, 272),         # behind the main hall, uphill
                            ("training_yard", 1640, 780)],   # the east hall's steps
@@ -215,7 +215,8 @@ init python:
 
           to             the place key it leads to
           label          the hover label now ("To the Dojo", or the lock's reason)
-          icon           the destination's icon (a locked exit is drawn as "lock")
+          icon           the destination's icon, locked or not (the hotspot itself
+                         is drawn as "lock" while locked; read locked_reason)
           x, y           where it sits (the sidecar hot_<loc>.json applied), ints
           locked_reason  "" when I can walk there now
 
