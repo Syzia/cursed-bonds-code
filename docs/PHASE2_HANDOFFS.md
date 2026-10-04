@@ -794,3 +794,13 @@ Locked doors are dimmed, say why when you hover, and do nothing when clicked.
   - A column tile's label opens to the left over whatever stands beside the column: in the Courtyard the Practice tile's label hides the Training Yard exit at (1640, 850); the same over the Library's exit and the Riverside's bank. No point on the right-hand porch is clear of both the vending machine and the column's labels, so `PATH_EXITS` is unchanged. The fix, if wanted, is in `hover_label`: open the first `rail_` tile's label above.
   - The "+N" chip: with five people in the Common Room in the evening Panda's name label is drawn over the "+1 / Toge" chip, and the chip sits on Panda's feet; with seven or more its list would cover the card table. One decision covers both: move `RAIL_MORE_POS` (today (1400, 1040), `game/sb_screens.rpy`) clear of the last stage slot and re-run `p2_hud`, `p2_view` and `p2_rooms`.
 - **Hover checks** that need the pointer are now in five harnesses: `p2_contracts`, `p2_hud`, `p2_map`, `p2_paths`, `p2_view`.
+
+## P8: round 3 (5 Oct 2026)
+
+*Written by P8's integrator after the second review. No game file changed in this round.*
+
+- **Docs only:** `docs/ART_PHASE2.md` (batch 4, step 8) no longer asks for a hand-made width fit, since `tools/install_pose.py` fits the render itself; `docs/PLAYTEST.md` part 3 names the hour each yard person stands there.
+- **Exit labels, as built: above the icon.** Triage items w2-P5-01, w2-P9-02 and tm-09 said "under the icon"; the plan's 4.3 and the lines above record the departure, and `p2_paths.rpy` measures the labels as drawn.
+- **`build.version`** stays "0.3" until the owner says otherwise (it names the build folder only; no save depends on it).
+- **Save tests still open, for phase 3:** parks `combat` and `grade_card` in `p2_saves.rpy` on the `zzs_park` pattern, when the fight is rebuilt. A pre-phase-2 save parked on the map does not exist to test.
+- **One run to watch:** `p2_oldsave.rpy` on slot auto-10 (a prologue save) once ended after 3 s with "the harness returned without calling finish()"; the same slot passed 14 of 14 on the two runs after it and on the earlier round. Nothing was raised and the slot loads SAME; treat a single such result as the harness's timing and run it again.
