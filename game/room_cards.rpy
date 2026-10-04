@@ -72,15 +72,16 @@ init -1 python:
     ## lose a hand; glad: when they win one ("happy" unless the row says so:
     ## the ones whose faces give nothing away don't grin either). blind: plays
     ## without looking (the cards don't steer them).
-    ## win / lose: what they say when they win or lose a hand; stop: when
-    ## they've lost all they mean to today.
+    ## win / lose: what they say when they win or lose a hand; deal: what
+    ## they say instead of win as the dealer at blackjack, where the poker
+    ## line doesn't fit; stop: when they've lost all they mean to today.
     CARDS_STYLE = {
         "yuji": dict(tight=0.3, bluff=0.45, tell="serious", shows="bluff", rest="happy", sore="surprised",
                      win="Ha! Sorry. Not that sorry.",
                      lose="No way. One more, one more.",
                      stop="I'm out. That was my ramen money."),
         "megumi": dict(tight=0.7, bluff=0.1, tell="neutral", shows=None, rest="neutral", sore="serious", glad="neutral",
-                       win="You hesitated.",
+                       win="You hesitated.", deal="Dealer's hand.",
                        lose="Hm. Take it.",
                        stop="That's enough of my money."),
         "nobara": dict(tight=0.45, bluff=0.3, tell="angry", shows="bet", rest="neutral", sore="angry",
@@ -88,7 +89,7 @@ init -1 python:
                        lose="Tch. You got lucky.",
                        stop="I'm done. You're buying lunch."),
         "maki": dict(tight=0.6, bluff=0.2, tell="angry", shows="weak", rest="serious", sore="angry", glad="serious",
-                     win="You're easy to read. Hand it over.",
+                     win="You're easy to read. Hand it over.", deal="House wins. Hand it over.",
                      lose="Not bad. Don't get used to it.",
                      stop="That's all you're getting out of me today."),
         "panda": dict(tight=0.5, bluff=0.1, tell="happy", shows="strong", rest="neutral", sore="sad",
@@ -169,7 +170,7 @@ init -1 python:
 
     def cards_block():
         """P7. Blocks rollback. The labels call it after every deal, every
-        draw and every settlement (4.12). Returns None."""
+        draw, every read and every settlement (4.12). Returns None."""
         renpy.block_rollback()
         return None
 
@@ -201,8 +202,11 @@ init -1 python:
 
     def cards_opponents():
         """P7. Who sits down with me: the people in the common room, three
-        at most."""
-        return list(who_is_here("dorm_common"))[:3]
+        at most; the ones I haven't played today sit first (so a fourth
+        person gets a seat at the next sitting)."""
+        here = list(who_is_here("dorm_common"))
+        here.sort(key=lambda w: ("cards:" + w) in store.actions_today)
+        return here[:3]
 
     def cards_ok():
         """P7 (room_cards.rpy). bool: the card table can be sat at now:
@@ -398,7 +402,7 @@ init -1 python:
             text = {"natural": "Twenty-one off the deal.", "win": "My hand.", "push": "A push. My stake comes back.",
                     "bust": "Over. I'm bust.", "lose": "The dealer's hand.", "left": "I leave my stake on the table."}.get(res, "")
         else:
-            text = {"win": "The pot's mine.", "split": "A split pot.", "lose": "Not my pot.",
+            text = {"win": "Mine.", "split": "A split pot.", "lose": "Not my pot.",
                     "fold": "I fold."}.get(res, "")
         if st.get("capped"):
             text += " They only pay me part of it: they've lost enough today."
@@ -480,7 +484,7 @@ init -1 python:
         elif result == "push":
             st["says"], st["face"] = "", {who: sty["rest"]}
         else:
-            st["says"], st["face"] = sty["win"], {who: sty.get("glad", "happy")}
+            st["says"], st["face"] = sty.get("deal", sty["win"]), {who: sty.get("glad", "happy")}
 
     def cards_bj_deal():
         """P7. Deals a hand of blackjack: my stake leaves my yen, two cards
@@ -958,8 +962,10 @@ init -1 python:
         return (st.get("face") or {}).get(who) or cards_style(who)["rest"]
 
     def cards_default_stake():
-        """P7. The stake the table opens on: the smallest."""
-        return CARDS_STAKES[0]
+        """P7. The stake the table opens on: the one I last played this
+        sitting if I can still cover it, the smallest otherwise."""
+        s = (store.cards_sit or {}).get("stake")
+        return s if s in CARDS_STAKES and store.yen >= s else CARDS_STAKES[0]
 
     def cards_game_note(g, stake, n_people):
         """P7. The line under a game's button: why it can't be played, or
@@ -1115,6 +1121,10 @@ screen cards_card(c, up=True, w=120):
 
 ## The table (4.12): who is here, the games, the stakes. Returns
 ## ("play", game, stake) or ("close",).
+## On all three card screens a button that carries its name in words has no
+## hover label: the label opens to the left, over the button beside it. Only
+## the icon-only look button at poker keeps one. What leaving mid-hand costs
+## is in the button's own words ("Give up the hand", "Fold and leave").
 screen cards_table():
 
     tag sandbox
@@ -1172,7 +1182,6 @@ screen cards_table():
                         xysize (_cards_gw, 132)
                         sensitive cards_game_open(_cards_g, cards_pick, len(_cards_opp))
                         action Return(("play", _cards_g["id"], cards_pick))
-                        tooltip ("%s\n%s" % (_cards_g["name"], CARDS_BLURB.get(_cards_g["id"], "")), "cards_game_" + _cards_g["id"])
                         hbox:
                             spacing 16
                             yalign 0.5
@@ -1198,7 +1207,6 @@ screen cards_table():
                         sensitive (yen >= _cards_s)
                         selected (cards_pick == _cards_s)
                         action SetScreenVariable("cards_pick", _cards_s)
-                        tooltip ("%s a hand\n%s" % (cards_yen(_cards_s), ("I can cover it." if yen >= _cards_s else "More than I hold.")), "cards_stake_%d" % _cards_s)
 
             textbutton "Leave":
                 id "cards_leave"
@@ -1206,7 +1214,6 @@ screen cards_table():
                 xalign 1.0
                 yalign 1.0
                 action Return(("close",))
-                tooltip ("Leave\nGet up from the table.", "cards_leave")
 
 
 ## Blackjack (4.12): the dealer at the left, the table at the right. Returns
@@ -1316,30 +1323,25 @@ screen cards_blackjack():
                 id "cards_hit"
                 style "cards_btn"
                 action Return(("hit",))
-                tooltip ("Hit\nOne more card.", "cards_hit")
             textbutton "Stand":
                 id "cards_stand"
                 style "cards_btn"
                 action Return(("stand",))
-                tooltip ("Stand\nThe dealer draws to seventeen.", "cards_stand")
             textbutton "Double":
                 id "cards_double"
                 style "cards_btn"
                 sensitive cards_bj_can_double()
                 action Return(("double",))
-                tooltip ("Double\nA second stake, one card, and I stand.", "cards_double")
         else:
             textbutton "Deal":
                 id "cards_deal"
                 style "cards_btn"
                 sensitive (not _cards_why)
                 action Return(("deal",))
-                tooltip ("Deal\nAnother hand at %s." % cards_yen(_cards_st.get("stake", 0)), "cards_deal")
-        textbutton "Leave":
+        textbutton ("Give up the hand" if _cards_stage == "play" else "Leave"):
             id "cards_leave"
             style "cards_btn"
             action Return(("leave",))
-            tooltip (("Leave\nMy stake stays on the table." if _cards_stage == "play" else "Leave\nBack to the table."), "cards_leave")
 
 
 ## Five-card draw (4.12): the opponents along the top, each with the face
@@ -1431,7 +1433,6 @@ screen cards_poker():
                         padding (10, 4)
                         text_size 18
                         action Return(("read", _cards_w))
-                        tooltip ("Read %s\nHow good the hand is, in five steps." % cards_short(_cards_w), "cards_read_" + _cards_w)
 
     ## The pot, y 400.
     vbox:
@@ -1494,48 +1495,40 @@ screen cards_poker():
                 id "cards_check"
                 style "cards_btn"
                 action Return(("check",))
-                tooltip ("Check\nPut nothing in and see what they do.", "cards_check")
             textbutton (u"Bet %s" % cards_yen(_cards_st.get("stake", 0))):
                 id "cards_bet"
                 style "cards_btn"
                 sensitive (yen >= _cards_st.get("stake", 0))
                 action Return(("bet",))
-                tooltip ("Bet\nOne stake. They call or fold.", "cards_bet")
             textbutton "Fold":
                 id "cards_fold"
                 style "cards_btn"
                 action Return(("fold",))
-                tooltip ("Fold\nWhat I've put in stays in.", "cards_fold")
         elif _cards_stage in ("call1", "call2"):
             textbutton (u"Call %s" % cards_yen(_cards_st.get("owed", 0))):
                 id "cards_bet"
                 style "cards_btn"
                 sensitive (yen >= _cards_st.get("owed", 0))
                 action Return(("bet",))
-                tooltip ("Call\nMatch the bet and stay in.", "cards_bet")
             textbutton "Fold":
                 id "cards_fold"
                 style "cards_btn"
                 action Return(("fold",))
-                tooltip ("Fold\nWhat I've put in stays in.", "cards_fold")
         elif _cards_stage == "draw":
             textbutton ("Stand pat" if not _cards_out else "Draw %d" % len(_cards_out)):
                 id "cards_draw"
                 style "cards_btn"
                 action Return(("draw", _cards_out))
-                tooltip ("Draw\nNew cards for the ones I marked.", "cards_draw")
         else:
             textbutton "Deal":
                 id "cards_deal"
                 style "cards_btn"
                 sensitive (not _cards_why)
                 action Return(("deal",))
-                tooltip ("Deal\nAnother hand at %s." % cards_yen(_cards_st.get("stake", 0)), "cards_deal")
-        textbutton "Leave":
+        textbutton ("Leave" if _cards_stage in ("done", "idle") else "Fold and leave"):
             id "cards_leave"
             style "cards_btn"
             action Return(("leave",))
-            tooltip (("Leave\nBack to the table." if _cards_stage in ("done", "idle") else "Leave\nI fold this hand."), "cards_leave")
 
 
 ## The place action (4.12): the table, then a game, until the sitting is over
@@ -1557,6 +1550,7 @@ label sb_do_cards_play:
         elif not renpy.has_label("mg_" + _cards_r[1]) or cards_can_deal(_cards_r[1], _cards_r[2]):
             $ renpy.say(None, cards_can_deal(_cards_r[1], _cards_r[2]) or "Nobody here knows that one.")
         else:
+            $ cards_sit["stake"] = _cards_r[2]
             call expression "mg_" + _cards_r[1] pass (_cards_opp, _cards_r[2])
             $ cards_sit_note(_cards_r[1])
             if cards_sit_over():
