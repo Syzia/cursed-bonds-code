@@ -9,9 +9,11 @@
 ##
 ##   Campus, level 1   "Jujutsu High": the six AREAS as markers (icon, name, up
 ##                     to three faces, what is waiting there, I'M HERE).
-##                     Clicking one only opens it.
+##                     Clicking one only opens it. A marker is 240 x 96 (D59,
+##                     checkpoint B: "the black box is too big").
 ##   Campus, level 2   screen map_area(key): the area's own picture with one
-##                     pin per room. Clicking a pin walks there: ("go", loc).
+##                     pin per place, its hub included (D53). Clicking a pin
+##                     walks there: ("go", loc).
 ##   Tokyo, level 1    the five districts as markers. Opens after Ijichi's
 ##                     ride-along (tokyo_open()).
 ##   Tokyo, level 2    screen map_district(key): the district's picture, its
@@ -208,6 +210,16 @@ init -1 python:
     MAP_DISC = 72
     MAP_FACE = 36
     MAP_FACE_CAP = 3
+    ## An area's marker on level 1 (D59): smaller than a district's. The name
+    ## on one line; under it up to three faces, "+n", the gold mark and the
+    ## moon; under those, I'M HERE.
+    MAP_AREA_W = 240
+    MAP_AREA_H = 96
+    MAP_AREA_FACE = 30
+    ## The mountain as tools/genworld.py paints it on map_campus.png (the
+    ## peak's triangle around (1290, 215)): x0, y0, x1, y1. The Mountain
+    ## marker's centre stays inside it (D59; map_validate checks).
+    MAP_MOUNTAIN_BOX = (1160, 119, 1420, 285)
     ## A pin left of this x has its hover label on its right (hover_label
     ## has no room on the left), so its faces go on the left of the tile.
     MAP_FACES_LEFT_X = 700
@@ -296,6 +308,19 @@ init -1 python:
         many are left over (drawn as "+n")."""
         folk = list(folk)
         return folk[:cap], max(0, len(folk) - cap)
+
+    def map_pin_icon(loc):
+        """P9. The icon on a place's pin: place_<loc>, or for a hub that has
+        no picture of its own, its area's (D55: existing names only)."""
+        name = "place_" + str(loc)
+        if name in ICONS:
+            return name
+        return "area_" + str(area_of(loc))
+
+    def map_area_rect(key):
+        """P9. (x, y, w, h): where an area's marker is drawn on level 1."""
+        ax, ay = AREA_BY_KEY[key]["anchor"]
+        return (int(ax - MAP_AREA_W // 2), int(ay - MAP_AREA_H // 2), MAP_AREA_W, MAP_AREA_H)
 
     def map_area_people(key):
         """P1. Everyone in an area's rooms that I can enter now, in room
@@ -416,7 +441,7 @@ init -1 python:
                 if not (x0 <= x <= x1 and y0 <= y <= y1):
                     out.append("map pin %r at (%d, %d) is outside x %d to %d, y %d to %d"
                                % (l, x, y, x0, x1, y0, y1))
-                if ("place", l) not in ICON_FOR:
+                if map_pin_icon(l) not in ICONS:
                     out.append("map pin %r has no icon" % l)
         for l in LOCATIONS:
             n = len(seen.get(l, []))
@@ -443,6 +468,20 @@ init -1 python:
         for dk in MAP_NIGHT_DISTRICTS:
             if dk not in DISTRICTS:
                 out.append("MAP_NIGHT_DISTRICTS: unknown district %r" % dk)
+        ## Level 1 (D59): no two area markers overlap, each keeps clear of
+        ## the top row, and the Mountain's sits on the mountain.
+        rects = [(a["key"], map_area_rect(a["key"])) for a in AREAS]
+        for i, (ka, ra) in enumerate(rects):
+            if ra[0] < 0 or ra[1] < 96 or ra[0] + ra[2] > 1920 or ra[1] + ra[3] > 1080:
+                out.append("area marker %r at %r runs off the map or under its top row" % (ka, ra))
+            for kb, rb in rects[i + 1:]:
+                if ra[0] < rb[0] + rb[2] and rb[0] < ra[0] + ra[2] and ra[1] < rb[1] + rb[3] and rb[1] < ra[1] + ra[3]:
+                    out.append("area markers %r and %r overlap" % (ka, kb))
+        if "mountain" in AREA_BY_KEY:
+            mx, my = AREA_BY_KEY["mountain"]["anchor"]
+            x0, y0, x1, y1 = MAP_MOUNTAIN_BOX
+            if not (x0 <= mx <= x1 and y0 <= my <= y1):
+                out.append("the Mountain marker's centre (%d, %d) is not on the mountain %r" % (mx, my, MAP_MOUNTAIN_BOX))
         return out
 
     register_validator(map_validate)
@@ -531,7 +570,7 @@ style sb_map_district is button:
 
 ## Phase 2 (4.1): the two-level map's own styles.
 
-## An area or district marker: 300 x 132.
+## A district marker: 300 x 132. (An area's is map_area_marker, below.)
 style map_marker is button:
     background Frame("gui/panel_dark.png", 4, 4)
     hover_background Frame("gui/panel_hover.png", 4, 4)
@@ -551,6 +590,17 @@ style map_marker_name is text:
     size 26
     color gui.paper
     layout "nobreak"
+
+## An area's marker on level 1 (D59): 240 x 96.
+style map_area_marker is button:
+    background Frame("gui/panel_dark.png", 4, 4)
+    hover_background Frame("gui/panel_hover.png", 4, 4)
+    padding (10, 8, 10, 8)
+    xsize 240
+    ysize 96
+
+style map_area_marker_here is map_area_marker:
+    background Frame("gui/panel_active.png", 4, 4)
 
 style map_more is text:
     font gui.body_medium_font
@@ -708,7 +758,7 @@ screen sb_map_campus():
         $ _cur = (_k == _map_mine)
         button:
             id ("area_" + _k)
-            style ("map_marker_here" if _cur else "map_marker")
+            style ("map_area_marker_here" if _cur else "map_area_marker")
             xanchor 0.5
             yanchor 0.5
             xpos _a["anchor"][0]
@@ -716,26 +766,30 @@ screen sb_map_campus():
             tooltip map_area_tip(_k)
             action SetScreenVariable("zone", _k)
             fixed:
+                ## The name, on one line.
                 hbox:
-                    spacing 10
-                    add icon("area_" + _k, 44) yalign 0.5
-                    text _a["name"] style "map_marker_name" size map_fit(_a["name"], 26, 222) yalign 0.5
+                    spacing 8
+                    add icon("area_" + _k, 30) yalign 0.5
+                    text _a["name"] style "map_marker_name" size map_fit(_a["name"], 22, 180) yalign 0.5
+                ## Who is there, on the left; what is waiting, on the right.
                 hbox:
-                    ypos 50
-                    spacing 4
+                    ypos 34
+                    spacing 3
                     for _w in _faces:
-                        add face_chip(_w, MAP_FACE)
+                        add face_chip(_w, MAP_AREA_FACE)
                     if _more:
-                        text "+[_more]" style "map_more" yalign 0.5 xoffset 4
+                        text "+[_more]" style "map_more" yalign 0.5 xoffset 3
                 hbox:
-                    ypos 92
-                    spacing 12
+                    ypos 34
+                    xalign 1.0
+                    ysize MAP_AREA_FACE
+                    spacing 6
                     if _wait:
                         text "◆ [_wait]" font gui.body_medium_font size 16 color gui.gold yalign 0.5
                     if _map_moons.get(_k):
-                        add icon("moon", 24) yalign 0.5
-                    if _cur:
-                        text _("I'M HERE") style "jjk_label" size 13 kerning 1.0 color gui.violet2 yalign 0.5
+                        add icon("moon", 22) yalign 0.5
+                if _cur:
+                    text _("I'M HERE") style "jjk_label" size 12 kerning 1.0 color gui.violet2 ypos 66
 
 
 ## Campus, level 2: one area's picture, a pin for each of its rooms.
@@ -784,7 +838,7 @@ screen map_area(key):
                 frame:
                     style ("map_pin_disc_here" if _cur else ("map_pin_disc" if _ok else "map_pin_disc_locked"))
                     xalign 0.5
-                    add icon("place_" + _l, 52) xalign 0.5 yalign 0.5 alpha (1.0 if _ok else 0.45)
+                    add icon(map_pin_icon(_l), 52) xalign 0.5 yalign 0.5 alpha (1.0 if _ok else 0.45)
                 frame:
                     style "map_pin_plate"
                     xalign 0.5

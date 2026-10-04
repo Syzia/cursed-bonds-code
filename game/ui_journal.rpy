@@ -433,13 +433,14 @@ init python:
     def jr_closer(who):
         """P3. The page's "Closer: ..." line. It is unlock_line(who), except
         while the roll-call gate holds this person's next scene: then
-        nothing with them gets closer before roll call, and the line says
-        so, as the story's NEXT row does ("Closer: after roll call")."""
+        nothing with them gets closer before roll call, and the page shows
+        no Closer line at all (D61, checkpoint B: roll call is forced at the
+        start of day 2; the story's NEXT row still says "After roll call")."""
         if who not in CAST:
             return ""
         nh = jr_next_hangout(who)
         if nh and nh[1] == "held":
-            return "Closer: %s%s" % (nh[2][:1].lower(), nh[2][1:])
+            return ""
         try:
             return unlock_line(who) or ""
         except Exception:

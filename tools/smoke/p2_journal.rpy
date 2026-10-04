@@ -547,14 +547,18 @@ label zz_smoke:
         check(jr_next("megumi") == "Next: Spend time together — after roll call", "before roll call a card's Next says after roll call", jr_next("megumi"))
         _zz_h = [r for r in jr_story_rows("megumi") if r["next"]]
         check(len(_zz_h) == 1 and _zz_h[0]["line"] == "After roll call", "and so does the story's NEXT row", _zz_h)
-        ## The page's Closer line agrees with it (it used to read "Closer:
-        ## Eat together — at Bond 10" over a NEXT row saying After roll call).
-        check(jr_closer("megumi") == "Closer: after roll call", "before roll call the Closer line says after roll call too", jr_closer("megumi"))
+        ## P9 (D61, checkpoint B): before roll call the page shows no Closer
+        ## line at all, and neither does a card's hover; the NEXT row keeps
+        ## "After roll call".
+        check(jr_closer("megumi") == "", "before roll call there is no Closer line (D61)", jr_closer("megumi"))
+        check("loser" not in jr_card_tip("megumi"), "and none in the People card's hover", jr_card_tip("megumi"))
         zz_open("people", sel="megumi", psub="story")
         shot("page_megumi_before_roll_call")
-        check(zz_has("Closer: after roll call") and [t for t in zz_texts("journal") if t.startswith("After roll call")]
-              and not [t for t in zz_texts("journal") if t.startswith("Closer: ") and " at Bond" in t],
-              "and the page prints it: Right now and the NEXT row say one thing", [t for t in zz_texts("journal") if "loser" in t or "roll call" in t])
+        check(not [t for t in zz_texts("journal") if "Closer" in t] and [t for t in zz_texts("journal") if t.startswith("After roll call")],
+              "and the page prints none: 'Closer: after roll call' is gone, the NEXT row still says After roll call",
+              [t for t in zz_texts("journal") if "loser" in t or "roll call" in t])
+        zz_open("people")
+        check(not [t for t in zz_texts("journal") if "Closer" in t], "the People grid prints no Closer line before roll call either")
         flags.clear(); flags.update(_zz_keep[0])
         done_events.clear(); done_events.update(_zz_keep[1])
         check(jr_next("megumi").startswith("Next: Spend time together — ") and "roll call" not in jr_next("megumi"),

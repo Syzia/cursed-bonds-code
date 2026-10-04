@@ -1,5 +1,6 @@
 {
   "spots": {
+    "school_yard": [940, 560],
     "classroom": [520, 400],
     "cafeteria": [1270, 380],
     "infirmary": [560, 790],

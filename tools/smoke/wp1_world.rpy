@@ -23,18 +23,22 @@ init 999 python:
     ## --- a frozen copy of the world before phase 1 (commit 57eb3db) ----------
     ## The regression check compares today's char_location against this.
     ## Phase 2 changed one row on purpose: Megumi, weekend Afternoon -> library.
+    ## P9 (D57) moved five slots into the hubs, on purpose: Yuji, Night ->
+    ## dorm_yard; Nobara, Morning -> training_yard; Toge, Afternoon ->
+    ## school_yard; Megumi, weekend Morning -> trailhead; Shoko, weekend
+    ## Afternoon -> staff_yard. Every other cell is as it was.
     ZZ_OLD_SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
-                   "Evening": "dorm_common", "Night": "dorm_common"},
+                   "Evening": "dorm_common", "Night": "dorm_yard"},
         "megumi": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "forest",
                    "Evening": "dorm_common", "Night": "-"},
-        "nobara": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "courtyard",
+        "nobara": {"Morning": "training_yard", "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "girls_dorm"},
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
                    "Evening": "dorm_common", "Night": "dorm_common"},
-        "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "rooftop",
+        "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
                    "Evening": "dorm_common", "Night": "-"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
@@ -45,12 +49,12 @@ init 999 python:
     }
     ZZ_OLD_WEEKEND = {
         "yuji":   {"Morning": "dorm_common", "Afternoon": "riverside", "Evening": "cafeteria"},
-        "megumi": {"Morning": "forest",      "Afternoon": "library"},
+        "megumi": {"Morning": "trailhead",   "Afternoon": "library"},
         "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
         "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
         "panda":  {"Afternoon": "riverside"},
         "toge":   {"Morning": "rooftop",     "Afternoon": "riverside"},
-        "shoko":  {"Afternoon": "rooftop"},
+        "shoko":  {"Afternoon": "staff_yard"},
         "yaga":   {"Morning": "-", "Noon": "-", "Afternoon": "-", "Evening": "-"},
     }
     ZZ_OLD_GOJO_SPOTS = ["-", "-", "-", "rooftop", "courtyard", "office", "cafeteria", "training"]
@@ -233,9 +237,11 @@ label zz_smoke:
         check(not _you, "no place name or description says you/your (Kaito narrates in I)", _you)
         check([a["key"] for a in AREAS] == ["heart", "school", "dorms", "staff", "grounds", "mountain"], "AREAS order")
         check([a["seal"] for a in AREAS] == ["門", "校", "寮", "職", "練", "山"], "AREAS seals")
-        check([a["anchor"] for a in AREAS] == [(960, 900), (420, 740), (900, 560), (1560, 440), (1560, 760), (740, 290)], "AREAS anchors")
-        check(places_in("staff") == ["office", "utahime_office", "gojo_office"] and places_in("dorms") == ["dorm", "dorm_common", "girls_dorm", "rooftop"],
-              "places_in", (places_in("staff"), places_in("dorms")))
+        check([a["anchor"] for a in AREAS] == [(960, 900), (420, 740), (900, 560), (1560, 440), (1560, 760), (1290, 215)],
+              "AREAS anchors (P9, D59: the Mountain's sits on the mountain, it was (740, 290) over the lake)")
+        check(places_in("staff") == ["staff_yard", "office", "utahime_office", "gojo_office"]
+              and places_in("dorms") == ["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop"],
+              "places_in (P9, D53: each area's hub is first)", (places_in("staff"), places_in("dorms")))
         check(area_of("gate") == "heart" and area_of("ridge") == "mountain" and area_of("gojo_office") == "staff" and area_of("zz") is None, "area_of")
         _counts = {l: sum(1 for a in AREAS if l in a["places"]) for l in LOCATIONS}
         check(all(n == 1 for n in _counts.values()), "every place is in exactly one area", _counts)

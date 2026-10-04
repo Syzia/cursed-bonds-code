@@ -5,9 +5,11 @@
 ## tinted so it reads as somewhere else. The real art drops in by filename
 ## with no script change: when images/bg/<name>.png exists it is used instead
 ## (alley, alley_dark, ridge_veil, utahime_office, gojo_office, map_tokyo,
-## shibuya, harajuku, shinjuku, kawasaki, yotsuka, library, and the six
-## area_<key> pictures of the map's second level). Their light rows are in
-## BG_LIGHT in lighting.rpy.
+## shibuya, harajuku, shinjuku, kawasaki, yotsuka, library, the six
+## area_<key> pictures of the map's second level, and the five hubs:
+## school_yard, dorm_yard, staff_yard, training_yard, trailhead). Their light
+## rows are in BG_LIGHT in lighting.rpy (the hubs have none: they are outdoor
+## places and take the outdoor light).
 ################################################################################
 
 init -3 python:
@@ -102,3 +104,14 @@ init -1 python:
     renpy.image("bg area_staff", world_area_bg("staff"))
     renpy.image("bg area_grounds", world_area_bg("grounds"))
     renpy.image("bg area_mountain", world_area_bg("mountain"))
+
+    ## The five hubs (phase 2, D53 and D58): the outdoor place each area's
+    ## rooms open onto. images/bg/<name>.png when it is painted
+    ## (tools/bgs/prompts/<name>.txt), else a stand-in borrowed from the
+    ## courtyard or the forest trail (world_hub_bg in sb_world.rpy, which
+    ## holds the table: WORLD_HUB_STANDINS).
+    renpy.image("bg school_yard", world_hub_bg("school_yard"))
+    renpy.image("bg dorm_yard", world_hub_bg("dorm_yard"))
+    renpy.image("bg staff_yard", world_hub_bg("staff_yard"))
+    renpy.image("bg training_yard", world_hub_bg("training_yard"))
+    renpy.image("bg trailhead", world_hub_bg("trailhead"))

@@ -1,5 +1,6 @@
 {
   "spots": {
+    "training_yard": [1180, 620],
     "training": [520, 340],
     "dojo": [1390, 420],
     "storehouse": [890, 810]
