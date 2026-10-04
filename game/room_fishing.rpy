@@ -272,6 +272,15 @@ init -1 python:
             st["t0"] = _fish_time.time()
         return None
 
+    def fish_rewait():
+        """P6. Returns None. The record book has closed: the float's wait
+        starts again from now. The wait timer is held while the book is
+        open, and without this the float would dip the moment it shut."""
+        st = store.fish_state
+        if st and st.get("phase") == "wait":
+            st["t_cast"] = _fish_time.time()
+        return None
+
     def fish_wait_left():
         """P6. Seconds until the float dips (at least a twentieth)."""
         st = store.fish_state
@@ -331,6 +340,17 @@ init -1 python:
         "Whatever it was, it takes the bait and leaves the hook, which is fair.",
     ]
 
+    ## The sitting's first line, by the day. None of them presumes an earlier
+    ## sitting.
+    FISH_OPEN_LINES = [
+        "There's a rod in the reeds that belongs to nobody, or to everybody. I bait the hook and find a flat stone to stand on.",
+        "The rod is in the reeds where the last person left it. I bait the hook and take the flat stone.",
+        "Somebody has retied the hook lately, better than I would have. I bait it and step out onto the stone.",
+    ]
+
+    def fish_open_line():
+        return FISH_OPEN_LINES[store.day % len(FISH_OPEN_LINES)]
+
     def fish_miss_line(kind):
         if kind == FISH_LORD:
             return ("The line goes heavy, then heavier, then slack. Something very large turns over once "
@@ -348,7 +368,9 @@ init -1 python:
                     "talisman, wet through and still good.")
         if res["id"] == FISH_LORD:
             line = ("The line goes heavy, and stays heavy, and I walk it up the bank a step at a time. "
-                    "A carp longer than my arm and a good deal older than I am. The River Lord, %d cm." % res["cm"])
+                    "A carp longer than my arm and a good deal older than I am. Somebody has cut two words into "
+                    "the rod's handle, worn nearly flat, and now I know what they are for: the River Lord. "
+                    "%d cm." % res["cm"])
             if res["yen"]:
                 line += " The cook will pay %s for it and not ask where." % fish_yen(res["yen"])
             return line
@@ -518,7 +540,12 @@ screen fish_screen():
     add fish_bg()
     add Solid(gui.ink) alpha 0.12
 
-    key "game_menu" action Return(("leave",))
+    ## Esc or right-click: with the record book open it closes the book;
+    ## otherwise it packs up.
+    if fish_book:
+        key "game_menu" action [Function(ui_do, fish_rewait), SetScreenVariable("fish_book", False)]
+    else:
+        key "game_menu" action Return(("leave",))
 
     ## A harness's autoplay never waits on it.
     if smoke_autoplay:
@@ -549,15 +576,19 @@ screen fish_screen():
             add fish_float() at fish_still
     add Solid(gui.paper) xysize (64, 2) pos (FISH_FLOAT[0] - 32, FISH_FLOAT[1] + 2) alpha 0.35
 
-    ## Top left: the casts.
-    hbox:
-        pos (60, 56)
-        ysize 56
-        spacing 14
-        for _fish_i in range(FISH_CASTS):
-            add icon("fish_cast", 48) alpha (0.3 if _fish_i + 1 < _fish_n else 1.0) yalign 0.5
-        if _fish_n:
-            text "Cast [_fish_n] of [FISH_CASTS]" style "fish_text" yalign 0.5
+    ## Top left: the casts, on a dark plate (the sky behind is pale by day).
+    frame:
+        style "empty"
+        pos (48, 50)
+        background Solid("#07060c99")
+        padding (12, 6)
+        hbox:
+            ysize 56
+            spacing 14
+            for _fish_i in range(FISH_CASTS):
+                add icon("fish_cast", 48) alpha (0.3 if _fish_i + 1 < _fish_n else 1.0) yalign 0.5
+            if _fish_n:
+                text "Cast [_fish_n] of [FISH_CASTS]" style "fish_text" yalign 0.5
 
     ## The bar: the zone, and the marker crossing it and coming back.
     if _fish_phase == "bite" and _fish_kind:
@@ -607,7 +638,7 @@ screen fish_screen():
         button:
             xysize (1920, 1080)
             background Solid("#07060cb0")
-            action SetScreenVariable("fish_book", False)
+            action [Function(ui_do, fish_rewait), SetScreenVariable("fish_book", False)]
         frame:
             style "jjk_panel"
             pos (610, 240)
@@ -634,7 +665,7 @@ screen fish_screen():
                 xalign 1.0
                 yalign 1.0
                 text_xalign 0.5
-                action SetScreenVariable("fish_book", False)
+                action [Function(ui_do, fish_rewait), SetScreenVariable("fish_book", False)]
 
 
 ## Three casts at the river (4.13). `call screen fish_screen` and the line
@@ -642,7 +673,8 @@ screen fish_screen():
 label sb_do_fish_cast:
 
     $ fish_begin()
-    "There's a rod in the reeds that belongs to nobody, or to everybody. I bait the hook and find a flat stone to stand on."
+    $ _fish_line = fish_open_line()
+    "[_fish_line]"
     if companion and companion in CAST:
         $ _fish_who = CAST[companion]["short"]
         "[_fish_who] takes the next stone along and watches the float as if it owed us both money."
@@ -656,11 +688,12 @@ label sb_do_fish_cast:
         $ _fish_r = _return
         if not isinstance(_fish_r, tuple) or not _fish_r or _fish_r[0] == "leave":
             ## Once the float has dipped the cast is spent: the zone has
-            ## shown what was on the line.
+            ## shown what was on the line. The line says I put the rod down;
+            ## the ordinary miss lines say I struck.
             if fish_phase() == "bite":
                 $ _fish_line = fish_settle(("miss",))
                 $ renpy.block_rollback()
-                "[_fish_line]"
+                "I lift the rod while it is still making up its mind. The hook comes back bare, and the hour is spent all the same."
             $ fish_leave()
         else:
             $ _fish_line = fish_settle(_fish_r)

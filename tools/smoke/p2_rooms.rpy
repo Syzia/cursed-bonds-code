@@ -20,7 +20,8 @@
 ##   I  fishing: 1,000 casts, the River Lord, the pale thing, the yen, the
 ##      first catch, a companion, fish_Hook, rollback (blocked when a cast
 ##      is dealt and again when it is settled; the rollback key at the bite),
-##      packing up at the bite, the screen's own timers, the rolled sitting,
+##      packing up at the bite, Esc with the record book open, the opening
+##      line, the screen's own timers, the rolled sitting,
 ##      the record book
 ##   J  the Library's shelves; a desk is unchanged
 ##   K  autoplay timers and the menu key; the saved variables; zz_worst
@@ -37,7 +38,8 @@
 ## Screenshots (shots/p2_rooms/): worst_pc_screen.png, worst_fish_screen.png,
 ## room_<place>.png for every room with a hotspot, room_dorm_standin.png (no
 ## icon pictures), room_riverside_night.png, pc_<page>.png for the twelve
-## pages, pc_board_checked.png, fish_wait.png, fish_bite.png, fish_book.png.
+## pages, pc_board_checked.png, fish_wait.png, fish_record_hover.png, fish_bite.png,
+## fish_book.png.
 ##
 ## A run takes about a minute and a quarter (one sitting is left to the
 ## screen's own timers: three sweeps of three seconds).
@@ -146,6 +148,36 @@ init 999 python:
         zz_r_phase(name)
         if name == "fish_screen" and fish_phase() == "bite":
             zz_r.keep["bite_kind"] = fish_state.get("kind")
+            return ("leave",)
+        return None
+
+    def zz_r_esc_book(name):
+        """An `own` driver that misses cast 1, opens the record book while
+        cast 2's float sits, presses the player's own Esc / right-click
+        (through the keymap) half a second later, notes what is left a
+        quarter of a second after that, and then packs up."""
+        if name != "fish_screen":
+            return None
+        k = zz_r.keep
+        if fish_state.get("cast", 0) == 1:
+            return ("miss",)
+        s = renpy.get_screen("fish_screen")
+        now = time.time()
+        if "eb_t" not in k:
+            k["eb_t"] = now
+            fish_state["wait"] = 60.0
+            k["eb_cast0"] = fish_state.get("t_cast")
+            s.scope["fish_book"] = True
+            renpy.restart_interaction()
+            return None
+        if now - k["eb_t"] > 0.5 and "eb_open" not in k:
+            k["eb_open"] = (bool(s.scope.get("fish_book")), fish_state.get("cast"), fish_phase())
+            k["eb_key"] = now
+            renpy.queue_event("game_menu")
+            return None
+        if now - k["eb_t"] > 0.75 and "eb_open" in k and "eb_after" not in k:
+            k["eb_after"] = (bool(s.scope.get("fish_book")), fish_state.get("cast"), fish_phase(), fish_state.get("settled"))
+            k["eb_cast1"] = fish_state.get("t_cast")
             return ("leave",)
         return None
 
@@ -1256,16 +1288,49 @@ label zz_smoke:
         del zz_r.lines[:]
         del zz_r.blocks[:]
         _zz_y0 = yen
+        _zz_n0 = len(zz_r.texts)
         zz_r_drive([], own=zz_r_leave_at_bite)
     call sb_do_fish_cast
     python:
         zz_r_stop()
         check(zz_r.keep["phases"] == [(1, "wait"), (1, "bite")] and period == "Noon" and fish_state == {} and yen == _zz_y0
               and len(zz_r.lines) == 1 and zz_r.lines[0] == zz_with(dict(fish_state=dict(cast=1)), lambda: fish_miss_line(zz_r.keep["bite_kind"]))
+              and zz_r_said(_zz_n0, "I lift the rod while it is still making up its mind.")
+              and not [t for t in zz_r.texts[_zz_n0:] if t in FISH_MISS_LINES]
+              and len(zz_r_said(_zz_n0, "[_fish_line]")) <= 2
               and zz_r.blocks == [False, False],
-              "I: Pack up once the float has dipped (the screen's own wait timer brought the bite) is a miss: one miss "
-              "line, the period is charged, nothing is paid, and renpy.can_rollback() is False after the block",
-              (zz_r.keep["phases"], period, fish_state, zz_r.lines, zz_r.blocks))
+              "I: Pack up once the float has dipped (the screen's own wait timer brought the bite) is a miss: the cast "
+              "is settled as one, the line said is the put-the-rod-down one (not a struck-and-missed line), the period "
+              "is charged, nothing is paid, and renpy.can_rollback() is False after the block",
+              (zz_r.keep["phases"], period, fish_state, zz_r.lines, zz_r.texts[_zz_n0:], zz_r.blocks))
+
+        ## Esc / right-click with the record book open closes the book; it
+        ## does not pack up. The float's wait starts again when it closes.
+        zz_r_fix("rich", here="riverside", period="Morning")
+        for _zz_k in ("eb_t", "eb_open", "eb_key", "eb_after", "eb_cast0", "eb_cast1"):
+            zz_r.keep.pop(_zz_k, None)
+        del zz_r.lines[:]
+        zz_r_drive([], own=zz_r_esc_book)
+    call sb_do_fish_cast
+    python:
+        zz_r_stop()
+        check(zz_r.keep.get("eb_open") == (True, 2, "wait") and zz_r.keep.get("eb_after") == (False, 2, "wait", 1)
+              and zz_r.keep.get("eb_cast1", 0) >= zz_r.keep.get("eb_key", 1e18) - 0.01
+              and zz_r.keep.get("eb_cast1", 0) > zz_r.keep.get("eb_cast0", 1e18)
+              and len(zz_r.lines) == 1 and period == "Noon" and fish_state == {},
+              "I: with the record book open in cast 2's wait, the game_menu key (queued through the keymap) closes the "
+              "book and nothing else: fish_screen is still up on cast 2, nothing more is settled, and the float's wait "
+              "starts again from the moment the book closed",
+              (zz_r.keep.get("eb_open"), zz_r.keep.get("eb_after"), zz_r.keep.get("eb_cast0"), zz_r.keep.get("eb_key"),
+               zz_r.keep.get("eb_cast1"), zz_r.lines, period))
+        _zz_a = zz_with(dict(fish_state=dict(phase="bite", t_cast=5.0)), lambda: (fish_rewait(), fish_state["t_cast"]))
+        _zz_b = zz_with(dict(fish_state={}), lambda: (fish_rewait(), dict(fish_state)))
+        check(_zz_a == (None, 5.0) and _zz_b == (None, {}),
+              "I: fish_rewait() returns None and leaves a cast that has already bitten, or no sitting, alone", (_zz_a, _zz_b))
+        _zz_a = [zz_with(dict(day=_zz_d), fish_open_line) for _zz_d in range(1, 7)]
+        check(len(set(_zz_a[:3])) == 3 == len(FISH_OPEN_LINES) and _zz_a[:3] == _zz_a[3:]
+              and not [t for t in FISH_OPEN_LINES if "[" in t or "{" in t],
+              "I: the sitting's opening line changes with the day (three lines, then round again)", _zz_a[:3])
 
         ## The rollback key at the bite (D33): the zone has shown what is on
         ## the line, so neither the key nor renpy.rollback() may take the
@@ -1547,6 +1612,9 @@ label zz_smoke:
         _zz_wait = (fish_phase(), zz_rect("fish_screen", "fish_hook"), zz_rect("fish_screen", "fish_leave"),
                     zz_rect("fish_screen", "fish_record"), zz_rect("fish_screen", "fish_water"))
         shot("fish_wait", wait=0.1)
+        ## The record book's hover label, above Pack up (looked at, not measured).
+        renpy.set_focus("fish_screen", "fish_record")
+        shot("fish_record_hover")
         fish_state["t_cast"] = time.time() - 10.0
         fish_strike()
         fish_state["t0"] = time.time() - FISH_SWEEP * 0.4
