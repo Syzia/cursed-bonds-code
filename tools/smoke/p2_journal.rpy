@@ -867,6 +867,26 @@ label zz_smoke:
         check(zz_js()["sel"] == "me" and zz_has("Nothing on record yet.")
               and not any(t in ("PAGES I'VE READ", "THE RECORD BOOK", "AT THE CARD TABLE") for t in zz_texts("journal")),
               "Records renders with the three stubs and shows no section")
+        ## P8: the record book comes with my first catch. fish_records always
+        ## returns one row per species, so before any fishing it used to draw
+        ## seven "not caught yet" lines.
+        zz_unpatch("fish_records")
+        _zz_fish = builtins.list(fish_records())
+        check(len(_zz_fish) == 7 and not any(r[1] for r in _zz_fish) and jr_records() == [],
+              "nothing caught: fish_records has seven empty rows and Records has no section", (_zz_fish, jr_records()))
+        zz_open("people", sel="me", msub2="records")
+        check(zz_has("Nothing on record yet.") and not zz_has("THE RECORD BOOK") and not zz_any("not caught yet"),
+              "nothing caught: the Me page draws no RECORD BOOK")
+        _zz_one = [(_zz_fish[0][0], 12)] + _zz_fish[1:]
+        zz_patch("fish_records", lambda: builtins.list(_zz_one))
+        zz_open("people", sel="me", msub2="records")
+        shot("me_records_first_catch")
+        _zz_rec = jr_records()
+        check(len(_zz_rec) == 1 and _zz_rec[0][0] == "THE RECORD BOOK" and len(_zz_rec[0][1]) == 7
+              and zz_has("THE RECORD BOOK") and zz_has("%s — 12 cm" % _zz_fish[0][0])
+              and builtins.len([t for t in zz_texts("journal") if t.endswith("— not caught yet")]) == 6,
+              "after one catch the record book has all seven rows", _zz_rec)
+        zz_patch("fish_records", lambda: [])
         zz_patch("pc_records", lambda: ["Ryomen Sukuna", "The Three Great Clans"])
         zz_open("people", sel="me", msub2="records")
         check(zz_has("PAGES I'VE READ") and zz_has("Ryomen Sukuna") and zz_has("The Three Great Clans")
@@ -922,6 +942,38 @@ label zz_smoke:
               and ("slaughter_demon", False, "In my hand") in jr_pick_options("tool"),
               "the tool picker shows can_hold's reason, and the row can't be pressed", jr_pick_options("tool"))
         zz_unpatch("can_hold")
+        ## P8: a full set, and a replacement whose checklist is unmet. can_wear
+        ## tests the slots first, so "No free slot" used to hide the line and
+        ## the row could be pressed and did nothing.
+        _zz_eq = (equipped_tool, builtins.list(equipped_talismans))
+        fixture(equipped_talismans=["paper_ward"])
+        check(len(equipped_talismans) >= talisman_slots() and ("steady_hand", True, "") in jr_pick_options("talisman", 0),
+              "slots full: a replacement I qualify for can be picked", jr_pick_options("talisman", 0))
+        zz_patch("item_unmet_reason", lambda id: "Control 50 · I have 31" if id == "steady_hand" else "")
+        zz_patch("item_requirements_met", lambda id: id != "steady_hand")
+        check(("steady_hand", False, "Control 50 · I have 31") in jr_pick_options("talisman", 0),
+              "slots full: a replacement with an unmet line is refused with that line", jr_pick_options("talisman", 0))
+        zz_open("equipment", pick=("talisman", 0))
+        shot("pick_talisman_unmet")
+        _zz_b = zz_widget("jr_pick_steady_hand")
+        check(zz_has("Control 50 · I have 31") and _zz_b is not None and not _zz_b.is_sensitive(),
+              "slots full: that row shows the line and can't be pressed")
+        renpy.hide_screen("journal")
+        ## P8 (D28): a talisman I already wear whose checklist I no longer
+        ## meet stays on when an earlier slot is changed.
+        give_item("iron_seal", 1, quiet=True)
+        zz_patch("talisman_slots", lambda key=None: 2)
+        fixture(equipped_talismans=["paper_ward", "steady_hand"])
+        check(jr_worn() == ["paper_ward", "steady_hand"] and item_unmet_reason("steady_hand") != "",
+              "D28 fixture: Steady Hand is worn in slot 2 with an unmet line", jr_worn())
+        _zz_r = jr_wear(0, "iron_seal")
+        check(_zz_r is None and "steady_hand" in jr_worn() and jr_worn()[1] == "steady_hand",
+              "jr_wear on slot 1 keeps a later talisman whose checklist is no longer met", jr_worn())
+        unequip_talisman("steady_hand")
+        check(not equip_talisman("steady_hand") and "steady_hand" not in jr_worn(),
+              "(control) put on anew, the same talisman is refused", jr_worn())
+        zz_unpatch("talisman_slots", "item_unmet_reason", "item_requirements_met")
+        fixture(equipped_tool=_zz_eq[0], equipped_talismans=_zz_eq[1])
         ## Grade chips: the journal's own gold chip is gone from the gear.
         zz_open("inventory", inv_sel="paper_ward")
         check(zz_has("GRADE 4"), "an item's grade is a grade chip")
@@ -966,6 +1018,23 @@ label zz_smoke:
             check(all(zz_widget("jr_ssub_" + k) is not None for k in ("overview", "light", "year"))
                   and all(l in _zz_tx for l in ("Overview", "Last Light", "My year")), "Stats, ssub=%s: the three chips are there" % _zz_s)
         check(len(jr_bars()) == 6, "Overview has six bars")
+        ## P8: a night on the ridge carries Control and the reserve past the
+        ## cap; the row says so instead of "46 · cap 40".
+        _zz_cap = (grade_cap("stat"), grade_cap("reserve"))
+        _zz_st = (store.control, store.output, store.ce, store.ce_max)
+        _zz_at = builtins.dict((b[0], b[5]) for b in jr_bars())
+        check(all("from the ridge" not in v for v in _zz_at.values()), "at or under the cap no row mentions the ridge", _zz_at)
+        fixture(control=_zz_cap[0] + 6, output=_zz_cap[0], ce_max=_zz_cap[1] + 3, ce=_zz_cap[1] + 3)
+        _zz_at = builtins.dict((b[0], b[5]) for b in jr_bars())
+        _zz_want = "%d  · cap %d, +6 from the ridge" % (_zz_cap[0] + 6, _zz_cap[0])
+        check(_zz_at["Control"] == _zz_want and _zz_at["Output"] == "%d  · cap %d" % (_zz_cap[0], _zz_cap[0])
+              and _zz_at["Cursed energy"] == "%d / %d  · cap %d, +3 from the ridge" % (_zz_cap[1] + 3, _zz_cap[1] + 3, _zz_cap[1]),
+              "past the cap the Stats row reads 'cap N, +M from the ridge'", _zz_at)
+        zz_open("stats", ssub="overview")
+        shot("stats_past_cap")
+        check(zz_any("+6 from the ridge") and zz_any("+3 from the ridge"), "the Overview pane draws the past-the-cap rows",
+              [t for t in zz_texts("journal") if "cap" in t])
+        fixture(control=_zz_st[0], output=_zz_st[1], ce=_zz_st[2], ce_max=_zz_st[3])
         renpy.hide_screen("journal")
 
     ## =====================================================================
