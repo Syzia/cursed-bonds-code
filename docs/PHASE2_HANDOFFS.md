@@ -742,3 +742,11 @@ Known placeholders: the five yards use tinted cut-outs of the courtyard and fore
 Small things you may notice: in the courtyard the vending machine and the Training Yard exit sit almost touching; in My Room the door's and the laptop's hover labels cover each other a little. Both are one-line moves.
 Locked doors are dimmed, say why when you hover, and do nothing when clicked.
 
+
+## From art batch 3 (5 Oct 2026), for P8
+
+- **`tools/install_pose.py`, `fit()`:** it centre-crops the 2752x1536 render, but the editor scales the room to the render's width, so everything lands 6 to 7 px off at the edges and the tool reports 11 to 12% "changed" with thousands of changed blocks outside the largest region. Both batch-3 poses were installed from width-fitted copies instead (1920x1072 placed at y=4), which align exactly (4.0% and 1.7% changed). Make `fit()` scale to width and pad or crop the height, and re-check against the two installed poses.
+- **`tools/install_pose.py`, the auto box:** on Nobara's sofa pose it missed her feet; she was installed with `--box 248,408,632,536`, leaving out her painted floor shadow. Check the box rule against a seated pose.
+- **`game/room_paths.rpy`, `PATH_EXITS`:** the five hubs now have real backgrounds (`school_yard`, `dorm_yard`, `staff_yard`, `training_yard`, `trailhead`), but their exits still sit in the stand-in's plain row along the top. Move each exit onto the door, steps or path it leads to, with `tools/layout_sheet.py`.
+- **Utahime's pose:** her scar is faint in both candidates; the desk foreground hides her feet and the lower edge of her hands. For the owner to judge at checkpoint C.
+- **Pose candidates in the workflow are stacked (A above B), not side by side;** the hand-off note for batch 4 should say "top" and "bottom".
