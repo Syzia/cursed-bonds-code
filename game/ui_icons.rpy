@@ -197,12 +197,15 @@ init -3 python:
 
     def icon(name, size=40, gold=False):
         """P0 (ui_icons.rpy), final. The icon as a displayable, size x size:
-        its picture when icon_has_art(name), else the kanji on the seal (a
-        Text in the style icon_glyph, gold when asked). An unknown name
-        draws a question mark. Build it in the line that uses it and never
-        store it: screen scope is saved (R10)."""
+        its picture when icon_has_art(name) (tinted gold when asked: the
+        pictures are white, D23), else the kanji on the seal (a Text in the
+        style icon_glyph, gold when asked). An unknown name draws a question
+        mark. Build it in the line that uses it and never store it: screen
+        scope is saved (R10)."""
         size = int(size)
         if name in ICONS and icon_has_art(name):
+            if gold:
+                return Transform(ICON_ART % name, xysize=(size, size), matrixcolor=TintMatrix(gui.gold))
             return Transform(ICON_ART % name, xysize=(size, size))
         glyph = ICONS[name][0] if name in ICONS else u"？"
         return Fixed(
@@ -230,6 +233,35 @@ init -3 python:
             return None
         head, _sep, rest = str(tip[0]).partition("\n")
         return head, rest
+
+    ## Which side of its button a hover label opens on, by the tooltip key's
+    ## first letters (the first row that fits wins; any other key: "left").
+    ## A label on the left would cover the neighbour in a row: the next
+    ## corner button or status chip, the next name tag, the next exit.
+    ICON_TIP_SIDES = (
+        (("sample_auto_", "sample_always_", "sample_never_"), "top"),
+        (("hud_map", "hud_journal", "hud_menu", "hud_chip_"), "bottom"),
+        (("tag_", "stage_"), "top"),
+        (("hot_go_courtyard__training_yard",), "left"),
+        (("hot_go_", "hot_computer"), "top"),
+        (("map_campus", "map_tokyo"), "bottom"),
+        (("district_go", "district_night"), "left"),
+        (("district_shinjuku", "district_harajuku"), "right"),
+        (("district_",), "bottom"),
+        (("jr_now", "jr_stage_", "jr_chapter_", "jr_unmet_", "jr_strength"), "bottom"),
+        (("jr_card_",), "top"),
+    )
+
+    def icon_tip_side(tip):
+        """P8 (ui_icons.rpy). "left", "top" or "bottom": the side of the
+        hovered button hover_label opens on, from the tooltip's key (D11:
+        the tooltip stays the tuple (text, key))."""
+        if isinstance(tip, tuple) and len(tip) > 1:
+            key = str(tip[1])
+            for heads, side in ICON_TIP_SIDES:
+                if key.startswith(heads):
+                    return side
+        return "left"
 
     def icon_validate():
         """P0 (ui_icons.rpy). Lint findings for the icon tables."""
@@ -312,15 +344,14 @@ screen icon_btn(name, action, tip=None, size=52, w=None, gold=False, selected=Fa
 ## tuple tooltip (text, key), beside the hovered button, on the left when there
 ## is room. "Title\nhint": the first line large, the rest small and dim.
 ## Over the style sample's icon rows it sits above the icon instead: on the
-## left it would hide the neighbouring icon the owner is comparing.
+## left it would hide the neighbouring icon the owner is comparing. The same
+## goes for every row of buttons: icon_tip_side() picks the side by the key.
 screen hover_label():
     zorder 190
 
     $ _hover_tip = GetTooltip()
     $ _hover_t = icon_tip_parts(_hover_tip)
-    $ _hover_side = "left"
-    if isinstance(_hover_tip, tuple) and len(_hover_tip) > 1 and str(_hover_tip[1]).startswith(("sample_auto_", "sample_always_", "sample_never_")):
-        $ _hover_side = "top"
+    $ _hover_side = icon_tip_side(_hover_tip)
     if _hover_t:
         nearrect:
             focus "tooltip"
