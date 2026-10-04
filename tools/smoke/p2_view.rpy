@@ -337,6 +337,18 @@ label zzv_replay:
     $ renpy.end_replay()
 
 
+init 999 python:
+    def zzv_room_is(m):
+        """m (what a master tag shows) is graded_bg() for here and now: the
+        tinted Transform itself, or the painted picture by its name."""
+        g = graded_bg()
+        for d in (m, getattr(m, "child", None)):
+            if d is None:
+                continue
+            if d is g or getattr(d, "name", None) is g or (isinstance(g, str) and getattr(d, "name", None) == tuple(g.split())):
+                return True
+        return False
+
 label zz_smoke:
 
     $ zzv_fixture()
@@ -360,8 +372,56 @@ label zz_smoke:
         _zz_src = open(os.path.join(config.gamedir, "sb_loop.rpy"), encoding="utf-8").read()
         check(0 <= _zz_src.find("\n        $ view_sync_light()\n") < _zz_src.find("\n        call screen sb_place\n"),
               "the loop calls view_sync_light() before call screen sb_place")
+        ## Integration: the master layer is the room at THIS hour when the person
+        ## view's dissolve starts (the place view is already hidden by then).
+        _zz_m = zzv_master("view_room") or zzv_master("bg")
+        check(_zz_m is not None and zzv_room_is(_zz_m)
+              and zz_layer_tags("master") <= {"view_room", "bg"} and len(zz_layer_tags("master")) == 1,
+              "after sb_do_wait, the master layer holds graded_bg() for the new hour, and nothing else, once view_sync_light has run",
+              (_zz_m, graded_bg(), zz_layer_tags("master")))
+        renpy.game.interface.transition.clear()
+        VIEW_FROM_PERSON[0] = False
+        view_sync_light()
+        _zz_t0 = renpy.game.interface.transition.get(None)
+        view_before_person("megumi")
+        _zz_m2 = zzv_master("view_room") or zzv_master("bg")
+        renpy.game.interface.transition.clear()
+        view_sync_light()
+        _zz_t1 = renpy.game.interface.transition.get(None)
+        renpy.game.interface.transition.clear()
+        view_sync_light()
+        _zz_t2 = renpy.game.interface.transition.get(None)
+        check(zzv_room_is(_zz_m2), "and it is still that picture when view_before_person queues its dissolve", (_zz_m2, _zz_m))
+        check(_zz_t0 is None and _zz_t1 is not None and _zz_t2 is None and VIEW_FROM_PERSON[0] is False,
+              "leaving the person view eases back: the place view's next opening queues a dissolve, once (Back returns with no scene)",
+              (_zz_t0, _zz_t1, _zz_t2))
+        view_before_person("megumi")
+        renpy.game.interface.transition.clear()
+        config.skipping = "fast"
+        view_sync_light()
+        config.skipping = None
+        check(renpy.game.interface.transition.get(None) is None and VIEW_FROM_PERSON[0] is False, "but not while skipping")
+        zzv_put("rooftop", ["megumi"], "Night")
+        view_sync_light()
+        _zz_m = zzv_master("view_room") or zzv_master("bg")
+        check(_zz_m is not None and zzv_room_is(_zz_m),
+              "a painted picture for the hour or a tinted one: either is shown as scene expression graded_bg() shows it",
+              (_zz_m, graded_bg()))
+        check(zzv_dumps(_zz_m), "and what it shows pickles")
+        _zz_tint = [(l, p) for l in LOCATIONS for p in PERIODS if not isinstance(graded_bg(l, p), str)]
+        if _zz_tint:
+            zzv_put(_zz_tint[0][0], [], _zz_tint[0][1])
+            view_sync_light()
+            _zz_m = zzv_master("view_room")
+            check(zzv_room_is(_zz_m) and zz_layer_tags("master") == {"view_room"} and zzv_dumps(_zz_m),
+                  "a tinted room (%s, %s) goes up under the tag view_room, and pickles" % _zz_tint[0], (_zz_m, zz_layer_tags("master")))
+        else:
+            check(False, "fixture: no tinted room to test")
+        renpy.game.interface.transition.clear()
+        period = "Evening"
         here = "nowhere_at_all"
-        check(view_sync_light() is None, "view_sync_light does nothing outside the campus")
+        _zz_tags = zz_layer_tags("master")
+        check(view_sync_light() is None and zz_layer_tags("master") == _zz_tags, "view_sync_light does nothing outside the campus")
         here = "dorm_common"
 
     ## --- 2. slots ------------------------------------------------------------------------------
@@ -664,6 +724,22 @@ label zz_smoke:
         check(view_slots("dorm_common", 3) == VIEW_SLOTS["dorm_common"][3], "with the file back the room's own slots return")
     hide screen sb_place
 
+    ## Integration: the classroom. Nobody's legs among the near desks (they
+    ## reach the feet's line from x 950 on), with the pictures to look at.
+    python:
+        check(all(r[0] + 60 <= 960 and r[3] == 0 for n in (1, 2, 3, 4) for r in view_slots("classroom", n)),
+              "the classroom's slots keep everyone on the clear floor left of the near desks (x 950), nobody a step back",
+              [view_slots("classroom", n) for n in (1, 2, 3, 4)])
+        for _zz_n in (2, 3, 4):
+            zzv_put("classroom", ["megumi", "nobara", "yuji", "maki"][:_zz_n], "Morning")
+            zzv_quiet()
+            renpy.scene()
+            renpy.show("zzv_bg", what=graded_bg())
+            renpy.show_screen("sb_place")
+            shot("classroom_%d" % _zz_n, wait=0.3)
+            renpy.hide_screen("sb_place")
+        renpy.scene()
+
     ## --- 8. lit_sprite: blink and talk -------------------------------------------------------
     python:
         _zz_args = ((760, 1400), (380, 1365, 300))
@@ -671,10 +747,18 @@ label zz_smoke:
         _zz_h = lit_sprite("images/char/yuji_happy.png", *_zz_args)
         _zz_o = lit_sprite("images/char/megumi_neutral.png", *_zz_args)
         check(renpy.loadable("images/char/fx/fx_yuji_blink.png") and renpy.loadable("images/char/fx/fx_yuji_talk.png")
-              and len(_zz_n.child.children) == 4 and len(_zz_h.child.children) == 2 and len(_zz_o.child.children) == 2,
+              and len(_zz_n.child.children) == 4 and len(_zz_h.child.children) == 3 and len(_zz_o.child.children) == 2,
               "with the overlay's fx_yuji_blink.png / fx_yuji_talk.png, lit_sprite adds the two layers on a compatible "
-              "expression (neutral) and none on happy, nor for someone with no files",
-              (len(_zz_n.child.children), len(_zz_h.child.children), len(_zz_o.child.children)))
+              "expression (neutral), only the blink on Yuji's happy face (VIEW_BLINK_ALSO: integration), and none for "
+              "someone with no files", (len(_zz_n.child.children), len(_zz_h.child.children), len(_zz_o.child.children)))
+        _zz_a = lit_sprite("images/char/yuji_angry.png", *_zz_args)
+        _zz_also = zzv_with(dict(VIEW_BLINK_ALSO={}), lambda: lit_sprite("images/char/yuji_happy.png", *_zz_args))
+        check(len(_zz_a.child.children) == 2 and len(_zz_also.child.children) == 2
+              and tuple(_zz_h.child.children[2].state.crop) == VIEW_FACE["yuji"]["eyes"]
+              and "happy" in VIEW_BLINK_ALSO["yuji"] and "angry" not in VIEW_BLINK_ALSO["yuji"] and VIEW_TALK_OK == ("neutral",)
+              and zzv_dumps(_zz_h),
+              "the happy layer is the eye box (the face Yuji greets with), it pickles; an expression outside his row "
+              "(angry: the brows cross the box) gets none, and without the row happy gets none (the plan's line)")
         _zz_l = _zz_n.child.children[2:]
         check([tuple(d.state.crop) for d in _zz_l] == [VIEW_FACE["yuji"]["eyes"], VIEW_FACE["yuji"]["mouth"]]
               and [(d.state.xpos, d.state.ypos) for d in _zz_l] == [VIEW_FACE["yuji"]["eyes"][:2], VIEW_FACE["yuji"]["mouth"][:2]],

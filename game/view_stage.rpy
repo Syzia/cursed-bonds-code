@@ -86,13 +86,15 @@ init -2 python:
             3: [(330, -40, 0.52, 0), (760, -50, 0.50, 1), (1380, -40, 0.52, 0)],
             4: [(250, -40, 0.52, 0), (530, -50, 0.50, 1), (800, -40, 0.52, 0), (1075, -40, 0.52, 0)],
         },
-        ## Everyone in the aisle at the front, before the desks: the desks
-        ## are too thin-legged to hide anyone behind (no foreground here).
+        ## Everyone on the clear floor at the left and the front, nearer us
+        ## than the desks' legs: the desks are too thin-legged to hide anyone
+        ## behind (no foreground here). From x 950 on, the near desks reach
+        ## the feet's line, and the blackboard's hotspot is at x 1450.
         "classroom": {
-            1: [(620, -40, 0.52, 0)],
-            2: [(520, -40, 0.52, 0), (1085, -40, 0.52, 0)],
-            3: [(360, -40, 0.52, 0), (900, -50, 0.50, 1), (1450, -40, 0.52, 0)],
-            4: [(250, -40, 0.52, 0), (540, -40, 0.52, 0), (820, -40, 0.52, 0), (1100, -40, 0.52, 0)],
+            1: [(500, -40, 0.52, 0)],
+            2: [(330, -40, 0.52, 0), (720, -40, 0.52, 0)],
+            3: [(290, -40, 0.52, 0), (570, -40, 0.52, 0), (850, -40, 0.52, 0)],
+            4: [(240, -40, 0.52, 0), (460, -40, 0.52, 0), (680, -40, 0.52, 0), (900, -40, 0.52, 0)],
         },
         ## Open ground; the vending machine's corner (x 1464 on) stays clear.
         "courtyard": {
@@ -165,9 +167,23 @@ init -2 python:
     VIEW_BLINK_OK = ("neutral",)
     VIEW_TALK_OK = ("neutral",)
 
+    ## The other faces a person's blink also sits on: the rim of their eye box
+    ## on that sprite matches the neutral sprite's (a mean difference under 4
+    ## of 255, and no eyebrow crossing it). Measured face by face, so a row is
+    ## added when that person's blink picture arrives; Yuji's is the test.
+    ## His greeting and most of his room faces are "happy". The mouth is not
+    ## shared: a small open mouth on a grin would show.
+    VIEW_BLINK_ALSO = {
+        "yuji": ("happy", "sad", "serious", "surprised"),
+    }
+
     ## Who is speaking, and until when the mouth moves (the wall clock). Init
     ## data, never saved: a say statement sets it again.
     VIEW_SPEAKING = builtins.list([None, 0.0])
+
+    ## True from the moment the person view opens until the place view is
+    ## next shown: that return eases (view_sync_light). Init data, never saved.
+    VIEW_FROM_PERSON = builtins.list([False])
 
     def view_motion():
         """P0 (view_stage.rpy), final. bool: looping motion is on
@@ -525,11 +541,32 @@ init -2 python:
     ## The loop's hooks (6.3) ---------------------------------------------------------
 
     def view_sync_light():
-        """P5 (view_stage.rpy). Returns None. Sets the sprite light for the
-        room and hour before the place view opens: Wait, Study and the rest
-        change the hour without a scene statement."""
+        """P5 (view_stage.rpy). Returns None. Called before the place view
+        opens. Wait, Study and the rest change the hour without a scene
+        statement, so this sets the sprite light for the room and hour and
+        puts the room's picture for this hour on the master layer: whatever
+        dissolves next (into the person view, into a scene) starts from the
+        right room. Coming back from the person view, the place view eases
+        in (VIEW_FROM_PERSON)."""
         if store.here in LOCATIONS:
             store.scene_light = light_for_place(store.here, store.period)
+            view_room_show()
+        if VIEW_FROM_PERSON[0]:
+            VIEW_FROM_PERSON[0] = False
+            if view_eased():
+                renpy.transition(Dissolve(0.25))
+        return None
+
+    def view_room_show():
+        """P5. Returns None. Clears the master layer and shows the room as
+        `scene expression graded_bg()` would: a painted picture under its
+        own name, a tinted one under the tag view_room."""
+        d = graded_bg()
+        renpy.scene()
+        if isinstance(d, str):
+            renpy.show(d)
+        else:
+            renpy.show("view_room", what=d)
         return None
 
     def view_eased():
@@ -539,7 +576,9 @@ init -2 python:
 
     def view_before_person(who):
         """P5 (view_stage.rpy). Returns None. Called before the person view
-        opens: the place view dissolves into it."""
+        opens: the room dissolves into it, and the place view eases back
+        in when we leave it (view_sync_light)."""
+        VIEW_FROM_PERSON[0] = True
         if view_eased():
             renpy.transition(Dissolve(0.25))
         return None
@@ -617,7 +656,8 @@ init -2 python:
         the eye box cut from images/char/fx/fx_<who>_blink.png and the mouth
         box cut from fx_<who>_talk.png, each where it sits on the canvas.
         [] unless the file exists, VIEW_FACE has the box, and the expression
-        is one the edit sits on (VIEW_BLINK_OK, VIEW_TALK_OK), so without
+        is one the edit sits on (VIEW_BLINK_OK and the person's row in
+        VIEW_BLINK_ALSO; VIEW_TALK_OK), so without
         the files a sprite is built exactly as before."""
         who, expr = view_face_of(path)
         face = VIEW_FACE.get(who)
@@ -628,6 +668,8 @@ init -2 python:
                                   ("talk", "mouth", VIEW_TALK_OK, view_talk_fn)):
             box = face.get(key)
             fx = "images/char/fx/fx_%s_%s.png" % (who, kind)
+            if kind == "blink":
+                ok = builtins.tuple(ok) + builtins.tuple(VIEW_BLINK_ALSO.get(who, ()))
             if box and expr in ok and renpy.loadable(fx):
                 out.append(Transform(fx, crop=builtins.tuple(box), xpos=box[0], ypos=box[1],
                                      function=renpy.curry(fn)(who=who)))
@@ -663,6 +705,12 @@ init -2 python:
                     x, _y, w, _h = view_slot_rect(r)
                     if x < 40 or x + w > 1700:
                         out.append("VIEW_SLOTS %s, %d people: the slot at x %s leaves the stage (x 40 to 1700)" % (loc, n, r[0]))
+        for who, exprs in VIEW_BLINK_ALSO.items():
+            if "eyes" not in VIEW_FACE.get(who, {}):
+                out.append("VIEW_BLINK_ALSO: %r has no eye box in VIEW_FACE" % (who,))
+            for e in exprs:
+                if not renpy.loadable("images/char/%s_%s.png" % (who, e)):
+                    out.append("VIEW_BLINK_ALSO %s: no sprite for the expression %r" % (who, e))
         for who, face in VIEW_FACE.items():
             if who not in CAST:
                 out.append("VIEW_FACE: %r is not in the cast" % (who,))
