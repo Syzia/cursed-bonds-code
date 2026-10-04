@@ -894,7 +894,9 @@ init python:
         for r in fish:
             if isinstance(r, (tuple, list)) and len(r) >= 2:
                 lines.append("%s — %s" % (r[0], ("%s cm" % r[1]) if r[1] else "not caught yet"))
-        if lines:
+        ## P8: the record book appears with my first catch, not as seven
+        ## "not caught yet" lines before I have ever fished.
+        if lines and any(isinstance(r, (tuple, list)) and len(r) >= 2 and r[1] for r in fish):
             out.append(("THE RECORD BOOK", lines))
         try:
             won = int((cards_records() or {}).get("today", 0) or 0)
@@ -1449,14 +1451,22 @@ init python:
         scap = grade_cap("stat")
         rcap = grade_cap("reserve")
         rscale = max(store.ce_max, rcap or 0, 1)
+        def capline(v, cap):
+            ## P8: a night on the ridge can carry a value past its cap; say
+            ## so, instead of "46 · cap 40".
+            if not cap:
+                return ""
+            if v > cap:
+                return "  · cap %d, +%d from the ridge" % (cap, v - cap)
+            return "  · cap %d" % cap
         return [
             ("Health", store.hp, max(1, store.hp_max), None, gui.seal, "%d / %d" % (store.hp, store.hp_max)),
             ("Cursed energy", store.ce, rscale, rcap, gui.violet,
-             "%d / %d" % (store.ce, store.ce_max) + ("  · cap %d" % rcap if rcap else "")),
+             "%d / %d" % (store.ce, store.ce_max) + capline(store.ce_max, rcap)),
             ("Control", store.control, 100, scap, gui.violet2,
-             "%d" % store.control + ("  · cap %d" % scap if scap else "")),
+             "%d" % store.control + capline(store.control, scap)),
             ("Output", store.output, 100, scap, gui.gold,
-             "%d" % store.output + ("  · cap %d" % scap if scap else "")),
+             "%d" % store.output + capline(store.output, scap)),
             ("Insight", store.insight, 100, None, gui.paper, "%d" % store.insight),
             ("Stamina", store.stamina, max(1, store.stamina_max), None, gui.stamina,
              "%d / %d" % (store.stamina, store.stamina_max)),
@@ -1561,6 +1571,14 @@ init python:
             ## Replacing: the slot this goes into is about to be free.
             if not ok and cur and str(why).startswith("No free slot"):
                 ok, why = True, ""
+                ## P8: can_wear tests the slots before the checklist, so a
+                ## full set hid an unmet line; ask for it here.
+                try:
+                    why2 = item_unmet_reason(iid)
+                except Exception:
+                    why2 = ""
+                if why2:
+                    ok, why = False, why2
             out.append((iid, ok, why or ""))
         return out
 
@@ -1579,7 +1597,9 @@ init python:
         ok = iid in jr_worn()
         for x in ([] if ok else ([cur] if cur else [])) + later:
             if x not in jr_worn():
-                equip_talisman(x)
+                ## P8 (D28): putting back, not putting on anew, so the
+                ## checklist is not asked again.
+                item_wear_again(x)
 
     def jr_hold(iid):
         """WP8. Take a cursed tool in hand (None: bare hands) through WP6's

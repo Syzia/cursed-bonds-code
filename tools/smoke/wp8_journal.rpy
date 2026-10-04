@@ -316,6 +316,9 @@ init 999 python:
     if zzj.stub6:
         store.can_wear = zzj_can_wear
         store.equip_talisman = zzj_equip_talisman
+        ## P8: jr_wear puts the later talismans back with item_wear_again.
+        ## (setattr, as p2_journal's zz_patch does: a patch, not a new global.)
+        setattr(store, "item_wear_again", zzj_equip_talisman)
         store.unequip_talisman = zzj_unequip_talisman
         store.equip_tool = zzj_equip_tool
 
