@@ -86,13 +86,13 @@ init -2 python:
             3: [(330, -40, 0.52, 0), (760, -50, 0.50, 1), (1380, -40, 0.52, 0)],
             4: [(250, -40, 0.52, 0), (530, -50, 0.50, 1), (800, -40, 0.52, 0), (1075, -40, 0.52, 0)],
         },
-        ## The desk at the front of the middle row (x 943 to 1229, y 726 to
-        ## 810) is the foreground.
+        ## Everyone in the aisle at the front, before the desks: the desks
+        ## are too thin-legged to hide anyone behind (no foreground here).
         "classroom": {
             1: [(620, -40, 0.52, 0)],
-            2: [(520, -40, 0.52, 0), (1085, -130, 0.48, 1)],
-            3: [(360, -40, 0.52, 0), (1085, -130, 0.48, 1), (1450, -40, 0.52, 0)],
-            4: [(250, -40, 0.52, 0), (540, -40, 0.52, 0), (820, -40, 0.52, 0), (1085, -130, 0.48, 1)],
+            2: [(520, -40, 0.52, 0), (1085, -40, 0.52, 0)],
+            3: [(360, -40, 0.52, 0), (900, -50, 0.50, 1), (1450, -40, 0.52, 0)],
+            4: [(250, -40, 0.52, 0), (540, -40, 0.52, 0), (820, -40, 0.52, 0), (1100, -40, 0.52, 0)],
         },
         ## Open ground; the vending machine's corner (x 1464 on) stays clear.
         "courtyard": {
@@ -129,6 +129,19 @@ init -2 python:
             4: [(350, -120, 0.52, 0), (600, -120, 0.52, 0), (960, -40, 0.52, 0), (1190, -40, 0.52, 0)],
         },
     }
+
+    ## The rooms whose VIEW_SLOTS rows stand someone behind the foreground
+    ## object. Without the foreground picture for the hour (a new painted
+    ## variant of the room with no fg file yet) those slots would put a person
+    ## on top of the table, so the room falls back to view_default_slots.
+    VIEW_FG_ROOMS = ("dorm_common", "cafeteria", "utahime_office")
+
+    ## The name tags: the gap kept between two, the left edge (the Review
+    ## tools link ends at x 171) and the right edge (the stage's, x 1700; a
+    ## second icon column starts at 1726).
+    VIEW_TAG_GAP = 8
+    VIEW_TAG_EDGES = (179, 1700)
+    VIEW_TAG_W = builtins.dict()     # (short name, mark, NEW) -> width; init data
 
     ## Blink and talk (D39). The eye box and the mouth box of each person, on
     ## the sprite canvas (x, y, w, h), measured on <who>_neutral.png. Gojo's
@@ -198,13 +211,17 @@ init -2 python:
         """P5 (view_stage.rpy). A list of n tuples (xcenter, yoffset, zoom,
         far): where n people stand in a room. The sidecar
         game/layout/view_<loc>.json ("slots") first, then VIEW_SLOTS, then
-        the phase-1 centres with the middle people a step back. [] when n
-        is not 1 to 4."""
+        the phase-1 centres with the middle people a step back. A room
+        whose table rows stand people behind its foreground (VIEW_FG_ROOMS)
+        uses those centres too while the foreground picture for the hour is
+        missing. [] when n is not 1 to 4."""
         if n not in (1, 2, 3, 4):
             return []
         rows = (rule_layout("view_" + str(loc)).get("slots") or {})
         rows = rows.get(str(n)) if isinstance(rows, builtins.dict) else None
         if not view_slot_ok(rows, n):
+            if loc in VIEW_FG_ROOMS and view_fg_path(loc) is None:
+                return view_default_slots(loc, n)
             rows = VIEW_SLOTS.get(loc, {}).get(n)
         if not view_slot_ok(rows, n):
             return view_default_slots(loc, n)
@@ -276,50 +293,98 @@ init -2 python:
                                           rect=view_slot_rect(slot)))
         return rows
 
+    def view_pose_cost(slot, boxes):
+        """P5. How much of the pose boxes a person standing in `slot` covers,
+        in square pixels (the body: the middle 60% of the canvas)."""
+        x, y, w, h = view_slot_rect(slot)
+        bx0, bx1 = x + 0.2 * w, x + 0.8 * w
+        cost = 0
+        for px, py, pw, ph in boxes:
+            ox = min(bx1, px + pw) - max(bx0, px)
+            oy = min(y + h, py + ph) - max(y, py)
+            if ox > 0 and oy > 0:
+                cost += ox * oy
+        return int(cost)
+
     def view_pick_slots(loc, k, boxes):
         """P5. The slots for the k people who stand while others are painted
         into the room (`boxes`, their pose boxes). With no pose it is
-        view_slots(loc, k). Otherwise it is the k slots, from the layouts
-        for k to four people, whose bodies cover the pose boxes least, so
-        nobody stands in front of someone sitting on the sofa."""
+        view_slots(loc, k). Otherwise it is the k slots that cover the pose
+        boxes least: k slots of one layout (for k to four people) when one
+        such set is clear of the boxes, else k slots drawn from all of the
+        room's layouts, left to right and at least 170 px apart. So nobody
+        stands in front of someone on the sofa while the room has a clear
+        slot left; in a room with none, the overlap is the smallest there is."""
         if not boxes or k < 1:
             return view_slots(loc, k)
         import itertools
         best = None
+        pool = []
         for m in range(k, 5):
             layout = view_slots(loc, m)
+            for s in layout:
+                if s not in pool:
+                    pool.append(s)
             for combo in itertools.combinations(range(len(layout)), k):
-                cost = 0
-                for i in combo:
-                    x, y, w, h = view_slot_rect(layout[i])
-                    bx0, bx1 = x + 0.2 * w, x + 0.8 * w      # the body, not the canvas
-                    for px, py, pw, ph in boxes:
-                        ox = min(bx1, px + pw) - max(bx0, px)
-                        oy = min(y + h, py + ph) - max(y, py)
-                        if ox > 0 and oy > 0:
-                            cost += ox * oy
-                key = (cost, m, combo)
+                key = (sum(view_pose_cost(layout[i], boxes) for i in combo), 0, m, combo)
                 if best is None or key < best[0]:
                     best = (key, [layout[i] for i in combo])
+        if best is not None and best[0][0] > 0:
+            pool.sort(key=lambda s: (s[0], s[1]))
+            for combo in itertools.combinations(range(len(pool)), k):
+                if any(pool[j][0] - pool[i][0] < 170 for i, j in zip(combo, combo[1:])):
+                    continue
+                key = (sum(view_pose_cost(pool[i], boxes) for i in combo), 1, 0, combo)
+                if key < best[0]:
+                    best = (key, [pool[i] for i in combo])
         return best[1] if best else view_slots(loc, k)
 
-    def view_tag_xs(rows, gap=170, lo=250, hi=1640):
+    def view_tag_est(short, job=False, new=False):
+        """P5. A name tag's width from the length of the name (used until
+        the text can be measured)."""
+        return 28 + 13 * len(short) + (48 if job else 0) + (56 if new else 0)
+
+    def view_tag_w(short, job=False, new=False):
+        """P5. The width of a name tag (screen view_tags): the padding, the
+        short name, and the mission mark and the NEW chip when it has them.
+        Measured once for each tag (Text.size) and kept."""
+        key = (short, bool(job), bool(new))
+        if key not in VIEW_TAG_W:
+            try:
+                w = 28 + Text(short, style="view_tag_name", substitute=False).size()[0]
+                if job:
+                    w += 8 + Text(u"\u300c!\u300d", font=gui.display_heavy_font, size=20).size()[0]
+                if new:
+                    w += 8 + 12 + Text(__("NEW"), font=gui.body_bold_font, size=11, kerning=2).size()[0]
+                VIEW_TAG_W[key] = int(w + 0.999)
+            except Exception:
+                return view_tag_est(short, job, new)
+        return VIEW_TAG_W[key]
+
+    def view_tag_xs(rows, widths=None, gap=None, lo=None, hi=None):
         """P5. The x centre of each row's name tag, in the rows' order: under
-        the person, moved apart where two would touch (someone standing by a
-        painted pose), and kept between the Review tools link and the column."""
+        the person, moved apart by the tags' own widths where two would
+        touch, and kept between the Review tools link and the icon column
+        (VIEW_TAG_EDGES). `widths` is each tag's width (view_tag_w); without
+        it every tag is taken as 170 wide."""
+        gap = VIEW_TAG_GAP if gap is None else gap
+        lo = VIEW_TAG_EDGES[0] if lo is None else lo
+        hi = VIEW_TAG_EDGES[1] if hi is None else hi
+        ws = builtins.list(widths) if widths is not None else [170] * len(rows)
         want = [int(r["rect"][0] + r["rect"][2] / 2) for r in rows]
         order = sorted(range(len(rows)), key=want.__getitem__)
         out = builtins.list(want)
-        last = None
+        edge = lo - gap                 # the right edge of the tag before
         for i in order:                 # left to right: push apart
-            x = max(lo, want[i])
-            if last is not None and x < last + gap:
-                x = last + gap
-            out[i] = last = x
-        limit = hi
+            half = (ws[i] + 1) // 2
+            x = max(want[i], edge + gap + half)
+            out[i] = x
+            edge = x + half
+        edge = hi + gap                 # the left edge of the tag after
         for i in order[::-1]:           # right to left: back inside
-            out[i] = min(out[i], limit)
-            limit = out[i] - gap
+            half = (ws[i] + 1) // 2
+            out[i] = min(out[i], edge - gap - half)
+            edge = out[i] - half
         return out
 
     def view_draw_key(row):
@@ -688,12 +753,13 @@ screen view_stage(loc):
 screen view_tags(loc):
 
     $ _view_rows = view_stage_rows(loc)
-    $ _view_xs = view_tag_xs(_view_rows)
+    $ _view_marks = [view_tag_marks(_view_r["who"], loc) for _view_r in _view_rows]
+    $ _view_xs = view_tag_xs(_view_rows, [view_tag_w(CAST[_view_r["who"]]["short"], *_view_m) for _view_r, _view_m in zip(_view_rows, _view_marks)])
 
     for _view_i, _view_r in enumerate(_view_rows):
         $ _view_who = _view_r["who"]
         $ _view_c = CAST[_view_who]
-        $ _view_job, _view_new = view_tag_marks(_view_who, loc)
+        $ _view_job, _view_new = _view_marks[_view_i]
         button:
             id "tag_" + _view_who
             style "view_tag_button"

@@ -1,8 +1,8 @@
 """
 Build the ComfyUI workflow that paints one person into their room.
 
-    python3 tools/make_pose_workflow.py nobara dorm_common evening
-    python3 tools/make_pose_workflow.py utahime utahime_office
+    python3 tools/make_pose_workflow.py dorm_common nobara evening
+    python3 tools/make_pose_workflow.py utahime_office utahime
     python3 tools/make_pose_workflow.py --list        # the planned poses and what each costs
     python3 tools/make_pose_workflow.py --batch 3     # every pose of art batch 3, one file each
 
@@ -312,9 +312,11 @@ def main(argv):
         if not rows:
             raise SystemExit("no pose in batch %s" % batch)
     elif len(args) in (2, 3):
-        who, place = args[0], args[1]
+        ## <place> <who> [variant], as the plan writes it (section 5, row 6);
+        ## the two the other way round are understood too.
+        place, who = args[0], args[1]
         variant = args[2] if len(args) == 3 else ""
-        row = find(who, place, variant)
+        row = find(who, place, variant) or find(place, who, variant)
         if row is None:
             raise SystemExit("%s is not in the plan (POSES): add a row saying where in the room and doing "
                              "what, or see --list" % stem(place, who, variant))

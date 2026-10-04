@@ -142,6 +142,15 @@ init 999 python:
             d.visit_all(each)
         return out
 
+    def zzv_focus_at(x, y):
+        """Put the pointer at (x, y) the way a mouse move does; the id of
+        the button that takes the focus, or None."""
+        renpy.display.focus.mouse_handler(None, int(x), int(y), default=False)
+        return getattr(renpy.display.focus.get_focused(), "id", None)
+
+    def zzv_both_marks(who, loc):
+        return (True, True)
+
     def zzv_master(tag):
         """The displayable showing under a tag on the master layer, or None."""
         try:
@@ -319,6 +328,15 @@ screen zzv_focus_one():
     add "megumi" at char_focus(300)
 
 
+## A replay's body (section 11): what a memory's scene does first.
+label zzv_replay:
+    call stage_person("megumi")
+    python:
+        ZZV["replay"] = (bool(_in_replay), zzv_atl(zzv_master("megumi")) is pos_c.atl, "view_fg" in zz_layer_tags("master"),
+                         here, view_fg_path(here) is not None)
+    $ renpy.end_replay()
+
+
 label zz_smoke:
 
     $ zzv_fixture()
@@ -360,6 +378,13 @@ label zz_smoke:
         check(not _zz_bad, "view_slots(loc, n) returns n 4-tuples for every room (%d, read from LOCATIONS) and n from 1 to 4, "
                            "left of x 1700" % len(LOCATIONS), _zz_bad)
         check(view_slots("dorm_common", 0) == [] and view_slots("dorm_common", 5) == [], "and [] for 0 or 5 people")
+        ## 4.4 keeps the stage inside x 40 to 1700. view_validate holds VIEW_SLOTS
+        ## to that; a room with no row keeps its phase-1 centres, and these start
+        ## left of x 40 (each wants a VIEW_SLOTS row or a sidecar, if it matters).
+        _zz_left = ["%s/%d: x %d" % (l, n, min(r[0] for r in view_slot_rects(l, n)))
+                    for l in LOCATIONS for n in (1, 2, 3, 4) if min(r[0] for r in view_slot_rects(l, n)) < 40]
+        note("slots left of x 40 (phase-1 defaults, rooms with no VIEW_SLOTS row)", ", ".join(_zz_left) or "none")
+        check(not [t for t in _zz_left if t.split("/")[0] in VIEW_SLOTS], "no room with a VIEW_SLOTS row starts left of x 40", _zz_left)
         _zz_bad = []
         for _zz_loc in ("dorm_common", "cafeteria", "dorm", "gate"):
             for _zz_n in (1, 2, 3, 4):
@@ -445,6 +470,30 @@ label zz_smoke:
               "and no two name tags touch", _zz_tr)
         check(view_tip("nobara", here) == zzv_tip("sb_place", "stage_nobara")[0], "the patch carries the same hover label")
         shot("common_room_pose", wait=0.3)
+    hide screen sb_place
+    python:
+        ## Four in the room, one of them the pose: the three who stand.
+        zzv_put("dorm_common", ["yuji", "megumi", "nobara", "maki"], "Evening")
+        zzv_quiet()
+        _zz_rows = view_stage_rows(here)
+        _zz_cost = [(r["who"], view_pose_cost((r["x"], r["yoff"], r["zoom"], r["far"]), [(270, 410, 400, 460)]))
+                    for r in _zz_rows if not r["pose"]]
+        _zz_xs = sorted(r["x"] for r in _zz_rows if not r["pose"])
+        note("four in the common room, Nobara the pose: each standing body's overlap with her box, in square px", _zz_cost)
+        check(len(_zz_cost) == 3 and not any(c for _w, c in _zz_cost) and all(b - a >= 170 for a, b in zip(_zz_xs, _zz_xs[1:])),
+              "with four people the three who stand are still clear of the pose's box (slots drawn from all the "
+              "room's layouts, 170 px apart)", (_zz_cost, _zz_xs))
+        check(view_pick_slots("dorm_common", 2, [(270, 410, 400, 460)]) == [VIEW_SLOTS["dorm_common"][3][1], VIEW_SLOTS["dorm_common"][3][2]],
+              "while a layout with a clear set is used as it is (three people: the layout for three, less its left slot)",
+              view_pick_slots("dorm_common", 2, [(270, 410, 400, 460)]))
+    scene expression graded_bg()
+    show screen sb_place
+    python:
+        zz_render(0.3)
+        _zz_tr = [zz_rect("sb_place", "tag_" + r["who"]) for r in _zz_rows]
+        check(all(_zz_tr) and not any(hot_overlap(a, b) for a in _zz_tr for b in _zz_tr if a is not b),
+              "and their four name tags do not touch", _zz_tr)
+        shot("common_room_pose_four", wait=0.3)
     hide screen sb_place
     $ ZZV["press"] = "stage_nobara"
     call screen sb_place
@@ -563,11 +612,13 @@ label zz_smoke:
             if _zz_fn.endswith(".json"):
                 for _zz_v in zzv_json.load(open(os.path.join(_zz_fgdir, _zz_fn))):
                     _zz_want.append("images/fg/fg_%s%s.png" % (_zz_fn[:-5], "_" + _zz_v if _zz_v else ""))
-        check(sorted(_zz_want) == ["images/fg/fg_cafeteria.png", "images/fg/fg_classroom.png", "images/fg/fg_dorm_common.png",
+        check(sorted(_zz_want) == ["images/fg/fg_cafeteria.png", "images/fg/fg_dorm_common.png",
                                    "images/fg/fg_dorm_common_evening.png", "images/fg/fg_dorm_common_night.png",
                                    "images/fg/fg_utahime_office.png"]
               and all(renpy.loadable(p) for p in _zz_want),
-              "the six foreground files load, one for every polygon in tools/fg/", _zz_want)
+              "the five foreground files load, one for every polygon in tools/fg/ (the classroom has none: round 1)", _zz_want)
+        check(sorted(VIEW_FG_ROOMS) == sorted(builtins.set(os.path.splitext(f)[0] for f in os.listdir(_zz_fgdir) if f.endswith(".json"))),
+              "VIEW_FG_ROOMS names the rooms that have a polygon file", VIEW_FG_ROOMS)
 
     ## --- 7. the foreground on the place view ----------------------------------------------
     python:
@@ -602,7 +653,15 @@ label zz_smoke:
         check(view_fg_path(here) is None and not [d for d in _zz_o if builtins.str(getattr(d, "filename", "")).startswith("images/fg/")]
               and all(zzv_wid("sb_place", "tag_" + w) is not None for w in stage_people(here)[0]),
               "the stand-in path: with no foreground file the screen draws none, and the tags are still there")
+        check(all(view_slots(l, n) == view_default_slots(l, n) and not any(s[1] < -60 for s in view_slots(l, n))
+                  for l in VIEW_FG_ROOMS for n in (1, 2, 3, 4))
+              and view_slots("library", 3) == VIEW_SLOTS["library"][3]
+              and view_person_rects(here) == [view_slot_rect(s) for s in view_default_slots(here, 3)],
+              "and nobody stands up on the table: a foreground room uses the plain default slots while its picture is "
+              "missing (other rooms keep their rows)", [view_slots(l, 3) for l in VIEW_FG_ROOMS])
+        shot("standin_no_foreground", wait=0.2)
         renpy.loadable = ZZV_LOADABLE[0]
+        check(view_slots("dorm_common", 3) == VIEW_SLOTS["dorm_common"][3], "with the file back the room's own slots return")
     hide screen sb_place
 
     ## --- 8. lit_sprite: blink and talk -------------------------------------------------------
@@ -730,6 +789,81 @@ label zz_smoke:
         gui.icon_words = _zz_words_were
     hide screen sb_place
     python:
+        ## The pointer on a sprite: a breathing transform over a (blurred) transform
+        ## under focus_mask True still takes the focus where the person is painted,
+        ## and not in the empty corner of the canvas.
+        _zz_bad = []
+        for _zz_loc, _zz_who in (("dorm_common", ["megumi", "nobara", "maki"]), ("dorm_common", ["yuji", "megumi", "nobara", "maki"]),
+                                 ("classroom", ["yuji", "megumi", "nobara", "maki"]), ("cafeteria", ["yuji", "toge", "megumi"])):
+            zzv_put(_zz_loc, _zz_who, "Afternoon")
+            zzv_quiet()
+            renpy.scene()
+            renpy.show("zzv_bg", what=graded_bg())
+            renpy.show_screen("sb_place")
+            zz_render(0.3)
+            for _zz_row in view_stage_rows(_zz_loc):
+                _zz_x, _zz_y, _zz_w, _zz_h = _zz_row["rect"]
+                _zz_f = zzv_focus_at(_zz_x + _zz_w // 2, _zz_y + int(_zz_h * 0.42))
+                zz_render(0.1)
+                _zz_tt = GetTooltip("sb_place")
+                _zz_f2 = zzv_focus_at(_zz_x + 6, _zz_y + 6)
+                if not (_zz_f == "stage_" + _zz_row["who"] and isinstance(_zz_tt, tuple) and _zz_tt[1] == _zz_f
+                        and _zz_tt[0] == view_tip(_zz_row["who"], _zz_loc)
+                        and (_zz_f2 == _zz_f) == bool(_zz_row["pose"])):
+                    _zz_bad.append((_zz_loc, len(_zz_who), _zz_row["who"], _zz_f, _zz_tt, _zz_f2))
+            if _zz_loc == "dorm_common" and len(_zz_who) == 3:
+                _zz_far = [r for r in view_stage_rows(_zz_loc) if r["far"]][0]
+                zzv_focus_at(_zz_far["rect"][0] + _zz_far["rect"][2] // 2, _zz_far["rect"][1] + int(_zz_far["rect"][3] * 0.42))
+                zz_render(0.2)
+                shot("hover_sprite_far", wait=0)
+            renpy.hide_screen("sb_place")
+        check(not _zz_bad, "the pointer on a person's chest focuses stage_<who> and GetTooltip('sb_place') is their label; "
+              "the empty corner of a sprite's canvas does not, while a painted pose (Yuji's day test pose) is its whole box "
+              "(four stages, 14 people; needs this window to hold the pointer)", _zz_bad)
+
+        ## Tags by their real width: every room, four people with the longest
+        ## short names, every tag carrying both marks (the widest a tag gets).
+        _zz_long = sorted([w for w in ROSTER_ORDER if w in VIEW_FACE], key=lambda w: (-len(CAST[w]["short"]), w))[:4]
+        _zz_bad = []
+        _zz_wbad = []
+        _zz_real_marks = store.view_tag_marks
+        for _zz_forced in (False, True):
+            store.view_tag_marks = zzv_both_marks if _zz_forced else _zz_real_marks
+            for _zz_loc in LOCATIONS:
+                zzv_put(_zz_loc, _zz_long, "Noon")
+                zzv_quiet()
+                renpy.show_screen("sb_place")
+                zz_render(0.05)
+                _zz_on = stage_people(_zz_loc)[0]
+                _zz_tr = [zz_rect("sb_place", "tag_" + w) for w in _zz_on]
+                _zz_dev = zz_rect("sb_place", "hud_dev")
+                if (len(_zz_on) != 4 or not all(_zz_tr) or _zz_dev is None
+                        or any(hot_overlap(a, b) for a in _zz_tr for b in _zz_tr if a is not b)
+                        or any(hot_overlap(r, _zz_dev) for r in _zz_tr)
+                        or any(r[0] < VIEW_TAG_EDGES[0] or r[0] + r[2] > VIEW_TAG_EDGES[1] for r in _zz_tr)
+                        or any(b[0] - (a[0] + a[2]) < VIEW_TAG_GAP - 1 for a, b in zip(sorted(_zz_tr), sorted(_zz_tr)[1:]))):
+                    _zz_bad.append((_zz_forced, _zz_loc, _zz_dev, _zz_tr))
+                for _zz_w, _zz_r in zip(_zz_on, _zz_tr):
+                    _zz_m = view_tag_marks(_zz_w, _zz_loc)
+                    if _zz_r and abs(_zz_r[2] - view_tag_w(CAST[_zz_w]["short"], *_zz_m)) > 2:
+                        _zz_wbad.append((_zz_w, _zz_m, _zz_r[2], view_tag_w(CAST[_zz_w]["short"], *_zz_m)))
+                if _zz_forced and _zz_loc in ("dorm_common", "library"):
+                    shot("tags_both_marks_" + _zz_loc, wait=0.1)
+                renpy.hide_screen("sb_place")
+        store.view_tag_marks = _zz_real_marks
+        check(not _zz_bad, "with the four longest names on stage, in every room (%d, from LOCATIONS), plain and with both marks "
+              "forced on every tag: no two tags overlap (8 px apart), none touches Review tools, none leaves x 179 to 1700"
+              % len(LOCATIONS), _zz_bad[:4])
+        check(not _zz_wbad, "view_tag_w is the tag's real width on screen (within 2 px)", _zz_wbad[:6])
+        _zz_rows = [dict(rect=(x - 100, 0, 200, 10)) for x in (300, 320, 1650, 900)]
+        check(view_tag_xs(_zz_rows, [100, 200, 120, 80]) == [300, 458, 1640, 900]
+              and view_tag_xs([dict(rect=(100, 0, 200, 10))], [224]) == [291] and view_tag_xs([], []) == [],
+              "view_tag_xs: under the person; pushed right by the two widths plus the gap; held inside the edges",
+              view_tag_xs(_zz_rows, [100, 200, 120, 80]))
+        zzv_put("cafeteria", ["yuji", "toge", "megumi"], "Noon")
+        zzv_quiet()
+    scene expression graded_bg()
+    python:
         ## The badges: NEW follows night_allows('hang', 1); the mission mark the night's rules.
         _zz_patch = dict(has_event=lambda kind, who=None, loc=None: kind == "hangout" and who == "yuji",
                          missions_with=lambda who, loc=None: ["m_sunmall"] if who == "toge" else [])
@@ -837,6 +971,15 @@ label zz_smoke:
         store._in_replay = None
         check(zzv_atl(_zz_d) is pos_c.atl and "view_fg" not in _zz_tags and _zz_tr is None,
               "inside a replay view_enter shows the sprite at pos_c with no foreground (and no dissolve)", (_zz_d, _zz_tags))
+        ## The same in a real replay: a new context started from memory_scope.
+        _zz_mem = MEMORIES[0]["id"]
+        _zz_scope = memory_scope(_zz_mem)
+        _zz_scope.update(here="cafeteria", period="Noon")
+        ZZV["replay"] = None
+        renpy.call_replay("zzv_replay", scope=_zz_scope)
+        check(ZZV["replay"] == (True, True, False, "cafeteria", True) and not _in_replay,
+              "a real replay (renpy.call_replay with memory_scope's scope, in the cafeteria): stage_person shows the sprite "
+              "at pos_c with no foreground", ZZV["replay"])
     scene expression graded_bg()
     python:
         persistent.motion = False
