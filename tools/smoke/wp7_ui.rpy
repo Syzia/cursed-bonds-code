@@ -377,7 +377,6 @@ label zz_smoke:
         _names = [CAST[w]["short"] for w in _on]
         check(all(any(n in s for s in _t) for n in _names), "sb_place renders four people with nameplates", _t)
         _caps = [ambient_of(w, here)[0] for w in _on]
-        check(any("on her phone" in s for s in _t), "nameplates carry what they're doing", _caps)
         check(any("Dorm Common Room" in s for s in _t), "the arrival caption names the place")
         check(zz_rect("sb_place", "hud_chip_stamina") is not None
               and zz_tip("sb_place", "hud_chip_stamina") == ("Running on empty. Eat or sleep.", "hud_chip_stamina")
@@ -394,6 +393,14 @@ label zz_smoke:
               "renpy.get_screen((sandbox, menu)) hides the quick menu over the place view")
         _t0 = arrival_caption()
         check(_t0 is not None and arrival_caption() == _t0, "the arrival caption shows once per (day, period, here)")
+        ## Phase 2 (P5, 4.5): the tag is the short name; what they're doing is
+        ## the hover label, over the person or the tag.
+        check(not any("on her phone" in s for s in _t) and "on her phone" in _caps
+              and all(zz_tip("sb_place", p + w) == (CAST[w]["short"] + "\n" + ambient_of(w, here)[0], p + w)
+                      for w in _on for p in ("stage_", "tag_")),
+              "what they're doing is the hover label of the person and of the name tag, no longer printed (phase 2)", _caps)
+        check(all((zz_rect("sb_place", "tag_" + w) or (0, 0, 0, 0))[1::2] == (1036, 36) for w in _on),
+              "the name tags are one 36-high line under the feet (phase 2)", [zz_rect("sb_place", "tag_" + w) for w in _on])
     $ renpy.pause(3.6, hard=True)
     python:
         check(arrival_caption() is None, "the arrival caption fades after about 3 s")
