@@ -27,8 +27,8 @@
 ## (promote, board_generate), never by hand (R5).
 ##
 ## What waits for another package (7.3) is written as a NOTE:
-##   - the stage's own buttons (the sprites and name tags, view_stage.rpy) get
-##     their hover labels from P5;
+##   - (the stage's own buttons, the sprites and name tags of view_stage.rpy,
+##     got their hover labels with P5 in wave 2: that line is a check now);
 ##   - "Go to bed", the real moon chip and a Night with missions closed need
 ##     P4b's night rule: here they run against the stubs, with night_tag and
 ##     night_can_work swapped for the chip check only.
@@ -483,12 +483,9 @@ label zz_smoke:
         _zz_bare_ret = [getattr(getattr(w, "action", None), "value", None) for w, r in _zz_bare]
         check(len(_zz_keys) == len(set(_zz_keys)) and len(_zz_keys) >= 5 + len(_zz_extra),
               "sb_place: every hover label's key is unique on the screen (%d buttons)" % len(_zz_keys), sorted(_zz_keys))
-        check(all(isinstance(v, tuple) and v[0] == "char" and v[1] in _zz_stage for v in _zz_bare_ret)
-              and len(_zz_bare) == 2 * len(_zz_stage),
-              "sb_place: the only buttons without a hover label are the stage's own (sprites and name tags)",
+        check(not _zz_bare and all(("stage_" + w) in _zz_keys and ("tag_" + w) in _zz_keys for w in _zz_stage),
+              "sb_place: every button has a hover label, the stage's sprites and name tags included (P5)",
               _zz_bare_ret)
-        note("sb_place: the stage's buttons", "%d sprites and name tags (view_stage.rpy) get their hover labels from P5 (4.5, 7.3)"
-             % len(_zz_bare))
         check(_zz_extra and all(("rail_more_" + w) in _zz_keys for w in _zz_extra) and "hud_dev" in _zz_keys
               and "hud_chip_stamina" in _zz_keys,
               "the overflow chip's names, Review tools and a status chip carry hover labels too", sorted(_zz_keys))

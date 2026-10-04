@@ -151,12 +151,25 @@ init -10 python:
 
         size is the sprite canvas (w, h); feet is (x centre, sole row, width)
         measured from the neutral pose by tools/gen_sprite_defs.py.
+
+        Phase 2 (D39): when images/char/fx/fx_<who>_blink.png or
+        fx_<who>_talk.png exists, the eye box and the mouth box cut from
+        them are two more layers over the sprite (view_face_layers,
+        view_stage.rpy). Without those files the sprite is built as before.
         """
         fx, fy, fw = feet
         shadow = Transform("images/fx/contact_shadow.png", function=_shadow_light,
                            xysize=(int(fw * 1.6), max(14, int(fw * 0.2))),
                            xcenter=fx, ycenter=fy + 2)
-        return Transform(Fixed(shadow, Image(path), xysize=size), function=_sprite_light)
+        layers = [shadow, Image(path)] + light_face_layers(path)
+        return Transform(Fixed(*layers, xysize=size), function=_sprite_light)
+
+    def light_face_layers(path):
+        """P5. The blink and talk layers for a sprite's path ([] when there
+        are none). They are view_stage.rpy's; a sprite built before that
+        file's init has run gets none."""
+        fn = getattr(store, "view_face_layers", None)
+        return list(fn(path)) if fn is not None else []
 
 default scene_light = ("#ffffff", 0.0, 1.0, 0.55)
 define sprite_lighting = True
