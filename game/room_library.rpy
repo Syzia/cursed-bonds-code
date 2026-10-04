@@ -99,10 +99,11 @@ label sb_do_lib_study:
         "History: who did this before me, and how it went":
             $ _lib_shelf = "history"
 
-    $ _lib_line = lib_line(_lib_shelf)
-    "[_lib_line]"
     if _lib_shelf == "barrier" and not night_can_work():
-        "My hands won't hold a line today. I read it, and leave the practice for a day I can stand up straight."
+        "A manual of veils, all diagrams. My hands won't hold a line today, so I only read: the order the lines go down in, and what each one is for. The practice can wait for a day I can stand up straight."
+    else:
+        $ _lib_line = lib_line(_lib_shelf)
+        "[_lib_line]"
     $ lib_read(_lib_shelf)
     $ advance_period_soft(1)
     return

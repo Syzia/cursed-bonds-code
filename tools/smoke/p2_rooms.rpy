@@ -18,7 +18,8 @@
 ##      records, the pages' text
 ##   H  the cross-check of the board
 ##   I  fishing: 1,000 casts, the River Lord, the pale thing, the yen, the
-##      first catch, a companion, fish_Hook, rollback, the record book
+##      first catch, a companion, fish_Hook, rollback, packing up at the bite,
+##      the screen's own timers, the rolled sitting, the record book
 ##   J  the Library's shelves; a desk is unchanged
 ##   K  autoplay timers and the menu key; the saved variables; zz_worst
 ##
@@ -36,7 +37,8 @@
 ## icon pictures), room_riverside_night.png, pc_<page>.png for the twelve
 ## pages, pc_board_checked.png, fish_wait.png, fish_bite.png, fish_book.png.
 ##
-## A run takes about a minute.
+## A run takes about a minute and a quarter (one sitting is left to the
+## screen's own timers: three sweeps of three seconds).
 
 init 999 python:
     import builtins
@@ -58,6 +60,8 @@ init 999 python:
             self.answers = None                 # what to answer pc_screen / fish_screen with
             self.seen = builtins.list()         # the screens the driver answered
             self.on_show = None                 # called with the screen's name before each answer
+            self.own = None                     # when set: called with the screen's name, and ITS return is the answer
+                                                # (None leaves the screen to its own timers)
             self.lines = builtins.list()        # every line fish_settle returned
             self.blocks = builtins.list()       # can_rollback() after each block_rollback()
             self.keep = builtins.dict()
@@ -127,6 +131,22 @@ init 999 python:
     def zz_r_false():
         return False
 
+    def zz_r_phase(name):
+        """An `own` driver that answers nothing: it only notes each new
+        (cast, phase) fish_screen passes through."""
+        row = (fish_state.get("cast"), fish_phase())
+        if name == "fish_screen" and (not zz_r.keep["phases"] or zz_r.keep["phases"][-1] != row):
+            zz_r.keep["phases"].append(row)
+        return None
+
+    def zz_r_leave_at_bite(name):
+        """An `own` driver that packs up as soon as the float has dipped."""
+        zz_r_phase(name)
+        if name == "fish_screen" and fish_phase() == "bite":
+            zz_r.keep["bite_kind"] = fish_state.get("kind")
+            return ("leave",)
+        return None
+
     def zz_r_no_art(name):
         return False
 
@@ -163,6 +183,8 @@ init 999 python:
                 zz_r.seen.append(name)
                 if zz_r.on_show is not None:
                     zz_r.on_show(name)
+                if zz_r.own is not None:
+                    return zz_r.own(name)
                 if zz_r.answers:
                     return zz_r.answers.pop(0)
                 return ("close",) if name == "pc_screen" else ("leave",)
@@ -170,11 +192,14 @@ init 999 python:
 
     config.overlay_screens.append("zz_r_driver")
 
-    def zz_r_drive(answers, on_show=None):
+    def zz_r_drive(answers, on_show=None, own=None):
         """Script plays through (text skipped), the two screens are answered
-        from `answers`, then closed."""
+        from `answers`, then closed. With `own`, a function of the screen's
+        name, the answer is whatever it returns: None leaves the screen
+        waiting on its own timers."""
         zz_r.answers = builtins.list(answers)
         zz_r.on_show = on_show
+        zz_r.own = own
         del zz_r.seen[:]
         autoplay(True)
         store.smoke_autoplay = False
@@ -183,6 +208,7 @@ init 999 python:
         autoplay(False)
         zz_r.answers = None
         zz_r.on_show = None
+        zz_r.own = None
 
     ## --- fixtures --------------------------------------------------------------
 
@@ -827,8 +853,24 @@ label zz_smoke:
         renpy.show_screen("pc_screen", "home")
         _zz_tx = zz_texts("pc_screen")
         _zz_btn = zz_rect("pc_screen", "pc_lead_clan_zenin")
+        _zz_fit = [zz_rect("pc_screen", "pc_site_" + _zz_k) for _zz_k in PC_SITE_ORDER]
+        _zz_n = len(pc_leads())
         shot("pc_home_requests", wait=0.1)
         renpy.hide_screen("pc_screen")
+        check(_zz_n == 2 and _zz_tx.index("REQUESTED READING") < _zz_tx.index(PC_PAGES["home"]["body"][0]) < _zz_tx.index("SITES")
+              and all(r is not None and r[3] >= 30 and r[1] + r[3] <= 926 for r in _zz_fit),
+              "G: on Home the requests come first, then the intranet's lines, then the sites; with two requests all five "
+              "site cards are inside the page without a scroll (4.11)", (_zz_n, _zz_fit))
+        pc_request("clan_gojo", "Who signs [the] 7-C {zz}forms")
+        renpy.show_screen("pc_screen", "home")
+        _zz_tx2 = zz_texts("pc_screen")
+        _zz_btn2 = zz_rect("pc_screen", "pc_lead_clan_gojo")
+        shot("pc_home_brackets", wait=0.1)
+        renpy.hide_screen("pc_screen")
+        check("Who signs [the] 7-C {{zz}forms" in _zz_tx2 and _zz_btn2 is not None and _zz_btn2[2] > 250,
+              "G: a request's note is drawn as written: square brackets are not substituted and a brace is not a text tag "
+              "(an unknown tag would raise)", _zz_tx2[:8])
+        store.pc_requests = [r for r in pc_requests if r[0] != "clan_gojo"]
         check(_zz_ret is None and pc_requests == [("clan_zenin", "Ask the register about Maki's family")]
               and ("clan_zenin", "Ask the register about Maki's family") in pc_leads()
               and "Ask the register about Maki's family" in _zz_tx and "REQUESTED READING" in _zz_tx and _zz_btn is not None,
@@ -918,6 +960,15 @@ label zz_smoke:
         board_offers = board_generate(board_week_now())
         board_week = board_week_now()
         _zz_day = day
+        renpy.show_screen("pc_screen", "board_reports")
+        _zz_shut = (pc_check_ok(), ("check",) in zz_r_rets("pc_screen"), zz_rect("pc_screen", "pc_check"),
+                    "Too late. Bed." in zz_texts("pc_screen"),
+                    "Cross-check the reports · 1 period" in zz_texts("pc_screen"))
+        shot("pc_board_night", wait=0.1)
+        renpy.hide_screen("pc_screen")
+        check(_zz_shut == (True, False, None, True, True),
+              "H: at Night the cross-check button is drawn shut (it takes no focus and returns nothing), with "
+              "'Too late. Bed.' under it", _zz_shut)
         _zz_n0 = len(zz_r.texts)
         zz_r_drive([("page", "board_reports"), ("check",), ("close",)])
     call sb_do_pc_open
@@ -1142,7 +1193,108 @@ label zz_smoke:
     python:
         zz_r_stop()
         check(_zz_a == ("Morning", {}) and (period, fish_state) == ("Noon", {}),
-              "I: packing up before the first cast costs nothing; after one cast it costs the period", (_zz_a, period))
+              "I: packing up while the first cast's float still sits costs nothing; after one cast it costs the period",
+              (_zz_a, period))
+
+        ## Packing up once the float has dipped: the zone has shown what is
+        ## on the line, so the cast is spent (D33: a cast can't be taken again).
+        zz_r_fix("rich", here="riverside", period="Morning")
+        zz_r.keep["wait"] = store.FISH_WAIT
+        setattr(store, "FISH_WAIT", (0.2, 0.4))
+        zz_r.keep["phases"] = []
+        zz_r.keep["bite_kind"] = None
+        del zz_r.lines[:]
+        del zz_r.blocks[:]
+        _zz_y0 = yen
+        zz_r_drive([], own=zz_r_leave_at_bite)
+    call sb_do_fish_cast
+    python:
+        zz_r_stop()
+        check(zz_r.keep["phases"] == [(1, "wait"), (1, "bite")] and period == "Noon" and fish_state == {} and yen == _zz_y0
+              and len(zz_r.lines) == 1 and zz_r.lines[0] == zz_with(dict(fish_state=dict(cast=1)), lambda: fish_miss_line(zz_r.keep["bite_kind"]))
+              and zz_r.blocks == [False],
+              "I: Pack up once the float has dipped (the screen's own wait timer brought the bite) is a miss: one miss "
+              "line, the period is charged, nothing is paid, and renpy.can_rollback() is False after the block",
+              (zz_r.keep["phases"], period, fish_state, zz_r.lines, zz_r.blocks))
+
+        ## The screen's own timers, nothing answered: the wait timer brings
+        ## the bite, the sweep's timer returns the miss, three times over.
+        zz_r_fix("rich", here="riverside", period="Morning")
+        zz_r.keep["phases"] = []
+        del zz_r.lines[:]
+        _zz_t0 = time.time()
+        zz_r_drive([], own=zz_r_phase)
+    call sb_do_fish_cast
+    python:
+        zz_r_stop()
+        setattr(store, "FISH_WAIT", zz_r.keep.pop("wait"))
+        _zz_dt = time.time() - _zz_t0
+        check(zz_r.keep["phases"] == [(1, "wait"), (1, "bite"), (2, "wait"), (2, "bite"), (3, "wait"), (3, "bite")]
+              and len(zz_r.lines) == 3 and not [t for t in zz_r.lines if " cm." in t]
+              and period == "Noon" and fish_state == {} and _zz_dt >= 3 * FISH_SWEEP * FISH_PASSES,
+              "I: left alone, fish_screen plays itself: its wait timer calls fish_strike, its sweep timer returns "
+              "('miss',), three casts, three miss lines, one period (%.1f s)" % _zz_dt,
+              (zz_r.keep["phases"], zz_r.lines, period))
+        check(FISH_WAIT == (1.0, 3.0), "I: FISH_WAIT is back to the game's own (1.0, 3.0)", FISH_WAIT)
+
+        ## The sitting is rolled when I sit down: running fish_next again from
+        ## the same state (what a load during a cast does) deals the same cast.
+        zz_r_fix("rich", here="riverside", period="Evening")
+        fish_begin()
+        _zz_plan = copy.deepcopy(fish_state["plan"])
+        _zz_snap = copy.deepcopy(fish_state)
+        _zz_deal = []
+        for _zz_i in range(3):
+            store.fish_state = copy.deepcopy(_zz_snap)
+            fish_next()
+            _zz_deal.append((fish_state["cast"], fish_state["kind"], fish_state["centre"], fish_state["wait"]))
+        check(len(_zz_plan) == FISH_CASTS and all(len(r) == 4 and fish_kind(r[0]) and fish_kind(r[1]) and 0.0 <= r[2] <= 1.0
+                                                 and FISH_WAIT[0] <= r[3] <= FISH_WAIT[1] for r in _zz_plan)
+              and _zz_deal[0] == _zz_deal[1] == _zz_deal[2] and _zz_deal[0][:2] == (1, _zz_plan[0][0])
+              and fish_state["plan"] == _zz_plan,
+              "I: fish_begin() rolls the sitting's three casts (fish_state['plan']); fish_next() reads the row and rolls "
+              "nothing, so a cast started again from the same state is the same fish, zone and wait", (_zz_plan, _zz_deal))
+        ## A planned fish that can no longer come up gives way to its spare.
+        fish_begin()
+        fish_state["plan"][0][0] = FISH_PALE
+        fish_state["plan"][1][0] = FISH_LORD
+        fish_cursed_week = fish_week()
+        flag("caught_river_lord")
+        fish_next()
+        _zz_a = (fish_state["kind"], fish_state["plan"][0][1])
+        fish_settle(("miss",))
+        fish_next()
+        _zz_b = (fish_state["kind"], fish_state["plan"][1][1])
+        check(_zz_a[0] == _zz_a[1] and _zz_b[0] == _zz_b[1] and _zz_a[0] not in (FISH_PALE, FISH_LORD)
+              and _zz_b[0] not in (FISH_PALE, FISH_LORD),
+              "I: a planned pale thing in a week it has already come up, or a planned River Lord once it is caught, "
+              "gives way to the row's spare (an ordinary fish)", (_zz_a, _zz_b))
+        fish_end()
+        ## A sitting with no plan still casts.
+        fish_begin()
+        del fish_state["plan"]
+        fish_next()
+        check(fish_kind(fish_state["kind"]) is not None and fish_state["cast"] == 1, "I: a fish_state with no plan still casts (rolled then)")
+        fish_end()
+
+        ## A companion is on the next stone along.
+        zz_r_fix("rich", here="riverside", period="Morning")
+        companion = "yuji"
+        _zz_n0 = len(zz_r.texts)
+        zz_r_drive([("leave",)])
+    call sb_do_fish_cast
+    python:
+        zz_r_stop()
+        _zz_a = len(zz_r_said(_zz_n0, "takes the next stone along"))      # a line may be captured twice
+        companion = None
+        _zz_n0 = len(zz_r.texts)
+        zz_r_drive([("leave",)])
+    call sb_do_fish_cast
+    python:
+        zz_r_stop()
+        check(_zz_a >= 1 and not zz_r_said(_zz_n0, "takes the next stone along") and _fish_who == CAST["yuji"]["short"],
+              "I: with a companion the sitting opens with a line about them (by name, no expression); alone it does not",
+              (_zz_a, _fish_who))
 
         ## Under autoplay.
         zz_r_fix("rich", here="riverside", period="Morning")
@@ -1188,6 +1340,7 @@ label zz_smoke:
         check((insight, control, period) == (14, 12, "Noon"), "J: the history shelf gives Insight +4", (insight, control, period))
         zz_r_fix("rich", here="library", period="Morning", insight=10, control=12, stamina=80)
         zz_r.picks = ["Barrier craft"]
+        _zz_n1 = len(zz_r.texts)
         zz_r.keep["ncw"] = store.night_can_work
         store.night_can_work = zz_r_false
     call sb_do_lib_study
@@ -1199,6 +1352,9 @@ label zz_smoke:
         zz_r.picks = ["Barrier craft"]
     call sb_do_lib_study
     python:
+        check(len(zz_r_said(_zz_n1, "so I only read")) >= 2 and not zz_r_said(_zz_n1, "[_lib_line]"),
+              "J: on a rest day the barrier-craft shelf says one line, of reading only (no shelf line about tracing or "
+              "copying before it)", zz_r.texts[_zz_n1:])
         check(_zz_a == (12, 12, "Noon") and (insight, control, period) == (12, 12, "Noon"),
               "J: on a rest day the barrier-craft shelf gives Insight +2 only (night_can_work patched to False, and P4b's "
               "real rest day)", (_zz_a, (insight, control, period)))

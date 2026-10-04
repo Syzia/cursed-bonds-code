@@ -9,6 +9,9 @@
 ##
 ##   FISH_KINDS             six species, the River Lord and the pale thing
 ##   fish_roll(per)         what takes the hook next
+##   fish_begin()           sits down, and rolls the sitting's three casts
+##                          (fish_state["plan"]) so a save loaded during a
+##                          cast finds the same fish on the line
 ##   fish_hit(kind, q)      whether a hook of quality q lands it
 ##   fish_length(kind, q)   how long it is
 ##   fish_land(kind, cm)    settles a catch: dict(id, cm, yen, record)
@@ -25,7 +28,9 @@
 ## (1.0 dead centre, falling by 0.2 for every tenth of the bar). A fish is
 ## landed when q >= 1 - its zone, so the River Lord (zone 0.10) needs 0.9.
 ##
-## Each settled cast blocks rollback (a cast can't be taken again).
+## Each settled cast blocks rollback (a cast can't be taken again). Packing
+## up while the float only sits is free; once it has dipped the zone has shown
+## what is on the line, so packing up then is a miss and the cast is spent.
 ################################################################################
 
 init -1 python:
@@ -50,13 +55,13 @@ init -1 python:
     ## ordinary species sell for cm x yen_per_cm, always inside FISH_YEN; the
     ## River Lord pays FISH_LORD_YEN once; the pale thing is not a fish.
     FISH_KINDS = [
-        dict(id="oikawa", name="Oikawa", min_cm=9, max_cm=15, weight=0.30, zone=0.50, yen_per_cm=12,
+        dict(id="oikawa", name="Pale chub", min_cm=9, max_cm=15, weight=0.30, zone=0.50, yen_per_cm=12,
              periods=("Morning", "Noon", "Afternoon", "Evening")),
         dict(id="ugui", name="Dace", min_cm=15, max_cm=30, weight=0.24, zone=0.42, yen_per_cm=8,
              periods=("Morning", "Noon", "Afternoon", "Evening")),
         dict(id="ayu", name="Ayu", min_cm=12, max_cm=24, weight=0.17, zone=0.34, yen_per_cm=20,
              periods=("Morning", "Noon", "Afternoon")),
-        dict(id="yamame", name="Yamame", min_cm=15, max_cm=30, weight=0.12, zone=0.28, yen_per_cm=18,
+        dict(id="yamame", name="Yamame trout", min_cm=15, max_cm=30, weight=0.12, zone=0.28, yen_per_cm=18,
              periods=("Morning", "Evening")),
         dict(id="iwana", name="Char", min_cm=18, max_cm=40, weight=0.08, zone=0.22, yen_per_cm=15,
              periods=("Morning", "Evening")),
@@ -186,10 +191,35 @@ init -1 python:
 
     ## The sitting (fish_state) -----------------------------------------------------
 
+    def fish_plan(per=None):
+        """P6. The sitting's casts, rolled before the first one: a list of
+        FISH_CASTS rows [kind, spare, r, wait]. kind is what will bite;
+        spare is an ordinary fish that bites in its place if kind can no
+        longer come up by then (the pale thing already seen this week, the
+        River Lord already caught); r, 0.0 to 1.0, places the zone on the
+        bar; wait is how long the float sits. Plain lists and numbers."""
+        per = per or store.period
+        plain = [k for k in fish_pool(per) if k["id"] != FISH_LORD] or [FISH_KINDS[0]]
+        total = sum(k["weight"] for k in plain)
+        rows = []
+        for i in range(FISH_CASTS):
+            kind = fish_roll(per)
+            pick = renpy.random.random() * total
+            spare = plain[-1]["id"]
+            for k in plain:
+                if pick < k["weight"]:
+                    spare = k["id"]
+                    break
+                pick -= k["weight"]
+            rows.append([kind, spare, renpy.random.random(),
+                         FISH_WAIT[0] + renpy.random.random() * (FISH_WAIT[1] - FISH_WAIT[0])])
+        return rows
+
     def fish_begin():
-        """P6. Returns None. Sits down: a fresh fish_state."""
+        """P6. Returns None. Sits down: a fresh fish_state, with the
+        sitting's casts already rolled (fish_plan)."""
         store.fish_state = dict(cast=0, settled=0, phase="idle", kind="", centre=0.5,
-                                wait=1.0, t_cast=0.0, t0=0.0, left=False)
+                                wait=1.0, t_cast=0.0, t0=0.0, left=False, plan=fish_plan())
         return None
 
     def fish_more():
@@ -199,14 +229,28 @@ init -1 python:
 
     def fish_next():
         """P6. Returns None. Casts: what will bite, where its zone lies on
-        the bar, and how long the float sits first."""
+        the bar, and how long the float sits first. It reads the row
+        fish_begin rolled for this cast and rolls nothing itself, so a save
+        loaded during the cast (which runs this again) finds the same fish.
+        A sitting with no plan (none can be saved, but a harness may build
+        one) is rolled here."""
         st = store.fish_state
-        kind = fish_roll()
+        n = st.get("cast", 0)
+        plan = st.get("plan") or []
+        if n < len(plan):
+            kind, spare, r, wait = plan[n]
+            if ((kind == FISH_PALE and store.fish_cursed_week == fish_week())
+                    or (kind == FISH_LORD and has_flag("caught_river_lord"))):
+                kind = spare
+        else:
+            kind = fish_roll()
+            r = renpy.random.random()
+            wait = FISH_WAIT[0] + renpy.random.random() * (FISH_WAIT[1] - FISH_WAIT[0])
         zone = fish_kind(kind)["zone"]
-        st["cast"] = st.get("cast", 0) + 1
+        st["cast"] = n + 1
         st["kind"] = kind
-        st["centre"] = zone / 2.0 + renpy.random.random() * (1.0 - zone)
-        st["wait"] = FISH_WAIT[0] + renpy.random.random() * (FISH_WAIT[1] - FISH_WAIT[0])
+        st["centre"] = zone / 2.0 + r * (1.0 - zone)
+        st["wait"] = wait
         st["t_cast"] = _fish_time.time()
         st["t0"] = 0.0
         st["phase"] = "wait"
@@ -304,14 +348,14 @@ init -1 python:
                     "talisman, wet through and still good.")
         if res["id"] == FISH_LORD:
             line = ("The line goes heavy, and stays heavy, and I walk it up the bank a step at a time. "
-                    "A carp longer than my arm and older than the school. The River Lord, %d cm." % res["cm"])
+                    "A carp longer than my arm and a good deal older than I am. The River Lord, %d cm." % res["cm"])
             if res["yen"]:
-                line += " The cook pays %s and doesn't ask where." % fish_yen(res["yen"])
+                line += " The cook will pay %s for it and not ask where." % fish_yen(res["yen"])
             return line
         line = "%s, %d cm." % (k["name"], res["cm"])
         if res["record"]:
             line += " A new best."
-        return line + " The kitchen gives me %s for it." % fish_yen(res["yen"])
+        return line + " The kitchen will give me %s for it." % fish_yen(res["yen"])
 
     def fish_company():
         """P6. Returns None. Whoever is along gains Bond +2, once a day
@@ -343,7 +387,8 @@ init -1 python:
         return fish_miss_line(kind)
 
     def fish_leave():
-        """P6. Returns None. I pack up before the last cast."""
+        """P6. Returns None. I pack up before the last cast. (A cast that
+        has already bitten is settled as a miss first: the label does it.)"""
         if store.fish_state:
             store.fish_state["left"] = True
         return None
@@ -504,6 +549,7 @@ screen fish_screen():
     ## Top left: the casts, and the record book.
     hbox:
         pos (60, 56)
+        ysize 56
         spacing 14
         for _fish_i in range(FISH_CASTS):
             add icon("fish_cast", 48) alpha (0.3 if _fish_i + 1 < _fish_n else 1.0) yalign 0.5
@@ -588,12 +634,21 @@ label sb_do_fish_cast:
 
     $ fish_begin()
     "There's a rod in the reeds that belongs to nobody, or to everybody. I bait the hook and find a flat stone to stand on."
+    if companion and companion in CAST:
+        $ _fish_who = CAST[companion]["short"]
+        "[_fish_who] takes the next stone along and watches the float as if it owed us both money."
 
     while fish_more():
         $ fish_next()
         call screen fish_screen
         $ _fish_r = _return
         if not isinstance(_fish_r, tuple) or not _fish_r or _fish_r[0] == "leave":
+            ## Once the float has dipped the cast is spent: the zone has
+            ## shown what was on the line.
+            if fish_phase() == "bite":
+                $ _fish_line = fish_settle(("miss",))
+                $ renpy.block_rollback()
+                "[_fish_line]"
             $ fish_leave()
         else:
             $ _fish_line = fish_settle(_fish_r)

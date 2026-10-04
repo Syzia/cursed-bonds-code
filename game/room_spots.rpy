@@ -60,9 +60,9 @@ init -1 python:
     SPOT_LINES = {
         "tv": [
             "The television is off. Somebody has left a controller on the table with its battery cover taped on.",
-            "I turn the television on. A cooking programme, a quiz, the weather. Out there it is an ordinary day.",
+            "I turn the television on. A cooking programme, a quiz, the weather. Out there nothing unusual is happening to anybody.",
             "There's a rental case on the shelf under the television with Yuji's handwriting on the spine: DO NOT RETURN YET.",
-            "A late film with the sound low. I watch four minutes of it standing up and never learn who did it.",
+            "A film, already half over, with the sound low. I watch four minutes of it standing up and never learn who did it.",
         ],
         "locked_shelf": [
             "A cabinet with a lattice door and a paper seal across the lock. The spines behind it have no titles.",
@@ -116,5 +116,5 @@ label sb_do_spot_vend:
     $ add_yen(-SPOT_VEND["yen"])
     "The machine under the eaves takes my coins, thinks about it, and drops a can so cold it hurts to hold."
     $ stamina = min(stamina_max, stamina + SPOT_VEND["stamina"])
-    "I drink it standing in the shade, and the day gets a little easier."
+    "I drink it standing under the eaves, and feel a little more like myself."
     return

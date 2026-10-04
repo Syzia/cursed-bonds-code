@@ -41,7 +41,7 @@ init -1 python:
     PC_GIVES = ("insight", 1)
 
     ## site -> name, made-up address, the voice it is written in, and the
-    ## name of its colour token (gui.<color>).
+    ## name of its colour token (gui.<color>): dict(name, url, tone, color).
     PC_SITES = {
         "intra": dict(name="Tokyo Jujutsu High · Staff Intranet", url="intra.jujutsu-high.local",
                       tone="The school's own pages. Somebody left Ijichi signed in.", color="pc_intra"),
@@ -68,8 +68,8 @@ init -1 python:
         "home": dict(
             site="intra", title="Intranet home",
             body=[
-                "Session: IJICHI K. · Terminal 3, Dormitory B · Signed in 41 days ago.",
-                "Reminder to all auxiliary staff: sign out of shared terminals. This is the fourth reminder this term.",
+                "Session: IJICHI K. · Device: student loan unit 14 · Signed in 41 days ago.",
+                "Reminder to all auxiliary staff: sign out of a device before it is issued to a student. This is the fourth reminder this term.",
             ],
             links=["techniques", "board_reports"], needs=None, gives=None),
 
@@ -165,12 +165,12 @@ init -1 python:
             links=["clans", "clan_gojo"], needs=None, gives=None),
 
         "legends": dict(
-            site="board", title="Seen in Tokyo, thread 41",
+            site="board", title="Seen around Tokyo, thread 41",
             body=[
                 "No. 4411 · the alley behind the arcade off the shopping street. went past at 2am. every light on that one block was out, and only that block. never again",
                 "No. 4412 · a transformer. happens",
                 "No. 4413 · a transformer doesn't make the vending machines go dark from the inside",
-                "No. 4419 · sun mall, third floor. the escalator runs at night with nobody in the building. security won't do that floor any more",
+                "No. 4419 · kawagoe, the sun mall, the shut one. third floor. the escalator runs at night with the power off. the security firm won't send anyone to that floor any more",
                 "No. 4424 · a friend's cousin did night security there. says the cold on that floor has a direction",
                 "No. 4430 · mods delete every post about the school. everyone has noticed. this one will be gone by morning",
             ],
@@ -183,7 +183,7 @@ init -1 python:
                 "No. 3108 · what does he sell",
                 "No. 3110 · paper. strips of paper with writing on. a friend bought one for a gambling habit, won for a month, and then lost a tooth",
                 "No. 3115 · how does anyone find it",
-                "No. 3116 · nobody finds it sober. the club two doors from the crossing. leave by the back and count the doors",
+                "No. 3116 · nobody finds it sober. the club two doors from the crossing. don't stop at the club's door. keep going down",
                 "No. 3121 · went. the stairs weren't there",
                 "No. 3122 · then it wasn't late enough",
             ],
@@ -254,7 +254,9 @@ init -1 python:
         """P6 (room_computer.rpy). Returns None. Asks me to look a page up:
         it shows on the computer's home page and as a lead in the journal's
         Missions tab until the page is read. A page already read, already
-        asked for, or not in PC_PAGES is left alone."""
+        asked for, or not in PC_PAGES is left alone. The note is drawn as
+        it is written: brackets and braces in it are not read as text tags
+        or substitutions."""
         if page not in PC_PAGES or page in store.pc_read:
             return None
         if any(r[0] == page for r in store.pc_requests):
@@ -520,38 +522,45 @@ screen pc_screen(page="home"):
                                 padding (14, 5)
                                 text pc_noted substitute False color gui.ink size 18 font gui.body_bold_font
 
+                        ## Home: what I've been asked to look up comes first (4.11).
+                        if _pc_id == PC_HOME and _pc_leads:
+                            vbox:
+                                spacing 6
+                                text "REQUESTED READING" style "jjk_label" color gui.gold
+                                for _pc_q, _pc_note in _pc_leads:
+                                    button:
+                                        id "pc_lead_" + _pc_q
+                                        style "pc_link_button"
+                                        action Return(("page", _pc_q))
+                                        text _pc_note.replace("{", "{{") substitute False style "pc_link_text"
+
                         for _pc_t in _pc_p["body"]:
                             text _pc_t substitute False style "pc_body"
 
-                        ## Home: what I've been asked to look up, then the sites.
+                        ## Home: then the sites, a line each.
                         if _pc_id == PC_HOME:
-                            if _pc_leads:
-                                text "REQUESTED READING" style "jjk_label" color gui.gold
-                                for _pc_q, _pc_note in _pc_leads:
-                                    textbutton _pc_note:
-                                        id "pc_lead_" + _pc_q
-                                        style "pc_link_button"
-                                        text_style "pc_link_text"
-                                        action Return(("page", _pc_q))
-                            text "SITES" style "jjk_label"
-                            for _pc_k in PC_SITE_ORDER:
-                                $ _pc_list = [p for p in pc_pages() if PC_PAGES[p]["site"] == _pc_k and p != PC_HOME]
-                                if _pc_list:
-                                    button:
-                                        id "pc_site_" + _pc_k
-                                        background Frame("gui/panel_dark.png", 4, 4)
-                                        hover_background Frame("gui/panel_hover.png", 4, 4)
-                                        padding (18, 10)
-                                        xsize 1100
-                                        action Return(("page", _pc_list[0]))
-                                        vbox:
-                                            spacing 2
-                                            text PC_SITES[_pc_k]["name"]:
-                                                substitute False
-                                                font gui.body_bold_font
-                                                size 20
-                                                color pc_color(_pc_k)
-                                            text PC_SITES[_pc_k]["tone"] substitute False style "pc_small" size 18
+                            vbox:
+                                spacing 10
+                                text "SITES" style "jjk_label"
+                                for _pc_k in PC_SITE_ORDER:
+                                    $ _pc_list = [p for p in pc_pages() if PC_PAGES[p]["site"] == _pc_k and p != PC_HOME]
+                                    if _pc_list:
+                                        button:
+                                            id "pc_site_" + _pc_k
+                                            background Frame("gui/panel_dark.png", 4, 4)
+                                            hover_background Frame("gui/panel_hover.png", 4, 4)
+                                            padding (18, 6)
+                                            xsize 1100
+                                            action Return(("page", _pc_list[0]))
+                                            hbox:
+                                                spacing 16
+                                                text PC_SITES[_pc_k]["name"]:
+                                                    substitute False
+                                                    font gui.body_bold_font
+                                                    size 20
+                                                    color pc_color(_pc_k)
+                                                    yalign 0.5
+                                                text PC_SITES[_pc_k]["tone"] substitute False style "pc_small" size 18 yalign 0.5
 
                         ## The board's postings, and the cross-check.
                         if _pc_id == PC_BOARD_PAGE:
@@ -567,7 +576,17 @@ screen pc_screen(page="home"):
                                     text _pc_title substitute False style "pc_body" yalign 0.5
                                     if _pc_bad:
                                         text "This one doesn't add up." style "pc_body" color gui.gold yalign 0.5
-                            if pc_check_ok():
+                            if pc_check_ok() and period == PERIODS[-1]:
+                                ## At Night it is drawn shut, like every
+                                ## other thing that costs time.
+                                textbutton "Cross-check the reports · 1 period":
+                                    id "pc_check"
+                                    style "jjk_button"
+                                    xsize 520
+                                    text_color gui.mute
+                                    action None
+                                text "Too late. Bed." style "pc_small" size 18
+                            elif pc_check_ok():
                                 textbutton "Cross-check the reports · 1 period":
                                     id "pc_check"
                                     style "jjk_button"
@@ -583,11 +602,11 @@ screen pc_screen(page="home"):
                             null height 4
                             text "SEE ALSO" style "jjk_label"
                             for _pc_q in pc_links(_pc_id):
-                                textbutton PC_PAGES[_pc_q]["title"]:
+                                button:
                                     id "pc_link_" + _pc_q
                                     style "pc_link_button"
-                                    text_style "pc_link_text"
                                     action Return(("page", _pc_q))
+                                    text PC_PAGES[_pc_q]["title"] substitute False style "pc_link_text"
 
 
 ## My computer (4.11): browse until I close it. Reading costs no time; the
@@ -617,8 +636,11 @@ label sb_do_pc_open:
                 "Too late. Bed."
             elif pc_check():
                 "I pull the survey sheet behind every posting and read them against each other: who signed, how long they stayed, what they wrote down and what they left out."
-                if any(r[2] for r in pc_offers()):
+                $ _pc_bad_n = len([r for r in pc_offers() if r[2]])
+                if _pc_bad_n == 1:
                     "One of them doesn't add up."
+                elif _pc_bad_n:
+                    "More than one of them doesn't add up."
                 else:
                     "They all add up. This week."
                 $ advance_period_soft(1)
