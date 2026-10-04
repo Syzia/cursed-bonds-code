@@ -134,6 +134,12 @@ init 999 python:
 
     def zz_n_menu(items, **kwargs):
         caps = [lab for lab, val in items if val is not None]
+        ## what is behind this menu: the "bg" picture on the master layer
+        ## (None for a tinted campus picture, which has no tag of its own)
+        ## and the sprite light
+        zz_n.keep.setdefault("menu_bg", builtins.list()).append(
+            (" ".join(("bg",) + builtins.tuple(renpy.get_attributes("bg", "master") or ()))
+             if renpy.showing("bg", "master") else None, store.scene_light))
         if zz_n.picks:
             want = zz_n.picks.pop(0)
             for lab, val in items:
@@ -505,10 +511,26 @@ label zz_smoke:
         check(not _zz_bad, "A: at Night the filter has no wait anywhere, night_bed everywhere but dorm, sleep in dorm, "
               "and no costed id outside NIGHT_OK (%d rooms)" % len(LOC_ORDER), _zz_bad[:6])
 
-        ## P7's card table is not in yet: its row is checked as a row.
-        _zz_f = night_filter_actions("dorm_common", [("cards_play", "Play cards", "", 1), ("wait", "Wait", "", 1)])
-        check(zz_n_ids(_zz_f) == ["night_bed"], "A: a costed cards_play row is dropped at Night", _zz_f)
-        note("A: cards_play", "P7's card table arrives in wave 2; the row above stands in for it (7.3: 'closed at Night' is P7's line)")
+        ## P7's card table (7.3: "closed at Night"): its real place action, with
+        ## someone in the common room and a stake in my pocket.
+        here = "dorm_common"
+        _zz_row = None
+        for _zz_per in PERIODS[:-1]:
+            period = _zz_per
+            _zz_row = ([a for a in place_actions("dorm_common") if a[0] == "cards_play"] or [None])[0]
+            if _zz_row is not None:
+                break
+        _zz_day_acts = place_actions("dorm_common")
+        _zz_day_f = zz_n_ids(night_filter_actions("dorm_common", _zz_day_acts))
+        _zz_day_ok = night_allows("cards_play", 1)
+        period = PERIODS[-1]
+        _zz_f = night_filter_actions("dorm_common", _zz_day_acts)
+        check(_zz_row is not None and _zz_row[3] == 1 and "cards_play" in _zz_day_f and _zz_day_ok
+              and "cards_play" not in zz_n_ids(_zz_f) and "night_bed" in zz_n_ids(_zz_f)
+              and "cards_play" not in NIGHT_OK and not night_allows("cards_play", 1)
+              and "cards_play" not in zz_n_ids(rail_actions("dorm_common")),
+              "A: the card table's own place action (cards_play, one period) is offered in the common room by day and "
+              "dropped at Night; night_allows refuses it", (_zz_row, _zz_day_f, zz_n_ids(_zz_f)))
 
         ## rail_actions
         _zz_bad = []
@@ -1407,15 +1429,25 @@ label zz_n_e4:
         zz_n.picks = ["Not enough yen", "Head home"]
         del zz_n.menus[:]
         zz_n.keep["t"] = len(zz_n.texts)
+        zz_n.keep["menu_bg"] = builtins.list()
         zz_n_bg_watch()
         zz_n_play(menus=True)
+    scene black
     call night_out("shibuya")
     python:
         zz_n_stop()
         _zz_bg = zz_n_bg_unwatch()
-        check(_zz_bg == [(None, None, "gate", "Evening")],
-              "J: the first line and the arrival menu play over tonight's picture of where I am (one `scene expression "
-              "graded_bg()` before them), not whatever the last scene left", _zz_bg)
+        _zz_mbg = zz_n.keep.pop("menu_bg")
+        check(_zz_bg == [(None, None, "gate", "Evening")] * 2,
+              "J: the first line plays over tonight's picture of where I am (one `scene expression graded_bg()` before "
+              "it), not whatever the last scene left; Head home puts that picture back (a second one)", _zz_bg)
+        check(len(_zz_mbg) == 2 and all(b == (night_bg("shibuya"), light_for_bg(night_bg("shibuya"))) for b in _zz_mbg)
+              and night_bg("shibuya") != bg_name("gate", "Evening"),
+              "J: the arrival menu ('Shibuya, after dark.') plays over the district's picture, with its light on the "
+              "sprites, not over the campus place I left from (night_out_menu.png)", _zz_mbg)
+        check(not renpy.showing(night_bg("shibuya"), "master") and scene_light == light_for_place("gate", "Evening"),
+              "J: after Head home the district's picture is down and the light is the gate's again",
+              (builtins.sorted(renpy.get_showing_tags("master")), scene_light))
         check(len(zz_n.menus) == 2 and zz_n.menus[0][1].endswith("Not enough yen") and zz_n.menus[1][1] == "Head home"
               and not any(c == "The Black Market" for c in zz_n.menus[0][0])
               and not any(c.startswith("The club") and "Not enough" not in c for c in zz_n.menus[0][0])
@@ -1610,8 +1642,46 @@ label zz_n_e4:
         check(all(builtins.set(it) == _zz_fields for it in ITEMS.values()) and len(_zz_fields) == 12,
               "K: every ITEMS record still has exactly 12 fields",
               [i for i, it in ITEMS.items() if builtins.set(it) != _zz_fields])
-        note("K: putting a market talisman on through its checklist", "needs P4a's can_wear (7.3: always deferred to P8)")
         note("K: the rumour page and the review button", "P6's page and explore.rpy's button ask market_exists(), now True (7.3)")
+
+        ## 7.3's deferred line: a market talisman, bought, goes on through the
+        ## checklist (can_wear) and no other way. The rows are the game's.
+        _zz_bad = []
+        for _zz_i in _zz_four:
+            _zz_g = ITEMS[_zz_i]["grade"]
+            _zz_stat = [r for r in ITEM_REQS[_zz_i] if r[0] == "stat"]
+            if ("grade", _zz_g) not in ITEM_REQS[_zz_i] or len(_zz_stat) != 1 or grade_rank(_zz_g) < 1:
+                _zz_bad.append((_zz_i, "row", ITEM_REQS[_zz_i]))
+                continue
+            _zz_stat = _zz_stat[0]
+            ## one grade short, the stat met
+            zz_n_fix("rich", grade=GRADE_ORDER[GRADE_ORDER.index(_zz_g) - 1], yen=100000)
+            setattr(store, _zz_stat[1], _zz_stat[2])
+            _zz_bs = builtins.set(bound_specials)
+            if not market_buy(_zz_i) or not has_item(_zz_i):
+                _zz_bad.append((_zz_i, "buy"))
+            if can_wear(_zz_i) != (False, "Needs " + grade_label(_zz_g)) or equip_talisman(_zz_i) is not False:
+                _zz_bad.append((_zz_i, "below the grade", can_wear(_zz_i)))
+            ## the grade met, the stat one short
+            promote("mc", _zz_g, quiet=True)
+            setattr(store, _zz_stat[1], _zz_stat[2] - 1)
+            _zz_unmet = [l for l, ok in item_requirements(_zz_i) if not ok]
+            if (len(_zz_unmet) != 1 or can_wear(_zz_i) != (False, _zz_unmet[0])
+                    or _zz_unmet[0] != "%s %d · I have %d" % (_zz_stat[1].capitalize(), _zz_stat[2], _zz_stat[2] - 1)
+                    or equip_talisman(_zz_i) is not False or _zz_i in equipped_talismans):
+                _zz_bad.append((_zz_i, "one short", can_wear(_zz_i), _zz_unmet))
+            ## both met
+            setattr(store, _zz_stat[1], _zz_stat[2])
+            if (can_wear(_zz_i) != (True, "") or not item_requirements_met(_zz_i) or equip_talisman(_zz_i) is not True
+                    or equipped_talismans != [_zz_i] or can_wear(_zz_i) != (False, "Already worn")):
+                _zz_bad.append((_zz_i, "met", can_wear(_zz_i), builtins.list(equipped_talismans)))
+            if bound_specials != _zz_bs:
+                _zz_bad.append((_zz_i, "bound_specials", bound_specials))
+        check(not _zz_bad,
+              "K: 7.3's deferred line: each of the four, bought at the market, is refused by can_wear below its grade "
+              "('Needs <grade>'), refused with the unmet stat line itself one point short, and goes on with equip_talisman "
+              "once its ITEM_REQS row is met; bound_specials is untouched", _zz_bad)
+        zz_n_fix("rich", grade="g3", yen=100000)
         check(market_outfits() == [] and MARKET_OUTFITS == [], "K: the outfits shelf is empty until an outfit's sprite files exist")
         MARKET_OUTFITS.append(dict(name="A test outfit", files=["images/zz_no_such_sprite.png"]))
         _zz_none = market_outfits()
@@ -1648,31 +1718,44 @@ label zz_n_e4:
         check(_zz_buys and all(b is not None and b[0] >= 110 and b[0] + b[2] <= 1810 and b[1] + b[3] + 40 <= _zz_close[1] for b in _zz_buys),
               "K: every Buy button sits inside the panel, and the panel ends above Close (the last row's button is 40 px or more "
               "above it)", (_zz_buys, _zz_close))
-        note("K: worst_market_screen.png", "toasts are still drawn over the market in this worktree: toast_room() is P2's "
-             "(R6: they wait over the market; hand-off to P2 and P8). toast_room() here: %r" % (toast_room(),))
+        ## R6: toasts wait over the market (worst_market_screen.png holds none),
+        ## and one that arrives while it is open (the club's rewards) waits too.
+        toast("A reward line that has to wait", "info")
+        zz_render(0.6)
+        _zz_wait = (toast_room(), builtins.list(toast_visible()), len(TOASTQ.items), [t["t_shown"] for t in TOASTQ.items])
+        check(_zz_wait == ((0, 0, 0), [], 1, [None]) and "A reward line that has to wait" not in zz_texts("toasts"),
+              "K: over the market toast_room() is (0, 0, 0): a toast queued there is not drawn and its clock has not started",
+              (_zz_wait, zz_texts("toasts")))
+        toast_clear()
         renpy.hide_screen("market_screen")
 
-        ## the checklist chips, with P4a's function stood in for
-        zz_n.keep["ir"] = store.item_requirements
-        store.item_requirements = lambda id: [("Grade 3", True), ("Insight 35", False)] if id in ITEM_REQS else []
+        ## the checklist chips: the game's own item_requirements(), at Grade 3
+        ## with Insight between the two Grade 3 talismans' lines
+        _zz_four = ("borrowed_luck", "night_eyes", "debt_marker", "second_wind")
+        zz_n_fix("rich", grade="g3", yen=30000)
+        insight = (ITEM_REQS["borrowed_luck"][1][2] + ITEM_REQS["night_eyes"][1][2]) // 2
+        _zz_lines = [(i, item_requirements(i)) for i in _zz_four]
+        _zz_met = [l for i, rows in _zz_lines for l, ok in rows if ok]
+        _zz_unmet = [l for i, rows in _zz_lines for l, ok in rows if not ok]
         renpy.show_screen("market_screen")
         _zz_texts = zz_texts("market_screen")
         shot("market_reqs")
-        check("Grade 3" in _zz_texts and "Insight 35" in _zz_texts and "✓" in _zz_texts and "✗" in _zz_texts,
-              "K: each talisman row shows its requirement chips, ticked or crossed (item_requirements stood in for)",
-              [t for t in _zz_texts if len(t) < 24])
+        check(all(len(rows) == 2 for i, rows in _zz_lines) and len(_zz_met) + len(_zz_unmet) == 8 and _zz_met and _zz_unmet
+              and dict(_zz_lines)["borrowed_luck"] == [(grade_label("g3"), True), ("Insight %d" % ITEM_REQS["borrowed_luck"][1][2], True)]
+              and dict(_zz_lines)["night_eyes"] == [(grade_label("g3"), True),
+                                                    ("Insight %d · I have %d" % (ITEM_REQS["night_eyes"][1][2], insight), False)]
+              and all(_zz_texts.count(l) == (_zz_met + _zz_unmet).count(l) for l in _zz_met + _zz_unmet)
+              and _zz_texts.count("✓") == len(_zz_met) and _zz_texts.count("✗") == len(_zz_unmet),
+              "K: each of the four talisman rows shows its two requirement chips from item_requirements(), ticked or "
+              "crossed, an unmet stat with what I have (market_reqs.png)", (_zz_lines, [t for t in _zz_texts if len(t) < 30]))
         _zz_chips = [(zz_text_string(d), Color(d.style.color).hexcode) for d in zz_text_nodes("market_screen")
-                     if zz_text_string(d) in ("✓", "✗", "Grade 3", "Insight 35")]
+                     if zz_text_string(d) in ["✓", "✗"] + _zz_met + _zz_unmet]
         _zz_paper, _zz_seal = Color(gui.paper).hexcode, Color(gui.seal).hexcode
-        check(_zz_chips and all(c == (_zz_paper if t in ("✓", "Grade 3") else _zz_seal) for t, c in _zz_chips)
-              and len([t for t, c in _zz_chips if t == "✗"]) == len([t for t, c in _zz_chips if t == "Insight 35"])
-              and len([t for t, c in _zz_chips if t == "✓"]) == len([t for t, c in _zz_chips if t == "Grade 3"]),
+        check(len(_zz_chips) == 16 and not (builtins.set(_zz_met) & builtins.set(_zz_unmet))
+              and all(c == (_zz_paper if (t == "✓" or t in _zz_met) else _zz_seal) for t, c in _zz_chips),
               "K: a met requirement is '✓ …' in paper, an unmet one '✗ …' in seal red, as the armory and the journal draw them (4.16)",
               _zz_chips)
         renpy.hide_screen("market_screen")
-        store.item_requirements = zz_n.keep["ir"]
-        note("K: the requirement chips", "item_requirements() is P4a's (a stub returning [] in this worktree): the chips show once "
-             "P4a is merged (7.3: P8)")
 
     ## label market_open, driven through the screen
     python:
