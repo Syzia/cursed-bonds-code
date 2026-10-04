@@ -77,10 +77,10 @@ init -2 python:
         ## courtyard). Always open. x/y sit beside the area on map_campus.png.
         "school_yard": dict(
             indoor=False, name="School Courtyard", bg="bg school_yard", x=470, y=800,
-            desc="Packed earth between the school buildings. Every door I need before noon opens onto it."),
+            desc="Packed earth between the school buildings. Built for a few hundred students to cross at once; most days it's me and my own footsteps."),
         "dorm_yard": dict(
             indoor=False, name="Dormitory Garden", bg="bg dorm_yard", x=950, y=560,
-            desc="A pond, a stone path, and the dormitories on every side. I cross it half asleep most mornings."),
+            desc="A stone path between the dormitories, and a garden somebody else looks after. I cross it half asleep most mornings."),
         "staff_yard": dict(
             indoor=False, name="Staff Building Steps", bg="bg staff_yard", x=1560, y=640,
             desc="Wide stone steps below the principal's hall. I stand up straighter here without meaning to."),
@@ -89,7 +89,7 @@ init -2 python:
             desc="Bare dirt and striking posts between the hall, the dojo and the storehouse. I hear someone hitting something before I see them."),
         "trailhead": dict(
             indoor=False, name="Mountain Path", bg="bg trailhead", x=960, y=330,
-            desc="Where the stone path gives out and the mountain starts. From here I can climb to the forest, the river or the ridge."),
+            desc="Where the stone path gives out and the mountain starts. I go level into the forest, down to the river, or up the steps to the ridge."),
     }
 
     LOC_ORDER = ["gate", "courtyard", "classroom", "cafeteria", "training", "dojo",

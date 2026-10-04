@@ -34,20 +34,24 @@
 ## drawn as the lock icon; its hover label is the lock's reason; clicking it
 ## does nothing. The frozen hot_layer has no dim state for it (see the P8
 ## hand-off), so the two rows below read their label and icon when they are
-## asked for them (path_ActionRow, path_SpotRow) and nothing is ever written
-## to a registry at run time.
+## asked for them (path_ActionRow, path_SpotRow: by row[key], row.get(key),
+## row.items(), row.values() or a dict(row) copy made now) and nothing is ever
+## written to a registry at run time.
 ##
 ## Provides (frozen for P8, 13.2): path_exits(loc), path_hub(area_key),
 ## path_neighbours(loc). Plain values, never None.
 ##
 ## Where an exit sits (D56): a door, a gate or a path on the place's picture,
-## inside x 40 to 1700 and y 180 to 1000, clear of the toast and banner lanes,
-## at least PATH_CLEAR px from every hotspot start point of 4.10's table
+## inside x 40 to 1700 and y 180 to 1000, clear of the toast and banner lanes
+## and of the arrival caption's panel (PATH_CAPTION_BOX), at least PATH_CLEAR px from every hotspot start point of 4.10's table
 ## (PATH_KEEP_CLEAR), and PATH_APART px from the place's other exits. P6's
 ## sidecar game/layout/hot_<place>.json can move one by its hotspot id, as it
 ## moves any hotspot. The five new hubs still show stand-in pictures, so their
-## points follow one plan (rooms along the top, neighbouring hubs at the
-## sides) until the pictures are painted.
+## points follow one plan until the pictures are painted: rooms along the top
+## at y 272 (below a two-line banner, above the people), between the arrival
+## caption and the toast lane (x 850 to 1270), a room that can be locked
+## leftmost (its long hover label opens to the left, over empty picture);
+## neighbouring hubs at the sides.
 ################################################################################
 
 init python:
@@ -83,21 +87,21 @@ init python:
     PATH_EXITS = {
         ## Courtyard & Gate -------------------------------------------------------
         "gate":           [("courtyard", 960, 280)],        # through the torii, up to the hall
-        "courtyard":      [("gate", 960, 985),              # back down the flagstones
+        "courtyard":      [("gate", 1180, 985),             # back down the flagstones (right of a lone person's name tag)
                            ("school_yard", 84, 600),        # past the west hall's veranda
                            ("dorm_yard", 960, 272),         # behind the main hall, uphill
                            ("training_yard", 1640, 780)],   # the east hall's steps
         ## School Building --------------------------------------------------------
-        "school_yard":    [("classroom", 360, 272), ("cafeteria", 660, 272),
-                           ("infirmary", 960, 272), ("library", 1260, 272),
+        "school_yard":    [("classroom", 850, 272), ("cafeteria", 990, 272),
+                           ("infirmary", 1130, 272), ("library", 1270, 272),
                            ("courtyard", 1640, 620)],
         "classroom":      [("school_yard", 1670, 620)],     # the sliding door, right wall
         "cafeteria":      [("school_yard", 230, 520)],      # the glass doors on the left
         "infirmary":      [("school_yard", 84, 500)],       # out past the desk
         "library":        [("school_yard", 1660, 880)],     # back the way I came in
         ## Dormitories ------------------------------------------------------------
-        "dorm_yard":      [("dorm", 360, 272), ("dorm_common", 660, 272),
-                           ("girls_dorm", 960, 272), ("rooftop", 1260, 272),
+        "dorm_yard":      [("dorm", 990, 272), ("dorm_common", 1130, 272),
+                           ("girls_dorm", 850, 272), ("rooftop", 1270, 272),
                            ("courtyard", 1640, 800), ("staff_yard", 1640, 520),
                            ("trailhead", 84, 600)],
         "dorm":           [("dorm_yard", 150, 560)],        # my door
@@ -105,22 +109,22 @@ init python:
         "girls_dorm":     [("dorm_yard", 1090, 560)],       # the far end of the corridor
         "rooftop":        [("dorm_yard", 1680, 640)],       # the stairs behind the pillar
         ## Staff Building ---------------------------------------------------------
-        "staff_yard":     [("office", 960, 272), ("utahime_office", 620, 272),
-                           ("gojo_office", 1260, 272),
+        "staff_yard":     [("office", 1060, 272), ("utahime_office", 850, 272),
+                           ("gojo_office", 1270, 272),
                            ("dorm_yard", 84, 600), ("training_yard", 1640, 620)],
         "office":         [("staff_yard", 84, 560)],        # the open side of the hall
         "utahime_office": [("staff_yard", 84, 520)],        # the sliding door
         "gojo_office":    [("staff_yard", 1680, 640)],      # the sliding door
         ## Training Grounds -------------------------------------------------------
-        "training_yard":  [("training", 460, 272), ("dojo", 860, 272),
-                           ("storehouse", 1260, 272),
+        "training_yard":  [("training", 1060, 272), ("dojo", 1270, 272),
+                           ("storehouse", 850, 272),
                            ("courtyard", 84, 600), ("staff_yard", 1640, 520)],
         "training":       [("training_yard", 230, 600)],    # the bright doorway, far left
         "dojo":           [("training_yard", 84, 620)],     # the open panel on the left
         "storehouse":     [("training_yard", 84, 520)],     # daylight at the door
         ## The Mountain -----------------------------------------------------------
-        "trailhead":      [("forest", 460, 272), ("ridge", 860, 272),
-                           ("riverside", 1260, 272),
+        "trailhead":      [("forest", 850, 272), ("ridge", 1060, 272),
+                           ("riverside", 1270, 272),
                            ("dorm_yard", 1640, 760)],
         "forest":         [("trailhead", 84, 600)],         # back down, where the trees open
         "riverside":      [("trailhead", 84, 760)],         # the sandy path on the bank
@@ -144,6 +148,11 @@ init python:
     }
     PATH_CLEAR = 120
     PATH_APART = 110        # between two exits of one place (their rings are 96 px)
+
+    ## The arrival caption's panel (screen sb_place: a frame at (40, 100), up
+    ## to 744 wide, 157 tall with a two-line description). It lies over the
+    ## picture for the first seconds in a place, so no exit sits under it.
+    PATH_CAPTION_BOX = (40, 100, 744, 160)
 
     ## "To the School Courtyard": the few names that take no article.
     PATH_TO_WORDS = {
@@ -236,20 +245,50 @@ init python:
 
     ## The registry rows (see the header) -----------------------------------------
 
-    class path_ActionRow(path_builtins.dict):
-        """P9. A PLACE_ACTIONS row whose label is read when it is asked for:
-        where the exit leads, or the lock's reason. Init data, never saved."""
+    class path_LiveRow(path_builtins.dict):
+        """P9. A registry row with a value that is read when it is asked
+        for. Every way of reading it gives the value as it is now: row[key],
+        row.get(key), row.items(), row.values(), and a dict(row) copy (which
+        then keeps the value of the moment it was made). Init data, never
+        saved."""
+
+        def path_now(self, key):
+            return path_builtins.dict.__getitem__(self, key)
 
         def __getitem__(self, key):
+            return self.path_now(key)
+
+        def get(self, key, default=None):
+            return self.path_now(key) if key in self else default
+
+        def __iter__(self):
+            ## Defined so that dict(row) and dict.update(row) read each value
+            ## through __getitem__ instead of copying the stored ones.
+            return path_builtins.dict.__iter__(self)
+
+        def items(self):
+            return [(k, self.path_now(k)) for k in path_builtins.dict.keys(self)]
+
+        def values(self):
+            return [self.path_now(k) for k in path_builtins.dict.keys(self)]
+
+        def copy(self):
+            return path_builtins.dict(self.items())
+
+    class path_ActionRow(path_LiveRow):
+        """P9. A PLACE_ACTIONS row whose label is read when it is asked for:
+        where the exit leads, or the lock's reason."""
+
+        def path_now(self, key):
             if key == "label":
                 return path_label(path_builtins.dict.__getitem__(self, "to"))
             return path_builtins.dict.__getitem__(self, key)
 
-    class path_SpotRow(path_builtins.dict):
+    class path_SpotRow(path_LiveRow):
         """P9. A HOT_SPOTS row whose icon is the lock while its destination
-        is locked. Init data, never saved."""
+        is locked."""
 
-        def __getitem__(self, key):
+        def path_now(self, key):
             if key == "icon" and path_locked(path_builtins.dict.__getitem__(self, "to")):
                 return "lock"
             return path_builtins.dict.__getitem__(self, key)
@@ -286,8 +325,9 @@ init python:
         hub among its places; every place has an exit; a room's first exit
         is its hub; a hub leads to each of its rooms and each neighbouring
         hub and nowhere else; every exit has a way back; from my room every
-        place is reached; each point keeps clear of 4.10's start points and
-        of the place's other exits. (Bounds and lanes are hot_validate's.)"""
+        place is reached; each point keeps clear of 4.10's start points, of
+        the place's other exits and of the arrival caption's panel (the
+        sidecar's point too). (Bounds and lanes are hot_validate's.)"""
         out = []
         links = {}
         for a, b in PATH_LINKS:
@@ -341,6 +381,13 @@ init python:
                     if to2 > to and (x - x2) ** 2 + (y - y2) ** 2 < PATH_APART ** 2:
                         out.append("exits %s and %s of %r are less than %d px apart"
                                    % (path_spot_id(frm, to), path_spot_id(frm, to2), frm, PATH_APART))
+        for frm in sorted(PATH_EXITS):
+            if frm not in LOCATIONS:
+                continue
+            for r in path_exits(frm):
+                if hot_overlap(hot_rect(r["x"], r["y"]), PATH_CAPTION_BOX):
+                    out.append("exit %s at (%d, %d) lies under the arrival caption %r"
+                               % (path_spot_id(frm, r["to"]), r["x"], r["y"], PATH_CAPTION_BOX))
         if "dorm" in LOCATIONS:
             lost = sorted(path_builtins.set(LOCATIONS) - path_reach("dorm"))
             if lost:

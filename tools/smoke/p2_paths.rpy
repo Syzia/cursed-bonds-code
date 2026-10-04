@@ -4,7 +4,9 @@
 ##   tools/smoke.sh tools/smoke/p2_paths.rpy
 ##
 ## Every acceptance bullet of 13.2 is a named check, in the plan's order
-## (sections 1 to 7 below; 8 is a walk through real clicks, 9 a save). What
+## (sections 1 to 7 below; 8 is a walk through real clicks, 9 the worst case,
+## 10 a save, a load and a rollback through exit walks inside the real loop,
+## which ends the run from label sandbox). What
 ## is run outside a harness, or waits for another package, is a NOTE that
 ## says so: phase1_all, wp3_missions and the 11 saves (bullet 7); P6's final
 ## hotspot points (P8 settles any exit that still touches one); the dim state
@@ -18,13 +20,17 @@
 ## Screenshots (shots/p2_paths/): worst_sb_map and worst_sb_place (zz_worst),
 ## every hub with its test picture and with its stand-in, the campus map with
 ## three faces and a gold mark on every marker, each area view, a locked
-## exit, four people in front of the exits, and the walk from my room to the
-## training hall.
+## exit (and the longest lock's hover label), every hub on arrival (the
+## caption up), four people in front of the exits, the walk from my room to
+## the training hall, and the place view after a load.
 
 init 999 python:
     import os
     import subprocess as zz_subprocess
     import builtins as zz_builtins
+    ## Imported at init (zz_re is _lib.rpy's): a module imported into the
+    ## running store would reach section 10's save.
+    import pickle as zz_pickle
 
     ZZ_HUBS = ("school_yard", "dorm_yard", "staff_yard", "training_yard", "trailhead")
     ZZ_HUB_NAMES = {"school_yard": "School Courtyard", "dorm_yard": "Dormitory Garden",
@@ -148,6 +154,137 @@ init 999 python:
     def zz_two(key):
         return 2
 
+    def zz_arrive(loc, per=None):
+        """Stand somewhere, just arrived: the place view with its caption up."""
+        store.here = loc
+        if per:
+            store.period = per
+        ARRIVAL[0] = None
+        renpy.scene()
+        renpy.show("bg", what=graded_bg())
+        renpy.hide_screen("sb_place")
+        renpy.show_screen("sb_place")
+        zz_render(0.6)
+
+    def zz_caption_box(loc):
+        """The arrival caption's panel in a place, from its texts (screen
+        sb_place: a frame at (40, 100), padding (22, 10, 22, 14), the name at
+        44 beside the period, the description at 20 wrapped at 700)."""
+        d = Text(LOCATIONS[loc]["desc"], style="sb_arrival_text", size=20, xmaximum=700)
+        dw, dh = renpy.render(d, 700, 400, 0, 0).get_size()
+        n = Text(LOCATIONS[loc]["name"], style="sb_arrival_text", font=gui.display_font, size=44)
+        nw, nh = renpy.render(n, 1200, 400, 0, 0).get_size()
+        pw = max(renpy.render(Text("· " + p, style="sb_arrival_text", font=gui.body_medium_font, size=20, kerning=gui.track), 600, 400, 0, 0).get_size()[0]
+                 for p in PERIODS)
+        return (40, 100, int(max(dw, nw + 14 + pw) + 44), int(10 + nh + 4 + dh + 14))
+
+    def zz_hover_rect():
+        """The hover label's rectangle as it was last drawn, (x, y, w, h);
+        None when no label is up."""
+        sc = renpy.get_screen("hover_label")
+        if sc is None:
+            return None
+        for d in zz_tree(sc):
+            if isinstance(d, renpy.display.layout.NearRect) and d.child is not None:
+                size = getattr(d.child, "window_size", None)
+                offs = getattr(d, "offsets", None)
+                if size and offs:
+                    return (int(offs[0][0]), int(offs[0][1]), int(size[0]), int(size[1]))
+        return None
+
+    def zz_row_reads():
+        """How the storehouse exit's two registry rows read right now, each
+        way a reader may take them: (labels, icons, the rest holds). Plain
+        values: the rows themselves never become store variables here (a
+        harness variable would carry them into a save)."""
+        ar = [a for a in PLACE_ACTIONS if a["id"] == "path_storehouse"][0]
+        sr = [h for h in HOT_SPOTS if h["id"] == "go_training_yard__storehouse"][0]
+        labels = [ar["label"], ar.get("label"), zz_builtins.dict(ar)["label"], zz_builtins.dict(ar.items())["label"], ar.copy()["label"]]
+        icons = [sr["icon"], sr.get("icon"), zz_builtins.dict(sr)["icon"], zz_builtins.dict(sr.items())["icon"], sr.copy()["icon"]]
+        rest = (ar["label"] in ar.values() and ar.get("zz_none", 7) == 7 and ar.get("zz_none") is None
+                and sorted(sr) == sorted(zz_builtins.dict.keys(sr)) and len(sr) == len(zz_builtins.dict(sr))
+                and type(sr.copy()) is zz_builtins.dict and sr.get("id") == "go_training_yard__storehouse")
+        return labels, icons, bool(rest)
+
+    def zz_cover_storehouse(loc):
+        """Someone standing right in front of the training yard's storehouse exit."""
+        x, y = [(r["x"], r["y"]) for r in path_exits("training_yard") if r["to"] == "storehouse"][0]
+        return [(x - 100, y - 100, 200, 800)]
+
+    ## Section 10: a state machine driven by a timer, inside `jump sandbox`.
+    ## Init-made builtins, so a load and a rollback leave them alone.
+    ZZ_LOOP = zz_builtins.list([0, 0, 0, None])     # phase, loads seen, ticks, the clock at the start
+
+    def zz_loop_loaded():
+        if ZZ_LOOP[0]:
+            ZZ_LOOP[1] += 1
+
+    config.after_load_callbacks.append(zz_loop_loaded)
+
+    def zz_loop_press(wid):
+        w = renpy.get_widget("sb_place", wid)
+        if w is None:
+            check(False, "the loop: button %s is there" % wid, (store.here, [h["id"] for h in hot_spots_for(store.here)]))
+            finish()
+        return renpy.run(w.action)
+
+    def zz_loop_save_names(slot):
+        data, _sig = renpy.loadsave.location.load(slot)
+        return [n for n in (b"path_ActionRow", b"path_SpotRow", b"path_LiveRow", b"path_builtins") if n in data]
+
+    def zz_loop_step():
+        L = ZZ_LOOP
+        if not L[0] or len(renpy.game.contexts) != 1:
+            return None
+        L[2] += 1
+        if L[2] > 60:
+            check(False, "the loop: the run reaches its end", (zz_builtins.list(L), store.here, renpy.get_screen("sb_place") is not None))
+            finish()
+        if not renpy.get_screen("sb_place"):
+            return None
+        h = store.here
+        tm = (store.day, store.period, store.stamina)
+        if L[0] == 1 and h == "dorm":
+            L[3] = tm
+            L[0], L[2] = 2, 0
+            return zz_loop_press("hot_go_dorm__dorm_yard")
+        if L[0] == 2 and h == "dorm_yard":
+            check(tm == L[3], "in the real loop (label sandbox): the exit in my room walks to the Dormitory Garden, no time spent", (tm, L[3]))
+            renpy.take_screenshot()
+            renpy.save("zz_p9_walk")
+            check(not zz_loop_save_names("zz_p9_walk"), "a save made in a hub after an exit walk holds no registry row class", zz_loop_save_names("zz_p9_walk"))
+            L[0], L[2] = 3, 0
+            renpy.load("zz_p9_walk")
+        if L[0] == 3:
+            room = [x["id"] for x in hot_spots_for(h)]
+            col = [a[0] for a in rail_actions(h) if a[0].startswith("path_")]
+            check(L[1] == 1 and h == "dorm_yard" and tm == L[3] and len(room) + len(col) == 7,
+                  "that save loads onto the same place view: the Dormitory Garden, its seven exits offered", (L[1], h, tm, room, col))
+            shot("after_load_dorm_yard", wait=0)
+            L[0], L[2] = 4, 0
+            return zz_loop_press("hot_go_dorm_yard__courtyard")
+        if L[0] == 4 and h == "courtyard":
+            check(tm == L[3], "after the load, walking on works: Dormitory Garden to Courtyard")
+            L[0], L[2] = 5, 0
+            return zz_loop_press("hot_go_courtyard__training_yard")
+        if L[0] == 5 and h == "training_yard":
+            L[0], L[2] = 6, 0
+            renpy.rollback(force=True, checkpoints=1)
+        if L[0] == 6:
+            check(h == "courtyard" and tm == L[3], "rolling back one step through an exit walk: I am back in the courtyard", (h, tm))
+            L[0], L[2] = 7, 0
+            renpy.rollback(force=True, checkpoints=1)
+        if L[0] == 7:
+            check(h == "dorm_yard" and tm == L[3], "rolling back a second step: back in the Dormitory Garden", (h, tm))
+            L[0], L[2] = 8, 0
+            return zz_loop_press("hot_go_dorm_yard__trailhead")
+        if L[0] == 8 and h == "trailhead":
+            check(tm == L[3], "after two rollbacks, walking on works: Dormitory Garden to Mountain Path")
+            finish()
+        return None
+
+    config.overlay_screens.append("zz_paths_loop")
+
     def zz_all_moons():
         return dict((a["key"], "moon") for a in AREAS)
 
@@ -159,6 +296,13 @@ init 999 python:
 screen zz_paths_press(wid, delay=0.5):
     zorder 200
     timer delay action [Hide("zz_paths_press"), Function(zz_press, wid)]
+
+
+## Section 10's driver: idle until ZZ_LOOP[0] is set.
+screen zz_paths_loop():
+    zorder 200
+    if ZZ_LOOP[0]:
+        timer 0.4 repeat True action Function(zz_loop_step)
 
 
 label zz_smoke:
@@ -233,6 +377,10 @@ label zz_smoke:
               "icons are existing names: place_<room> for a room, area_<key> for a hub (in the room and in the column)", _zz_ic)
         note("action ids", "D55 says go_<to>; they are path_<to> (label sb_do_path_<to>), because R1's --prefixes "
              "rejects a label sb_do_go_<to> in room_paths.rpy. The hotspot ids are D55's go_<from>__<to>.")
+        ## The registry's own rows leave the store with this statement: a
+        ## harness variable still holding one would carry it into section
+        ## 10's save (through the rollback log), which the game never does.
+        del _zz_acts, _zz_spots
 
     ## --- 2. taking an exit ------------------------------------------------------------------------
     python:
@@ -309,7 +457,12 @@ label zz_smoke:
               and any("School Courtyard" in s for s in _zz_t) and any(LOCATIONS["school_yard"]["desc"] in s for s in _zz_t),
               "walking shows the arrival caption of the new place (its name and its first-person line)", [s for s in _zz_t if "School" in s or "earth" in s])
         shot("arrival_school_yard", wait=0)
-        check(renpy.showing("bg") or True, "(the walk's picture is the new place's: see arrival_school_yard.png)")
+        ## The walk's `scene expression graded_bg()` cleared the picture this
+        ## harness had shown under the tag bg and put up the new place's alone.
+        check(len(renpy.get_showing_tags("master")) == 1 and "bg" not in renpy.get_showing_tags("master")
+              and LOCATIONS["school_yard"]["bg"] == "bg school_yard" and renpy.has_image("bg school_yard", exact=True),
+              "the walk replaces the picture with the new place's (bg school_yard: see arrival_school_yard.png)",
+              (sorted(renpy.get_showing_tags("master")), LOCATIONS["school_yard"]["bg"]))
 
     ## A locked destination (D55).
     python:
@@ -336,15 +489,29 @@ label zz_smoke:
     python:
         renpy.say = _zz_say0
         check((day, period, here, stamina) == _zz_before and not _zz_said, "clicking it does nothing: I stay, no time passes, nothing is said", (here, _zz_said))
-        ## In the column (someone standing in front of it) it still reads the reason.
-        ZZ_CROWD[0] = 4
-        store.who_is_here = zz_crowd
-        _zz_col = [r for r in rail_rows("training_yard") if r[0] == ("act", "path_storehouse")]
-        store.who_is_here = zz_who_is_here0
-        ZZ_CROWD[0] = 0
-        note("a locked exit in the icon column", "its tile's hover text is %r" % (_zz_col and _zz_col[0][3],))
+        ## In the column it still reads the reason: as the registry gives the
+        ## row, and with someone standing right in front of the exit.
+        _zz_reg = [a for a in registered_place_actions("training_yard") if a[0] == "path_storehouse"]
+        check(len(_zz_reg) == 1 and _zz_reg[0][1] == _zz_why and _zz_reg[0][3] == 0,
+              "the locked exit's place action reads the lock's reason (registered_place_actions)", _zz_reg)
+        _zz_vpr0 = view_person_rects
+        store.view_person_rects = zz_cover_storehouse
+        try:
+            _zz_col = [r for r in rail_rows("training_yard") if r[0] == ("act", "path_storehouse")]
+            zz_place("training_yard", "Noon")
+            check(len(_zz_col) == 1 and _zz_col[0][3] == _zz_why and "path_storehouse" not in zz_exits_offered("training_yard")[0]
+                  and zz_hot("hot_go_training_yard__storehouse") is None and zz_tip("rail_path_storehouse") == _zz_why,
+                  "with someone in front of it the locked exit is a column tile, and its hover label is still the lock's reason",
+                  (_zz_col, zz_tip("rail_path_storehouse")))
+        finally:
+            store.view_person_rects = _zz_vpr0
+        ## However a reader takes the row, it reads the lock (and the open door again afterwards).
+        _zz_reads = zz_row_reads()
+        check(set(_zz_reads[0]) == set([_zz_why]) and set(_zz_reads[1]) == set(["lock"]) and _zz_reads[2],
+              "the registry rows read the lock through row[key], row.get, row.items, row.values, row.copy and a dict(row) copy alike", _zz_reads)
         flag("storehouse_access")
-        check(path_exits("training_yard")[2]["locked_reason"] == "" and path_exits("training_yard")[2]["label"] == "To the Storehouse",
+        check(path_exits("training_yard")[2]["locked_reason"] == "" and path_exits("training_yard")[2]["label"] == "To the Storehouse"
+              and set(zz_row_reads()[0]) == set(["To the Storehouse"]) and set(zz_row_reads()[1]) == set(["place_storehouse"]),
               "once the door opens the exit reads To the Storehouse again", path_exits("training_yard")[2])
         ## The other locks read their own reasons.
         period = "Night"
@@ -352,6 +519,31 @@ label zz_smoke:
         check(all(_zz_n[l] == place_access(l)[1] and _zz_n[l] for l in ("office", "utahime_office", "gojo_office")) and not _zz_n["dorm_yard"],
               "at Night the three office exits on the staff steps are locked, each with its own reason; the way out is open", _zz_n)
         period = "Noon"
+        ## The longest lock (the one met every evening from day 1): the girls'
+        ## dormitory after dark, from the Dormitory Garden.
+        flags.discard("invited_girls_dorm")
+        zz_place("dorm_yard", "Evening")
+        _zz_why = place_access("girls_dorm")[1]
+        check(_zz_why and zz_tip("hot_go_dorm_yard__girls_dorm") == _zz_why and zz_action_value("hot_go_dorm_yard__girls_dorm") == ("act", "path_girls_dorm"),
+              "in the evening the girls' dormitory exit reads its lock's reason (%d characters)" % len(_zz_why), zz_tip("hot_go_dorm_yard__girls_dorm"))
+        renpy.set_focus("sb_place", "hot_go_dorm_yard__girls_dorm")
+        zz_render(0.4)
+        _zz_hr = zz_hover_rect()
+        _zz_others = [zz_rect("sb_place", "hot_go_dorm_yard__" + t) for t in path_neighbours("dorm_yard") if t != "girls_dorm"]
+        check(_zz_hr is not None and _zz_hr[0] >= 0 and _zz_hr[1] >= 0 and _zz_hr[0] + _zz_hr[2] <= 1920 and _zz_hr[1] + _zz_hr[3] <= 1080
+              and _zz_hr[2] <= 520 and not any(hot_overlap(_zz_hr, ln) for ln in HOT_LANES if ln[0] >= 1300),
+              "its hover label fits: on screen, at most 520 wide, clear of the toast lane (hover check: needs the pointer)", _zz_hr)
+        check(_zz_hr is not None and all(_zz_others) and not [r for r in _zz_others if hot_overlap(_zz_hr, r)],
+              "and it opens over empty picture: it hides none of the garden's other exits (a lockable room sits leftmost in its row)",
+              (_zz_hr, _zz_others))
+        shot("locked_girls_dorm_hover", wait=0)
+        _zz_before = (day, period, here, stamina)
+    call sb_do_path_girls_dorm
+    python:
+        check((day, period, here, stamina) == _zz_before, "and clicking it leaves me in the garden", here)
+        flag("invited_girls_dorm")
+        period = "Noon"
+        renpy.hide_screen("sb_place")
 
     ## --- 3. where exits sit -------------------------------------------------------------------------
     python:
@@ -390,6 +582,34 @@ label zz_smoke:
         ## A two-line objective banner ends near y 233: the exits along the top stay under it.
         check(all(r["y"] - 36 >= 234 for f in LOCATIONS for r in path_exits(f) if 364 <= r["x"] <= 1336 and r["y"] < 400),
               "an exit under the banner starts below a two-line banner (y 234)")
+        ## The arrival caption lies over the picture for my first seconds in
+        ## a place: no exit sits under it (and the box the validator keeps
+        ## clear really holds the caption of every place).
+        _zz_boxes = dict((l, zz_caption_box(l)) for l in LOCATIONS)
+        _zz_big = [(l, b) for l, b in sorted(_zz_boxes.items())
+                   if b[0] + b[2] > PATH_CAPTION_BOX[0] + PATH_CAPTION_BOX[2] or b[1] + b[3] > PATH_CAPTION_BOX[1] + PATH_CAPTION_BOX[3]]
+        check(PATH_CAPTION_BOX == (40, 100, 744, 160) and not _zz_big,
+              "every place's arrival caption fits inside PATH_CAPTION_BOX (the tallest is %d px, the widest %d)"
+              % (max(b[3] for b in _zz_boxes.values()), max(b[2] for b in _zz_boxes.values())), _zz_big)
+        _zz_under = [(f, r["to"], r["x"], r["y"]) for f in LOCATIONS for r in path_exits(f)
+                     if hot_overlap((r["x"] - 48, r["y"] - 48, 96, 96), PATH_CAPTION_BOX)]
+        check(not _zz_under, "no exit sits under the arrival caption (its 96 px ring is clear of the caption's box)", _zz_under)
+        for _zz_h in ZZ_HUBS:
+            zz_arrive(_zz_h, "Noon")
+            shot("arrival_" + _zz_h, wait=0)
+        _zz_hubrects = dict((t, zz_rect("sb_place", "hot_go_trailhead__" + t)) for t in path_neighbours("trailhead"))
+        check(all(_zz_hubrects.values()) and not [t for t, r in _zz_hubrects.items() if hot_overlap(r, zz_caption_box("trailhead"))],
+              "on arrival (the caption up) the hub's exit buttons as drawn are clear of it", _zz_hubrects)
+        ARRIVAL[1] -= 10
+        renpy.hide_screen("sb_place")
+        ## A lockable room is the leftmost of its hub's top row.
+        _zz_bad = []
+        for _zz_h in [path_hub(a["key"]) for a in AREAS]:
+            _zz_top = sorted((r["x"], r["to"]) for r in path_exits(_zz_h) if r["y"] < 300 and not path_is_hub(r["to"]))
+            _zz_lk = [t for x, t in _zz_top if t in ("girls_dorm", "storehouse", "utahime_office", "gojo_office", "office")]
+            if _zz_lk and _zz_top[0][1] not in _zz_lk:
+                _zz_bad.append((_zz_h, _zz_top))
+        check(not _zz_bad, "in a hub's top row a room that can be locked comes first from the left", _zz_bad)
         ## Four people on stage: every exit is still offered, once.
         store.who_is_here = zz_crowd
         _zz_bad, _zz_moved = [], 0
@@ -411,7 +631,7 @@ label zz_smoke:
                   "or in the column, never neither and never both", _zz_bad[:4])
             check(_zz_moved > 0, "(with four people some exits do move to the column: %d of %d)" % (_zz_moved, sum(len(v) for v in PATH_EXITS.values())))
             _zz_tiles = max(len(rail_rows(f)) for f in LOCATIONS)
-            check(_zz_tiles <= 15, "even then no place needs more than fifteen column tiles (two columns)", _zz_tiles)
+            check(_zz_tiles <= RAIL_MAX and RAIL_MAX == 8, "even then no place needs more than one column of tiles (RAIL_MAX, 8)", _zz_tiles)
             zz_place("courtyard", "Noon")
             _zz_room, _zz_col = zz_exits_offered("courtyard")
             check(all(zz_hot("hot_go_courtyard__" + a[5:]) is not None for a in _zz_room)
@@ -444,7 +664,6 @@ label zz_smoke:
                     _zz_bad.append((_zz_p, _zz_h))
         check(not _zz_bad, "each is always enterable: at every period, with no flag set", _zz_bad)
         zz_open_campus()
-        import re as zz_re
         check(all(LOCATIONS[h]["desc"] and not zz_re.search(r"\b(you|your|you're)\b", LOCATIONS[h]["desc"] + LOCATIONS[h]["name"], zz_re.I)
                   and zz_re.search(r"\b(I|me|my)\b", LOCATIONS[h]["desc"]) for h in ZZ_HUBS),
               "each has a first-person description", [LOCATIONS[h]["desc"] for h in ZZ_HUBS])
@@ -715,7 +934,7 @@ label zz_smoke:
         check(zz_action_value("hot_go_gate__courtyard") == ("act", "path_courtyard") and zz_tip("hot_go_gate__courtyard") == "To the Courtyard",
               "at the gate, the exit clicks through to the courtyard")
 
-    ## --- 9. worst case, and a save in a hub ---------------------------------------------------------------
+    ## --- 9. worst case, and what a save holds ---------------------------------------------------------------
     python:
         zz_open_campus()
         day = 9
@@ -730,7 +949,6 @@ label zz_smoke:
               "the Dormitory Garden on a weekday night: Yuji outside, seven exits", (who_is_here("dorm_yard"), [h["id"] for h in hot_spots_for("dorm_yard")]))
         ## Nothing un-picklable reaches a save (R10): the registry rows are
         ## init data; the screen's scope holds plain copies.
-        import pickle as zz_pickle
         _zz_rows = hot_spots_for("dorm_yard")
         check(all(type(h) is zz_builtins.dict for h in _zz_rows) and zz_pickle.loads(zz_pickle.dumps(_zz_rows)) == _zz_rows
               and zz_pickle.loads(zz_pickle.dumps(path_exits("dorm_yard"))) == path_exits("dorm_yard"),
@@ -749,4 +967,19 @@ label zz_smoke:
         renpy.save("zz_p9_hub")
         check(renpy.can_load("zz_p9_hub"), "a save made standing in a hub, with the place view up, is written")
         renpy.hide_screen("sb_place")
-        finish()
+
+    ## --- 10. the real loop: walk, save, load, walk on, roll back --------------------------------------------
+    ## From here the run is label sandbox's own `call screen sb_place`; the
+    ## timer of screen zz_paths_loop presses the exits, and zz_loop_step ends
+    ## the run with finish().
+    python:
+        zz_open_campus()
+        day = 9
+        period = "Noon"
+        here = "dorm"
+        explore_mode = False
+        toast_clear()
+        note("the loop: a story beat waiting in my room (None is wanted)", repr(pick_event("story", loc=here)))
+        ZZ_LOOP[:] = [1, 0, 0, None]
+    scene expression graded_bg()
+    jump sandbox
