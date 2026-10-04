@@ -397,10 +397,27 @@ label zz_smoke:
               "ACC bound_specials is never written (no game file writes it; it is still empty after every check above)",
               (_zz_writes, bound_specials))
 
-    ## --- 7.3: what waits for another package -----------------------------------------------------------
+    ## --- 7.3: the deferred line: a Black Market talisman goes on through this checklist ---------------------
+    ## (p2_night.rpy's section K runs the same line for all four, a point short of the stat as well.)
     python:
-        note("deferred to P8 (7.3)", "putting a Black Market talisman on through this checklist needs P4b's sb_market.rpy "
-             "rows (ITEM_REQS.update) and stock; with P4b's stub market_exists() is %r here" % (market_exists(),))
+        _zz_bad = []
+        for _zz_i in [r["item"] for r in MARKET_STOCK if ITEMS[r["item"]]["kind"] == "talisman"]:
+            _zz_g = ITEMS[_zz_i]["grade"]
+            _zz_stat = [r for r in ITEM_REQS.get(_zz_i, ()) if r[0] == "stat"][0]
+            zz_gear_state(GRADE_ORDER[GRADE_ORDER.index(_zz_g) - 1], yen=100000, **{_zz_stat[1]: _zz_stat[2] - 1})
+            if not market_buy(_zz_i) or can_wear(_zz_i) != (False, "Needs " + grade_label(_zz_g)):
+                _zz_bad.append((_zz_i, "below the grade", can_wear(_zz_i)))
+            promote("mc", _zz_g, quiet=True)
+            _zz_unmet = [l for l, ok in item_requirements(_zz_i) if not ok]
+            if len(_zz_unmet) != 1 or can_wear(_zz_i) != (False, _zz_unmet[0]) or equip_talisman(_zz_i):
+                _zz_bad.append((_zz_i, "one short", can_wear(_zz_i), _zz_unmet))
+            zz_gear_raise(_zz_stat[1], _zz_stat[2])
+            if can_wear(_zz_i) != (True, "") or not equip_talisman(_zz_i) or equipped_talismans != [_zz_i]:
+                _zz_bad.append((_zz_i, "met", can_wear(_zz_i), getattr(store, _zz_stat[1])))
+        check(market_exists() and len(MARKET_STOCK) >= 4 and not _zz_bad and bound_specials == builtins.set(),
+              "ACC 7.3's deferred line: a talisman bought at the Black Market is refused below its grade ('Needs <grade>'), "
+              "refused with its unmet stat line one point short, and worn once its ITEM_REQS row is met", _zz_bad)
+        zz_gear_state("g4")
         note("owner check, P3's screen", "a talisman's checklist in the journal's Equipment and Inventory tabs is drawn "
              "by ui_journal.rpy (P3) from item_requirements(); it is not on any screen P4a owns")
 

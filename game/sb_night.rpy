@@ -522,7 +522,7 @@ label night_out(key):
     if not night_out_ok(key)[0]:
         return
 
-    ## where I am, as it is tonight, behind the first line and the menu
+    ## where I am, as it is tonight, behind the first line
     scene expression graded_bg()
 
     $ _night_name = DISTRICTS[key]["name"].split(" — ")[-1]
@@ -530,6 +530,10 @@ label night_out(key):
     $ _night_who = companion
 
     "The last train into the city leaves from the foot of the mountain in twenty minutes. I could be on it."
+
+    ## the district, behind the menu (config.show sets the sprite light from it)
+    scene expression night_bg(key)
+    with Dissolve(0.4)
 
     $ _night_pick = night_out_auto() if smoke_autoplay else ""
     while not _night_pick:
@@ -545,10 +549,10 @@ label night_out(key):
                 $ _night_pick = "home"
 
     if _night_pick == "home":
+        ## back where I was
+        scene expression graded_bg()
+        with Dissolve(0.4)
         return
-
-    scene expression night_bg(key)
-    with Dissolve(0.6)
 
     if _night_pick == "market":
         "Past the club's door, one flight further down. Nobody at this one asks for money."
