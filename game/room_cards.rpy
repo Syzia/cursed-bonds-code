@@ -58,6 +58,7 @@ init -1 python:
     CARDS_GAMES = ("blackjack", "poker")    # the games this file plays
     CARDS_TAKE = ("stands pat", "takes one", "takes two", "takes three")    # an opponent's draw, by cards taken
     CARDS_COUNT = ("no cards", "one", "two", "three")
+    CARDS_NUM = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}
     CARDS_ROW = 820                     # the room a blackjack hand has, left of its total
     CARDS_BLURB = {
         "blackjack": "Against the dealer. Twenty-one, or as near as I dare.",
@@ -254,6 +255,17 @@ init -1 python:
         hand through."""
         return int(stake) * (3 if game == "poker" else 1)
 
+    def cards_hands_word():
+        """P7. The sitting's limit in words: "Five hands"."""
+        n = int(CARDS_LIMIT["hands"])
+        return "%s hand%s" % (CARDS_NUM.get(n, str(n)), "" if n == 1 else "s")
+
+    def cards_act(guard, value):
+        """P7. A move button's action: nothing while the screen has only
+        just opened, so a second click meant for the last button isn't
+        taken as a move."""
+        return NullAction() if guard else Return(value)
+
     def cards_can_deal(game, stake):
         """P7. Why a hand can't be dealt now, as a first-person line; ""
         when it can. The sitting's five hands and ¥3,000; my yen; the
@@ -261,7 +273,7 @@ init -1 python:
         hands, net = cards_tally()
         stake = int(stake)
         if hands >= CARDS_LIMIT["hands"]:
-            return "Five hands. That's the sitting."
+            return "%s. That's the sitting." % cards_hands_word()
         if net <= -CARDS_LIMIT["down"]:
             return "I'm %s down. Enough." % cards_yen(CARDS_LIMIT["down"])
         if store.yen < cards_need(game, stake):
@@ -294,9 +306,9 @@ init -1 python:
         opp = sit.get("opponents") or cards_opponents()
         first = opp[0] if opp else None
         if int(sit.get("hands", 0)) >= CARDS_LIMIT["hands"]:
-            return "Five hands. %s gathers the cards up." % (cards_short(first) if first else "Somebody")
+            return "%s. %s gathers the cards up." % (cards_hands_word(), cards_short(first) if first else "Somebody")
         if int(sit.get("net", 0)) <= -CARDS_LIMIT["down"]:
-            return "I'm %s down. I push my chair back before it gets worse." % cards_yen(CARDS_LIMIT["down"])
+            return "I'm %s down. I push my chair back before it gets worse." % cards_yen(abs(int(sit.get("net", 0))))
         if cards_cap_left() < 2 * CARDS_STAKES[0]:
             if first:
                 return "%s pushes the deck away. \"%s\"" % (cards_short(first), cards_style(first)["stop"])
@@ -897,10 +909,15 @@ init -1 python:
         theirs = [p for p in winners if p != "me"]
         face = dict(st.get("face") or {})
         if theirs:
-            st["says"] = cards_style(theirs[0])["win"]
-            st["speaker"] = theirs[0]
+            ## Nobody won a split pot: nobody crows over it.
+            if res == "split":
+                st["says"] = ""
+                st["speaker"] = ""
+            else:
+                st["says"] = cards_style(theirs[0])["win"]
+                st["speaker"] = theirs[0]
             for w in theirs:
-                face[w] = cards_style(w).get("glad", "happy")
+                face[w] = cards_style(w)["rest"] if res == "split" else cards_style(w).get("glad", "happy")
         elif st["opponents"]:
             ## Only someone who showed a hand has a hand to be sore about.
             if st["shown"]:
@@ -973,6 +990,9 @@ init -1 python:
         if n_people < int(g.get("min_people", 1)):
             return "Needs %d at the table." % int(g.get("min_people", 1))
         why = cards_can_deal(g["id"], stake)
+        ## Poker pays only up to the day's limit: say so before I put money in.
+        if not why and g["id"] == "poker" and cards_cap_left() < int(stake) * n_people * 3:
+            return "They'll pay me %s more today, no further." % cards_yen(cards_cap_left())
         return why or CARDS_BLURB.get(g["id"], "")
 
     def cards_game_open(g, stake, n_people):
@@ -1023,7 +1043,7 @@ init python:
     register_minigame("blackjack", "Blackjack", "cards_play")
     register_minigame("poker", "Five-card draw", "cards_play")
 
-    register_place_action("cards_play", "Play cards", "Blackjack or poker, for yen. Five hands a sitting.",
+    register_place_action("cards_play", "Play cards", "Blackjack or poker, for yen. %s a sitting." % cards_hands_word(),
                           cost=1, locs=("dorm_common",), when="cards_ok", order=40)
 
     register_validator(cards_validate)
@@ -1222,6 +1242,8 @@ screen cards_blackjack():
 
     tag sandbox
 
+    default cards_guard = True
+
     $ _cards_st = cards_state or {}
     $ _cards_who = cards_dealer()
     $ _cards_stage = _cards_st.get("stage")
@@ -1234,6 +1256,10 @@ screen cards_blackjack():
 
     if smoke_autoplay:
         timer 0.05 action Return(cards_auto("blackjack"))
+
+    ## A second click meant for the last button is not a move (cards_act).
+    if cards_guard:
+        timer 0.3 action SetScreenVariable("cards_guard", False)
 
     if _cards_who:
         add cards_portrait(_cards_who, cards_face_of(_cards_who), 1.8):
@@ -1322,26 +1348,26 @@ screen cards_blackjack():
             textbutton "Hit":
                 id "cards_hit"
                 style "cards_btn"
-                action Return(("hit",))
+                action cards_act(cards_guard, ("hit",))
             textbutton "Stand":
                 id "cards_stand"
                 style "cards_btn"
-                action Return(("stand",))
+                action cards_act(cards_guard, ("stand",))
             textbutton "Double":
                 id "cards_double"
                 style "cards_btn"
                 sensitive cards_bj_can_double()
-                action Return(("double",))
+                action cards_act(cards_guard, ("double",))
         else:
             textbutton "Deal":
                 id "cards_deal"
                 style "cards_btn"
                 sensitive (not _cards_why)
-                action Return(("deal",))
+                action cards_act(cards_guard, ("deal",))
         textbutton ("Give up the hand" if _cards_stage == "play" else "Leave"):
             id "cards_leave"
             style "cards_btn"
-            action Return(("leave",))
+            action cards_act(cards_guard, ("leave",))
 
 
 ## Five-card draw (4.12): the opponents along the top, each with the face
@@ -1353,6 +1379,7 @@ screen cards_poker():
     tag sandbox
 
     default cards_picking = False
+    default cards_guard = True
 
     $ _cards_st = cards_state or {}
     $ _cards_stage = _cards_st.get("stage")
@@ -1371,6 +1398,10 @@ screen cards_poker():
 
     if smoke_autoplay:
         timer 0.05 action Return(cards_auto("poker"))
+
+    ## A second click meant for the last button is not a move (cards_act).
+    if cards_guard:
+        timer 0.3 action SetScreenVariable("cards_guard", False)
 
     frame:
         background Frame("gui/panel.png", 4, 4)
@@ -1432,7 +1463,7 @@ screen cards_poker():
                         xsize 120
                         padding (10, 4)
                         text_size 18
-                        action Return(("read", _cards_w))
+                        action cards_act(cards_guard, ("read", _cards_w))
 
     ## The pot, y 400.
     vbox:
@@ -1482,7 +1513,7 @@ screen cards_poker():
             xpos 1700
             ypos 560
             xysize (84, 84)
-            use icon_btn("look", (Return(("read", _cards_live[0])) if len(_cards_live) == 1 else ToggleScreenVariable("cards_picking")),
+            use icon_btn("look", (cards_act(cards_guard, ("read", _cards_live[0])) if len(_cards_live) == 1 else ToggleScreenVariable("cards_picking")),
                          tip="Read someone\nOnce a hand: how good their cards are.", size=60, w=84,
                          selected=cards_picking, wid="cards_look", words="never")
 
@@ -1494,41 +1525,41 @@ screen cards_poker():
             textbutton "Check":
                 id "cards_check"
                 style "cards_btn"
-                action Return(("check",))
+                action cards_act(cards_guard, ("check",))
             textbutton (u"Bet %s" % cards_yen(_cards_st.get("stake", 0))):
                 id "cards_bet"
                 style "cards_btn"
                 sensitive (yen >= _cards_st.get("stake", 0))
-                action Return(("bet",))
+                action cards_act(cards_guard, ("bet",))
             textbutton "Fold":
                 id "cards_fold"
                 style "cards_btn"
-                action Return(("fold",))
+                action cards_act(cards_guard, ("fold",))
         elif _cards_stage in ("call1", "call2"):
             textbutton (u"Call %s" % cards_yen(_cards_st.get("owed", 0))):
                 id "cards_bet"
                 style "cards_btn"
                 sensitive (yen >= _cards_st.get("owed", 0))
-                action Return(("bet",))
+                action cards_act(cards_guard, ("bet",))
             textbutton "Fold":
                 id "cards_fold"
                 style "cards_btn"
-                action Return(("fold",))
+                action cards_act(cards_guard, ("fold",))
         elif _cards_stage == "draw":
             textbutton ("Stand pat" if not _cards_out else "Draw %d" % len(_cards_out)):
                 id "cards_draw"
                 style "cards_btn"
-                action Return(("draw", _cards_out))
+                action cards_act(cards_guard, ("draw", _cards_out))
         else:
             textbutton "Deal":
                 id "cards_deal"
                 style "cards_btn"
                 sensitive (not _cards_why)
-                action Return(("deal",))
+                action cards_act(cards_guard, ("deal",))
         textbutton ("Leave" if _cards_stage in ("done", "idle") else "Fold and leave"):
             id "cards_leave"
             style "cards_btn"
-            action Return(("leave",))
+            action cards_act(cards_guard, ("leave",))
 
 
 ## The place action (4.12): the table, then a game, until the sitting is over

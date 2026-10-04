@@ -168,6 +168,20 @@ init 999 python:
         zz_c_patch("cards_auto", zz_c_auto)
         zz_c_patch("cards_pk_showdown", zz_c_showdown)
 
+    def zz_c_btn(screen, wid):
+        """The Button with `id wid` on a shown screen. For a textbutton
+        renpy.get_widget gives the Text inside it; this gives the button
+        around it, which is what carries the action and the tooltip."""
+        w = renpy.get_widget(screen, wid)
+        if w is None or isinstance(w, renpy.display.behavior.Button):
+            return w
+        found = []
+        def visit(d):
+            if isinstance(d, renpy.display.behavior.Button) and w in d.visit():
+                found.append(d)
+        renpy.get_screen(screen).visit_all(visit)
+        return found[0] if found else None
+
     def zz_c_reset():
         """Empties cards_state and cards_sit the game's own way: a sitting
         with no hand played, got up from (no period, no Bond)."""
@@ -465,6 +479,19 @@ label zz_smoke:
         cards_end()
         check("3,000 down" in cards_sit_over() and mg_result["outcome"] == "lose" and mg_result["yen"] == -3000,
               "B: the sitting ends at ¥3,000 down, with its line", (cards_sit_over(), mg_result))
+        cards_sit["net"] = -4000
+        check("4,000 down" in cards_sit_over() and "3,000" not in cards_sit_over(),
+              "B: the line that ends a losing sitting says what I am really down, not the limit", cards_sit_over())
+        _zz_lim = CARDS_LIMIT["hands"]
+        CARDS_LIMIT["hands"] = 4
+        cards_sit["net"] = 0
+        cards_sit["hands"] = 4
+        check(cards_sit_over().startswith("Four hands. ") and cards_can_deal("blackjack", 100) == "Four hands. That's the sitting.",
+              "B: the hand-limit lines are built from CARDS_LIMIT, not written out", (cards_sit_over(), cards_can_deal("blackjack", 100)))
+        CARDS_LIMIT["hands"] = _zz_lim
+        cards_sit["hands"] = _zz_lim
+        check(cards_sit_over().startswith("Five hands. ") or _zz_lim != 5, "B: at the real limit the line reads 'Five hands.'", cards_sit_over())
+        cards_sit["hands"] = 3
         cards_get_up()
         zz_c_unpatch()
 
@@ -613,7 +640,16 @@ label zz_smoke:
 
         ## Poker: a pot bigger than the room left is paid only up to the limit.
         zz_c_base(yen=20000, who=("megumi", "nobara", "yuji"))
+        _zz_pk = [g for g in mg_games() if g["id"] == "poker"][0]
+        check(cards_game_note(_zz_pk, 500, 3) == CARDS_BLURB["poker"] and cards_game_note(_zz_pk, 1000, 2) == CARDS_BLURB["poker"],
+              "C: while the day's limit is further off than the most a hand can win, poker's note is its blurb", cards_game_note(_zz_pk, 500, 3))
+        check(cards_game_note(_zz_pk, 1000, 3) == u"They'll pay me ¥6,000 more today, no further.",
+              "C: three opponents at ¥1,000 could lose ¥9,000 in a hand: the note says the ¥6,000 they will pay", cards_game_note(_zz_pk, 1000, 3))
         fixture(cards_won=5000, cards_won_day=day)
+        check(cards_game_note(_zz_pk, 1000, 3) == u"They'll pay me ¥1,000 more today, no further." and cards_game_open(_zz_pk, 1000, 3)
+              and cards_game_note(_zz_pk, 100, 3) == CARDS_BLURB["poker"],
+              "C: near the limit the table says, before the hand, how much a poker win can still pay",
+              (cards_game_note(_zz_pk, 1000, 3), cards_game_note(_zz_pk, 100, 3)))
         cards_new("poker", ["megumi", "nobara", "yuji"], 1000)
         ## Mine, then Megumi's, Nobara's, Yuji's: a royal flush against three high pairs.
         zz_c.cards[:] = zz_cd("TS JS QS KS AS") + zz_cd("AH AD KC 8C JC") + zz_cd("KH KD QD JD 9C") + zz_cd("QH QC 9D 8D 7C")
@@ -728,8 +764,9 @@ label zz_smoke:
         cards_pk_bet()
         _zz_sh = zz_c.shows[-1]
         check(cards_state["line"] == "The same hand. We split it." and cards_face_of("megumi") == "neutral"
-              and cards_state["says"] == CARDS_STYLE["megumi"]["win"],
-              "D: a split says so, and Megumi's face stays as it was", (cards_state["line"], cards_state["face"]))
+              and cards_face_of("megumi") == CARDS_STYLE["megumi"]["rest"]
+              and cards_state["says"] == "" and cards_state["speaker"] == "",
+              "D: a split says so, nobody speaks a winner's line, and Megumi's face stays at rest", (cards_state["line"], cards_state["face"]))
         check(cards_state["result"] == "split" and _zz_sh["pot"] == 600 and _zz_sh["paid"] == {"me": 300, "megumi": 300}
               and cards_state["last"] == 0 and yen == 5000,
               "D: equal hands split the pot", (_zz_sh, cards_state["result"], yen))
@@ -968,7 +1005,7 @@ label zz_smoke:
         check(_zz_ok and toast_visible() == [] and len(TOASTQ.items) == 1 and TOASTQ.items[0]["t_shown"] is None,
               "H: zz_worst('cards_table'): no toast is drawn, and a queued one waits", (toast_visible(), len(TOASTQ.items)))
         toast_clear()
-        _zz_tips = [(i, renpy.get_widget("cards_table", i)._get_tooltip())
+        _zz_tips = [(i, zz_c_btn("cards_table", i)._get_tooltip())
                     for i in ["cards_game_blackjack", "cards_game_poker", "cards_leave"] + ["cards_stake_%d" % s for s in CARDS_STAKES]]
         check(all(t is None for i, t in _zz_tips),
               "H: the table's buttons carry their names in words and no hover label (it would cover the button beside it)", _zz_tips)
@@ -994,6 +1031,14 @@ label zz_smoke:
         zz_c.cards[:] = zz_cd("9S 2H KD 7C")
         cards_bj_deal()
         renpy.show_screen("cards_blackjack")
+        zz_render(0.05)
+        _zz_g0 = [type(zz_c_btn("cards_blackjack", i).action).__name__ for i in ("cards_hit", "cards_stand", "cards_double", "cards_leave")]
+        zz_render(0.6)
+        _zz_g1 = [zz_c_btn("cards_blackjack", i).action for i in ("cards_hit", "cards_stand", "cards_leave")]
+        check(_zz_g0 == ["NullAction"] * 4 and all(isinstance(a, Return) for a in _zz_g1) and _zz_g1[0].value == ("hit",)
+              and renpy.get_screen("cards_blackjack").scope["cards_guard"] is False,
+              "H: blackjack's buttons take no click for a moment after the screen opens (a double click on Deal isn't a Hit), then work",
+              (_zz_g0, _zz_g1))
         check(toast_room() == (0, 0, 0), "H: toast_room() is (0, 0, 0) over blackjack", toast_room())
         _zz_btn = [zz_rect("cards_blackjack", i) for i in ("cards_hit", "cards_stand", "cards_double", "cards_leave")]
         check(all(r is not None and abs(r[1] - 840) <= 2 and 760 <= r[0] and r[0] + r[2] <= 1840 for r in _zz_btn),
@@ -1004,7 +1049,7 @@ label zz_smoke:
         check(_zz_ok and toast_visible() == [] and len(TOASTQ.items) == 1,
               "H: zz_worst('cards_blackjack'): no toast is drawn", (toast_visible(), len(TOASTQ.items)))
         toast_clear()
-        _zz_tips = [(i, renpy.get_widget("cards_blackjack", i)._get_tooltip()) for i in ("cards_hit", "cards_stand", "cards_double", "cards_leave")]
+        _zz_tips = [(i, zz_c_btn("cards_blackjack", i)._get_tooltip()) for i in ("cards_hit", "cards_stand", "cards_double", "cards_leave")]
         check(all(t is None for i, t in _zz_tips), "H: blackjack's buttons carry no hover label", _zz_tips)
         check(any("Give up the hand" in t for t in zz_texts("cards_blackjack")),
               "H: mid-hand the way out says what it costs: 'Give up the hand'", zz_texts("cards_blackjack"))
@@ -1019,7 +1064,7 @@ label zz_smoke:
         zz_render(0.2)
         check(zz_rect("cards_blackjack", "cards_deal") is not None and zz_rect("cards_blackjack", "cards_hit") is None,
               "H: once a hand is settled the buttons are Deal and Leave")
-        check(renpy.get_widget("cards_blackjack", "cards_deal")._get_tooltip() is None
+        check(zz_c_btn("cards_blackjack", "cards_deal")._get_tooltip() is None
               and not any("Give up the hand" in t for t in zz_texts("cards_blackjack")) and any(t == "Leave" for t in zz_texts("cards_blackjack")),
               "H: Deal has no hover label, and the way out reads 'Leave' again", zz_texts("cards_blackjack"))
         check(any(CARDS_STYLE["nobara"]["lose"] in t for t in zz_texts("cards_blackjack")) and cards_face_of("nobara") == CARDS_STYLE["nobara"]["sore"],
@@ -1052,6 +1097,13 @@ label zz_smoke:
         zz_c.cards[:] = zz_cd("AS AH 7D 4C 2S")
         cards_pk_deal()
         renpy.show_screen("cards_poker")
+        zz_render(0.05)
+        _zz_g0 = [type(zz_c_btn("cards_poker", i).action).__name__ for i in ("cards_check", "cards_bet", "cards_fold", "cards_leave")]
+        zz_render(0.6)
+        _zz_g1 = [zz_c_btn("cards_poker", i).action for i in ("cards_check", "cards_bet", "cards_fold", "cards_leave")]
+        check(_zz_g0 == ["NullAction"] * 4 and all(isinstance(a, Return) for a in _zz_g1) and _zz_g1[1].value == ("bet",),
+              "H: poker's buttons take no click for a moment after the screen opens (a double click on Deal isn't a Bet), then work",
+              (_zz_g0, _zz_g1))
         check(toast_room() == (0, 0, 0), "H: toast_room() is (0, 0, 0) over poker", toast_room())
         _zz_ok = zz_worst("cards_poker", hover="cards_check")
         toast("A reward", "item")
@@ -1061,11 +1113,19 @@ label zz_smoke:
         toast_clear()
         _zz_btn = [zz_rect("cards_poker", i) for i in ("cards_check", "cards_bet", "cards_fold", "cards_leave")]
         check(all(r is not None and 838 <= r[1] <= 852 for r in _zz_btn), "H: Check, Bet, Fold and Leave sit at y 840 to 850", _zz_btn)
-        _zz_tips = [(i, renpy.get_widget("cards_poker", i)._get_tooltip()) for i in ("cards_check", "cards_bet", "cards_fold", "cards_leave")]
+        _zz_tips = [(i, zz_c_btn("cards_poker", i)._get_tooltip()) for i in ("cards_check", "cards_bet", "cards_fold", "cards_leave")]
         check(all(t is None for i, t in _zz_tips) and any("Fold and leave" in t for t in zz_texts("cards_poker")),
               "H: poker's buttons carry no hover label, and mid-hand the way out reads 'Fold and leave'", _zz_tips)
-        check(renpy.get_widget("cards_poker", "cards_look")._get_tooltip() is not None,
-              "H: the icon-only look button keeps its hover label", renpy.get_widget("cards_poker", "cards_look")._get_tooltip())
+        check(zz_c_btn("cards_poker", "cards_look")._get_tooltip() is not None,
+              "H: the icon-only look button keeps its hover label", zz_c_btn("cards_poker", "cards_look")._get_tooltip())
+        renpy.get_screen("cards_poker").scope["cards_picking"] = True
+        zz_render(0.2)
+        _zz_rd = [(w, zz_c_btn("cards_poker", "cards_read_" + w)) for w in cards_state["opponents"]]
+        check(len(_zz_rd) == 3 and all(b is not None and b._get_tooltip() is None and isinstance(b.action, Return) for w, b in _zz_rd),
+              "H: the Read buttons under each opponent carry no hover label",
+              [(w, b and b._get_tooltip()) for w, b in _zz_rd])
+        renpy.get_screen("cards_poker").scope["cards_picking"] = False
+        zz_render(0.2)
         zz_worst("cards_poker", hover="cards_fold", name="cards_poker_hover_fold")
         check(GetTooltip() is None, "H: hovering Fold draws no label over Bet", GetTooltip())
         check(all(zz_rect("cards_poker", "cards_my_%d" % i) is None for i in range(5)),
@@ -1086,8 +1146,8 @@ label zz_smoke:
             check(cards_marked() == (2, 3, 4) and zz_rect("cards_poker", "cards_my_2")[1] == 536,
                   "H: a marked card lifts, and three is the most", cards_marked())
             shot("cards_poker_draw")
-            _zz_tips = [renpy.get_widget("cards_poker", "cards_my_%d" % i)._get_tooltip() for i in range(5)]
-            check(renpy.get_widget("cards_poker", "cards_draw")._get_tooltip() is None, "H: the Draw button carries no hover label")
+            _zz_tips = [zz_c_btn("cards_poker", "cards_my_%d" % i)._get_tooltip() for i in range(5)]
+            check(zz_c_btn("cards_poker", "cards_draw")._get_tooltip() is None, "H: the Draw button carries no hover label")
             check(_zz_tips == [None] * 5,
                   "H: my cards carry no hover label in the draw (it would cover the rank of the card beside it)", _zz_tips)
             zz_worst("cards_poker", hover="cards_my_4", name="cards_poker_hover_card")
@@ -1107,7 +1167,7 @@ label zz_smoke:
             zz_render(0.2)
             check(cards_state["stage"] == "done" and zz_rect("cards_poker", "cards_deal") is not None,
                   "H: after the showdown the buttons are Deal and Leave", cards_state["stage"])
-            check(renpy.get_widget("cards_poker", "cards_deal")._get_tooltip() is None and any(t == "Leave" for t in zz_texts("cards_poker")),
+            check(zz_c_btn("cards_poker", "cards_deal")._get_tooltip() is None and any(t == "Leave" for t in zz_texts("cards_poker")),
                   "H: Deal has no hover label, and the way out reads 'Leave' again")
             if cards_state["result"] == "win":
                 check(cards_result_line().startswith("Mine.  +"), "H: the result line leaves the pot to the line above it", cards_result_line())
