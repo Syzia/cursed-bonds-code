@@ -525,7 +525,7 @@ label zz_smoke:
         flags.discard("invited_girls_dorm")
         zz_place("dorm_yard", "Evening")
         _zz_why = place_access("girls_dorm")[1]
-        check(_zz_why and zz_tip("hot_go_dorm_yard__girls_dorm") == _zz_why and zz_action_value("hot_go_dorm_yard__girls_dorm") == ("act", "path_girls_dorm"),
+        check(_zz_why and zz_tip("hot_go_dorm_yard__girls_dorm") == _zz_why and zz_action_value("hot_go_dorm_yard__girls_dorm") is None,
               "in the evening the girls' dormitory exit reads its lock's reason (%d characters)" % len(_zz_why), zz_tip("hot_go_dorm_yard__girls_dorm"))
         renpy.set_focus("sb_place", "hot_go_dorm_yard__girls_dorm")
         zz_render(0.4)

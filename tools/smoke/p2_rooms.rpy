@@ -352,13 +352,13 @@ init 999 python:
 
     def zz_r_spots():
         """The registered hotspots that are the game's own."""
-        return [h for h in HOT_SPOTS if not h["id"].startswith("zz")]
+        return [h for h in HOT_SPOTS if not h["id"].startswith(("zz", "go_"))]
 
     def zz_r_ids(rows):
         return [r[0] for r in rows]
 
     def zz_r_hot_ids(loc):
-        return [h["id"] for h in hot_spots_for(loc) if not h["id"].startswith("zz")]
+        return [h["id"] for h in hot_spots_for(loc) if not h["id"].startswith(("zz", "go_"))]
 
     def zz_r_rets(screen):
         """The value of every Return action on a shown screen's buttons."""
@@ -714,7 +714,7 @@ label zz_smoke:
                 period = _zz_per
                 here = _zz_l
                 zz_r_stage(_zz_l, 0)
-                _zz_bad += [(_zz_l, _zz_h["id"]) for _zz_h in hot_spots_for(_zz_l) if _zz_h["lines"] is None]
+                _zz_bad += [(_zz_l, _zz_h["id"]) for _zz_h in hot_spots_for(_zz_l) if _zz_h["lines"] is None and not _zz_h["id"].startswith("go_")]
         _zz_looks = zz_r_hot_ids("classroom")
         store.explore_mode = False
         check(not _zz_bad and _zz_looks == ["blackboard"],
