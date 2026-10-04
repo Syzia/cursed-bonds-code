@@ -59,16 +59,41 @@ init python:
     HUD_BANNER_X = 400
     HUD_BANNER_W = 900
 
+    ## The text column of a toast (screen toasts), and what toast_wraps()
+    ## has measured: text -> bool. Never saved; emptied when it grows.
+    TOAST_TEXT_W = 378
+    TOAST_WRAPS = {}
+
+    def toast_wraps(text):
+        """P8 (ui_hud.rpy). bool: a toast's text runs to a second line (it
+        is wider than the toast's text column, or holds a line break)."""
+        text = builtins.str(text)
+        got = TOAST_WRAPS.get(text)
+        if got is None:
+            if len(TOAST_WRAPS) > 200:
+                TOAST_WRAPS.clear()
+            try:
+                w = Text(text, substitute=False, font=gui.body_medium_font, size=20).size()[0]
+                got = ("\n" in text) or w > TOAST_TEXT_W
+            except Exception:
+                got = len(text) > 36
+            TOAST_WRAPS[text] = got
+        return got
+
     def toast_room():
         """P2 (ui_hud.rpy). (xpos, ypos, limit) as ints: where the toast
         stack's top right corner sits and how many toasts show at once.
         (0, 0, 0): they wait, with their clocks stopped (4.2, R6).
 
         The grade card is tested first, by name (it has no tag). Then the
-        prologue's blackout and the game menu's own context. Then: a scene
+        prologue's blackout and the game menu's own context. Then a choice
+        menu: they wait while it is up (the stack would lie over the right
+        end of the choices) and show once I have picked. Then: a scene
         (no `sandbox` or `menu` screen up; the review panel has no tag and
         lands here on purpose) shows four at the top right; the place view
-        shows four left of the icon column; the person view two beside
+        shows four left of the icon column, or three while one of them
+        runs to a second line (four of those would leave the lane, onto
+        the right-hand person's hair); the person view two beside
         Menu; a fight four at the top right. Every other `sandbox` or
         `menu` screen makes them wait."""
         if renpy.get_screen("grade_card"):
@@ -79,11 +104,15 @@ init python:
             return (0, 0, 0)
         if renpy.get_screen("menu"):
             return (0, 0, 0)
+        if renpy.get_screen("choice"):
+            return (0, 0, 0)
         sc = renpy.get_screen("sandbox")
         if sc is None:
             return (1880, 92, TOAST_VISIBLE)
         name = sc.screen_name[0]
         if name == "sb_place":
+            if any(toast_wraps(t["text"]) for t in TOASTQ.items[:TOAST_VISIBLE]):
+                return (TOAST_LANE[2], TOAST_LANE[1], TOAST_VISIBLE - 1)
             return (TOAST_LANE[2], TOAST_LANE[1], TOAST_VISIBLE)
         if name == "sb_char":
             return (1722, 26, TOAST_VISIBLE_PERSON)
@@ -511,7 +540,7 @@ screen toasts():
                             color gui.paper
                             size 20
                             yalign 0.5
-                            xmaximum 378
+                            xmaximum TOAST_TEXT_W
 
 
 ## Objective toast (4.3) #########################################################

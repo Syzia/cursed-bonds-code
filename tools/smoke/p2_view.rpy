@@ -78,6 +78,23 @@ init 999 python:
             pin(w, loc)
         mission_cache_clear()
 
+    def zzv_label():
+        """(x, y, w, h) of the hover label as it was last drawn, or None when
+        no label is up."""
+        sc = renpy.get_screen("hover_label")
+        out = []
+
+        def each(d):
+            if isinstance(d, renpy.display.layout.NearRect) and d.child is not None:
+                size = getattr(d.child, "window_size", None)
+                offs = getattr(d, "offsets", None)
+                if size and offs:
+                    out.append((int(offs[0][0]), int(offs[0][1]), int(size[0]), int(size[1])))
+
+        if sc is not None:
+            sc.visit_all(each)
+        return out[0] if out else None
+
     def zzv_quiet():
         """Nothing that moves by the clock: the caption faded, the objective
         read, no toast."""
@@ -451,9 +468,22 @@ label zz_smoke:
                 zzv_put(_zz_loc, ZZV_FOLK[:_zz_n], "Noon")
                 _zz_on = stage_people(_zz_loc)[0]
                 _zz_xs = [stage_x(w, _zz_loc) for w in _zz_on]
-                if len(_zz_on) != _zz_n or _zz_xs != [s[0] for s in view_slots(_zz_loc, _zz_n)]:
+                _zz_rows = view_stage_rows(_zz_loc)
+                if len(_zz_on) != _zz_n or _zz_xs != [r["x"] for r in _zz_rows]:
                     _zz_bad.append((_zz_loc, _zz_n, _zz_xs))
-        check(not _zz_bad and stage_x("sana", "dorm_common") == 700, "stage_x agrees with view_slots (and is 700 off the stage)", _zz_bad)
+                elif not any(r["pose"] for r in _zz_rows) and _zz_xs != [s[0] for s in view_slots(_zz_loc, _zz_n)]:
+                    _zz_bad.append((_zz_loc, _zz_n, _zz_xs, "slots"))
+        check(not _zz_bad and stage_x("sana", "dorm_common") == 700,
+              "stage_x is each row's own x: view_slots while nobody is a painted pose (and 700 off the stage)", _zz_bad)
+        ## P8: someone painted into the room answers with the pose's centre.
+        zzv_put("dorm_common", ["yuji", "megumi", "nobara", "panda"], "Evening")
+        _zz_rows = view_stage_rows("dorm_common")
+        _zz_posed = [r for r in _zz_rows if r["pose"]]
+        check(all(stage_x(r["who"], "dorm_common") == r["x"] for r in _zz_rows)
+              and all(stage_x(r["who"], "dorm_common") == int(r["rect"][0] + r["rect"][2] / 2) for r in _zz_posed),
+              "stage_x with a painted pose on stage (%d posed): the pose's centre, and every row's own x" % len(_zz_posed),
+              [(r["who"], r["x"], stage_x(r["who"], "dorm_common")) for r in _zz_rows])
+        del _zz_rows, _zz_posed
         check(set(VIEW_SLOTS) == {"dorm_common", "cafeteria", "classroom", "courtyard", "training", "infirmary",
                                   "library", "utahime_office"} and view_validate() == [],
               "VIEW_SLOTS has rows for the eight rooms, and they validate", (sorted(VIEW_SLOTS), view_validate()))
@@ -980,6 +1010,27 @@ label zz_smoke:
     scene expression graded_bg()
     python:
         check(zz_worst("sb_place", hover="tag_megumi"), "zz_worst screenshot: sb_place, four people, a name tag hovered")
+        ## P8: with four people a tag's label opens above the tag, a person's
+        ## above their head: neither covers another tag.
+        zzv_quiet()
+        _zz_on = stage_people(here)[0]
+        _zz_tr = dict((w, zz_rect("sb_place", "tag_" + w)) for w in _zz_on)
+        _zz_bad = []
+        for _zz_w in _zz_on:
+            for _zz_p in ("tag_", "stage_"):
+                renpy.set_focus("sb_place", _zz_p + _zz_w)
+                zz_render(0.4)
+                _zz_lab = zzv_label()
+                if (_zz_lab is None or _zz_lab[0] < 0 or _zz_lab[1] < 0 or _zz_lab[0] + _zz_lab[2] > 1920 or _zz_lab[1] + _zz_lab[3] > 1080
+                        or any(r is None or hot_overlap(_zz_lab, r) for k, r in _zz_tr.items() if k != _zz_w)
+                        or (_zz_p == "tag_" and hot_overlap(_zz_lab, _zz_tr[_zz_w]))):
+                    _zz_bad.append((_zz_p + _zz_w, _zz_lab))
+                if (_zz_p, _zz_w) == ("tag_", _zz_on[1]):
+                    shot("hover_tag_four", wait=0)
+        check(len(_zz_on) == 4 and not _zz_bad and icon_tip_side(("x", "tag_megumi")) == "top" and icon_tip_side(("x", "stage_megumi")) == "top",
+              "four people: no name tag's or person's hover label meets another person's tag (hover check: needs the pointer)",
+              (_zz_bad, _zz_tr))
+        del _zz_tr
         renpy.hide_screen("sb_place")
 
     ## --- 11. idle to talking -------------------------------------------------------------------

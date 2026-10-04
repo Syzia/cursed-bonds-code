@@ -172,6 +172,23 @@ init 999 python:
         x, y, _n = toast_room()
         return (x - 460, y, 460, sum(hs) + 8 * (len(hs) - 1))
 
+    def zz_hud_label():
+        """(x, y, w, h) of the hover label as it was last drawn, or None when
+        no label is up."""
+        sc = renpy.get_screen("hover_label")
+        out = []
+
+        def each(d):
+            if isinstance(d, renpy.display.layout.NearRect) and d.child is not None:
+                size = getattr(d.child, "window_size", None)
+                offs = getattr(d, "offsets", None)
+                if size and offs:
+                    out.append((int(offs[0][0]), int(offs[0][1]), int(size[0]), int(size[1])))
+
+        if sc is not None:
+            sc.visit_all(each)
+        return out[0] if out else None
+
     def zz_hud_banner():
         """(alpha, yoffset) of the objective banner's slide as drawn now, or
         None when the screen is not up."""
@@ -270,6 +287,9 @@ init 999 python:
             return None
         ZZ_HUD_SEEN.append((want, toast_room(), len(zz_text_nodes("toasts"))))
         ZZ_HUD_WANT[0] = None
+        if want == "choice":
+            ZZ_HUD_SEEN.append([t["t_shown"] for t in TOASTQ.items])
+            shot("choice_toasts_wait", wait=0)
         return ("probe",)
 
     def zz_hud_menu_cb():
@@ -459,6 +479,28 @@ label zz_smoke:
         check(not any("running on empty" in s for s in zz_texts("sb_place")),
               "the running-on-empty line is no longer above the actions")
         shot("hud_chips", wait=0.2)
+        ## P8: a corner button's or a chip's hover label opens under it, so it
+        ## covers neither the next button, the next chip nor the date.
+        _zz_ids = ("hud_map", "hud_journal", "hud_menu", "hud_chip_moon", "hud_chip_stamina", "hud_chip_skip")
+        _zz_rs = dict((w, zz_rect("sb_place", w)) for w in _zz_ids)
+        _zz_bad = []
+        if _zz_dsize is not None and all(_zz_rs.values()):
+            _zz_rs["hud_date"] = (40, 26, int(_zz_dsize[0]), int(_zz_dsize[1]))
+            for _zz_w in _zz_ids:
+                renpy.set_focus("sb_place", _zz_w)
+                zz_render(0.4)
+                _zz_lab = zz_hud_label()
+                if (_zz_lab is None or _zz_lab[0] < 0 or _zz_lab[0] + _zz_lab[2] > 1920
+                        or any(zz_hud_meets(_zz_lab, r) for k, r in _zz_rs.items())):
+                    _zz_bad.append((_zz_w, _zz_lab))
+                if _zz_w in ("hud_journal", "hud_chip_moon"):
+                    shot("hover_" + _zz_w, wait=0)
+        check(icon_tip_side(("Journal (J)", "hud_journal")) == "bottom" and icon_tip_side(("Rough morning", "hud_chip_moon")) == "bottom"
+              and icon_tip_side(("Wait", "rail_wait")) == "left" and icon_tip_side("plain") == "left" and icon_tip_side(None) == "left",
+              "icon_tip_side: the corner buttons and the chips open their labels underneath; a column tile on the left")
+        check(all(_zz_rs.values()) and not _zz_bad,
+              "hovered, no corner button's or status chip's label meets a neighbouring button, a chip or the date "
+              "(hover check: needs the pointer)", _zz_bad)
         zz_hud_swap("night_can_work", _zz_o_work)
         zz_hud_swap("night_tag", lambda: "Rough morning")
         check(hud_chips()[0][:2] == ("moon", "Rough morning"), "a rough morning's chip says only that", hud_chips())
@@ -602,6 +644,27 @@ label zz_smoke:
               "a tile's hover label is its name, then its hint and cost", _zz_tip)
         shot("place_dorm_companion", wait=0.2)
         companion = None
+
+        ## P8: "Train until morning" takes the rest of the night, not a
+        ## period: no "1 period" in its label, no diamond, and a gold icon.
+        period = PERIODS[-1]
+        here = NIGHT_GOJO["place"]
+        night_gojo_invite()
+        mission_cache_clear()
+        zz_hud_quiet()
+        zz_render(0.2)
+        _zz_rows = dict((r[5], r) for r in rail_rows(here))
+        _zz_g = _zz_rows.get("rail_night_gojo")
+        check(_zz_g is not None and _zz_g[3].startswith("Train until morning\n") and "period" not in _zz_g[3]
+              and _zz_g[4] == 0 and _zz_g[2] is True and zz_hud_tip(zz_hud_wid("sb_place", "rail_night_gojo")) == (_zz_g[3], "rail_night_gojo"),
+              "at Night the Gojo tile's hover label names no period and the tile has no cost diamond; it is gold", _zz_g)
+        _zz_plain, _zz_gold = icon("night_gojo", 50), icon("night_gojo", 50, True)
+        check(icon_has_art("night_gojo") and getattr(_zz_plain, "matrixcolor", None) is None
+              and getattr(_zz_gold, "matrixcolor", None) is not None and _zz_gold.matrixcolor != _zz_plain.matrixcolor,
+              "icon(name, size, True) with its picture installed is tinted gold; the plain one is not",
+              (getattr(_zz_plain, "matrixcolor", None), getattr(_zz_gold, "matrixcolor", None)))
+        del _zz_plain, _zz_gold, _zz_rows
+        shot("place_ridge_night", wait=0.2)
         renpy.hide_screen("sb_place")
 
     ## place_actions against the baseline.
@@ -654,7 +717,9 @@ label zz_smoke:
             toast("Lane test %d: a reward line long enough to wrap onto a second line" % (_zz_i + 1),
                   ("grade", "stat", "item", "info")[_zz_i])
         zz_render(0.5)
-        check(len(toast_visible()) == 4 and toast_room() == (1790, 92, 4), "four toasts are up over the place view",
+        check(len(TOASTQ.items) == 4 and all(toast_wraps(t["text"]) for t in TOASTQ.items)
+              and len(toast_visible()) == 3 and toast_room() == (1790, 92, 3) and TOASTQ.items[3]["t_shown"] is None,
+              "four two-line toasts queued over the place view: three show and the fourth waits (P8)",
               (len(toast_visible()), toast_room()))
         _zz_r = [zz_rect("sb_place", r[5]) for r in _zz_rows]
         _zz_lane = (TOAST_LANE[0], TOAST_LANE[1], TOAST_LANE[2] - TOAST_LANE[0], TOAST_LANE[3] - TOAST_LANE[1])
@@ -663,8 +728,8 @@ label zz_smoke:
         _zz_drawn = zz_hud_toasts()
         check(_zz_drawn is not None and _zz_drawn[:3] == (1330, 92, 460)
               and not any(zz_hud_meets(r, _zz_drawn) for r in _zz_r)
-              and _zz_drawn[1] + _zz_drawn[3] <= RAIL_TOP_INNER,
-              "no tile meets the four toasts as drawn (they end above the second column's top line, y 430)", _zz_drawn)
+              and _zz_drawn[3] > 3 * 56 + 16 and _zz_drawn[1] + _zz_drawn[3] <= TOAST_LANE[3],
+              "the three two-line toasts as drawn end inside the lane (above y 350), and no tile meets them", _zz_drawn)
         _zz_xs = sorted(set(r[0] for r in _zz_r))
         check(_zz_xs == [1726, 1808] and sum(1 for r in _zz_r if r[0] == 1808) == 8
               and max(r[1] + r[3] for r in _zz_r) == 1040 and all(r[1] >= RAIL_TOP_INNER for r in _zz_r if r[0] == 1726),
@@ -675,6 +740,15 @@ label zz_smoke:
         check(max(r[0] + r[2] for w, r in zz_hud_buttons("sb_place") if getattr(getattr(w, "action", None), "value", ("",))[0] == "char") <= 1700,
               "the stage keeps x 40 to 1700, left of both columns")
         shot("place_nine_actions", wait=0.2)
+        toast_clear()
+        ## Four one-line toasts still show four at once, inside the lane.
+        for _zz_i in range(4):
+            toast("Short notice %d" % (_zz_i + 1), ("grade", "stat", "item", "info")[_zz_i])
+        zz_render(0.5)
+        _zz_drawn = zz_hud_toasts()
+        check(not any(toast_wraps(t["text"]) for t in TOASTQ.items) and len(toast_visible()) == 4 and toast_room() == (1790, 92, 4)
+              and _zz_drawn is not None and _zz_drawn[1] + _zz_drawn[3] <= TOAST_LANE[3],
+              "four one-line toasts over the place view: all four show, inside the lane", (toast_room(), _zz_drawn))
         toast_clear()
 
         ## The same nine with every icon's picture missing: the words show,
@@ -887,6 +961,23 @@ label zz_smoke:
     python:
         zz_render(0.2)
         check(toast_room() == (1880, 92, 4) and toast_limit() == 4, "a scene: (1880, 92, 4)", toast_room())
+        ## P8: a choice menu in a scene. The stack (x 1420 to 1880) would lie
+        ## over the right end of the choices (x 460 to 1460): toasts wait.
+        toast("Up before the choice", "item")
+        toast("And a second one: a reward line long enough to wrap onto a second line", "stat")
+        zz_render(0.4)
+        check(len(toast_visible()) == 2 and all(t["t_shown"] is not None for t in TOASTQ.items),
+              "fixture: two toasts are up in the scene before the menu")
+        del ZZ_HUD_SEEN[:]
+        ZZ_HUD_WANT[0] = "choice"
+        _zz_pick = renpy.display_menu([("The first choice, long enough to say something", 1), ("The second choice", 2)])
+        check(_zz_pick == ("probe",) and len(ZZ_HUD_SEEN) == 2 and ZZ_HUD_SEEN[0][1] == (0, 0, 0) and ZZ_HUD_SEEN[0][2] == 0
+              and ZZ_HUD_SEEN[1] == [None, None],
+              "a scene with a menu up: (0, 0, 0), no toast drawn over the choices, their clocks stopped", (_zz_pick, ZZ_HUD_SEEN))
+        zz_render(0.4)
+        check(toast_room() == (1880, 92, 4) and len(toast_visible()) == 2 and all(time.time() - t["t_shown"] < 1.5 for t in TOASTQ.items),
+              "once I have picked, both toasts show with a full turn", (toast_room(), TOASTQ.items))
+        toast_clear()
         _zz_bad = []
         ## Drawn: the toasts screen must stay empty over each of these.
         for _zz_s, _zz_args in (("journal", ()), ("sb_map", ()), ("board_screen", ()), ("armory", ()), ("icon_sample", ())):

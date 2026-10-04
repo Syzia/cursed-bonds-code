@@ -27,6 +27,10 @@ label sandbox:
         $ _story = None if explore_mode else pick_event("story", loc=here)
         if _story:
             call play_event(_story)
+            ## Phase 2 (P8): a beat that turned the day leaves me where it
+            ## ended; walk home now, not one action late.
+            if night_pending():
+                call night_carry_home
 
         $ view_sync_light()
         $ check_objective()

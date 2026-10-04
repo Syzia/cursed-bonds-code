@@ -47,6 +47,13 @@ init python:
         ("yaga", "office"):         ("sewing a cursed doll", "serious"),
         ("ijichi", "gate"):         ("on the phone beside the car", "neutral"),
 
+        ## The five yards between the buildings (D57).
+        ("nobara", "training_yard"): ("on her way to the training hall", "neutral"),
+        ("toge", "school_yard"):    ("on the steps, onigiri in hand", "happy"),
+        ("megumi", "trailhead"):    ("with a Divine Dog, heading up", "neutral"),
+        ("shoko", "staff_yard"):    ("on the steps with coffee", "neutral"),
+        ("yuji", "dorm_yard"):      ("by the pond, counting stars out loud", "happy"),
+
         ## Each person's fallback, anywhere else.
         ("yuji", None):             ("killing time, loudly", "happy"),
         ("megumi", None):           ("hands in his pockets", "neutral"),
@@ -175,11 +182,10 @@ init python:
     def stage_x(who, loc=None):
         """WP7. The x centre someone stands at in the place view (700 if
         they are not on the stage)."""
-        on, _extra = stage_people(loc)
-        if who in on:
-            ## Phase 2: the slots are view_stage.rpy's (view_slots).
-            return view_slots(loc or store.here, len(on))[on.index(who)][0]
-        return 700
+        ## Phase 2: the row's own x (view_stage.rpy), so someone painted
+        ## into the room answers with their pose's centre, not a slot's.
+        row = [r for r in view_stage_rows(loc or store.here) if r["who"] == who]
+        return row[0]["x"] if row else 700
 
     ## Missions, as the screens draw them --------------------------------------------
 
@@ -321,7 +327,10 @@ init python:
         for mid, title, hint in rail_missions(loc):
             out.append((("mission", mid), "mission", True, rail_tip(title, hint), 0, wid("rail_m_%s" % mid)))
         for aid, label, hint, cost, name, gold in rail_actions(loc):
-            out.append((("act", aid), name, gold, rail_tip(label, hint, cost), cost, wid("rail_%s" % aid)))
+            ## At Night one of the night's own actions takes what is left of
+            ## the night, not a period: no diamond and no "1 period".
+            shown = 0 if (aid in NIGHT_OK and night_on() and night_is_night()) else cost
+            out.append((("act", aid), name, gold, rail_tip(label, hint, shown), shown, wid("rail_%s" % aid)))
         return out
 
     def rail_word(row):
