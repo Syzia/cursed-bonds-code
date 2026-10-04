@@ -153,7 +153,7 @@ init python:
     }
 
     ## Where a hidden exit's tile stands in the icon column.
-    PATH_ACTION_ORDER = 40      # among the registered place actions: first (the default is 50)
+    PATH_ACTION_ORDER = 5       # first among the registered place actions (the default is 50)
 
     def path_hub(area_key):
         """P9 (room_paths.rpy), frozen for P8. The place key of an area's hub
