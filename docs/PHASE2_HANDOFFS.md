@@ -460,3 +460,285 @@ The change is in /Users/hunterjolly/Desktop/JJK_worktrees/p2_3/game/ui_journal.r
 - **P2, game/sb_screens.rpy:282-289, rail_tip():** The Gojo night's hover label reads 'More than a day's worth. Tomorrow I'm no use to anyone. · 1 period' (walkh_new_c/i06_hover_train_until_morning.png). It takes the rest of the night and the next day's work, so '1 period' is wrong beside 'Go to bed … The day ends.', which shows no cost. *Fix:* In rail_tip, do not append the period cost at Night (`if cost and store.period != PERIODS[-1]:`), or have rail_rows pass cost 0 for actions in NIGHT_OK.
 - **P2, game/ui_hud.rpy:83-84, toast_room() in a scene:** In a scene the toast stack sits at x 1880 and is about 460 wide, so its left 40 px lie over the right end of the choice buttons (1000 wide, centred). Seen with the review tools' toasts still up at the night out's menu (walk_new_c/j04_night_menu.png). No text is hidden. It may be phase 1's layout carried over; I did not compare. *Fix:* In toast_room(), when renpy.get_screen("choice") is up return (0, 0, 0) so toasts wait, or narrow the scene lane so the stack starts right of x 1460.
 - **P3, game/ui_journal.rpy, jr_person_detail: the 'Usually' hover label on the Right now panel:** The label is drawn to the left of the panel and its right edge lies about 20 px over the panel's border and the first letter of 'RIGHT NOW' (walkh_save_a/d04_person_page_hover_now.png). *Fix:* Give that tooltip's label a small gap from the panel (shift it 24 px left), or show it below the panel's first line.
+
+---
+
+# Hand-offs from wave 2
+
+*Written 5 Oct 2026 from the wave 2 reports (P5, P6, P7, P9), their review rounds, the two trial merges and the integration edits. P8 reads this before it starts. Wave 2 was merged into phase2 at 50998ce.*
+
+## P5
+
+**Hand-offs**
+- Owner at checkpoint C: the classroom. It has no foreground; on the sheet (shots/layout/view_classroom.png) the front-aisle people stand over the nearest desks and chairs. Either keep it, or restore a person behind a desk: a polygon covering the whole desk with legs and chair in tools/fg/classroom.json, then tools/make_fg.py, a far slot in VIEW_SLOTS['classroom'] and "classroom" in VIEW_FG_ROOMS (game/view_stage.rpy).
+- Owner at checkpoint C: VIEW_FG_TALK. In dialogue the foreground stays over the person only in the cafeteria. For the plan's behaviour in every foreground room, set VIEW_FG_TALK = ("cafeteria", "dorm_common", "utahime_office") in game/view_stage.rpy.
+- P8 (frozen ui_icons.rpy): the hover label opens to the left of the button and can cover the neighbouring tag's NEW chip or the next person's head. Let a tooltip tuple carry a side as a third item, e.g. (text, key, 'above'), and open the label above the button when it is given. P5's three tooltips in game/view_stage.rpy (the sprite button, the pose button and the tag in view_tags) then pass 'above'.
+- P8 / orchestrator (after batch 3's poses): if two standing people overlap beside a pose, raise the spacing test in view_pick_slots' mixed-layout pass (game/view_stage.rpy, about line 335) from 170 to 0.6 * 760 * max(pool[i][2], pool[j][2]), or give that room a sidecar slots row. Re-check the common room with four people afterwards: wider spacing may leave no clear set there.
+- P6 / P8 (hotspots under a foreground): the foreground picture is drawn after hot_layer(here), so a hotspot on a foreground object is covered unless registered front=True. The card table's start point (900, 800) in dorm_common has its top third under the coffee table's apron: register it front=True or move it to about (955, 850). Polygons in tools/fg/<place>.json: dorm_common (x 761 to 1150, y 698 to 908), cafeteria (near table from x 1160, y 881 down), utahime_office (x 156 to 779, y 557 to 968). The classroom has none.
+- P6 / P9 / P8 (points against the slots): the classroom's four-person rectangles are centred at x 250, 540, 820, 1100 (zoom 0.52); the blackboard spot (760, 360) is behind the third person when four are in. The TV look spot (1420, 520) is behind the third person in dorm_common. tools/layout_sheet.py hot_<place> draws them once p2_contracts has rewritten shots/layout/defaults.json.
+- P8 / owner (art rule): every new painted time variant of a foreground room (dorm_common, cafeteria, utahime_office) needs its fg_<loc>_<variant>.png. Until it exists the room falls back to plain default slots and draws no foreground.
+- P9 / P8: re-run the pose plan's schedule check (p2_view section 6) on the merged tree, since P9 moves schedule slots into the hubs. If a row fails, either the slot stays or the row moves in POSES (tools/make_pose_workflow.py).
+- P9: no BG_LIGHT row was requested for the five hubs, so none was added to lighting.rpy; they get the default outdoor light. The tag check walks LOCATIONS with four people in each room, so it covers the hubs after the merge.
+- P8 (frozen sb_screens.rpy): VIEW_INK = 0.10 and VIEW_INK_PERSON = 0.35 mirror `add Solid(gui.ink) alpha 0.10` in sb_place and `alpha 0.35` in sb_char. If either alpha changes, change the constant too.
+- P8 (frozen sb_screens.rpy, optional): stage_x(who, loc) reads view_slots by index, which differs from where a person stands when someone else is a painted pose. Exact version: `row = [r for r in view_stage_rows(loc or store.here) if r['who'] == who]; return row[0]['x'] if row else 700`.
+- P8 (frozen ui_hud.rpy): the tags' left limit, VIEW_TAG_EDGES[0] = 179, assumes the Review tools link ends at x 171. If that link moves or widens, change the constant.
+- P8 (p2_saves): save in dialogue after stage_person with the rollback log untrimmed (p2_view purges it first). A working pattern is the reviewer's harness at scratchpad p2_w2/P5/review_saves_r1/zzr_saves.rpy (run with SMOKE_ASSETS=tools/smoke/assets/p2_view): jump sandbox, drive sb_place and sb_char from an overlay timer, guard the start flag against the load's greedy rollback.
+- P8 (docs, PHASE2_DESIGN.md): in 4.5 and section 7 P5 record 'five foreground files (no classroom)'. Section 5 row 6 can stay as written. In 4.5 / 6.1 / 7 also record: the tags are in view_fg / view_tags; VIEW_FG_TALK; VIEW_FG_ROOMS and the default-slot fallback; the ink wash; view_pick_slots (mixed layouts, 170 px), view_pose_cost; view_tag_w, view_tag_est, view_tag_xs(rows, widths), VIEW_TAG_GAP, VIEW_TAG_EDGES, VIEW_TAG_W; VIEW_SPEAKING as [who, until]; the <who>_fx_in.png close-up and install_face.py's --prepare / --sheet; install_pose.py's --name, --bg, --root, --dry; and the names view_stage_rows, view_draw_order, view_sprite, view_pose_patch, view_fg_path, view_fg_image, view_room_matrix, view_tag_marks, view_face_layers, view_say_cb, view_validate, light_face_layers. tools/README.md needs the four new tools.
+- P8 (standing set): p2_view reports 117 PASS in about 75 s; wp7_ui 143; p2_hud 109. p2_view runs the system python3 for install_pose.py, and its pointer check needs the harness window to hold the pointer (re-run alone if it fails while another Ren'Py window is open).
+- P8 (frozen _lib.rpy, optional): zz_worst focuses only by id, which does not light a focus_mask sprite. To hover a sprite in the worst-case shot it would need a point option that calls renpy.display.focus.mouse_handler(None, x, y, default=False).
+- Orchestrator (layout sheets for checkpoint C): the sheets in the p2_5 worktree's shots/layout/ are current as of this round, but shots/ is gitignored, so regenerate in the merged tree: tools/smoke.sh tools/smoke/p2_contracts.rpy; then python3 tools/layout_sheet.py view_<room> for dorm_common, cafeteria, classroom, courtyard, training, infirmary, library and utahime_office; then python3 tools/install_face.py --sheet.
+- Orchestrator (art batch 3): python3 tools/make_pose_workflow.py --batch 3 writes the two pose workflows; python3 tools/install_face.py --prepare yuji, then python3 tools/make_edit_workflow.py yuji --only blink,talk writes yuji_fx.json. Install with tools/install_pose.py <render> and tools/install_face.py <render> yuji blink|talk.
+- Orchestrator: during the first build two input pictures were copied into ~/ComfyUI-Shared/input (pose_ref_nobara.png, pose_room_dorm_common_evening.png); they are the same files batch 3 will put there. Nothing else outside the worktree and the scratch folder was written in any round.
+- P8 / owner: a pose shows whenever its file exists for the hour, even when AMBIENT_STORY has changed the caption. If that matters, give view_pose a caption test or paint a second pose.
+
+**Where it departs from the plan**
+- Five foreground files ship, not the plan's six. The classroom's foreground was removed in round 1; everyone there stands in the front aisle (with three people the middle one is a slight step back, with nothing in front).
+- A foreground room (VIEW_FG_ROOMS: dorm_common, cafeteria, utahime_office) uses the plain default slots while its foreground picture for the hour is missing.
+- make_pose_workflow.py accepts both <place> <who> (the plan's order) and <who> <place>.
+- The name tags' right limit is the tag's right edge at x 1700; the second icon column starts at 1726.
+- The name tags are drawn by screen view_fg (through screen view_tags), not by view_stage, so they sit above the foreground picture.
+- In dialogue the foreground is shown over the sprite only in the cafeteria (VIEW_FG_TALK), not in every room with a foreground file as 4.5 says. For the owner at checkpoint C.
+- Foreground and pose pieces get the same ink wash the screens lay over the room (VIEW_INK 0.10, VIEW_INK_PERSON 0.35, mirroring sb_screens.rpy).
+- When someone is a painted pose, the people still standing take the slots that cover the pose box least: one layout's slots when a clear set exists, else slots from all the room's layouts, 170 px apart. stage_x in sb_screens.rpy still reads plain slots, so it can differ in that case.
+- Name tags are moved apart by their measured widths (8 px gap) and kept right of the Review tools link.
+- A companion never takes their pose.
+- The far slots in rooms with a foreground are stronger than the plan's default (zoom 0.43 and feet 190 px higher behind the coffee table). Rooms without a row keep the plan's default.
+- VIEW_BLINK_OK and VIEW_TALK_OK are ('neutral',) only.
+- The mouth moves for a time taken from the line's length (0.6 to 2.4 s), since text is shown at once; VIEW_SPEAKING is [who, until], not [None].
+- Blink and talk are edited from a new close-up cut from the game's own sprite (install_face.py --prepare writes <who>_fx_in.png); make_edit_workflow.py loads that file for --only blink,talk.
+- install_pose.py's 4 px blur is a 4x4 block average and its region is measured on those blocks; both tools are pure Python and take --root so the harness never writes into the repository.
+- The save test purges the rollback log at its start.
+- install_pose.py's test pictures are drawn when the harness runs rather than kept in the asset overlay.
+- The harness slot check is 'left of x 1700 and not off-screen'; a NOTE lists the defaults left of x 40 (dorm with four people, x 27).
+- No game/layout/view_*.json ships; install_pose.py creates the file when the first pose lands.
+- Round 2 made no commit, although the task named one ('Phase 2 P5: review fixes, round 2'): no finding needed a change to a tracked file.
+
+**Open**
+- The harnesses, the standing set and the save loads were not re-run in round 2; their results are round 1's, at the same commit.
+- The pose workflow and the blink/talk workflow have not been opened in ComfyUI; install_face.py's line-up was tried only on a simulated edit.
+- view_pick_slots was tested with the one test pose (Nobara on the sofa, three and four people). Its 170 px spacing lets two standing people touch shoulders; overlap with other rooms' poses is unknown until batch 3.
+- The hover label of a person or tag opens to the left (frozen ui_icons.rpy) and can cover the neighbouring tag or head while hovered.
+- Classroom: the front-aisle people stand over the nearest desks and chairs on the sheet; the owner has not ruled on five foreground files instead of six.
+- In the stand-in case (no foreground picture) a person on a default slot can stand in front of the coffee table with their legs over it.
+- The far slots and the three remaining polygons were placed by eye; in the cafeteria the fourth person's leg can touch the near table's corner.
+- VIEW_FACE boxes have not had a real blink or talk picture laid in them.
+- People a step back are large for the furniture they stand behind; a matter of taste.
+- A person shown by a later `show` in a cafeteria scene at pos_r stands behind the near table.
+- Shoko's planned pose is a day picture and the infirmary has a night picture, so at Night she is her standing sprite unless a night pose is painted.
+- The dorm with four people starts at x 27 (phase-1 default), left of the plan's x 40; one VIEW_SLOTS row or a sidecar fixes it if it matters.
+
+**Findings left unfixed, with reasons**
+- (not fixed) spec / five foreground files ship where plan 4.5 says six (the classroom's was removed in round 1) — No code change, as the finding asks. It is the owner's choice at checkpoint C on the classroom sheet (keep the front aisle, or restore a whole-desk polygon, a far slot and 'classroom' in VIEW_FG_ROOMS). The docs edit goes to P8. Both are in the hand-offs.
+- (not fixed) play / view_pick_slots' mixed-layout pass keeps only 170 px between centres, so two standing people can touch — No change, as the finding says. The only pose that exists reads acceptably, and widening the spacing now could leave the common room with no clear set for four people, which would put someone back over the sofa. The reviewer's one-line change (line 335: 170 becomes 0.6 * 760 * max of the two zooms) is in the hand-offs for when a batch-3 pose shows a real overlap.
+- (not fixed) play / the hover label opens to the left and can cover the neighbouring tag or head — Out of scope for P5: the label's side is set in the frozen ui_icons.rpy. Handed to P8 with the edit (a third tuple item 'above'); once that exists, P5's three tooltips in view_stage.rpy pass it.
+
+## P6
+
+**Hand-offs**
+- P8 (frozen tools/smoke/wp0_stubs.rpy line 353): replace `check(registered_place_actions("dorm") == [("zzact", "Zed", "A test action.", 1)],` with `check([a for a in registered_place_actions("dorm") if a[0].startswith("zz")] == [("zzact", "Zed", "A test action.", 1)],`. Re-run this round: 323 PASS.
+- P5 (owns tools/smoke/p2_hud.rpy this wave; else P8), line 581: before the `if any(v[0] in ("act", "mission") ...` line add `_zz_hot = [("act", h["act"]) for h in hot_spots_for(_zz_loc) if h["lines"] is None]` and add `and v not in _zz_hot` to the generator's condition. Re-run this round: 109 PASS.
+- P8 (tools/smoke/p2_night.rpy lines 1266 and 1268): `_zz_dorm = zz_n_ids(rail_actions("dorm")) + builtins.sorted(hot_covers("dorm"))` and `_zz_caf = zz_n_ids(rail_actions("cafeteria")) + builtins.sorted(hot_covers("cafeteria"))`. Re-run this round: 165 PASS.
+- Orchestrator: the three patched harness copies are in the scratch folder p2_w2/P6/retry/patched/ (wp0_stubs.rpy, p2_hud.rpy, p2_night.rpy); their diffs against the originals are exactly the edits above.
+- P7: the card table's hotspot is already registered in room_spots.rpy (id card_table, dorm_common, act cards_play, point (1400, 876) in game/layout/hot_dorm_common.json). Do not register a second one.
+- P9 / P8: P6's final points are in game/layout/hot_<place>.json (listed under deviations). Exits must clear those; the vending machine is at (1600, 690).
+- P5: hotspot visibility was placed against today's view_slot_rects. If the stage slots move right of about x 1360 or people stand taller than y 312, re-run tools/smoke/p2_rooms.rpy and look at room_*.png.
+- P8 (phase2_all): under autoplay sb_do_pc_open closes at once and sb_do_fish_cast hooks at q 0.5 three times. To drive the screens use returns as p2_rooms' zz_r_drive does: ("page", id), ("check",), ("hook", 1.0). zz_r_drive(..., own=fn) leaves a screen to its own timers. After sb_do_fish_cast has dealt its first cast renpy.can_rollback() is False; a harness that rolls back across a sitting will be refused. The text filter now sees fishing's opening line as "[_fish_line]", like the result lines.
+- P8 (p2_saves): p2_rooms writes a real save inside pc_screen and fish_screen and checks can_load; it does not load them. Working state machines are in scratch p2_w2/P6/review_saves_r3/rv3_saves.rpy (passed against db1632a; not re-run against 548eb33, which changes fishing's opening line and the pack-up-at-the-bite line) and review_saves_r3/rv_owner.rpy (use it only on slots parked on sb_map or sb_place, such as 1-1 and auto-1); fix_r1/zzf_load.rpy also still works. Do not use review_saves_r2/rv2_saves.rpy: it expects round 1's behaviour. Expected for fishing: a save loaded during a cast lands on fish_screen with the same cast number, kind and centre, nothing settled, in the phase it was saved in; a save at the bite starts that cast's sweep again. A save made with the record book open loads with the book closed, same cast: do not assert the book is still open. Cautions: in the shelf menu the caption is item 0, so the choices are 1, 2, 3; with the rich fixture a Kurose beat plays in the Library after the study, so compare Insight and the period on the first line after lib_read; treat the say screen as up only when its 'what' text is non-empty; set stage counters with max(), because renpy.rollback(checkpoints=1) re-runs the harness's own set-up block; expect Insight +2 from the page 'techniques'.
+- P8 (protected statements): `call screen pc_screen(_pc_page)` / `$ _pc_r = _return`, `call screen fish_screen` / `$ _fish_r = _return` and the shelf `menu:` are protected from commit a2201c9 and unchanged in 2b0d19d, db1632a and 548eb33. `$ renpy.block_rollback()` sits on the line above the fish_screen pair.
+- P8 (docs, PHASE2_DESIGN.md): 3.1: PC_SITES rows are dict(name, url, tone, color), color being the name of the gui.pc_* token. 3.3: pc_noted; fish_state gains plan (list of [kind, spare, r, wait]). 4.10: the final points. 4.11: Home's order (requests, intranet lines, sites); the Night button is drawn shut. 4.13: q's definition and the zone rule; the result line is narration; rollback is blocked when a cast is dealt and again when it is settled; packing up while the float sits is free, packing up at the bite is a miss with its own line, leaving after a cast costs the period; the sitting is rolled when it starts, and a save loaded during a cast finds the same cast in the same phase; a save loaded at the bite starts that cast's sweep again (same fish, same zone); Esc / right-click closes the record book when it is open, and the float's wait restarts when the book closes; the opening line rotates by day; a species' first catch says 'The first in the book.'; the record book's button is above Pack up; the seven-row record book and its names. PLAYTEST.md: the courtyard machine has no picture behind it; the fishing float and bar are engine-drawn stand-ins.
+- Owner's call, then P8 if yes: the shipped request note 'What was that on the ridge?' (the plan's 4.11 wording) could become 'Who was Ryomen Sukuna?'. Edits: game/room_computer.rpy PC_AUTO_REQUESTS (P6's file), tools/smoke/p2_rooms.rpy (the check that compares the note's text), PHASE2_DESIGN.md 4.11.
+- Phase 4 / mission authors: to gate a mission on research, call pc_request("<page>", "<the question>") and put gate.flags=("researched_<page>",) on what it opens. The note may hold any characters; brackets and braces are drawn as written.
+- Orchestrator: the lint command in the brief ends in 'lint .'; it was run without the dot, as P3 and P4b advised.
+
+**Where it departs from the plan**
+- Final hotspot points differ from 4.10's start points (measured on stand-in art): computer (440, 590), bed (1330, 720), card table (1400, 876), TV (1590, 560), bank (1580, 905), stacks (300, 520), locked cabinet (1630, 480), vending machine (1600, 690), blackboard (1450, 500), counter (1500, 600), cot (1420, 700), racks and armory (1600, 600), board (1500, 470), veil (960, 250). Code defaults and sidecars hold the same numbers.
+- The courtyard picture has no vending machine in it; the icon sits on the right-hand building's porch.
+- pc_open is registered with order=5 so it sorts before wp0_stubs' test action.
+- One saved variable 3.3 does not list: default pc_noted = "".
+- A page's first-read Insight is given quietly and shown on the page's gold 'Noted.' strip; no toast.
+- Cross-check reads offers through board_summary()["offers"] and keys the week on board_week_now().
+- The one shipped request is derived in pc_leads() from PC_AUTO_REQUESTS and the flag saw_the_ridge_veil; it is not stored in pc_requests.
+- PC_SITES rows are dict(name, url, tone, color); 3.1 gives three keys.
+- Home is ordered: requests, the intranet's two lines, then the sites as one-line cards.
+- At Night the cross-check button is drawn shut with 'Too late. Bed.' under it; the label's refusal remains for a driven return.
+- Fishing: q is closeness to the middle of the zone (1.0 centre, 0.2 less per tenth of the bar); a fish is landed when q >= 1 - zone. Under autoplay the 0.5 hook lands only the easiest species.
+- The fishing marker redraws every frame and ignores the Motion switch.
+- A cast's result is a line of narration after the screen closes, so fish_screen keeps exactly its three returns.
+- Packing up while the float sits is free; packing up once it has dipped is a miss (the cast is spent, the period charged). Packing up after any settled cast costs the period.
+- NEW: packing up at the bite says its own fixed line ('I lift the rod while it is still making up its mind...'), not a miss line; this also replaces the River Lord's and the pale thing's special miss lines in that case.
+- Rollback is blocked when a cast is dealt (before fish_screen opens) and again when it is settled.
+- The sitting's three casts are rolled in fish_begin() into fish_state["plan"]; fish_next() reads them. A save loaded during a cast lands on fish_screen in the same cast and phase; a save at the bite starts that cast's sweep again.
+- The record book has seven rows (six species and the River Lord, ??? until caught); names are Pale chub, Dace, Ayu, Yamame trout, Char, Carp.
+- The record book's button is at (1750, 900), above Pack up.
+- NEW: with the record book open, Esc / right-click closes the book; otherwise it packs up. Closing the book by any of its three ways restarts the float's wait (fish_rewait).
+- NEW: the cast row top left sits on a dark plate (frame at (48, 50), Solid #07060c99).
+- NEW: the sitting's opening line rotates over three lines by day (FISH_OPEN_LINES, fish_open_line); two of the three differ from the reviewer's suggested wording so that none presumes an earlier sitting.
+- NEW: the River Lord's catch line names the fish from two words cut into the rod's handle.
+- A species' first catch says 'The first in the book.'; 'A new best.' only when an earlier best is beaten. fish_land's return is unchanged.
+- With a companion, sb_do_fish_cast says one extra line naming them (_fish_who).
+- The vending machine also refuses, at no cost, when stamina is full.
+- The Library menu has exactly three choices and no way back; on a rest day the barrier shelf says its own single line.
+- The legends thread hints at the alley and the Sun Mall (Kawagoe's shut mall); no line about the forty-minute survey.
+- New names beyond the plan, all prefixed: SPOT_SET, SPOT_LOOKS, SPOT_VEND; pc_can_see, pc_pages, pc_links, pc_address, pc_color, pc_visit, pc_week, pc_checked, pc_offers, pc_check_ok, pc_check, pc_validate, PC_SITE_ORDER, PC_PAGE_ORDER, PC_AUTO_REQUESTS, _pc_bad_n; fish_roll, fish_hit, fish_length, fish_cast_once, fish_plan, fish_settle and the sitting helpers, fish_rewait, fish_open_line, FISH_OPEN_LINES, fish_validate, _fish_who; LIB_SHELVES, lib_gains, lib_line, lib_read, lib_validate.
+
+**Open**
+- wp0_stubs, p2_hud and p2_night each fail one check in P6's worktree until the hand-off edits are applied at the merge.
+- Quitting the game at the bite and reloading starts that cast's sweep again (same fish, same zone), so the hook can be retried that way. Closing it needs a second protected call screen between the dip and the hook; left for the owner (checkpoint C).
+- A save made with the record book open loads with the book closed, and the float then dips at once. Only a quit autosave can reach this.
+- The record book's overlay click and Close button carry the same action list as the Esc key, but the harness presses only the key.
+- The record book's hover label is checked by screenshot only; no check measures its rectangle.
+- Because rollback is blocked from the first cast, a player who sits down to fish cannot roll back to before the sitting once the float is in the water. Packing up before the dip is still free.
+- Opening the record book repeatedly puts the bite off each time (the wait restarts on close). Harmless, but it is a way to stall.
+- Fishing was still not played by hand: the sweep (1.5 s a pass), the 1 to 3 s wait and the zone widths are untested for feel. The numbers are constants at the top of game/room_fishing.rpy.
+- Home scrolls again with about six or more requests; the bookmarks on the left still reach every page.
+- The card table's hotspot cannot be seen in this worktree (P7's stub); its point is only linted.
+- With two or more people in a room some hotspots hide and their actions return to the column; that is the plan's rule, but it may read as icons coming and going.
+- Only the first-set table was built; eight rooms have no hotspot.
+- The pages' lore (the Nihon Shoki entry, the Keicho duel, Noritoshi Kamo, Michizane) is written from memory and was not checked against a reference.
+- The made-up web addresses use realistic endings (.jp, .net); they are never clickable.
+
+**Findings left unfixed, with reasons**
+- (not fixed) spec/minor: a save loaded at the bite starts that cast's sweep again (same fish, same zone) — No code change, as the finding says: D33 is met in ordinary play, and closing this fully needs a second protected call screen, which is the owner's call. The line is added to the P8 docs hand-off for 4.13, to open issues and to the owner's note.
+- (not fixed) saves/minor: a save made with the record book open loads with the book closed — No code change, as the finding says. The note is added to the P8 (p2_saves) hand-off. The bite-at-once side effect after such a load remains, because the load does not pass through the book's closers.
+
+## P7
+
+**Hand-offs**
+- P6 (room_spots.rpy): register the card-table hotspot as an action hotspot for `cards_play` in dorm_common, e.g. `register_hotspot("cards_play", "dorm_common", 900, 800, "cards_play")`. It shows only while cards_ok() is True, which is also False once the day's ¥6,000 is won.
+- P6 / P2 (column budget): dorm_common gains one column tile, 'Play cards' (id cards_play, cost 1, order 40), while someone is there, I hold ¥100, I haven't sat with everyone present today, and the day's limit is not reached.
+- P3 (journal Me page): cards_records()['today'] is net yen for the day and can be negative; 0 on a new day. No edit needed.
+- P8: re-run tools/smoke/p2_cards.rpy on the merged tree. Section G's hotspot check uses the harness's own hotspot (zz_c_table) plus any real one for cards_play.
+- P8 (p2_saves): park on `call screen cards_blackjack` inside label mg_blackjack; state is cards_state plus cards_sit. A reload mid-hand keeps the dealt cards but the next card is drawn fresh, by design. A save made at the poker draw comes back with no cards marked: do not assert on marks. After a load the move buttons are deaf for 0.3 s (cards_guard starts True): a harness that clicks must wait that long; the autoplay timer is not affected.
+- P8 (phase2_all): under smoke_autoplay, sb_do_cards_play plays one blackjack hand at ¥100 (stand) and gets up, costing one period. It needs someone in dorm_common, ¥100, and the day's card winnings under ¥5,800.
+- P8 (docs, PHASE2_DESIGN.md): 2.3's protected list for room_cards.rpy is as written. Update 3.3 with cards_sit (keys day, hands, net, opponents, stake). Update 4.12 with: the ("deal",) return; no-raise betting; the three-stake rule for poker; how the cap is applied, including cards_ok() going False at the cap and the poker note 'They'll pay me ¥N more today, no further.'; the ¥3,000 limit being a stop rule; light card faces; the extra CARDS_STYLE keys (shows, rest, sore, stop, blind, glad, deal); rollback blocked after a read; no hover labels on worded buttons, only on the look icon; 'Give up the hand' / 'Fold and leave'; people not yet played seated first; the table remembering the stake; the 0.3 s click guard on the two game screens; nobody speaks on a split. 6.1 may list cards_can_deal, cards_today, cards_cap_left, cards_auto, cards_block, cards_row_gap, cards_default_stake, cards_act, cards_hands_word.
+- P8 (docs/PLAYTEST.md, checkpoint C list): ask the owner whether the ¥3,000 stop should be a hard ceiling, and whether the table should disappear at the ¥6,000 cap. Hard-ceiling edit if wanted: in cards_can_deal refuse when net - cards_need(game, stake) * (2 if game == 'blackjack' else 1) < -CARDS_LIMIT['down'], and add the matching test on the sitting's net to cards_bj_can_double.
+- P8 (tools/smoke/_lib.rpy, ZZ_SHAPED): add cards_sit to the shaped list. p2_cards builds it with cards_sit_down() and clears it with cards_get_up(); a few checks set cards_sit keys (stake, net, hands) on a sitting built that way.
+- P8 (tools/smoke/_lib.rpy) and other packages' harnesses: renpy.get_widget(screen, id) on a textbutton returns the Text inside it, not the Button, so `._get_tooltip()` or `.action` read that way test nothing or raise. p2_cards has a helper zz_c_btn(screen, wid) that walks up to the Button; consider moving it into _lib.rpy and checking other harnesses' tooltip checks on textbuttons.
+- P8 / orchestrator: p2_cards joins the standing set at 145 PASS, about 45 s. It has no pointer-dependent pass/fail check.
+- Orchestrator: the lint command in the task text (`... lint .`) fails on this SDK with IsADirectoryError: '.'; drop the trailing dot.
+
+**Where it departs from the plan**
+- The two game screens return one value the plan does not list: ("deal",), for the Deal button shown after a hand is settled.
+- Blackjack with Double settles at ±2 stakes as well as the plan's ±stake, +1.5 stake or 0.
+- A fourth saved variable, `default cards_sit = {}`, holds the sitting's tally (day, hands, net, opponents, stake) so the five-hand and ¥3,000 limits span both games.
+- The daily cap is enforced two ways: blackjack is not dealt at a stake whose doubled win could pass it; a poker pot is paid only up to it, with a line. New this round: the table's poker button says beforehand how much a win can still pay.
+- cards_ok() is also False once less than ¥200 can still be won that day, so the place action disappears at the cap.
+- Poker needs three stakes in hand to be dealt; blackjack needs one.
+- Poker has no raises: Check, Bet or Fold, then Call or Fold. The Call button returns ("bet",).
+- CARDS_STYLE rows carry more keys than the plan's five: shows, rest, sore, stop, blind, glad, deal.
+- The next card is chosen when it is drawn, not fixed at the shuffle.
+- Card faces are a light paper colour with red and black suits, not a dark panel.
+- With two or three opponents the look button switches on a 'Read' button under each opponent still in.
+- The poker buttons sit at y 850 rather than 840.
+- The game screens do not bind the menu key and are not modal.
+- Leaving in the middle of a hand forfeits what is on the table; the button says so ('Give up the hand', 'Fold and leave').
+- No worded button on the three card screens has a hover label; only the icon-only look button keeps one.
+- With more than three people in the room, the ones not yet played today are seated first.
+- The table opens on the sitting's last stake, not always the smallest.
+- A blackjack hand of seven or more cards overlaps its cards so the row stays left of the total.
+- The card-table hotspot is not registered here; it belongs to P6's room_spots.rpy.
+- The ¥3,000 limit is a stop rule checked before each deal, so a sitting can end further down than ¥3,000. New this round: the closing line says the real figure.
+- New this round: the move buttons on the blackjack and poker screens take no click for the first 0.3 s after the screen opens (screen variable cards_guard, action built by cards_act). The table picker is not guarded: none of its buttons sits under a game screen's button.
+- New this round: on a split pot the opponent says nothing and keeps their resting face.
+
+**Open**
+- Balance is untuned. One good poker hand at ¥500 against three opponents won ¥3,500 in the harness, so the ¥6,000 daily cap can be reached in one or two hands. Tells fire about 85% of the time when true. All of it is table values in CARDS_STYLE and CARDS_STAKES.
+- Owner decision for checkpoint C: the ¥3,000 limit is checked between hands, so a sitting can end at ¥4,000 or ¥5,000 down. Making it a hard ceiling is a small change (see hand-offs).
+- Owner decision for checkpoint C: the 'Play cards' icon goes away once the day's ¥6,000 is won, which the plan's cards_ok does not list.
+- With three opponents at ¥1,000, the poker button on the table always reads "They'll pay me ¥6,000 more today, no further." instead of its usual blurb, because such a hand can win ¥9,000. It is true, but the owner may find it noisy; the alternative is to show it only once something has been won that day.
+- The new near-limit note on the table picker was checked as text only; no screenshot of it was taken or viewed.
+- The 0.3 s click guard has been tested with posted mouse clicks (the reviewer's harness), not by a person; if 0.3 s feels sluggish or too short, it is one number in each screen's timer.
+- The real card-table hotspot does not exist until P6's branch merges; until then the table is reached from the icon column only.
+- No renpy.save / renpy.load round trip inside the card screens is in this harness (P8's p2_saves).
+- The poker blind player (Gojo) bets and calls at random; nobody has played against him by hand yet.
+- With the hover labels gone, the one-line explanations of Hit, Stand, Double, Check, Bet and Fold are not shown anywhere.
+- If the dialogue window is still up when a card screen opens, its gradient dims the bottom buttons. Seen only in the harness, not from the place view.
+- The harness's rollback test calls renpy.ui.reset() before a rollback that will actually go through (failing case only); harness-only.
+
+**Findings left unfixed, with reasons**
+- (not fixed) spec minor (carried over): declared departures from plan 4.12 and 3.3 need P8's doc update and the owner's word — No code change wanted. All stay in deviations and the P8 hand-offs.
+- (not fixed) saves minor (carried over): cards_sit (with stake) is not in plan 3.3 or ZZ_SHAPED — Not my files. Kept as a hand-off to P8. No new saved variable this round: cards_guard is a screen variable (a bool).
+- (not fixed) saves minor (carried over): a save at the poker draw loads with no cards marked — Settled as no fix. The P8 hand-off (p2_saves must not assert on marks) is kept.
+- (not fixed) play minor (carried over): the ¥3,000 stop rule and cards_ok() False at the cap are owner decisions — No change. Both stay in the checkpoint C list handed to P8.
+
+## P9
+
+**Hand-offs**
+- P8 (frozen tools/smoke/wp0_stubs.rpy, 2 failing checks; proven 323/0 in a scratch copy). Line 349: `_ids = [a[0] for a in place_actions("courtyard") if not a[0].startswith("path_")]`. Line 353: compare `[r for r in registered_place_actions("dorm") if not r[0].startswith("path_")]` with the same right-hand side.
+- P5 or P8 (tools/smoke/p2_hud.rpy line 581, 1 failing check; proven 109/0 in a scratch copy): replace the condition with `if any(v[0] in ("act", "mission") for v in _zz_all if isinstance(v, tuple) and v not in _zz_got and not (v[0] == "act" and v[1] in hot_covers(_zz_loc))):`. P6's action hotspots will trip the same check.
+- P8 (frozen game/sb_hotspots.rpy, screen hot_layer), to dim a locked exit; proven 7/0 in retry/patched/p9_dim_proof.rpy. After `$ _hot_ok = hot_open(_hot_h)` add `$ _hot_lock = path_locked(_hot_h["act"][5:]) if str(_hot_h["act"]).startswith("path_") else ""`; use `alpha=(1.0 if (_hot_ok and not _hot_lock) else 0.45)`; pass `(NullAction() if _hot_lock else hot_action(_hot_h))` as the button's action. In the same commit, make the dim destination icon the default: in game/room_paths.rpy delete class path_SpotRow and the line `HOT_SPOTS[-1] = path_SpotRow(HOT_SPOTS[-1], to=to)` in path_register, so a locked exit is the room's own icon at alpha 0.45 with the reason on hover. Then in tools/smoke/p2_paths.rpy: replace the NOTE 'a locked exit is not drawn dim' with a check; change the check 'it is drawn as the lock icon' to expect place_storehouse; in zz_row_reads() and its two checks expect the icons to be place_storehouse both locked and open; drop path_SpotRow from the 'no saved store variable holds a registry row' check and from zz_loop_save_names. Also reword path_exits' docstring line for `icon` (drop the words about "lock").
+- New this round. P8 (frozen game/ui_icons.rpy, screen hover_label), so an exit's label opens under its icon and not over the exit to its left. After the two lines `if isinstance(_hover_tip, tuple) and len(_hover_tip) > 1 and str(_hover_tip[1]).startswith(("sample_auto_", "sample_always_", "sample_never_")):` / `$ _hover_side = "top"` add: `elif isinstance(_hover_tip, tuple) and len(_hover_tip) > 1 and str(_hover_tip[1]).startswith("hot_go_"):` / `$ _hover_side = "bottom"`. The key is right: icon_btn's tooltip key is its wid, and hot_layer passes wid="hot_" + id with exit ids go_<from>__<to>. Not run. After it, p2_paths' two hover checks (the girls' dormitory label hides no other exit; the courtyard gate label lies between x 1040 and 1300) need re-measuring, and the gate exit at y 985 needs room below it (the label would run past y 1080, so NearRect may fall back to another side). Or instead, when re-placing the hub exits on the painted pictures, keep at least 360 px of empty picture left of each exit.
+- P8: exit rows in PLACE_ACTIONS and HOT_SPOTS read their label and icon live through row[key], row.get, row.items, row.values and row.copy; a dict(row) copy holds the label and icon of the moment it was made, so do not keep such a copy across a change of flags or period.
+- P8 (sb_screens.rpy, AMBIENT) caption requests for D57: ("nobara", "training_yard"): ("on her way to the training hall", "neutral"); ("toge", "school_yard"): ("on the steps, onigiri in hand", "happy"); ("yuji", "dorm_yard"): ("on the garden wall, counting stars out loud", "happy"); ("megumi", "trailhead"): ("with a Divine Dog, heading up", "neutral"); ("shoko", "staff_yard"): ("on the steps with coffee", "neutral"). Until then the fallbacks show.
+- New this round. If the owner wants Yuji outside by day: in game/sb_world.rpy set WEEKEND["yuji"]["Morning"] = "dorm_yard" (he is in dorm_common then; no written scene uses that slot), and change his AMBIENT request to ("on the garden wall, doing nothing loudly", "happy").
+- P8 (sb_activities.rpy): 'Walk with them' is offered only at courtyard, gate, forest, riverside and ridge. Add the five hubs to its loc tuple if a walk should start from a yard.
+- P5 (lighting.rpy): the hubs need no BG_LIGHT row; they are outdoor LOCATIONS and take OUTDOOR_LIGHT. Add PLACE_LIGHT rows only if the painted pictures call for them.
+- P5: with wave 0's stage, top-row exits (y 272, x 850 to 1270) and exits at x 84 or x 1640 and above stay visible with up to three people; the courtyard's gate exit (1300, 985) stays in the picture with one or two people and moves to the column with three or more. If your slots, pose boxes or name tags change, re-check p2_paths' check 'with two people the gate exit is in the picture and its hover label is right of both name tags' (it assumes the second tag ends by x 1040).
+- P6: exits are action hotspots with ids go_<from>__<to>, drawn at PATH_EXITS in room_paths.rpy. Keep your final points 120 px from them (the courtyard's gate exit is now at (1300, 985)). game/layout/hot_<place>.json can move an exit by its id; path_exits() reports the moved point and path_validate checks it against the caption box. Exit tiles come first among registered actions in the column (order 5).
+- P8: once P6's final points and the five hub pictures are in, re-place the hub exits on natural spots with tools/layout_sheet.py hot_<hub>. Keep them out of PATH_CAPTION_BOX (40, 100, 744, 160): lint reports any that are not. Keep a room that can be locked (girls_dorm, office, utahime_office, gojo_office, storehouse) leftmost in its row or with empty picture to its left, because its hover label is up to 520 px wide and opens to the left; on the staff steps spread the three office doors so each has that room. Keep the courtyard's gate exit right of the name tags. tools/layout_sheet.py's STAND_INS table needs the five hub stand-ins (WORLD_HUB_STANDINS in sb_world.rpy).
+- Orchestrator (art batch 3): `python3 tools/make_bg_workflow.py school_yard dorm_yard staff_yard training_yard trailhead --out phase2/hubs.json` writes ten pictures, about $0.35. Not run for real: it writes into ~/Desktop/JJK Game images and ~/ComfyUI-Shared/input.
+- P8 (docs/PHASE2_DESIGN.md). (1) Section 2.3, add a row: `room_paths.rpy | label path_walk(path_to) with its line call rule_walk_to(path_to); every label sb_do_path_<to> with its line call path_walk("<to>")`. Saves made after an exit walk hold return sites in these. (2) D55: the action is path_<to> and its label sb_do_path_<to>; never rename the labels to go_<to>. (3) D54: the link list as built (courtyard to school_yard, dorm_yard, training_yard; dorm_yard to staff_yard, trailhead; staff_yard to training_yard), or the owner's ruling from checkpoint C. (4) D56: add the arrival caption box as a keep-clear zone. (5) Section 4.0, place view row: 4 object hotspots plus the place's exits (1 in a room, up to 7 in a hub; the Dormitory Garden has 7). (6) 4.0's level-2 map budget is 5 pins plus 5 buttons. (7) Record: path_locked, path_label, path_icon, path_words, path_is_hub, path_reach, path_LiveRow, PATH_HUBS, PATH_LINKS, PATH_EXITS, PATH_KEEP_CLEAR, PATH_CAPTION_BOX, PATH_ACTION_ORDER, map_pin_icon, map_area_rect, MAP_AREA_W/H, MAP_MOUNTAIN_BOX, WORLD_HUB_STANDINS, world_hub_standin, world_hub_bg. (8) LOCATIONS has 24 rows; tools/bgs/CAMPUS.md still says 'Classroom Building'.
+- P8 (p2_saves): p2_paths section 10 saves, loads and rolls back through exit walks inside the real loop. p2_saves may still want the same on the merged tree with P5's stage and P6's hotspots in.
+- If the owner wants the courtyard joined to the staff steps: add ("courtyard", "staff_yard") to PATH_LINKS, a ("staff_yard", x, y) row to PATH_EXITS["courtyard"] and a ("courtyard", x, y) row to PATH_EXITS["staff_yard"]; the labels already exist.
+- All wave-2 packages: code that walks every place must read LOCATIONS or LOC_ORDER (24 entries). icon_for('place', hub) returns area_<key>; 'place_' + hub is not an icon name. A harness that keeps a PLACE_ACTIONS or HOT_SPOTS row in a store variable across statements carries it into any later save through the rollback log; read the rows inside a function or delete the variable in the same statement.
+
+**Where it departs from the plan**
+- A locked exit is not dim (D55): frozen hot_layer dims a hotspot only when the night closes it. It shows the lock icon, gives the reason on hover, and does nothing when clicked. The P8 edit is in the hand-offs.
+- Action ids are path_<to> with labels sb_do_path_<to>, not D55's go_<to>: the prefix rule rejects sb_do_go_<to> in room_paths.rpy. Hotspot ids are D55's go_<from>__<to>.
+- Hub links follow map_campus.png, not D54's list: staff_yard joins training_yard and dorm_yard, not the courtyard.
+- The exit rows in PLACE_ACTIONS and HOT_SPOTS are dict subclasses (path_LiveRow, path_ActionRow, path_SpotRow) that read their label and icon when asked. Nothing is written to a registry at run time and nothing new reaches a save.
+- room_paths.rpy adds rows to ICON_FOR at init (each exit action, each new hub).
+- Exits come first among the registered place actions (order 5).
+- Hub top rows sit at x 850 to 1270, y 272, with a lockable room leftmost, so the row order on screen is not the list order in PATH_EXITS.
+- Changed this round: the courtyard's gate exit is at (1300, 985), well right of the flagstones' centre. It stays in the picture with one or two people and moves to the column with three or more.
+- PATH_CAPTION_BOX is a keep-clear zone that the plan's D56 does not list.
+- The Mountain Path and Training Yard descriptions are the round 2 story reviewer's wordings; the Mountain Path line differs from round 1's suggested text.
+- On the five stand-in pictures the exits follow one plan rather than natural spots; they need re-placing once the hub pictures are painted.
+- D57: Yuji's hub slot is Night, not Evening; the Staff Building Steps and the Mountain Path have someone at weekends only.
+- D61: the People card's hover keeps 'Next: Spend time together / after roll call', as the NEXT row does.
+- The hub stand-in table and builder live in sb_world.rpy (prefix rule); area markers use a new style map_area_marker (240 x 96); the heart keeps ['gate', 'courtyard'].
+
+**Open**
+- wp0_stubs (2 checks) and p2_hud (1 check) failed in this worktree on round 1's run and will fail on the merged tree until the hand-off edits are applied. Neither was re-run this round, nor were wp2, wp4 to wp7, wp9 to wp11, p2_gear and p2_night.
+- A locked exit is the lock icon, not dim, until P8 edits hot_layer. On the Staff Building Steps at Night that is three identical locks in a row.
+- In every hub, hovering a top-row exit puts its label over the exit to its left (14 pairs at Noon by the reviewer's sweep). Nothing is lost; the fix is the hover_label hand-off or the re-placing on painted pictures.
+- The courtyard has no direct exit to the Staff Building Steps (two walks away). The owner has not ruled; a checkpoint C question.
+- Four hubs show more than 4.0's four hotspots from exits alone (Dormitory Garden 7; School Courtyard, Staff Steps and Training Yard 5). Whether the garden keeps seven is a checkpoint C question.
+- The five hubs show stand-in pictures, so their exits sit in a schematic row at the top right until art batch 3.
+- A few room exits sit where the picture shows no door (infirmary, library, ridge, the end of the girls' dormitory corridor), and the courtyard's gate exit is now on the right side of the flagstones, at x 1300.
+- Yuji stands in the Dormitory Garden only on weekday nights, with a fallback caption until P8 adds the AMBIENT row. The Staff Building Steps and the Mountain Path have a person at weekends only.
+- p2_contracts' hover checks failed (126/3) while another Ren'Py window was open and passed 129/0 alone; expect the same on any crowded run. p2_paths now has two hover checks that need the pointer (the girls' dormitory label, the courtyard gate label); both passed on both runs here.
+- The new gate-label check assumes wave 0's stage (second name tag ends by x 1040); P5's slots or tags may need the number changed.
+
+**Findings left unfixed, with reasons**
+- (not fixed) spec: carried from round 1: D54's courtyard-to-staff_yard link is not built; four hubs show 5 to 7 exits against 4.0's budget — No code change, by the reviewer's own advice. Both stay as checkpoint C questions in the owner note, open issues and hand-offs.
+- (not fixed) play: in every hub, a top-row exit's hover label opens over the exit to its left — As advised, PATH_EXITS is not changed: the row is a stand-in plan until the hub pictures are painted, and the fix is in frozen game/ui_icons.rpy. The exact edit is in the P8 hand-offs. I confirmed the tooltip key of an exit is its widget id "hot_go_<from>__<to>" (icon_btn line 291), so the suggested test matches. The edit itself was not run.
+- (not fixed) story: Yuji is in the Dormitory Garden only at Night on weekdays, so the owner may not see the example they asked for — No code change, as advised. The owner note now says when and where to see Yuji and Nobara; the weekend-morning alternative is in the hand-offs.
+
+## Left after the trial merges (all minor; for P8)
+
+- **frozen, game/ui_icons.rpy screen hover_label (preferred side), with P5's name tags:** Unchanged from pass 1. pass2/shots/p2_view/worst_sb_place.png: Megumi's tag label opens left and covers Yuji's name tag. walk_new_a/a_4_hover_tag.png: Nobara's opens left over empty floor. *Fix:* P8: in hover_label treat tooltip keys starting 'tag_' (and 'hud_') like the sample_ keys and open the label above the button.
+- **frozen, tools/smoke/wp10_chapters.rpy:129-148, zz_wp10_text():** 149/1 once, 150/0 twice on this tree. The needle fires on a predicted line, so ch4_curse_reveal is pictured one scene early. Harness race, not the game. *Fix:* P8: first line of zz_wp10_text: `if renpy.predicting(): return _zz_wp10_prev_filter(s) if _zz_wp10_prev_filter else s`.
+- **frozen, game/ui_hud.rpy toast lane on the place view against P5's slots:** Unchanged from pass 1. worst_sb_place.png: four two-line toasts end near y 397 and touch the top of Maki's hair at the right-hand slot. Only with four wrapped toasts; they fade. *Fix:* P8: cap the place-view stack at three when any toast wraps, or accept it. No P5 change.
+- **frozen, game/sb_loop.rpy (call screen hides the place view before view_before_person runs):** d_02_person_first_tick.png and d_05_back_first_tick.png: both dissolves run between the bare room and the full view, so the other people and the HUD fade out and in rather than staying put. Right hour now; P5 listed this as an open issue. *Fix:* P8, only if the owner minds it at checkpoint C: show the person view from inside sb_place (or keep sb_place shown under sb_char) so the stage never leaves the screen. Otherwise accept.
+- **P6, tools/smoke/p2_rooms.rpy lines 355, 361, 717 (six checks: 495, 516, 697, 706, 721, 729):** p2_rooms 117/6 on the merged tree. Each failing check compares the whole hotspot list of a room with P6's own set and now also sees P9's go_<from>__<to> exits; line 721 forbids any action hotspot in explore mode, which D55 requires of exits. Test-only: the game behaves as planned. *Fix:* Line 355: `return [h for h in HOT_SPOTS if not h["id"].startswith(("zz", "go_"))]`. Line 361: `return [h["id"] for h in hot_spots_for(loc) if not h["id"].startswith(("zz", "go_"))]`. Line 717: append `and not _zz_h["id"].startswith("go_")` to the comprehension's condition. Proven 123/0 in pass1/full/patched/p2_rooms.rpy.
+- **P9, tools/smoke/p2_paths.rpy line 528 (and the NOTE at line 481):** p2_paths 102/1: 'in the evening the girls' dormitory exit reads its lock's reason'. The check still expects the locked exit to return ('act', 'path_girls_dorm'); with P9's own hot_layer edit applied it is NullAction. *Fix:* Line 528: replace `zz_action_value("hot_go_dorm_yard__girls_dorm") == ("act", "path_girls_dorm")` with `zz_action_value("hot_go_dorm_yard__girls_dorm") is None`; turn the NOTE 'a locked exit is not drawn dim' at line 481 into a check. Proven 103/0 in pass1/full/patched/p2_paths.rpy.
+- **P9, game/room_paths.rpy PATH_EXITS['courtyard'] and PATH_KEEP_CLEAR:** The Training Yard exit (1640, 780) is 98 px from P6's final vending machine point (1600, 690): the two rings overlap by 6 px and the icons sit almost touching (walk_new_e/e1_courtyard_hov_spot_vend.png). PATH_KEEP_CLEAR still holds 4.10's start points, so P9's validator cannot see it; p2_paths only notes it. *Fix:* Move the exit to ("training_yard", 1640, 850) (165 px from the machine, clear of the column and the gate exit). Replace PATH_KEEP_CLEAR with P6's final points (courtyard (1600, 690); dorm (440, 590), (1330, 720); dorm_common (1400, 876), (1590, 560); riverside (1580, 905); library (300, 520), (1630, 480); classroom (1450, 500); cafeteria (1500, 600); infirmary (1420, 700); storehouse (1600, 600); utahime_office (1500, 470); ridge (960, 250)).
+- **P9, game/room_paths.rpy PATH_EXITS['dorm']:** In My Room the exit at (150, 560) and the computer at (440, 590) are on one row. The exit's label 'To the Dormitory Garden' covers the top of the laptop icon, and the computer's label 'My computer / Look something up...' covers the lower half of the exit icon (walk_new_e/e00_dorm_hov_go_dorm__dorm_yard.png, e00_dorm_hov_computer.png). Both stay clickable. *Fix:* Move the exit down the same door: ("dorm_yard", 150, 760). Its label then spans about y 724 to 772, below the computer's ring (542 to 638), and the computer's label no longer reaches it.
+- **P9, game/room_paths.rpy, the leftmost top-row exit of each hub (850, 272):** For the first seconds in a hub the arrival caption is up; hovering the leftmost exit while it is locked opens a two-line reason to the left that covers the caption's last line (walk_new_e/e2_locked_storehouse.png: 'The storehouse is sealed...' over 'usually hear this place before I see it.'). Same geometry for the girls' dormitory and Utahime's office. *Fix:* Put the lockable exits at the right end of the top row (x 1270) so their label opens over empty picture, or lower the hubs' top row to y 300. Either is a PATH_EXITS edit only.
+- **P9, game/sb_world.rpy schedule (D57), School Courtyard:** walk_new_h and walk_save_h: school_yard on a weekday Afternoon has nobody; 'roster has toge: False'. Toge is the hub's only resident, and he is not met in a new game or in the owner's campus save, so that hub is empty through the first week. *Fix:* Give the School Courtyard a first-year as well, at an hour that moves no scene (owner's choice of who), or accept it as is until the second-years are met. One schedule row.
+- **P9, game/ui_journal.rpy jr_records (the Me page's Records):** Before I have ever fished, Records shows THE RECORD BOOK with seven 'not caught yet' lines (walk_new_f f00 jr_records). fish_records() always returns seven rows by contract, so jr_records' 'leave an empty section out' rule never fires for it. ui_journal.rpy is P9's this wave for D61 only; P8 may be the right hand. *Fix:* In jr_records, build the record-book section only when something is caught: `if lines and any(isinstance(r, (tuple, list)) and len(r) >= 2 and r[1] for r in fish):` before `out.append(("THE RECORD BOOK", lines))`.
+
+## The checkpoint C note the trial checker wrote for the owner
+
+Walk it: in My Room click the door icon on the left, then keep clicking icons in the picture: Dormitory Garden, Courtyard, Training Yard, Training Hall. No map, no time spent. At the gate, the icon above the torii leads up to the courtyard.
+Common room in the evening: three people stand in the room with shadows and evening light, one behind the table. Click someone and watch the view ease in, then back.
+My Room: click the laptop. Read a few pages, then "Posted assignments" and cross-check the board (your campus save has the board open; a brand-new game does not yet). The lead shows in the journal's Missions tab until you read the page.
+Riverside: the fishing icon on the flat rock. Click the water when the white marker is in the green. Say if it feels too fast or slow; nobody has tuned it by hand.
+Library: the shelves on the left (one hour, three shelves). Courtyard: the vending machine icon on the right porch (¥150, once a day).
+Card table: with ¥100 and someone in the common room, play blackjack and a hand of poker; watch their faces. With three people in the room the table icon moves to the right-hand column.
+People in the yards: Nobara in the Training Yard on weekday mornings, Yuji in the Dormitory Garden at night, Megumi on the Mountain Path and Shoko on the Staff Building Steps on Saturdays. The School Courtyard stays empty until you meet Toge.
+Known placeholders: the five yards use tinted cut-outs of the courtyard and forest, with exits in a plain row along the top; the courtyard picture has no vending machine painted in; the fishing float and bar are plain shapes; poses and Yuji's blink wait for art batch 3.
+Small things you may notice: in the courtyard the vending machine and the Training Yard exit sit almost touching; in My Room the door's and the laptop's hover labels cover each other a little. Both are one-line moves.
+Locked doors are dimmed, say why when you hover, and do nothing when clicked.
+
