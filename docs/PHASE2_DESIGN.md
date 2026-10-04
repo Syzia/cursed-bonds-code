@@ -244,7 +244,7 @@ The only exceptions, by name: the contract symbols of section 6 that have no pre
 | overlay | may draw over | where (1920×1080) |
 |---|---|---|
 | toasts | a scene | right edge 1880, top 92, four at most (as now) |
-| toasts | the place view | x 1330 to 1790, y 92 to 350 (left of the icon column). **As built:** four two-line toasts end near y 416, so the lane runs to about y 422: the hotspot validator's lane (`HOT_LANES`) is y 92 to 422, a second icon column starts at y 430 (4.4), and P8 shows three toasts, not four, while one of them runs to a second line (4.2) |
+| toasts | the place view | x 1330 to 1790, y 92 to 350 (left of the icon column). **As built:** four two-line toasts end near y 416, so the lane runs to y 422: `TOAST_LANE` is `(1330, 92, 1790, 422)` and the hotspot validator's lane (`HOT_LANES`) is y 92 to 422, a second icon column starts at y 430 (4.4), and P8 shows three toasts, not four, while one of them runs to a second line (4.2) |
 | toasts | the person view | right edge 1722, top 26, two at most (as now) |
 | toasts | a fight (`combat_screen`, which is tagged `sandbox`) | right edge 1880, top 92, four at most (as now; a fight's rewards must not be held back) |
 | toasts | the map, journal, board, the board's partner picker, the grade card, armory, market, computer, card table, fishing, the style sample, the game menu | **not drawn**; they wait, clocks stopped |
@@ -1012,7 +1012,7 @@ P0 writes every symbol in its owner's file with its final signature, a docstring
 | `explore.rpy` | `DEV_WHEN`, `dev_rows` (4.16) |
 | `sb_world.rpy` | `world_area_crop`, `world_area_standin`, `world_area_bg` (the area stand-ins); `WORLD_HUB_STANDINS`, `world_hub_standin`, `world_hub_bg` (section 13); `_validate_world`'s three `AREAS` checks |
 | `ui_map.rpy` | `map_validate`, `MAP_FACES_LEFT_X`; `map_pin_icon`, `map_area_rect`, `MAP_AREA_W`, `MAP_AREA_H`, `MAP_MOUNTAIN_BOX`, style `map_area_marker` (section 13) |
-| `ui_hud.rpy` | `toast_hold`, `hud_banner_ok`, `hud_chips`, `TOAST_LANE`, `HUD_BANNER_X`, `HUD_BANNER_W`; `toast_wraps` (P8) |
+| `ui_hud.rpy` | `toast_hold`, `hud_banner_ok`, `hud_chips`, `TOAST_LANE`, `HUD_BANNER_X`, `HUD_BANNER_W`; `toast_wraps(text)` → bool and `TOAST_TEXT_W` (P8) |
 | `sb_screens.rpy` | `rail_rows`, `rail_columns`, `rail_layout`, `rail_height`, `rail_word`, `rail_tip`, `rail_missions`, `rail_chip`, `rail_story_ok`, `rail_story_caption`, `RAIL_COLUMNS`, `RAIL_CARD_Y`, `RAIL_MORE_POS`, screen `rail_btn` (4.4, 4.6) |
 | `ui_journal.rpy` | the `jr_` / `JR_` names of 4.7 |
 | `sb_items.rpy` | `item_req_line`, `item_first_unmet`, `item_unmet_reason`, `item_wear_check(id, checklist=True)`, `item_wear_again(id)` (wears a talisman again without asking its checklist, D28; it exists because `wp0_stubs` pins `equip_talisman`'s signature), `ITEM_ARC_NAMES`, `armory_checklist`, screen `armory_req` |
@@ -1216,7 +1216,7 @@ A phase-1 harness that fails in a wave because of a change is fixed by the owner
 - `sb_char` for every person returns the tuples recorded in `baseline_p0.json` for each choice; the screen holds no `Text` equal to the person's name, no pip image, no "Closer", no bar; `zz_words("sb_char") <= 16`;
 - `person_choices` still returns at most four, ending with `talk`, for every person × room × period, each with an `icon` in `ICONS`, and a mission choice's icon is `mission`;
 - `toast_room()` is `(0, 0, 0)` with `journal`, `sb_map`, `board_screen`, `board_partner`, `armory`, `icon_sample` and the game menu up, and with `grade_card` shown by `call screen` over a scene (it has no tag; the test is by name); `(1880, 92, 4)` over `dev_panel`, and a review button's toast is drawn while the panel is up; `(1790, 92, 4)` over `sb_place`, `(1722, 26, 2)` over `sb_char`, `(1880, 92, 4)` over `combat_screen`; a toast queued under limit 0 is still queued and unexpired 10 s later;
-- the toast lane (x 1330 to 1790, y 92 to 350; as built to about y 422, R6) and the banner's rectangle over `sb_place` (x 400 to 1300) do not intersect; in the `zz_worst("sb_place")` screenshot the objective line is readable to its end;
+- the toast lane (x 1330 to 1790, y 92 to 350; as built to y 422, R6) and the banner's rectangle over `sb_place` (x 400 to 1300) do not intersect; in the `zz_worst("sb_place")` screenshot the objective line is readable to its end;
 - `ambient_of` returns a 2-tuple for every person × room; with `sunmall_done` set at least one caption differs from the fresh-game one.
 
 **Owner check:** the corner icons; hover over everything; click Nobara: grade and choices only.

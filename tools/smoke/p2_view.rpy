@@ -207,7 +207,7 @@ init 999 python:
 import sys, os
 tools, out = sys.argv[1], sys.argv[2]
 sys.path.insert(0, tools)
-from raster import Img
+from raster import Img, resample, crop
 W, H = 1920, 1080
 os.makedirs(out, exist_ok=True)
 bg = Img(W, H)
@@ -225,6 +225,17 @@ def variant(name, rect, noise=0):
 variant("pose_zzroom__nobara_a_00001_.png", (0, 0, 960, 864))
 variant("pose_zzroom__yuji_b_00002_.png", (600, 300, 480, 432))
 variant("pose_zzroom__megumi__evening_a_00001_.png", (600, 300, 480, 432), noise=6)
+# P8: a 16:9 render that is not 1920x1080 (fit() scales to the full width and
+# crops the height), and a body with its feet a few pixels apart from it.
+room2 = Img(W, H); room2.buf = bytearray(bg.buf)
+room2.rect(96, 0, 112, H, (30, 30, 40)); room2.rect(1808, 0, 1824, H, (30, 30, 40)); room2.rect(0, 96, W, 112, (30, 30, 40))
+room2.save(os.path.join(out, "room2.png"))
+small = crop(resample(room2, 1376, 774), 0, 3, 1376, 771)
+small.rect(430, 215, 774, 525, (230, 40, 60))
+small.save(os.path.join(out, "pose_zzroom__maki_a_00001_.png"))
+im = Img(W, H); im.buf = bytearray(bg.buf)
+im.rect(600, 300, 1080, 732, (230, 40, 60)); im.rect(700, 740, 900, 780, (230, 40, 60)); im.rect(1400, 900, 1440, 940, (230, 40, 60))
+im.save(os.path.join(out, "pose_zzroom__panda_a_00001_.png"))
 '''
 
     ## The driver: an overlay that answers the screens and the say lines of
@@ -663,6 +674,16 @@ label zz_smoke:
             _zz_sc = zzv_json.load(open(_zz_side)) if os.path.exists(_zz_side) else {}
             check(_zz_rc == 0 and _zz_sc.get("poses", {}).get("yuji") == [400, 300, 500, 700],
                   "--box 400,300,500,700 writes that box", (_zz_log, _zz_sc))
+            _zz_rc, _zz_log = zzv_run([_zz_tool, "--bg", os.path.join(_zz_dir, "room2.png"), "--root", _zz_out,
+                                       os.path.join(_zz_dir, "pose_zzroom__maki_a_00001_.png")])
+            _zz_sc = zzv_json.load(open(_zz_side)) if os.path.exists(_zz_side) else {}
+            check(_zz_rc == 0 and "10.1%" in _zz_log and _zz_sc.get("poses", {}).get("maki") == [576, 280, 528, 484],
+                  "P8: a 1376x768 render is scaled to the full width and cropped in height, so the room lines up: 10.1% "
+                  "changed, the box around the patch", (_zz_log, _zz_sc))
+            _zz_rc, _zz_log = zzv_run(_zz_base + [os.path.join(_zz_dir, "pose_zzroom__panda_a_00001_.png")])
+            _zz_sc = zzv_json.load(open(_zz_side)) if os.path.exists(_zz_side) else {}
+            check(_zz_rc == 0 and _zz_sc.get("poses", {}).get("panda") == [576, 276, 528, 528],
+                  "P8: feet 8 px below the body are in the box; a far speck is not", (_zz_log, _zz_sc))
             check(open(_zz_hot, "rb").read() == _zz_hot_before and sorted(os.listdir(os.path.join(_zz_out, "game", "layout")))
                   == ["hot_zzroom.json", "view_zzroom.json"],
                   "an existing hot_<place>.json beside it is byte-identical afterwards")

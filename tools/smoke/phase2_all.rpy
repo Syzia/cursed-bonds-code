@@ -4,7 +4,7 @@
 ##   SMOKE_TIMEOUT=300 tools/smoke.sh tools/smoke/phase2_all.rpy
 ##
 ## Phase 1's driver (tools/smoke/phase1_all.rpy), extended. A 30-day run takes
-## about two to three minutes on the owner's Mac; the driver stops itself after
+## about a minute and a half on the owner's Mac; the driver stops itself after
 ## PHASE2_MAX_SECONDS (default 270) and still reports how far it got.
 ## PHASE2_DAYS sets how many days to play after the prologue (default 30).
 ##

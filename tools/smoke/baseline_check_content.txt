@@ -1,6 +1,7 @@
 # tools/smoke/baseline_check_content.txt -- the findings of
-# `tools/check_content.py --all game/ tools/smoke/` that the tree had before
-# phase 2 changed a game file (written by --write-baseline at P0a; frozen).
+# `tools/check_content.py --all game/ tools/smoke/` that the tree had when this
+# file was last written (by --write-baseline: at P0a, before phase 2 changed a
+# game file, and again by P8 at the end of the phase; frozen in between).
 # A finding with the same file, rule and text is counted, not listed; line
 # numbers are not compared. --no-baseline lists them. (Names have their own
 # baseline, baseline_globals.txt.)
@@ -10,17 +11,17 @@ tools/smoke/wp10_chapters.rpy:99: one-technique: WP10_TECH = re.compile(r"filame
 tools/smoke/wp10_chapters.rpy:100: no-deadline: WP10_DEADLINE = re.compile(r"KYOTO_DAY|days_left\(|days until Kyoto|TO KYOTO|Three weeks from today"
 tools/smoke/wp10_chapters.rpy:101: no-deadline: r"|In three weeks|\barc\s*=\s*2\b|END OF ARC ONE")
 tools/smoke/wp10_chapters.rpy:102: no-deadline: WP10_GREP = ["technique ==", "tname", "min_day", "arc = 2", "min(160", "min(140", "grade = "]
-tools/smoke/wp10_chapters.rpy:246: no-deadline: check(not _grep, "static: no technique==/tname/min_day/arc = 2/min(160/min(140/grade = ", _grep)
-tools/smoke/wp10_chapters.rpy:390: no-deadline: and "END OF ARC ONE" not in _nb, "st_night_before: the card is THE NIGHT BEFORE / Goodwill")
-tools/smoke/wp10_chapters.rpy:407: one-technique: technique = "filament"
-tools/smoke/wp10_chapters.rpy:484: one-technique: technique = "filament"
-tools/smoke/wp10_chapters.rpy:518: one-technique: technique = "filament"
-tools/smoke/wp10_chapters.rpy:601: one-technique: check(not _techs, "no line shown names Filament, Emberfall, Aftersound or Stillness", _techs[:5])
-tools/smoke/wp1_world.rpy:181: no-literal-name: check(not _you, "no place name or description says you/your (Kaito narrates in I)", _you)
+tools/smoke/wp10_chapters.rpy:250: no-deadline: check(not _grep, "static: no technique==/tname/min_day/arc = 2/min(160/min(140/grade = ", _grep)
+tools/smoke/wp10_chapters.rpy:394: no-deadline: and "END OF ARC ONE" not in _nb, "st_night_before: the card is THE NIGHT BEFORE / Goodwill")
+tools/smoke/wp10_chapters.rpy:411: one-technique: technique = "filament"
+tools/smoke/wp10_chapters.rpy:488: one-technique: technique = "filament"
+tools/smoke/wp10_chapters.rpy:522: one-technique: technique = "filament"
+tools/smoke/wp10_chapters.rpy:605: one-technique: check(not _techs, "no line shown names Filament, Emberfall, Aftersound or Stillness", _techs[:5])
+tools/smoke/wp1_world.rpy:237: no-literal-name: check(not _you, "no place name or description says you/your (Kaito narrates in I)", _you)
 tools/smoke/wp2_grades.rpy:185: one-technique: ## acc: migration 10 on an Emberfall fixture, twice.
 tools/smoke/wp2_grades.rpy:191: one-technique: "acc: migration 10 on Emberfall gives control >= output", (technique, control, output))
 tools/smoke/wp2_grades.rpy:201: one-technique: "migration 10 on Filament: Last Light, control unchanged", (technique, control))
-tools/smoke/wp7_ui.rpy:827: one-technique: check("The forge is cold." in _tp and "Emberfall" not in _tp and "gain(" not in _tp and "advance_period" not in _tp,
+tools/smoke/wp7_ui.rpy:870: one-technique: check("The forge is cold." in _tp and "Emberfall" not in _tp and "gain(" not in _tp and "advance_period" not in _tp,
 tools/smoke/wp9_prologue.rpy:174: one-technique: fixture(technique="filament", mc_name="Ren", mc_surname="Tachibana")
 game/images/side/gojo_angry.png:1: art-names: the image name gojo_angry is also game/images/char/gojo_angry.png
 game/images/side/gojo_happy.png:1: art-names: the image name gojo_happy is also game/images/char/gojo_happy.png

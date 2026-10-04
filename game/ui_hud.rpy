@@ -53,9 +53,11 @@ init python:
     TOAST_VISIBLE_PERSON = 2    # over the person view, where the card is below
 
     ## Lanes (R6). The toast stack over the place view sits left of the icon
-    ## column: (left, top, right, bottom) of four toasts there. The objective
-    ## banner over the place view: its left edge and width.
-    TOAST_LANE = (1330, 92, 1790, 350)
+    ## column: (left, top, right, bottom) of four toasts there (P8: four
+    ## two-line toasts end near y 416, so the lane's bottom is 422, as the
+    ## hotspot validator's HOT_LANES has it). The objective banner over the
+    ## place view: its left edge and width.
+    TOAST_LANE = (1330, 92, 1790, 422)
     HUD_BANNER_X = 400
     HUD_BANNER_W = 900
 

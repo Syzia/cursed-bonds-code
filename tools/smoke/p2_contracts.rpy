@@ -887,6 +887,7 @@ label zz_smoke:
         zz_p0_quiet_view()
         _zz_ok = zz_worst("sb_place")
         check(_zz_ok and renpy.get_screen("sb_place"), "zz_worst(sb_place): the place view's worst case is on file")
+        check(OBJ_SHOWN[1] == 0.0, "zz_worst: the banner did not wait for the arrival caption", OBJ_SHOWN[1])
         renpy.hide_screen("sb_place")
 
     ## --- 3. fixture() is strict (R5) -----------------------------------------------
@@ -909,7 +910,7 @@ label zz_smoke:
                 _zz_refused.append(_zz_k)
         check(_zz_refused == list(ZZ_SHAPED) and set(ZZ_SHAPED) >= {
             "board_offers", "board_log", "npc_state", "inventory", "mission_state", "cb",
-            "cards_state", "fish_state", "fish_log", "pc_requests"},
+            "cards_state", "cards_sit", "fish_state", "fish_log", "pc_requests"},
             "fixture() refuses every shaped variable (R5)", _zz_refused)
         try:
             fixture(day=_zz_day + 5, inventory={"paper_ward": 1})

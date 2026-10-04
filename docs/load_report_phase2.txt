@@ -5,14 +5,8 @@ auto-10): no separate checkpoint slot was saved at A, B or C, and
 tools/load_all_saves.sh loads every *.save it finds, so it needed no list.
 Compare a later run with this one by STATUS, not by line number.
 
-INTERIM: this run was made on the P8 docs branch, before P8's file groups
-were merged (the only game change in it is config.version). After the final
-merge, run tools/load_all_saves.sh on the merged tree and replace everything
-below this paragraph with its shots/load_report.txt; then delete this
-paragraph.
-
-Load report · 2026-10-04 20:32 · p2_8docs @ c229326 + uncommitted changes
-Saves from: /Users/hunterjolly/Desktop/JJK_worktrees/p2_8docs/game/saves
+Load report · 2026-10-04 21:50 · p2_8trial @ 83ff7f9 + uncommitted changes
+Saves from: /Users/hunterjolly/Desktop/JJK_worktrees/p2_8trial/game/saves
             /Users/hunterjolly/Library/RenPy/JJKgamemd-1788928056
 Slots: 11 · SAME 11 · EARLIER 0 · MOVED 0 · RECOVER 0 · UNKNOWN 0 · RAISED 0
 
@@ -23,8 +17,8 @@ return_recover ran. UNKNOWN: the save's log couldn't be read before loading.
 RAISED: an exception, a timeout or no result (see the slot's section below).
 
 SLOT             STATUS                 SAVED AT                           LANDED
-1-1              SAME                   game/sb_loop.rpy:33                game/sb_loop.rpy:33
-auto-1           SAME                   game/sb_loop.rpy:68                game/sb_loop.rpy:68
+1-1              SAME                   game/sb_loop.rpy:37                game/sb_loop.rpy:37
+auto-1           SAME                   game/sb_loop.rpy:72                game/sb_loop.rpy:72
 auto-10          SAME                   game/ch1b_the_offer.rpy:53         game/ch1b_the_offer.rpy:53
 auto-2           SAME                   game/story_arc1.rpy:72             game/story_arc1.rpy:72
 auto-3           SAME                   game/sb_night.rpy:486              game/sb_night.rpy:486
@@ -46,7 +40,7 @@ the objective points at), the objective, keepsakes, and where it landed.
   story step sandbox [legacy] · m_roll_call (waiting)
   objective  Roll call with Principal Yaga — tomorrow morning, wherever I am
   keepsakes  none
-  landed     statement game/sb_loop.rpy:33
+  landed     statement game/sb_loop.rpy:37
 auto-1
   version    save_version 1 · game 0.3 — Arc One, phase 1
   technique  timestop (Last Light) · grade g4 · arc 1 · day 3 Morning
@@ -54,7 +48,7 @@ auto-1
   story step arc_one_open [story_point] · m_sunmall (waiting)
   objective  Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings, from tomorrow
   keepsakes  The festival photo
-  landed     statement game/sb_loop.rpy:68
+  landed     statement game/sb_loop.rpy:72
 auto-10
   version    save_version 1 · game 0.3 — Arc One, phase 1
   technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
@@ -132,11 +126,11 @@ auto-9
 # load_slot · 2.9 s · Ren'Py 8.5.3.26051504
 NOTE slot: 1-1
 NOTE saved: 2026-09-23 16:59, game version 0.1 — Prologue, Ren'Py [8, 5, 3, 26051504]
-NOTE saved_at: game/sb_loop.rpy:33
-NOTE rollback_target: game/sb_loop.rpy:33
+NOTE saved_at: game/sb_loop.rpy:37
+NOTE rollback_target: game/sb_loop.rpy:37
 NOTE saved_store: save_version='<unset>' story_point='<unset>' day=1 flags=1
 NOTE status: SAME
-NOTE landed: game/sb_loop.rpy:33
+NOTE landed: game/sb_loop.rpy:37
 NOTE statement: ('game/sb_loop.rpy', 652177548, 1968)
 NOTE call_stack_depth: 1
 NOTE dead_return_sites: none
@@ -209,7 +203,7 @@ NOTE report.merit: 0
 NOTE report.story_step: sandbox [legacy] · m_roll_call (waiting)
 NOTE report.objective: Roll call with Principal Yaga — tomorrow morning, wherever I am
 NOTE report.keepsakes: none
-NOTE report.where: statement game/sb_loop.rpy:33
+NOTE report.where: statement game/sb_loop.rpy:37
 PASS loads without an exception
 RESULT PASS
 
@@ -217,11 +211,11 @@ RESULT PASS
 # load_slot · 2.5 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-1
 NOTE saved: 2026-10-04 11:54, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
-NOTE saved_at: game/sb_loop.rpy:68
-NOTE rollback_target: game/sb_loop.rpy:68
+NOTE saved_at: game/sb_loop.rpy:72
+NOTE rollback_target: game/sb_loop.rpy:72
 NOTE saved_store: save_version=1 story_point='arc_one_open' day=3 flags=24
 NOTE status: SAME
-NOTE landed: game/sb_loop.rpy:68
+NOTE landed: game/sb_loop.rpy:72
 NOTE statement: ('game/sb_loop.rpy', 652177548, 1978)
 NOTE call_stack_depth: 2
 NOTE dead_return_sites: none
@@ -294,12 +288,12 @@ NOTE report.merit: 5
 NOTE report.story_step: arc_one_open [story_point] · m_sunmall (waiting)
 NOTE report.objective: Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings, from tomorrow
 NOTE report.keepsakes: The festival photo
-NOTE report.where: statement game/sb_loop.rpy:68
+NOTE report.where: statement game/sb_loop.rpy:72
 PASS loads without an exception
 RESULT PASS
 
 === auto-10 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.2 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.3 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-10
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch1b_the_offer.rpy:53
@@ -384,7 +378,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-2 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-2
 NOTE saved: 2026-10-04 11:47, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/story_arc1.rpy:72
@@ -809,7 +803,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-7 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-7
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch2_tour.rpy:82

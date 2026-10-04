@@ -728,7 +728,7 @@ label zz_smoke:
         _zz_drawn = zz_hud_toasts()
         check(_zz_drawn is not None and _zz_drawn[:3] == (1330, 92, 460)
               and not any(zz_hud_meets(r, _zz_drawn) for r in _zz_r)
-              and _zz_drawn[3] > 3 * 56 + 16 and _zz_drawn[1] + _zz_drawn[3] <= TOAST_LANE[3],
+              and _zz_drawn[3] > 3 * 56 + 16 and _zz_drawn[1] + _zz_drawn[3] <= 350,
               "the three two-line toasts as drawn end inside the lane (above y 350), and no tile meets them", _zz_drawn)
         _zz_xs = sorted(set(r[0] for r in _zz_r))
         check(_zz_xs == [1726, 1808] and sum(1 for r in _zz_r if r[0] == 1808) == 8
@@ -748,7 +748,7 @@ label zz_smoke:
         _zz_drawn = zz_hud_toasts()
         check(not any(toast_wraps(t["text"]) for t in TOASTQ.items) and len(toast_visible()) == 4 and toast_room() == (1790, 92, 4)
               and _zz_drawn is not None and _zz_drawn[1] + _zz_drawn[3] <= TOAST_LANE[3],
-              "four one-line toasts over the place view: all four show, inside the lane", (toast_room(), _zz_drawn))
+              "four one-line toasts over the place view: all four show, inside the lane (above y 422)", (toast_room(), _zz_drawn))
         toast_clear()
 
         ## The same nine with every icon's picture missing: the words show,
@@ -1102,9 +1102,9 @@ label zz_smoke:
         zz_hud_quiet()
         _zz_lane = (TOAST_LANE[0], TOAST_LANE[1], TOAST_LANE[2] - TOAST_LANE[0], TOAST_LANE[3] - TOAST_LANE[1])
         _zz_banner = (HUD_BANNER_X, 96, HUD_BANNER_W, 170 - 96)
-        check(TOAST_LANE == (1330, 92, 1790, 350) and (HUD_BANNER_X, HUD_BANNER_X + HUD_BANNER_W) == (400, 1300)
+        check(TOAST_LANE == (1330, 92, 1790, 422) and (HUD_BANNER_X, HUD_BANNER_X + HUD_BANNER_W) == (400, 1300)
               and not zz_hud_meets(_zz_lane, _zz_banner) and HUD_BANNER_X + HUD_BANNER_W <= TOAST_LANE[0],
-              "the toast lane (x 1330 to 1790, y 92 to 350) and the banner (x 400 to 1300) do not intersect",
+              "the toast lane (x 1330 to 1790, y 92 to 422) and the banner (x 400 to 1300) do not intersect",
               (TOAST_LANE, _zz_banner))
     scene expression graded_bg()
     python:

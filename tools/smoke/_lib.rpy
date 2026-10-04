@@ -67,7 +67,8 @@
 ##   zz_layer_tags(layer)          the set of tags showing on a layer
 ##   zz_worst(screen, *args, hover=None, name=None)
 ##                                 the worst case for a full screen (R6): four
-##                                 toasts queued, the objective banner up
+##                                 toasts queued (over sb_place three show, the
+##                                 fourth waits), the objective banner up
 ##                                 (the arrival caption aged out of its way),
 ##                                 skipping on, `screen` shown with *args, and
 ##                                 (hover=) the button with that id focused;
@@ -428,7 +429,8 @@ init 999 python:
         return builtins.set(renpy.get_showing_tags(layer))
 
     def zz_worst(screen, *args, **kwargs):
-        """The worst case for a full screen (R6): four toasts queued, the
+        """The worst case for a full screen (R6): four two-line toasts queued
+        (over sb_place three show and the fourth waits, toast_wraps), the
         objective banner up, skipping on, `screen` shown with *args and, with
         hover=<id>, that button focused. Saves worst_<screen>.png (name= for
         another file name) and returns True if it was written. `screen` stays

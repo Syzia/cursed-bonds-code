@@ -295,6 +295,13 @@ init 999 python:
     def zz_n_no_event(*args, **kwargs):
         return None
 
+    def zz_n_one_event(kind, who=None, loc=None):
+        """The loop's first pick_event("story") gets the beat kept in
+        zz_n.keep["ev"]; every later call gets None."""
+        if kind == "story":
+            return zz_n.keep.pop("ev", None)
+        return None
+
     def zz_n_loop(target):
         zz_n.after_loop = target
         zz_n.real_pick = store.pick_event
@@ -876,9 +883,27 @@ label zz_n_e4:
         check(not _zz_bad and NIGHT_CARRY_LINES["dorms"] != NIGHT_CARRY_LINES["girls_dorm"],
               "E: the corridor line is the girls' dormitory's alone: the rooftop and the common room get the area's line, "
               "and an unknown place the fallback", _zz_bad)
-        note("E: a beat picked by the loop", "the loop picks a story beat after it asks night_pending() (sb_loop.rpy), so a "
-             "Night beat that rolls the day would be walked home one action late; no Arc One beat does (hand-off to P8)")
         note("E: board jobs", "not a case: the board refuses in the Evening and at Night (board_take_reason)")
+
+        ## P8: a beat the loop itself picks at Night away from my room. The
+        ## loop asks night_pending() again right after play_event, so the walk
+        ## home comes before the place view, not one action late.
+        zz_n_fix("rich", here="courtyard", period=PERIODS[-1])
+        zz_n.keep["day"] = day
+        done_events.discard("st_second_years")
+        zz_n.keep["t"] = len(zz_n.said)
+        zz_n_loop("zz_n_e5")
+        store.pick_event = zz_n_one_event
+    jump sandbox
+
+label zz_n_e5:
+    python:
+        zz_n_loop_done()
+        _zz_said = zz_n_carry_said(zz_n.keep["t"])
+        check(day == zz_n.keep["day"] + 1 and here == "dorm" and not night_pending()
+              and _zz_said == [NIGHT_CARRY_LINES["heart"]] and "ev" not in zz_n.keep,
+              "E: a beat the loop picks at Night that rolls the day: the carry line is said once and I'm in my room "
+              "before the place view first shows", (day, here, night_carried, _zz_said, "ev" in zz_n.keep))
 
     ############################################################################
     ## F. When a Gojo night is due

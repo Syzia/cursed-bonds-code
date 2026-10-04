@@ -979,8 +979,12 @@ label zz_smoke:
         check(any("Ask the register about Maki's family" in str(r) for r in _zz_lead) and any("ridge" in str(r) for r in _zz_lead),
               "G (7.3, with P3 in): the journal's Missions tab reads both leads through jr_leads()", _zz_lead)
         _zz_rec = builtins.dict(jr_records())
-        check(_zz_rec.get("PAGES I'VE READ") == pc_records() and len(_zz_rec.get("THE RECORD BOOK", [])) == len(fish_records()),
-              "G (7.3, with P3 in): the journal's Me page lists the pages read and the record book through jr_records()", _zz_rec)
+        ## P8: the record book is listed from my first catch on (ui_journal.rpy).
+        _zz_caught = any(r[1] for r in fish_records())
+        check(_zz_rec.get("PAGES I'VE READ") == pc_records()
+              and len(_zz_rec.get("THE RECORD BOOK", [])) == (len(fish_records()) if _zz_caught else 0),
+              "G (7.3, with P3 in): the journal's Me page lists the pages read through jr_records(), and the record book "
+              "once something is caught", (_zz_caught, _zz_rec))
 
         ## The pages' text.
         _zz_bad = []
