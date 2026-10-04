@@ -750,3 +750,17 @@ Locked doors are dimmed, say why when you hover, and do nothing when clicked.
 - **`game/room_paths.rpy`, `PATH_EXITS`:** the five hubs now have real backgrounds (`school_yard`, `dorm_yard`, `staff_yard`, `training_yard`, `trailhead`), but their exits still sit in the stand-in's plain row along the top. Move each exit onto the door, steps or path it leads to, with `tools/layout_sheet.py`.
 - **Utahime's pose:** her scar is faint in both candidates; the desk foreground hides her feet and the lower edge of her hands. For the owner to judge at checkpoint C.
 - **Pose candidates in the workflow are stacked (A above B), not side by side;** the hand-off note for batch 4 should say "top" and "bottom".
+
+---
+
+# P8: where the record went (5 Oct 2026)
+
+*Written by P8's docs group. Nothing below is new work for a wave: it says where each thing above ended up, for phases 3 and 4.*
+
+- **The plan is now as built.** `docs/PHASE2_DESIGN.md` carries every departure listed in this file, in the section it belongs to, in a sentence or block marked **As built**. Where the two still disagree about what was built, the code is right.
+- **What was put off** is in the plan's section 11, under its phase: phase 3 (a save test inside a fight; yen balance), phase 4 (the Inverted Spear's `sealed` field, a ridge caption for Gojo, the placeholder night scenes and district pins, a caption test for poses, cafeteria staging, the computer pages' lore, `pc_request` for mission authors, Night beats that roll the day), and a list for the owner's review after the phase.
+- **The owner's checklist** for checkpoint D is `docs/PLAYTEST.md`: the play-through, every stand-in, the five rulings as built, what was chosen and what the owner said at A, B and C, and the questions still open.
+- **The art still to make** (twelve poses, blink and talk for ten, foregrounds) is `docs/ART_PHASE2.md`, as numbered steps with the prices the tools print.
+- **The tools and harnesses** of phase 2 are in `tools/README.md`; the systems in `README.md`.
+- **The save reference** is `docs/load_report_phase2.txt` (the owner's eleven slots, which are also the checkpoint saves). The three per-wave reports are kept as history.
+- **Not settled by P8, for the owner:** `gen_gui.py --all` is unverified (no Pillow on this Mac); `build.version` in `game/options.rpy` still reads "0.3" (only `config.version` was asked for; it names the build folder).
