@@ -77,6 +77,14 @@ Rules (flags):
                       `renpy.store.Function(`. `Function` handed on without
                       a call (`F = Function`) is a finding anywhere in a
                       game file: what F( ... ) runs could not be read.
+  --icon-names        The literal first argument of `icon("...")` and
+                      `icon_btn("...")` (as `use icon_btn(` too, and written
+                      `name="..."`) in a game file must be a key of ICONS in
+                      game/ui_icons.rpy. Lint cannot see this: an unknown
+                      name draws a question mark in the game. An argument
+                      that is not one plain string (`icon(_s["icon"])`,
+                      `icon("area_" + _k)`) is not read; icon_validate()
+                      checks the data tables at start-up.
   --all               Every rule. This is also the default when no rule flag
                       is given.
   --no-baseline       List the findings tools/smoke/baseline_check_content.txt
@@ -128,6 +136,7 @@ RULES = [
     "harness-names",
     "art-names",
     "action-returns",
+    "icon-names",
 ]
 
 MC_ON_SCREEN = re.compile(r"^\s*(show|hide)\s+mc\b")
@@ -142,6 +151,11 @@ LITERAL_NAME = re.compile(r"Kaito|Amagiri")
 NAME_ASSIGN = re.compile(r"\bmc_(sur)?name\s*=(?!=)")
 LABEL_DEF = re.compile(r"^\s*label\s+([A-Za-z_.][\w.]*)")
 PYTHON_HEADER = re.compile(r"^(init(\s+[-+]?\d+)?\s+)?python\b(.*)$")
+ICON_CALL = re.compile(r"(?<![\w.])icon(?:_btn)?\(")
+# One whole string and then the end of the argument: `"area_" + k` is not read.
+ICON_LITERAL = re.compile(r"""\s*(?:name\s*=\s*)?(["'])([^"'\\]*)\1\s*(?=[,)])""")
+ICONS_OPEN = re.compile(r"^\s*ICONS\s*=\s*\{\s*$")
+ICONS_ROW = re.compile(r"""^\s*["'](\w+)["']\s*:\s*\(""")
 # The narrator's string may be followed by say arguments or a transition.
 SAY_TAIL = re.compile(r"^(with\b|\(|id\b|nointeract\b)")
 
@@ -616,7 +630,8 @@ def label_temporaries(path, lines):
 
 
 class Baseline(object):
-    """tools/smoke/baseline_globals.txt: the names the tree had before phase 2.
+    """tools/smoke/baseline_globals.txt: the names the tree had when the
+    baseline was last written (before phase 2 at P0a; again at the end of it).
     Tab-separated rows, `kind  namespace  name  file`:
       def  a top-level name (--prefixes and --harness-names leave it alone)
       dup  one definition site of a name that was already defined twice
@@ -738,6 +753,35 @@ def rule_action_returns(path, lines, allowed):
                 yield ln, arg
 
 
+def icon_names(lines):
+    """The keys of ICONS, read from game/ui_icons.rpy's own text: the
+    `"name": (` rows between `ICONS = {` and the line that closes it."""
+    names = set()
+    inside = False
+    for ln in lines:
+        if not inside:
+            inside = bool(ICONS_OPEN.match(ln.code))
+            continue
+        if ln.code.strip().startswith("}"):
+            break
+        m = ICONS_ROW.match(ln.code)
+        if m:
+            names.add(m.group(1))
+    return names
+
+
+def rule_icon_names(path, lines, names):
+    """[(Line, name)] for each icon("...") / icon_btn("...") whose literal
+    first argument is not an icon name."""
+    for ln in lines:
+        # Found in the code with strings blanked (so "icon(" inside a string
+        # is not a call), then read from the code itself.
+        for m in ICON_CALL.finditer(ln.bare):
+            lit = ICON_LITERAL.match(ln.code[m.end():])
+            if lit and lit.group(2) not in names:
+                yield ln, lit.group(2)
+
+
 def art_names(images):
     """{base name: [paths]} for the names two or more files under images share."""
     seen = {}
@@ -813,8 +857,8 @@ def shown(path):
 
 
 def global_findings(files, chosen, cache):
-    """The findings of --dup-globals, --prefixes, --harness-names, --art-names
-    and --action-returns, as (path, line, rule, text)."""
+    """The findings of --dup-globals, --prefixes, --harness-names, --art-names,
+    --action-returns and --icon-names, as (path, line, rule, text)."""
     out = []
     base = Baseline()
     cfg = load_prefixes()
@@ -922,6 +966,20 @@ def global_findings(files, chosen, cache):
                     continue
                 out.append((path, ln.n, "action-returns",
                             "Function(%s ...) is not ui_do or in tools/none_ok.txt: %s" % (arg, ln.raw.strip())))
+
+    if "icon-names" in chosen:
+        src = os.path.join(GAME, "ui_icons.rpy")
+        names = icon_names(read_lines(src, cache)) if os.path.isfile(src) else set()
+        checked = [p for p in files if is_game(p)]
+        if not names and checked:
+            # Never pass because the list could not be read.
+            out.append((src, 1, "icon-names", "no ICONS = { ... } table of \"name\": (kanji, word) rows "
+                        "could be read from game/ui_icons.rpy"))
+        elif names:
+            for path in checked:
+                for ln, name in rule_icon_names(path, read_lines(path, cache), names):
+                    out.append((path, ln.n, "icon-names", "%r is not an icon name (a key of ICONS in "
+                                "game/ui_icons.rpy): %s" % (name, ln.raw.strip())))
     return out
 
 
@@ -974,9 +1032,10 @@ def write_baselines(cache, really=True):
             len(old - new)), file=sys.stderr)
         return len(rows)
     with open(BASELINE_GLOBALS, "w", encoding="utf-8") as f:
-        f.write("# tools/smoke/baseline_globals.txt -- the names the tree had before phase 2\n"
-                "# changed a game file (written by `tools/check_content.py --write-baseline`\n"
-                "# at P0a; frozen). Tab-separated: kind, namespace, name, file.\n"
+        f.write("# tools/smoke/baseline_globals.txt -- the names the tree had when this file\n"
+                "# was last written (by `tools/check_content.py --write-baseline`: at P0a,\n"
+                "# before phase 2 changed a game file, and again by P8 at the end of the\n"
+                "# phase; frozen in between). Tab-separated: kind, namespace, name, file.\n"
                 "#   def  a top-level name: --prefixes and --harness-names leave it alone\n"
                 "#   dup  one definition site of a name that was already defined twice:\n"
                 "#        --dup-globals leaves that many sites in that file alone\n"
@@ -1001,7 +1060,7 @@ def main(argv=None):
                     help="also list the findings tools/smoke/baseline_check_content.txt records")
     ap.add_argument("--write-baseline", action="store_true",
                     help="write baseline_globals.txt and baseline_check_content.txt "
-                         "from the tree as it stands (P0a only)")
+                         "from the tree as it stands (P0a and P8 only)")
     ap.add_argument("--i-am-p0a-or-p8", dest="really_write", action="store_true",
                     help="the second flag --write-baseline needs before it replaces "
                          "the two frozen baselines")
@@ -1084,8 +1143,9 @@ def main(argv=None):
     if args.write_baseline:
         with open(BASELINE_FINDINGS, "w", encoding="utf-8") as f:
             f.write("# tools/smoke/baseline_check_content.txt -- the findings of\n"
-                    "# `tools/check_content.py --all game/ tools/smoke/` that the tree had before\n"
-                    "# phase 2 changed a game file (written by --write-baseline at P0a; frozen).\n"
+                    "# `tools/check_content.py --all game/ tools/smoke/` that the tree had when this\n"
+                    "# file was last written (by --write-baseline: at P0a, before phase 2 changed a\n"
+                    "# game file, and again by P8 at the end of the phase; frozen in between).\n"
                     "# A finding with the same file, rule and text is counted, not listed; line\n"
                     "# numbers are not compared. --no-baseline lists them. (Names have their own\n"
                     "# baseline, baseline_globals.txt.)\n")
