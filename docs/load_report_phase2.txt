@@ -5,7 +5,7 @@ auto-10): no separate checkpoint slot was saved at A, B or C, and
 tools/load_all_saves.sh loads every *.save it finds, so it needed no list.
 Compare a later run with this one by STATUS, not by line number.
 
-Load report · 2026-10-04 21:50 · p2_8trial @ 83ff7f9 + uncommitted changes
+Load report · 2026-10-04 21:52 · p2_8trial @ bbeb94f
 Saves from: /Users/hunterjolly/Desktop/JJK_worktrees/p2_8trial/game/saves
             /Users/hunterjolly/Library/RenPy/JJKgamemd-1788928056
 Slots: 11 · SAME 11 · EARLIER 0 · MOVED 0 · RECOVER 0 · UNKNOWN 0 · RAISED 0
@@ -803,7 +803,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-7 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-7
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch2_tour.rpy:82
