@@ -42,8 +42,9 @@ init -5 python:
     HOT_PULSE = 2.4                 # seconds for one pulse of the ring
     HOT_BOUNDS = (40, 180, 1700, 1000)      # x0, y0, x1, y1 a point must sit in
     ## The two lanes other things draw in over the place view (R6): the toast
-    ## stack and the objective banner. (x, y, w, h).
-    HOT_LANES = ((1330, 92, 460, 258), (400, 96, 900, 74))
+    ## stack and the objective banner. (x, y, w, h). The toast lane runs to
+    ## y 422: four two-line toasts end near y 416 (ui_hud.rpy).
+    HOT_LANES = ((1330, 92, 460, 330), (400, 96, 900, 74))
     HOT_KEYS = ("id", "x", "y", "icon", "label", "hint", "cost", "act", "lines", "standalone", "front")
 
     def register_hotspot(id, place, x, y, icon, act=None, lines=None, label="", hint="", cost=0, when=None, standalone=False, front=False):
