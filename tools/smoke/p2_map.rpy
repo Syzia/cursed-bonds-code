@@ -271,8 +271,9 @@ label zz_smoke:
     ## --- 2. level 2: an area's rooms --------------------------------------------------------
     python:
         zz_map(area="school")
-        check(zz_ids("row_") == ["row_cafeteria", "row_classroom", "row_infirmary", "row_library"],
-              "sb_map(area='school') shows row_classroom, row_cafeteria, row_infirmary, row_library", zz_ids("row_"))
+        ## P9 (D53): the area's hub, the School Courtyard, has a pin too.
+        check(zz_ids("row_") == ["row_cafeteria", "row_classroom", "row_infirmary", "row_library", "row_school_yard"],
+              "sb_map(area='school') shows row_classroom, row_cafeteria, row_infirmary, row_library and the hub's row_school_yard", zz_ids("row_"))
         check("School Building" in zz_texts("sb_map") and AREA_BY_KEY["school"]["name"] == "School Building"
               and "library" in places_in("school"), "the school area is 'School Building' and holds the Library")
         _zz_bad = []
@@ -296,9 +297,9 @@ label zz_smoke:
             _zz_rects["back:" + _zz_a["key"]] = zz_rect("sb_map", "map_back")
             zz_settle()
             shot("area_" + _zz_a["key"], wait=0)
-        check(not _zz_bad and len(LOCATIONS) == 19, "pressing an open pin returns ('go', loc), for every one of the 19 rooms", _zz_bad)
+        check(not _zz_bad and len(LOCATIONS) == 24, "pressing an open pin returns ('go', loc), for every one of the 24 places (19 rooms, 5 new hubs)", _zz_bad)
         check(max(_zz_words.values()) <= 16, "level 2: zz_words <= 16 in every area", _zz_words)
-        check(max(_zz_btns.values()) <= 9, "level 2: at most 5 pins + 4 buttons in every area", _zz_btns)
+        check(max(_zz_btns.values()) <= 10, "level 2: at most 5 pins (the hub's included) + 5 buttons in every area", _zz_btns)
         _zz_hits = [(a, b) for a in _zz_rects for b in _zz_rects if a < b and _zz_rects[a] and _zz_rects[b]
                     and (area_of(a) or a[5:]) == (area_of(b) or b[5:]) and zz_overlap(_zz_rects[a], _zz_rects[b])]
         check(all(_zz_rects.values()) and not _zz_hits, "no pin overlaps another pin of its area, or Back", (_zz_hits, [k for k, v in _zz_rects.items() if not v]))
@@ -485,8 +486,11 @@ label zz_smoke:
         check(not [w for w in _zz_in if w in _zz_m] and not [w for w in _zz_in if w in _zz_p]
               and not [w for w in _zz_in if w in map_area_people("dorms")] and map_pin_people("girls_dorm") == [],
               "a person in a locked room is on no marker and no pin", (_zz_in, _zz_m, _zz_p))
-        check(sorted(_zz_p) == sorted(w for l in ("dorm", "dorm_common", "rooftop") for w in who_is_here(l)[:3]),
-              "the open rooms' pins still show who is there", (_zz_p,))
+        ## P9 (D53, D57): the hub is an open place of the area too (Yuji is in
+        ## the Dormitory Garden at night).
+        check(sorted(_zz_p) == sorted(w for l in ("dorm_yard", "dorm", "dorm_common", "rooftop") for w in who_is_here(l)[:3])
+              and "yuji" in who_is_here("dorm_yard"),
+              "the open places' pins still show who is there", (_zz_p,))
 
     ## --- 7. the two new screens ---------------------------------------------------------------
     python:
@@ -806,7 +810,7 @@ label zz_smoke:
             zz_map(area="grounds")
             zz_settle()
             shot("standin_area", wait=0)
-            check(zz_ids("row_") == ["row_dojo", "row_storehouse", "row_training"], "stand-in: the area view works on the stand-in picture")
+            check(zz_ids("row_") == ["row_dojo", "row_storehouse", "row_training", "row_training_yard"], "stand-in: the area view works on the stand-in picture", zz_ids("row_"))
             zz_map(layer="tokyo", area="harajuku")
             zz_settle()
             shot("standin_district", wait=0)
@@ -820,7 +824,8 @@ label zz_smoke:
         _zz_src = zz_source("game/ui_map.rpy") or ""
         _zz_names = set(zz_re.findall(r'icon(?:_btn)?\("([a-z_]+)"', _zz_src))
         check(_zz_names and all(n in ICONS or n in ("area_", "place_") for n in _zz_names)
-              and all("area_" + a["key"] in ICONS for a in AREAS) and all("place_" + l in ICONS for l in LOCATIONS),
+              and all("area_" + a["key"] in ICONS for a in AREAS) and all(map_pin_icon(l) in ICONS for l in LOCATIONS)
+              and all(map_pin_icon(l) == "area_" + area_of(l) for l in ("school_yard", "dorm_yard", "staff_yard", "training_yard", "trailhead")),
               "every literal icon name in ui_map.rpy is a key of ICONS", sorted(_zz_names))
 
     ## --- 13. a save on the map ---------------------------------------------------------------

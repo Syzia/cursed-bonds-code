@@ -20,7 +20,7 @@ init -2 python:
             indoor=False, name="Courtyard", bg="bg courtyard", x=960, y=815,
             desc="The middle of everything. Somebody is always crossing it."),
         "classroom": dict(
-            indoor=True, name="Classroom Building", bg="bg classroom", x=600, y=735,
+            indoor=True, name="Classroom", bg="bg classroom", x=600, y=735,
             desc="Rows of desks for a class of thirty. Four of them are used. Lessons are rare and unannounced."),
         "cafeteria": dict(
             indoor=True, name="Cafeteria", bg="bg cafeteria", x=330, y=860,
@@ -72,12 +72,31 @@ init -2 python:
         "library": dict(
             indoor=True, name="Library", bg="bg library", x=250, y=640,
             desc="Shelves to the ceiling and a smell of dust and ink. Nobody talks above a murmur."),
+        ## Phase 2 (D53, P9): every area has an outdoor place its rooms open
+        ## onto, its hub (PATH_HUBS in room_paths.rpy; the heart's is the
+        ## courtyard). Always open. x/y sit beside the area on map_campus.png.
+        "school_yard": dict(
+            indoor=False, name="School Courtyard", bg="bg school_yard", x=470, y=800,
+            desc="Packed earth between the school buildings. Built for a few hundred students to cross at once; most days it's me and my own footsteps."),
+        "dorm_yard": dict(
+            indoor=False, name="Dormitory Garden", bg="bg dorm_yard", x=950, y=560,
+            desc="A stone path between the dormitories, and a garden somebody else looks after. I cross it half asleep most mornings."),
+        "staff_yard": dict(
+            indoor=False, name="Staff Building Steps", bg="bg staff_yard", x=1560, y=640,
+            desc="Wide stone steps below the principal's hall. I stand up straighter here without meaning to."),
+        "training_yard": dict(
+            indoor=False, name="Training Yard", bg="bg training_yard", x=1480, y=790,
+            desc="Bare dirt and striking posts between the hall, the dojo and the storehouse. I usually hear this place before I see it."),
+        "trailhead": dict(
+            indoor=False, name="Mountain Path", bg="bg trailhead", x=960, y=330,
+            desc="Where the stone path gives out and the mountain starts. I can go level into the forest, down to the river, or up the steps to the ridge."),
     }
 
     LOC_ORDER = ["gate", "courtyard", "classroom", "cafeteria", "training", "dojo",
                  "dorm_common", "dorm", "girls_dorm", "rooftop", "infirmary",
                  "office", "utahime_office", "gojo_office", "storehouse",
-                 "forest", "riverside", "ridge", "library"]
+                 "forest", "riverside", "ridge", "library",
+                 "school_yard", "dorm_yard", "staff_yard", "training_yard", "trailhead"]
 
     ## Areas (3.2, WP1) ----------------------------------------------------------
     ## The map's six cards, in order. anchor is the card centre on
@@ -90,6 +109,10 @@ init -2 python:
     ## picture, 1920x1080). spots are the code's defaults; a sidecar,
     ## game/layout/area_<key>.json, moves them without a script change
     ## (map_spots in ui_map.rpy reads both).
+    ##
+    ## Phase 2 (D53, D59, P9): each area's hub is the first of its places (the
+    ## heart keeps its order; its hub is the courtyard). The Mountain's anchor
+    ## sits on the peak drawn on map_campus.png (it sat over the lake).
 
     AREAS = [
         dict(key="heart",    name="Courtyard & Gate",  seal="門",
@@ -98,32 +121,35 @@ init -2 python:
              blurb="The stone path up from the torii, and the yard everything else hangs off.",
              spots={"courtyard": (960, 460), "gate": (960, 820)}),
         dict(key="school",   name="School Building",   seal="校",
-             places=["classroom", "cafeteria", "infirmary", "library"], anchor=(420, 740),
+             places=["school_yard", "classroom", "cafeteria", "infirmary", "library"], anchor=(420, 740),
              bg="bg area_school",
              blurb="Built for a few hundred students. There are four of us, and it echoes.",
-             spots={"classroom": (520, 380), "cafeteria": (1300, 420),
+             spots={"school_yard": (940, 560), "classroom": (520, 380), "cafeteria": (1300, 420),
                     "infirmary": (620, 760), "library": (1340, 780)}),
         dict(key="dorms",    name="Dormitories",       seal="寮",
-             places=["dorm", "dorm_common", "girls_dorm", "rooftop"],   anchor=(900, 560),
+             places=["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop"], anchor=(900, 560),
              bg="bg area_dorms",
              blurb="Where I sleep, and where everyone ends up by evening.",
-             spots={"rooftop": (960, 260), "dorm": (480, 440),
+             spots={"dorm_yard": (960, 520), "rooftop": (960, 260), "dorm": (480, 440),
                     "girls_dorm": (1440, 440), "dorm_common": (960, 640)}),
         dict(key="staff",    name="Staff Building",    seal="職",
-             places=["office", "utahime_office", "gojo_office"],        anchor=(1560, 440),
+             places=["staff_yard", "office", "utahime_office", "gojo_office"], anchor=(1560, 440),
              bg="bg area_staff",
              blurb="The principal's hall and the offices beside it. I knock first.",
-             spots={"office": (960, 340), "utahime_office": (520, 660), "gojo_office": (1400, 660)}),
+             spots={"staff_yard": (950, 480), "office": (960, 340),
+                    "utahime_office": (520, 660), "gojo_office": (1400, 660)}),
         dict(key="grounds",  name="Training Grounds",  seal="練",
-             places=["training", "dojo", "storehouse"],                 anchor=(1560, 760),
+             places=["training_yard", "training", "dojo", "storehouse"], anchor=(1560, 760),
              bg="bg area_grounds",
              blurb="The hall, the dojo and the storehouse. Most of my bruises come from here.",
-             spots={"training": (620, 420), "dojo": (1320, 420), "storehouse": (960, 780)}),
+             spots={"training_yard": (1180, 620), "training": (620, 420),
+                    "dojo": (1320, 420), "storehouse": (960, 780)}),
         dict(key="mountain", name="The Mountain",      seal="山",
-             places=["forest", "riverside", "ridge"],                   anchor=(740, 290),
+             places=["trailhead", "forest", "riverside", "ridge"],      anchor=(1290, 215),
              bg="bg area_mountain",
              blurb="Trees, cold water, and the ridge above them. It's further up than it looks.",
-             spots={"ridge": (960, 280), "forest": (480, 700), "riverside": (1380, 640)}),
+             spots={"trailhead": (520, 870), "ridge": (960, 280),
+                    "forest": (480, 700), "riverside": (1380, 640)}),
     ]
 
     AREA_BY_KEY = {a["key"]: a for a in AREAS}
@@ -155,21 +181,63 @@ init -2 python:
         images from this)."""
         return bg_placeholder("images/bg/area_%s.png" % key, world_area_standin(key))
 
+    ## A hub's stand-in picture (D58), until images/bg/<name>.png is painted:
+    ## an existing outdoor picture, cropped, mirrored or tinted so that no
+    ## two hubs look alike and none reads as the place it was borrowed from.
+    ## name -> (picture, tint, saturation, brightness, crop or None, mirrored).
+    WORLD_HUB_STANDINS = {
+        ## the courtyard, mirrored, in warm morning light
+        "school_yard":   ("courtyard.png", "#ffeed2", 0.92, 0.0, None, True),
+        ## the courtyard's left half (the veranda, the pagoda), cooler and greener
+        "dorm_yard":     ("courtyard.png", "#dcf0e6", 1.05, -0.02, (0, 240, 1280, 720), False),
+        ## the hall at the far side of the courtyard, close up: its steps
+        "staff_yard":    ("courtyard.png", "#e9e2f6", 0.80, -0.03, (420, 330, 1080, 608), False),
+        ## the courtyard's right half, mirrored, dusty and bleached
+        "training_yard": ("courtyard.png", "#ffe6c6", 0.70, 0.03, (640, 240, 1280, 720), True),
+        ## the forest trail, mirrored, deeper green
+        "trailhead":     ("forest.png", "#dcf4d4", 0.90, -0.04, None, True),
+    }
+
+    def world_hub_standin(name):
+        """P9. The stand-in for a hub's picture (WORLD_HUB_STANDINS), 1920x1080."""
+        src, tint, sat, bright, crop, mirror = WORLD_HUB_STANDINS[name]
+        kw = dict(matrixcolor=TintMatrix(tint) * SaturationMatrix(sat) * BrightnessMatrix(bright))
+        if crop:
+            kw.update(crop=crop, xysize=(1920, 1080))
+        if mirror:
+            kw.update(xzoom=-1.0)
+        return Transform("images/bg/" + src, **kw)
+
+    def world_hub_bg(name):
+        """P9. What `bg <hub>` shows: images/bg/<name>.png when it exists,
+        else the stand-in (bg_placeholders.rpy defines the five images from
+        this)."""
+        return bg_placeholder("images/bg/%s.png" % name, world_hub_standin(name))
+
     ## Schedules ---------------------------------------------------------------
     ## Weekday routine. "-" means the character is off campus this period.
+    ##
+    ## Phase 2 (D57, P9): a few slots stand in the hubs, so the yards are not
+    ## empty. Each was picked where the move takes nothing away that only
+    ## that slot offered (no written scene asks for the person at the old
+    ## place; ev() rows with a person have no place): Yuji outside the
+    ## dormitories at night, Nobara in the training yard in the
+    ## morning, Toge in the school courtyard in the afternoon; at weekends
+    ## Megumi at the foot of the mountain in the morning and Shoko on the
+    ## staff building's steps in the afternoon.
 
     SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
-                   "Evening": "dorm_common", "Night": "dorm_common"},
+                   "Evening": "dorm_common", "Night": "dorm_yard"},
         "megumi": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "forest",
                    "Evening": "dorm_common", "Night": "-"},
-        "nobara": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "courtyard",
+        "nobara": {"Morning": "training_yard", "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "girls_dorm"},
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
                    "Evening": "dorm_common", "Night": "dorm_common"},
-        "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "rooftop",
+        "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
                    "Evening": "dorm_common", "Night": "-"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
@@ -187,12 +255,12 @@ init -2 python:
     WEEKEND = {
         "yuji":   {"Morning": "dorm_common", "Afternoon": "riverside", "Evening": "cafeteria"},
         ## Phase 2 (D34): Megumi reads in the Library on weekend afternoons.
-        "megumi": {"Morning": "forest",      "Afternoon": "library"},
+        "megumi": {"Morning": "trailhead",   "Afternoon": "library"},
         "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
         "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
         "panda":  {"Afternoon": "riverside"},
         "toge":   {"Morning": "rooftop",     "Afternoon": "riverside"},
-        "shoko":  {"Afternoon": "rooftop"},
+        "shoko":  {"Afternoon": "staff_yard"},
         "yaga":   {"Morning": "-", "Noon": "-", "Afternoon": "-", "Evening": "-"},
         "utahime": {"Afternoon": "-", "Evening": "courtyard"},
     }
