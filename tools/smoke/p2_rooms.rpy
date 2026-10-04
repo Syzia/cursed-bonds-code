@@ -497,6 +497,18 @@ label zz_smoke:
         check(hot_validate() == [] and pc_validate() == [] and fish_validate() == [] and lib_validate() == [],
               "A: the hotspot validator passes (and the computer's, fishing's and the Library's)",
               hot_validate() + pc_validate() + fish_validate() + lib_validate())
+        ## The toast lane is as tall as four two-line toasts (they end near
+        ## y 416): a point just under the old lane (y 92 to 350) is a finding.
+        _zz_look = [_zz_h for _zz_h in _zz_real if _zz_h["kind"] == "look"][0]
+        check(HOT_LANES[0] == (1330, 92, 460, 330) and HOT_LANES[0][1] + HOT_LANES[0][3] >= TOAST_LANE[3]
+              and len(hot_point_findings(_zz_look, 1500, 420)) == 1 and "lane" in hot_point_findings(_zz_look, 1500, 420)[0]
+              and len(hot_point_findings(_zz_look, 1366, 457)) == 1
+              and hot_point_findings(_zz_look, 1500, 459) == [] and hot_point_findings(_zz_look, 1293, 420) == [],
+              "A: the validator's toast lane is x 1330 to 1790, y 92 to 422: a hotspot under the fourth toast is a finding",
+              (HOT_LANES, hot_point_findings(_zz_look, 1500, 420), hot_point_findings(_zz_look, 1500, 459)))
+        _zz_bad = [(_zz_h["id"], _zz_h["x"], _zz_h["y"]) for _zz_l in LOCATIONS for _zz_h in hot_spots_for(_zz_l)
+                   if hot_overlap(hot_rect(_zz_h["x"], _zz_h["y"]), (1330, 92, 460, 330))]
+        check(not _zz_bad, "A: no hotspot of any room (sidecar points and exits too) sits under four two-line toasts", _zz_bad)
         check(all(set(SPOT_LINES[_zz_h["id"]]) == set(_zz_h["lines"]) and len(_zz_h["lines"]) >= 2
                   for _zz_h in _zz_real if _zz_h["kind"] == "look") and len(SPOT_LINES) == 3,
               "A: SPOT_LINES holds the look hotspots' lines, at least two each")
@@ -669,6 +681,27 @@ label zz_smoke:
                 if _zz_n == (1 if _zz_l not in ("dorm", "library", "ridge", "riverside", "courtyard") else 0):
                     shot("room_" + _zz_l)
                 renpy.hide_screen("sb_place")
+        ## The "+N" chip (five or more in a room) and the card table beside it.
+        _zz_chip = []
+        for _zz_n in (5, len(store.roster)):
+            zz_r_fix("rich", period="Afternoon", here="dorm_common")
+            _zz_got = zz_r_stage("dorm_common", _zz_n)
+            renpy.show_screen("sb_place")
+            zz_render()
+            _zz_box = zz_rect("sb_place", "hot_card_table")
+            _zz_more = [zz_rect("sb_place", "rail_more_" + _zz_w) for _zz_w in who_is_here("dorm_common")]
+            _zz_more = [_zz_m for _zz_m in _zz_more if _zz_m]
+            _zz_top = min(_zz_m[1] for _zz_m in _zz_more) - 44 if _zz_more else None
+            _zz_chip.append((_zz_n, _zz_got, _zz_box, _zz_more, _zz_top))
+            if _zz_n == 5:
+                shot("room_dorm_common_five")
+                check(_zz_got == 5 and len(_zz_more) == 1 and (_zz_box is None or _zz_box[1] + _zz_box[3] <= _zz_top),
+                      "B: five in the common room: the card table's hotspot is clear of the \"+1\" chip (or hidden by a person)",
+                      _zz_chip[-1])
+            else:
+                shot("room_dorm_common_all")
+                note("B: everyone in the common room: the card table and the \"+N\" chip", _zz_chip[-1])
+            renpy.hide_screen("sb_place")
         check(not _zz_bad and _zz_drawn >= 30,
               "B: on the drawn place view (eleven rooms, none to four people) each visible hotspot's rectangle (zz_rect) is "
               "its 72 px square, meets no rectangle of view_person_rects, and its return is one of hot_layer's (%d buttons)"
