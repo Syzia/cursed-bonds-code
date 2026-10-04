@@ -67,7 +67,8 @@
 ##   zz_layer_tags(layer)          the set of tags showing on a layer
 ##   zz_worst(screen, *args, hover=None, name=None)
 ##                                 the worst case for a full screen (R6): four
-##                                 toasts queued, the objective banner up,
+##                                 toasts queued, the objective banner up
+##                                 (the arrival caption aged out of its way),
 ##                                 skipping on, `screen` shown with *args, and
 ##                                 (hover=) the button with that id focused;
 ##                                 saves worst_<screen>.png (or <name>.png).
@@ -246,10 +247,10 @@ init 999 python:
     ## harness builds them with the owner's functions: board_generate(),
     ## board_take(), give_item(), promote(), start_mission / the mission API,
     ## the combat labels, night_set_cost(), market_buy(), cards_new(),
-    ## fish_land(), pc_request(). To empty one, assign the empty value directly
+    ## cards_sit_down(), fish_land(), pc_request(). To empty one, assign the empty value directly
     ## (`store.inventory = {}`): an empty container has no shape to get wrong.
     ZZ_SHAPED = ("board_offers", "board_log", "npc_state", "inventory", "mission_state", "cb",
-                 "cards_state", "fish_state", "fish_log", "pc_requests")
+                 "cards_state", "cards_sit", "fish_state", "fish_log", "pc_requests")
 
     class ZZFixtureError(Exception):
         """fixture() was asked for a name the store doesn't have, or for a
@@ -439,6 +440,14 @@ init 999 python:
         toast_clear()
         for i, (kind, who) in enumerate((("grade", None), ("bond", "yuji"), ("item", None), ("stat", None))):
             toast("Worst case %d: a reward line long enough to wrap onto a second line" % (i + 1), kind, who)
+        ## The banner waits for the arrival caption of a new (day, period,
+        ## place) to fade, about 3 s (objective_delay): age the caption, so
+        ## the banner really is in the picture. The wp-era harnesses that run
+        ## on stubs have no caption to age.
+        _cap, _arr = getattr(store, "arrival_caption", None), getattr(store, "ARRIVAL", None)
+        if callable(_cap) and _arr is not None:
+            _cap()
+            _arr[1] -= 10
         renpy.show_screen("objective_toast", "Worst case: an objective long enough to fill the banner from edge to edge")
         renpy.show_screen(screen, *args, **kwargs)
         ## Let the banner slide in and the toasts fade in before skipping starts.

@@ -131,6 +131,10 @@ init 999 python:
     def zz_wp10_text(s):
         ## Called for every say and menu line, even while skipping (the
         ## start-interaction callback is not, under fast skip).
+        ## Prediction runs the filter too, ahead of time: a predicted line
+        ## must not fire a needle (it did now and then: one snapshot missed).
+        if renpy.predicting():
+            return _zz_wp10_prev_filter(s) if _zz_wp10_prev_filter else s
         zz_wp10_state.texts.append(s)
         zz_wp10_interact()
         if zz_wp10_state.menu_needle and zz_wp10_state.menu_needle[0] in s:

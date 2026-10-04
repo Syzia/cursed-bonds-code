@@ -13,15 +13,19 @@ person is, and has to be sure the rest of the room was left alone.
 What it does:
   1. Reads the name: pose_<place>__<who>[__<variant>], from the file's own
      name (the workflow's `_a_00001_` tail is ignored) or from --name.
-  2. Brings the render to 1920x1080 and compares it with the room's own
-     picture, game/images/bg/<room>[_<variant>].png (or --bg). "Changed"
+  2. Brings the render to 1920x1080 (scaled to the full width; the height
+     is then padded with the room's own rows, or cropped, about the centre:
+     a 2752x1536 render is the room at 1920x1072, 4 px down) and compares it
+     with the room's own picture, game/images/bg/<room>[_<variant>].png (or --bg). "Changed"
      means: after a 4 px blur of both (each 4x4 block is averaged), a block
      differs by more than 24 in any channel. An editor's faint noise over the
      whole frame is not a change; a person is.
   3. Refuses the picture when more than 35% of the room changed: the editor
      redrew the room, so the box would show a seam. Run the other candidate.
-  4. Measures the box: the largest connected changed region, grown by 24 px
-     (the feathered edge needs room). --box x,y,w,h sets it by hand.
+  4. Measures the box: the largest connected changed region, with any
+     changed region within 12 px of it (feet or a shadow cut off from the
+     body), grown by 24 px (the feathered edge needs room). --box x,y,w,h
+     sets it by hand.
   5. Writes the box to game/layout/view_<place>.json under "poses" (the only
      file it writes there; slots and other poses in it are kept, and
      hot_<place>.json is never touched), a side-by-side preview to
@@ -43,6 +47,8 @@ CELL = 4                    # the blur: each CELL x CELL block is averaged
 THRESH = 24                 # a block differs when any channel is off by more than this
 REFUSE = 0.35               # more of the room than this changed: refuse
 GROW = 24                   # the box is the region grown by this many pixels
+NEAR = 3                    # a region this many blocks (12 px) or less from the person is part of them
+NEAR_MIN = 4                # ... when it has at least this many blocks (a lone speck is not)
 
 NAME_RE = re.compile(r"^(pose_(.+?)__([a-z0-9]+?)(?:__([a-z0-9]+?))?)(?:_[ab])?(?:_\d+_?)?$")
 
@@ -74,22 +80,39 @@ def rgb(im):
     return out
 
 
-def fit(im):
-    """The picture at exactly 1920x1080: cropped to 16:9 about its centre if
-    it came back off-ratio, then resized."""
+def fit(im, under=None):
+    """The picture at exactly 1920x1080. An off-ratio picture is scaled to the
+    full width, and then its height is padded or cropped about the centre:
+    the editor lays the room across the render's whole width, so a 2752x1536
+    render is the room at 1920x1072, 4 px down (cropping its sides to 16:9
+    instead would put everything 6 to 7 px off). The padding rows are taken
+    from `under` (the room, already 1920x1080) when it is given, else the
+    picture's own edge rows are repeated."""
     im = rgb(im)
     if (im.w, im.h) == (W, H):
         return im
-    target = W / float(H)
-    if abs(im.w / float(im.h) - target) > 0.002:
+    nh = max(1, int(im.h * W / float(im.w) + 0.5))
+    if (im.w, im.h) != (W, nh):
+        im = resample(im, W, nh)
+    if nh == H:
+        return im
+    if nh > H:
         from raster import crop
-        if im.w / float(im.h) > target:
-            nw = int(im.h * target); x0 = (im.w - nw) // 2
-            im = crop(im, x0, 0, x0 + nw, im.h)
-        else:
-            nh = int(im.w / target); y0 = (im.h - nh) // 2
-            im = crop(im, 0, y0, im.w, y0 + nh)
-    return resample(im, W, H)
+        y0 = (nh - H) // 2
+        return crop(im, 0, y0, W, y0 + H)
+    y0 = (H - nh) // 2
+    out = Img(W, H)
+    stride = W * 3
+    if under is not None and (under.w, under.h) == (W, H):
+        out.buf[:] = rgb(under).buf
+    else:
+        top, bottom = im.buf[:stride], im.buf[(nh - 1) * stride:nh * stride]
+        for y in range(y0):
+            out.buf[y * stride:(y + 1) * stride] = top
+        for y in range(y0 + nh, H):
+            out.buf[y * stride:(y + 1) * stride] = bottom
+    out.buf[y0 * stride:(y0 + nh) * stride] = im.buf
+    return out
 
 
 def blocks(im):
@@ -131,11 +154,11 @@ def changed_cells(a, b):
     return grid, gw, gh
 
 
-def largest_region(grid, gw, gh):
-    """(cells, x0, y0, x1, y1) of the largest connected region of changed
-    blocks (8-connected), in block units; None when nothing changed."""
+def regions(grid, gw, gh):
+    """[(cells, x0, y0, x1, y1)] for every connected region of changed blocks
+    (8-connected), in block units, the largest first."""
     seen = [bytearray(gw) for _y in range(gh)]
-    best = None
+    out = []
     for sy in range(gh):
         row = grid[sy]
         for sx in range(gw):
@@ -156,9 +179,35 @@ def largest_region(grid, gw, gh):
                         if 0 <= nx < gw and 0 <= ny < gh and grid[ny][nx] and not seen[ny][nx]:
                             seen[ny][nx] = 1
                             stack.append((nx, ny))
-            if best is None or n > best[0]:
-                best = (n, x0, y0, x1, y1)
-    return best
+            out.append((n, x0, y0, x1, y1))
+    out.sort(key=lambda r: -r[0])
+    return out
+
+
+def person_region(grid, gw, gh):
+    """(cells, x0, y0, x1, y1) of the person, in block units; None when
+    nothing changed. It is the largest region, together with every region of
+    at least NEAR_MIN blocks that lies within NEAR blocks of it (feet, a hand
+    or a shadow that a few unchanged blocks cut off from the body); what is
+    taken in can bring its own neighbours."""
+    found = regions(grid, gw, gh)
+    if not found:
+        return None
+    n, x0, y0, x1, y1 = found[0]
+    rest = [r for r in found[1:] if r[0] >= NEAR_MIN]
+    grew = True
+    while grew:
+        grew = False
+        for r in list(rest):
+            _n, a0, b0, a1, b1 = r
+            dx = max(0, a0 - x1 - 1, x0 - a1 - 1)
+            dy = max(0, b0 - y1 - 1, y0 - b1 - 1)
+            if dx <= NEAR and dy <= NEAR:
+                rest.remove(r)
+                n += _n
+                x0, y0, x1, y1 = min(x0, a0), min(y0, b0), max(x1, a1), max(y1, b1)
+                grew = True
+    return (n, x0, y0, x1, y1)
 
 
 def half(im):
@@ -241,12 +290,12 @@ def install(src, name=None, box=None, bg_path=None, root=None, dry=False):
     if not os.path.exists(bg_path):
         raise SystemExit("no room picture at %s to compare with" % bg_path)
     bg = fit(load(bg_path))
-    pose = fit(load(src))
+    pose = fit(load(src), under=bg)
 
     grid, gw, gh = changed_cells(bg, pose)
     total = sum(sum(row) for row in grid)
     frac = total / float(gw * gh)
-    region = largest_region(grid, gw, gh)
+    region = person_region(grid, gw, gh)
     print("%s: %.1f%% of the room changed" % (stem, 100.0 * frac))
 
     prev = os.path.join(root, "shots", "art", stem + ".png")
@@ -267,7 +316,7 @@ def install(src, name=None, box=None, bg_path=None, root=None, dry=False):
         box = (bx0, by0, bx1 - bx0, by1 - by0)
         stray = total - region[0]
         if stray > 0.25 * region[0]:
-            print("   !! %d changed blocks lie outside the largest region (%d blocks): look at the preview; "
+            print("   !! %d changed blocks lie outside the person's region (%d blocks): look at the preview; "
                   "if part of the person is outside the box, pass --box x,y,w,h" % (stray, region[0]))
     else:
         x, y, w, h = box
