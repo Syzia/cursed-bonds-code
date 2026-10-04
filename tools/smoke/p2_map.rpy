@@ -661,6 +661,40 @@ label zz_smoke:
                                                                "map_district_action", "map_place_name", "map_has_news", "map_waiting"))
               and isinstance(FACE_BOX, dict) and MAP_CARD_W == 340 and MAP_ROW_W == 320,
               "face_chip, FACE_BOX, map_who_where, map_cards, map_people and the MAP_* tables stay defined")
+        ## The gold "!" after a name follows the night rule, as the name tag
+        ## in the place view does (view_tag_marks): the map promises nothing
+        ## the place view then does not offer.
+        _zz_keep_marks = (store.has_event, store.missions_with, store.night_can_work, store.night_allows, store.explore_mode)
+        try:
+            store.has_event = lambda kind, who=None, loc=None: kind == "hangout" and who == "yuji"
+            store.missions_with = lambda who, loc=None: ["m_sunmall"] if who == "toge" else []
+            store.night_can_work = lambda: True
+            store.night_allows = lambda aid, cost=0: True
+            store.explore_mode = False
+            _zz_m0 = [map_has_news(w, "cafeteria") for w in ("yuji", "toge", "megumi")]
+            store.night_can_work = lambda: False
+            _zz_m1 = [map_has_news(w, "cafeteria") for w in ("yuji", "toge", "megumi")]
+            store.night_can_work = lambda: True
+            store.night_allows = lambda aid, cost=0: not str(aid).startswith("mission:")
+            _zz_m2 = [map_has_news(w, "cafeteria") for w in ("yuji", "toge", "megumi")]
+            store.night_allows = lambda aid, cost=0: aid != "hang"
+            _zz_m3 = [map_has_news(w, "cafeteria") for w in ("yuji", "toge", "megumi")]
+            store.night_allows = lambda aid, cost=0: True
+            store.explore_mode = True
+            _zz_m4 = [map_has_news(w, "cafeteria") for w in ("yuji", "toge", "megumi")]
+            store.explore_mode = False
+            _zz_m5 = [map_has_news(w, "cafeteria") == any(view_tag_marks(w, "cafeteria")) for w in ("yuji", "toge", "megumi")]
+        finally:
+            store.has_event, store.missions_with, store.night_can_work, store.night_allows, store.explore_mode = _zz_keep_marks
+        check(_zz_m0 == [True, True, False] and all(type(v) is bool for v in _zz_m0),
+              "map_has_news: a gold mark for a waiting scene and for a waiting mission, none for anyone else (a bool)", _zz_m0)
+        check(_zz_m1 == [True, False, False],
+              "on a rest day (night_can_work patched to False) the map promises no mission; the scene's mark stays", _zz_m1)
+        check(_zz_m2 == [True, False, False] and _zz_m3 == [False, True, False],
+              "when the night won't let the mission start its mark is gone; when it won't let a scene start, the scene's is", (_zz_m2, _zz_m3))
+        check(_zz_m4 == [True, False, False] and all(_zz_m5),
+              "no mission mark in explore mode; the map's mark is the place view's name-tag marks (view_tag_marks)", (_zz_m4, _zz_m5))
+        del _zz_keep_marks
         note("load_all_saves.sh (auto-1 and auto-2 SAME)",
              "run outside a harness: tools/load_all_saves.sh loads the owner's 11 saves; the two parked on `call screen sb_map` reopen on the six areas")
 
