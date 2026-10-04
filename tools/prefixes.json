@@ -1,153 +1,157 @@
 {
- "about": [
-  "tools/prefixes.json -- one prefix per file (docs/PHASE2_DESIGN.md 2.2, R1).",
-  "tools/check_content.py --prefixes reads it: a top-level name (or a `$ x = ...` temporary in a label) that is not in tools/smoke/baseline_globals.txt must start with one of its file's prefixes.",
-  "Leading underscores are ignored (`_night_x`). A lower-case prefix also allows its capitals (`toast_` allows `TOAST_`). For `gui.x` and `persistent.x` the part after the dot may carry the prefix (`gui.pc_wiki` in room_computer.rpy).",
-  "A label may also be `sb_do_<action id>` where the action id carries the file's prefix (`sb_do_pc_open`), or `mg_<game id>`.",
-  "A file with no row here may gain no new top-level name.",
-  "`exceptions` are the contract symbols of section 6 that live in a file whose prefix they do not carry, by name and file.",
-  "`harness` is what every top-level name in tools/smoke/*.rpy starts with (--harness-names).",
-  "Frozen after wave 0."
- ],
- "files": {
-  "game/ui_icons.rpy": [
-   "icon",
-   "ICON",
-   "hover_",
-   "ui_do"
+  "about": [
+    "tools/prefixes.json -- one prefix per file (docs/PHASE2_DESIGN.md 2.2, R1).",
+    "tools/check_content.py --prefixes reads it: a top-level name (or a `$ x = ...` temporary in a label) that is not in tools/smoke/baseline_globals.txt must start with one of its file's prefixes.",
+    "Leading underscores are ignored (`_night_x`). A lower-case prefix also allows its capitals (`toast_` allows `TOAST_`). For `gui.x` and `persistent.x` the part after the dot may carry the prefix (`gui.pc_wiki` in room_computer.rpy).",
+    "A label may also be `sb_do_<action id>` where the action id carries the file's prefix (`sb_do_pc_open`), or `mg_<game id>`.",
+    "A file with no row here may gain no new top-level name.",
+    "`exceptions` are the contract symbols of section 6 that live in a file whose prefix they do not carry, by name and file.",
+    "`harness` is what every top-level name in tools/smoke/*.rpy starts with (--harness-names).",
+    "Frozen after wave 0."
   ],
-  "game/sb_hotspots.rpy": [
-   "hot_",
-   "HOT_",
-   "mg_",
-   "MG_"
+  "files": {
+    "game/ui_icons.rpy": [
+      "icon",
+      "ICON",
+      "hover_",
+      "ui_do"
+    ],
+    "game/sb_hotspots.rpy": [
+      "hot_",
+      "HOT_",
+      "mg_",
+      "MG_"
+    ],
+    "game/sb_rules.rpy": [
+      "rule_",
+      "RULE_"
+    ],
+    "game/view_stage.rpy": [
+      "view_",
+      "VIEW_"
+    ],
+    "game/sb_night.rpy": [
+      "night_",
+      "NIGHT_"
+    ],
+    "game/sb_market.rpy": [
+      "market_",
+      "MARKET_"
+    ],
+    "game/room_spots.rpy": [
+      "spot_",
+      "SPOT_"
+    ],
+    "game/room_computer.rpy": [
+      "pc_",
+      "PC_"
+    ],
+    "game/room_fishing.rpy": [
+      "fish_",
+      "FISH_"
+    ],
+    "game/room_library.rpy": [
+      "lib_",
+      "LIB_"
+    ],
+    "game/room_cards.rpy": [
+      "cards_",
+      "CARDS_"
+    ],
+    "game/ui_map.rpy": [
+      "map_",
+      "MAP_"
+    ],
+    "game/ui_journal.rpy": [
+      "jr_",
+      "JR_"
+    ],
+    "game/ui_hud.rpy": [
+      "toast_",
+      "hud_"
+    ],
+    "game/sb_screens.rpy": [
+      "rail_",
+      "AMBIENT_"
+    ],
+    "game/sb_items.rpy": [
+      "item_",
+      "ITEM_",
+      "armory_"
+    ],
+    "game/sb_grades.rpy": [
+      "grade_",
+      "GRADE_"
+    ],
+    "game/sb_board.rpy": [
+      "board_"
+    ],
+    "game/sb_combat.rpy": [
+      "combat_"
+    ],
+    "game/sb_world.rpy": [
+      "world_"
+    ],
+    "game/sb_activities.rpy": [
+      "act_"
+    ],
+    "game/lighting.rpy": [
+      "light_"
+    ],
+    "game/screens.rpy": [
+      "pref_"
+    ],
+    "game/gui.rpy": [
+      "gui.grade_",
+      "gui.icon_"
+    ],
+    "game/explore.rpy": [
+      "dev_",
+      "DEV_"
+    ],
+    "game/bg_placeholders.rpy": [
+      "bg area_",
+      "bg library"
+    ],
+    "game/room_paths.rpy": [
+      "path_",
+      "PATH_"
+    ]
+  },
+  "exceptions": [
+    {
+      "name": "advance_period_soft",
+      "file": "game/sb_world.rpy",
+      "why": "contract symbol (6.1)"
+    },
+    {
+      "name": "person_now",
+      "file": "game/sb_world.rpy",
+      "why": "contract symbol (6.1)"
+    },
+    {
+      "name": "register_hotspot",
+      "file": "game/sb_hotspots.rpy",
+      "why": "contract symbol (6.1)"
+    },
+    {
+      "name": "register_minigame",
+      "file": "game/sb_hotspots.rpy",
+      "why": "contract symbol (6.1)"
+    },
+    {
+      "name": "char_focus",
+      "file": "game/view_stage.rpy",
+      "why": "the transform moved from sb_screens.rpy (D35)"
+    },
+    {
+      "name": "persistent.motion",
+      "file": "game/view_stage.rpy",
+      "why": "the Motion preference (D17; 6.3 puts its default here)"
+    }
   ],
-  "game/sb_rules.rpy": [
-   "rule_",
-   "RULE_"
-  ],
-  "game/view_stage.rpy": [
-   "view_",
-   "VIEW_"
-  ],
-  "game/sb_night.rpy": [
-   "night_",
-   "NIGHT_"
-  ],
-  "game/sb_market.rpy": [
-   "market_",
-   "MARKET_"
-  ],
-  "game/room_spots.rpy": [
-   "spot_",
-   "SPOT_"
-  ],
-  "game/room_computer.rpy": [
-   "pc_",
-   "PC_"
-  ],
-  "game/room_fishing.rpy": [
-   "fish_",
-   "FISH_"
-  ],
-  "game/room_library.rpy": [
-   "lib_",
-   "LIB_"
-  ],
-  "game/room_cards.rpy": [
-   "cards_",
-   "CARDS_"
-  ],
-  "game/ui_map.rpy": [
-   "map_",
-   "MAP_"
-  ],
-  "game/ui_journal.rpy": [
-   "jr_",
-   "JR_"
-  ],
-  "game/ui_hud.rpy": [
-   "toast_",
-   "hud_"
-  ],
-  "game/sb_screens.rpy": [
-   "rail_",
-   "AMBIENT_"
-  ],
-  "game/sb_items.rpy": [
-   "item_",
-   "ITEM_",
-   "armory_"
-  ],
-  "game/sb_grades.rpy": [
-   "grade_",
-   "GRADE_"
-  ],
-  "game/sb_board.rpy": [
-   "board_"
-  ],
-  "game/sb_combat.rpy": [
-   "combat_"
-  ],
-  "game/sb_world.rpy": [
-   "world_"
-  ],
-  "game/sb_activities.rpy": [
-   "act_"
-  ],
-  "game/lighting.rpy": [
-   "light_"
-  ],
-  "game/screens.rpy": [
-   "pref_"
-  ],
-  "game/gui.rpy": [
-   "gui.grade_",
-   "gui.icon_"
-  ],
-  "game/explore.rpy": [
-   "dev_",
-   "DEV_"
-  ],
-  "game/bg_placeholders.rpy": [
-   "bg area_",
-   "bg library"
+  "harness": [
+    "zz",
+    "ZZ"
   ]
- },
- "exceptions": [
-  {
-   "name": "advance_period_soft",
-   "file": "game/sb_world.rpy",
-   "why": "contract symbol (6.1)"
-  },
-  {
-   "name": "person_now",
-   "file": "game/sb_world.rpy",
-   "why": "contract symbol (6.1)"
-  },
-  {
-   "name": "register_hotspot",
-   "file": "game/sb_hotspots.rpy",
-   "why": "contract symbol (6.1)"
-  },
-  {
-   "name": "register_minigame",
-   "file": "game/sb_hotspots.rpy",
-   "why": "contract symbol (6.1)"
-  },
-  {
-   "name": "char_focus",
-   "file": "game/view_stage.rpy",
-   "why": "the transform moved from sb_screens.rpy (D35)"
-  },
-  {
-   "name": "persistent.motion",
-   "file": "game/view_stage.rpy",
-   "why": "the Motion preference (D17; 6.3 puts its default here)"
-  }
- ],
- "harness": [
-  "zz",
-  "ZZ"
- ]
 }

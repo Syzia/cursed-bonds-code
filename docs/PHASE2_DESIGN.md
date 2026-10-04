@@ -1399,3 +1399,44 @@ Nothing was disputed. Two things were answered with the checker's second option 
 - **Quick-menu icons:** dropped rather than given six new icon names, because nothing in SCOPE asks for them and the icon table is frozen at 88.
 
 One thing this pass could not settle from the files: whether the Nano Banana workflow bills one run or both candidates (section 5). The figures assume one.
+
+---
+
+## 13. Addendum (4 Oct 2026): walking between places, and the checkpoint B touch-ups (P9, wave 2)
+
+The owner played checkpoint B and asked for one new thing and four small changes (SCOPE section 5, "Checkpoint B passed"). They are one package, **P9**, built in wave 2 beside P5, P6 and P7.
+
+### 13.1 Decisions
+
+| # | Decision |
+|---|---|
+| D53 | **Every area has an outdoor hub place** that you can stand in, and that all of the area's rooms open onto. `heart` keeps `courtyard` as its hub (the gate opens onto it). New places: `school_yard` "School Courtyard" (school), `dorm_yard` "Dormitory Garden" (dorms), `staff_yard` "Staff Building Steps" (staff), `training_yard` "Training Yard" (grounds), `trailhead` "Mountain Path" (mountain). Each is a normal `LOCATIONS` row in its area's `places`, first in the list, always enterable, with a first-person description, and a pin on the area view. The owner's words: "more places to have characters, like Nobara on the way to the training ground, or Yuji chilling outside". |
+| D54 | **Exits.** In every place, the ways out are things you can click in the picture: from a room, one exit to its area's hub; from a hub, one exit to each of its rooms and one to each neighbouring hub. Walking is free and instant, at any hour (cost 0, so the night rule allows it), and works in explore mode. The map stays as it is for going anywhere in two clicks. Hubs are joined as the campus map's paths join the areas: `courtyard` to `school_yard`, `dorm_yard`, `staff_yard` and `training_yard`; `dorm_yard` to `trailhead`; `gate` to `courtyard`. P9 checks this against the paths drawn on `map_campus.png` and adjusts if the picture says otherwise. |
+| D55 | **An exit is an action hotspot** on the frozen framework (4.10): `register_place_action("go_<to>", ...)` with `locs=(<from>,)`, cost 0, `explore=True`, and `register_hotspot("go_<from>__<to>", <from>, x, y, icon, act="go_<to>")`. `label sb_do_go_<to>` sets `here` and returns, exactly as map travel does (it calls the same arrival code, so the arrival caption, `view_sync_light` and any story beat waiting at the new place behave as after a map trip). When someone stands in front of an exit it moves to the icon column, like any hotspot. Icons are existing names only: `place_<room>` for a room, `area_<key>` for a hub, `back` never. The hover label reads "To the School Courtyard", or the lock's reason when `place_access` refuses (then the exit is shown dim and does nothing). |
+| D56 | **Where exits sit.** On a natural spot of each background (a door, a gate, a path leading off), found with `tools/layout_sheet.py`, inside x 40 to 1700 and y 180 to 1000 and clear of the toast and banner lanes. Exit points are written in `room_paths.rpy`'s `PATH_EXITS` table, not in `game/layout/hot_<place>.json` (that file is P6's). P9 keeps each exit at least 120 px from every hotspot start point in 4.10's table; P8 settles any that still touch once P6's final points are in. |
+| D57 | **People in the hubs.** A few schedule slots move into the hubs so they are not empty: one or two people per hub, at hours when the move breaks no written scene (every story and hangout `ev()` that needs a person at a place still finds them there; `phase1_all` and `wp3_missions` prove it). Each gets an `AMBIENT` caption request in the hand-over note for P8 (`AMBIENT` lives in `sb_screens.rpy`, which P9 does not own); until then the default caption shows. |
+| D58 | **Backgrounds.** Each new hub has `bg <name>` through `bg_placeholder("images/bg/<name>.png", <stand-in>)`; stand-ins are existing outdoor pictures (the courtyard or the forest, tinted so the five differ). P9 writes `tools/bgs/prompts/<name>.txt` for the five (eye-level, outdoor, matching the area's bird's-eye picture) so they can be made as one more art batch (five pictures, two candidates each, about $0.35). `lighting.rpy` is P5's in this wave: if a hub needs a `BG_LIGHT` row, P9 asks for it in its hand-over note and the default light is used until then. |
+| D59 | **The map touch-ups.** The area markers shrink (about 240 by 96, the name on one line, faces and marks under it; nothing may overlap at 1920 by 1080 with three faces and a gold mark). The Mountain marker moves onto the mountain drawn on `map_campus.png` (it sat over the lake); the lake stays unmarked for now. Each hub gets a pin on its area view. |
+| D60 | **"Classroom Building" becomes "Classroom"** wherever the place's name is shown (the `LOCATIONS` name; the key `classroom` and every story line stay). |
+| D61 | **The "Closer: after roll call" line goes** from a person's journal page (and from the People card's hover): before roll call no Closer line is shown at all. The NEXT row keeps "After roll call". |
+
+### 13.2 P9 · Walking between places, and the checkpoint B touch-ups (wave 2)
+
+**Owns (wave 2):** `game/sb_world.rpy`, `game/ui_map.rpy`, `game/bg_placeholders.rpy`, `game/room_paths.rpy` (new; prefix `path_`), `game/layout/area_*.json`, `game/ui_journal.rpy` (D61 only), `tools/bgs/prompts/school_yard.txt`, `dorm_yard.txt`, `staff_yard.txt`, `training_yard.txt`, `trailhead.txt`, `tools/smoke/wp1_world.rpy`, `tools/smoke/p2_map.rpy`, `tools/smoke/p2_journal.rpy` and `tools/smoke/wp8_journal.rpy` (only where they pin D61's line), `tools/smoke/p2_paths.rpy` (new).
+
+**Provides (frozen for P8):** `path_exits(loc)` → list of dicts `(to, label, icon, x, y, locked_reason)` for the place, in a stable order; `path_hub(area_key)` → the hub's place key; `path_neighbours(loc)` → the list of place keys one step away. All return plain values and never `None`.
+
+**Tasks:** D53 to D61.
+
+**Acceptance:** the standard set (2.4), and `p2_paths`:
+- every place has at least one exit; every room's first exit leads to its area's hub; every hub has an exit to each of its rooms and to each neighbouring hub; the graph is connected (from `dorm`, every place is reached by exits alone);
+- taking an exit changes `here`, costs no time at any period, works at Night under the strict rule and in explore mode, and shows the arrival caption; an exit to a locked place is dim, does nothing, and its hover label is the lock's reason;
+- no exit point lies in a lane or within 120 px of a 4.10 start point in the same place; with four people on stage every exit is still offered (in the room or in the column), never neither and never both;
+- the five new places render with their stand-in and with a test picture (the asset overlay), are in exactly one area each, and appear as pins on their area view; `make_bg_workflow.py` accepts the five new names;
+- the campus map: no two markers overlap with three faces and a gold mark on each; the Mountain marker's centre lies on the mountain (inside the box P9 measures from `map_campus.png`);
+- "Classroom Building" appears nowhere on screen (`zz_texts` over the map, the place view and the journal); "Closer: after roll call" appears nowhere;
+- `phase1_all` (30 days) and `wp3_missions` still pass: no story beat or hangout lost its person; all 11 saves load SAME.
+- **Owner check (checkpoint C):** walk from my room to the training hall without opening the map; at the gate, click through to the courtyard; find someone standing in a hub.
+
+**Coordination with the other wave-2 packages:** P5 keeps `view_person_rects` (exits hide behind people like any hotspot). P6's object hotspots and P9's exits share rooms; each keeps to its own table (`hot_<place>.json` for P6, `PATH_EXITS` for P9). P7 is untouched.
+

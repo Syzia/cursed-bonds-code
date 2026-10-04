@@ -197,6 +197,16 @@ Already promised by the storyboard, now moved here.
 - **The Gojo night may push past the ceiling (decided 3 Oct 2026).** It can leave Control up to 6 above the grade's ceiling, and the reserve with it, so the night is offered at every grade whenever it is due.
 - **Checkpoint A passed (4 Oct 2026).** The owner played the wave 0 build: it plays fine. No ruling was changed, so the defaults stand: a strict Night, character scenes after roll call, two-hour activities ending early for a waiting story scene, and icons without words once they have pictures (`gui.icon_words = "auto"`). Art batch 1 (88 icons, the Tokyo map, the six area maps) is installed.
 
+**Checkpoint B passed (4 Oct 2026), with notes** ("Wave 1 Review", with screenshots):
+- **The Mountain marker sits over the lake**, not on the mountain drawn on the map. Move it onto the mountain. (The lake could be a new place one day; the mountain place, where the veil is, already exists.)
+- **The black box of each area marker is too big.** Make the markers smaller.
+- **Walking between places, new:** "Instead of always clicking on the map to travel to different places, once you're in an area of the map we should have arrows that lead to the other section. For the main gate, have an arrow that takes you to the courtyard that is interactive. For this area [the School Building], create a new courtyard location, and have all the rooms point to it for a travel location and also make all the rooms accessible from this location via the arrow method. This same principle applies to all locations. They don't have to be arrows; they can just be interactable parts of the screen to avoid clutter. This gives us more travel options, better world-building, and more places to have characters. Like Nobara on the way to the training ground. Or Yuji chilling outside."
+- Nothing seems cluttered for the moment. The faces on the map seem right. Two clicks to walk is fine.
+- **Rename "Classroom Building" to "Classroom".**
+- **Titles:** go with the ones that fit ("Taking My Measure" stays); everything gets a review after the phase.
+- **Remove the "Closer: after roll call" line**, since roll call is forced at the start of day 2.
+- Gojo's night looks good. No number was changed (the Gojo night's size, the night out's price and hangover, the market's prices stand).
+
 **Still open from phase 1's review** (the design proposes a default for each):
 - Two-slot activities (sparring, a heart-to-heart, a Tokyo trip) can skip past a story beat that only happens at noon, so it comes a day late.
 - The first hangouts still narrate in "you" and can happen on day 1.
