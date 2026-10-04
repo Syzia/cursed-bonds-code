@@ -6,6 +6,8 @@ This plan starts from the winning design ("evolve in place": screens keep their 
 
 "Decision D20" and the like are the numbered rows of section 1.
 
+**As built.** Phase 2 was built in waves 0 to 2 and finished by P8 (integration, 5 Oct 2026). Where the build departs from this plan, the section says so in a sentence or block marked **As built**; the plan's own wording is kept beside it, so the reasons stay readable. Nothing the owner decided was changed. The full record of every hand-off and departure is `docs/PHASE2_HANDOFFS.md`; the owner's rulings at each checkpoint are in `docs/PHASE2_UI_OVERHAUL.md` section 5 and summed up in `docs/PLAYTEST.md`. What was put off is in section 11.
+
 ---
 
 ## 0. What phase 2 changes, in plain words
@@ -69,6 +71,8 @@ This plan starts from the winning design ("evolve in place": screens keep their 
 
 **Art you'll make:** about 47 pictures, about $12.50 in all (the ten backgrounds use the cheaper background tool), in five small batches, each a drag-in file with numbered steps. The first batch is about $1.45. Nothing waits for any of it.
 
+**As built (5 Oct 2026).** Checkpoints A, B and C passed and no number on this page was changed. At B the owner added one thing, walking between places without the map (section 13: exits in every picture, five new yards, smaller map markers, "Classroom", no "Closer: after roll call" line). The art costs less than this page says: about $9.70 in all, of which about $2.97 is spent (section 5, as built; `docs/ART_PHASE2.md`).
+
 ---
 
 ## 1. Decisions
@@ -79,7 +83,7 @@ This plan starts from the winning design ("evolve in place": screens keep their 
 
 | # | Decision | Why / from | Pkg |
 |---|---|---|---|
-| D1 | The map always opens on the six areas, with "YOU ARE HERE" on mine. Clicking an area opens that area's view inside the same screen (a screen variable); I move only when a room is picked, which returns the existing `("go", loc)`. Esc: area → areas → close. This differs from SCOPE 2.A's wording ("choosing an area takes you there"); section 0 flags it for the owner. | SCOPE 2.A. `here` must stay a room; `call screen sb_map` is protected text. Two clicks to anywhere. (E, D; J-owner graft over S's area-first opening.) | P1 |
+| D1 | The map always opens on the six areas, with "YOU ARE HERE" on mine (**as built:** the mark reads "I'M HERE", since the game never says "you" to me). Clicking an area opens that area's view inside the same screen (a screen variable); I move only when a room is picked, which returns the existing `("go", loc)`. Esc: area → areas → close. This differs from SCOPE 2.A's wording ("choosing an area takes you there"); section 0 flags it for the owner. | SCOPE 2.A. `here` must stay a room; `call screen sb_map` is protected text. Two clicks to anywhere. (E, D; J-owner graft over S's area-first opening.) | P1 |
 | D2 | The six areas keep their keys. `school` is renamed "School Building" and gains `library`. | Keys are in saves, schedules and missions. | P1 |
 | D3 | Rooms on the area view are icon pins (a 72 px disc with the room's icon, the name on a plate under it, up to three faces), not text rows. Area markers on level 1 also stop at three faces and "+n" (18 faces at most on the map; the owner's page 5 note is about faces crowding). | J-owner: text rows broke SCOPE 2.B. (S) | P1 |
 | D4 | Tokyo's second level: a district opens its own view with display-only pins ("Later build") and one "Ride with Ijichi" button returning the existing `("district", key)`. At Evening and Night it also offers "A night in [district]" (new return `("night", key)`). **Cuttable.** | Same shape as campus. | P1 |
@@ -113,7 +117,7 @@ This plan starts from the winning design ("evolve in place": screens keep their 
 |---|---|---|---|
 | D18 | Five tabs. `journal("memories")` opens People. A shared scene shows on every participant's page (`memories_with(who)`, already written). A **"Me" card** comes first in People: the story by act, including the three scenes nobody else is in. | Answer 6, both halves; SCOPE 2.C's "Kaito's own page". (D; J-owner graft over E's Stats → My story.) | P3 |
 | D19 | The person view shows a grade chip and the choices, then "Ask them along" and Back. The name, caption, bond bar, affection, thread diamonds and "Closer" hint are all on the journal page. | SCOPE 2.D. J-owner: E's bond bar was not asked for. A bond toast already answers "did that work?". | P2 |
-| D19b | "Right now" captions follow the story: a new table `AMBIENT_STORY` of `(who, place, condition, caption, expression)` rows is read before `AMBIENT`; the last row whose condition holds wins. Twelve rows ship on existing flags and thread stages; phase 4 adds rows per act. | J-owner gap: the note says "updated as the story progresses". `ambient_of` keeps its 2-tuple. | P2 |
+| D19b | "Right now" captions follow the story: a new table `AMBIENT_STORY` of `(who, place, condition, caption, expression)` rows is read before `AMBIENT`; the last row whose condition holds wins. Twelve rows ship on existing flags and thread stages (**as built:** twelve, none keyed on `saw_the_ridge_veil`, which the prologue tour already sets; section 11); phase 4 adds rows per act. | J-owner gap: the note says "updated as the story progresses". `ambient_of` keeps its 2-tuple. | P2 |
 
 ### The night
 
@@ -151,8 +155,8 @@ This plan starts from the winning design ("evolve in place": screens keep their 
 |---|---|---|---|
 | D35 | The stage (the people, their name tags, the focus transform) moves into its own file, `game/view_stage.rpy`, in the scaffold (`sb_screens.rpy:405-453`: the stage buttons and the name plates, verbatim; the background at 402-403 and the overflow chip from 455 stay in `sb_place`). Because a `use`d screen that takes parameters gets a fresh scope holding only those parameters (`renpy/sl2/slast.py`, `SLUse.execute`), `view_stage(loc)` starts with its own copies of the five `$` lines the loop reads (`sb_screens.rpy:388-392`), with `here` replaced by `loc` (4.5). `sb_place` and `sb_char` `use` it. | J-tech and J-build: E handed `sb_screens.rpy` from one package to another. (S) | P0 |
 | D36 | A pose is one whole 1920×1080 picture of the room with the person painted in. The engine overlays only a soft-edged box around the person, so several people in a room each use their own picture. **It is painted on the picture the player actually sees at that hour** (Nobara's on the evening common room) and named for it; a missing variant falls back to the standing sprite, never to a day pose on a night room. | E's box survives the pixel noise an AI repaint spreads (J-tech). D's variant rule (both judges' graft). | P5 |
-| D37 | `tools/install_pose.py` refuses a picture where more than 35% of the room changed, writes a side-by-side preview, and writes the box to the sidecar `view_<place>.json`. "Changed" means: after a 4 px blur of both pictures, a pixel differs by more than 24 in any channel; the box is the largest connected changed region grown by 24 px. `--box x,y,w,h` sets the box by hand. | Graft (D). | P5 |
-| D38 | Foreground layers are cut from the backgrounds themselves by `tools/make_fg.py` (a polygon per place, per time variant, kept in `tools/fg/<place>.json`: tool input, not a game sidecar). Free. | Graft (E). | P5 |
+| D37 | `tools/install_pose.py` refuses a picture where more than 35% of the room changed, writes a side-by-side preview, and writes the box to the sidecar `view_<place>.json`. "Changed" means: after a 4 px blur of both pictures (**as built:** each 4×4 block is averaged, and the region is measured on those blocks), a pixel differs by more than 24 in any channel; the box is the largest connected changed region grown by 24 px. `--box x,y,w,h` sets the box by hand. | Graft (D). | P5 |
+| D38 | Foreground layers are cut from the backgrounds themselves by `tools/make_fg.py` (a polygon per place, per time variant, kept in `tools/fg/<place>.json`: tool input, not a game sidecar). Free. **As built:** five files in three rooms (`dorm_common` ×3, `cafeteria`, `utahime_office`); the classroom has none (4.5). | Graft (E). | P5 |
 | D39 | Blink and talk: two edits of each neutral sprite; the engine uses only the eye box and mouth box, on the expressions listed as compatible. **Yuji's pair is made and judged first** ($0.64). Gojo and Yaga get talk only. **Cuttable.** | Graft (S). | P5 |
 | D40 | Drop-in files start with their kind: `area_`, `pose_`, `fg_`, `ic_`, `fx_`. A validator rejects two files under `images/` with one basename. | Ren'Py names an auto-image from the basename; `images/fg/dorm_common.png` would collide with `images/bg/dorm_common.png`. (D) | P0 |
 
@@ -204,6 +208,8 @@ New names in an existing file use that file's prefix: `ui_map.rpy` `map_` / `MAP
 
 The only exceptions, by name: the contract symbols of section 6 that have no prefix (`advance_period_soft`, `register_hotspot`, `register_minigame`, `person_now`, in files whose prefix they don't carry); labels `sb_do_<action id>` where the action id carries the prefix (`sb_do_pc_open`, `sb_do_night_bed`); labels `mg_<game id>`; the moved transform `char_focus` (`stage_person` is a label in `sb_activities.rpy:278` and stays there; it is in the baseline). Everything else was renamed to fit: `hot_spots_for`, `mg_games`, screens `map_area`, `map_district` and `market_screen`. `tools/prefixes.json` holds the table and the exception list.
 
+**As built (R1).** One more file and prefix arrived with section 13: `game/room_paths.rpy`, `path_` / `PATH_`. A lower-case prefix also allows its capitals (`toast_` allows `TOAST_`), so lane constants and the like need no row of their own. `prefixes.json` holds one exception R1 does not name, `persistent.motion` in `view_stage.rpy` (its `default` cannot carry `view_`), and `define config.*` is ignored. At the top of an init block every bound name is checked: aliased imports, each target of a chained or bracketed assignment, `with … as NAME`, `store.NAME =`, names under a top-level `if` / `for` / `try`, and every statement of `a = 1; b = 2`.
+
 **R2. Checks (lesson 1).** `tools/check_content.py` gains, all inside `--all`:
 - `--dup-globals`: across `game/*.rpy`, every top-level `NAME =`, `def`, `class` in `init … python:` blocks and every `define`, `default`, `screen`, `style`, `transform`, `image`, `label`; a name defined in two files, or twice in one, is a finding. Store names, screens, styles, images and labels are separate namespaces (today's `jr_mission_row` function and screen pass).
 - `--prefixes`: a name that is not in `tools/smoke/baseline_globals.txt` (today's names, written by P0) must carry its file's prefix from `tools/prefixes.json`, or be on R1's exception list.
@@ -212,6 +218,13 @@ The only exceptions, by name: the contract symbols of section 6 that have no pre
 - Run time: `tools/smoke/p2_contracts.rpy` asserts `fn.__code__.co_filename` ends with the owning file for every contract function. A silent replacement fails in every worktree.
 - Registries: `register_hotspot` and `register_minigame` report a duplicate id as a `VALIDATE:` line. Place actions already have this check (`_validate_place_actions`, `sb_hooks.rpy:262-275`: "place action %r is registered twice"), so nothing is added and `sb_hooks.rpy` is not touched. Migrations are not checked: phase 2 adds none (D41), and order 65 is already used twice today (`sb_memories.rpy:623`, `sb_missions.rpy:1028`), so an order check would fail the untouched tree.
 - Init order: `p2_contracts` is run with `tools/smoke/aa_zz_order.rpy`, a file named to sort before every game file, which makes one dummy `register_hotspot` and one `register_minigame` call at init 0. It fails with a NameError if a registry is ever defined too late (6.1).
+
+**As built (R2).**
+- `--dup-globals` counts a style as a finding only when two files define it (`style x is y` then `style x:` in one file is the usual Ren'Py idiom), and skips labels when `--dup-labels` also runs, so a duplicate label is reported once.
+- `--write-baseline` alone exits 2 without writing; it needs the second flag `--i-am-p0a-or-p8`. Nobody but P0a and P8 runs it. `tools/smoke/baseline_check_content.txt` is the known findings of the pre-phase-2 tree, subtracted by file, rule and text (not line number).
+- Not read by the checks: a plain `import x`, `except … as NAME`, a one-line `if x: a = 1`, and names set through `setattr` or `globals()`. An unknown literal name in `icon("…")` / `icon_btn("…")` inside a screen is not caught by lint (lint never runs a screen); P8 added the rule `--icon-names` for it: a literal first argument must be a key of `ICONS` (an argument that is not one plain string is not read).
+- `aa_zz_order.rpy` registers two inert hotspots (`zz_order_spot` in the dorm, `zz_tv` in the common room) and one mini-game; none is ever visible. A harness asks for it with the line `## smoke-with: aa_zz_order.rpy`.
+- The baseline was committed on its own (de37a14) before the tooling (bc97121), so the history shows it was written before any tool changed. `baseline_globals.txt` later gained rows for phase-1 names the improved scanner sees, each with a comment.
 
 **R3. Frozen return values (lesson 2).** Section 6 gives every contract's return value. A stub returns a value of the same type and shape. `p2_contracts.rpy` holds one table, `ZZ_RETURNS` (symbol, example call, expected type or shape), and runs against the stubs at P0 and, unchanged, against every worktree and the merged tree. (The three symbols that arrive with a later package are asserted in that package's own harness, 6.1, so `p2_contracts.rpy` is never edited after wave 0.)
 
@@ -222,7 +235,7 @@ The only exceptions, by name: the contract symbols of section 6 that have no pre
 - `Function(f, …)` where `f` is on `tools/none_ok.txt`;
 - **a named Action class whose `__call__` returns the screen's documented tuple,** allowed only when section 4 lists it. One ships: `fish_Hook` (4.13), because the value it returns must be read at the moment of the click.
 
-`check_content.py --action-returns` flags every other `Function(` in `game/*.rpy`, **inside `screen` blocks and inside `def` bodies** (today `explore.rpy:259-260` builds `Function(DEV_FUNCS[key])` in a `def`; `map_row_action` and `icon_btn`'s callers do the same). It flags nothing but `Function(`. `tools/none_ok.txt` is one line per function, `name<TAB>example call` (`jr_wear<TAB>jr_wear(0, "paper_ward")`: the slot is an integer, `ui_journal.rpy:948`); `p2_contracts.rpy` runs each example inside a `settle()` fixture and asserts `is None`. The `dev_*` functions change state (a week passes, a grade rises), so they are checked through `dev_action(key)` for every key in `DEV_FUNCS`, each in a fresh fixture. `none_ok.txt` at P0: `toast_tick`, `check_objective`, `jr_go`, `jr_toggle`, `jr_wear`, `jr_hold`, `jr_takeoff`, and the `dev_*` functions.
+`check_content.py --action-returns` flags every other `Function(` in `game/*.rpy`, **inside `screen` blocks and inside `def` bodies** (today `explore.rpy:259-260` builds `Function(DEV_FUNCS[key])` in a `def`; `map_row_action` and `icon_btn`'s callers do the same). It flags nothing but `Function(`. `tools/none_ok.txt` is one line per function, `name<TAB>example call` (`jr_wear<TAB>jr_wear(0, "paper_ward")`: the slot is an integer, `ui_journal.rpy:948`); `p2_contracts.rpy` runs each example inside a `settle()` fixture and asserts `is None`. The `dev_*` functions change state (a week passes, a grade rises), so they are checked through `dev_action(key)` for every key in `DEV_FUNCS`, each in a fresh fixture. `none_ok.txt` at P0: `toast_tick`, `check_objective`, `jr_go`, `jr_toggle`, `jr_wear`, `jr_hold`, `jr_takeoff`, and the `dev_*` functions. **As built:** the `dev_*` functions are one row, `DEV_FUNCS[key]` (example `dev_action(key)()`), because the source check cannot resolve the subscript; the harness runs it for every key. `--action-returns` also reports `Function` handed on without a call (an alias), and reads `Function (`, `store.Function(` and `renpy.store.Function(`. Besides `fish_Hook`, the card screens build their move actions through `cards_act` (4.12).
 
 **R5. Fixtures from constructors (lesson 3).** `fixture()` fails on an unknown variable name, and refuses to set a shaped variable at all: `board_offers`, `board_log`, `npc_state`, `inventory`, `mission_state`, `cb`, `cards_state`, `fish_state`, `fish_log`, `pc_requests`. Harnesses build those with the owner's functions: `board_generate()`, `board_take()`, `give_item()`, `promote()`, `_mem()` / `memory_entry()`, `night_set_cost()`, `market_buy()`, `cards_new()`, `fish_land()`, `pc_request()`. Each package's acceptance names its builders.
 
@@ -231,13 +244,13 @@ The only exceptions, by name: the contract symbols of section 6 that have no pre
 | overlay | may draw over | where (1920×1080) |
 |---|---|---|
 | toasts | a scene | right edge 1880, top 92, four at most (as now) |
-| toasts | the place view | x 1330 to 1790, y 92 to 350 (left of the icon column) |
+| toasts | the place view | x 1330 to 1790, y 92 to 350 (left of the icon column). **As built:** four two-line toasts end near y 416, so the lane runs to about y 422: the hotspot validator's lane (`HOT_LANES`) is y 92 to 422, a second icon column starts at y 430 (4.4), and P8 shows three toasts, not four, while one of them runs to a second line (4.2) |
 | toasts | the person view | right edge 1722, top 26, two at most (as now) |
 | toasts | a fight (`combat_screen`, which is tagged `sandbox`) | right edge 1880, top 92, four at most (as now; a fight's rewards must not be held back) |
 | toasts | the map, journal, board, the board's partner picker, the grade card, armory, market, computer, card table, fishing, the style sample, the game menu | **not drawn**; they wait, clocks stopped |
 | toasts | the review panel (`dev_panel`) | right edge 1880, top 92, four at most (as now: the review buttons report through toasts, and the panel sits left of centre to leave the stack clear, `explore.rpy:362`) |
 | objective banner | the place view only | x 400 to 1300, y 96 to 170 (`xpos 400`, `xsize 900`; today it is centred at x 510 to 1410, which would run under the toast lane) |
-| arrival caption | the place view only | from (40, 100), up to 744 wide, fades |
+| arrival caption | the place view only | from (40, 100), up to 744 wide, fades. **As built:** not a lane for hotspots, but exits keep out of its box (`PATH_CAPTION_BOX`, D56) |
 | SKIPPING tag | scenes only | (48, 108) |
 | hover label | everything | beside the hovered button; zorder 190; may cover a toast while I hover |
 
@@ -267,16 +280,19 @@ From the commit each lands in, these stay textually identical, each with the lin
 | `sb_night.rpy` | the three `menu:` statements (the Gojo night; the night in Tokyo's three-way arrival choice; the after-club Black Market / Home choice) with their captions; both `call market_open` statements (after the club; the direct market choice), each with the line after it |
 | `sb_market.rpy` | `call screen market_screen` / `$ _market_r = _return` |
 | `room_computer.rpy` | `call screen pc_screen(_pc_page)` / `$ _pc_r = _return` |
-| `room_fishing.rpy` | `call screen fish_screen` / `$ _fish_r = _return` |
+| `room_fishing.rpy` | `call screen fish_screen` / `$ _fish_r = _return`, with `$ renpy.block_rollback()` on the line above the pair (as built) |
 | `room_cards.rpy` | `call screen cards_table` / `$ _cards_r = _return`; `call screen cards_blackjack` / `$ _cards_b = _return`; `call screen cards_poker` / `$ _cards_p = _return`; `call expression "mg_" + _cards_r[1] pass (_cards_opp, _cards_r[2])` (opponents, then the stake: the frozen interface is `label mg_<id>(opponents, stake=0)`, 4.12) |
-| `room_library.rpy` | the shelf `menu:` |
+| `room_library.rpy` | the shelf `menu:` (three shelves, no way back; 4.14) |
+| `room_paths.rpy` (section 13) | `label path_walk(path_to)` with its line `call rule_walk_to(path_to)`; every `label sb_do_path_<to>` with its line `call path_walk("<to>")`. A save made after an exit walk holds return sites in these: never rename them (not to `go_<to>` either, D55) |
+
+**As built.** The rows for `room_computer.rpy`, `room_cards.rpy` and `room_library.rpy` are as written. The `sb_night.rpy` menus are as built, including the unaffordable club as a second choice (4.15); the owner has saves on them. P8 added a second `call night_carry_home` in `sb_loop.rpy`, after `call play_event(_story)` (4.15); it is protected like the first.
 
 ### 2.4 Working method
 
 - **Backup first** (P0 task 0): `game/*.rpyc`, `game/saves/`, `~/Library/RenPy/JJKgamemd-1788928056/` → `~/Desktop/JJK_backup_phase2_<date>/`.
 - P0a, P0b and P0c commit to `phase2` in the owner's folder, in that order (P0c changes no `.rpy` file). Each later package works in `~/Desktop/JJK_worktrees/p2_<n>`, **branched from `phase2` after the wave before has merged,** with the owner's `.rpyc` copied in. Files are disjoint within a wave, so merges are clean, and every package codes against P0's stubs, so the tree is playable after any merge in any order (7.3 lists the few acceptance lines that only run once another package is in).
 - File ownership is **per wave** (7.2): in wave 0, P0 owns every file it touches; in wave 2, a file P2 owned in wave 1 can belong to P5.
-- Lint is `~/Desktop/renpy-8.5.3-sdk/renpy.sh <tree> lint`, in a worktree or scratch copy only.
+- Lint is `~/Desktop/renpy-8.5.3-sdk/renpy.sh <tree> lint`, in a worktree or scratch copy only. The command ends at `lint`: with a trailing `.` this SDK tries to write its report to `.` and raises IsADirectoryError.
 - **Standard acceptance for every package:** (a) lint clean, no `VALIDATE:` lines; (b) `python3 tools/check_content.py --all game/*.rpy tools/smoke/*.rpy` shows no new finding; (c) the package's harness passes through `tools/smoke.sh`; (d) `p2_contracts.rpy`, `core_flow.rpy` and `phase1_all.rpy` pass in the worktree, and so does every phase-1 `wp*` harness in the package's own row of 7.2; (e) a `zz_worst` screenshot of each full screen it owns; (f) a five-line "what changed / what to look at" note for the owner.
 
 ---
@@ -287,17 +303,17 @@ From the commit each lands in, these stay textually identical, each with the lin
 
 | table | file (owner) | change |
 |---|---|---|
-| `LOCATIONS` | `sb_world.rpy` (**P0**) | new row `"library": dict(indoor=True, name="Library", bg="bg library", x=250, y=640, desc="Shelves to the ceiling and a smell of dust and ink. Nobody talks above a murmur.")`; key appended to `LOC_ORDER`; the `school` row of `AREAS` (a list of dicts; `AREA_BY_KEY["school"]["places"]`) gains `"library"`; `bg library` in `bg_placeholders.rpy`. Laid in wave 0 so that P2's `AMBIENT` row and P6's hotspots lint against a real place (`_validate_wp7_tables`, `sb_screens.rpy:278-282`, rejects an unknown one). At checkpoint A the old map shows one more row, an empty Library |
+| `LOCATIONS` | `sb_world.rpy` (**P0**) | new row `"library": dict(indoor=True, name="Library", bg="bg library", x=250, y=640, desc="Shelves to the ceiling and a smell of dust and ink. Nobody talks above a murmur.")`; key appended to `LOC_ORDER`; the `school` row of `AREAS` (a list of dicts; `AREA_BY_KEY["school"]["places"]`) gains `"library"`; `bg library` in `bg_placeholders.rpy`. Laid in wave 0 so that P2's `AMBIENT` row and P6's hotspots lint against a real place (`_validate_wp7_tables`, `sb_screens.rpy:278-282`, rejects an unknown one). At checkpoint A the old map shows one more row, an empty Library. **As built:** `LOCATIONS` has 24 rows: the 19 rooms and the five hubs of section 13 (D53); code that walks every place reads `LOCATIONS` or `LOC_ORDER`. The classroom's name is "Classroom" (D60) |
 | `AREAS` | `sb_world.rpy` (P1) | `school`: `name="School Building"`. Every row gains `bg="bg area_<key>"`, `blurb` (one first-person line) and `spots={loc: (x, y)}` (4.1). Keys, seals, order and anchors unchanged |
 | `WEEKEND` | `sb_world.rpy` (P1) | Megumi, Saturday and Sunday Afternoon → `library`; the frozen copy in `tools/smoke/wp1_world.rpy` is updated in the same commit. **Cuttable** |
 | `JOURNAL_TABS` | `ui_journal.rpy` (P3) | the `memories` row goes (five rows) |
-| `THREADS` stage lines | `sb_threads.rpy` (P3) | the 11 lines that say "you" are reworded to "I/me". Only the stage index is saved |
+| `THREADS` stage lines | `sb_threads.rpy` (P3) | the 11 lines that say "you" are reworded to "I/me". Only the stage index is saved. **As built:** 15 lines said "you" and all 15 are reworded; each row gained `short=[…]` (init data: one or two words a stage, for a page that is short of room, 4.7); Gojo's thread title is "Taking My Measure" (was "Taking Your Measure"), kept by the owner's ruling at checkpoint B |
 | `MEMORY_UNMET_HINT` | `sb_memories.rpy` (P3) | "Someone I haven't met yet." |
 | `ITEMS` | `sb_market.rpy` (P4b), through `_item()` | four talismans: `borrowed_luck` (g3), `night_eyes` (g3), `debt_marker` (g2), `second_wind` (s1); `source="The Black Market"`; `fx` stored only. Twelve fields each. (`sb_market.rpy` sorts after `sb_items.rpy` at init -1, which `_item()` and `ITEM_REQS.update(…)` need.) The three story Specials are not touched |
 | `BOARD_GRADE_COLOR` | `sb_board.rpy` (P4a) | stays defined, re-pointed at the `gui.grade_*` tokens |
-| `AMBIENT` | `sb_screens.rpy` (P2) | new row `("megumi", "library"): ("three books deep", "serious")` |
+| `AMBIENT` | `sb_screens.rpy` (P2) | new row `("megumi", "library"): ("three books deep", "serious")`. **As built:** P8 added one row for each person scheduled into a hub (D57) |
 | `ACTIVITIES` | `sb_activities.rpy` (P2) | the `study` row's `loc` gains `"library"` |
-| `DEV_BUTTONS`, `DEV_FUNCS`, `DEV_SCENES` | `explore.rpy` (P0) | six rows (4.16); the grid becomes 3×7 |
+| `DEV_BUTTONS`, `DEV_FUNCS`, `DEV_SCENES` | `explore.rpy` (P0) | six rows (4.16); the grid becomes 3×7. **As built:** `DEV_BUTTONS` rows stay 2-tuples and a button's `when` lives in a new table, `DEV_WHEN` (key → function name), read by `dev_rows()` (4.16) |
 
 ### 3.2 New tables (init data, never saved)
 
@@ -314,11 +330,12 @@ From the commit each lands in, these stay textually identical, each with the lin
 | `MARKET_STOCK`, `MARKET_OUTFITS` | `sb_market.rpy` (P4b) | `[dict(item, price, once)]`; `[]` |
 | `NIGHT_STRICT`, `NIGHT_OK`, `NIGHT_REST_BLOCKS`, `NIGHT_GOJO`, `NIGHT_OUT`, `NIGHT_CARRY_LINES` | `sb_night.rpy` (P4b) | `True`; `{"night_gojo", "stargaze", "rom_close", "int_night"}`; `{"train", "lesson", "hold", "swim"}` (action and activity ids closed on a rest day: `train` covers Train, Practice and "Train together"); `dict(over=6, reserve_over=3, day_step=4, day_hold=2, day_lesson=5, day_lesson_reserve=5, past_cap=6, gap=10, place="ridge")` (`day_step` and `day_hold` mirror `sb_do_train` on the ridge and `sb_do_hold`; `day_lesson` and `day_lesson_reserve` mirror `act_lesson`, `sb_activities.rpy:321-322`; a harness proves they still match; `past_cap` is how far the night may leave Control above the grade ceiling: 6, the owner's ruling 5; with it above 0 the reserve may end `reserve_over` above its own ceiling); `dict(cover=1500, bond=4, stamina=0.5, ce=0.7, market="shibuya")`; `{area key or "": str}` |
 | `VIEW_TICK` | `view_stage.rpy` (P0, final) | `0.05` |
-| `VIEW_SLOTS`, `VIEW_FACE`, `VIEW_BLINK_OK`, `VIEW_TALK_OK` | `view_stage.rpy` (P5) | `{place: {n: [(xcenter, yoffset, zoom, far)]}}`; `{who: dict(eyes=(x,y,w,h), mouth=(x,y,w,h))}` on the sprite canvas; tuples of expressions |
+| `VIEW_SLOTS`, `VIEW_FACE`, `VIEW_BLINK_OK`, `VIEW_TALK_OK` | `view_stage.rpy` (P5) | `{place: {n: [(xcenter, yoffset, zoom, far)]}}`; `{who: dict(eyes=(x,y,w,h), mouth=(x,y,w,h))}` on the sprite canvas; tuples of expressions (**as built:** both are `("neutral",)`) |
+| `PATH_HUBS`, `PATH_LINKS`, `PATH_EXITS` (as built, section 13) | `room_paths.rpy` (P9) | `{area: hub}`; `[(hub, hub)]`; `{from: [(to, x, y)]}` |
 | `SPOT_LINES` | `room_spots.rpy` (P6) | `{hotspot id: [first-person lines]}` |
-| `PC_SITES`, `PC_PAGES` | `room_computer.rpy` (P6) | `{site: dict(name, url, tone)}`; `{page: dict(site, title, body=[str], links=[page], needs=None or flag, gives=None or ("insight", n) or ("flag", name))}` |
+| `PC_SITES`, `PC_PAGES` | `room_computer.rpy` (P6) | `{site: dict(name, url, tone)}` (**as built:** `dict(name, url, tone, color)`, `color` naming a `gui.pc_*` token); `{page: dict(site, title, body=[str], links=[page], needs=None or flag, gives=None or ("insight", n) or ("flag", name))}` |
 | `FISH_KINDS` | `room_fishing.rpy` (P6) | `[dict(id, name, min_cm, max_cm, weight, zone, yen_per_cm, periods)]`: six species, `river_lord`, `pale_thing` |
-| `CARDS_STYLE`, `CARDS_STAKES`, `CARDS_LIMIT` | `room_cards.rpy` (P7) | `{who: dict(tight=0..1, bluff=0..1, tell=expr, win=str, lose=str)}` for the 11; `(100, 500, 1000)`; `dict(hands=5, down=3000)` |
+| `CARDS_STYLE`, `CARDS_STAKES`, `CARDS_LIMIT` | `room_cards.rpy` (P7) | `{who: dict(tight=0..1, bluff=0..1, tell=expr, win=str, lose=str)}` for the 11 (**as built:** also `shows`, `rest`, `sore`, `stop`, `blind`, `glad`, `deal`); `(100, 500, 1000)`; `dict(hands=5, down=3000)` |
 
 ### 3.3 New store variables (all `default`, plain, safe at default in a replay)
 
@@ -337,12 +354,14 @@ From the commit each lands in, these stay textually identical, each with the lin
 | `pc_read` | `set()` | P6 | page ids read |
 | `pc_requests` | `[]` | P6 | `[(page, note)]` |
 | `pc_checked_week` | `-1` | P6 | the `board_week` already cross-checked |
+| `pc_noted` (as built) | `""` | P6 | what the page just read gave, for its gold "Noted." strip |
 | `fish_log` | `{}` | P6 | species id → longest cm (int) |
-| `fish_state` | `{}` | P6 | the sitting in progress; `{}` otherwise |
+| `fish_state` | `{}` | P6 | the sitting in progress; `{}` otherwise. **As built:** it holds `plan`, the sitting's three casts rolled when it starts (a list of `[kind, spare, r, wait]`) |
 | `fish_cursed_week` | `-1` | P6 | the week the cursed catch last came up |
 | `cards_state` | `{}` | P7 | the sitting in progress (deck as a list of ints); `{}` otherwise |
 | `cards_won_day` | `0` | P7 | the day `cards_won` counts for |
 | `cards_won` | `0` | P7 | yen won at cards that day |
+| `cards_sit` (as built) | `{}` | P7 | the sitting's tally across both games: keys `day`, `hands`, `net`, `opponents`, `stake` |
 
 Flags (in the existing `flags` set): `market_found`, `researched_<page>`, `caught_river_lord`; reserved for Arc Two: `spear_unsealed`, `yaga_signature`. `actions_today` (a set) gains `cards:<who>`, `fish_bond`, `fish_first`, `spot_vend`, `night_toast`, `hot:<id>` (a look hotspot used today). `default persistent.motion = True` (P0) is not in saves. `bound_specials` is not written by phase 2.
 
@@ -355,6 +374,12 @@ What replaces a migration:
 - a save whose `_r` is `("journal", "memories")` opens People;
 - the two owner saves parked on `call screen sb_map` (auto-1, auto-2) reopen on the six areas; the one on `call screen sb_place` (1-1) reopens in the new place view;
 - a save parked at Night away from the dorm shows "Go to bed"; the next rollover walks it home. `docs/PLAYTEST.md` says so.
+
+**As built: what a load does to what was open** (all by design, each asserted in `p2_saves`):
+- a save made on the map with an area or district open loads on level 1 (the open area is a screen variable; Ren'Py re-runs the call with a fresh scope);
+- a save made in the journal with a person's page open loads on the People grid (`js` is the screen's);
+- a save made at a fishing bite loads on the same cast, fish and zone, with the sweep started again; one made with the record book open loads with the book closed;
+- a save made in a blackjack hand loads with the same cards dealt (the next card is drawn fresh); one made at the poker draw loads with no card marked.
 
 ---
 
@@ -379,13 +404,15 @@ Both protected map calls (`call screen sb_map`, `call screen sb_map(layer="tokyo
 
 | screen | words at most | buttons at most | faces at most | today |
 |---|---|---|---|---|
-| map, six areas | 20 (six area names: 12; the title: 2; "YOU ARE HERE": 3) | 6 markers + 4 | 18 (three a marker) | about 45 words, 18 rows, 11 faces in a strip |
-| map, one area | 16 (the area's name: 2; Back: 2; room plates: up to 10) | 5 pins + 4 | 15 (three a pin) | – |
-| place view (after P5) | 2 per person on stage | 8 in the column, 4 hotspots | – | about 60 words and a card |
+| map, six areas | 20 (six area names: 12; the title: 2; "YOU ARE HERE": 3; as built "I'M HERE") | 6 markers + 4 | 18 (three a marker) | about 45 words, 18 rows, 11 faces in a strip |
+| map, one area | 16 (the area's name: 2; Back: 2; room plates: up to 10) | 5 pins + 4 (**as built:** 5 pins + 5 buttons, with the hub's pin and Stay here on every level) | 15 (three a pin) | – |
+| place view (after P5) | 2 per person on stage | 8 in the column, 4 hotspots (**as built:** 4 object hotspots plus the place's exits: 1 in a room, up to 7 in a hub; the Dormitory Garden has 7. The owner was asked at checkpoint C and changed nothing) | – | about 60 words and a card |
 | place view (after P2, old name plates) | the column itself: 0 | the same | – | – |
 | person view | 16 | 4 choices + 2 | – | about 40 words |
 | journal, a People card | 6 | 1 | 1 | 6 lines a card |
 | journal, a person's page | 70 | – | – | about 150 |
+
+**As built.** The person-page budget is `JR_PAGE_WORDS` (70), measured on the page's default pane (Their story); the Memories pane and the Me page are not held to it. The wordiest page measured is exactly 70 (4.7 says how a page makes room).
 
 ### 4.1 The map: `screen sb_map(layer="campus", area=None)` (`ui_map.rpy`, P1)
 
@@ -435,6 +462,17 @@ The removed tooltip frame includes the `$ _tip` lines P0 adjusted (6.3); every t
 
 No toasts over the map (R6).
 
+**As built (P1, then P9 for section 13).**
+- **Back** is its own button (`id "map_back"`) reading "Jujutsu High" or "Tokyo", not `icon_btn("back")`.
+- **"Stay here"** is on every level, not only level 1.
+- **Markers** are 240×96 (style `map_area_marker`, `MAP_AREA_W` / `MAP_AREA_H`; D59), the name on one line and shrunk to fit; the Mountain marker sits on the mountain (anchor inside `MAP_MOUNTAIN_BOX`). My area's marker reads "I'M HERE".
+- **A pin** is a 72 px square tile (there is no round asset); its name plate shrinks to fit. Its hover also lists who is there, and says "I'm here." on my own room, which stays hoverable (`NullAction`). Faces go on the left of a pin whose x is under 700 (`MAP_FACES_LEFT_X`). Each hub has a pin (`map_pin_icon`).
+- **The zoom-in** is used for a district's picture too.
+- **Districts:** pins show no name plate at rest and use the `place_later` icon. A closed district passed as `area=` opens Tokyo on level 1.
+- **A load** (and a save made with an area open) comes back on level 1 (3.4).
+- **Sidecars:** `game/layout/area_<key>.json` exist for all six areas; the table above stays the code default. Pin rules are a separate validator, `map_validate`; `_validate_world` gained three `AREAS` checks.
+- **Hover labels** on the map's switch and on district markers open below or above their button, not on the left (4.3).
+
 ### 4.2 The HUD: `screen sb_hud(on_map=False, person=False)` (`ui_hud.rpy`, P2)
 
 - Date chip and **status chips** share one `hbox` at (40, 26), `spacing 10`: the date chip first, unchanged in look and position ("Day 12 · Wednesday" is 310 to 350 px wide, so a fixed x for the chips would overlap it), then the chips, each a 36 px icon with a hover label: `moon` when `night_tag()` is non-empty ("Worn out — no missions or training today" / "Rough morning"); `stamina_low` when stamina < 25 ("Running on empty. Eat or sleep.", moved here from above the action card); `skip` while `renpy.is_skipping()`.
@@ -456,6 +494,13 @@ No toasts over the map (R6).
 
 The tests run in the table's order, except that the `grade_card` test comes first. `toast_limit()` returns `toast_room()[2]`. `toast_tick` leaves every clock stopped while the limit is 0. `objective_toast` is hidden unless `sb_place` is the `sandbox` screen showing, and there it is drawn at `xpos 400`, `xsize 900` (x 400 to 1300), clear of the toast lane that starts at x 1330.
 
+**As built (P2, then P8).**
+- `toast_room()` tests in this order: the grade card, the prologue blackout, the game menu's own context, a screen tagged `menu` (the journal is tagged `menu`), then a choice menu (P8: toasts wait while one is up and show once I have picked), then the `sandbox` names. Every row's value is as the table says, except that the place view shows three while one of the toasts up runs to a second line (P8; R6).
+- `toast_hold()` is a start-of-interaction callback that stops every toast clock wherever toasts wait.
+- The status chips never show a word under their icon; the stamina chip is hidden in explore mode; the moon chip's hover is `night_tag()` verbatim (`NIGHT_TAGS` carries the whole sentence, "Worn out — no missions or training today" / "Rough morning").
+- The objective banner is wrapped in `showif hud_banner_ok()`, so its slide runs on `show` and on `appear`; `check_objective()` hides the banner before it shows it.
+- The corner icons' and chips' hover labels open below them (4.3).
+
 **Preferences** (`screens.rpy`): the "Motion" row for `persistent.motion` is added by P0 (6.3), not here.
 
 ### 4.3 Icons and hover labels (`ui_icons.rpy`, P0, final)
@@ -465,6 +510,13 @@ The tests run in the table's order, except that the `grade_card` test comes firs
 - `screen icon_btn(name, action, tip=None, size=52, w=None, gold=False, selected=False, pips=0, wid=None, words=None)`: a button `w or size + 12` wide; the icon centred; `pips` cost diamonds under it; the word under the icon (13 px) when `words == "always"`, or when `words` is `None` and `gui.icon_words` is `"always"`, or `"auto"` and `not icon_has_art(name)`; `tooltip ((tip or icon_label(name)), wid or name)`; `id wid` when given.
 - `screen hover_label()`: `zorder 190`; in `config.always_shown_screens`. `$ _hover_t = GetTooltip()`; when it is set: `nearrect: focus "tooltip"  preferred_side "left"` holding a `panel_dark` frame (padding 14, 8; `xmaximum 520`). **It draws only when the tooltip is a 2-tuple;** the text is `_hover_t[0]`. A plain-string tooltip (phase 1's map rows, `ui_map.rpy:400, 455, 506`) is left to the screen that owns it. `"Title\nhint"` draws the first line at 22 in the display font and the rest at 18 dim. Callers that want the label on another side put the button where `nearrect` has no room on the left; it then uses the opposite side by itself.
 - `screen icon_sample()` (for checkpoint A): a `sandbox` screen with a row of twelve `icon_btn`s in each of the three `icon_words` modes, the five grade chips at sizes 13 and 18, and one person-view choice button. Returns `("close",)`.
+
+**As built.**
+- **The label's side comes from the tooltip key.** `hover_label` opens on the left unless the key starts with one of the prefixes in `ICON_TIP_SIDES` (`icon_tip_side(tip)`, P8): the style sample's rows, name tags and district markers open above; the corner icons and chips, exits (`hot_go_…`), the map's switch and the journal's Right now and story rows open below; journal cards open above. A label on the left would cover the neighbour in a row. The tooltip stays the 2-tuple of D11.
+- **The style sample** is 1290 wide with 90 px buttons. Its twelve names are in `ICON_SAMPLE`: `map`, `journal`, `menu`, `train`, `study`, `eat`, `sleep`, `talk`, `wait`, `mission`, `look`, `fish_cast`. It is not modal and closes itself under `smoke_autoplay`.
+- **An unknown icon name** draws "？". Lint does not report one written as a literal in a screen (lint never runs a screen); `check_content.py --icon-names` does (R2).
+- **Gold:** with its picture installed, a gold icon is the white picture tinted gold (P8; "Train until morning", D23).
+- A long icon word wraps to two or three lines in a 90 to 120 px button.
 
 `ICONS`, `ICON_FOR` and `ICON_GOLD` are defined at `init -3 python`, before any file registers a hotspot (6.1).
 
@@ -491,8 +543,8 @@ Draw order, bottom to top:
 3. `use view_stage(here)`: the people and their name tags (4.5).
 4. `use view_fg(here)`.
 5. `use hot_layer(here, front=True)`.
-6. The overflow chip at (1300, 900): unchanged.
-7. "Nobody here right now." at (700, 640): the second sentence about the map is dropped; `tools/smoke/wp7_ui.rpy:445` is updated.
+6. The overflow chip at (1300, 900): unchanged. **As built:** the "+N" chip is at `RAIL_MORE_POS` (1400, 1040), bottom-anchored, with a tooltip and an id.
+7. "Nobody here right now." at (700, 640): the second sentence about the map is dropped; `tools/smoke/wp7_ui.rpy:445` is updated. **As built:** not shown in the dorm.
 8. The arrival caption at (40, 100): unchanged.
 9. **The icon column** (replaces the 440-wide card): a `vbox`, `xalign 1.0`, `xoffset -40`, `yalign 1.0`, `yoffset -40`, `spacing 10`, of 72×72 `icon_btn`s built from `rail_actions(here)`: gold mission icons first, then the actions in order, then Wait (or Go to bed), then `release` last when someone is tagging along (`rail_actions` appends that row itself, 6.1; today's separate "Let them go" link at `sb_screens.rpy:571` goes). Cost shows as pips. More than eight (six when words show): a second column at x 1726 to 1798. Never above y 360.
    - Hover: "Train\nPush my cursed energy. Costs stamina. · 1 period".
@@ -500,6 +552,13 @@ Draw order, bottom to top:
 10. `use sb_hud`.
 
 `_missions` is also empty when `not night_can_work()`, and at Night holds only missions for which `night_allows("mission:" + mid, cost)`. The stage keeps x 40 to 1700.
+
+**As built (the column).**
+- The tiles are a new screen, `rail_btn` (72×72, a 50 px icon, the cost diamonds under it; a tile's id is `"rail_" + action id`), not `icon_btn`.
+- The edge column holds eight tiles; a second column (x 1726 to 1798) stops at y 430 and holds seven. Two columns at most (`RAIL_COLUMNS`), so a room may hold 15 tiles; Wait (or Go to bed) and "Let them go" stay at the foot of the edge column.
+- `rail_layout()` drops the words rather than open a third column. While words show, a tile's word is the action's own name (missions keep "Mission").
+- Exits (section 13) come first among the registered actions. At Night an action in `NIGHT_OK` shows no diamond and no "1 period" (P8: it takes the rest of the night).
+- The name tags are drawn by `view_fg` (through `view_tags`), above the foreground picture (4.5), so step 4 draws them, not step 3.
 
 **Between P0 and P2** the phase-1 action card is still there, but P0 has re-pointed it at `rail_actions` (6.3), so the night rule and the hotspots reach the screen whichever of P2, P4b and P6 lands first.
 
@@ -515,7 +574,7 @@ Draw order, bottom to top:
 - **Breathing.** A wall-clock function transform (`view_breathe_fn`, top-level, curried with the phase; R10): `yzoom` 1.0 ↔ 1.006 over 4.2 s about the feet, each person offset by a phase from their name; returns `VIEW_TICK`. Off for a pose picture and when `view_motion()` is False.
 - **Name tags.** A 36-high tag with the short name (20 px, the person's colour) and the gold 「!」 / NEW badge (NEW is hidden while `night_allows("hang", 1)` is False: no badge for a scene the night won't let me start), at `ypos 1036` under the feet, so the contact shadow shows. The caption moves to the hover label (over the person or the tag).
 - **Poses.** `view_pose(who, loc, per=None)` → `dict(image, box)` or `None`. `image` is the file's path as a `str`, never a displayable (a screen may hold the dict in a `$` variable, and screen scope is pickled, R10); the displayable is built in the `add` line. It looks for `images/place/pose_<loc>__<who>__<variant>.png` when `bg_variant(loc, per)` names a painted variant, else `images/place/pose_<loc>__<who>.png`. With a painted variant and only the day file: `None` (the sprite). `box` is `(x, y, w, h)` from the sidecar `game/layout/view_<loc>.json` key `"poses"`; with no box, the whole picture, and only when that person is alone on the stage. The box is cropped, given a 24 px feathered edge (`AlphaMask` with `gui/soft_box.png`, generated by `tools/gen_gui.py` in P0c; a hard edge until that file exists), tinted like the background when `graded_bg` tints it, and drawn at its own position as a `button` (hover: brightness +0.08) returning `("char", who)`.
-- **Foreground.** `view_fg(loc)` adds `images/fg/fg_<loc>_<variant>.png` or `fg_<loc>.png` when loadable, tinted like the background. Files ship for `dorm_common` (three variants), `cafeteria`, `classroom`, `utahime_office`.
+- **Foreground.** `view_fg(loc)` adds `images/fg/fg_<loc>_<variant>.png` or `fg_<loc>.png` when loadable, tinted like the background. Files ship for `dorm_common` (three variants), `cafeteria`, `classroom`, `utahime_office` (as built: not the classroom; see the block below).
 - **Idle to talking:**
 
 | join | today | phase 2 |
@@ -530,16 +589,29 @@ Draw order, bottom to top:
   **These two are shown on the master layer, so they are saved and rolled back (R10).** `view_enter_ease` is an ATL `transform` statement; nothing `view_enter` shows carries a function defined inside another function. With `view_motion()` False the sprite is shown at `pos_c` as today.
 - **Blink and talk** (cuttable). `lit_sprite(path, size, feet)` (`lighting.rpy`) derives `<who>` and the expression from the path; when `images/char/fx/fx_<who>_blink.png` or `fx_<who>_talk.png` is loadable and `VIEW_FACE[who]` has a box, it adds two small layers to the sprite's `Fixed`: the eye box cropped from the blink picture (shown 0.12 s every 3 to 6 s, on `VIEW_BLINK_OK` expressions) and the mouth box cropped from the talk picture (alternating 0.12 s while `VIEW_SPEAKING[0] == who`, on `VIEW_TALK_OK` expressions). Both layers are function transforms on a sprite that dialogue shows with `show`, so their functions are top-level (`view_blink_fn`, `view_talk_fn`), curried with `who` (R10). `VIEW_SPEAKING` is a `builtins.list([None])`, set by a `config.all_character_callbacks` entry. Without the files the sprite's structure is exactly today's. `jjk_sprites.rpy` and `jjk_defs.rpy` are not edited; `tools/gen_sprite_defs.py` only reads `images/char/*.png`, so the `fx/` folder is invisible to it.
 
+**As built (P5).**
+- **Foregrounds:** five files, not six: `fg_dorm_common.png`, `_evening`, `_night`, `fg_cafeteria.png`, `fg_utahime_office.png`. The classroom has none; people there stand in the front aisle. `VIEW_FG_ROOMS` names the three rooms; while the hour's foreground file is missing, such a room falls back to the plain default slots and draws no foreground. A hotspot on a foreground object needs `front=True`.
+- **In dialogue** the foreground stays over the person only in the cafeteria: `VIEW_FG_TALK = ("cafeteria",)`.
+- **The ink wash:** foreground and pose pieces get the wash the screens lay over the room (`VIEW_INK` 0.10, `VIEW_INK_PERSON` 0.35, mirroring `sb_screens.rpy`; change both together).
+- **Slots beside a pose:** the people still standing take the slots that cover the pose box least (`view_pick_slots`, `view_pose_cost`): one layout's slots when a clear set exists, else slots from all the room's layouts, at least 170 px apart. A companion never takes their pose. `stage_x` reads the row's own x (`view_stage_rows`).
+- **Far slots** in the foreground rooms are stronger than the default: zoom 0.43, feet 190 px higher.
+- **Name tags** are drawn by `view_fg` through screen `view_tags`, above the foreground, spaced by their measured widths (`view_tag_w`, `view_tag_est`, `view_tag_xs`; `VIEW_TAG_GAP` 8; `VIEW_TAG_EDGES` (179, 1700), the left limit being the end of the Review tools link; `VIEW_TAG_W` is the cache). Sprites and tags carry tuple tooltips (`stage_<who>`, `tag_<who>`).
+- **Blink and talk:** `VIEW_BLINK_OK` and `VIEW_TALK_OK` are `("neutral",)`; `VIEW_BLINK_ALSO` lists, person by person, the other faces a blink also sits on without a seam (Yuji: four of his other five). `VIEW_SPEAKING` is `[who, until]`: the mouth moves for 0.6 to 2.4 s by the line's length, since text is shown at once. The pictures are edited from a close-up cut from the game's own sprite (`<who>_fx_in.png`, `install_face.py --prepare`; `--sheet` draws every box).
+- **Tools:** `install_pose.py` takes `--name`, `--bg`, `--root`, `--dry` and `--box`; its blur is a 4×4 block average. `make_pose_workflow.py` takes `<place> <who>` or `<who> <place>`. `game/layout/view_<place>.json` is created by `install_pose.py` when the first pose lands; two ship (`dorm_common`, `utahime_office`).
+- **A pose shows whenever its file exists for the hour;** it has no caption test (section 11).
+- **Other names:** `view_slot_rects(loc, n)` (kept for the hotspot validator), `view_stage_rows`, `view_draw_order`, `view_sprite`, `view_pose_patch`, `view_fg_path`, `view_fg_image`, `view_room_matrix`, `view_tag_marks`, `view_face_layers`, `view_say_cb`, `view_validate`; `light_face_layers` in `lighting.rpy`.
+
 ### 4.6 The person view: `screen sb_char(who)` (`sb_screens.rpy`, P2)
 
 - Background as now; the person through `use view_focus(who)` (ends at xcenter 520, zoom 0.66).
-- Card: `jjk_panel`, `xpos 1180`, `ypos 190`, `xsize 640`, `ymaximum 850`, padding (20, 20):
+- Card: `jjk_panel`, `xpos 1180`, `ypos 190` (**as built:** y 250, `RAIL_CARD_Y`, so that two three-line toasts end above it), `xsize 640`, `ymaximum 850`, padding (20, 20):
   1. `use grade_chip(<the person's grade key>, size=18)`: "GRADE 2"; "OFF THE SCALE" on the sheen for Gojo; the role ("DOCTOR") in a plain chip for people with no grade;
   2. the choices from `person_choices(who, here)`, each a 600-wide button: `icon(choice["icon"], 40)` at the left, the label (display 24; gold for a mission, rose for romance), cost pips at the right; the hint is the hover label. Returns unchanged;
   3. footer: an `invite` icon button ("Ask them along" / "Let them go") and Back (`id "sb_char_back"` kept).
 - Removed: the name, the role line, the caption, the bond and affection rows, the thread title and pips, the "Closer" hint. `person_thread`, `unlock_line` and `role_line` stay defined.
 - `person_choices` dicts carry `icon` (`icon_for(choice["kind"], choice["id"])`, added by P0b, 6.3; a mission choice gets the `mission` icon); nothing unpacks them by position.
-- Toasts at (1722, 26), two at most; the card starts at y 190 to stay clear.
+- Toasts at (1722, 26), two at most; the card starts at y 190 to stay clear (as built: y 250).
+- **As built:** the romance "♡ " prefix on a choice's label is gone; the heart icon and the rose colour carry it. The two affection notes that were only on this card are gone from the game.
 
 ### 4.7 The journal: `screen journal(tab="people")` (`ui_journal.rpy`, P3)
 
@@ -568,6 +640,20 @@ Chrome, rail and body keep their geometry (rail 0 to 320; body 1520×928 at x 36
 - New `js` keys: `psub`, `ssub`, `msub2` (the Me page's chip); `sel` accepts `"me"`. `mem_mode` and `mem_who` stay in the dict, unused.
 - No toasts over the journal (R6).
 
+**As built (P3; D61 by P9).**
+- **Their story, when the page is short of room** (`JR_PAGE_WORDS`): a learned line that does not fit prints its short name (`THREADS[…]["short"]`) with the whole line on hover; the whole lines are always the newest run (once a line takes its short name, every older one does too); folding the oldest into one row ("3 earlier lines", listed whole on hover) is the last resort and occurs on none of the pages measured. The heading is always the first row; an unlearned stage is never listed.
+- **The NEXT row:** a mission still locked or waiting becomes the NEXT row when nothing else is left (one closed by Arc Two never does); a step row is titled "More time together" once the thread is resolved; before roll call it reads "After roll call".
+- **Right now:** the lighter panel background (the page itself is `panel_dark`); the line is clipped at 72 characters. "Usually" is on hover while the person can be seen, and only the first usual place is printed when they cannot. "In his office today." is printed alone, and only when `person_now` gives Gojo a place. **No "Closer" line while the roll-call gate holds** (D61, `jr_closer`); afterwards it is the usual "Closer: … — at Bond N".
+- **Header:** bond rank and number sit under the 620 px bar; the heart bar's note is its hover label; the promotions line reads "Promoted Day n"; Strength (reserve, control, output) is a small block over the sprite, with its blurb on hover.
+- **Go there** is also hidden when the person is with me or already where I stand.
+- **Cards** use short names ("Gojo"); someone in a room I can't enter reads "Elsewhere"; the hover is `jr_next` on two lines (`jr_card_tip`), and keeps "Next: Spend time together / after roll call".
+- **Leads** sit above the sub-tab chips on every Missions sub-tab: three at most, then "and n more"; " — my computer" is appended unless the note already names the computer.
+- **Equipment:** talisman slot cards are 352×300 so the checklist fits; the checklist chips are screen `jr_req_chips`; a tool I own but cannot hold, or a talisman whose checklist is unmet, is not pickable and shows the reason (P8).
+- **Records** wording: "PAGES I'VE READ", "THE RECORD BOOK" (shown from the first catch, P8), "AT THE CARD TABLE" ("Won today: ¥n", or "Lost today").
+- **Screens:** `jr_stats_tab(js=None)`; `jr_story`, `jr_character` and `jr_board_view` take an optional height; `jr_memories_tab` is removed. No screen listed in 4.0 changed.
+- **Stats after a Gojo night** can show a value above its cap; that is intended (D23), and the row says so ("· cap 40, +6 from the ridge", P8).
+- **Names:** `JR_PAGE_WORDS`, `JR_FOLD_WORDS`, `JR_LEAD_WORDS`, `JR_LEAD_MIN`, `JR_TAG_RE`, `jr_is_word`, `jr_word_count`, `jr_lead`, `jr_story_sub`, `jr_story_fit`, `jr_story_brief`, `jr_stage_short`, `jr_mission_where`, `jr_usual_first`, `jr_text_width`, `jr_fit_name`, `jr_closer`, `jr_card_tip`, `jr_people_cards`, screens `jr_story_chapter` and `jr_req_chips`, style `jr_plain_button`.
+
 ### 4.8 Grade colours (`sb_grades.rpy`: functions P0, sites by their owners)
 
 `screen grade_chip(v, size=13, text=None, dim=False)`: a frame with background `grade_fill(v)`, padding (10, 3), the text `(text or grade_label(v))` upper-cased and bold, in `gui.ink` (in `gui.paper` on the Special chip); `dim=True` draws at alpha 0.45. No grade: `panel_ghost` and dim text.
@@ -577,9 +663,9 @@ Chrome, rail and body keep their geometry (rail 0 to 320; body 1520×928 at x 36
 | site | file (owner) | change |
 |---|---|---|
 | journal chips (people card, person page, board view, equipment, picker, inventory) | `ui_journal.rpy` (P3) | `use grade_chip(key, …)`; Gojo passes `text="Off the scale"` |
-| board card and partner chips | `sb_board.rpy` (P4a) | `board_grade_chip(g, size)` becomes `use grade_chip(g, size)` (name kept) |
+| board card and partner chips | `sb_board.rpy` (P4a) | `board_grade_chip(g, size)` becomes `use grade_chip(g, size)` (name kept); as built the board draws the common chip |
 | grade card | `sb_grades.rpy` (P4a) | the 64 px label takes `grade_color(key)`; for `sp` it sits on a 560×6 sheen rule |
-| combat header | `sb_combat.rpy` (P4a) | `grade_chip(cb.get("grade"), 16)` left of "ROUND n"; the enemy's name stays red |
+| combat header | `sb_combat.rpy` (P4a) | `grade_chip(cb.get("grade"), 16)` left of "ROUND n"; the enemy's name stays red. **As built:** `grade_chip(cb.get("grade"), 16, text=<"Ungraded" when None>)`, so an enemy with no grade reads UNGRADED on a ghost chip, not "NOT YET ASSESSED" |
 | armory rows and "MY GRADE" | `sb_items.rpy` (P4a) | `grade_chip`, `dim=True` when sealed |
 | market rows | `sb_market.rpy` (P4b) | `grade_chip` |
 | person view | `sb_screens.rpy` (P2) | 4.6 |
@@ -593,6 +679,14 @@ Sentences that name a grade (toasts, lock reasons) stay uncoloured.
 - `can_hold(id)` adds the same test for a tool not already in my hand; `can_wear(id)` adds it after its existing checks, for a talisman not already worn (D28). The talisman rows of `ITEM_REQS` (D27) are shown in the journal (4.7) and at the market (4.16); the armory lists tools only, as today.
 - Returns unchanged.
 
+**As built (P4a).**
+- The panel ends near y 950, not 900, with tightened padding and sizes (name 27 px, description 19 px). A sixth rack tool would need the rows in a viewport (`ysize` about 780, `mousewheel True`).
+- All five tools show a checklist (screen `armory_req`). Two of them, with no `ITEM_REQS` row, show their grade alone, ticked once owned (`armory_checklist(id)`); `item_requirements()` stays `[]` for those.
+- In `can_hold` / `can_wear` an unmet grade reads "Needs Grade 2"; every other line is the checklist line verbatim (`item_unmet_reason`).
+- `give_item` no longer drops Playful Cloud into an empty hand below Grade 2 / Output 50.
+- A malformed checklist row reads "?" and counts as unmet; any other error in a row raises.
+- The Inverted Spear's `sealed` field is tested before its checklist, so it stays "Sealed — Arc Two" whatever is ticked (section 11).
+
 ### 4.10 Hotspots (`sb_hotspots.rpy`, P0 final; content in `room_spots.rpy`, P6)
 
 - `register_hotspot(id, place, x, y, icon, act=None, lines=None, label="", hint="", cost=0, when=None, standalone=False, front=False)` → `None`. Three kinds:
@@ -602,9 +696,10 @@ Sentences that name a grade (toasts, lock reasons) stay uncoloured.
 - **Visible** means all of: registered for this place; for an action hotspot, **its `act` is in `{a[0] for a in place_actions(loc)}` right now and `night_blocks(act)` is False** (so a used-up "Get patched up", a closed board, `veil` after one look, and explore mode, where only `explore_time` is offered, all remove the hotspot as they remove the button); for the other kinds, `when` is true; and, **for an action or a look hotspot, its 72 px square is clear of every rectangle in `view_person_rects(loc)`** (a standalone skips this test). A hotspot that is not visible is not drawn, and an action hotspot's action then stays in the column. Nothing is ever both hidden behind a person and missing from the column.
 - `hot_spots_for(loc)` → the visible rows as dict copies, with the sidecar's point (`game/layout/hot_<loc>.json`) applied and, for an action hotspot, `label`, `hint` and `cost` filled from the action's row. `hot_covers(loc)` → the `set` of action ids a visible action hotspot offers.
 - `screen hot_layer(loc, front=False)`: each row is a 72×72 `icon_btn` centred at (x, y) on a soft ring (`gui/hot_ring.png`, drawn by `tools/gen_gui.py`; a plain circle until it exists) that pulses between alpha 0.45 and 0.8 over 2.4 s (a wall-clock function transform, top-level, still when `view_motion()` is False). Action: `Return(("hot", id))` for a look; `Return(("act", act))` when `night_allows(act, cost)`; else `NullAction()`, dim, with "Too late. Bed." on hover.
-- `label hot_use(id)`: says `lines[day % len(lines)]`, adds `"hot:" + id` to `actions_today` (a set: it records that the spot was used today, not how often), returns. Reached by P0's new `elif _r[0] == "hot"`.
+- `label hot_use(hot_id)` (the plan wrote `hot_use(id)`; a label parameter becomes a store variable while the label runs and `id` would shadow the builtin. It is called positionally, `call hot_use(_r[1])`): says `lines[day % len(lines)]`, adds `"hot:" + id` to `actions_today` (a set: it records that the spot was used today, not how often), returns. Reached by P0's new `elif _r[0] == "hot"`.
 - Validator: the place is in `LOCATIONS`; `sb_do_<act>` exists (unless `lines`); `when` is a store function; a standalone has `when`; an action hotspot sets no label, hint or cost; the icon is in `ICONS`; the point is inside x 40 to 1700, y 180 to 1000 and outside both lanes; a standalone's point is clear of the default stage rectangles for one to four people (it has no column to fall back to); no duplicate id.
 - `sb_hotspots.rpy` defines its registries and `register_*` at **`init -5 python`** (as `sb_hooks.rpy:20` does), because `room_*.rpy` sort before `sb_hotspots.rpy` and Ren'Py runs equal priorities in filename order. Every `room_*.rpy` registers at init 0 or later.
+- **As built (the validator):** it checks the two lanes of R6 only (toasts and banner; the arrival caption is not a lane for object hotspots). `hot_validate()` also reports a sidecar point that is not two numbers or is out of bounds, a sidecar id nobody registered for that place, and a malformed sidecar; `hot_spots_for()` ignores a sidecar point that is not two numbers.
 - The first set (points are P6's to fix on each background with `tools/layout_sheet.py`):
 
 | place | hotspot → action | start (x, y) |
@@ -625,6 +720,11 @@ Existing actions only move from the column to the room; their ids, labels and `w
 
 Several start points sit where people stand (the card table at (900, 800), which only matters when someone is in the room; the cot at (640, 700) beside Shoko at x 700; the counter at (1200, 560) with four people in the cafeteria; the bank at (1180, 820)). The visibility rule handles that at run time: with someone in the way the icon goes and the action is in the column. P6 still moves each point, on the layout sheet, to where it is clear in the room's usual crowd.
 
+**As built (P6): the final points** (code defaults and `game/layout/hot_<place>.json` hold the same numbers): computer (440, 590) · bed (1330, 720) · card table (1400, 876) · TV (1590, 560) · the bank (1580, 905) · the stacks (300, 520) · locked cabinet (1630, 480) · vending machine (1600, 690) · blackboard (1450, 500) · counter (1500, 600) · cot (1420, 700) · racks and armory (1600, 600), on one point and never both · board (1500, 470) · veil (960, 250).
+- `pc_open` is registered with `order=5`. The card table's hotspot is registered in `room_spots.rpy` (P6), not in `room_cards.rpy`.
+- The vending machine also refuses, at no cost, when stamina is full. The courtyard picture has no machine painted in; the icon sits on the right-hand building's porch.
+- **Exits** (section 13) are action hotspots on this same framework, ids `go_<from>__<to>`. A locked exit is drawn at alpha 0.45 with its reason on hover and `NullAction` (P8).
+
 ### 4.11 The computer: `screen pc_screen(page="home")` (`room_computer.rpy`, P6)
 
 - Entry: place action `pc_open` at `dorm` ("My computer", free), with a hotspot. `label sb_do_pc_open` loops `call screen pc_screen(_pc_page)` like `sb_do_armory`.
@@ -644,6 +744,12 @@ Several start points sit where people stand (the card table at (900, 800), which
 - `board_reports`: this week's offers by title and posted grade; a button "Cross-check the reports · 1 period" → `Return(("check",))`. The label refuses at Night ("Too late. Bed."), else sets `pc_checked_week`, calls `advance_period_soft(1)` and reopens; a checked week shows "This one doesn't add up." in gold on every offer whose `true_grade != grade` (read-only on `board_offers`, checking `taken_by` first).
 - Under `smoke_autoplay` a 0.05 s timer returns `("close",)`.
 
+**As built (P6).**
+- Home is ordered: requests, the intranet's two lines, then the sites as one-line cards.
+- A page's first-read Insight is given quietly and shown on the page's gold "Noted." strip (`pc_noted`); no toast.
+- The one shipped request is derived in `pc_leads()` from `PC_AUTO_REQUESTS` and the flag `saw_the_ridge_veil`; it is not stored in `pc_requests`.
+- The cross-check reads offers through `board_summary()["offers"]` and keys the week on `board_week_now()`. At Night its button is drawn shut with "Too late. Bed." under it; the label's refusal remains for a driven return.
+
 ### 4.12 Cards (`room_cards.rpy`, P7; the interface in `sb_hotspots.rpy`, P0)
 
 - **The interface:** `register_minigame(id, name, icon, min_people=1)` → `None`; `mg_games()` → list of dict copies; a game is `label mg_<id>(opponents, stake=0)` (the list of people at the table, then the yen staked a hand; a game with no stake ignores it), which plays until I leave, keeps its state in its own plain dict, and before `return` sets `mg_result = dict(game=id, outcome="win"|"lose"|"even"|"quit", yen=n)`. Chess later is one file and one register call.
@@ -655,6 +761,18 @@ Several start points sit where people stand (the card table at (900, 800), which
 - State lives in `cards_state` (plain values; `renpy.random` shuffles), built by `cards_new(game, opponents, stake)` and cleared on exit. **The label calls `renpy.block_rollback()` after every deal, every draw and every settlement,** so I can't roll back past a lost hand and play it again knowing the next card. `cards_records()` → `dict(today=<yen won today>)` for the Me page. No toasts over the table.
 - Under `smoke_autoplay` a timer plays "stand" / "check" and leaves after one hand.
 
+**As built (P7).**
+- **Returns:** the two game screens also return `("deal",)`, for the Deal button shown after a hand is settled.
+- **Blackjack:** Double settles at ±2 stakes. The next card is chosen when it is drawn, not fixed at the shuffle. Seven or more cards overlap so the row stays left of the total.
+- **Poker has no raises:** Check, Bet or Fold, then Call or Fold; Call returns `("bet",)`. It needs three stakes in hand to be dealt, blackjack one. The buttons sit at y 850. With two or three opponents the look button switches on a "Read" button under each; rollback is blocked after a read. Nobody speaks on a split pot.
+- **The daily cap** (`BOARD_YEN["g4"][1]`, ¥6,000): blackjack is not dealt at a stake whose doubled win could pass it; a poker pot is paid only up to it, with the line "They'll pay me ¥N more today, no further."; `cards_ok()` is False once less than ¥200 can still be won, so the table's icon goes away at the cap.
+- **The ¥3,000 limit is a stop rule** checked before each deal, so a sitting can end further down; the closing line says the real figure.
+- **The sitting** is tallied in `cards_sit` (3.3), so five hands and the limit span both games; people not yet played today are seated first; the table opens on the sitting's last stake.
+- **Look:** light paper card faces with red and black suits. No worded button has a hover label, only the look icon. Leaving mid-hand forfeits what is on the table, and the button says so ("Give up the hand", "Fold and leave").
+- **The screens** bind no menu key and are not modal; their move buttons take no click for the first 0.3 s (`cards_guard`, actions built by `cards_act`).
+- **`CARDS_STYLE`** rows also carry `shows`, `rest`, `sore`, `stop`, `blind`, `glad`, `deal`.
+- **Names:** `cards_can_deal`, `cards_today`, `cards_cap_left`, `cards_auto`, `cards_block`, `cards_row_gap`, `cards_default_stake`, `cards_act`, `cards_hands_word`.
+
 ### 4.13 Fishing: `screen fish_screen()` (`room_fishing.rpy`, P6)
 
 - Entry: place action `fish_cast` at `riverside` ("Fish", cost 1), with a hotspot.
@@ -663,10 +781,21 @@ Several start points sit where people stand (the card table at (900, 800), which
 - The River Lord: Evening only, weight 0.03, needs `q ≥ 0.9`; ¥5,000 once; sets `caught_river_lord`. The pale thing: Evening only, at most once a board week; gives one `sealing_talisman` and a line.
 - After three casts: `advance_period_soft(1)`. Under `smoke_autoplay` a timer returns `("hook", 0.5)`.
 
+**As built (P6).**
+- **`q`** is closeness to the middle of the zone: 1.0 at the centre, 0.2 less for each tenth of the bar. A fish is landed when `q >= 1 - zone`.
+- **The result** is a line of narration after the screen closes, so `fish_screen` keeps exactly its three returns. A species' first catch says "The first in the book."; "A new best." only when an earlier best is beaten.
+- **Rollback** is blocked when a cast is dealt (before the screen opens) and again when it is settled.
+- **Packing up** while the float sits is free; at the bite it is a miss with its own line; after any settled cast it costs the period.
+- **The sitting's three casts** are rolled in `fish_begin()` into `fish_state["plan"]`. A save loaded during a cast finds the same cast in the same phase; at the bite the sweep restarts (same fish, same zone).
+- **The record book** has seven rows: Pale chub, Dace, Ayu, Yamame trout, Char, Carp, and the River Lord as "???" until caught. Its button is at (1750, 900), above Pack up. With the book open, Esc or right-click closes the book first, and the float's wait restarts (`fish_rewait`).
+- **The opening line** rotates over three lines by day (`FISH_OPEN_LINES`). With a companion there is one extra line naming them.
+- **The marker** redraws every frame and ignores the Motion switch. The float and the bar are engine-drawn stand-ins.
+
 ### 4.14 The Library (`sb_world.rpy` and `bg_placeholders.rpy`: the place, P0; pins and schedule, P1; `room_library.rpy` P6 for what to do)
 
 - `bg library` = `bg_placeholder("images/bg/library.png", <classroom.png cropped and tinted warm>)`, one word after `bg` (`light_for_bg` matches on two).
 - `lib_study` "Study in the stacks" (cost 1, stamina 8): a `menu` of three shelves with first-person captions (theory: Insight +4; barrier craft: Control +2, Insight +2; history: Insight +4). On a rest day (`not night_can_work()`) the barrier-craft shelf gives its Insight +2 only: nothing raises Control or Output that day (4.15). "Study together" works there (P2). The locked shelf is a look hotspot.
+- **As built:** the menu has exactly three shelves and no way back; on a rest day the barrier-craft shelf says its own line. Megumi reads there on weekend afternoons.
 
 ### 4.15 The night (`sb_night.rpy`, P4b)
 
@@ -686,13 +815,24 @@ No new full screen; the rule shows through the existing ones.
   - `night_gojo_due()` also needs the night to beat a real day: `min(night_day_best() + NIGHT_GOJO["over"], ceiling + NIGHT_GOJO["past_cap"] - control) > min(night_day_best(), max(0, ceiling - control))`, where `ceiling = grade_cap("stat") or 100` (`grade_cap` returns `None` at Special Grade, `sb_grades.rpy:109-112`; `gain` treats that as 100). With the shipped `past_cap = 6` (the owner's ruling 5) that holds at every grade and every Control, unless Control already sits `past_cap` above the ceiling. The reserve needs no room test when `past_cap > 0` (it may end `reserve_over` above its ceiling; `grade_cap("reserve")` of `None` means no ceiling, as `raise_reserve` reads it). With `past_cap = 0` the rule reduces to `room > night_day_best()` plus room under the reserve ceiling for the whole reserve gain (D23; section 0, ruling 5).
   - The mirror can't drift unseen: `p2_night` runs the real thing (five `sb_do_train` at every place whose `place_actions` offers `train`: `training`, `dojo`, `ridge`, `forest`, `courtyard`, `riverside`; the lesson day on the ridge, `act_lesson` through its label on a day Gojo is in plus four `sb_do_train`; each with one `sb_do_hold`, run hold-first and hold-last; and "Train together" with each partner) and fails if any real day beats `night_day_best()` on Control or the night's reserve on `ce_max`.
 - **A night in Tokyo:** `("night", key)` → `label night_out(key)`: returns at once unless `night_out_ok(key)[0]`; a line for the last train in; then one `menu` ("[district], after dark."):
-  - **"The club · ¥1,500"** (shown dim with "Not enough yen" when I can't cover it): `add_yen(-1500)`; a placeholder scene (the club, whoever came along, Bond +4 for a companion); in Shibuya, the first time, **and only when `market_exists()`**: I find the stairs (`flag("market_found")`; with the market unbuilt the line is not said and the flag is not set); then, when `market_found` and `market_exists()`, a second `menu` "The Black Market" (`call market_open`) / "Home";
+  - **"The club · ¥1,500"** (shown dim with "Not enough yen" when I can't cover it; **as built it is not dim:** when I can't cover it the menu shows a second choice, "The club · ¥1,500 · Not enough yen", that says one line and brings the menu back. The choice screen has no dim state, the menu is protected (2.3) and the owner has played checkpoints B and C with saves on it, so the wording is corrected here, not the code): `add_yen(-1500)`; a placeholder scene (the club, whoever came along, Bond +4 for a companion); in Shibuya, the first time, **and only when `market_exists()`**: I find the stairs (`flag("market_found")`; with the market unbuilt the line is not said and the flag is not set); then, when `market_found` and `market_exists()`, a second `menu` "The Black Market" (`call market_open`) / "Home";
   - **"The Black Market"** (only in `NIGHT_OUT["market"]`, with `market_found` and `market_exists()`): `call market_open`. No door charge;
   - **"Head home"**: `return`. Nothing is charged, no time passes, no cost is set.
 
   After the club or the market I was out all night: `night_set_cost("out")`, `here = "dorm"`, `new_day()`. Under `smoke_autoplay` the club is taken when affordable, else home; at the second menu autoplay takes Home.
 - **The next day:** a new-day hook (order 80, after the refill) applies a night out's stamina and cursed energy and clears a cost whose day has passed. A hook at order 5 sets `night_carried = here` when the day turns, I'm not in `dorm`, and explore mode and replays are off.
 - Explore mode: none of it applies.
+
+**As built (P4b, then P8).**
+- `night_gojo_beats()` clamps the night at Control 100, so at a ceiling of 100 (Grade 1, Special Grade) the night is due only while it still beats a day.
+- `NIGHT_CARRY_LINES` is keyed by place as well as area; a place's own row wins (one today, `girls_dorm`).
+- The club's companion line has two versions (one for Yuji and Nobara, one for anyone else).
+- The night out's menu and scenes play over `night_bg(key)`: the district's own picture, or one named `bg <district> night` once it is painted (it drops in by name).
+- `market_screen` closes itself under `smoke_autoplay`.
+- The morning after, an info toast says "Worn out — no missions or training today" or "Rough morning", besides the cost toasts.
+- An invitation not taken is offered again on Gojo's next in-day (about weekly); `gap` counts from the last night taken.
+- `night_pending()` clears a stale mark as a side effect; call it from script only, never from a screen. The loop asks it at the top of each turn and, since P8, again after a story beat it played (2.3).
+- **Names:** `NIGHT_DISTRICTS`, `NIGHT_OUT_PERIODS`, `NIGHT_TAGS`, `NIGHT_REST_REASON`, `night_on`, `night_is_night`, `night_carry_line`, `night_step`, `night_day_walk`, `night_gojo_beats`, `night_gojo_apply`, `night_gojo_invite`, `night_gojo_morning`, `night_market_here`, `night_out_auto`, `night_bg`, `night_validate`, `night_new_day_early`, `night_new_day_late`.
 
 ### 4.16 The Black Market and the review tools
 
@@ -707,7 +847,11 @@ No new full screen; the rule shows through the existing ones.
 
 Each talisman row shows its requirement chips (D27). The three story Specials (`unending_moment`, `the_zone`, `finger_wrap`) are not stock. If the owner asks for a Special Grade talisman here (section 0), it is a new item made with `_item(…, grade="sp", special=True, source="The Black Market")`, priced under 6 × 20,000, and the question of what binding it means for the later story Specials (PHASE1 3.8: one bound special) goes back to the owner with it.
 
+**As built (the market).** `market_state` decides "Sold" from `market_bought` only (a talisman owned some other way can still be bought once). The requirement chips are screen `market_req`, ticks and crosses like `armory_req`. Other names: `MARKET_TOP_GRADE`, `market_price_cap`, `market_row`, `market_outfits`, `market_yen`, `market_validate`.
+
 **Review tools** (`explore.rpy`, P0): six more `DEV_BUTTONS`, each a `dev_*` function that returns `None` and calls a contract function: "Jump to Night", "Gojo night tonight" (`night_dev("gojo")`), "Tomorrow is a rest day" (`night_dev("rest")`), "+¥20,000", "Find the Black Market" (`night_dev("market")`), and "Style sample" (in `DEV_SCENES`; `dev_tools` gains `elif _return == "sample":` / `call screen icon_sample`). A `DEV_BUTTONS` row may carry `when` (the name of a store function); the grid skips a row whose `when` is False. "Find the Black Market" has `when="market_exists"`; "Gojo night tonight" and "Tomorrow is a rest day" have `when="night_exists"` (`night_dev` is a no-op stub until P4b, so without the test they would be buttons that do nothing at checkpoint A, and for good if P4b were postponed). "Jump to Night", "+¥20,000" and "Style sample" work from P0b.
+
+**As built (the review tools).** `DEV_BUTTONS` rows stay 2-tuples; `when` lives in `DEV_WHEN` (key → function name), read by `dev_rows()`. The grid is 3×6 while the three `when` buttons are hidden and 3×7 once the night and the market exist (drawn tighter so it fits 1080). Close has the id `dev_close`. The panel's footer text was reworded. "Style sample" stays usable in explore mode (`DEV_EXPLORE_OK`). `rule_hangout_gate` passes everything in explore mode, which has no roll call.
 
 ---
 
@@ -764,6 +908,18 @@ The storyboard's "Nobara on the rooftop" and "Megumi at the riverside" are added
 | 4 | if batch 3 looked right | poses 3 to 14 | $3.84 |
 | 5 | if Yuji's blink looked right | blink and talk for the other ten on campus (Gojo and Yaga: talk only) | $5.76 |
 
+**As built (5 Oct 2026; the working list is `docs/ART_PHASE2.md`).**
+- **Real costs.** Nano Banana Pro bills each picture: about $0.16. A pose is two candidates, $0.32. Blink and talk are one picture each, $0.16 each ($0.32 a person, not $0.64). An icon sheet is two candidates, $0.32. A background is two candidates of Krea 2, about $0.07.
+- **Delivered.** Batch 1 ($1.45): the 88 icons, the six area maps, the Tokyo map. Batch 2 ($0.21): the Library and the two offices. Batch 3 ($1.31): the five yards (ten pictures, $0.35, section 13), Yuji's blink and talk, poses 1 and 2. About $2.97 spent.
+- **Still to make.** Batch 4: poses 3 to 14, $3.84. Batch 5: blink and talk for the other ten (18 pictures: Gojo and Yaga talk only), $2.88. Foregrounds are free.
+- **Row 8** is five files, not six (4.5). Every new painted time variant of `dorm_common`, `cafeteria` or `utahime_office` needs its `fg_<loc>_<variant>.png`, or the room falls back to default slots with no foreground.
+- **Row 9 sizes:** `grade_sheen.png` 1024×64; `hot_ring.png` 96×96, a soft rounded-square glow (the 72 px button covers the middle); `soft_box.png` 96×96 with a 24 px feather; `card_back.png` 120×168. A plain `gen_gui.py` run draws only these four, in pure Python; `--all` redraws the phase-1 set, needs Pillow and has never been run on this Mac.
+- **Icons:** one workflow file a sheet (three files), each loading a blank 6×5 grid (`icon_grid.png`); what each icon looks like is the table `DRAW` in `make_icon_workflow.py`, which stops if `DRAW` and `ICONS` disagree. `cut_icons.py` takes `--dry`, `--only`, `--out`, `--any-sheet`, and "-" in a names file leaves a cell out; its preview is `shots/art/icons_<names file>__<render>.png`. `make_icon_workflow.py --names` rewrites the three names files from `ICONS`.
+- **Layout sheets:** `layout_sheet.py` takes `--sidecar`, `--fg`, `--no-sidecar`, `--defaults` and `--out` (`<name>__sidecar.png` with `--sidecar`), and draws `hot_<place>` and `area_<key>` sheets with the validators' frames and the two lanes. It stops with one line on a malformed sidecar: unknown top-level keys, a slot key outside "1" to "4", a slot list whose length is not its key. It reads `shots/layout/defaults.json`, which `p2_contracts` writes and git ignores: run that harness first in a new worktree.
+- **Backgrounds:** `make_bg_workflow.py` gained `--out` and an aerial style (`tools/bgs/style_aerial.txt`) for the area maps, and prompts for the five hubs.
+- **Poses:** the two candidates are stacked in the workflow, A on top and B below. Install from a width-fitted render until `install_pose.py`'s `fit()` is fixed (`docs/ART_PHASE2.md`).
+- **The hand-off habit** is as above; the results land in `~/ComfyUI-Shared/output` and Claude picks them up from there.
+
 ---
 
 ## 6. Contracts (frozen by P0)
@@ -787,27 +943,28 @@ P0 writes every symbol in its owner's file with its final signature, a docstring
 | `grade_is_special(v)` | P0 | `bool` | final |
 | screen `grade_chip(v, size=13, text=None, dim=False)` | P0 | – | final |
 | `advance_period_soft(n=1, loc=None)` | `sb_world.rpy` (P0) | `bool`: True if the day rolled, as `advance_period`. `loc` is where a waiting beat is looked for (default `here`) | final |
-| `rule_hangout_gate(e)` | `sb_rules.rpy` (P0) | `bool` | final |
+| `rule_hangout_gate(e)` | `sb_rules.rpy` (P0) | `bool` (as built: True for everything in explore mode) | final |
 | label `rule_walk_to(loc)` | P0 | `return`; moves only if `can_enter(loc)[0]`, else says why | final |
 | `rule_layout(name)` | P0 | `dict` (`{}` when there is no sidecar) | final |
 | **sidecar schemas** (JSON; lists, not tuples; every key optional) | written by P1 / P5 / P6, read by `rule_layout` (P0b) and `tools/layout_sheet.py` (P0c) | `area_<key>.json`: `{"spots": {"<loc>": [x, y]}}`. `view_<place>.json`: `{"slots": {"<n>": [[xcenter, yoffset, zoom, far], …]}, "poses": {"<who>" or "<who>__<variant>": [x, y, w, h]}}` (`<n>` is the number of people, `"1"` to `"4"`, as a string). `hot_<place>.json`: `{"spots": {"<hotspot id>": [x, y]}}`. Not a sidecar, tool input only: `tools/fg/<place>.json`: `{"<variant, or \"\" for the day picture>": [[x, y], …]}` (one polygon each; read by `make_fg.py` and `layout_sheet.py`, never by the game) | frozen; no file exists at P0 |
 | `register_hotspot(id, place, x, y, icon, act=None, lines=None, label="", hint="", cost=0, when=None, standalone=False, front=False)` | `sb_hotspots.rpy` (P0) | `None` | final |
 | `hot_spots_for(loc)` | P0 | `list` of dicts `(id, x, y, icon, label, hint, cost, act, lines, standalone, front)`: only the visible ones (4.10) | final |
 | `hot_covers(loc)` | P0 | `set` of action ids | final |
-| screen `hot_layer(loc, front=False)`; label `hot_use(id)` | P0 | `("act", id)` or `("hot", id)` through its parent; `return` | final |
+| screen `hot_layer(loc, front=False)`; label `hot_use(hot_id)` (called positionally) | P0 | `("act", id)` or `("hot", id)` through its parent; `return` | final |
 | `register_minigame(id, name, icon, min_people=1)`; `mg_games()`; a game is `label mg_<id>(opponents, stake=0)` | P0 | `None`; `list` of dicts; `return`, having set `mg_result` | final (no game registered) |
 | `rail_actions(loc)` | `sb_screens.rpy` (P0) | `list` of `(id, label, hint, cost, icon, gold)`: `night_filter_actions(loc, place_actions(loc))` without the ids in `hot_covers(loc)`, then, when `companion` is set, the row `("release", "Let them go", <hint>, 0, "release", False)` **last** | final |
 | `VIEW_TICK`; `view_motion()` | `view_stage.rpy` (P0) | `0.05`; `bool` (`persistent.motion`) | final |
 | `view_person_rects(loc)` | `view_stage.rpy` (P0 from `STAGE_CENTRES`; P5 from slots and pose boxes) | `list` of `(x, y, w, h)`, one per person on stage now | today's centres and sprite size |
+| `view_slot_rects(loc, n)` (as built; not in the plan) | `view_stage.rpy` (P0, kept by P5) | `list` of n int rectangles `(x, y, w, h)` built from `view_slots(loc, n)`; frozen `sb_hotspots.rpy` calls it for every standalone hotspot | final |
 | `place_actions(loc)` | `sb_screens.rpy` | `list` of `(id, label, hint, cost)`, **exactly as today** | untouched |
-| `toast_room()` | `ui_hud.rpy` (P2) | `(int, int, int)`: xpos, ypos, limit | today's behaviour |
-| `person_now(who)` | `sb_world.rpy` (P1) | `dict(place=key or None, name=str, doing=str, reachable=bool, hidden=bool, with_me=bool)`; never `None` | `dict(place=None, name="Off campus", doing="", reachable=False, hidden=False, with_me=False)` |
+| `toast_room()` | `ui_hud.rpy` (P2) | `(int, int, int)`: xpos, ypos, limit | today's behaviour (as built: the stub was defined but not wired into `toast_limit()` or the toasts screen until P2) |
+| `person_now(who)` | `sb_world.rpy` (P1) | `dict(place=key or None, name=str, doing=str, reachable=bool, hidden=bool, with_me=bool)`; never `None`. As built: the hidden row has `place=None` and the name "Somewhere I can't go right now"; the companion's name is "With me" and their doing "tagging along" | `dict(place=None, name="Off campus", doing="", reachable=False, hidden=False, with_me=False)` |
 | `map_spots(key)` | `ui_map.rpy` (P1) | `dict` `{loc: (x, y)}` | `{}` |
 | `AREAS` rows have `bg`, `blurb`, `spots` | `sb_world.rpy` (P1) | – | keys present, `spots={}` |
 | screen `sb_map(layer="campus", area=None)`; screens `map_area(key)`, `map_district(key)` | `ui_map.rpy` (P1) | 4.0 | parameter added, today's body; the two new screens arrive with P1 |
 | `ambient_of(who, loc)` | `sb_screens.rpy` (P2) | `(caption, expression)`, as today | untouched |
 | `person_choices(who, loc=None)` | `sb_activities.rpy` (P2) | as today, each dict with `icon` (`icon_for(choice["kind"], choice["id"])`) | today's plus `icon`, added by P0b (6.3); P2 does not add it again |
-| `journal(tab)` accepts `"memories"`; may return `("go", loc)` | `ui_journal.rpy` (P3) | 4.0 | the alias only |
+| `journal(tab)` accepts `"memories"`; may return `("go", loc)` | `ui_journal.rpy` (P3) | 4.0 | the alias only (as built: P0b wrote no alias, since the Memories tab still existed; `journal_state` maps `"memories"` to `"people"` from P3's commit, the one that removed the tab's row) |
 | `jr_story_rows(who)` | P3 | `list` of `dict(kind, title, line, state, where, next)` | `[]` |
 | `ITEM_REQS` | `sb_items.rpy` (P4a; `sb_market.rpy` adds rows) | `dict` | `{}` |
 | `item_requirements(id)` | `sb_items.rpy` (P4a) | `list` of `(str, bool)` | `[]` |
@@ -817,7 +974,7 @@ P0 writes every symbol in its owner's file with its final signature, a docstring
 | `market_rows()` | P4b | `list` of `(id, price, state, reason)`, state in `buy`, `sold`, `poor` | `[]` |
 | `market_buy(id)` | P4b | `bool` | `False` |
 | label `market_open`; screen `market_screen()` | P4b | `return`; `("buy", id)` / `("close",)` | `return`; an empty screen that returns `("close",)` |
-| `night_pending()` | `sb_night.rpy` (P4b) | `bool` | `False` |
+| `night_pending()` | `sb_night.rpy` (P4b) | `bool`. As built it clears a stale mark: call it from script only, never from a screen | `False` |
 | `night_can_work()` | P4b | `bool` | `True` |
 | `night_exists()` | P4b | `bool`: the night rule is built | `False` (hides the two review buttons that need it, 4.16) |
 | `night_block_reason()`, `night_tag()` | P4b | `str` (`""` when clear) | `""` |
@@ -846,6 +1003,29 @@ P0 writes every symbol in its owner's file with its final signature, a docstring
 | `cards_records()` | P7 | `dict(today=int)` | `dict(today=0)` |
 | `spot_vend_ok()` | `room_spots.rpy` (P6) | `bool` | `False` |
 | labels `sb_do_pc_open`, `sb_do_fish_cast`, `sb_do_lib_study`, `sb_do_spot_vend`, `sb_do_cards_play` | P6, P6, P6, P6, P7 | `return` | `return` |
+
+**As built: names the plan does not list** (each carries its file's prefix; none changes a contract above).
+
+| file | names |
+|---|---|
+| `ui_icons.rpy` | `ICON_SAMPLE` (the style sample's twelve names); `ICON_TIP_SIDES`, `icon_tip_side` (P8: the hover label's side, 4.3) |
+| `explore.rpy` | `DEV_WHEN`, `dev_rows` (4.16) |
+| `sb_world.rpy` | `world_area_crop`, `world_area_standin`, `world_area_bg` (the area stand-ins); `WORLD_HUB_STANDINS`, `world_hub_standin`, `world_hub_bg` (section 13); `_validate_world`'s three `AREAS` checks |
+| `ui_map.rpy` | `map_validate`, `MAP_FACES_LEFT_X`; `map_pin_icon`, `map_area_rect`, `MAP_AREA_W`, `MAP_AREA_H`, `MAP_MOUNTAIN_BOX`, style `map_area_marker` (section 13) |
+| `ui_hud.rpy` | `toast_hold`, `hud_banner_ok`, `hud_chips`, `TOAST_LANE`, `HUD_BANNER_X`, `HUD_BANNER_W`; `toast_wraps` (P8) |
+| `sb_screens.rpy` | `rail_rows`, `rail_columns`, `rail_layout`, `rail_height`, `rail_word`, `rail_tip`, `rail_missions`, `rail_chip`, `rail_story_ok`, `rail_story_caption`, `RAIL_COLUMNS`, `RAIL_CARD_Y`, `RAIL_MORE_POS`, screen `rail_btn` (4.4, 4.6) |
+| `ui_journal.rpy` | the `jr_` / `JR_` names of 4.7 |
+| `sb_items.rpy` | `item_req_line`, `item_first_unmet`, `item_unmet_reason`, `item_wear_check(id, checklist=True)`, `item_wear_again(id)` (wears a talisman again without asking its checklist, D28; it exists because `wp0_stubs` pins `equip_talisman`'s signature), `ITEM_ARC_NAMES`, `armory_checklist`, screen `armory_req` |
+| `sb_night.rpy`, `sb_market.rpy` | the `night_` / `NIGHT_` and `market_` / `MARKET_` names of 4.15 and 4.16 |
+| `view_stage.rpy`, `lighting.rpy` | the `view_` / `VIEW_` names of 4.5; `light_face_layers` |
+| `room_spots.rpy` | `SPOT_SET`, `SPOT_LOOKS`, `SPOT_VEND` |
+| `room_computer.rpy` | `pc_can_see`, `pc_pages`, `pc_links`, `pc_address`, `pc_color`, `pc_visit`, `pc_week`, `pc_checked`, `pc_offers`, `pc_check_ok`, `pc_check`, `pc_validate`, `PC_SITE_ORDER`, `PC_PAGE_ORDER`, `PC_AUTO_REQUESTS` |
+| `room_fishing.rpy` | `fish_begin`, `fish_next`, `fish_roll`, `fish_hit`, `fish_length`, `fish_cast_once`, `fish_plan`, `fish_settle`, `fish_rewait`, `fish_open_line`, `FISH_OPEN_LINES`, `fish_validate` |
+| `room_library.rpy` | `LIB_SHELVES`, `lib_gains`, `lib_line`, `lib_read`, `lib_validate` |
+| `room_cards.rpy` | the `cards_` names of 4.12 |
+| `room_paths.rpy` | the `path_` / `PATH_` names of section 13; it adds `ICON_FOR` rows at init (each exit action, each hub) |
+
+Also as built: `sb_hotspots.rpy`'s `hot_validate` reports sidecar findings (4.10); the P0 hot-ring stand-in was the seal picture until P0c drew `hot_ring.png`; `AREAS` rows carried `blurb=""` and `spots={}` until P1.
 
 ### 6.2 Who calls whom across packages
 
@@ -897,12 +1077,12 @@ Each is a new line calling a contract above. No existing statement's text change
 | `sb_screens.rpy` `sb_char` | the sprite line | `use view_focus(who)` (which computes `_x0 = stage_x(who, here)` itself) |
 | `sb_activities.rpy` `stage_person` | the `renpy.show` line | `$ view_enter(who, expr)` |
 | `sb_activities.rpy` `person_choices` | step 1 (`sb_activities.rpy:233-237`) | `ms` is also empty when `not night_can_work()`, and is filtered to the missions for which `night_allows("mission:" + mid, MISSION_BY_ID[mid]["cost"])` (step 1 builds its choice with `cost=0` and never passes through `activity_state`, so without this line a costed mission such as `cm_ijichi_1` is still offered on a person at Night) |
-| `sb_activities.rpy` `person_choices` | where each choice dict is built | each dict gains `icon = icon_for(choice["kind"], choice["id"])` |
+| `sb_activities.rpy` `person_choices` | where each choice dict is built | each dict gains `icon = icon_for(choice["kind"], choice["id"])` (as built: in one loop at the end of the function; same result) |
 | `sb_activities.rpy` `activity_state` | **two places:** inside the confession block, after the `confession_ready` test and before its `return` (line 122), and before the last `return True, None` | `(False, night_block_reason())` when `night_blocks(a["id"])`; `(False, "Too late")` when `a["cost"]` and `not night_allows(a["id"], a["cost"])`. The confession (`rom_say`, cost 2, not in `NIGHT_OK`) returns early at lines 118-122, before the last return, so it needs its own copy of the two tests |
 | `sb_board.rpy` `board_take_reason`, `board_refusal` | first test | `night_block_reason()` when `not night_can_work()` |
 | `screens.rpy` `skip_indicator` | around the frame | `if not renpy.get_screen(("sandbox", "menu")):` |
 | `screens.rpy` `preferences` | one new row | "Motion": on / off for `persistent.motion` (`default persistent.motion = True` sits in `view_stage.rpy`) |
-| `explore.rpy` | `DEV_BUTTONS`, `DEV_FUNCS`, `DEV_SCENES`, the grid (skips a row whose `when` is False), `dev_tools` | 4.16; one new `elif` |
+| `explore.rpy` | `DEV_BUTTONS`, `DEV_FUNCS`, `DEV_SCENES`, the grid (skips a row whose `when` is False), `dev_tools` | 4.16; one new `elif`. As built: `DEV_WHEN`, a 3×6 / 3×7 grid, Close has `id "dev_close"`, and the panel's footer text changed (one screen text line) |
 
 ---
 
@@ -934,7 +1114,8 @@ Nine packages. Two of them are too big for one agent and are split for good: P0 
 | P5 | 600 game, 350 tools | `p2_view.rpy` | 1 |
 | P6 | 750 (half of it page text) | `p2_rooms.rpy` | 1 |
 | P7 | 550 | `p2_cards.rpy` | 1 |
-| P8 | 400 | `phase2_all.rpy`, `p2_saves.rpy` | 1 |
+| P8 | 400 (as built: the two harnesses alone are 1,244 and 740 lines) | `phase2_all.rpy`, `p2_saves.rpy` | 1 (as built: split by file group, see P8 below) |
+| P9 (section 13) | – | `p2_paths.rpy` | 1 |
 
 The splits are not optional. P0 as one sitting was 13 tasks across about 30 files and the only package that edits protected statements; a failed sitting there is the costliest. P0a touches no game file, so "today's tree is clean under every new check" is proved before a line of the game changes.
 
@@ -957,11 +1138,18 @@ The splits are not optional. P0 as one sitting was 13 tasks across about 30 file
 | P7 (2) | `game/room_cards.rpy`, `tools/smoke/p2_cards.rpy` |
 | P8 (3) | everything, including the frozen files; `tools/smoke/phase2_all.rpy`, `tools/smoke/p2_saves.rpy`, `tools/smoke/wp11_dev.rpy`, `tools/smoke/phase1_all.rpy`, `tools/smoke/core_flow.rpy`, `docs/PLAYTEST.md`, `docs/ART_PHASE2.md`, `docs/PHASE2_DESIGN.md`, `docs/load_report_phase2.txt`, `tools/README.md` |
 | Frozen after wave 0 (change only through P8) | `game/sb_loop.rpy`, `game/sb_tokyo.rpy`, `game/sb_missions.rpy`, `game/sb_events.rpy`, `game/sb_hooks.rpy` (not edited by P0 either), `game/explore.rpy`, `game/ui_icons.rpy`, `game/sb_hotspots.rpy`, `game/sb_rules.rpy`, `game/gui.rpy`, `game/screens.rpy` (P0b's two edits are the only ones), `game/jjk_defs.rpy`, `game/sb_relations.rpy`, `game/sb_energy.rpy`, `game/options.rpy`, and everything in the P0a and P0c rows, `tools/smoke/p2_contracts.rpy` and its assets folder included (`tools/smoke/wp0_stubs.rpy` and `tools/smoke/load_slot.rpy` too) |
-| Untouched in phase 2 | `game/jjk_sprites.rpy` (not regenerated), `game/jjk_screens.rpy`, `game/script.rpy`, `game/missions_stubs.rpy`, every story and event file (`ch*`, `events_*`, `story_*`, `missions_arc1.rpy`), every existing picture, font and sound, `tools/smoke/wp3_missions.rpy`, `wp9_prologue.rpy`, `wp10_chapters.rpy` (unless P0b's hangout gate or soft clock breaks one, in which case P0b fixes it in its own commit), and every other existing tool (`install_bg.py`, `make_bg_workflow.py`, `keysprite.py`, `raster.py`, `pngread.py`, `gen_sprite_defs.py`, the sprite tools, `comfy_nodes/`, `chars/`, `bgs/` apart from the new prompts) |
+| Untouched in phase 2 | `game/jjk_sprites.rpy` (not regenerated), `game/jjk_screens.rpy`, `game/script.rpy`, `game/missions_stubs.rpy`, every story and event file (`ch*`, `events_*`, `story_*`, `missions_arc1.rpy`), every existing picture, font and sound, `tools/smoke/wp3_missions.rpy`, `wp9_prologue.rpy`, `wp10_chapters.rpy` (unless P0b's hangout gate or soft clock breaks one, in which case P0b fixes it in its own commit), and every other existing tool (`install_bg.py`, `keysprite.py`, `raster.py`, `pngread.py`, `gen_sprite_defs.py`, the sprite tools, `comfy_nodes/`, `chars/`, `bgs/` apart from the new prompts) |
 
 **Overlap check (after the review).** The three layout sidecars are three file patterns with three owners (`area_*`, `view_*`, `hot_*`). `sb_world.rpy`, `bg_placeholders.rpy`, `ui_map.rpy`, `sb_items.rpy`, `sb_grades.rpy`, `sb_board.rpy`, `ui_hud.rpy`, `ui_journal.rpy`, `sb_screens.rpy`, `sb_activities.rpy` and `view_stage.rpy` each appear in P0b's row and one later row: different waves. `wp7_ui.rpy` and `p2_hud.rpy` are P2's in wave 1 and P5's in wave 2. `phase1_all.rpy` and `core_flow.rpy` are P4b's in wave 1 (only if needed) and P8's in wave 3. `p2_contracts.rpy` is written by P0a and extended by P0b, in sequence, and by nobody after that (the "arrives with" symbols are asserted in `p2_map.rpy` and `p2_rooms.rpy`). `screens.rpy` is P0b's only. No file has two owners in one wave.
 
 A phase-1 harness that fails in a wave because of a change is fixed by the owner of the file that changed the behaviour, if the harness is in that owner's row for that wave; otherwise it goes to P8 in the hand-over note.
+
+**As built (7.2).**
+- `tools/make_bg_workflow.py` is off the untouched list: wave 0's review gave it `--out` and the aerial style (`tools/bgs/style_aerial.txt`); `make_relight_workflow.py` imports its room list, so it treats `library` and the two offices as rooms too.
+- `game/layout/area_<key>.json` exist for all six areas (P1; the plan's table stays the code default). `game/layout/hot_<place>.json` exist for eleven rooms (P6). `game/layout/view_<place>.json` is created by `install_pose.py`; two ship.
+- P9 (section 13) owned `sb_world.rpy`, `ui_map.rpy`, `bg_placeholders.rpy`, `room_paths.rpy`, the area sidecars and `p2_paths.rpy` in wave 2.
+- New in `tools/smoke/`: `baseline_shots/1818x1022/` (the pre-phase-2 screenshots at this Mac's window size; the strict wave-0 comparison needs `SMOKE_P0_SHOTS` pointed at it) and `p8_patterns/` (the save-test patterns `p2_saves` was built from).
+- `tools/README.md` was written by P8, not P0c.
 
 ### P0a · Tooling, checks and the baseline (wave 0, first; in the owner's folder on `phase2`; no game file changes)
 
@@ -1021,21 +1209,21 @@ A phase-1 harness that fails in a wave because of a change is fixed by the owner
 **Tasks:** 4.2 (the date and status chips in one row; the banner's new x over the place view); 4.4 (the column, the "Nobody here" line, `release` from `rail_actions`); 4.6; `toast_room()` and the stopped clocks; the objective banner's rule; `AMBIENT_STORY` with twelve rows, read by `ambient_of`; the `AMBIENT` row and the `study` activity's `loc`; update `wp7_ui.rpy`. (`icon` on `person_choices` is already there from P0b. Quick-menu icons are not in phase 2: section 11.)
 
 **Acceptance (`p2_hud.rpy`):**
-- the three HUD buttons sit at x 1668 / 1742 / 1816, y 26 (`zz_rect`), return `("map",)`, `("journal","people")` and open the menu; with all three status chips showing and the longest date ("Day 100 · Wednesday"), no chip's rectangle meets the date chip's;
+- the three HUD buttons sit at x 1668 / 1742 / 1816, y 26 (`zz_rect`), return `("map",)`, `("journal","people")` and open the menu; with all three status chips showing and the longest date ("Day 100 · Wednesday"; as built the check uses day 101, the first Wednesday from day 100), no chip's rectangle meets the date chip's;
 - every button on `sb_place`, `sb_char` and the HUD has a tooltip whose key is unique on its screen;
 - for every room × period, the column offers exactly the `("act", id)` returns of `rail_actions(here)` and the `("mission", mid)` returns of `missions_here(here)` (as sets), with and without a companion (the `release` row is last); **every row of `baseline_p0.json`'s `place_actions` is still present in `place_actions(loc)`, in the same order; any extra row is a registered place action** (so this bullet still passes after P4b, P6 and P7 register theirs);
 - with icon words off, the column holds no `Text` other than icon glyphs (`zz_words` is 0); with nine actions and four toasts up, no column button's rectangle meets the toast lane and none rises above y 360;
 - `sb_char` for every person returns the tuples recorded in `baseline_p0.json` for each choice; the screen holds no `Text` equal to the person's name, no pip image, no "Closer", no bar; `zz_words("sb_char") <= 16`;
 - `person_choices` still returns at most four, ending with `talk`, for every person × room × period, each with an `icon` in `ICONS`, and a mission choice's icon is `mission`;
 - `toast_room()` is `(0, 0, 0)` with `journal`, `sb_map`, `board_screen`, `board_partner`, `armory`, `icon_sample` and the game menu up, and with `grade_card` shown by `call screen` over a scene (it has no tag; the test is by name); `(1880, 92, 4)` over `dev_panel`, and a review button's toast is drawn while the panel is up; `(1790, 92, 4)` over `sb_place`, `(1722, 26, 2)` over `sb_char`, `(1880, 92, 4)` over `combat_screen`; a toast queued under limit 0 is still queued and unexpired 10 s later;
-- the toast lane (x 1330 to 1790, y 92 to 350) and the banner's rectangle over `sb_place` (x 400 to 1300) do not intersect; in the `zz_worst("sb_place")` screenshot the objective line is readable to its end;
+- the toast lane (x 1330 to 1790, y 92 to 350; as built to about y 422, R6) and the banner's rectangle over `sb_place` (x 400 to 1300) do not intersect; in the `zz_worst("sb_place")` screenshot the objective line is readable to its end;
 - `ambient_of` returns a 2-tuple for every person × room; with `sunmall_done` set at least one caption differs from the fresh-game one.
 
 **Owner check:** the corner icons; hover over everything; click Nobara: grade and choices only.
 
 ### P3 · The journal: five tabs, the person page, the Me page (wave 1)
 
-**Tasks:** 4.7; `jr_story_rows`; reword the 11 "you" stage lines and `MEMORY_UNMET_HINT`; grade chips; the checklist chips on talismans; the Leads section; the `("go", loc)` return; update `wp8_journal.rpy` (the lines that expect a Memories tab) and `wp5_memories.rpy` (the hint text).
+**Tasks:** 4.7; `jr_story_rows`; reword the 11 "you" stage lines (as built: 15) and `MEMORY_UNMET_HINT`; grade chips; the checklist chips on talismans; the Leads section; the `("go", loc)` return; update `wp8_journal.rpy` (the lines that expect a Memories tab) and `wp5_memories.rpy` (the hint text).
 
 **Acceptance (`p2_journal.rpy`; memories built with `_mem()` / `memory_entry()`):**
 - `JOURNAL_TABS` has five rows; `journal("memories")` opens with `js["tab"] == "people"`; `jjk_status` and `jjk_journal` render;
@@ -1092,7 +1280,7 @@ A phase-1 harness that fails in a wave because of a change is fixed by the owner
 
 ### P5 · The place view alive (wave 2)
 
-**Tasks:** 4.5's P5 version in full (every transform function top-level and curried, the entrance an ATL transform: R10); `view_person_rects` from the slots and pose boxes; `VIEW_SLOTS` for eight rooms; `tools/make_fg.py` with polygon files in `tools/fg/<place>.json` (6.1's schema; not in the `view_` sidecar), and the six foreground files; `tools/make_pose_workflow.py`, `tools/install_pose.py`, `tools/install_face.py`; `VIEW_FACE` boxes for the eleven on campus; the schedule check of the pose list; `tools/layout_sheet.py` runs for every room with slots, a foreground or face boxes (the sheets go to the owner at checkpoint C); test pictures in `tools/smoke/assets/p2_view/`.
+**Tasks:** 4.5's P5 version in full (every transform function top-level and curried, the entrance an ATL transform: R10); `view_person_rects` from the slots and pose boxes; `VIEW_SLOTS` for eight rooms; `tools/make_fg.py` with polygon files in `tools/fg/<place>.json` (6.1's schema; not in the `view_` sidecar), and the six foreground files (as built: five, no classroom; 4.5); `tools/make_pose_workflow.py`, `tools/install_pose.py`, `tools/install_face.py`; `VIEW_FACE` boxes for the eleven on campus; the schedule check of the pose list; `tools/layout_sheet.py` runs for every room with slots, a foreground or face boxes (the sheets go to the owner at checkpoint C); test pictures in `tools/smoke/assets/p2_view/`.
 
 **Acceptance (`p2_view.rpy`):**
 - after `sb_do_wait` (no `scene` statement), `scene_light == light_for_place(here, period)` when the place view opens;
@@ -1151,6 +1339,13 @@ A phase-1 harness that fails in a wave because of a change is fixed by the owner
 
 **Tasks:** merge; any cross-package fix from the hand-over notes; `tools/smoke/phase2_all.rpy` (phase 1's end-to-end driver, extended: the map's two levels by pressing buttons, one night at each of bed / carried home / Gojo / out, one market purchase, one page read, one cross-check, one cast, one blackjack hand); `tools/smoke/p2_saves.rpy` (D44: in one scratch run it makes and reloads five saves: at `call screen sb_place` at Night on the ridge, on a rest day, inside `call screen cards_blackjack`, **on the first line of dialogue after `stage_person` with the eased sprite and the foreground up, and at the same place after a rollback through it** (R10); a `builtins` stage counter survives the load; each must come back on its statement with no `load_recover`); add the owner's checkpoint saves to `tools/load_all_saves.sh`'s list; `wp11_dev.rpy` only for what integration changes (the six new buttons and the 3×7 panel are P0b's, whose acceptance already needs every `wp*` to pass); the deferred acceptance lines (wave 1: P4b's market talisman put on through P4a's `can_wear`; wave 2: P5's word budget, P7's Night line); `p2_saves` also saves and reloads at the after-club menu of `night_out`; `docs/PLAYTEST.md` (every stand-in named, the five rulings as built, the "chosen for you" list of section 0 with what the owner said), `docs/ART_PHASE2.md` (section 5 as numbered steps), `docs/PHASE2_DESIGN.md` as built, `docs/load_report_phase2.txt`, `tools/README.md`.
 
+**As built (P8).**
+- **Split by file group.** P8 owns everything, so to work in parallel it was split into eight groups of files (the place view and HUD; the map and exits; the journal and missions; rooms; the night and gear; tools and the frozen harnesses; docs; the two new harnesses), each in its own worktree and branch, merged at the end.
+- **`p2_saves` makes and reloads 21 saves, not five:** the armory before and after taking a tool; the board; the partner picker; a hub after an exit walk; the map with an area open; a computer page; a person's journal page; the person view; the first line of dialogue after `stage_person`, and the same after a rollback through it; a blackjack hand; fishing at the bite; the night out's two menus; the market before and after a purchase; the ridge at Night; Gojo's menu; the "Day N. Morning." line; the rest day. Not covered: a save inside a fight or on the grade card (phase 1's; the owner's saves cover them; section 11).
+- **`phase2_all`** also plays a poker hand, a ride with Ijichi, the journal's five tabs and a person's page; it walks by exits on odd days and by the map on even days; it holds one Nade mission to the Evening for the carried-home night; it uses `night_dev("gojo")` on day 22 only if no Gojo night came due; and it ends with 7.3's deferred market line (each market talisman refused below its grade, refused on its unmet line, and worn once met). Its output is `shots/phase2_all/days.txt` (not `objectives.txt`).
+- **`tools/load_all_saves.sh` needed no list:** it loads every `*.save` it finds, and the owner's checkpoint saves are the same eleven slots (1-1, auto-1 to auto-10). The report is `docs/load_report_phase2.txt`.
+- **P9's harness** (`p2_paths`) joins the package harnesses, so nine `p2_*` run on the merged tree beside `p2_contracts`.
+
 **Acceptance:** standard (a) to (d) on the merged tree; **every one of the twelve `wp*` harnesses and every one of the eight `p2_*` package harnesses passes on the merged tree** (not only the three standing ones); `phase2_all` passes for 30 days; `load_all_saves.sh`: the 11 phase-1 saves SAME and each checkpoint save loads; `p2_saves` passes; every check of R2 clean; `p2_contracts` passes, byte-identical to P0b's.
 
 **Owner check (checkpoint D):** a full playthrough with `docs/PLAYTEST.md`.
@@ -1167,6 +1362,8 @@ A phase-1 harness that fails in a wave because of a change is fixed by the owner
 | P7 | P0 | "closed at Night" needs P4b's real `sb_night.rpy` (deferred to P8 if P4b slipped) |
 | P4b (wave 1) | P0 | putting a market talisman on through P4a's checklist needs P4a's `can_wear` (always deferred to P8: the two are parallel). The cap validator is P0b's, so it runs in P4b's own worktree |
 | P6 | P0 | the reachability bullet's Night and rest-day half, and the two "no Control on a rest day" lines, test against P4b's real rule (with P4b slipped they run with `night_can_work` patched, as written, and the Night half is deferred to P8) |
+| P2 (as built) | P0 | the `sb_place` half of every-button-has-a-tooltip waited for P5's stage tooltips (met in wave 2) |
+| P3 (as built) | P0 | no toast or banner over the journal waited for P2's `toast_room()` (met at the wave-1 merge) |
 
   A wave-2 package may start before wave 1 is reviewed only with those lines deferred, and only if credits make waiting worse; they look best after P2.
 - **A missing wave-1 package never strands another's work,** because P0b pointed the phase-1 action card at `rail_actions`: without P2, the night rule and the hotspots still reach the screen through the old card; without P4b, `night_out_ok` hides the map's night button and `market_exists()` hides the rumour page and the review button; without P1, `hover_label` ignores the old map's string tooltips and the old map still works.
@@ -1178,7 +1375,7 @@ A phase-1 harness that fails in a wave because of a change is fixed by the owner
 
 ## 8. Testing
 
-- **`tools/smoke.sh`** as PHASE1 8.1, plus the asset overlay (P0a task 2).
+- **`tools/smoke.sh`** as PHASE1 8.1, plus the asset overlay (P0a task 2). **As built (D49):** overlay files sit under `tools/smoke/assets/<harness>/game/…`, mirroring the repository (anything outside `game/` is refused); `SMOKE_ASSETS` names another overlay folder; a harness line `## smoke-with: <file>.rpy` installs a second script (how `aa_zz_order.rpy` gets in); `SMOKE_ROOT` is the repository the run started from, so a harness can read `baseline_p0.json` and `none_ok.txt`; the script refuses to run if the scratch `game/cache` ends up a link.
 - **Standing checks in every worktree:** lint; `check_content.py --all`; `p2_contracts.rpy` (with `aa_zz_order.rpy`); `core_flow.rpy`; `phase1_all.rpy`; the `wp*` harnesses in the package's own row.
 - **Everything, three times:** all twelve `wp*` harnesses run at P0a (new `_lib.rpy`), at P0b (the hooks) and at P8 (the merged tree, with all eight `p2_*`).
 - **Baselines, not memory:** "unchanged" always means "equal to `tools/smoke/baseline_p0.json` or `baseline_shots/`", written by P0a before anything changed; where later packages legitimately add rows (`place_actions`), the test is "every baseline row still present, in order".
@@ -1186,8 +1383,16 @@ A phase-1 harness that fails in a wave because of a change is fixed by the owner
 - **Save regression:** `tools/load_all_saves.sh` at P0, P1 (the map saves), P4b (Night away from the dorm) and P8; the baseline is `docs/load_report_phase1.txt`.
 - **What the measuring helpers can and can't do.** `zz_rect` reads rectangles of buttons with an `id`, after one render; it can't see a plain frame, so toast and banner positions are checked through `toast_room()` and the lane constants, and by the `zz_worst` screenshot. `zz_words` counts letter-bearing tokens in one screen's tree, including see-through text and excluding icon glyphs; it can't tell what is hidden behind another screen. `zz_texts` lists the strings, for "this line is gone" checks that `zz_rect` cannot make. `zz_calls` counts calls to a top-level function over a wall-clock span; `zz_layer_tags` lists what a layer shows.
 - **Balance assertions use the game's own tables and labels** (`GRADES`, `BOARD_YEN`, `BOARD_PERIODS`, `sb_do_train`, `sb_do_hold` and `act_lesson` themselves, at every training place), never literals (D27, D29, P4b's "owner's sentence").
-- **Saves are tested by saving** (R10): on the place view at P0b, in dialogue with the eased sprite up at P5, and five states at P8.
+- **Saves are tested by saving** (R10): on the place view at P0b, in dialogue with the eased sprite up at P5, and five states at P8 (as built: 21, section 7 P8).
 - **Phase-1 harnesses this phase changes,** each updated by the owner of the changed behaviour in the same commit: `wp0_stubs` (P0: the map's parameters), `wp1_world` (P0b: the nineteenth room; P1: row presses, the two-press district cards, the Megumi row), `wp7_ui` (P0b: the stage move, if anything; P2: person view, toast counts, the "Nobody here" text; P5: the name plates), `wp8_journal` and `wp5_memories` (P3), `wp2_grades`, `wp4_board`, `wp6_items` (P4a), `wp11_dev` (P0b: the six new buttons and the panel's size, if it pins them; P8: only what integration changes).
+
+**As built (section 8).**
+- **`p2_contracts.rpy`** runs WITHOUT `SMOKE_P0_STRICT` after wave 0: four comparisons with the pre-phase-2 tree are hard only under `SMOKE_P0_STRICT=1`, and their "no longer holds" notes are expected once the wave packages are in. The strict evidence for wave 0 is `SMOKE_P0_STRICT=1` with `SMOKE_P0_SHOTS` pointed at `tools/smoke/baseline_shots/1818x1022/`. In the default run `sb_char` is compared order-free and the Night rows of `person_choices` are skipped once `night_exists()`.
+- **`_lib.rpy`:** its three waits pass `modal=False`; `zz_render()` was added; `zz_worst` takes `hover=<id>` and `name=`; `zz_words` counts Latin-letter tokens only, so a kanji seal drawn in an ordinary style is not a word; the shaped-variable list also refuses `cards_sit`.
+- **Hover checks need the pointer.** `p2_contracts`, `p2_paths` and `p2_view` have checks that use the pointer or `renpy.set_focus`; they fail while another Ren'Py window is open. Run them one at a time and re-run alone before treating a failure as real.
+- **`p2_journal.rpy`** needs `SMOKE_TIMEOUT=300` (about 145 s of the default 180 s). `wp10_chapters.rpy` had a timing race (149/1 now and then).
+- **Per-package harnesses** also include `p2_paths` (section 13).
+- **The save regression's reference** is `docs/load_report_phase2.txt`; compare by status, not line number (`docs/load_report_phase1.txt` no longer matches line for line).
 
 ---
 
@@ -1201,6 +1406,8 @@ Each is played from the Ren'Py launcher in the owner's folder on branch `phase2`
 | B | P1 to P4 | The map (areas, then rooms; Tokyo). The corner icons, the icon column, hover labels. The person view. The journal's five tabs, a person's page, the Me page. Grade colours and the armory checklist. A normal night; a Gojo night and the day after; a night in Tokyo: the club, then the Black Market (Review tools get you there). **Questions:** is anything still cluttered? Are the faces on the map too many? Is anything now too hidden, including "where is everyone" without the row of faces? Is two clicks to walk somewhere right? **And the things chosen for you (section 0):** the Gojo night's size and how often (its ceiling rule was ruled at A; say if it now feels too rare); what is closed the day after; the night in Tokyo's price and hangover; market prices; one market-only Special Grade talisman, yes or no. | 30 min | batch 2: the Library, the two offices (about $0.21) |
 | C | P5 to P7 | The common room with people blended in; idle to talking. The layout sheets. The computer (and its lead in the Missions tab), fishing, the Library, blackjack and poker. **Chosen for you, to confirm or change:** fishing as proposed; the computer's five sites and the cross-check; card stakes, five hands a sitting, ¥6,000 a day; Library +4; the vending machine. Then batch 3 dropped in: two poses and Yuji's blink. | 30 min | batch 3 ($1.28), then 4 and 5 if they look right |
 | D | P8 | Everything, with `docs/PLAYTEST.md`. | a session | the rest, at your pace |
+
+**As built.** A passed on 4 Oct 2026 (no ruling changed; the defaults stand). B passed on 4 Oct with notes, which became section 13. C passed on 5 Oct with no change asked for. No separate checkpoint slot was saved: the regression is the owner's same eleven slots. D is `docs/PLAYTEST.md`.
 
 If credits run short after B, stop there: the structure is complete, and C's three packages each stand alone. What waits is then your choice (7.3): nothing you decided is dropped without asking.
 
@@ -1236,6 +1443,8 @@ If credits run short after B, stop there: the structure is complete, and C's thr
 - The Nade missions' in-scene `advance_period(2)` and the rest of the time economy (the safety net catches them today).
 - A research bonus in board fights (the cross-check only *shows* a misgrade today).
 - Tuning: night gains, prices, stakes.
+- **(P8)** A save test inside a fight and on the grade card: `p2_saves` does not save in `combat_screen` or on the grade card's pause (the armory, the board and the partner picker are covered). The fight is rebuilt in this phase; its save test belongs with it.
+- **(P8)** Whether yen should stay this easy once talisman effects wake up (see "For the owner's review" below).
 
 ### Phase 4 (story)
 
@@ -1248,6 +1457,24 @@ If credits run short after B, stop there: the structure is complete, and C's thr
 - Chess, memory, tic-tac-toe (one file each behind `register_minigame`).
 - Blink and talk for Sana (she is staged four times in the prologue, `ch1_alley.rpy`; two pictures, $0.64, no script change) and for Kaito if he is ever staged.
 - A market-only Special Grade talisman, if the owner asks for one at checkpoint B.
+- **(P8) The Inverted Spear's `sealed` field.** It is tested before the checklist (`sb_items.rpy`), so with all four lines met the armory row still reads "Sealed — Arc Two". Not reachable in Arc One. When Arc Two is built, clear the spear's `sealed` field, or let `armory_tools`' `arcii` state and `can_hold`'s sealed test yield when the arc is 2 or more.
+- **(P8) A "Gojo at the ridge" story caption** needs a later flag than `saw_the_ridge_veil` (the prologue tour sets that one), so `AMBIENT_STORY` has no such row. Phase 4 adds the row with its own flag. A grade condition on Shoko or Ijichi is a validator finding.
+- **(P8) Stand-ins to rewrite:** the Gojo night, the club scene and the companion lines (`## PLACEHOLDER — rewrite in phase 4` in `sb_night.rpy`); the Tokyo district pictures and their "Later build" pins, which sit on arbitrary spots until the districts get content and art.
+- **(P8) A pose has no caption test.** `view_pose` tests only the file and its box, so a pose shows whenever its file exists for the hour, even when a story caption says the person is doing something else. When story captions are written for the common room's evenings or Utahime's office, give `view_pose` a caption test or paint a second pose.
+- **(P8) Scene staging in the cafeteria.** A person shown by a later `show` at `pos_r` there stands behind the near table (the foreground stays up in dialogue only in the cafeteria). Story scenes should avoid `pos_r` there, or the table's polygon is revisited.
+- **(P8) The computer pages' lore** (the Nihon Shoki entry, the Keicho duel, Noritoshi Kamo, Michizane) was written from memory. Check it against a reference before the clans arc leans on it.
+- **(P8) Gating a mission on research:** call `pc_request("<page>", "<the question>")` and put `gate.flags=("researched_<page>",)` on what it opens. The note may hold any characters.
+- **(P8) Night beats that roll the day.** The loop asks `night_pending()` at the top of each turn, before it picks a story beat, and again after a beat it played. No Arc One beat rolls the day at Night; a phase-4 Night beat that does must be reached through the loop's own `play_event` call to be walked home at once.
+
+### For the owner's review after the phase (no code change now; listed in `docs/PLAYTEST.md`)
+
+- **(P8) `gen_gui.py --all`** (the phase-1 GUI pictures) is unverified: Pillow is not installed on this Mac, and installing it is the owner's call. Nothing in the game depends on it.
+- **(P8) Four things put to the owner at checkpoint B and left as they are:** `JR_PAGE_WORDS` stays 70 (story lines show as short names on tight pages); a finished story shows RESOLVED, a NEXT row and "n more chapters in a later build" together; an untaken Gojo invitation returns about weekly (one line in `night_gojo_morning` would make it rarer); a save with a map area open reloads on the six areas.
+- **(P8) Fishing's feel:** the sweep (1.5 s a pass), the 1 to 3 s wait and the zone widths are constants at the top of `room_fishing.rpy`. The owner fished at C and asked for no change; asked once more at D.
+- **(P8) Card balance** is table values only (`CARDS_STYLE`, `CARDS_STAKES`): one good poker hand can win ¥3,500, tells fire about 85% of the time, Gojo bets at random. Whether the ¥3,000 stop should be a hard ceiling, and whether the table should go away at the cap, are the owner's calls.
+- **(P8) "Walk with them" from a yard:** it is offered at the courtyard, gate, forest, riverside and ridge only. Adding the five hubs is one edit (the walk row's `loc` tuple in `sb_activities.rpy`). Not done unasked.
+- **(P8) Money piles up.** One board job a day at Grade 3 pays about ¥8,000, so the 30-day run holds ¥100,000 by day 24 and ¥144,000 by day 30, while the whole market costs ¥90,000 and the club ¥1,500. Nothing breaks D29's price rule; whether yen should stay this easy is a balance call (or phase 3's).
+- **(Art, at the owner's pace)** A night pose for Shoko: her planned pose is a day picture and the infirmary has a night picture, so at Night she is her standing sprite (`docs/ART_PHASE2.md`).
 
 ### Not planned
 
@@ -1411,20 +1638,22 @@ The owner played checkpoint B and asked for one new thing and four small changes
 | # | Decision |
 |---|---|
 | D53 | **Every area has an outdoor hub place** that you can stand in, and that all of the area's rooms open onto. `heart` keeps `courtyard` as its hub (the gate opens onto it). New places: `school_yard` "School Courtyard" (school), `dorm_yard` "Dormitory Garden" (dorms), `staff_yard` "Staff Building Steps" (staff), `training_yard` "Training Yard" (grounds), `trailhead` "Mountain Path" (mountain). Each is a normal `LOCATIONS` row in its area's `places`, first in the list, always enterable, with a first-person description, and a pin on the area view. The owner's words: "more places to have characters, like Nobara on the way to the training ground, or Yuji chilling outside". |
-| D54 | **Exits.** In every place, the ways out are things you can click in the picture: from a room, one exit to its area's hub; from a hub, one exit to each of its rooms and one to each neighbouring hub. Walking is free and instant, at any hour (cost 0, so the night rule allows it), and works in explore mode. The map stays as it is for going anywhere in two clicks. Hubs are joined as the campus map's paths join the areas: `courtyard` to `school_yard`, `dorm_yard`, `staff_yard` and `training_yard`; `dorm_yard` to `trailhead`; `gate` to `courtyard`. P9 checks this against the paths drawn on `map_campus.png` and adjusts if the picture says otherwise. |
-| D55 | **An exit is an action hotspot** on the frozen framework (4.10): `register_place_action("go_<to>", ...)` with `locs=(<from>,)`, cost 0, `explore=True`, and `register_hotspot("go_<from>__<to>", <from>, x, y, icon, act="go_<to>")`. `label sb_do_go_<to>` sets `here` and returns, exactly as map travel does (it calls the same arrival code, so the arrival caption, `view_sync_light` and any story beat waiting at the new place behave as after a map trip). When someone stands in front of an exit it moves to the icon column, like any hotspot. Icons are existing names only: `place_<room>` for a room, `area_<key>` for a hub, `back` never. The hover label reads "To the School Courtyard", or the lock's reason when `place_access` refuses (then the exit is shown dim and does nothing). |
-| D56 | **Where exits sit.** On a natural spot of each background (a door, a gate, a path leading off), found with `tools/layout_sheet.py`, inside x 40 to 1700 and y 180 to 1000 and clear of the toast and banner lanes. Exit points are written in `room_paths.rpy`'s `PATH_EXITS` table, not in `game/layout/hot_<place>.json` (that file is P6's). P9 keeps each exit at least 120 px from every hotspot start point in 4.10's table; P8 settles any that still touch once P6's final points are in. |
-| D57 | **People in the hubs.** A few schedule slots move into the hubs so they are not empty: one or two people per hub, at hours when the move breaks no written scene (every story and hangout `ev()` that needs a person at a place still finds them there; `phase1_all` and `wp3_missions` prove it). Each gets an `AMBIENT` caption request in the hand-over note for P8 (`AMBIENT` lives in `sb_screens.rpy`, which P9 does not own); until then the default caption shows. |
-| D58 | **Backgrounds.** Each new hub has `bg <name>` through `bg_placeholder("images/bg/<name>.png", <stand-in>)`; stand-ins are existing outdoor pictures (the courtyard or the forest, tinted so the five differ). P9 writes `tools/bgs/prompts/<name>.txt` for the five (eye-level, outdoor, matching the area's bird's-eye picture) so they can be made as one more art batch (five pictures, two candidates each, about $0.35). `lighting.rpy` is P5's in this wave: if a hub needs a `BG_LIGHT` row, P9 asks for it in its hand-over note and the default light is used until then. |
+| D54 | **Exits.** In every place, the ways out are things you can click in the picture: from a room, one exit to its area's hub; from a hub, one exit to each of its rooms and one to each neighbouring hub. Walking is free and instant, at any hour (cost 0, so the night rule allows it), and works in explore mode. The map stays as it is for going anywhere in two clicks. Hubs are joined as the campus map's paths join the areas: `courtyard` to `school_yard`, `dorm_yard`, `staff_yard` and `training_yard`; `dorm_yard` to `trailhead`; `gate` to `courtyard`. P9 checks this against the paths drawn on `map_campus.png` and adjusts if the picture says otherwise. **As built (`PATH_LINKS`, following the picture):** `courtyard` to `school_yard`, `dorm_yard`, `training_yard`; `dorm_yard` to `staff_yard`, `trailhead`; `staff_yard` to `training_yard`; `gate` to `courtyard`. There is no `courtyard` to `staff_yard` link (the picture has no such path). The owner was asked at checkpoint C and changed nothing. |
+| D55 | **An exit is an action hotspot** on the frozen framework (4.10): `register_place_action("go_<to>", ...)` with `locs=(<from>,)`, cost 0, `explore=True`, and `register_hotspot("go_<from>__<to>", <from>, x, y, icon, act="go_<to>")`. `label sb_do_go_<to>` sets `here` and returns, exactly as map travel does (it calls the same arrival code, so the arrival caption, `view_sync_light` and any story beat waiting at the new place behave as after a map trip). When someone stands in front of an exit it moves to the icon column, like any hotspot. Icons are existing names only: `place_<room>` for a room, `area_<key>` for a hub, `back` never. The hover label reads "To the School Courtyard", or the lock's reason when `place_access` refuses (then the exit is shown dim and does nothing). **As built:** the action is `path_<to>` and its label `sb_do_path_<to>` (the prefix rule rejects `sb_do_go_<to>` in `room_paths.rpy`; never rename them, 2.3); hotspot ids are `go_<from>__<to>` as written. Exits come first among the registered place actions (`PATH_ACTION_ORDER` 5). A locked exit is drawn at alpha 0.45, with the reason on hover and `NullAction` (P8's edit to `hot_layer`). The exit rows in the registries are dict subclasses read live (`path_LiveRow`, `path_ActionRow`, `path_SpotRow`): nothing is written at run time and nothing new is saved; do not keep a `dict(row)` copy across a change of flags or period. |
+| D56 | **Where exits sit.** On a natural spot of each background (a door, a gate, a path leading off), found with `tools/layout_sheet.py`, inside x 40 to 1700 and y 180 to 1000 and clear of the toast and banner lanes. Exit points are written in `room_paths.rpy`'s `PATH_EXITS` table, not in `game/layout/hot_<place>.json` (that file is P6's). P9 keeps each exit at least 120 px from every hotspot start point in 4.10's table; P8 settles any that still touch once P6's final points are in. **As built:** `PATH_CAPTION_BOX` (40, 100, 744, 160), the arrival caption's box, is a keep-clear zone too (lint reports an exit inside it). P8 moved each hub's exits off the stand-in's top row onto the door, steps or path in its painted picture, and `PATH_KEEP_CLEAR` now holds P6's final points; the numbers are `PATH_EXITS`. A sidecar `hot_<place>.json` can move an exit by its id. |
+| D57 | **People in the hubs.** A few schedule slots move into the hubs so they are not empty: one or two people per hub, at hours when the move breaks no written scene (every story and hangout `ev()` that needs a person at a place still finds them there; `phase1_all` and `wp3_missions` prove it). Each gets an `AMBIENT` caption request in the hand-over note for P8 (`AMBIENT` lives in `sb_screens.rpy`, which P9 does not own); until then the default caption shows. **As built:** Nobara in the Training Yard on weekday mornings; Toge in the School Courtyard on weekday afternoons; Yuji in the Dormitory Garden at Night on weekdays (not the Evening); Megumi on the Mountain Path and Shoko on the Staff Building Steps at weekends only. P8 added the five `AMBIENT` rows. |
+| D58 | **Backgrounds** (as built: the five were painted in art batch 3, $0.35, and are installed; the hubs take the default outdoor light and need no `BG_LIGHT` row). Each new hub has `bg <name>` through `bg_placeholder("images/bg/<name>.png", <stand-in>)`; stand-ins are existing outdoor pictures (the courtyard or the forest, tinted so the five differ). P9 writes `tools/bgs/prompts/<name>.txt` for the five (eye-level, outdoor, matching the area's bird's-eye picture) so they can be made as one more art batch (five pictures, two candidates each, about $0.35). `lighting.rpy` is P5's in this wave: if a hub needs a `BG_LIGHT` row, P9 asks for it in its hand-over note and the default light is used until then. |
 | D59 | **The map touch-ups.** The area markers shrink (about 240 by 96, the name on one line, faces and marks under it; nothing may overlap at 1920 by 1080 with three faces and a gold mark). The Mountain marker moves onto the mountain drawn on `map_campus.png` (it sat over the lake); the lake stays unmarked for now. Each hub gets a pin on its area view. |
 | D60 | **"Classroom Building" becomes "Classroom"** wherever the place's name is shown (the `LOCATIONS` name; the key `classroom` and every story line stay). |
-| D61 | **The "Closer: after roll call" line goes** from a person's journal page (and from the People card's hover): before roll call no Closer line is shown at all. The NEXT row keeps "After roll call". |
+| D61 | **The "Closer: after roll call" line goes** from a person's journal page (and from the People card's hover): before roll call no Closer line is shown at all. The NEXT row keeps "After roll call". **As built:** the People card's hover keeps "Next: Spend time together / after roll call", as the NEXT row does. |
 
 ### 13.2 P9 · Walking between places, and the checkpoint B touch-ups (wave 2)
 
 **Owns (wave 2):** `game/sb_world.rpy`, `game/ui_map.rpy`, `game/bg_placeholders.rpy`, `game/room_paths.rpy` (new; prefix `path_`), `game/layout/area_*.json`, `game/ui_journal.rpy` (D61 only), `tools/bgs/prompts/school_yard.txt`, `dorm_yard.txt`, `staff_yard.txt`, `training_yard.txt`, `trailhead.txt`, `tools/smoke/wp1_world.rpy`, `tools/smoke/p2_map.rpy`, `tools/smoke/p2_journal.rpy` and `tools/smoke/wp8_journal.rpy` (only where they pin D61's line), `tools/smoke/p2_paths.rpy` (new).
 
 **Provides (frozen for P8):** `path_exits(loc)` → list of dicts `(to, label, icon, x, y, locked_reason)` for the place, in a stable order; `path_hub(area_key)` → the hub's place key; `path_neighbours(loc)` → the list of place keys one step away. All return plain values and never `None`.
+
+**As built: other names.** `path_locked`, `path_label`, `path_icon`, `path_words`, `path_is_hub`, `path_reach`, `path_walk` (a label), `path_LiveRow` / `path_ActionRow` / `path_SpotRow`, `PATH_HUBS`, `PATH_LINKS`, `PATH_EXITS`, `PATH_KEEP_CLEAR`, `PATH_CAPTION_BOX`, `PATH_ACTION_ORDER`; in `ui_map.rpy` `map_pin_icon`, `map_area_rect`, `MAP_AREA_W` / `MAP_AREA_H`, `MAP_MOUNTAIN_BOX`, style `map_area_marker` (240 × 96); in `sb_world.rpy` `WORLD_HUB_STANDINS`, `world_hub_standin`, `world_hub_bg`. `room_paths.rpy` adds `ICON_FOR` rows at init; `icon_for("place", hub)` returns `area_<key>`. `LOCATIONS` has 24 rows. The level-2 map budget is 5 pins plus 5 buttons, and a hub may show up to 7 exits (4.0). "Walk with them" is not offered in the yards (section 11).
 
 **Tasks:** D53 to D61.
 
