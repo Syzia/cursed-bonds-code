@@ -22,8 +22,9 @@
 ##     it is made), so I can never stake more than I hold;
 ##   - the day's winnings never pass BOARD_YEN["g4"][1]: blackjack isn't dealt
 ##     at a stake that could pass it, and a poker pot is paid only up to it;
-##   - every deal, draw and settlement is followed by cards_block(), which
-##     blocks rollback: a lost hand can't be replayed with the next card known.
+##   - every deal, draw, read and settlement is followed by cards_block(),
+##     which blocks rollback: a lost hand can't be replayed with the next card
+##     known, and a read can't be taken back and spent on someone else.
 ##     The next card is also picked when it is drawn, not when the deck is
 ##     shuffled, so a reloaded save doesn't know it either.
 ##
@@ -55,6 +56,9 @@ init -1 python:
     CARDS_LIVE = ("play", "bet1", "call1", "draw", "bet2", "call2")     # a hand is being played
     CARDS_READ_AT = 20                  # the Insight a read takes
     CARDS_GAMES = ("blackjack", "poker")    # the games this file plays
+    CARDS_TAKE = ("stands pat", "takes one", "takes two", "takes three")    # an opponent's draw, by cards taken
+    CARDS_COUNT = ("no cards", "one", "two", "three")
+    CARDS_ROW = 820                     # the room a blackjack hand has, left of its total
     CARDS_BLURB = {
         "blackjack": "Against the dealer. Twenty-one, or as near as I dare.",
         "poker": "The cards matter less than the faces. Watch them.",
@@ -65,7 +69,9 @@ init -1 python:
     ## on nothing. tell: the expression their face slips into; shows: what
     ## that gives away ("bluff", "bet": about to bet, "strong", "weak", or
     ## None: nothing). rest: the face they wear otherwise; sore: when they
-    ## lose a hand. blind: plays without looking (the cards don't steer them).
+    ## lose a hand; glad: when they win one ("happy" unless the row says so:
+    ## the ones whose faces give nothing away don't grin either). blind: plays
+    ## without looking (the cards don't steer them).
     ## win / lose: what they say when they win or lose a hand; stop: when
     ## they've lost all they mean to today.
     CARDS_STYLE = {
@@ -73,7 +79,7 @@ init -1 python:
                      win="Ha! Sorry. Not that sorry.",
                      lose="No way. One more, one more.",
                      stop="I'm out. That was my ramen money."),
-        "megumi": dict(tight=0.7, bluff=0.1, tell="neutral", shows=None, rest="neutral", sore="serious",
+        "megumi": dict(tight=0.7, bluff=0.1, tell="neutral", shows=None, rest="neutral", sore="serious", glad="neutral",
                        win="You hesitated.",
                        lose="Hm. Take it.",
                        stop="That's enough of my money."),
@@ -81,15 +87,15 @@ init -1 python:
                        win="Pay up. I've got my eye on a jacket.",
                        lose="Tch. You got lucky.",
                        stop="I'm done. You're buying lunch."),
-        "maki": dict(tight=0.6, bluff=0.2, tell="angry", shows="weak", rest="serious", sore="angry",
-                     win="Too slow. Hand it over.",
+        "maki": dict(tight=0.6, bluff=0.2, tell="angry", shows="weak", rest="serious", sore="angry", glad="serious",
+                     win="You're easy to read. Hand it over.",
                      lose="Not bad. Don't get used to it.",
                      stop="That's all you're getting out of me today."),
         "panda": dict(tight=0.5, bluff=0.1, tell="happy", shows="strong", rest="neutral", sore="sad",
-                      win="Panda wins! Don't look at me like that.",
-                      lose="Aw. I really thought I had that one.",
+                      win="Read them and weep. Don't look at me like that.",
+                      lose="Aw. Fine. Take it.",
                       stop="I'm cleaned out. Pandas don't even get an allowance."),
-        "toge": dict(tight=0.5, bluff=0.35, tell="neutral", shows=None, rest="neutral", sore="neutral",
+        "toge": dict(tight=0.5, bluff=0.35, tell="neutral", shows=None, rest="neutral", sore="neutral", glad="neutral",
                      win="Salmon.",
                      lose="Bonito flakes.",
                      stop="Mustard leaf."),
@@ -100,8 +106,8 @@ init -1 python:
         "gojo": dict(tight=0.0, bluff=0.5, tell="happy", shows=None, rest="happy", sore="surprised", blind=True,
                      win="I wasn't even looking. Isn't that great?",
                      lose="Oh no. Whatever will I do.",
-                     stop="Okay, okay. Even my wallet has feelings."),
-        "yaga": dict(tight=0.8, bluff=0.05, tell="angry", shows="weak", rest="serious", sore="serious",
+                     stop="That's my allowance gone. Ijichi keeps the rest. Isn't that sad?"),
+        "yaga": dict(tight=0.8, bluff=0.05, tell="angry", shows="weak", rest="serious", sore="serious", glad="serious",
                      win="Discipline. That's all it is.",
                      lose="Hmph. Well played.",
                      stop="Enough. Go and do something useful."),
@@ -111,7 +117,7 @@ init -1 python:
                         stop="No more. I'm not paying for your weekend."),
         "ijichi": dict(tight=0.75, bluff=0.05, tell="surprised", shows="strong", rest="neutral", sore="sad",
                        win="Oh. I'm sorry. I think I won.",
-                       lose="I should have folded. I always should have folded.",
+                       lose="Ah. Yes. That one is yours. Congratulations.",
                        stop="Please. I have rent."),
     }
     CARDS_STYLE_ANY = dict(tight=0.5, bluff=0.2, tell="neutral", shows=None, rest="neutral", sore="neutral",
@@ -200,8 +206,9 @@ init -1 python:
 
     def cards_ok():
         """P7 (room_cards.rpy). bool: the card table can be sat at now:
-        someone is in the common room, I have the smallest stake, and I
-        haven't already sat today with everyone who is here."""
+        someone is in the common room, I have the smallest stake, I haven't
+        already sat today with everyone who is here, and they haven't lost
+        all they mean to today (the day's limit, as cards_sit_over has it)."""
         if store.explore_mode:
             return False
         opp = cards_opponents()
@@ -210,6 +217,8 @@ init -1 python:
         if store.yen < CARDS_STAKES[0]:
             return False
         if all(("cards:" + w) in store.actions_today for w in opp):
+            return False
+        if cards_cap_left() < 2 * CARDS_STAKES[0]:
             return False
         return True
 
@@ -253,8 +262,10 @@ init -1 python:
             return "I'm %s down. Enough." % cards_yen(CARDS_LIMIT["down"])
         if store.yen < cards_need(game, stake):
             return "I'd need %s for that." % cards_yen(cards_need(game, stake))
-        room = stake * (2 if game == "blackjack" else 1)
-        if stake and cards_cap_left() < room:
+        per = 2 if game == "blackjack" else 1
+        if stake and cards_cap_left() < stake * per:
+            if stake > CARDS_STAKES[0] and cards_cap_left() >= CARDS_STAKES[0] * per:
+                return "Not at that stake. They've nearly lost enough to me today."
             return "They've lost enough to me today."
         return ""
 
@@ -390,7 +401,7 @@ init -1 python:
             text = {"win": "The pot's mine.", "split": "A split pot.", "lose": "Not my pot.",
                     "fold": "I fold."}.get(res, "")
         if st.get("capped"):
-            text += " They won't pay past that today."
+            text += " They only pay me part of it: they've lost enough today."
         return u"%s  %s" % (text, cards_signed(st.get("last", 0)))
 
     def cards_auto(where):
@@ -437,6 +448,15 @@ init -1 python:
             aces -= 1
         return total
 
+    def cards_row_gap(n):
+        """P7. The space between the cards of a blackjack hand of n: 16,
+        closing up (the cards overlap) once the row would run under its
+        total, so a hand of any length ends by x 1620."""
+        n = int(n)
+        if n <= 6:
+            return 16
+        return (CARDS_ROW - 120 * n) // (n - 1)
+
     def cards_natural(hand):
         """P7. bool: twenty-one in two cards."""
         return len(hand) == 2 and cards_total(hand) == 21
@@ -460,7 +480,7 @@ init -1 python:
         elif result == "push":
             st["says"], st["face"] = "", {who: sty["rest"]}
         else:
-            st["says"], st["face"] = sty["win"], {who: "happy"}
+            st["says"], st["face"] = sty["win"], {who: sty.get("glad", "happy")}
 
     def cards_bj_deal():
         """P7. Deals a hand of blackjack: my stake leaves my yen, two cards
@@ -820,9 +840,9 @@ init -1 python:
             for i in out:
                 st["theirs"][w][i] = cards_draw(st)
             st["drew"][w] = len(out)
-            took.append("%s takes %d." % (cards_short(w), len(out)))
+            took.append("%s %s." % (cards_short(w), CARDS_TAKE[len(out)]))
         st["marks"] = dict((i, False) for i in range(5))
-        st["line"] = ("I take %d. " % len(mine)) + " ".join(took)
+        st["line"] = ("I stand pat. " if not mine else "I take %s. " % CARDS_COUNT[len(mine)]) + " ".join(took)
         st["stage"] = "bet2"
         cards_pk_plan()
         return True
@@ -876,11 +896,16 @@ init -1 python:
             st["says"] = cards_style(theirs[0])["win"]
             st["speaker"] = theirs[0]
             for w in theirs:
-                face[w] = "happy"
+                face[w] = cards_style(w).get("glad", "happy")
         elif st["opponents"]:
-            w = (st["shown"] or st["opponents"])[0]
-            st["says"] = cards_style(w)["lose"]
-            st["speaker"] = w
+            ## Only someone who showed a hand has a hand to be sore about.
+            if st["shown"]:
+                w = st["shown"][0]
+                st["says"] = cards_style(w)["lose"]
+                st["speaker"] = w
+            else:
+                st["says"] = ""
+                st["speaker"] = ""
             for x in st["opponents"]:
                 face[x] = cards_style(x)["sore"]
         st["face"] = face
@@ -888,8 +913,11 @@ init -1 python:
             st["line"] = "%s take%s the pot." % (cards_pk_names(theirs), "s" if len(theirs) == 1 else "")
         elif len(players) == 1:
             st["line"] = "Everyone else is out."
-        elif res in ("win", "split"):
-            st["line"] = "%s." % cards_pk_name(st["mine"])
+        elif res == "win":
+            mine = cards_pk_name(st["mine"]).lower()
+            st["line"] = "My %s holds." % (mine[2:] if mine.startswith("a ") else mine)
+        elif res == "split":
+            st["line"] = "The same hand. We split it."
         else:
             st["line"] = "%s: %s." % (cards_pk_names(theirs), cards_pk_name(st["theirs"][theirs[0]]).lower())
         return cards_finish_hand(pay, res)
@@ -968,7 +996,7 @@ init -1 python:
             for k in ("tight", "bluff", "tell", "win", "lose", "stop", "rest", "sore"):
                 if k not in row:
                     out.append("CARDS_STYLE[%r] has no %r" % (w, k))
-            for k in ("tell", "rest", "sore"):
+            for k in ("tell", "rest", "sore", "glad"):
                 if k in row and row[k] not in ("neutral", "happy", "serious", "angry", "surprised", "sad"):
                     out.append("CARDS_STYLE[%r][%r] = %r is not an expression" % (w, k, row[k]))
             if row.get("shows") not in (None, "bluff", "bet", "strong", "weak"):
@@ -1237,7 +1265,7 @@ screen cards_blackjack():
     hbox:
         xpos 800
         ypos 200
-        spacing 16
+        spacing cards_row_gap(len(_cards_dl))
         for _cards_i, _cards_c in enumerate(_cards_dl):
             use cards_card(_cards_c, up=(_cards_i == 0 or not _cards_st.get("hide")))
     if _cards_dl:
@@ -1260,7 +1288,7 @@ screen cards_blackjack():
     hbox:
         xpos 800
         ypos 520
-        spacing 16
+        spacing cards_row_gap(len(_cards_my))
         for _cards_c in _cards_my:
             use cards_card(_cards_c)
     if _cards_my:
@@ -1383,7 +1411,7 @@ screen cards_poker():
                 elif not _cards_in:
                     text "Folded" style "cards_line" size 18 color gui.seal
                 elif _cards_w in (_cards_st.get("drew") or {}):
-                    text ("Took %d" % _cards_st["drew"][_cards_w]) style "cards_line" size 18 substitute False
+                    text ("Took %s" % CARDS_COUNT[_cards_st["drew"][_cards_w]] if _cards_st["drew"][_cards_w] else "Stood pat") style "cards_line" size 18 substitute False
                 else:
                     text "In" style "cards_line" size 18
                 hbox:
@@ -1419,7 +1447,8 @@ screen cards_poker():
                 xalign 0.5
         text (_cards_st.get("line") or "") style "cards_line" xalign 0.5 substitute False
 
-    ## My five cards, y 560. In the draw a click marks one to throw away.
+    ## My five cards, y 560. In the draw a click marks one to throw away. No
+    ## hover label: it would open over the card beside the one I'm judging.
     for _cards_i, _cards_c in enumerate(_cards_my):
         button:
             id "cards_my_%d" % _cards_i
@@ -1429,7 +1458,6 @@ screen cards_poker():
             xysize (120, 168)
             sensitive (_cards_stage == "draw")
             action If(_cards_marks.get(_cards_i) or len(_cards_out) < 3, ToggleDict(_cards_marks, _cards_i), NullAction())
-            tooltip (("Keep it" if _cards_marks.get(_cards_i) else "Throw it away"), "cards_my_%d" % _cards_i)
             fixed:
                 use cards_card(_cards_c)
                 if _cards_marks.get(_cards_i):
@@ -1540,7 +1568,7 @@ label sb_do_cards_play:
 
 ## Blackjack (4.12). The game's own label: it plays until I leave, and sets
 ## mg_result before it returns (cards_end). Rollback is blocked after every
-## deal, every draw and every settlement.
+## deal, every draw and every settlement (and, at poker, every read).
 label mg_blackjack(opponents, stake=0):
     $ cards_new("blackjack", opponents, stake)
     if cards_can_deal("blackjack", stake):
@@ -1599,6 +1627,7 @@ label mg_poker(opponents, stake=0):
             $ cards_block()
         elif _cards_p[0] == "read":
             $ cards_pk_read(_cards_p[1] if len(_cards_p) > 1 else None)
+            $ cards_block()
         elif _cards_p[0] == "deal":
             $ cards_pk_deal()
             $ cards_block()

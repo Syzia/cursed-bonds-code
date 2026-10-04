@@ -13,14 +13,18 @@
 ##      eleven styles; the read
 ##   E  Bond +1 once a day; one period only if a hand was played;
 ##      cards_records()
-##   F  rollback is blocked after every deal, draw and settlement (the real
-##      labels are played, with cards_block() wrapped)
+##   F  rollback is blocked after every deal, draw, read and settlement: the
+##      real labels are played with cards_block() wrapped, the blocks are
+##      matched to the moves made, and a rollback is asked for from inside
+##      the next screen after each one (nothing may change)
 ##   G  at Night the table is closed
 ##   H  zz_worst of the three screens: no toast drawn; the names
 ##   I  the saved state pickles; the stand-in pictures
 ## A line that waits for another package is a NOTE that says so (7.3).
 ##
-## State is built through cards_new() and the game's own functions (R5).
+## State is built through cards_new() and the game's own functions (R5), and
+## cleared through them too (zz_c_reset: cards_sit_down, cards_get_up); the
+## harness never assigns cards_state or cards_sit.
 ## Where a hand must come out a given way, cards_draw() (the one function a
 ## card comes from) is wrapped to hand out scripted cards; nothing else of
 ## the game is replaced. The labels are driven through cards_auto(), the
@@ -30,9 +34,10 @@
 ## Screenshots: worst_cards_table.png, worst_cards_blackjack.png,
 ## worst_cards_poker.png (R6), cards_blackjack_done.png, cards_poker_draw.png,
 ## cards_poker_read.png, cards_poker_showdown.png, cards_poker_one.png,
-## cards_standin.png, cards_table_poor.png.
+## cards_standin.png, cards_table_poor.png, cards_poker_hover_card.png (a
+## card hovered in the draw: no label), cards_blackjack_long.png (nine cards).
 ##
-## A run takes about 40 seconds.
+## A run takes about 35 seconds.
 
 init 999 python:
     import builtins
@@ -48,6 +53,12 @@ init 999 python:
             self.said = builtins.list()
             self.shows = builtins.list()        # the state after every poker showdown
             self.patched = builtins.dict()
+            self.rb_on = False                  # ask for a rollback at the screen after each block
+            self.rb_arm = builtins.list()       # what the next screen's rollback follows
+            self.rb_wait = None                 # (what, the state when the rollback was asked for)
+            self.rb_log = builtins.list()       # (what, the state came back the same)
+            self.rb_read = False                # the read's own rollback has been asked for
+            self.reads = builtins.list()        # what cards_pk_read returned, each call
 
     zz_c = ZZCardsState()
 
@@ -90,10 +101,51 @@ init 999 python:
         zz_c.patched["cards_block"]()
         st = store.cards_state or {}
         zz_c.blocks.append(builtins.dict(game=st.get("game"), stage=st.get("stage"), hands=st.get("hands"),
-                                         result=st.get("result"), can=bool(renpy.can_rollback())))
+                                         result=st.get("result"), read=bool(st.get("read_used")),
+                                         can=bool(renpy.can_rollback())))
+        if zz_c.rb_on:
+            zz_c.rb_arm.append("%s %s" % (st.get("stage"), st.get("hands")))
         return None
 
+    def zz_c_read(who):
+        """cards_pk_read, noted; the first one arms a rollback at the next
+        screen whether or not the label blocks after it."""
+        r = zz_c.patched["cards_pk_read"](who)
+        zz_c.reads.append(r)
+        if zz_c.rb_on and not zz_c.rb_read:
+            zz_c.rb_read = True
+            zz_c.rb_arm.append("read")
+        return r
+
+    def zz_c_snap():
+        return pickle.dumps((store.cards_state, store.cards_sit, store.yen, store.cards_won, store.period), 2)
+
+    def zz_c_rollback():
+        """Called while a cards screen is being drawn (from cards_auto). After
+        a block or a read: note the state and ask for a rollback, as the mouse
+        wheel would. The next time round: has anything changed? The notes are
+        kept outside the store, so the rollback can't take them back."""
+        if not zz_c.rb_on or renpy.predicting():
+            return
+        if zz_c.rb_wait is not None:
+            what, snap = zz_c.rb_wait
+            zz_c.rb_wait = None
+            zz_c.rb_log.append((what, snap == zz_c_snap()))
+        if zz_c.rb_arm and len(zz_c.rb_log) < 60:
+            what = " + ".join(zz_c.rb_arm)
+            del zz_c.rb_arm[:]
+            zz_c.rb_wait = (what, zz_c_snap())
+            if renpy.can_rollback():
+                ## It will go: this screen is half built, so clear the ui
+                ## stack the rollback's exception would leave behind.
+                renpy.ui.reset()
+            renpy.rollback()
+            ## Still here: there was nothing to roll back to.
+            zz_c.rb_wait = None
+            zz_c.rb_log.append((what, True))
+
     def zz_c_auto(where):
+        zz_c_rollback()
         if zz_c.policy is not None:
             r = zz_c.policy(where, store.cards_state or {})
             if r is not None:
@@ -108,16 +160,22 @@ init 999 python:
         return r
 
     def zz_c_wrap():
-        """Wrap the game's four seams for the label-driven sections."""
+        """Wrap the game's seams for the label-driven sections."""
+        zz_c_patch("cards_pk_read", zz_c_read)
         zz_c_patch("cards_draw", zz_c_draw)
         zz_c_patch("cards_block", zz_c_block)
         zz_c_patch("cards_auto", zz_c_auto)
         zz_c_patch("cards_pk_showdown", zz_c_showdown)
 
+    def zz_c_reset():
+        """Empties cards_state and cards_sit the game's own way: a sitting
+        with no hand played, got up from (no period, no Bond)."""
+        cards_sit_down([])
+        cards_get_up()
+
     def zz_c_base(yen=5000, who=("yuji",), period="Afternoon", day=3):
         """A day at the table: these people in the common room, nobody else."""
-        store.cards_state = {}
-        store.cards_sit = {}
+        zz_c_reset()
         store.actions_today = builtins.set()
         fixture(day=day, period=period, here="dorm_common", yen=yen, cards_won=0, cards_won_day=0,
                 companion=None, explore_mode=False, insight=30)
@@ -132,6 +190,12 @@ init 999 python:
         del zz_c.blocks[:]
         del zz_c.said[:]
         del zz_c.shows[:]
+        del zz_c.rb_arm[:]
+        del zz_c.rb_log[:]
+        del zz_c.reads[:]
+        zz_c.rb_on = False
+        zz_c.rb_wait = None
+        zz_c.rb_read = False
         zz_c.policy = None
 
     def zz_c_tell(who, s, plan, n=400):
@@ -475,7 +539,7 @@ label zz_smoke:
                     if cards_today() > _zz_cap:
                         _zz_over.append(cards_today())
                 cards_end()
-            store.cards_sit = {}
+            zz_c_reset()
             if not _zz_any:
                 break
         check(not _zz_over and _zz_cap - 2 * CARDS_STAKES[0] < _zz_top <= _zz_cap and cards_records()["today"] == _zz_top,
@@ -486,10 +550,24 @@ label zz_smoke:
         cards_sit_down(["megumi"])
         check(CARDS_STYLE["megumi"]["stop"] in cards_sit_over() and "Megumi" in cards_sit_over(),
               "C: winnings past the limit are refused with a line", cards_sit_over())
-        store.cards_sit = {}
+        zz_c_reset()
+        check(yen >= CARDS_STAKES[0] and cards_opponents() == ["megumi"] and "cards:megumi" not in actions_today
+              and cards_ok() is False and "cards_play" not in [a[0] for a in place_actions("dorm_common")],
+              "C: once the day's limit is won the table is no longer offered (no dead-end icon)", (cards_ok(), cards_cap_left()))
         fixture(day=4)
-        check(cards_records()["today"] == 0 and cards_can_deal("blackjack", 1000) == "",
-              "C: the next day the count starts again", cards_records())
+        pin("megumi", "dorm_common")
+        check(cards_records()["today"] == 0 and cards_can_deal("blackjack", 1000) == "" and cards_ok() is True,
+              "C: the next day the count starts again and the table is back", cards_records())
+        fixture(cards_won=4500, cards_won_day=day)
+        cards_sit_down(["megumi"])
+        check(cards_can_deal("blackjack", 1000).startswith("Not at that stake") and cards_can_deal("blackjack", 500) == ""
+              and cards_can_deal("poker", 1000) == "",
+              "C: a stake too big for the room left says so, while a lower one still plays",
+              [cards_can_deal("blackjack", s) for s in CARDS_STAKES])
+        fixture(cards_won=5900, cards_won_day=day)
+        check(all(cards_can_deal("blackjack", s) == "They've lost enough to me today." for s in CARDS_STAKES),
+              "C: with no stake left to play, the line is the plain one", [cards_can_deal("blackjack", s) for s in CARDS_STAKES])
+        zz_c_reset()
 
         ## Poker: a pot bigger than the room left is paid only up to the limit.
         zz_c_base(yen=20000, who=("megumi", "nobara", "yuji"))
@@ -509,7 +587,8 @@ label zz_smoke:
               and yen == 20000 + 1000,
               "C: a ¥12,000 pot won with ¥1,000 of room left pays my money back and ¥1,000, no more",
               (_zz_stage1, cards_state["stage"], cards_state["result"], cards_state["pot"], cards_today(), yen))
-        check("won't pay past" in cards_result_line(), "C: the screen says the pot was cut short", cards_result_line())
+        check("part of it" in cards_result_line() and "past that" not in cards_result_line(),
+              "C: the screen says the pot was cut short", cards_result_line())
         cards_end()
         zz_c_unpatch()
 
@@ -603,12 +682,51 @@ label zz_smoke:
         cards_pk_deal()
         cards_pk_bet()
         cards_pk_draw(())
+        check(cards_state["line"] == "I stand pat. Megumi stands pat.", "D: the draw is told in words, and nobody 'takes 0'", cards_state["line"])
         cards_pk_bet()
         _zz_sh = zz_c.shows[-1]
+        check(cards_state["line"] == "The same hand. We split it." and cards_face_of("megumi") == "neutral"
+              and cards_state["says"] == CARDS_STYLE["megumi"]["win"],
+              "D: a split says so, and Megumi's face stays as it was", (cards_state["line"], cards_state["face"]))
         check(cards_state["result"] == "split" and _zz_sh["pot"] == 600 and _zz_sh["paid"] == {"me": 300, "megumi": 300}
               and cards_state["last"] == 0 and yen == 5000,
               "D: equal hands split the pot", (_zz_sh, cards_state["result"], yen))
         cards_end()
+
+        ## Everyone folds to my bet: nobody showed a hand, so nobody is sore about one.
+        _zz_out = None
+        for _zz_i in range(30):
+            zz_c_base(yen=5000, who=("ijichi", "panda"))
+            zz_c_patch("cards_draw", zz_c_draw)
+            cards_new("poker", ["ijichi", "panda"], 100)
+            zz_c.cards[:] = zz_cd("AS AH AD 4C 2S") + zz_cd("7H 5D 4D 3S 2H") + zz_cd("7C 5C 4H 3D 2C")
+            cards_pk_deal()
+            cards_pk_bet()
+            if cards_state["stage"] == "done" and not cards_state["live"]:
+                _zz_out = builtins.dict(cards_state)
+                cards_end()
+                break
+            cards_end()
+        check(_zz_out is not None and _zz_out["result"] == "win" and _zz_out["shown"] == [] and _zz_out["says"] == ""
+              and _zz_out["speaker"] == "" and _zz_out["line"] == "Everyone else is out." and _zz_out["last"] == 200,
+              "D: when everyone folds to my bet nobody speaks a losing line about a hand they threw away",
+              _zz_out and (_zz_out["says"], _zz_out["line"], _zz_out["last"]))
+        _zz_words = " ".join(r["lose"] for r in CARDS_STYLE.values())
+        check("folded" not in _zz_words and "Panda wins" not in " ".join(r["win"] for r in CARDS_STYLE.values()),
+              "D: no losing line talks about folding (it is the blackjack dealer's line too), and Panda says 'I'")
+        check([cards_style(w).get("glad", "happy") for w in ("megumi", "toge", "yaga", "maki", "yuji", "panda")]
+              == ["neutral", "neutral", "serious", "serious", "happy", "happy"],
+              "D: the ones whose faces give nothing away don't grin when they win")
+        for _zz_w, _zz_f in (("megumi", "neutral"), ("yuji", "happy")):
+            zz_c_base(yen=5000, who=(_zz_w,))
+            zz_c_patch("cards_draw", zz_c_draw)
+            cards_new("blackjack", [_zz_w], 100)
+            zz_c.cards[:] = zz_cd("TS 6H TD 9C")
+            cards_bj_deal()
+            cards_bj_stand()
+            check(cards_state["result"] == "lose" and cards_face_of(_zz_w) == _zz_f and cards_state["says"] == CARDS_STYLE[_zz_w]["win"],
+                  "D: dealing a winning hand, %s's face is %s" % (_zz_w.title(), _zz_f), (cards_state["result"], cards_state["face"]))
+            cards_end()
 
         ## The read.
         zz_c_base(yen=5000, who=("yuji", "megumi"))
@@ -701,6 +819,7 @@ label zz_smoke:
         zz_c_base(yen=5000, who=("megumi",))
         zz_c_wrap()
         zz_c.policy = zz_c_every_move
+        zz_c.rb_on = True
         zz_c.cards[:] = zz_cd("9S 2H TD 7C 7S") + zz_cd("5S 6H TD 7C TS")
         autoplay(True)
     call mg_blackjack(["megumi"], 100)
@@ -714,21 +833,39 @@ label zz_smoke:
               _zz_log)
         check(mg_result == builtins.dict(game="blackjack", outcome="win", yen=300) and yen == 5300,
               "F: as scripted: 18 beats 17 (+¥100), then a doubled 21 beats 17 (+¥200)", (mg_result, yen))
+        ## The leave's block has no cards screen after it here (the label was called bare).
+        check([w for w, same in zz_c.rb_log] == ["play 1", "play 1", "done 1", "play 2", "done 2"] and all(same for w, same in zz_c.rb_log),
+              "F: blackjack: a rollback asked for on the screen after the deal, the hit, each settlement and the second deal changes nothing",
+              zz_c.rb_log)
     python:
         zz_c_base(yen=5000, who=("megumi", "panda"))
         zz_c_wrap()
         zz_c.policy = zz_c_poker_moves
+        zz_c.rb_on = True
+        ## Both opponents hold two pair each hand, so both always bet and call:
+        ## the moves, and so the blocks, come out the same every run. Mine,
+        ## theirs, theirs; then the draw (hand 1: my two, one each; hand 2: one each).
+        _zz_deal = zz_cd("AS AH 7D 4C 2S") + zz_cd("KS KH QD QC 3S") + zz_cd("JS JH TD TC 3H")
+        zz_c.cards[:] = _zz_deal + zz_cd("9C 8C 4D 5D") + _zz_deal + zz_cd("4D 5D")
         autoplay(True)
     call sb_do_cards_play
     python:
         autoplay(False)
         zz_c_unpatch()
-        _zz_log = [(b["stage"], b["hands"], b["can"]) for b in zz_c.blocks]
-        check(len(zz_c.blocks) >= 6 and not any(b["can"] for b in zz_c.blocks)
-              and builtins.max(b["hands"] or 0 for b in zz_c.blocks) == 2
-              and builtins.sum(1 for b in zz_c.blocks if b["stage"] == "done") >= 2,
-              "F: poker through sb_do_cards_play: after every deal, bet, check, draw, fold and settlement, renpy.can_rollback() is False",
-              _zz_log)
+        _zz_log = [(b["stage"], b["hands"], b["read"]) for b in zz_c.blocks]
+        ## Hand 1: deal, read, check (they bet), call, draw two, bet (showdown).
+        ## Hand 2: deal, bet, stand pat, fold; then the leave.
+        _zz_want = [("bet1", 1, False), ("bet1", 1, True), ("call1", 1, True), ("draw", 1, True), ("bet2", 1, True), ("done", 1, True),
+                    ("bet1", 2, False), ("draw", 2, False), ("bet2", 2, False), ("done", 2, False), ("done", 2, False)]
+        check(_zz_log == _zz_want and not any(b["can"] for b in zz_c.blocks),
+              "F: poker through sb_do_cards_play: cards_block() follows the deal, the read, the check, the call, the draw, the bet, the fold and the leave, in that order, and renpy.can_rollback() is False after each",
+              (_zz_log, [b["can"] for b in zz_c.blocks]))
+        check(zz_c.reads == [True],
+              "F: the read is spent once: no rollback gives it back to be used on someone else", zz_c.reads)
+        check(len(zz_c.rb_log) == 11 and zz_c.rb_log[1][0].startswith("read") and zz_c.rb_log[-1][0] == "done 2"
+              and all(same for w, same in zz_c.rb_log),
+              "F: poker: a rollback asked for on the screen after every one of those (the read, the draw and the showdown among them, and at the table after leaving) changes nothing",
+              zz_c.rb_log)
         check(len(zz_c.shows) == 2 and mg_result["game"] == "poker" and period == "Evening" and cards_state == {},
               "F: two poker hands were played out through the table, and the sitting cost its period", (mg_result, period))
 
@@ -797,7 +934,7 @@ label zz_smoke:
               "H: a stake I can't cover is dim (not pressable)")
         shot("cards_table_poor")
         renpy.hide_screen("cards_table")
-        store.cards_sit = {}
+        zz_c_reset()
 
         ## Blackjack, mid-hand.
         zz_c_base(yen=3200, who=("nobara", "shoko"))
@@ -829,9 +966,25 @@ label zz_smoke:
         check(any(CARDS_STYLE["nobara"]["lose"] in t for t in zz_texts("cards_blackjack")) and cards_face_of("nobara") == CARDS_STYLE["nobara"]["sore"],
               "H: the dealer's line and face follow the hand (21 against 17: she loses)", (cards_state["says"], cards_state["face"]))
         shot("cards_blackjack_done")
+        cards_end()
+
+        ## A long hand closes up: it never runs under its total or off the table.
+        _zz_gaps = [(n, cards_row_gap(n)) for n in range(1, 12)]
+        check(all(g == 16 for n, g in _zz_gaps if n <= 6) and all(120 * n + g * (n - 1) <= 820 and 120 + g >= 60 for n, g in _zz_gaps if n >= 2),
+              "H: a blackjack hand of up to eleven cards ends by x 1620, left of its total, with each card's rank still showing", _zz_gaps)
+        cards_new("blackjack", cards_opponents(), 100)
+        zz_c.cards[:] = zz_cd("2S 2H TD 7C") + zz_cd("2D 2C 3S 3H 3D AS AH")
+        cards_bj_deal()
+        while len(cards_state["mine"]) < 9 and cards_state["stage"] == "play":
+            cards_bj_hit()
+        zz_render(0.2)
+        check(len(cards_state["mine"]) == 9 and cards_total(cards_state["mine"]) == 19 and cards_state["stage"] == "play",
+              "H: nine cards to nineteen, still in play (the screenshot's hand)", (cards_state["mine"], cards_state["stage"]))
+        shot("cards_blackjack_long")
+        cards_bj_stand()
         renpy.hide_screen("cards_blackjack")
         cards_end()
-        store.cards_sit = {}
+        zz_c_reset()
 
         ## Poker: three opponents, a live hand.
         zz_c_base(yen=3200, who=("yuji", "megumi", "panda"))
@@ -867,6 +1020,11 @@ label zz_smoke:
             check(cards_marked() == (2, 3, 4) and zz_rect("cards_poker", "cards_my_2")[1] == 536,
                   "H: a marked card lifts, and three is the most", cards_marked())
             shot("cards_poker_draw")
+            _zz_tips = [renpy.get_widget("cards_poker", "cards_my_%d" % i)._get_tooltip() for i in range(5)]
+            check(_zz_tips == [None] * 5,
+                  "H: my cards carry no hover label in the draw (it would cover the rank of the card beside it)", _zz_tips)
+            zz_worst("cards_poker", hover="cards_my_4", name="cards_poker_hover_card")
+            note("H: hovering my fifth card", "GetTooltip() is %r (cards_poker_hover_card.png)" % (GetTooltip(),))
             _zz_scope = builtins.dict((k, v) for k, v in renpy.get_screen("cards_poker").scope.items() if "cards" in k)
             check(zz_c_plain(_zz_scope) and pickle.loads(pickle.dumps(_zz_scope, pickle.HIGHEST_PROTOCOL)) == _zz_scope,
                   "I: poker's screen variables are plain and pickle", builtins.sorted(_zz_scope))
@@ -874,18 +1032,23 @@ label zz_smoke:
             cards_pk_draw(cards_marked())
             check(cards_pk_name(cards_state["mine"]) == "Full house" and cards_marked() == (),
                   "H: the draw replaces the marked cards and clears the marks", cards_state["mine"])
+            check(cards_state["line"].startswith("I take three. ") and not any(ch.isdigit() for ch in cards_state["line"]),
+                  "H: the draw's line spells its numbers out", cards_state["line"])
             cards_pk_bet()
             if cards_state["stage"] == "call2":
                 cards_pk_bet()
             zz_render(0.2)
             check(cards_state["stage"] == "done" and zz_rect("cards_poker", "cards_deal") is not None,
                   "H: after the showdown the buttons are Deal and Leave", cards_state["stage"])
+            if cards_state["result"] == "win" and cards_state["shown"]:
+                check(cards_state["line"] == "My full house holds." and cards_state["line"] not in ("Full house.",),
+                      "H: a won showdown says my hand held, not its name a second time", cards_state["line"])
             shot("cards_poker_showdown")
         else:
             note("H: the draw screenshots", "everyone folded to the first bet this run; no draw to photograph")
         renpy.hide_screen("cards_poker")
         cards_end()
-        store.cards_sit = {}
+        zz_c_reset()
 
         ## Poker against one, and the stand-in pictures (no card back, no portrait).
         zz_c_base(yen=3200, who=("gojo",))
