@@ -7,10 +7,13 @@
 ## (sections 1 to 7 below; 8 is a walk through real clicks, 9 the worst case,
 ## 10 a save, a load and a rollback through exit walks inside the real loop,
 ## which ends the run from label sandbox). What
-## is run outside a harness, or waits for another package, is a NOTE that
-## says so: phase1_all, wp3_missions and the 11 saves (bullet 7); P6's final
-## hotspot points (P8 settles any exit that still touches one); the dim state
-## of a locked exit (the frozen hot_layer has none: P8 hand-off).
+## is run outside a harness is a NOTE that says so: phase1_all, wp3_missions
+## and the 11 saves (bullet 7).
+##
+## P8: the five hubs' exits sit on the doors and paths of their painted
+## pictures; no exit is within 120 px of a room's own hotspot (P6's final
+## points); a locked exit is the lock icon drawn dim (alpha 0.45); the hover
+## label checks hold whichever side of its icon a label opens on.
 ##
 ## The overlay tools/smoke/assets/p2_paths/game/images/bg/ holds a test
 ## picture for each of the five new hubs, so in this run `bg <hub>` is the
@@ -191,6 +194,58 @@ init 999 python:
                 if size and offs:
                     return (int(offs[0][0]), int(offs[0][1]), int(size[0]), int(size[1]))
         return None
+
+    def zz_alpha(wid):
+        """How see-through a place-view button is drawn: the product of the
+        alpha of every Transform around it (1.0 for a plain button); None
+        when the button isn't there."""
+        w = zz_hot(wid)
+        sc = renpy.get_screen("sb_place")
+        if w is None or sc is None:
+            return None
+        a = 1.0
+        for d in zz_tree(sc):
+            if isinstance(d, renpy.display.transform.Transform) and d is not w and w in zz_tree(d):
+                a *= float(d.alpha)
+        return round(a, 2)
+
+    def zz_room_spots(loc):
+        """[(id, x, y)]: a place's own hotspots (every one that is not an
+        exit), where they sit: the sidecar hot_<loc>.json applied."""
+        side = rule_layout("hot_" + loc).get("spots") or {}
+        out = zz_builtins.list()
+        for h in HOT_SPOTS:
+            if h["place"] == loc and not h["id"].startswith("go_") and not h["id"].startswith("zz_"):
+                p = side.get(h["id"])
+                x, y = (p[0], p[1]) if isinstance(p, (zz_builtins.list, zz_builtins.tuple)) and len(p) == 2 else (h["x"], h["y"])
+                out.append((h["id"], int(x), int(y)))
+        return out
+
+    def zz_lock_label(hub, to):
+        """Hover the exit hub -> to in the place view as it stands and
+        measure: (the hover label's rectangle, the buttons of the hub's
+        other exits it covers). The rectangle is None unless the label is
+        drawn next to that exit's own button (within 24 px of it): a label
+        still laid out for another button is not measured."""
+        own = zz_rect("sb_place", "hot_" + path_spot_id(hub, to))
+        hr = None
+        for n in (0, 1, 2):
+            if n:
+                ## The label's place is taken when the focus changes: step
+                ## onto another exit and back.
+                away = [t for t in path_neighbours(hub) if t != to and zz_hot("hot_" + path_spot_id(hub, t)) is not None]
+                if away:
+                    renpy.set_focus("sb_place", "hot_" + path_spot_id(hub, away[0]))
+                    zz_render(0.2)
+            renpy.set_focus("sb_place", "hot_" + path_spot_id(hub, to))
+            zz_render(0.4)
+            hr = zz_hover_rect()
+            if hr is not None and own is not None and hot_overlap(hr, (own[0] - 24, own[1] - 24, own[2] + 48, own[3] + 48)):
+                break
+            hr = None
+        others = [(t, zz_rect("sb_place", "hot_" + path_spot_id(hub, t))) for t in path_neighbours(hub) if t != to]
+        hit = [t for t, r in others if hr is not None and r is not None and hot_overlap(hr, r)]
+        return hr, hit
 
     def zz_row_reads():
         """How the storehouse exit's two registry rows read right now, each
@@ -478,9 +533,9 @@ label zz_smoke:
         check("lock" in zz_icons(zz_hot("hot_go_training_yard__storehouse")) and "place_storehouse" not in zz_icons(zz_hot("hot_go_training_yard__storehouse"))
               and "place_dojo" in zz_icons(zz_hot("hot_go_training_yard__dojo")),
               "it is drawn as the lock icon (an open exit keeps its place's icon)", zz_icons(zz_hot("hot_go_training_yard__storehouse")))
-        note("a locked exit is not drawn dim",
-             "screen hot_layer (frozen sb_hotspots.rpy) dims a hotspot only when the night closes it; P9 draws the lock icon "
-             "instead and hands P8 the edit that would dim it")
+        check(zz_alpha("hot_go_training_yard__storehouse") == 0.45 and zz_alpha("hot_go_training_yard__dojo") == 1.0,
+              "a locked exit's icon is drawn dim (alpha 0.45); an open one is not",
+              (zz_alpha("hot_go_training_yard__storehouse"), zz_alpha("hot_go_training_yard__dojo")))
         shot("locked_exit")
         _zz_before = (day, period, here, stamina)
         _zz_said = []
@@ -527,16 +582,15 @@ label zz_smoke:
         _zz_why = place_access("girls_dorm")[1]
         check(_zz_why and zz_tip("hot_go_dorm_yard__girls_dorm") == _zz_why and zz_action_value("hot_go_dorm_yard__girls_dorm") is None,
               "in the evening the girls' dormitory exit reads its lock's reason (%d characters)" % len(_zz_why), zz_tip("hot_go_dorm_yard__girls_dorm"))
-        renpy.set_focus("sb_place", "hot_go_dorm_yard__girls_dorm")
-        zz_render(0.4)
-        _zz_hr = zz_hover_rect()
-        _zz_others = [zz_rect("sb_place", "hot_go_dorm_yard__" + t) for t in path_neighbours("dorm_yard") if t != "girls_dorm"]
+        _zz_hr, _zz_hit = zz_lock_label("dorm_yard", "girls_dorm")
+        _zz_own = zz_rect("sb_place", "hot_go_dorm_yard__girls_dorm")
         check(_zz_hr is not None and _zz_hr[0] >= 0 and _zz_hr[1] >= 0 and _zz_hr[0] + _zz_hr[2] <= 1920 and _zz_hr[1] + _zz_hr[3] <= 1080
               and _zz_hr[2] <= 520 and not any(hot_overlap(_zz_hr, ln) for ln in HOT_LANES if ln[0] >= 1300),
               "its hover label fits: on screen, at most 520 wide, clear of the toast lane (hover check: needs the pointer)", _zz_hr)
-        check(_zz_hr is not None and all(_zz_others) and not [r for r in _zz_others if hot_overlap(_zz_hr, r)],
-              "and it opens over empty picture: it hides none of the garden's other exits (a lockable room sits leftmost in its row)",
-              (_zz_hr, _zz_others))
+        check(_zz_hr is not None and _zz_own is not None and not _zz_hit and not hot_overlap(_zz_hr, _zz_own)
+              and not hot_overlap(_zz_hr, PATH_CAPTION_BOX),
+              "and it opens over empty picture: beside or under its own icon, hiding none of the garden's other exits, clear of the arrival caption",
+              (_zz_hr, _zz_own, _zz_hit))
         shot("locked_girls_dorm_hover", wait=0)
         _zz_before = (day, period, here, stamina)
     call sb_do_path_girls_dorm
@@ -565,21 +619,31 @@ label zz_smoke:
                 for _zz_r2 in _zz_rows:
                     if _zz_r2["to"] > _zz_r["to"] and abs(_zz_r2["x"] - _zz_x) < 96 and abs(_zz_r2["y"] - _zz_y) < 96:
                         _zz_close.append((_zz_id, _zz_r2["to"]))
-                for _zz_h in HOT_SPOTS:
-                    if _zz_h["place"] == _zz_f and not _zz_h["id"].startswith("go_") and not _zz_h["id"].startswith("zz_"):
-                        _zz_d = ((_zz_x - _zz_h["x"]) ** 2 + (_zz_y - _zz_h["y"]) ** 2) ** 0.5
-                        if _zz_d < 120:
-                            _zz_live.append((_zz_id, _zz_h["id"], int(_zz_d)))
+                for _zz_hid, _zz_hx, _zz_hy in zz_room_spots(_zz_f):
+                    _zz_d = ((_zz_x - _zz_hx) ** 2 + (_zz_y - _zz_hy) ** 2) ** 0.5
+                    if _zz_d < 120:
+                        _zz_live.append((_zz_id, _zz_hid, int(_zz_d)))
         check(not _zz_out, "every exit point is inside x 40 to 1700, y 180 to 1000", _zz_out)
         check(not _zz_lane and len(HOT_LANES) == 2, "no exit point lies in the toast lane or the banner lane", _zz_lane)
-        _zz_table = {"dorm": [(1240, 600), (420, 760)], "dorm_common": [(900, 800), (1420, 520)], "riverside": [(1180, 820)],
-                     "library": [(520, 520), (1480, 460)], "courtyard": [(1500, 640)], "classroom": [(760, 360)],
-                     "cafeteria": [(1200, 560)], "infirmary": [(640, 700)], "storehouse": [(960, 560)],
-                     "utahime_office": [(1320, 420)], "ridge": [(960, 420)]}
+        _zz_table = {"courtyard": [(1600, 690)], "dorm": [(440, 590), (1330, 720)], "dorm_common": [(1400, 876), (1590, 560)],
+                     "riverside": [(1580, 905)], "library": [(300, 520), (1630, 480)], "classroom": [(1450, 500)],
+                     "cafeteria": [(1500, 600)], "infirmary": [(1420, 700)], "storehouse": [(1600, 600)],
+                     "utahime_office": [(1500, 470)], "ridge": [(960, 250)]}
         check(not _zz_near and PATH_KEEP_CLEAR == _zz_table and PATH_CLEAR == 120,
-              "no exit is within 120 px of a 4.10 start point in the same place (the table of 4.10, copied here)", _zz_near)
+              "no exit is within 120 px of a point of PATH_KEEP_CLEAR in the same place (P6's final points, copied here)", _zz_near)
+        _zz_stale = [(l, sorted(set((x, y) for i, x, y in zz_room_spots(l))), sorted(PATH_KEEP_CLEAR.get(l, ())))
+                     for l in LOCATIONS if sorted(set((x, y) for i, x, y in zz_room_spots(l))) != sorted(PATH_KEEP_CLEAR.get(l, ()))]
+        check(not _zz_stale, "PATH_KEEP_CLEAR holds exactly where each room's own hotspots sit now (the sidecars applied)", _zz_stale)
         check(not _zz_close, "no two exits of one place overlap (their 96 px rings are clear of each other)", _zz_close)
-        note("exits within 120 px of a hotspot another package has registered so far (P8 settles them once P6's final points are in)", _zz_live or "none")
+        check(not _zz_live, "no exit is within 120 px of a hotspot of its room, as registered and placed now", _zz_live)
+        check(dict((r["to"], (r["x"], r["y"])) for r in path_exits("courtyard"))["training_yard"] == (1640, 850)
+              and path_exits("dorm")[0]["y"] - dict((i, y) for i, x, y in zz_room_spots("dorm"))["computer"] >= 120,
+              "the courtyard's Training Yard exit is below the vending machine; my door is a row below the laptop",
+              (path_exits("courtyard"), path_exits("dorm"), zz_room_spots("dorm")))
+        ## The hubs' exits sit on their pictures, not in a row along the top.
+        _zz_rows = dict((h, sorted(r["y"] for r in path_exits(h))) for h in ZZ_HUBS)
+        check(all(len([y for y in ys if y < 300]) <= 1 and len(set(ys)) >= 3 for ys in _zz_rows.values()),
+              "in each of the five hubs the exits are spread over the picture (at most one above y 300, at least three heights)", _zz_rows)
         ## A two-line objective banner ends near y 233: the exits along the top stay under it.
         check(all(r["y"] - 36 >= 234 for f in LOCATIONS for r in path_exits(f) if 364 <= r["x"] <= 1336 and r["y"] < 400),
               "an exit under the banner starts below a two-line banner (y 234)")
@@ -595,22 +659,60 @@ label zz_smoke:
         _zz_under = [(f, r["to"], r["x"], r["y"]) for f in LOCATIONS for r in path_exits(f)
                      if hot_overlap((r["x"] - 48, r["y"] - 48, 96, 96), PATH_CAPTION_BOX)]
         check(not _zz_under, "no exit sits under the arrival caption (its 96 px ring is clear of the caption's box)", _zz_under)
+        _zz_bad, _zz_hubrects = [], {}
         for _zz_h in ZZ_HUBS:
             zz_arrive(_zz_h, "Noon")
             shot("arrival_" + _zz_h, wait=0)
-        _zz_hubrects = dict((t, zz_rect("sb_place", "hot_go_trailhead__" + t)) for t in path_neighbours("trailhead"))
-        check(all(_zz_hubrects.values()) and not [t for t, r in _zz_hubrects.items() if hot_overlap(r, zz_caption_box("trailhead"))],
-              "on arrival (the caption up) the hub's exit buttons as drawn are clear of it", _zz_hubrects)
+            _zz_hubrects[_zz_h] = dict((t, zz_rect("sb_place", "hot_" + path_spot_id(_zz_h, t))) for t in path_neighbours(_zz_h))
+            _zz_bad += [(_zz_h, t, r) for t, r in sorted(_zz_hubrects[_zz_h].items()) if r is None or hot_overlap(r, zz_caption_box(_zz_h))]
+        check(not _zz_bad and len(_zz_hubrects["trailhead"]) == 4,
+              "on arrival (the caption up) every exit button of each of the five hubs, as drawn, is clear of it", (_zz_bad, _zz_hubrects["trailhead"]))
         ARRIVAL[1] -= 10
         renpy.hide_screen("sb_place")
-        ## A lockable room is the leftmost of its hub's top row.
-        _zz_bad = []
-        for _zz_h in [path_hub(a["key"]) for a in AREAS]:
-            _zz_top = sorted((r["x"], r["to"]) for r in path_exits(_zz_h) if r["y"] < 300 and not path_is_hub(r["to"]))
-            _zz_lk = [t for x, t in _zz_top if t in ("girls_dorm", "storehouse", "utahime_office", "gojo_office", "office")]
-            if _zz_lk and _zz_top[0][1] not in _zz_lk:
-                _zz_bad.append((_zz_h, _zz_top))
-        check(not _zz_bad, "in a hub's top row a room that can be locked comes first from the left", _zz_bad)
+        ## A locked exit's label (the lock's reason, up to two lines) hides no
+        ## other exit of its hub and stays off the arrival caption's panel,
+        ## whichever side of the icon it opens on.
+        _zz_bad, _zz_seen = [], {}
+        _zz_keep = set(flags)
+        for _zz_h, _zz_t, _zz_per in (("dorm_yard", "girls_dorm", "Evening"), ("training_yard", "storehouse", "Noon"),
+                                      ("staff_yard", "office", "Night"), ("staff_yard", "utahime_office", "Night"),
+                                      ("staff_yard", "gojo_office", "Night")):
+            flags.discard("invited_girls_dorm")
+            flags.discard("storehouse_access")
+            zz_place(_zz_h, _zz_per)
+            _zz_hr, _zz_hit = zz_lock_label(_zz_h, _zz_t)
+            _zz_own = zz_rect("sb_place", "hot_" + path_spot_id(_zz_h, _zz_t))
+            _zz_seen[_zz_t] = _zz_hr
+            if not (path_locked(_zz_t) and _zz_hr is not None and _zz_own is not None and not _zz_hit
+                    and not hot_overlap(_zz_hr, _zz_own) and not hot_overlap(_zz_hr, PATH_CAPTION_BOX)
+                    and _zz_hr[0] >= 0 and _zz_hr[1] >= 0 and _zz_hr[0] + _zz_hr[2] <= 1920 and _zz_hr[1] + _zz_hr[3] <= 1080):
+                _zz_bad.append((_zz_h, _zz_t, path_locked(_zz_t), _zz_hr, _zz_own, _zz_hit))
+            shot("locked_label_" + _zz_t, wait=0)
+        flags.clear(); flags.update(_zz_keep)
+        period = "Noon"
+        renpy.hide_screen("sb_place")
+        check(not _zz_bad, "each of the five exits that can be locked: its lock's reason, hovered, is on screen, hides no other exit of its hub "
+              "and is clear of the arrival caption's panel (hover check: needs the pointer)", _zz_bad)
+        note("where each locked exit's label was drawn (x, y, w, h)", _zz_seen)
+        ## And open: in every hub, with nobody on stage, no exit's hover
+        ## label covers another exit of that hub.
+        _zz_bad, _zz_n = [], 0
+        store.who_is_here = zz_crowd
+        ZZ_CROWD[0] = 0
+        try:
+            for _zz_h in [path_hub(a["key"]) for a in AREAS]:
+                zz_place(_zz_h, "Noon")
+                for _zz_t in path_neighbours(_zz_h):
+                    _zz_hr, _zz_hit = zz_lock_label(_zz_h, _zz_t)
+                    _zz_n += 1
+                    if (_zz_hr is None or _zz_hit or _zz_hr[0] < 0 or _zz_hr[1] < 0
+                            or _zz_hr[0] + _zz_hr[2] > 1920 or _zz_hr[1] + _zz_hr[3] > 1080):
+                        _zz_bad.append((_zz_h, _zz_t, _zz_hr, _zz_hit))
+        finally:
+            store.who_is_here = zz_who_is_here0
+        renpy.hide_screen("sb_place")
+        check(not _zz_bad and _zz_n == 30, "in the six hubs every exit's hover label (%d of them) is on screen and covers no other exit of its hub "
+              "(hover check: needs the pointer)" % _zz_n, _zz_bad)
         ## Four people on stage: every exit is still offered, once.
         store.who_is_here = zz_crowd
         _zz_bad, _zz_moved = [], 0
@@ -896,16 +998,18 @@ label zz_smoke:
               and char_location("ijichi", "Morning") == "gate",
               "the courtyard and the gate keep their people (Yuji and Nobara in the afternoon, Ijichi and the car)")
         ## The courtyard's commonest crowd: two people. The gate exit stays in
-        ## the picture and its hover label opens right of both name tags (the
-        ## second tag ends at about x 1032 with wave 0's stage).
+        ## the picture and its hover label covers neither name tag nor
+        ## another exit, whichever side of the icon it opens on.
         zz_place("courtyard", "Afternoon")
-        renpy.set_focus("sb_place", "hot_go_courtyard__gate")
-        zz_render(0.4)
-        _zz_hr = zz_hover_rect()
+        _zz_hr, _zz_hit = zz_lock_label("courtyard", "gate")
+        _zz_tags = [zz_rect("sb_place", "tag_" + w) for w in who_is_here("courtyard")]
         check(who_is_here("courtyard") == ["yuji", "nobara"] or sorted(who_is_here("courtyard")) == ["nobara", "yuji"],
               "a weekday afternoon in the courtyard: Yuji and Nobara", who_is_here("courtyard"))
-        check(zz_hot("hot_go_courtyard__gate") is not None and _zz_hr is not None and _zz_hr[0] >= 1040 and _zz_hr[0] + _zz_hr[2] <= 1300,
-              "with two people the gate exit is in the picture and its hover label is right of both name tags (hover check: needs the pointer)", _zz_hr)
+        check(zz_hot("hot_go_courtyard__gate") is not None and _zz_hr is not None and len(_zz_tags) == 2 and all(_zz_tags)
+              and not [r for r in _zz_tags if hot_overlap(_zz_hr, r)] and not _zz_hit
+              and _zz_hr[0] >= 0 and _zz_hr[0] + _zz_hr[2] <= 1920 and _zz_hr[1] + _zz_hr[3] <= 1080,
+              "with two people the gate exit is in the picture and its hover label, on screen, covers neither name tag nor another exit "
+              "(hover check: needs the pointer)", (_zz_hr, _zz_tags, _zz_hit))
         shot("courtyard_two_people_hover_gate", wait=0)
         renpy.hide_screen("sb_place")
         period = "Noon"

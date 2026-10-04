@@ -31,27 +31,27 @@
 ## any hotspot (hot_covers / rail_actions).
 ##
 ## A locked destination (place_access refuses): the exit stays where it is,
-## drawn as the lock icon; its hover label is the lock's reason; clicking it
-## does nothing. The frozen hot_layer has no dim state for it (see the P8
-## hand-off), so the two rows below read their label and icon when they are
-## asked for them (path_ActionRow, path_SpotRow: by row[key], row.get(key),
-## row.items(), row.values() or a dict(row) copy made now) and nothing is ever
-## written to a registry at run time.
+## drawn as the lock icon, dim (hot_layer draws it at alpha 0.45); its hover
+## label is the lock's reason; clicking it does nothing. The two rows below
+## read their label and icon when they are asked for them (path_ActionRow,
+## path_SpotRow: by row[key], row.get(key), row.items(), row.values() or a
+## dict(row) copy made now) and nothing is ever written to a registry at run
+## time.
 ##
 ## Provides (frozen for P8, 13.2): path_exits(loc), path_hub(area_key),
 ## path_neighbours(loc). Plain values, never None.
 ##
 ## Where an exit sits (D56): a door, a gate or a path on the place's picture,
 ## inside x 40 to 1700 and y 180 to 1000, clear of the toast and banner lanes
-## and of the arrival caption's panel (PATH_CAPTION_BOX), at least PATH_CLEAR px from every hotspot start point of 4.10's table
-## (PATH_KEEP_CLEAR), and PATH_APART px from the place's other exits. P6's
-## sidecar game/layout/hot_<place>.json can move one by its hotspot id, as it
-## moves any hotspot. The five new hubs still show stand-in pictures, so their
-## points follow one plan until the pictures are painted: rooms along the top
-## at y 272 (below a two-line banner, above the people), between the arrival
-## caption and the toast lane (x 850 to 1270), a room that can be locked
-## leftmost (its long hover label opens to the left, over empty picture);
-## neighbouring hubs at the sides.
+## and of the arrival caption's panel (PATH_CAPTION_BOX), at least PATH_CLEAR
+## px from each of the room's own hotspots (PATH_KEEP_CLEAR: P6's final
+## points), and PATH_APART px from the place's other exits. P6's sidecar
+## game/layout/hot_<place>.json can move one by its hotspot id, as it moves
+## any hotspot. The five hubs' exits sit on their painted pictures (art batch
+## 3): each on the door, the steps or the path it leads to, read off
+## tools/layout_sheet.py hot_<hub>. An exit near the top stays under a
+## two-line banner (y 270 or lower between x 364 and 1336), and one right of
+## x 1282 stays below the toast lane (y 398 or lower).
 ################################################################################
 
 init python:
@@ -90,61 +90,72 @@ init python:
         "courtyard":      [("gate", 1300, 985),             # back down the flagstones (right of two people's name tags)
                            ("school_yard", 84, 600),        # past the west hall's veranda
                            ("dorm_yard", 960, 272),         # behind the main hall, uphill
-                           ("training_yard", 1640, 780)],   # the east hall's steps
+                           ("training_yard", 1640, 850)],   # the east hall's steps, below the vending machine
         ## School Building --------------------------------------------------------
-        "school_yard":    [("classroom", 850, 272), ("cafeteria", 990, 272),
-                           ("infirmary", 1130, 272), ("library", 1270, 272),
-                           ("courtyard", 1640, 620)],
+        "school_yard":    [("classroom", 405, 630),         # the left hall's porch
+                           ("cafeteria", 985, 680),         # the centre hall's steps
+                           ("infirmary", 1610, 810),        # the right hall's step
+                           ("library", 84, 690),            # the left hall's west veranda
+                           ("courtyard", 1440, 950)],       # the stone path in the foreground
         "classroom":      [("school_yard", 1670, 620)],     # the sliding door, right wall
         "cafeteria":      [("school_yard", 230, 520)],      # the glass doors on the left
         "infirmary":      [("school_yard", 84, 500)],       # out past the desk
         "library":        [("school_yard", 1660, 880)],     # back the way I came in
         ## Dormitories ------------------------------------------------------------
-        "dorm_yard":      [("dorm", 990, 272), ("dorm_common", 1130, 272),
-                           ("girls_dorm", 850, 272), ("rooftop", 1270, 272),
-                           ("courtyard", 1640, 800), ("staff_yard", 1640, 520),
-                           ("trailhead", 84, 600)],
-        "dorm":           [("dorm_yard", 150, 560)],        # my door
+        "dorm_yard":      [("dorm", 248, 728),              # the left house's veranda steps
+                           ("dorm_common", 930, 600),       # the centre house
+                           ("girls_dorm", 1530, 600),       # the right house
+                           ("rooftop", 1200, 285),          # the tower
+                           ("courtyard", 450, 960),         # the flagstones, bottom left
+                           ("staff_yard", 1290, 960),       # the stepping stones, bottom right
+                           ("trailhead", 465, 615)],        # the dirt path behind the left house
+        "dorm":           [("dorm_yard", 150, 760)],        # my door (below the laptop's row)
         "dorm_common":    [("dorm_yard", 84, 540)],         # the sliding door
         "girls_dorm":     [("dorm_yard", 1090, 560)],       # the far end of the corridor
         "rooftop":        [("dorm_yard", 1680, 640)],       # the stairs behind the pillar
         ## Staff Building ---------------------------------------------------------
-        "staff_yard":     [("office", 1060, 272), ("utahime_office", 850, 272),
-                           ("gojo_office", 1270, 272),
-                           ("dorm_yard", 84, 600), ("training_yard", 1640, 620)],
+        "staff_yard":     [("office", 878, 495),            # the main hall's doors
+                           ("utahime_office", 1485, 660),   # the small house on the right
+                           ("gojo_office", 180, 660),       # the house on the left
+                           ("dorm_yard", 225, 930),         # the gravel, bottom left
+                           ("training_yard", 1640, 850)],   # the dirt path leaving right
         "office":         [("staff_yard", 84, 560)],        # the open side of the hall
         "utahime_office": [("staff_yard", 84, 520)],        # the sliding door
         "gojo_office":    [("staff_yard", 1680, 640)],      # the sliding door
         ## Training Grounds -------------------------------------------------------
-        "training_yard":  [("training", 1060, 272), ("dojo", 1270, 272),
-                           ("storehouse", 850, 272),
-                           ("courtyard", 84, 600), ("staff_yard", 1640, 520)],
+        "training_yard":  [("training", 1650, 600),         # the long hall on the right
+                           ("dojo", 165, 600),              # the doors on the left
+                           ("storehouse", 952, 645),        # the white kura
+                           ("courtyard", 150, 840),         # the stone path on the left
+                           ("staff_yard", 620, 560)],       # over the wall left of the kura
         "training":       [("training_yard", 230, 600)],    # the bright doorway, far left
         "dojo":           [("training_yard", 84, 620)],     # the open panel on the left
         "storehouse":     [("training_yard", 84, 520)],     # daylight at the door
         ## The Mountain -----------------------------------------------------------
-        "trailhead":      [("forest", 850, 272), ("ridge", 1060, 272),
-                           ("riverside", 1270, 272),
-                           ("dorm_yard", 1640, 760)],
+        "trailhead":      [("forest", 180, 660),            # the dirt path going left
+                           ("ridge", 862, 360),             # the stone stairs
+                           ("riverside", 1640, 830),        # the river on the right
+                           ("dorm_yard", 1080, 990)],       # the slabs in the foreground
         "forest":         [("trailhead", 84, 600)],         # back down, where the trees open
         "riverside":      [("trailhead", 84, 760)],         # the sandy path on the bank
         "ridge":          [("trailhead", 84, 720)],         # down the slope
     }
 
-    ## The hotspot start points of 4.10's table (P6's to settle): an exit
-    ## keeps PATH_CLEAR px from each in its own place.
+    ## Where each room's own hotspots sit (P6's final points, the sidecars
+    ## game/layout/hot_<place>.json): an exit keeps PATH_CLEAR px from each in
+    ## its own place.
     PATH_KEEP_CLEAR = {
-        "dorm":           [(1240, 600), (420, 760)],
-        "dorm_common":    [(900, 800), (1420, 520)],
-        "riverside":      [(1180, 820)],
-        "library":        [(520, 520), (1480, 460)],
-        "courtyard":      [(1500, 640)],
-        "classroom":      [(760, 360)],
-        "cafeteria":      [(1200, 560)],
-        "infirmary":      [(640, 700)],
-        "storehouse":     [(960, 560)],
-        "utahime_office": [(1320, 420)],
-        "ridge":          [(960, 420)],
+        "courtyard":      [(1600, 690)],
+        "dorm":           [(440, 590), (1330, 720)],
+        "dorm_common":    [(1400, 876), (1590, 560)],
+        "riverside":      [(1580, 905)],
+        "library":        [(300, 520), (1630, 480)],
+        "classroom":      [(1450, 500)],
+        "cafeteria":      [(1500, 600)],
+        "infirmary":      [(1420, 700)],
+        "storehouse":     [(1600, 600)],
+        "utahime_office": [(1500, 470)],
+        "ridge":          [(960, 250)],
     }
     PATH_CLEAR = 120
     PATH_APART = 110        # between two exits of one place (their rings are 96 px)
@@ -216,7 +227,7 @@ init python:
           to             the place key it leads to
           label          the hover label now ("To the Dojo", or the lock's reason)
           icon           the destination's icon, locked or not (the hotspot itself
-                         is drawn as "lock" while locked; read locked_reason)
+                         is drawn as "lock", dim, while locked; read locked_reason)
           x, y           where it sits (the sidecar hot_<loc>.json applied), ints
           locked_reason  "" when I can walk there now
 
@@ -326,8 +337,8 @@ init python:
         hub among its places; every place has an exit; a room's first exit
         is its hub; a hub leads to each of its rooms and each neighbouring
         hub and nowhere else; every exit has a way back; from my room every
-        place is reached; each point keeps clear of 4.10's start points, of
-        the place's other exits and of the arrival caption's panel (the
+        place is reached; each point keeps clear of the room's own hotspots
+        (PATH_KEEP_CLEAR), of the place's other exits and of the arrival caption's panel (the
         sidecar's point too). (Bounds and lanes are hot_validate's.)"""
         out = []
         links = {}
@@ -376,7 +387,7 @@ init python:
                     out.append("exits: %r has no icon (%r)" % (to, path_icon(to)))
                 for px, py in PATH_KEEP_CLEAR.get(frm, ()):
                     if (x - px) ** 2 + (y - py) ** 2 < PATH_CLEAR ** 2:
-                        out.append("exit %s at (%d, %d) is within %d px of the hotspot start point (%d, %d)"
+                        out.append("exit %s at (%d, %d) is within %d px of the hotspot at (%d, %d)"
                                    % (path_spot_id(frm, to), x, y, PATH_CLEAR, px, py))
                 for to2, x2, y2 in rows:
                     if to2 > to and (x - x2) ** 2 + (y - y2) ** 2 < PATH_APART ** 2:

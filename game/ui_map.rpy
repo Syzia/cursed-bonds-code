@@ -113,10 +113,12 @@ init -1 python:
         return w
 
     def map_has_news(who, loc):
-        """WP1. A gold "!" after someone's name: a mission with them, or a new scene."""
-        if missions_with(who, loc):
-            return True
-        return has_event("hangout", who, loc)
+        """WP1. A gold "!" after someone's name: a mission with them, or a
+        new scene, that the place view would offer now (view_tag_marks: no
+        mission mark in explore mode, on a rest day, or when the night
+        won't let me start it; no scene the night won't let me start)."""
+        job, new = view_tag_marks(who, loc)
+        return bool(job or new)
 
     def map_people(loc, budget, cap=3):
         """WP1. ([(short, colour, news)], hidden): up to `cap` of the people at
