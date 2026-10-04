@@ -207,6 +207,8 @@ Already promised by the storyboard, now moved here.
 - **Remove the "Closer: after roll call" line**, since roll call is forced at the start of day 2.
 - Gojo's night looks good. No number was changed (the Gojo night's size, the night out's price and hangover, the market's prices stand).
 
+**Checkpoint C passed (5 Oct 2026).** The owner played the wave 2 build (people blended into rooms, the computer, fishing, the Library, cards, walking between places by exits, the five yards, art batch 3's two test poses and Yuji's blink): it plays fine, with no change asked for. P8 (integration) starts.
+
 **Still open from phase 1's review** (the design proposes a default for each):
 - Two-slot activities (sparring, a heart-to-heart, a Tokyo trip) can skip past a story beat that only happens at noon, so it comes a day late.
 - The first hangouts still narrate in "you" and can happen on day 1.
