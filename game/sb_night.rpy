@@ -554,6 +554,10 @@ label night_out(key):
         with Dissolve(0.4)
         return
 
+    ## The district again. A new night already shows it; a save made on the
+    ## menu above by an older tree still holds the campus room.
+    scene expression night_bg(key)
+
     if _night_pick == "market":
         "Past the club's door, one flight further down. Nobody at this one asks for money."
         call market_open

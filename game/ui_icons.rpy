@@ -238,6 +238,12 @@ init -3 python:
     ## first letters (the first row that fits wins; any other key: "left").
     ## A label on the left would cover the neighbour in a row: the next
     ## corner button or status chip, the next name tag, the next exit.
+    ## Two district markers open to the right, clear of the markers below them.
+    ## A room pin on the map's area level opens above, centred on the pin
+    ## (ICON_TIP_CENTRED), clear of the next pin; the rows before ("row_",)
+    ## are the pins with another pin above them, as the pins stand in
+    ## game/layout/area_*.json today (tools/smoke/p2_map.rpy measures all six
+    ## areas: re-check these rows if a pin moves).
     ICON_TIP_SIDES = (
         (("sample_auto_", "sample_always_", "sample_never_"), "top"),
         (("hud_map", "hud_journal", "hud_menu", "hud_chip_"), "bottom"),
@@ -245,6 +251,10 @@ init -3 python:
         (("hot_go_courtyard__training_yard",), "left"),
         (("hot_go_", "hot_computer"), "top"),
         (("map_campus", "map_tokyo"), "bottom"),
+        (("row_school_yard", "row_staff_yard", "row_training_yard"), "left"),
+        (("row_trailhead",), "right"),
+        (("row_dorm_common", "row_storehouse", "row_library"), "bottom"),
+        (("row_",), "top"),
         (("district_go", "district_night"), "left"),
         (("district_shinjuku", "district_harajuku"), "right"),
         (("district_",), "bottom"),
@@ -252,8 +262,18 @@ init -3 python:
         (("jr_card_",), "top"),
     )
 
+    ## Keys whose label is centred on its button when it opens above or below.
+    ICON_TIP_CENTRED = ("row_",)
+
+    def icon_tip_centred(tip):
+        """P8 (ui_icons.rpy). 0.5 when the hovered button's label is centred
+        on it (a map pin), else 0.0 (its left edge on the button's)."""
+        if isinstance(tip, tuple) and len(tip) > 1 and str(tip[1]).startswith(ICON_TIP_CENTRED):
+            return 0.5
+        return 0.0
+
     def icon_tip_side(tip):
-        """P8 (ui_icons.rpy). "left", "top" or "bottom": the side of the
+        """P8 (ui_icons.rpy). "left", "right", "top" or "bottom": the side of the
         hovered button hover_label opens on, from the tooltip's key (D11:
         the tooltip stays the tuple (text, key))."""
         if isinstance(tip, tuple) and len(tip) > 1:
@@ -352,6 +372,7 @@ screen hover_label():
     $ _hover_tip = GetTooltip()
     $ _hover_t = icon_tip_parts(_hover_tip)
     $ _hover_side = icon_tip_side(_hover_tip)
+    $ _hover_mid = icon_tip_centred(_hover_tip)
     if _hover_t:
         nearrect:
             focus "tooltip"
@@ -360,6 +381,8 @@ screen hover_label():
                 background Frame("gui/panel_dark.png", 4, 4)
                 padding (14, 8)
                 xmaximum 520
+                xpos _hover_mid
+                xanchor _hover_mid
                 vbox:
                     spacing 2
                     text _hover_t[0]:

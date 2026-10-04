@@ -1039,10 +1039,20 @@ label zz_smoke:
         _zz_bad = []
         for _zz_w in _zz_on:
             for _zz_p in ("tag_", "stage_"):
-                renpy.set_focus("sb_place", _zz_p + _zz_w)
+                _zz_sr = None
+                if _zz_p == "stage_":
+                    ## a sprite takes the label's rectangle from the pointer
+                    ## only: set_focus alone leaves the last label's size
+                    _zz_sr = zz_rect("sb_place", "stage_" + _zz_w)
+                    if _zz_sr is not None:
+                        renpy.display.focus.mouse_handler(None, _zz_sr[0] + _zz_sr[2] // 2, _zz_sr[1] + _zz_sr[3] // 2, default=False)
+                else:
+                    renpy.set_focus("sb_place", _zz_p + _zz_w)
                 zz_render(0.4)
                 _zz_lab = zzv_label()
-                if (_zz_lab is None or _zz_lab[0] < 0 or _zz_lab[1] < 0 or _zz_lab[0] + _zz_lab[2] > 1920 or _zz_lab[1] + _zz_lab[3] > 1080
+                if (_zz_lab is None or (_zz_p == "stage_" and (_zz_sr is None or not hot_overlap(
+                            _zz_lab, (_zz_sr[0] - 40, _zz_sr[1] - 120, _zz_sr[2] + 80, _zz_sr[3] + 160))))
+                        or _zz_lab is None or _zz_lab[0] < 0 or _zz_lab[1] < 0 or _zz_lab[0] + _zz_lab[2] > 1920 or _zz_lab[1] + _zz_lab[3] > 1080
                         or any(r is None or hot_overlap(_zz_lab, r) for k, r in _zz_tr.items() if k != _zz_w)
                         or (_zz_p == "tag_" and hot_overlap(_zz_lab, _zz_tr[_zz_w]))):
                     _zz_bad.append((_zz_p + _zz_w, _zz_lab))
@@ -1051,7 +1061,7 @@ label zz_smoke:
         check(len(_zz_on) == 4 and not _zz_bad and icon_tip_side(("x", "tag_megumi")) == "top" and icon_tip_side(("x", "stage_megumi")) == "top",
               "four people: no name tag's or person's hover label meets another person's tag (hover check: needs the pointer)",
               (_zz_bad, _zz_tr))
-        del _zz_tr
+        del _zz_tr, _zz_sr
         renpy.hide_screen("sb_place")
 
     ## --- 11. idle to talking -------------------------------------------------------------------

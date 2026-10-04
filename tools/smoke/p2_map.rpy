@@ -67,6 +67,56 @@ init 999 python:
         w = zz_widget(wid)
         return getattr(w, "_tooltip", None) if w is not None else None
 
+    def zz_label():
+        """(x, y, w, h) of the hover label as it was last drawn, or None."""
+        sc = renpy.get_screen("hover_label")
+        out = []
+
+        def each(d):
+            if isinstance(d, renpy.display.layout.NearRect) and d.child is not None:
+                size = getattr(d.child, "window_size", None)
+                offs = getattr(d, "offsets", None)
+                if size and offs:
+                    out.append((int(offs[0][0]), int(offs[0][1]), int(size[0]), int(size[1])))
+
+        if sc is not None:
+            sc.visit_all(each)
+        return out[0] if out else None
+
+    def zz_pin_labels(area):
+        """Hover every room pin of an area in turn: (pins, [(pin, label, the
+        other pins its label meets)]), a row for each pin whose label is
+        missing, not beside its own pin, off the frame or over another pin."""
+        zz_map(area=area)
+        zz_settle()
+        locs = [l for l in LOC_ORDER if renpy.get_widget("sb_map", "row_" + l) is not None]
+        rects = dict((l, zz_rect("sb_map", "row_" + l)) for l in locs)
+        bad = []
+        for l in locs:
+            r = rects[l] or (0, 0, 0, 0)
+            near = (r[0] - 560, r[1] - 200, r[2] + 1120, r[3] + 400)
+            renpy.set_focus("sb_map", "row_" + l)
+            zz_render(0.4)
+            lab = zz_label()
+            if lab is None or not zz_overlap(lab, near):
+                ## the first pin focused on a fresh map has no rectangle yet:
+                ## look away and back
+                renpy.set_focus("sb_map", "row_" + locs[locs.index(l) - 1])
+                zz_render(0.3)
+                renpy.set_focus("sb_map", "row_" + l)
+                zz_render(0.4)
+                lab = zz_label()
+            tip = GetTooltip()
+            hit = [m for m in locs if m != l and (rects[m] is None or lab is None or zz_overlap(lab, rects[m]))]
+            if (lab is None or not isinstance(tip, tuple) or tip[1] != "row_" + l or hit
+                    or not zz_overlap(lab, near) or zz_overlap(lab, r)
+                    or lab[0] < 0 or lab[1] < 0 or lab[0] + lab[2] > 1920 or lab[1] + lab[3] > 1080):
+                bad.append((l, lab, hit))
+            if l == "girls_dorm":
+                shot("pin_label_girls_dorm", wait=0)
+        renpy.hide_screen("sb_map")
+        return len(locs), bad
+
     def zz_zone():
         return renpy.get_screen("sb_map").scope.get("zone")
 
@@ -797,6 +847,7 @@ label zz_smoke:
         renpy.hide_screen("objective_toast")
         toast_clear()
         renpy.hide_screen("sb_map")
+        _zz_period0 = store.period
         zz_map(area="dorms")
         renpy.set_focus("sb_map", "row_dorm_common")
         zz_render(0.5)
@@ -805,6 +856,24 @@ label zz_smoke:
         check(isinstance(_zz_tipnow, tuple) and _zz_tipnow[1] == "row_dorm_common" and "Dorm Common Room" in _zz_lab,
               "an area: the hovered pin's label is drawn by hover_label", (_zz_tipnow, _zz_lab))
         renpy.hide_screen("sb_map")
+        ## P8: a pin's label opens beside its own pin and over no other pin,
+        ## at Noon and in the Evening.
+        _zz_pl = []
+        _zz_pn = 0
+        for _zz_per in ("Noon", "Evening"):
+            store.period = _zz_per
+            for _zz_a in AREAS:
+                _zz_one = zz_pin_labels(_zz_a["key"])
+                if _zz_a["key"] == "school":
+                    ## this harness lays its own test sidecar over the School
+                    ## Building (assets/p2_map): its pins are not the shipped ones
+                    note("pin labels, the School Building under the test sidecar (%s)" % _zz_per, _zz_one)
+                    continue
+                _zz_pn += _zz_one[0]
+                _zz_pl += [(_zz_per, _zz_a["key"]) + row for row in _zz_one[1]]
+        store.period = _zz_period0
+        check(_zz_pn == 2 * (len(LOCATIONS) - 5) and not _zz_pl and icon_tip_side(("x", "row_dorm")) == "top" and icon_tip_centred(("x", "row_dorm")) == 0.5,
+              "five areas as shipped: no hovered pin's label meets another pin, the Dormitories among them (hover check: needs the pointer)", (_zz_pn, _zz_pl))
         zz_worst("sb_map", area="dorms", hover="row_dorm_common", name="worst_map_area")
         renpy.hide_screen("sb_map")
         here = "gate"

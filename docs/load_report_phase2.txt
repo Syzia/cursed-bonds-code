@@ -5,7 +5,12 @@ auto-10): no separate checkpoint slot was saved at A, B or C, and
 tools/load_all_saves.sh loads every *.save it finds, so it needed no list.
 Compare a later run with this one by STATUS, not by line number.
 
-Load report · 2026-10-04 21:52 · p2_8trial @ bbeb94f
+Each slot was also played on (tools/smoke/p2_oldsave.rpy: to the next morning
+through the real loop, then a save and a load on the place view, the map, the
+person view and the journal): 1-1 passed 21 checks, auto-1 to auto-10 passed
+14 each, no failures.
+
+Load report · 2026-10-05 01:55 · p2_8trial @ 79dc839 + the review fixes (the commit that holds this file)
 Saves from: /Users/hunterjolly/Desktop/JJK_worktrees/p2_8trial/game/saves
             /Users/hunterjolly/Library/RenPy/JJKgamemd-1788928056
 Slots: 11 · SAME 11 · EARLIER 0 · MOVED 0 · RECOVER 0 · UNKNOWN 0 · RAISED 0
@@ -123,7 +128,7 @@ auto-9
   landed     statement game/ch1b_the_offer.rpy:85
 
 === 1-1 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.9 s · Ren'Py 8.5.3.26051504
+# load_slot · 3.4 s · Ren'Py 8.5.3.26051504
 NOTE slot: 1-1
 NOTE saved: 2026-09-23 16:59, game version 0.1 — Prologue, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/sb_loop.rpy:37
@@ -208,7 +213,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-1 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.5 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-1
 NOTE saved: 2026-10-04 11:54, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/sb_loop.rpy:72
@@ -378,7 +383,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-2 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
+# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-2
 NOTE saved: 2026-10-04 11:47, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/story_arc1.rpy:72
@@ -463,7 +468,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-3 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.6 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.9 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-3
 NOTE saved: 2026-10-04 11:47, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/sb_night.rpy:486
@@ -548,7 +553,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-4 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.6 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.9 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-4
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch2_tour.rpy:335
@@ -633,7 +638,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-5 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.6 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-5
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch2_tour.rpy:231
@@ -718,7 +723,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-6 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+# load_slot · 3.2 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-6
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch2_tour.rpy:172
@@ -803,7 +808,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-7 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-7
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch2_tour.rpy:82
@@ -888,7 +893,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-8 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.4 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.6 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-8
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch1b_the_offer.rpy:187
@@ -973,7 +978,7 @@ PASS loads without an exception
 RESULT PASS
 
 === auto-9 · ~/Library/RenPy/JJKgamemd-1788928056
-# load_slot · 2.3 s · Ren'Py 8.5.3.26051504
+# load_slot · 2.4 s · Ren'Py 8.5.3.26051504
 NOTE slot: auto-9
 NOTE saved: 2026-10-04 11:44, game version 0.3 — Arc One, phase 1, Ren'Py [8, 5, 3, 26051504]
 NOTE saved_at: game/ch1b_the_offer.rpy:85

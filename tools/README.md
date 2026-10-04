@@ -229,9 +229,9 @@ for comparison):
 
 | harness | what it checks |
 |---|---|
-| `p2_contracts.rpy` (130) | The frozen contracts of design section 6: every shared function's signature, owning file and return shape; every `tools/none_ok.txt` example returns `None`; icon coverage; the registries' duplicate checks; init order (with `aa_zz_order.rpy`, which adds two inert hotspots, `zz_order_spot` and `zz_tv`). It also **writes `shots/layout/defaults.json`**, the code's own layout numbers, for `layout_sheet.py`. Run it **without `SMOKE_P0_STRICT`**: its notes that a wave-0 comparison "no longer holds" are expected. |
-| `p2_map.rpy` (96) | The two-level map: six markers, pins, the zoom-in, tooltips, Tokyo's districts and the night button. |
-| `p2_hud.rpy` (117) | The corner icons and chips, the icon column for every room and period, the person view, toast lanes, the banner. Its last section saves and loads inside the real loop and must stay last. About 95 s. |
+| `p2_contracts.rpy` (129) | The frozen contracts of design section 6: every shared function's signature, owning file and return shape; every `tools/none_ok.txt` example returns `None`; icon coverage; the registries' duplicate checks; init order (with `aa_zz_order.rpy`, which adds two inert hotspots, `zz_order_spot` and `zz_tv`). It also **writes `shots/layout/defaults.json`**, the code's own layout numbers, for `layout_sheet.py`. Run it **without `SMOKE_P0_STRICT`**: its notes that a wave-0 comparison "no longer holds" are expected. |
+| `p2_map.rpy` (97) | The two-level map: six markers, pins, the zoom-in, tooltips, Tokyo's districts and the night button. |
+| `p2_hud.rpy` (118) | The corner icons and chips, the icon column for every room and period, the person view, toast lanes, the banner. Its last section saves and loads inside the real loop and must stay last. About 95 s. |
 | `p2_journal.rpy` (188) | The five tabs, person pages, the Me page, the 70-word budget over 214 pages, checklists, Leads. **Run it with `SMOKE_TIMEOUT=300`**: it takes about 150 s of the default 180. |
 | `p2_gear.rpy` (78) | Grade chips on the board, the armory and the fight header; tool and talisman checklists; nothing held is taken away. |
 | `p2_night.rpy` (170) | The night rule, the Gojo night against real training days, the night in Tokyo, the Black Market and its price rule. |
@@ -240,12 +240,13 @@ for comparison):
 | `p2_cards.rpy` (145) | Blackjack and poker: thousands of simulated hands, the limits, rollback blocked after every deal. About 45 s. |
 | `p2_paths.rpy` (109) | Exits and the five yards: the graph is connected, an exit costs no time, locked exits, the map's smaller markers. |
 | `phase2_all.rpy` (35) | The whole of phase 2 end to end: `SMOKE_TIMEOUT=300 tools/smoke.sh tools/smoke/phase2_all.rpy` (about 90 s for the default 30 days; `PHASE2_DAYS` sets the days, `PHASE2_MAX_SECONDS` when the driver stops itself). A fresh game through the prologue, then the real loop played by a driver that presses what the screens offer: the map's two levels and the exits on alternate days, the journal's five tabs and a person's page, a board job a day, a page read and the cross-check, a cast, a blackjack and a poker hand, a ride with Ijichi, a night in Shibuya with a market purchase, a Gojo night, bed and one carried-home night. It writes `days.txt` (one block a day) and `driver_log.txt`. |
-| `p2_saves.rpy` (170) | Saves are tested by saving: `tools/smoke.sh tools/smoke/p2_saves.rpy` (about 35 s). In one run inside the real loop it makes and reloads 21 saves (the armory, the board, a yard, the map, the computer, the journal, the person view, dialogue, blackjack, fishing at the bite, the night's menus, the market, the Gojo night, the rest day) and checks each comes back on its own statement with the same state, without `load_recover`. Not covered: a save inside a fight or on the grade card (the owner's phase-1 saves cover those). `p8_patterns/` holds the two patterns it was built from, with a README on the two load pitfalls. |
+| `p2_saves.rpy` (187) | Saves are tested by saving: `tools/smoke.sh tools/smoke/p2_saves.rpy` (about 50 s). In one run inside the real loop it makes and reloads 22 saves (the armory, the board, a yard, the map, the computer, the journal, the person view, dialogue, blackjack, fishing at the bite, the night's menus, the market, the Gojo night, the rest day, the walk home's line) and checks each comes back on its own statement with the same state, without `load_recover`. It also rolls back through `stage_person`, through a market purchase, through the Gojo night's `new_day()` and onto the walk home's line. Not covered: a save inside a fight or on the grade card (the owner's phase-1 saves cover those). `p8_patterns/` holds the two patterns it was built from, with a README on the two load pitfalls. |
+| `p2_oldsave.rpy` (21 on slot 1-1, 14 on the others) | One of the owner's saves, played on: `SMOKE_SAVES=1 SMOKE_SLOT=1-1 tools/smoke.sh tools/smoke/p2_oldsave.rpy` (about 10 s). It loads the slot (1-1 was made before phase 2), checks it lands on its statement with phase 2's variables at their defaults, plays through the real loop to the next morning, then saves and loads on the place view, the map, the person view and the journal. |
 
-**Hover checks need the pointer.** `p2_contracts.rpy`, `p2_paths.rpy` and
-`p2_view.rpy` have checks that hold the pointer over a button (or use
+**Hover checks need the pointer.** `p2_contracts.rpy`, `p2_hud.rpy`,
+`p2_map.rpy`, `p2_paths.rpy` and `p2_view.rpy` have checks that hold the pointer over a button (or use
 `renpy.set_focus`). They fail while another Ren'Py window is open: run these
-three one at a time, with no other harness and no game running, and never in
+five one at a time, with no other harness and no game running, and never in
 parallel from several worktrees on one desktop. When one fails on a hover or
 tooltip check, run it again alone a few minutes later before treating it as
 real.

@@ -37,10 +37,27 @@
 ##   gojo_menu            sb_do_night_gojo's menu
 ##   gojo_morning         the line "Day N. Morning." that follows the night
 ##   rest_day             `call screen sb_place` on the rest day after it
+##   carry_line           night_carry_home's line: the day turned while I was
+##                        in the courtyard (new_day() run there, so the night's
+##                        own new-day hook leaves the mark), and the loop walks
+##                        me home
+##
+## Three rollbacks beside the one through stage_person, each one checkpoint
+## back with renpy.rollback(force=True):
+##   market_rollback        from the market after a purchase: the yen, the
+##                          item and market_bought are all as before it, or
+##                          all as after it (never a mix, never two items)
+##   gojo_morning_rollback  from "Day N. Morning." back through new_day(): the
+##                          day, the hour, night_gojo_last and the night's
+##                          gains are all as before; playing forward again
+##                          gives the same morning, the gains counted once
+##   carry_rollback         from the place view back onto the carry line: the
+##                          mark and the place are back
 ##
 ## Not here: a save inside a fight (combat_screen) or on the grade card. Both
 ## are phase 1's, the owner's phase-1 saves cover them (tools/load_all_saves.sh),
-## and phase 3 rebuilds the fight.
+## and phase 3 rebuilds the fight. A save made by the tree as it was before
+## phase 2 is not made here either: the owner's eleven slots are those.
 ##
 ## The driver's own state is one builtins object made at init (zzs): a load
 ## and a rollback leave it alone. Its stage counter is compared across every
@@ -88,7 +105,7 @@ init 999 python:
     ZZS_NAMES = ("armory", "armory_taken", "board", "board_partner", "hub", "map_area", "computer", "journal",
                  "person_view", "dialogue", "dialogue_rollback", "blackjack",
                  "fishing_bite", "night_arrival_menu", "after_club_menu", "market", "market_bought",
-                 "ridge_night", "gojo_menu", "gojo_morning", "rest_day")
+                 "ridge_night", "gojo_menu", "gojo_morning", "rest_day", "carry_line")
 
     def zzs_loaded():
         zzs.loads += 1
@@ -329,6 +346,13 @@ init 999 python:
         return (builtins.sorted(set(v for v in zzs_offered() if v[0] in ("act", "mission"))),
                 builtins.list(stage_people(store.here)[0]), night_tag(), night_can_work())
 
+    def zzs_st_gojo():
+        return (store.day, store.period, store.here, store.night_gojo_last, store.control, store.ce_max,
+                store.night_cost_kind, store.night_cost_day)
+
+    def zzs_st_carry():
+        return (store.night_carried, store.here, night_carry_line())
+
     def zzs_talk():
         """Talk, from the person view, when its button is there."""
         ret = ("do", "talk", ZZS_WHO)
@@ -363,7 +387,7 @@ init 999 python:
         here = store.here
 
         ## Lines are clicked on, except where a stage parks on one.
-        if ui == "say" and s not in (12, 14, 33):
+        if ui == "say" and s not in (12, 14, 33, 34, 36):
             return True
 
         ## --- the armory, a tool taken ---------------------------------------------------
@@ -633,10 +657,32 @@ init 999 python:
                 if "market_bought" not in zzs.parked:
                     check(store.yen == yen0 - price and item_count(iid) == n0 + 1, "Buy takes the yen and gives the item", (iid, store.yen, yen0))
                 if zzs_park("market_bought", zzs_st_market):
-                    check(store.yen == yen0 - price and item_count(iid) == n0 + 1, "market_bought: the purchase is still made after the load",
-                          (iid, store.yen, yen0, item_count(iid)))
+                    now = (store.yen, item_count(iid), iid in store.market_bought)
+                    if not zzs.keep.get("mrb"):
+                        check(store.yen == yen0 - price and item_count(iid) == n0 + 1, "market_bought: the purchase is still made after the load",
+                              (iid, store.yen, yen0, item_count(iid)))
+                        ## One checkpoint back: through the purchase.
+                        zzs.keep["mrb"] = now
+                        renpy.rollback(force=True, checkpoints=1)
+                        return None
+                    before = (yen0, n0, False)
+                    check(now in (before, zzs.keep["mrb"]),
+                          "market_rollback: the yen, the item and market_bought agree with each other (all before the purchase, or all after)",
+                          "%r; before %r, after %r" % (now, before, zzs.keep["mrb"]))
+                    check(now == before and (iid, "buy") in [(r[0], r[2]) for r in market_rows()],
+                          "market_rollback: one checkpoint back the purchase is undone, and the row can be bought again",
+                          "%r; before %r" % (now, before))
+                    note("market_rollback", "landed on %s with %r (before the purchase: %r)" % (zzs_where(), now, before))
                     zzs_next()
                     return zzs_must("market_screen", "market_close")
+            elif ui == "choice" and zzs.keep.get("mrb"):
+                ## the rollback went past the market's door
+                iid, price, yen0, n0 = zzs.keep["buy"]
+                now = (store.yen, item_count(iid), iid in store.market_bought)
+                check(now == (yen0, n0, False), "market_rollback: back on the menu, the purchase is undone whole", repr(now))
+                note("market_rollback", "landed on the menu at %s" % zzs_where())
+                zzs_next()
+                return zzs_choose("Home")
         ## --- Night on the ridge, Gojo's menu, the rest day ----------------------------
         elif s == 30:
             if ui == "sb_place":
@@ -658,24 +704,99 @@ init 999 python:
         elif s == 32:
             if ui == "choice":
                 if zzs_park("gojo_menu", zzs_captions):
+                    zzs.keep["g_before"] = zzs_st_gojo()
                     zzs_next()
                     return zzs_choose("Stay.")
         elif s == 33:
+            g = zzs.keep.get("grb", 0)
+            if ui == "choice" and g == 1:
+                ## the rollback went back as far as his menu
+                check(zzs_st_gojo() == zzs.keep["g_before"],
+                      "gojo_morning_rollback: back before new_day() the day, the hour, night_gojo_last and the gains are all as they were",
+                      "%r, was %r" % (zzs_st_gojo(), zzs.keep["g_before"]))
+                note("gojo_morning_rollback", "landed on the menu at %s" % zzs_where())
+                zzs.keep["grb"] = 2
+                return zzs_choose("Stay.")
             if ui == "say":
                 ## "Day N. Morning.", the line after the night's new_day().
                 if "sb_night.rpy" in zzs_where() and store.day == zzs.keep["day"] + 1:
                     if zzs_park("gojo_morning", lambda: (night_tag(), store.night_gojo_last, store.control, store.ce_max)):
+                        if g == 0:
+                            ## One checkpoint back: through new_day().
+                            zzs.keep["g_after"] = zzs_st_gojo()
+                            zzs.keep["grb"] = 1
+                            renpy.rollback(force=True, checkpoints=1)
+                            return None
+                        if g == 1:
+                            check(zzs_st_gojo() == zzs.keep["g_after"],
+                                  "gojo_morning_rollback: the rollback is refused, and nothing changed", repr(zzs_st_gojo()))
+                            note("gojo_morning_rollback", "refused: still on the morning line")
+                        elif g == 2:
+                            check(zzs_st_gojo() == zzs.keep["g_after"],
+                                  "gojo_morning_rollback: playing forward again gives the same morning, the night's gains counted once",
+                                  "%r, was %r" % (zzs_st_gojo(), zzs.keep["g_after"]))
+                        zzs.keep["grb"] = 3
                         return True
                     return None
+                if g == 1:
+                    check(zzs_st_gojo() == zzs.keep["g_before"],
+                          "gojo_morning_rollback: back before new_day() the day, the hour, night_gojo_last and the gains are all as they were",
+                          "%r, was %r" % (zzs_st_gojo(), zzs.keep["g_before"]))
+                    note("gojo_morning_rollback", "landed on %s" % zzs_where())
+                    zzs.keep["grb"] = 2
                 return True
             if ui == "sb_place":
                 if "rest_day" not in zzs.parked:
                     check(here == "dorm" and store.day == zzs.keep["day"] + 1 and not night_can_work() and night_tag() == NIGHT_TAGS["gojo"],
                           "the morning after: my room, a rest day", (here, store.day, night_tag()))
+                    check(zzs.keep.get("grb") == 3, "gojo_morning_rollback: the rollback from the morning line was tried and checked", zzs.keep.get("grb"))
                 if zzs_park("rest_day", zzs_st_place):
                     check(not night_can_work() and night_tag() == NIGHT_TAGS["gojo"], "rest_day: still a rest day after the load", night_tag())
+                    ## The day turns while I'm in the courtyard: the night's
+                    ## own new-day hook leaves the mark, and the loop comes
+                    ## round to night_carry_home.
+                    zzs.keep["carry_day"] = store.day
+                    store.here = "courtyard"
+                    new_day()
+                    check(store.night_carried == "courtyard" and store.day == zzs.keep["carry_day"] + 1 and night_pending(),
+                          "the day turns in the courtyard: the walk home is pending", (store.night_carried, store.day, store.here))
                     zzs_next()
-                    zzs_stop()
+                    return ("act", "release")
+        ## --- the walk home: night_carry_home's line ---------------------------------
+        elif s == 34:
+            if ui == "say":
+                if "carry_line" not in zzs.parked:
+                    if not ("sb_night.rpy" in zzs_where() and store.night_carried):
+                        return True
+                    zzs.keep["carry"] = (zzs_sig()[0], renpy.call_stack_depth())
+                    check(store.here == "courtyard" and store.night_carried == "courtyard",
+                          "the loop stops on the carry line, still in the courtyard, the mark set", zzs_st_carry())
+                if zzs_park("carry_line", zzs_st_carry):
+                    zzs_next()
+                    return True
+        elif s == 35:
+            if ui == "sb_place":
+                check(here == "dorm" and store.night_carried == "" and renpy.call_stack_depth() == 0,
+                      "after the carry line I'm in my room, the mark cleared, at the loop's own depth",
+                      (here, store.night_carried, renpy.call_stack_depth()))
+                zzs_next()
+                renpy.rollback(force=True, checkpoints=1)
+        elif s == 36:
+            if ui == "say":
+                check((zzs_sig()[0], renpy.call_stack_depth()) == zzs.keep["carry"] and store.here == "courtyard" and store.night_carried == "courtyard",
+                      "carry_rollback: a rollback from the place view lands on the carry line, the mark and the place back",
+                      (zzs_sig(), zzs_st_carry()))
+                zzs_next()
+                return True
+            if ui == "sb_place":
+                check(False, "carry_rollback: a rollback from the place view lands on the carry line", "still on the place view at %s" % zzs_where())
+                zzs_next()
+        elif s == 37:
+            if ui == "sb_place":
+                check(here == "dorm" and store.night_carried == "" and renpy.call_stack_depth() == 0,
+                      "forward again: in my room, the mark cleared", (here, store.night_carried))
+                zzs_next()
+                zzs_stop()
         return None
 
     def zzs_tick():

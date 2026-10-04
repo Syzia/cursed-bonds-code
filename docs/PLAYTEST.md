@@ -58,7 +58,8 @@ The parts are in a sensible order, but each stands alone. Tick them off.
 
 ## 3. Walking without the map: exits and the five yards (about 4 minutes)
 
-1. In **My Room**, click the door icon on the left. You are in the
+1. In **My Room**, click the small house icon on the left wall (rest the
+   pointer on it: "To the Dormitory Garden"). You are in the
    **Dormitory Garden**. No time passes.
 2. Keep clicking icons in the picture: Courtyard, then Training Yard, then
    the Training Hall. Each exit sits on the door, steps or path it leads to.
@@ -89,7 +90,8 @@ The parts are in a sensible order, but each stands alone. Tick them off.
 4. **Yuji blinks, and his mouth moves when he talks.** Talk to him anywhere.
    He blinks on most of his faces; his mouth moves on his neutral face only.
 5. Click anyone. You see their **grade** and three or four **choices**, each
-   with an icon. No name, no bars, no diamonds.
+   with an icon. No name, no bars, no story diamonds (a choice that takes time
+   still shows a small diamond at its right edge).
 6. In Menu → Preferences, **Motion** turns the breathing, the shimmer and the
    pulsing icons off.
 
@@ -345,6 +347,18 @@ you want it.
 - **The old GUI pictures can't be redrawn on this Mac** without installing a
   picture library (Pillow). Nothing in the game needs it. Say if you want it
   installed.
+- **A label from the icon column opens to the left,** over whatever stands
+  beside the column. In the Courtyard, resting the pointer on Practice hides
+  the Training Yard exit under the label; the same happens over the Library's
+  exit and the Riverside's bank. Only while the pointer rests there. If it
+  bothers you, the column's first label can open above its icon instead.
+- **Five people in the Common Room (evening).** The "+1" chip sits at Panda's
+  feet, and Panda's name label opens over it. Moving the chip a little to the
+  left would clear both. Say if you want it moved.
+- **Old saves.** Your eleven saves all load where they were saved, and slot
+  1-1 (made before phase 2) is also played on for a day and saved again on
+  four screens. No save from before phase 2 that was made with the map open
+  exists to test. Is that enough, or do you want more old saves tested?
 
 **Art still to make,** at your pace: twelve more poses (about $3.84) and blink
 and talk for ten more people (about $2.88). The steps are in

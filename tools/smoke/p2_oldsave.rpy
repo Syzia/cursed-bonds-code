@@ -1,0 +1,245 @@
+## tools/smoke/p2_oldsave.rpy -- one of the owner's saves, played on (docs/
+## PHASE2_DESIGN.md, 7 · P8; the companion of p2_saves.rpy).
+##
+##   SMOKE_SAVES=1 SMOKE_SLOT=1-1 SMOKE_TIMEOUT=300 tools/smoke.sh tools/smoke/p2_oldsave.rpy
+##
+## p2_saves.rpy makes its own saves on this tree. This harness starts from a
+## save the owner made (a read-only copy: SMOKE_SAVES=1), slot SMOKE_SLOT.
+## Slot 1-1 was made before phase 2 and holds none of its variables. It
+##   - loads the slot and checks it lands on the statement it was saved on;
+##   - for a save from before phase 2, checks the phase-2 variables come up
+##     at their defaults;
+##   - plays on through the real loop, by what the screens offer, until the
+##     next day's first place view (talk, wait, the map, sleep);
+##   - then saves and loads, from inside the interaction and with the
+##     rollback log as the game left it, on the place view, the map, the
+##     person view and the journal, and checks each comes back on its own
+##     statement at the same depth, day, hour and place, without load_recover.
+##
+## About 10 s a slot. Without SMOKE_SLOT, or with an empty slot, it fails with
+## one line. Screenshots: park_<screen>.png and end.png.
+
+init 999 python:
+    import builtins, os, time, pickle
+
+    class ZZR(builtins.object):
+        def __init__(self):
+            self.slot = (os.environ.get("SMOKE_SLOT") or "").strip()
+            self.phase = "boot"       # boot -> loaded -> play -> parks -> done
+            self.saved_name = None
+            self.day0 = None
+            self.expect = None        # (label, sig) awaited after a round-trip load
+            self.parks = builtins.list(["sb_place", "sb_map", "sb_char", "journal"])
+            self.done = builtins.list()
+            self.decisions = builtins.list()
+            self.labels = builtins.list()
+            self.t0 = time.time()
+            self.person_day = None
+            self.went = builtins.set()
+            self.target = None
+            self.after = 0
+            self.daydec = 0
+            self.stall = (None, 0.0)
+            self.old = False          # the save was made before phase 2
+    zzr = ZZR()
+
+    def zzr_sig():
+        ctx = renpy.game.context()
+        fn, ln = renpy.get_filename_line()
+        scr = [s for s in ("sb_place", "sb_map", "sb_char", "journal", "say", "hover_label", "sb_hud", "toasts") if renpy.get_screen(s) is not None]
+        return (ctx.current, "%s:%d" % (fn, ln), renpy.call_stack_depth(), store.day, store.period, store.here, tuple(scr))
+
+    def zzr_label_cb(name, abnormal):
+        if zzr.phase != "boot" and len(zzr.labels) < 400:
+            zzr.labels.append(name)
+            if name in ("load_recover", "return_recover"):
+                check(False, "no recover label ran", name)
+    config.label_callbacks.append(zzr_label_cb)
+
+    def zzr_inspect(slot):
+        log_data, _sig = renpy.loadsave.location.load(slot)
+        roots, log = renpy.loadsave.loads(log_data)
+        entries = builtins.list(log.log)
+        zzr.saved_name = entries[-1].context.current if entries else None
+        note("saved statement", repr(zzr.saved_name))
+        note("saved exists in script", renpy.game.script.has_label(zzr.saved_name))
+        note("saved store", "day=%r period=%r here=%r explore=%r" % (roots.get("store.day"), roots.get("store.period"), roots.get("store.here"), roots.get("store.explore_mode")))
+        new = [k for k in ("night_carried", "mg_result", "pc_read", "cards_state", "fish_log", "market_bought") if ("store." + k) in roots]
+        note("phase-2 names already in the save", repr(new))
+        zzr.old = not new
+
+    def zzr_interact_cb():
+        if len(renpy.game.contexts) != 1:
+            return
+        if zzr.phase == "loading":
+            sig = zzr_sig()
+            note("landed", repr(sig))
+            check(sig[0] == zzr.saved_name, "the owner save lands on its own statement", "%r vs %r" % (sig[0], zzr.saved_name))
+            if zzr.old:
+                for k, want in (("night_carried", ""), ("mg_result", {}), ("pc_read", set()), ("cards_state", {}), ("fish_log", {}), ("market_bought", set()), ("night_gojo_last", -99)):
+                    check(getattr(store, k, "<missing>") == want, "after load, %s is at its default" % k, repr(getattr(store, k, "<missing>")))
+            zzr.day0 = store.day
+            zzr.phase = "play"
+            zzr.t0 = time.time()
+            autoplay(True)
+        elif zzr.phase == "reloading":
+            label, want = zzr.expect
+            sig = zzr_sig()
+            check(sig[:6] == want[:6], "round trip on %s: same statement, depth, day, period, place" % label, "%r vs %r" % (sig, want))
+            check(label in sig[6], "round trip on %s: the screen is up again" % label, repr(sig[6]))
+            zzr.done.append(label)
+            zzr.phase = "parks"
+            autoplay(True)
+
+    config.start_interact_callbacks.append(zzr_interact_cb)
+
+    def zzr_roundtrip(label):
+        want = zzr_sig()
+        name = "zzrev_" + label
+        try:
+            renpy.save(name)
+        except Exception as e:
+            import traceback
+            check(False, "save parked on %s (log untrimmed, %d entries)" % (label, len(renpy.game.log.log)), traceback.format_exc()[-1500:])
+            zzr.phase = "done"
+            finish()
+            return
+        check(True, "save parked on %s (log untrimmed, %d entries)" % (label, len(renpy.game.log.log)))
+        shot("park_" + label, wait=0)
+        zzr.expect = (label, want)
+        zzr.phase = "reloading"
+        renpy.load(name)
+
+    def zzr_go(loc):
+        zzr.target = loc
+        zzr.went.add((store.day, store.period, loc))
+        return ("map",)
+
+    def zzr_place():
+        if zzr.phase == "play":
+            if store.day > zzr.day0:
+                zzr.phase = "parks"
+                note("played", "from day %s to day %s %s at %s; labels: %s" % (zzr.day0, store.day, store.period, store.here, ", ".join(zzr.labels[-60:])))
+            else:
+                zzr.daydec += 1
+                if zzr.daydec > 60:
+                    check(False, "the day ends", "60 decisions on day %s" % store.day)
+                    finish()
+                ms = [] if store.explore_mode else missions_here(store.here)
+                if ms and zzr.daydec < 20:
+                    return ("mission", ms[0])
+                if store.period == PERIODS[-1]:
+                    if store.here != "dorm" and (store.day, store.period, "dorm") not in zzr.went:
+                        return zzr_go("dorm")
+                    return ("act", "sleep")
+                on, extra = stage_people(store.here)
+                if on and zzr.person_day != store.day:
+                    zzr.person_day = store.day
+                    return ("char", on[0])
+                return ("act", "wait")
+        if zzr.phase == "parks":
+            if "sb_place" not in zzr.done:
+                zzr_roundtrip("sb_place")
+                return None
+            if "sb_map" not in zzr.done:
+                zzr.target = None
+                return ("map",)
+            if "sb_char" not in zzr.done:
+                on, extra = stage_people(store.here)
+                if on:
+                    return ("char", on[0])
+                for w in store.roster:
+                    loc = char_location(w)
+                    if loc and loc in LOCATIONS and loc != store.here and can_enter(loc)[0] and (store.day, store.period, loc) not in zzr.went:
+                        return zzr_go(loc)
+                if store.period != PERIODS[-1] and zzr.after < 4:
+                    zzr.after += 1
+                    return ("act", "wait")
+                note("sb_char park", "nobody reachable; skipped")
+                zzr.done.append("sb_char")
+            if "journal" not in zzr.done:
+                return ("journal", "people")
+            ## One more turn of the loop after the last reload, then stop.
+            if zzr.after < 99:
+                zzr.after = 99
+                return ("act", "wait")
+            shot("end", wait=0)
+            try:
+                for k, v in sorted(vars(store).items()):
+                    pass
+                check(True, "finished at day %s %s %s" % (store.day, store.period, store.here))
+            finally:
+                zzr.phase = "done"
+                finish()
+        return None
+
+    def zzr_tick():
+        if zzr.phase not in ("play", "parks") or not renpy.game.context().interacting:
+            return None
+        if time.time() - zzr.t0 > 400:
+            check(False, "driver time limit", "phase %s day %s %s %s; last: %r" % (zzr.phase, store.day, store.period, store.here, zzr.decisions[-8:]))
+            zzr.phase = "done"
+            finish()
+            return None
+        v = None
+        ## The first interaction after a load is "after rollback", where Ren'Py
+        ## does not skip: a say that sits for 2 s is clicked through, as a
+        ## player would.
+        cur = renpy.game.context().current
+        loop = any(renpy.get_screen(x) is not None for x in ("journal", "board_partner", "board_screen", "sb_map", "sb_char", "sb_place"))
+        ch = renpy.get_screen("choice")
+        if not loop and (ch is not None or renpy.get_screen("say") is not None):
+            if zzr.stall[0] != cur:
+                zzr.stall = (cur, time.time())
+            elif time.time() - zzr.stall[1] > 2.0:
+                zzr.stall = (None, 0.0)
+                if ch is not None:
+                    items = [i for i in ch.scope.get("items", ()) if i.action is not None]
+                    pick = ([i for i in items if i.caption == "Go with him."] or items)[0]
+                    zzr.decisions.append("picked %r at %r" % (pick.caption, cur))
+                    return pick.action()
+                zzr.decisions.append("clicked a say at %r" % (cur,))
+                return True
+            return None
+        if renpy.get_screen("journal") is not None:
+            if zzr.phase == "parks" and "journal" not in zzr.done:
+                zzr_roundtrip("journal")
+                return None
+            v = True
+        elif renpy.get_screen("board_partner") is not None:
+            v = ("cancel",)
+        elif renpy.get_screen("board_screen") is not None:
+            v = ("close",)
+        elif renpy.get_screen("sb_map") is not None:
+            if zzr.phase == "parks" and "sb_map" not in zzr.done:
+                zzr_roundtrip("sb_map")
+                return None
+            t, zzr.target = zzr.target, None
+            v = ("go", t) if t else ("cancel",)
+        elif renpy.get_screen("sb_char") is not None:
+            if zzr.phase == "parks" and "sb_char" not in zzr.done:
+                zzr_roundtrip("sb_char")
+                return None
+            who = renpy.get_screen("sb_char").scope.get("who")
+            v = ("do", "talk", who)
+        elif renpy.get_screen("sb_place") is not None:
+            v = zzr_place()
+        if v is not None:
+            zzr.decisions.append("d%s %s %s -> %r" % (store.day, store.period, store.here, v))
+        return v
+
+    config.overlay_screens.append("zzr_driver")
+
+screen zzr_driver():
+    zorder 400
+    if zzr.phase in ("play", "parks"):
+        timer 0.1 repeat True action Function(zzr_tick)
+
+label zz_smoke:
+    python:
+        if not renpy.can_load(zzr.slot):
+            abort("no save in slot %r" % zzr.slot)
+        zzr_inspect(zzr.slot)
+        zzr.phase = "loading"
+        renpy.load(zzr.slot)
+    $ abort("renpy.load returned")

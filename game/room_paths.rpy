@@ -89,7 +89,7 @@ init python:
         "gate":           [("courtyard", 960, 280)],        # through the torii, up to the hall
         "courtyard":      [("gate", 1300, 985),             # back down the flagstones (right of two people's name tags)
                            ("school_yard", 84, 600),        # past the west hall's veranda
-                           ("dorm_yard", 960, 272),         # behind the main hall, uphill
+                           ("dorm_yard", 960, 310),         # behind the main hall, uphill
                            ("training_yard", 1640, 850)],   # the east hall's steps, below the vending machine
         ## School Building --------------------------------------------------------
         "school_yard":    [("classroom", 405, 630),         # the left hall's porch

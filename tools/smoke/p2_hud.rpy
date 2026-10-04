@@ -1136,6 +1136,7 @@ label zz_smoke:
         _zz_ok = zz_worst("sb_place", hover="rail_wait")
         check(_zz_ok and renpy.get_screen("sb_place") and os.path.isfile(os.path.join(zz_smoke_state.shots, "worst_sb_place.png")),
               "zz_worst(sb_place): four toasts, the banner, skipping, a tile hovered: on file")
+        check(OBJ_SHOWN[1] == 0.0, "zz_worst: the banner did not wait for the arrival caption", OBJ_SHOWN[1])
         check(toast_room()[0] == TOAST_LANE[2] and toast_room()[0] - 460 == TOAST_LANE[0],
               "over sb_place the stack is anchored at the lane's right edge, 460 wide", toast_room())
         renpy.show_screen("objective_toast", "Worst case: an objective long enough to fill the banner from edge to edge")
