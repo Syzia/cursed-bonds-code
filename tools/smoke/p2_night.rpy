@@ -1263,9 +1263,9 @@ label zz_n_e4:
 
         ## what stays
         here, period = "dorm", "Morning"
-        _zz_dorm = zz_n_ids(rail_actions("dorm"))
+        _zz_dorm = zz_n_ids(rail_actions("dorm")) + builtins.sorted(hot_covers("dorm"))
         here = "cafeteria"
-        _zz_caf = zz_n_ids(rail_actions("cafeteria"))
+        _zz_caf = zz_n_ids(rail_actions("cafeteria")) + builtins.sorted(hot_covers("cafeteria"))
         here, period = "classroom", "Noon"
         _zz_study = activity_state(ACT_BY_ID["study"], "megumi", "classroom")
         _zz_talk = [c["id"] for c in person_choices("megumi", "classroom")]

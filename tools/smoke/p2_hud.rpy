@@ -575,7 +575,8 @@ label zz_smoke:
                     if set(_zz_got) != set(_zz_acts + _zz_miss) or len(_zz_got) != len(_zz_acts + _zz_miss):
                         _zz_bad.append((_zz_comp, _zz_loc, _zz_per, _zz_got, _zz_acts + _zz_miss))
                     _zz_all = zz_hud_returns(renpy.get_screen("sb_place"))
-                    if any(v[0] in ("act", "mission") for v in _zz_all if isinstance(v, tuple) and v not in _zz_got):
+                    _zz_hot = [("act", h["act"]) for h in hot_spots_for(_zz_loc) if h["lines"] is None]
+                    if any(v[0] in ("act", "mission") for v in _zz_all if isinstance(v, tuple) and v not in _zz_got and v not in _zz_hot):
                         _zz_bad.append(("an action outside the column", _zz_loc, _zz_per, _zz_all))
         check(not _zz_bad, "sb_place, as drawn: the column's returns are exactly rail_actions and the missions "
               "(%d room x period x companion; %d gold tiles seen)" % (_zz_n, _zz_gold), _zz_bad[:3])

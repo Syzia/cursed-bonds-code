@@ -306,14 +306,15 @@ screen hot_layer(loc, front=False):
     for _hot_h in hot_spots_for(loc):
         if bool(_hot_h["front"]) == bool(front):
             $ _hot_ok = hot_open(_hot_h)
+            $ _hot_lock = path_locked(_hot_h["act"][5:]) if str(_hot_h["act"]).startswith("path_") else ""
             fixed:
                 pos (int(_hot_h["x"]) - 48, int(_hot_h["y"]) - 48)
                 xysize (96, 96)
                 add Transform(hot_ring(), xysize=(96, 96), function=hot_pulse_fn)
-                fixed at Transform(alpha=(1.0 if _hot_ok else 0.45)):
+                fixed at Transform(alpha=(1.0 if (_hot_ok and not _hot_lock) else 0.45)):
                     pos (12, 12)
                     xysize (72, 72)
-                    use icon_btn(_hot_h["icon"], hot_action(_hot_h),
+                    use icon_btn(_hot_h["icon"], (NullAction() if _hot_lock else hot_action(_hot_h)),
                                  tip=(hot_tip(_hot_h) if _hot_ok else "Too late. Bed."),
                                  size=60, w=72, wid="hot_" + _hot_h["id"], words="never")
 
