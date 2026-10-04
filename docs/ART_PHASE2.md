@@ -138,10 +138,10 @@ untouched.
 8. **Claude** checks the two things batch 3 taught:
    - **the fit.** The editor lays the room across the render's whole width,
      so a 2752×1536 render is the room at 1920×1072, 4 px down. A good pose
-     reads a few percent changed (batch 3's two read 4.0% and 1.7%). If a
-     picture that looks right reads over 10%, with changed blocks all along
-     the edges, the fit is off: install from a width-fitted copy (the render
-     scaled to 1920 wide and placed at y = 4) and say so;
+     reads a few percent changed (batch 3's two read 4.0% and 1.7%). The tool
+     does this fit itself (scaled to 1920 wide, the height centred). If a
+     picture that looks right still reads over 10%, with changed blocks all
+     along the edges, the editor repainted the room: try the other version;
    - **the box.** On a seated pose the automatic box can miss the feet or the
      floor shadow. Look at the preview; set it by hand with `--box x,y,w,h`
      when it is short.

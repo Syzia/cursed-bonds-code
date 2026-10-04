@@ -71,8 +71,9 @@ The parts are in a sensible order, but each stands alone. Tick them off.
    it does nothing.
 5. People stand in the yards at some hours: Nobara in the Training Yard on
    weekday mornings, Yuji in the Dormitory Garden at night, Megumi on the
-   Mountain Path and Shoko on the Staff Building Steps at weekends. The School
-   Courtyard is empty until you have met Toge.
+   Mountain Path on weekend mornings and Shoko on the Staff Building Steps on
+   weekend afternoons. Toge is in the School Courtyard on weekday afternoons,
+   once you have met him; before that it is empty.
 6. When several people stand in a room, an exit or an object they would hide
    moves to the icon column on the right. Nothing is ever lost, only moved.
 
