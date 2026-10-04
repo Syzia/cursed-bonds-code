@@ -18,8 +18,10 @@
 ##      records, the pages' text
 ##   H  the cross-check of the board
 ##   I  fishing: 1,000 casts, the River Lord, the pale thing, the yen, the
-##      first catch, a companion, fish_Hook, rollback, packing up at the bite,
-##      the screen's own timers, the rolled sitting, the record book
+##      first catch, a companion, fish_Hook, rollback (blocked when a cast
+##      is dealt and again when it is settled; the rollback key at the bite),
+##      packing up at the bite, the screen's own timers, the rolled sitting,
+##      the record book
 ##   J  the Library's shelves; a desk is unchanged
 ##   K  autoplay timers and the menu key; the saved variables; zz_worst
 ##
@@ -145,6 +147,34 @@ init 999 python:
         if name == "fish_screen" and fish_phase() == "bite":
             zz_r.keep["bite_kind"] = fish_state.get("kind")
             return ("leave",)
+        return None
+
+    def zz_r_roll_at_bite(name):
+        """An `own` driver that, at the bite of cast 1, presses the player's
+        own rollback key (through the keymap), then asks renpy.rollback()
+        outright, then hooks dead centre; it packs up at cast 2."""
+        zz_r_phase(name)
+        if name != "fish_screen":
+            return None
+        k = zz_r.keep
+        if fish_state.get("cast", 0) >= 2:
+            return ("leave",)
+        if fish_phase() != "bite":
+            return None
+        now = time.time()
+        if "rb_t" not in k:
+            k["rb_t"] = now
+            k["rb_can"] = renpy.can_rollback()
+            k["rb_settled"] = fish_state.get("settled")
+            renpy.queue_event("rollback")
+            return None
+        if now - k["rb_t"] > 0.3 and "rb_asked" not in k:
+            k["rb_asked"] = True
+            renpy.rollback()
+            return None
+        if now - k["rb_t"] > 0.7:
+            k["rb_after"] = (fish_state.get("cast"), fish_phase(), fish_state.get("settled"))
+            return ("hook", 1.0)
         return None
 
     def zz_r_no_art(name):
@@ -1104,6 +1134,24 @@ label zz_smoke:
         check(_zz_a == dict(id="ayu", cm=20, yen=20 * fish_kind("ayu")["yen_per_cm"], record=True)
               and fish_land("ayu", 21)["record"] is False and fish_log["ayu"] == 22,
               "I: fish_land returns dict(id, cm, yen, record); the record is my longest and never falls", (_zz_a, fish_log))
+        ## The result line: a species' first catch is "the first in the
+        ## book"; "a new best" needs an earlier best to beat.
+        _zz_said = []
+        for _zz_old in (None, 1, 999):
+            fish_log.pop("ayu", None)
+            if _zz_old:
+                fish_log["ayu"] = _zz_old
+            fish_begin()
+            fish_next()
+            fish_state["kind"] = "ayu"
+            _zz_said.append(fish_settle(("hook", 1.0)))
+            fish_end()
+        check("The first in the book." in _zz_said[0] and "A new best." not in _zz_said[0]
+              and "A new best." in _zz_said[1] and "first in the book" not in _zz_said[1]
+              and "A new best." not in _zz_said[2] and "first in the book" not in _zz_said[2]
+              and all(t.startswith("Ayu, ") and "The kitchen will give me" in t for t in _zz_said),
+              "I: a species' first catch says 'The first in the book.', a longer one later 'A new best.', a shorter "
+              "one neither", _zz_said)
         new_day()
         _zz_c0 = control
         zz_with(dict(night_can_work=lambda: False), lambda: fish_land("ayu", 20))
@@ -1171,9 +1219,11 @@ label zz_smoke:
         check(zz_r.seen == ["fish_screen"] * 3 and period == "Noon" and fish_state == {} and len(fish_log) >= 1,
               "I: three casts are one sitting and cost one period (advance_period_soft); fish_state is {} afterwards",
               (zz_r.seen, period, fish_state))
-        check([r[:2] for r in _zz_roll] == [(1, 0), (2, 1), (3, 2)] and _zz_roll[0][2] and zz_r.blocks == [False, False, False],
-              "I: after a settled cast (a catch or a miss) renpy.can_rollback() is False: read straight after each of the "
-              "sitting's three renpy.block_rollback() calls (it was True before the first cast)", (_zz_roll, zz_r.blocks))
+        check([r[:2] for r in _zz_roll] == [(1, 0), (2, 1), (3, 2)] and not [r for r in _zz_roll if r[2]]
+              and zz_r.blocks == [False] * 6,
+              "I: rollback is blocked when a cast is dealt and again when it is settled (a catch or a miss): "
+              "renpy.can_rollback() is False straight after each of the sitting's six renpy.block_rollback() calls, "
+              "and already False while the first cast is on screen", (_zz_roll, zz_r.blocks))
         note("I: rollback", "the result line that follows a settled cast is a new checkpoint, so rollback can reach that "
              "line again but never the cast before it")
         check(len([t for t in zz_r.lines if " cm." in t]) == 2 and len([t for t in zz_r.lines if t in FISH_MISS_LINES]) == 1
@@ -1212,10 +1262,32 @@ label zz_smoke:
         zz_r_stop()
         check(zz_r.keep["phases"] == [(1, "wait"), (1, "bite")] and period == "Noon" and fish_state == {} and yen == _zz_y0
               and len(zz_r.lines) == 1 and zz_r.lines[0] == zz_with(dict(fish_state=dict(cast=1)), lambda: fish_miss_line(zz_r.keep["bite_kind"]))
-              and zz_r.blocks == [False],
+              and zz_r.blocks == [False, False],
               "I: Pack up once the float has dipped (the screen's own wait timer brought the bite) is a miss: one miss "
               "line, the period is charged, nothing is paid, and renpy.can_rollback() is False after the block",
               (zz_r.keep["phases"], period, fish_state, zz_r.lines, zz_r.blocks))
+
+        ## The rollback key at the bite (D33): the zone has shown what is on
+        ## the line, so neither the key nor renpy.rollback() may take the
+        ## cast back to its wait, or out of the sitting.
+        zz_r_fix("rich", here="riverside", period="Morning")
+        zz_r.keep["phases"] = []
+        for _zz_k in ("rb_t", "rb_can", "rb_settled", "rb_asked", "rb_after"):
+            zz_r.keep.pop(_zz_k, None)
+        del zz_r.lines[:]
+        zz_r_drive([], own=zz_r_roll_at_bite)
+    "A line before the sitting, so there is somewhere to roll back to."
+    call sb_do_fish_cast
+    python:
+        zz_r_stop()
+        check(zz_r.keep.get("rb_can") is False and zz_r.keep.get("rb_asked")
+              and zz_r.keep["phases"] == [(1, "wait"), (1, "bite"), (2, "wait")]
+              and zz_r.keep.get("rb_after") == (1, "bite", zz_r.keep.get("rb_settled")) and zz_r.keep.get("rb_settled") == 0
+              and len(zz_r.lines) == 1 and " cm." in zz_r.lines[0] and period == "Noon" and fish_state == {},
+              "I (D33): at the bite of cast 1 the rollback key (queued through the keymap) and renpy.rollback() do "
+              "nothing: the screen stays in its bite, never returns to the wait, nothing is settled by it; the hook "
+              "that follows lands and the period is charged",
+              (zz_r.keep.get("rb_can"), zz_r.keep["phases"], zz_r.keep.get("rb_after"), zz_r.lines, period))
 
         ## The screen's own timers, nothing answered: the wait timer brings
         ## the bite, the sweep's timer returns the miss, three times over.

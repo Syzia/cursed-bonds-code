@@ -116,5 +116,5 @@ label sb_do_spot_vend:
     $ add_yen(-SPOT_VEND["yen"])
     "The machine under the eaves takes my coins, thinks about it, and drops a can so cold it hurts to hold."
     $ stamina = min(stamina_max, stamina + SPOT_VEND["stamina"])
-    "I drink it standing under the eaves, and feel a little more like myself."
+    "I drink it where I stand, and feel a little more like myself."
     return

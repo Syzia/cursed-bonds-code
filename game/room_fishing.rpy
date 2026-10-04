@@ -340,7 +340,7 @@ init -1 python:
                     "For a moment the water beneath it is the wrong colour.")
         return FISH_MISS_LINES[(store.day + store.fish_state.get("cast", 0)) % len(FISH_MISS_LINES)]
 
-    def fish_catch_line(res):
+    def fish_catch_line(res, first=False):
         k = fish_kind(res["id"])
         if res["id"] == FISH_PALE:
             return ("What comes up is not a fish. It is pale, with too many joints, and it lets go of the hook "
@@ -353,7 +353,9 @@ init -1 python:
                 line += " The cook will pay %s for it and not ask where." % fish_yen(res["yen"])
             return line
         line = "%s, %d cm." % (k["name"], res["cm"])
-        if res["record"]:
+        if first:
+            line += " The first in the book."
+        elif res["record"]:
             line += " A new best."
         return line + " The kitchen will give me %s for it." % fish_yen(res["yen"])
 
@@ -383,7 +385,8 @@ init -1 python:
         st["kind"] = ""
         fish_company()
         if fish_hit(kind, q):
-            return fish_catch_line(fish_land(kind, fish_length(kind, q)))
+            first = kind not in store.fish_log
+            return fish_catch_line(fish_land(kind, fish_length(kind, q)), first)
         return fish_miss_line(kind)
 
     def fish_leave():
@@ -546,7 +549,7 @@ screen fish_screen():
             add fish_float() at fish_still
     add Solid(gui.paper) xysize (64, 2) pos (FISH_FLOAT[0] - 32, FISH_FLOAT[1] + 2) alpha 0.35
 
-    ## Top left: the casts, and the record book.
+    ## Top left: the casts.
     hbox:
         pos (60, 56)
         ysize 56
@@ -555,9 +558,6 @@ screen fish_screen():
             add icon("fish_cast", 48) alpha (0.3 if _fish_i + 1 < _fish_n else 1.0) yalign 0.5
         if _fish_n:
             text "Cast [_fish_n] of [FISH_CASTS]" style "fish_text" yalign 0.5
-        if _fish_phase != "bite":
-            use icon_btn("record", SetScreenVariable("fish_book", True), tip="Record book",
-                         size=48, wid="fish_record", words="never")
 
     ## The bar: the zone, and the marker crossing it and coming back.
     if _fish_phase == "bite" and _fish_kind:
@@ -581,6 +581,15 @@ screen fish_screen():
         text_color gui.gold
         text_hover_color gui.paper
         action (fish_Hook() if (_fish_phase == "bite" and not fish_book) else None)
+
+    ## The record book's button, above Pack up: its hover label opens to the
+    ## left, over open water.
+    if _fish_phase != "bite":
+        fixed:
+            pos (1750, 900)
+            xysize (60, 60)
+            use icon_btn("record", SetScreenVariable("fish_book", True), tip="Record book",
+                         size=48, wid="fish_record", words="never")
 
     textbutton "Pack up":
         id "fish_leave"
@@ -640,6 +649,9 @@ label sb_do_fish_cast:
 
     while fish_more():
         $ fish_next()
+        ## A dealt cast can't be rolled back out of (D33): the zone shows
+        ## what is on the line, and the hook can't be tried twice.
+        $ renpy.block_rollback()
         call screen fish_screen
         $ _fish_r = _return
         if not isinstance(_fish_r, tuple) or not _fish_r or _fish_r[0] == "leave":
