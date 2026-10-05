@@ -225,7 +225,7 @@ a modal screen; a harness's own `renpy.pause` over one needs `modal=False`.
 | `load_slot.rpy` | Used by `load_all_saves.sh`: loads one save (`SMOKE_SAVES=1 SMOKE_SLOT=1-1`) and reports where it lands. |
 
 Phase 2's harnesses (the PASS counts are the merged tree's at the end of P8,
-for comparison; after checkpoint D `core_flow` is 26, `wp1_world` 155 and
+for comparison; after checkpoint D `core_flow` is 26, `wp1_world` 156 and
 `wp7_ui` 146):
 
 | harness | what it checks |
@@ -239,7 +239,7 @@ for comparison; after checkpoint D `core_flow` is 26, `wp1_world` 155 and
 | `p2_view.rpy` (130) | People blended into rooms: slots, poses, foregrounds, name tags, blink and talk, the save test in dialogue, the pose plan against the schedule. It runs the system `python3` for `install_pose.py`. About 110 s. |
 | `p2_rooms.rpy` (126) | Hotspots (every action is in the room or in the column, never neither, never both), the computer, the Library, fishing, the vending machine. |
 | `p2_cards.rpy` (145) | Blackjack and poker: thousands of simulated hands, the limits, rollback blocked after every deal. About 45 s. |
-| `p2_paths.rpy` (109) | Exits and the five yards: the graph is connected, an exit costs no time, locked exits, the map's smaller markers. |
+| `p2_paths.rpy` (110) | Exits and the five yards: the graph is connected, an exit costs no time, locked exits, the map's smaller markers. |
 | `phase2_all.rpy` (35) | The whole of phase 2 end to end: `SMOKE_TIMEOUT=300 tools/smoke.sh tools/smoke/phase2_all.rpy` (about 90 s for the default 30 days; `PHASE2_DAYS` sets the days, `PHASE2_MAX_SECONDS` when the driver stops itself). A fresh game through the prologue, then the real loop played by a driver that presses what the screens offer: the map's two levels and the exits on alternate days, the journal's five tabs and a person's page, a board job a day, a page read and the cross-check, a cast, a blackjack and a poker hand, a ride with Ijichi, a night in Shibuya with a market purchase, a Gojo night, bed and one carried-home night. It writes `days.txt` (one block a day) and `driver_log.txt`. |
 | `p2_saves.rpy` (187) | Saves are tested by saving: `tools/smoke.sh tools/smoke/p2_saves.rpy` (about 50 s). In one run inside the real loop it makes and reloads 22 saves (the armory, the board, a yard, the map, the computer, the journal, the person view, dialogue, blackjack, fishing at the bite, the night's menus, the market, the Gojo night, the rest day, the walk home's line) and checks each comes back on its own statement with the same state, without `load_recover`. It also rolls back through `stage_person`, through a market purchase, through the Gojo night's `new_day()` and onto the walk home's line. Not covered: a save inside a fight or on the grade card (the owner's phase-1 saves cover those). `p8_patterns/` holds the two patterns it was built from, with a README on the two load pitfalls. |
 | `p2_oldsave.rpy` (21 on slot 1-1, 14 on the others) | One of the owner's saves, played on: `SMOKE_SAVES=1 SMOKE_SLOT=1-1 tools/smoke.sh tools/smoke/p2_oldsave.rpy` (about 10 s). It loads the slot (1-1 was made before phase 2), checks it lands on its statement with phase 2's variables at their defaults, plays through the real loop to the next morning, then saves and loads on the place view, the map, the person view and the journal. |

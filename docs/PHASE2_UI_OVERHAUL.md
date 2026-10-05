@@ -213,10 +213,26 @@ Already promised by the storyboard, now moved here.
 - **The Common Room in the evening:** "Don't fill the common room in the evening, it only makes sense to fill it with the 1st years." (The question was the "+1" chip on Panda's feet when five people stand there; the offer was to move the chip. The owner chose to empty the room instead.) Read as: in the Evening, on every day of the week, only Yuji, Megumi and Nobara stand in the Common Room by their own routine. Chosen for the two who left:
   - **Panda is in the Library in the evening.** It is a study room like the Common Room, so "Study together" can still be asked of him there, and he brings the crisps.
   - **Toge is in the Library in the evening too.** It is the one room where nobody is expected to talk, and "Study together" can still be asked of him.
-  - Panda's **Night** in the Common Room is unchanged (the owner spoke of the evening); it is asked in `docs/PLAYTEST.md`. The "+N" chip was not moved. Someone I ask along still comes into the Common Room with me: that is my doing, not their routine.
+  - Panda's **Night** in the Common Room was left then (the owner spoke of the evening) and asked; the answer is under "After the D notes" below. The "+N" chip was not moved. Someone I ask along still comes into the Common Room with me: that is my doing, not their routine.
 - **The icon column's label:** "Make the label open above." Read as: the label that hid an exit opens above its icon. Built: the column's first label opens above its icon wherever nothing is in the way; and because that alone does not clear the Library's exit or the Riverside's bank, any column label that would still hide a way out, something to click, a corner button or a toast sits beside the column and moves up or down until it hides nothing.
 - **The build folder:** "Leave the folder has Version 0.4". Read as: the build folder is version 0.4, like the game (it was still named 0.3). No save depends on it.
 - **Old saves:** "Leave the saves for now." No more old-save testing now.
+
+**After the D notes (5 Oct 2026).** The changes above were shown to the owner with three questions: (1) Panda and Toge in the evening: the Library, as built, or outside? (2) Panda at night: leave him alone in the Common Room, or move him too? (3) The weekend card table now seats Megumi alone: leave it, or change it? The owner's words:
+- "Put Panda in the garden for now. But we do need to add dorms, instead of just girls dorms and my dorm. Also where do the teachers stay. We're going to need a teachers lounge/dorms. If they stay on campus. Gojo wont, but the other will."
+- "Leave it as megumi for now. We can add an invite feature. Like invite toge or panda etc to come play."
+- "Other than that we can merge the pr."
+
+How each was read:
+- "Put Panda in the garden for now" answers (2). Built: at Night Panda stands in the Dormitory Garden, beside Yuji, on every day of the week. The Common Room is then empty at Night unless I bring someone in. "For now" means until there are dormitories for him to sleep in.
+- Nothing was said to (1), so the evening stays as built: Panda and Toge in the Library.
+- "Leave it as megumi for now" answers (3): the weekend card table stays as built.
+- "Other than that we can merge the pr": phase 2 is merged after this change.
+
+**Asked for after phase 2 (not built).** Nothing here is designed yet.
+- **More dormitories,** not only the girls' dormitory and my room, so that everyone who lives on campus has somewhere to be at night. When they exist, Panda's Night moves from the garden to his room.
+- **Where the teachers stay:** a teachers' lounge, teachers' dormitories, or both. Gojo lives off campus; the others live on it.
+- **An invite for the card table:** ask Toge, Panda or someone else to come and play.
 
 **Still open from phase 1's review** (the design proposes a default for each):
 - Two-slot activities (sparring, a heart-to-heart, a Tokyo trip) can skip past a story beat that only happens at noon, so it comes a day late.

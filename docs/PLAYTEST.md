@@ -5,7 +5,8 @@
 *You played this on 5 Oct 2026 and it passed. Your four answers are built or
 noted: who is in the Common Room in the evening, where the icon column's label
 opens, the build folder's version (now 0.4, like the game), and old saves
-(left for now). The steps below say what is true now.*
+(left for now). One more answer came after: Panda is in the Dormitory Garden
+at night, for now. The steps below say what is true now.*
 
 This is the last check of phase 2. Play the game from the Ren'Py launcher (the
 SDK) as usual, on the `phase2` branch in your game folder. Running from the
@@ -75,9 +76,9 @@ The parts are in a sensible order, but each stands alone. Tick them off.
    can't enter yet) is dimmed. Rest the pointer on it for the reason. Clicking
    it does nothing.
 5. People stand in the yards at some hours: Nobara in the Training Yard on
-   weekday mornings, Yuji in the Dormitory Garden at night, Megumi on the
-   Mountain Path on weekend mornings and Shoko on the Staff Building Steps on
-   weekend afternoons. Toge is in the School Courtyard on weekday afternoons,
+   weekday mornings, Yuji and Panda in the Dormitory Garden at night, Megumi
+   on the Mountain Path on weekend mornings and Shoko on the Staff Building
+   Steps on weekend afternoons. Toge is in the School Courtyard on weekday afternoons,
    once you have met him; before that it is empty. (In the evening Toge and
    Panda are in the Library: see part 4.)
 6. When several people stand in a room, an exit or an object they would hide
@@ -326,6 +327,9 @@ Every number here is one table entry. Say the word and any of them changes.
 | **The icon column's label** opened to the left, over an exit | D | "Make the label open above." Built: the column's first label opens above its icon; any column label that would still hide a way out or something to click moves up or down beside the column until nothing is under it. |
 | **The build folder** was still named 0.3 | D | "Leave the folder has Version 0.4". Built: the folder is 0.4, like the game. Your saves are untouched by it. |
 | **Old saves:** your eleven all load where they were saved; no more were tested | D | "Leave the saves for now." Left for now. |
+| **Panda at night:** alone in the Common Room | after D | "Put Panda in the garden for now." Built: at Night Panda is in the Dormitory Garden with Yuji, every day. The Common Room is empty at Night unless you bring someone in. |
+| **Panda and Toge in the evening:** the Library, or outside | after D | You said nothing against it, so the Library stays. |
+| **The weekend card table** seats Megumi alone | after D | "Leave it as megumi for now." Left as it is. |
 
 What you asked for at B, all built: the Mountain marker moved onto the
 mountain; smaller markers; walking by exits and the five yards; "Classroom"
@@ -333,6 +337,14 @@ instead of "Classroom Building"; no "Closer: after roll call" line.
 
 What you asked for at D, all built: the Common Room in the evening is the
 first years'; the column's label opens above; the build folder is 0.4.
+After D: Panda is in the garden at night.
+
+**Asked for later (not built, nothing designed yet):** more dormitories, so
+that everyone who lives on campus has somewhere to be at night (Panda's night
+then moves from the garden to his room); somewhere for the teachers to stay (a
+teachers' lounge, dormitories, or both; Gojo lives off campus, the others on
+it); and an invite for the card table (ask Toge, Panda or someone else to come
+and play).
 
 ---
 
@@ -383,12 +395,13 @@ you want it.
   installed.
 
 **After D** (what your answers left open)
-- **Panda at night.** You spoke of the evening, so Panda's night was left as
-  it is: he is alone in the Common Room at Night. Leave him there, or should
-  the room be empty at night too? (If he moves, say where, or leave it to me.)
-  Once his story has started his line there used to say he was sharing out
-  crisps; alone, that no longer read true, so it now says a bag of crisps is
-  open beside him.
+
+Settled by your second answer (5 Oct):
+- Panda at night: the Dormitory Garden, for now.
+- Panda and Toge in the evening: the Library stays.
+- The weekend card table: Megumi alone, for now. An invite is asked for later.
+
+Still open:
 - **Where five people still stand together.** Three hours of the week: the
   Cafeteria at noon on weekdays, the Cafeteria at noon at weekends (Yuji,
   Megumi, Nobara and Panda on the floor, Toge on the "+1" chip; six when Gojo
@@ -399,13 +412,6 @@ you want it.
   label opens to the left over Panda's right foot (in the Cafeteria it stops
   short of it). Nothing was changed there. Say if you would rather thin those
   hours out as well, or have the chip moved after all.
-- **Would you rather see Panda and Toge outside in the evening?** The Library
-  was chosen so that you can still study with them. A yard (Panda in the
-  Dormitory Garden, Toge on the School Courtyard steps) is one small edit, but
-  "Study together" with them would then need "Ask them along" first. One
-  thing for the yard: Panda's journal line says he does his rounds at eight in
-  the evening with crisps, and the Dormitory Garden would show that; the
-  Library does not.
 - **A label can touch an icon.** Nothing is hidden, but in these places a
   label sits edge to edge with an icon: in the Library (Hold the hour, just
   under the exit), at the Riverside (Train sits right on top of the fishing
@@ -426,6 +432,11 @@ you want it.
   noon, say), before you have held the hour, the label of Hold the hour moves
   up and sits beside Practice, almost where Practice's own label sits. The
   icon under the pointer is still the one lit. Say if it reads wrong.
+- **The Dormitory Garden at night with someone walking along.** Three people
+  stand there then, most exits move to the icon column, and the column gains a
+  second column of one icon, Hold the hour. Until you have held the hour that
+  day, the label of "Let them go" opens over that icon. No exit is hidden.
+  Say if it reads wrong.
 - **The Common Room on a weekday evening: the TV and the card table.** On a
   weekday evening Nobara is on the sofa and the last person standing (Megumi)
   is placed in front of the card table and the TV. So there is no TV look at
@@ -434,17 +445,6 @@ you want it.
   now). At the weekend it is better than before: Megumi is alone, and both
   can be clicked in the picture. Should the last person stand somewhere else
   on weekdays, so that both stay clickable in the picture?
-- **Cards in the evening.** On a weekday evening nothing changes at the
-  table in the ordinary way: it seats three, the three seats were already
-  Yuji's, Megumi's and Nobara's, and one sitting takes the evening. (One rare
-  case: if you had already played one of them earlier that day by bringing
-  them along, Panda used to take that seat in the evening; now the same first
-  year sits again.) At the weekend the table used
-  to seat Megumi, Panda and Toge; now the only player is Megumi. Panda or Toge
-  now sits only when you bring one of them along at an hour when a seat is
-  free (a weekend evening, or an hour when the room is otherwise empty; not a
-  weekday evening, when the first years fill the table). Leave it, or say if
-  you want it otherwise.
 - **Panda's memory "The Boy in the Car"** is still set in the Common Room in
   the evening: that is the picture on its tile and where its replay stands.
   Leave it, or set it in the Library now?
