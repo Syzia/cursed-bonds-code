@@ -120,9 +120,10 @@ init python:
         ("megumi", "classroom",   "thread:megumi:2",    "going back through Tsumiki's folder", "serious"),
         ("nobara", "dorm_common", "thread:nobara:1",    "scrolling through old photos", "neutral"),
         ("maki",   "dojo",        "thread:maki:1",      "drilling with a staff, a second one set out", "serious"),
-        ("panda",  "dorm_common", "thread:panda:1",     "sharing out a bag of crisps", "happy"),
+        ("panda",  "dorm_common", "thread:panda:1",     "a bag of crisps open beside him", "happy"),
         ## After checkpoint D his evening is in the library: the crisps go
-        ## with him (the row above still serves the common room at Night).
+        ## with him. The row above shows at Night, when he is alone in the
+        ## common room, so it no longer says he is sharing them out.
         ("panda",  "library",     "thread:panda:1",     "a bag of crisps open under the table", "happy"),
         ("toge",   "cafeteria",   "thread:toge:1",      "lining up onigiri by filling", "happy"),
         ("shoko",  "infirmary",   "thread:shoko:1",     "with coffee, an old photo face down on the desk", "neutral"),
