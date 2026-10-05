@@ -117,8 +117,9 @@ that would still hide a way out or something to click sits beside the column
 instead, a little higher or lower, so nothing is ever under it (try Hold the
 hour in the Library, and Train at the Riverside). The Courtyard's Practice
 label does that too once you have held the hour that day, or while someone
-walks along: Practice is then one step lower or higher in the column, and its
-label sits beside the column, just under the Training Yard exit or between the
+walks along and nobody else is standing there (at noon, say): Practice is
+then one step lower or higher in the column, and its label sits beside the
+column, just under the Training Yard exit or between the
 vending machine and that exit, still hiding nothing.
 
 1. **The computer** (My Room, the laptop). Read three pages. The first time
@@ -412,8 +413,8 @@ you want it.
   hour, just under the Training Yard exit) and in the Courtyard (Practice,
   opened above, touches the vending machine's icon; once you have held the
   hour that day its label sits beside the column, right under the Training
-  Yard exit; with someone walking along it sits beside the column, right
-  under the vending machine). There may be others like them. A little air
+  Yard exit; with someone walking along and nobody else there it sits beside
+  the column, right under the vending machine). There may be others like them. A little air
   can be added for the labels that sit beside the column; the Courtyard's
   Practice label, when it opens above, would stay where it is, touching the
   vending machine, because with any gap there it no longer fits above.
@@ -421,10 +422,10 @@ you want it.
   Courtyard at night with someone walking along, the label of Go to bed moves
   far enough down to stand level with "Let them go"; at the Riverside on a
   weekend afternoon the Mountain Path label sits half beside Wait. In the
-  Courtyard with someone walking along, before you have held the hour, the
-  label of Hold the hour moves up and sits beside Practice, almost where
-  Practice's own label sits. The icon
-  under the pointer is still the one lit. Say if it reads wrong.
+  Courtyard with someone walking along and nobody else standing there (at
+  noon, say), before you have held the hour, the label of Hold the hour moves
+  up and sits beside Practice, almost where Practice's own label sits. The
+  icon under the pointer is still the one lit. Say if it reads wrong.
 - **The Common Room on a weekday evening: the TV and the card table.** On a
   weekday evening Nobara is on the sofa and the last person standing (Megumi)
   is placed in front of the card table and the TV. So there is no TV look at
