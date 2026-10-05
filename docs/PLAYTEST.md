@@ -327,7 +327,7 @@ Every number here is one table entry. Say the word and any of them changes.
 | **The icon column's label** opened to the left, over an exit | D | "Make the label open above." Built: the column's first label opens above its icon; any column label that would still hide a way out or something to click moves up or down beside the column until nothing is under it. |
 | **The build folder** was still named 0.3 | D | "Leave the folder has Version 0.4". Built: the folder is 0.4, like the game. Your saves are untouched by it. |
 | **Old saves:** your eleven all load where they were saved; no more were tested | D | "Leave the saves for now." Left for now. |
-| **Panda at night:** alone in the Common Room | after D | "Put Panda in the garden for now." Built: at Night Panda is in the Dormitory Garden with Yuji, every day. The Common Room is empty at Night unless you bring someone in. |
+| **Panda at night:** alone in the Common Room | after D | "Put Panda in the garden for now." Built: at Night Panda is in the Dormitory Garden with Yuji, every day. The Common Room is empty at Night unless you bring someone in. With nobody there, the card table's icon is not shown at Night; it was closed at Night anyway. Only in the look-around mode ("Explore the campus", where the night rule is off): "Study together" with Panda at Night is no longer offered; he is in the Library in the evening for that. |
 | **Panda and Toge in the evening:** the Library, or outside | after D | You said nothing against it, so the Library stays. |
 | **The weekend card table** seats Megumi alone | after D | "Leave it as megumi for now." Left as it is. |
 
