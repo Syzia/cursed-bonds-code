@@ -81,7 +81,7 @@ These are the ones worth relighting, going by the schedules in
 | Infirmary | Shoko, at night | night (done) |
 | Rooftop | Shoko in the evening, and Gojo at any hour | evening and night (done) |
 | Riverside | Maki in the evening | evening (done) |
-| Dorm common room | nearly everyone, evening and night | evening and night (done) |
+| Dorm common room | the first years in the evening (after checkpoint D); Panda at night | evening and night (done) |
 | Girls' dormitory | Nobara and Maki, at night | night (done) |
 | Courtyard, dojo, cafeteria | weekend evenings | the tint is enough for now |
 | Principal's office | nobody after dark | none needed: it's candlelit at every hour |

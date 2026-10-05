@@ -136,7 +136,8 @@ vending machine and that exit, still hiding nothing.
    marker is in the green. The **record book** button is at the bottom right.
    Packing up before the float dips is free.
 5. **Cards** (Common Room, when someone is there and you hold ¥100; in the
-   evening that is the first years, plus anyone you bring along; on a
+   evening that is the first years; someone you bring along sits only when
+   a seat is free, so not on a weekday evening; on a
    weekday evening Megumi stands in front of the table, so **Play cards** is
    in the icon column on the right). Play a
    few hands of **blackjack** and one of **poker**. Watch their faces: each
@@ -416,10 +417,13 @@ you want it.
   can be added for the labels that sit beside the column; the Courtyard's
   Practice label, when it opens above, would stay where it is, touching the
   vending machine, because with any gap there it no longer fits above.
-- **A moved label can end up beside the next icon down.** In the School
+- **A moved label can end up beside the next icon up or down.** In the School
   Courtyard at night with someone walking along, the label of Go to bed moves
   far enough down to stand level with "Let them go"; at the Riverside on a
-  weekend afternoon the Mountain Path label sits half beside Wait. The icon
+  weekend afternoon the Mountain Path label sits half beside Wait. In the
+  Courtyard with someone walking along, before you have held the hour, the
+  label of Hold the hour moves up and sits beside Practice, almost where
+  Practice's own label sits. The icon
   under the pointer is still the one lit. Say if it reads wrong.
 - **The Common Room on a weekday evening: the TV and the card table.** On a
   weekday evening Nobara is on the sofa and the last person standing (Megumi)
@@ -430,8 +434,11 @@ you want it.
   can be clicked in the picture. Should the last person stand somewhere else
   on weekdays, so that both stay clickable in the picture?
 - **Cards in the evening.** On a weekday evening nothing changes at the
-  table: it seats three, the three seats were already Yuji's, Megumi's and
-  Nobara's, and one sitting takes the evening. At the weekend the table used
+  table in the ordinary way: it seats three, the three seats were already
+  Yuji's, Megumi's and Nobara's, and one sitting takes the evening. (One rare
+  case: if you had already played one of them earlier that day by bringing
+  them along, Panda used to take that seat in the evening; now the same first
+  year sits again.) At the weekend the table used
   to seat Megumi, Panda and Toge; now the only player is Megumi. Panda or Toge
   now sits only when you bring one of them along at an hour when a seat is
   free (a weekend evening, or an hour when the room is otherwise empty; not a
