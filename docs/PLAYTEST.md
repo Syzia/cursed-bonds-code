@@ -111,10 +111,15 @@ The parts are in a sensible order, but each stands alone. Tick them off.
 
 Each is a small glowing icon on an object. The icon column on the right holds
 whatever isn't in the picture. Rest the pointer on the column's top icon: its
-label opens **above** the icon (try Practice in the Courtyard). A label that
-would still hide a way out or something to click sits beside the column
+label opens **above** the icon (try Practice in the Courtyard in the morning,
+before you have held the hour that day and with nobody walking along). A label
+that would still hide a way out or something to click sits beside the column
 instead, a little higher or lower, so nothing is ever under it (try Hold the
-hour in the Library, and Train at the Riverside).
+hour in the Library, and Train at the Riverside). The Courtyard's Practice
+label does that too once you have held the hour that day, or while someone
+walks along: Practice is then one step lower or higher in the column, and its
+label sits beside the column, just under the Training Yard exit or between the
+vending machine and that exit, still hiding nothing.
 
 1. **The computer** (My Room, the laptop). Read three pages. The first time
    you read a page a gold "Noted." strip says what you got from it. Then open
@@ -399,30 +404,39 @@ you want it.
   thing for the yard: Panda's journal line says he does his rounds at eight in
   the evening with crisps, and the Dormitory Garden would show that; the
   Library does not.
-- **A label can touch an icon.** Nothing is hidden, but in four places a
+- **A label can touch an icon.** Nothing is hidden, but in these places a
   label sits edge to edge with an icon: in the Library (Hold the hour, just
   under the exit), at the Riverside (Train sits right on top of the fishing
   icon and Hold the hour right under it), in the Staff Building yard (Hold the
   hour, just under the Training Yard exit) and in the Courtyard (Practice,
-  opened above, touches the vending machine's icon). A little air can be added
-  for the labels that sit beside the column; the Courtyard's Practice label
-  would stay where it is, touching the vending machine, because with any gap
-  there it no longer fits above.
+  opened above, touches the vending machine's icon; once you have held the
+  hour that day its label sits beside the column, right under the Training
+  Yard exit; with someone walking along it sits beside the column, right
+  under the vending machine). There may be others like them. A little air
+  can be added for the labels that sit beside the column; the Courtyard's
+  Practice label, when it opens above, would stay where it is, touching the
+  vending machine, because with any gap there it no longer fits above.
 - **A moved label can end up beside the next icon down.** In the School
   Courtyard at night with someone walking along, the label of Go to bed moves
   far enough down to stand level with "Let them go"; at the Riverside on a
   weekend afternoon the Mountain Path label sits half beside Wait. The icon
   under the pointer is still the one lit. Say if it reads wrong.
-- **The Common Room on a weekday evening: the TV and the card table.** With
-  exactly three people in the room, the third (Megumi) stands in front of the
-  card table and the TV. So there is no TV look at that hour, and cards start
-  from the icon column instead of the table. This used to happen only at
-  weekends; now it is every weekday evening. Should the third person stand
-  somewhere else, so that both stay clickable in the picture?
-- **Cards in the evening.** With three people in the room there is one
-  sitting an evening on weekdays (there were two), and at the weekend the only
-  player is Megumi. Panda and Toge play only when you bring one of them along.
-  Leave it, or say if you want it otherwise.
+- **The Common Room on a weekday evening: the TV and the card table.** On a
+  weekday evening Nobara is on the sofa and the last person standing (Megumi)
+  is placed in front of the card table and the TV. So there is no TV look at
+  that hour, and cards start from the icon column instead of the table. It
+  was already so before your change (Panda stood there then; Megumi does
+  now). At the weekend it is better than before: Megumi is alone, and both
+  can be clicked in the picture. Should the last person stand somewhere else
+  on weekdays, so that both stay clickable in the picture?
+- **Cards in the evening.** On a weekday evening nothing changes at the
+  table: it seats three, the three seats were already Yuji's, Megumi's and
+  Nobara's, and one sitting takes the evening. At the weekend the table used
+  to seat Megumi, Panda and Toge; now the only player is Megumi. Panda or Toge
+  now sits only when you bring one of them along at an hour when a seat is
+  free (a weekend evening, or an hour when the room is otherwise empty; not a
+  weekday evening, when the first years fill the table). Leave it, or say if
+  you want it otherwise.
 - **Panda's memory "The Boy in the Car"** is still set in the Common Room in
   the evening: that is the picture on its tile and where its replay stands.
   Leave it, or set it in the Library now?
