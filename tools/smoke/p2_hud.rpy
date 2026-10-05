@@ -9,6 +9,8 @@
 ##   3. the column offers exactly rail_actions and the missions, in every room
 ##      and period, with and without a companion; place_actions against the
 ##      baseline (tools/smoke/baseline_p0.json)
+##   3b. (after checkpoint D) a column tile's hover label hides no exit, no
+##      hotspot, no corner button and no toast, in every place at every period
 ##   4. the column holds no words; nine actions clear the toast lane
 ##   5. the person view returns what the baseline recorded and shows no name,
 ##      thread pips, "Closer" or bars; at most 16 words
@@ -394,6 +396,100 @@ init 999 python:
     config.overlay_screens.append("zz_hud_probe")
 
 
+    ## --- after checkpoint D: where a column tile's label opens --------------
+    ZZ_HUD_CORNER = ("hud_map", "hud_journal", "hud_menu")
+
+    def zz_hud_rects(screen, heads):
+        """{id: (x, y, w, h)} of every button on a shown screen whose id
+        starts with one of `heads`, from the focus list of the last frame."""
+        sc = renpy.get_screen(screen)
+        if sc is None:
+            return {}
+        ids = {}
+        for src in (getattr(sc, "base_widgets", None) or {}, getattr(sc, "widgets", None) or {}):
+            for k, w in src.items():
+                if isinstance(k, str) and k.startswith(heads):
+                    ids[builtins.id(w)] = k
+        out = {}
+        for f in renpy.display.focus.focus_list:
+            k = ids.get(builtins.id(f.widget))
+            if k is not None and f.x is not None:
+                out[k] = (int(round(f.x)), int(round(f.y)), int(round(f.w)), int(round(f.h)))
+        return out
+
+    def zz_hud_spot_rect(tile, size, spot):
+        """(x, y, w, h): where icon_tip_spot's answer puts a label of `size`
+        for the tile: above it with the right edges together, or beside it,
+        moved by the shift."""
+        if spot[0] == "top":
+            return (tile[0] + tile[2] - size[0], tile[1] - size[1], size[0], size[1])
+        return (tile[0] - size[0], tile[1] + spot[2], size[0], size[1])
+
+    def zz_hud_label_hits(lab, tile, hots, corner):
+        """What a column tile's label covers, as a list of names (empty when
+        it is clear): the screen's edge, its own tile, an exit or a hotspot
+        (their buttons as drawn), a corner button, the toast lane."""
+        if lab is None:
+            return ["no label drawn"]
+        out = []
+        if lab[0] < 0 or lab[1] < 0 or lab[0] + lab[2] > config.screen_width or lab[1] + lab[3] > config.screen_height:
+            out.append("off the screen")
+        if zz_hud_meets(lab, tile):
+            out.append("its own tile")
+        out.extend(k for k, r in sorted(hots.items()) if zz_hud_meets(lab, r))
+        out.extend(k for k, r in sorted(corner.items()) if zz_hud_meets(lab, r))
+        if zz_hud_meets(lab, (TOAST_LANE[0], TOAST_LANE[1], TOAST_LANE[2] - TOAST_LANE[0], TOAST_LANE[3] - TOAST_LANE[1])):
+            out.append("the toast lane")
+        return out
+
+    def zz_hud_tile_hover(wid, want):
+        """Rest the pointer on a column tile and return its hover label's
+        rectangle as drawn. The label's place is taken when the focus
+        changes, so the pointer first steps onto the Menu button; the read
+        waits (up to about a second) for the label to be this tile's and to
+        stand where the rule puts it (`want`), and returns what is drawn
+        either way."""
+        lab = None
+        for _n in range(3):
+            renpy.set_focus("sb_place", "hud_menu")
+            zz_render(0.04)
+            renpy.set_focus("sb_place", wid)
+            for _k in range(6):
+                zz_render(0.04)
+                tip = GetTooltip()
+                lab = zz_hud_label()
+                if isinstance(tip, tuple) and tip[1] == wid and lab == want:
+                    return lab
+        tip = GetTooltip()
+        return lab if (isinstance(tip, tuple) and tip[1] == wid) else None
+
+    def zz_hud_tile_plan(loc, rows, tiles):
+        """[(id, tile rect, label size, spot, the rectangle the rule gives)]
+        for each tile of the column, top to bottom."""
+        tops = [c[0][5] for c in rail_layout(rows)[0] if c]
+        blocks = icon_tip_blocks(loc)
+        out = []
+        for r in rows:
+            tile = tiles.get(r[5])
+            size = icon_tip_size((r[3], r[5]))
+            if tile is None or size is None:
+                out.append((r[5], tile, size, None, None))
+                continue
+            spot = icon_tip_spot(tile, size, r[5] in tops, blocks)
+            out.append((r[5], tile, size, spot, zz_hud_spot_rect(tile, size, spot)))
+        return out
+
+    def zz_hud_tile_rects(rows):
+        """{id: (x, y, w, h)} of the column's tiles by the layout's own rule
+        (72 px tiles, 10 apart, bottom up from y 1040; the edge column at
+        x 1808, the next 82 further left), without drawing."""
+        out = {}
+        for i, col in enumerate(rail_layout(rows)[0]):
+            for k, r in enumerate(col[::-1]):
+                out[r[5]] = (1920 - 40 - RAIL_TILE - i * (RAIL_TILE + RAIL_GAP), RAIL_BOTTOM - RAIL_TILE - k * (RAIL_TILE + RAIL_GAP), RAIL_TILE, RAIL_TILE)
+        return out
+
+
 screen zz_hud_probe():
     zorder 200
     if ZZ_HUD_WANT[0]:
@@ -497,7 +593,8 @@ label zz_smoke:
                     shot("hover_" + _zz_w, wait=0)
         check(icon_tip_side(("Journal (J)", "hud_journal")) == "bottom" and icon_tip_side(("Rough morning", "hud_chip_moon")) == "bottom"
               and icon_tip_side(("Wait", "rail_wait")) == "left" and icon_tip_side("plain") == "left" and icon_tip_side(None) == "left",
-              "icon_tip_side: the corner buttons and the chips open their labels underneath; a column tile on the left")
+              "icon_tip_side: the corner buttons and the chips open their labels underneath; any other key answers left "
+              "(a column tile too: icon_tip_place then looks at what stands beside the column, section 3b)")
         check(all(_zz_rs.values()) and not _zz_bad,
               "hovered, no corner button's or status chip's label meets a neighbouring button, a chip or the date "
               "(hover check: needs the pointer)", _zz_bad)
@@ -691,6 +788,176 @@ label zz_smoke:
                       % (_zz_kind, len(_zz_b)), _zz_lost[:3])
                 check(not _zz_extra_rows, "baseline %s: any extra place_actions row is a registered place action" % _zz_kind,
                       _zz_extra_rows[:6])
+
+    ## --- 3b. after checkpoint D: a column tile's label hides nothing -------------------
+    ## The owner at checkpoint D: "Make the label open above." A label from
+    ## the icon column used to open to the left, over the Training Yard exit
+    ## in the Courtyard, the Library's exit and the Riverside's bank. Now
+    ## the column's top tile opens its label above the tile when nothing is
+    ## there, and any other label sits beside the column at the nearest
+    ## height where it hides nothing (icon_tip_place, ui_icons.rpy).
+    ##
+    ## First by the rule alone, over many more states than a run can draw.
+    python:
+        _zz_bad = []
+        _zz_n = 0
+        _zz_tiles = 0
+        _zz_kinds = {"top": 0, "left": 0, "moved": 0}
+        _zz_far = 0
+        _zz_two = []
+        _zz_corner_r = dict((w, r) for w, r in (("hud_map", (1668, 26, 64, 52)), ("hud_journal", (1742, 26, 64, 52)), ("hud_menu", (1816, 26, 64, 52))))
+        _zz_o_work = night_can_work
+        for _zz_kind in ("fresh", "rich"):
+            zz_hud_fixture(_zz_kind)
+            for _zz_day in ((3, 6) if _zz_kind == "fresh" else (9, 13)):     ## a weekday and a Saturday
+                day = _zz_day
+                roll_gojo()
+                for _zz_rest in (False, True):
+                    zz_hud_swap("night_can_work", (lambda: False) if _zz_rest else _zz_o_work)
+                    for _zz_hold in (False, True):
+                        actions_today = set(["hold"]) if _zz_hold else set()
+                        for _zz_comp in (None, "nobara"):
+                            companion = _zz_comp
+                            for _zz_loc in LOC_ORDER:
+                                for _zz_per in PERIODS:
+                                    period = _zz_per
+                                    here = _zz_loc
+                                    mission_cache_clear()
+                                    _zz_rows = rail_rows(_zz_loc)
+                                    _zz_tr = zz_hud_tile_rects(_zz_rows)
+                                    _zz_hots = dict(("hot_" + h["id"], hot_rect(h["x"], h["y"])) for h in hot_spots_for(_zz_loc))
+                                    _zz_n += 1
+                                    for _zz_w, _zz_tile, _zz_size, _zz_spot, _zz_lab in zz_hud_tile_plan(_zz_loc, _zz_rows, _zz_tr):
+                                        _zz_tiles += 1
+                                        _zz_hit = zz_hud_label_hits(_zz_lab, _zz_tile, _zz_hots, _zz_corner_r) if _zz_lab else ["no size"]
+                                        if _zz_hit:
+                                            _zz_bad.append((_zz_kind, _zz_day, _zz_rest, _zz_hold, _zz_comp, _zz_loc, _zz_per, _zz_w, _zz_lab, _zz_hit))
+                                            continue
+                                        _zz_kinds["top" if _zz_spot[0] == "top" else ("moved" if _zz_spot[2] else "left")] += 1
+                                        _zz_far = max(_zz_far, abs(_zz_spot[2]))
+                                        if any(zz_hud_meets(_zz_lab, r) for k, r in _zz_tr.items() if k != _zz_w):
+                                            _zz_two.append((_zz_loc, _zz_per, _zz_w))
+        zz_hud_swap("night_can_work", _zz_o_work)
+        actions_today = set()
+        companion = None
+        check(not _zz_bad and _zz_tiles > 5000,
+              "by the rule: no column tile's label lands on an exit, a hotspot, a corner button, the toast lane, its own tile or "
+              "the screen's edge (%d tiles in %d states: every place x period, both fixtures, a weekday and a Saturday, a rest day, "
+              "Hold used, a companion)" % (_zz_tiles, _zz_n), _zz_bad[:4])
+        note("where the column's labels open, by the rule", "%d above their tile, %d beside it unmoved, %d beside it moved up or down (the furthest %d px)"
+             % (_zz_kinds["top"], _zz_kinds["left"], _zz_kinds["moved"], _zz_far))
+        note("column labels that lie over a tile of the other column (two columns only)", (len(_zz_two), sorted(set(_zz_two))[:6]))
+        check(icon_tip_place(("Journal (J)", "hud_journal")) == ("bottom", 0.0, 0) and icon_tip_place(("Yuji\nx", "tag_yuji")) == ("top", 0.0, 0)
+              and icon_tip_place(("Dorm", "row_dorm")) == ("top", 0.5, 0) and icon_tip_place(("Toge\nx", "rail_more_toge")) == ("left", 0.0, 0)
+              and icon_tip_place("plain") == ("left", 0.0, 0) and icon_tip_place(None) == ("left", 0.0, 0),
+              "icon_tip_place: every button that is not a column tile is placed as before (its side by the key, no shift); "
+              "the +N chip's names are not tiles",
+              [icon_tip_place(t) for t in (("Journal (J)", "hud_journal"), ("Yuji\nx", "tag_yuji"), ("Dorm", "row_dorm"), ("Toge\nx", "rail_more_toge"))])
+        check(icon_tip_spot((1808, 804, 72, 72), (433, 77), True, []) == ("top", 1.0, 0)
+              and icon_tip_spot((1808, 804, 72, 72), (433, 77), False, []) == ("left", 0.0, 0)
+              and icon_tip_spot((1808, 804, 72, 72), (433, 77), True, [(1564, 654, 72, 80)]) == ("left", 0.0, 0)
+              and icon_tip_spot((1808, 804, 72, 72), (433, 77), False, [(1604, 814, 72, 72)]) == ("left", 0.0, -67)
+              and icon_tip_spot((1808, 968, 72, 72), (433, 77), False, [(1404, 914, 72, 72)]) == ("left", 0.0, 18),
+              "icon_tip_spot: the top tile opens above when that is clear; otherwise beside the column, at the nearest clear height",
+              (icon_tip_spot((1808, 804, 72, 72), (433, 77), False, [(1604, 814, 72, 72)]), icon_tip_spot((1808, 968, 72, 72), (433, 77), False, [(1404, 914, 72, 72)])))
+
+    ## Then as drawn: every place at every period on a weekday and on a
+    ## Saturday, everyone met, the pointer resting on every tile in turn.
+    python:
+        zz_hud_fixture("rich")
+        _zz_bad = []
+        _zz_off = []
+        _zz_fix = []
+        _zz_n = 0
+        _zz_tiles = 0
+        _zz_drawn = set()
+        _zz_above = 0
+        _zz_shift = 0
+    scene expression graded_bg()
+    show screen sb_place
+    python:
+        for _zz_day in (9, 13):
+            day = _zz_day
+            roll_gojo()
+            for _zz_loc in LOC_ORDER:
+                for _zz_per in PERIODS:
+                    period = _zz_per
+                    here = _zz_loc
+                    mission_cache_clear()
+                    zz_hud_quiet()
+                    _zz_rows = rail_rows(_zz_loc)
+                    for _zz_try in range(4):
+                        zz_render(0.03 + 0.1 * _zz_try)
+                        _zz_tr = dict((k, r) for k, r in zz_hud_rects("sb_place", ("rail_",)).items() if not k.startswith("rail_more"))
+                        _zz_hots = zz_hud_rects("sb_place", ("hot_",))
+                        _zz_corner = zz_hud_rects("sb_place", ZZ_HUD_CORNER)
+                        if (sorted(_zz_tr) == sorted(r[5] for r in _zz_rows) and len(_zz_corner) == 3
+                                and sorted(_zz_hots.values()) == sorted(hot_rect(h["x"], h["y"]) for h in hot_spots_for(_zz_loc))):
+                            break
+                    else:
+                        _zz_fix.append((_zz_day, _zz_loc, _zz_per, sorted(_zz_tr), sorted(_zz_hots)))
+                        continue
+                    _zz_n += 1
+                    _zz_sig = (_zz_loc, tuple(sorted(_zz_tr.items())), tuple(sorted(_zz_hots.items())), tuple(r[3] for r in _zz_rows))
+                    if _zz_sig in _zz_drawn:
+                        continue            ## this very column over these very exits and hotspots was hovered already
+                    _zz_drawn.add(_zz_sig)
+                    for _zz_w, _zz_tile, _zz_size, _zz_spot, _zz_want in zz_hud_tile_plan(_zz_loc, _zz_rows, _zz_tr):
+                        _zz_tiles += 1
+                        _zz_lab = zz_hud_tile_hover(_zz_w, _zz_want)
+                        _zz_hit = zz_hud_label_hits(_zz_lab, _zz_tile, _zz_hots, _zz_corner)
+                        if _zz_hit:
+                            _zz_bad.append((_zz_day, _zz_loc, _zz_per, _zz_w, _zz_lab, _zz_hit))
+                        if _zz_lab != _zz_want:
+                            _zz_off.append((_zz_day, _zz_loc, _zz_per, _zz_w, _zz_lab, _zz_want))
+                        _zz_above += 1 if _zz_spot[0] == "top" else 0
+                        _zz_shift += 1 if (_zz_spot[0] == "left" and _zz_spot[2]) else 0
+        check(not _zz_fix and _zz_n == 2 * len(LOC_ORDER) * len(PERIODS),
+              "fixture: in every place at every period the drawn column is rail_rows and the drawn exits and hotspots are hot_spots_for (%d states)" % _zz_n,
+              _zz_fix[:3])
+        check(not _zz_bad and _zz_tiles >= 100 and len(_zz_drawn) >= len(LOC_ORDER),
+              "as drawn, in every place at every period (a weekday and a Saturday, everyone met): resting the pointer on any tile "
+              "of the icon column, its label hides no exit, no hotspot, no corner button and not its own tile, stays on screen and "
+              "out of the toast lane (%d states; a column drawn again over the very same exits and hotspots is hovered once: %d tiles "
+              "hovered in %d different drawings; hover check: needs the pointer)" % (_zz_n, _zz_tiles, len(_zz_drawn)),
+              _zz_bad[:4])
+        check(not _zz_off, "as drawn, every column label stands exactly where icon_tip_place puts it (hover check: needs the pointer)", _zz_off[:4])
+        note("the drawn column labels", "%d opened above their tile, %d were moved up or down beside the column" % (_zz_above, _zz_shift))
+
+    ## The places the owner was shown (docs/PLAYTEST.md at checkpoint D),
+    ## with nobody about, and the fourth one this package found.
+    python:
+        for _zz_name, _zz_loc, _zz_per, _zz_w, _zz_title, _zz_side in (
+                ("courtyard_practice", "courtyard", "Morning", "rail_train", "Practice", "top"),
+                ("library_hold", "library", "Morning", "rail_hold", "Hold the hour", "left"),
+                ("riverside_train", "riverside", "Morning", "rail_train", "Train", "left"),
+                ("riverside_hold", "riverside", "Morning", "rail_hold", "Hold the hour", "left"),
+                ("school_yard_night_bed", "school_yard", "Night", "rail_night_bed", "Go to bed", "left")):
+            zz_hud_fixture("fresh")
+            roster = []
+            period = _zz_per
+            here = _zz_loc
+            mission_cache_clear()
+            zz_hud_quiet()
+            zz_render(0.3)
+            _zz_rows = rail_rows(_zz_loc)
+            _zz_tr = dict((k, r) for k, r in zz_hud_rects("sb_place", ("rail_",)).items() if not k.startswith("rail_more"))
+            _zz_hots = zz_hud_rects("sb_place", ("hot_",))
+            _zz_corner = zz_hud_rects("sb_place", ZZ_HUD_CORNER)
+            _zz_plan = dict((p[0], p) for p in zz_hud_tile_plan(_zz_loc, _zz_rows, _zz_tr))
+            _zz_p = _zz_plan.get(_zz_w)
+            _zz_lab = zz_hud_tile_hover(_zz_w, _zz_p[4]) if _zz_p else None
+            _zz_old = (_zz_p[1][0] - _zz_p[2][0], _zz_p[1][1], _zz_p[2][0], _zz_p[2][1]) if _zz_p else None
+            _zz_was = [k for k, r in sorted(_zz_hots.items()) if _zz_old and zz_hud_meets(_zz_old, r)]
+            check(_zz_p is not None and _zz_lab is not None and not zz_hud_label_hits(_zz_lab, _zz_p[1], _zz_hots, _zz_corner)
+                  and _zz_p[3][0] == _zz_side and _zz_was and (zz_texts("hover_label") or [""])[0] == _zz_title,
+                  "%s, %s: the label of '%s' used to open over %s; now it hides nothing (%s; hover check: needs the pointer)"
+                  % (LOCATIONS[_zz_loc]["name"], _zz_per, _zz_title, ", ".join(_zz_was) or "nothing",
+                     "above its tile" if _zz_side == "top" else "beside the column, %d px %s" % (abs(_zz_p[3][2]) if _zz_p else 0, "up" if (_zz_p and _zz_p[3][2] < 0) else "down")),
+                  (_zz_lab, _zz_p, _zz_was, sorted(_zz_hots.items())))
+            shot("column_label_" + _zz_name, wait=0)
+        renpy.set_focus("sb_place", "hud_menu")
+        renpy.hide_screen("sb_place")
 
     ## --- 4. no words in the column; nine actions clear the toast lane ---------------
     python:

@@ -12,6 +12,9 @@
 ##                    else the kanji on the game's seal
 ##   screen icon_btn  one icon button with a hover label
 ##   screen hover_label   the one place hover labels are drawn (always shown)
+##   icon_tip_side, icon_tip_place   where a label opens: by its key, and (after
+##                    checkpoint D) for a tile of the place view's icon column
+##                    by what stands beside the column
 ##   screen icon_sample   the style sample for checkpoint A
 ##   ui_do(fn, ...)   what a button calls: runs fn and returns None (R4)
 ##
@@ -236,6 +239,9 @@ init -3 python:
 
     ## Which side of its button a hover label opens on, by the tooltip key's
     ## first letters (the first row that fits wins; any other key: "left").
+    ## After checkpoint D a tile of the place view's icon column (a "rail_"
+    ## key) is not placed by this table alone: icon_tip_place() looks at what
+    ## stands beside the column.
     ## A label on the left would cover the neighbour in a row: the next
     ## corner button or status chip, the next name tag, the next exit.
     ## Two district markers open to the right, clear of the markers below them.
@@ -275,13 +281,111 @@ init -3 python:
     def icon_tip_side(tip):
         """P8 (ui_icons.rpy). "left", "right", "top" or "bottom": the side of the
         hovered button hover_label opens on, from the tooltip's key (D11:
-        the tooltip stays the tuple (text, key))."""
+        the tooltip stays the tuple (text, key)). A tile of the icon column
+        answers "left" here; icon_tip_place() then decides where its label
+        really goes."""
         if isinstance(tip, tuple) and len(tip) > 1:
             key = str(tip[1])
             for heads, side in ICON_TIP_SIDES:
                 if key.startswith(heads):
                     return side
         return "left"
+
+    ## The hover label's own measures (screen hover_label draws with them and
+    ## icon_tip_size() measures with them): the frame's widest, its padding,
+    ## the title's and the hint's text size, the gap between the two.
+    ICON_TIP_W = 520
+    ICON_TIP_PAD = (14, 8)
+    ICON_TIP_TEXT = (22, 18)
+    ICON_TIP_GAP = 2
+
+    ## After checkpoint D (5 Oct 2026, the owner: "Make the label open
+    ## above."). A tile of the place view's icon column used to open its
+    ## label to the left, over whatever stood beside the column: an exit, a
+    ## hotspot, the riverside's bank. Opening the first tile's label above
+    ## its icon clears the courtyard, but not the library (the label above
+    ## still lands on the exit) nor the riverside (the tiles that hide the
+    ## bank are the second and third). So the label looks before it opens:
+    ##   - the top tile of a column opens its label above the tile, its
+    ##     right edge on the tile's, when nothing is there;
+    ##   - otherwise, and for every other tile, the label stays beside the
+    ##     column and moves up or down to the nearest height where it hides
+    ##     nothing.
+    ## "Nothing" is: every exit and hotspot the place shows now (their 72 px
+    ## buttons), the toast lane with the corner buttons above it, and the
+    ## screen's edges. A label never covers its own tile either way.
+
+    def icon_tip_column(tip):
+        """After checkpoint D (ui_icons.rpy). bool: the tooltip belongs to a
+        tile of the place view's icon column (a "rail_" key; the "+N"
+        chip's names, "rail_more_", are not tiles)."""
+        if not (isinstance(tip, tuple) and len(tip) == 2):
+            return False
+        key = str(tip[1])
+        return key.startswith("rail_") and not key.startswith("rail_more_") and renpy.get_screen("sb_place") is not None
+
+    def icon_tip_size(tip):
+        """After checkpoint D (ui_icons.rpy). (w, h) in pixels of the hover
+        label hover_label draws for this tooltip, measured without drawing
+        it; None when it draws none."""
+        parts = icon_tip_parts(tip)
+        if not parts:
+            return None
+        room = ICON_TIP_W - 2 * ICON_TIP_PAD[0]
+        w, h = Text(parts[0], style="text", substitute=False, font=gui.display_font, size=ICON_TIP_TEXT[0]).size(room, config.screen_height)
+        if parts[1]:
+            w2, h2 = Text(parts[1], style="text", substitute=False, size=ICON_TIP_TEXT[1]).size(room, config.screen_height)
+            w, h = max(w, w2), h + ICON_TIP_GAP + h2
+        return (int(w) + 2 * ICON_TIP_PAD[0], int(h) + 2 * ICON_TIP_PAD[1])
+
+    def icon_tip_blocks(loc):
+        """After checkpoint D (ui_icons.rpy). The (x, y, w, h) rectangles a
+        column tile's label keeps off in a place: the exits and hotspots
+        showing now, and the screen's top right corner down to the foot of
+        the toast lane (the toasts, and the corner buttons above them)."""
+        out = [hot_rect(h["x"], h["y"]) for h in hot_spots_for(loc)]
+        out.append((TOAST_LANE[0], 0, config.screen_width - TOAST_LANE[0], TOAST_LANE[3]))
+        return out
+
+    def icon_tip_spot(rect, size, top, blocks):
+        """After checkpoint D (ui_icons.rpy). Where a column tile's label
+        goes: (side, x anchor, y shift). `rect` is the tile, `size` the
+        label, `top` whether the tile is the first of its column, `blocks`
+        what the label keeps off. ("top", 1.0, 0): above the tile, right
+        edges together. ("left", 0.0, n): beside the tile, n pixels down
+        (up when negative) from the tile's top edge."""
+        x, y, w, h = [int(v) for v in rect]
+        lw, lh = size
+
+        def clear(r):
+            return (r[0] >= 0 and r[1] >= 0 and r[0] + r[2] <= config.screen_width and r[1] + r[3] <= config.screen_height
+                    and not any(hot_overlap(r, b) for b in blocks))
+
+        if top and y - lh > 0 and clear((x + w - lw, y - lh, lw, lh)):
+            return ("top", 1.0, 0)
+        for d in range(config.screen_height):
+            for dy in (-d, d):
+                if clear((x - lw, y + dy, lw, lh)):
+                    return ("left", 0.0, dy)
+        return ("left", 0.0, 0)
+
+    def icon_tip_place(tip):
+        """After checkpoint D (ui_icons.rpy). (side, x anchor, y shift): how
+        hover_label places the label of the hovered button. Any button but
+        a tile of the icon column: (icon_tip_side(tip),
+        icon_tip_centred(tip), 0), as before. A column tile: icon_tip_spot's
+        answer for the tile as it is drawn now. Plain values only (the
+        screen keeps them)."""
+        plain = (icon_tip_side(tip), icon_tip_centred(tip), 0)
+        if not icon_tip_column(tip):
+            return plain
+        rect = GetFocusRect("tooltip")
+        size = icon_tip_size(tip)
+        if not rect or not size:
+            return plain
+        loc = store.here
+        tops = [col[0][5] for col in rail_layout(rail_rows(loc))[0] if col]
+        return icon_tip_spot(rect, size, tip[1] in tops, icon_tip_blocks(loc))
 
     def icon_validate():
         """P0 (ui_icons.rpy). Lint findings for the icon tables."""
@@ -366,35 +470,39 @@ screen icon_btn(name, action, tip=None, size=52, w=None, gold=False, selected=Fa
 ## Over the style sample's icon rows it sits above the icon instead: on the
 ## left it would hide the neighbouring icon the owner is comparing. The same
 ## goes for every row of buttons: icon_tip_side() picks the side by the key.
+## After checkpoint D a tile of the place view's icon column is placed by
+## icon_tip_place(): the column's top tile opens its label above the tile
+## when nothing is there; any other column label sits beside the column, moved
+## up or down until it hides no exit, no hotspot and no toast.
 screen hover_label():
     zorder 190
 
     $ _hover_tip = GetTooltip()
     $ _hover_t = icon_tip_parts(_hover_tip)
-    $ _hover_side = icon_tip_side(_hover_tip)
-    $ _hover_mid = icon_tip_centred(_hover_tip)
+    $ _hover_side, _hover_mid, _hover_dy = icon_tip_place(_hover_tip)
     if _hover_t:
         nearrect:
             focus "tooltip"
             preferred_side _hover_side
             frame:
                 background Frame("gui/panel_dark.png", 4, 4)
-                padding (14, 8)
-                xmaximum 520
+                padding ICON_TIP_PAD
+                xmaximum ICON_TIP_W
                 xpos _hover_mid
                 xanchor _hover_mid
+                ypos _hover_dy
                 vbox:
-                    spacing 2
+                    spacing ICON_TIP_GAP
                     text _hover_t[0]:
                         substitute False
                         font gui.display_font
                         color gui.paper
-                        size 22
+                        size ICON_TIP_TEXT[0]
                     if _hover_t[1]:
                         text _hover_t[1]:
                             substitute False
                             color gui.dim
-                            size 18
+                            size ICON_TIP_TEXT[1]
 
 
 ## The style sample (checkpoint A): Review tools, "Style sample". Twelve icon
