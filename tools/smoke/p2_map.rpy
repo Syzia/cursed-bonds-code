@@ -537,9 +537,9 @@ label zz_smoke:
               and not [w for w in _zz_in if w in map_area_people("dorms")] and map_pin_people("girls_dorm") == [],
               "a person in a locked room is on no marker and no pin", (_zz_in, _zz_m, _zz_p))
         ## P9 (D53, D57): the hub is an open place of the area too (Yuji is in
-        ## the Dormitory Garden at night).
+        ## the Dormitory Garden at night; Panda too, after checkpoint D).
         check(sorted(_zz_p) == sorted(w for l in ("dorm_yard", "dorm", "dorm_common", "rooftop") for w in who_is_here(l)[:3])
-              and "yuji" in who_is_here("dorm_yard"),
+              and "yuji" in who_is_here("dorm_yard") and "panda" in who_is_here("dorm_yard"),
               "the open places' pins still show who is there", (_zz_p,))
 
     ## --- 7. the two new screens ---------------------------------------------------------------

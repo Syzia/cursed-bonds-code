@@ -58,6 +58,9 @@ init python:
         ("panda", "library"):       ("turning pages very carefully", "happy"),
         ("toge", "library"):        ("a book open, hands in his sleeves", "neutral"),
 
+        ## After that: Panda's Night in the garden, beside Yuji and his stars.
+        ("panda", "dorm_yard"):     ("out in the night air, looking up", "happy"),
+
         ## Each person's fallback, anywhere else.
         ("yuji", None):             ("killing time, loudly", "happy"),
         ("megumi", None):           ("hands in his pockets", "neutral"),
@@ -122,8 +125,9 @@ init python:
         ("maki",   "dojo",        "thread:maki:1",      "drilling with a staff, a second one set out", "serious"),
         ("panda",  "dorm_common", "thread:panda:1",     "a bag of crisps open beside him", "happy"),
         ## After checkpoint D his evening is in the library: the crisps go
-        ## with him. The row above shows at Night, when he is alone in the
-        ## common room, so it no longer says he is sharing them out.
+        ## with him. His Night is in the garden now, so the row above shows
+        ## only when I bring him into the common room myself. The garden has
+        ## no row: his thread's crisps are an evening, indoors.
         ("panda",  "library",     "thread:panda:1",     "a bag of crisps open under the table", "happy"),
         ("toge",   "cafeteria",   "thread:toge:1",      "lining up onigiri by filling", "happy"),
         ("shoko",  "infirmary",   "thread:shoko:1",     "with coffee, an old photo face down on the desk", "neutral"),

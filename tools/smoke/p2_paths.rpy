@@ -477,8 +477,11 @@ label zz_smoke:
         check(night_is_night() and zz_action_value("hot_go_dorm__dorm_yard") == ("act", "path_dorm_yard") and zz_tip("hot_go_dorm__dorm_yard") == "To the Dormitory Garden",
               "the Night's place view draws it as a live button (not 'Too late. Bed.')", (zz_action_value("hot_go_dorm__dorm_yard"), zz_tip("hot_go_dorm__dorm_yard")))
         zz_place("dorm_yard", "Night")
-        check("path_dorm" in zz_exits_offered("dorm_yard")[0] and "night_bed" in [a[0] for a in rail_actions("dorm_yard")],
-              "a hub at Night offers its exits beside Go to bed")
+        ## Yuji and Panda stand there at Night: the exits they cover (my
+        ## room's is one) are in the icon column, as the rule has it.
+        _zz_room, _zz_col = zz_exits_offered("dorm_yard")
+        check("path_dorm" in _zz_room + _zz_col and len(_zz_room) + len(_zz_col) == 7 and "night_bed" in [a[0] for a in rail_actions("dorm_yard")],
+              "a hub at Night offers its exits beside Go to bed", (_zz_room, _zz_col))
         ## Explore mode.
         zz_open_campus()
         explore_mode = True
@@ -986,7 +989,8 @@ label zz_smoke:
         ## What each old place offered that needs the place (an activity with
         ## a `loc`): the person can still be found somewhere it is offered.
         ## After checkpoint D Panda and Toge left the common room in the
-        ## Evening for the library: the second list is theirs.
+        ## Evening for the library: the second list is theirs. Panda's Night
+        ## left it for the garden after that (the same pair covers it).
         _zz_moved = [("yuji", "dorm_common"), ("nobara", "classroom"), ("toge", "rooftop"), ("megumi", "forest"), ("shoko", "rooftop"),
                      ("panda", "dorm_common"), ("toge", "dorm_common")]
         _zz_lost = []
@@ -996,6 +1000,21 @@ label zz_smoke:
                 if _zz_a.get("loc") and _zz_l in _zz_a["loc"] and not (_zz_at & set(_zz_a["loc"])):
                     _zz_lost.append((_zz_w, _zz_l, _zz_a["id"]))
         check(not _zz_lost, "nobody who moved lost an activity that needs a place: each is still offered somewhere in their week", _zz_lost)
+        ## Panda's Night, garden against common room, with every bond full:
+        ## under the night rule the same things can be started with him.
+        _zz_b0, _zz_s0 = bonds.get("panda", 0), set(spent_today)
+        day = 9
+        period = "Night"
+        bonds["panda"] = 100
+        spent_today.discard("panda")
+        _zz_was = [(a["id"], ok, why) for a, ok, why in activities_for("panda", "dorm_common") if ok]
+        _zz_now = [(a["id"], ok, why) for a, ok, why in activities_for("panda", "dorm_yard") if ok]
+        check(night_on() and char_location("panda") == "dorm_yard" and _zz_now == _zz_was and ("talk", True, None) in _zz_now,
+              "at Night whatever can be started with Panda in the common room can be started with him in the garden (Bond 100)",
+              (_zz_was, _zz_now))
+        bonds["panda"] = _zz_b0
+        spent_today.clear(); spent_today.update(_zz_s0)
+        period = "Noon"
         day = 9
         check(char_location("nobara", "Afternoon") == "courtyard" and char_location("yuji", "Afternoon") == "courtyard"
               and char_location("ijichi", "Morning") == "gate",
@@ -1067,8 +1086,8 @@ label zz_smoke:
         arrival_caption()
         ARRIVAL[1] -= 10
         zz_worst("sb_place", hover="hot_go_dorm_yard__staff_yard")
-        check(who_is_here("dorm_yard") == ["yuji"] and len(hot_spots_for("dorm_yard")) + len([a for a in rail_actions("dorm_yard") if a[0].startswith("path_")]) == 7,
-              "the Dormitory Garden on a weekday night: Yuji outside, seven exits", (who_is_here("dorm_yard"), [h["id"] for h in hot_spots_for("dorm_yard")]))
+        check(who_is_here("dorm_yard") == ["yuji", "panda"] and len(hot_spots_for("dorm_yard")) + len([a for a in rail_actions("dorm_yard") if a[0].startswith("path_")]) == 7,
+              "the Dormitory Garden on a weekday night: Yuji and Panda outside, seven exits", (who_is_here("dorm_yard"), [h["id"] for h in hot_spots_for("dorm_yard")]))
         ## Nothing un-picklable reaches a save (R10): the registry rows are
         ## init data; the screen's scope holds plain copies.
         _zz_rows = hot_spots_for("dorm_yard")

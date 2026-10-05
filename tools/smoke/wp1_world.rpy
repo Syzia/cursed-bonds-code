@@ -29,7 +29,8 @@ init 999 python:
     ## Afternoon -> staff_yard. After checkpoint D (5 Oct 2026) the owner's
     ## word moved two more, on purpose: Panda, Evening -> library; Toge,
     ## Evening -> library (the common room in the Evening is the first
-    ## years'). Every other cell is as it was.
+    ## years'); and then one more: Panda, Night -> dorm_yard ("Put Panda in
+    ## the garden for now"). Every other cell is as it was.
     ZZ_OLD_SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "dorm_yard"},
@@ -40,7 +41,7 @@ init 999 python:
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
-                   "Evening": "library",   "Night": "dorm_common"},
+                   "Evening": "library",   "Night": "dorm_yard"},
         "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
                    "Evening": "library",   "Night": "-"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
@@ -284,6 +285,8 @@ label zz_smoke:
         _zz_bad = []
         _zz_seen = {}
         _zz_five = {}
+        _zz_night = []
+        _zz_garden = {}
         for _zz_in in (False, True):
             for _d in range(1, 15):
                 day = _d
@@ -294,6 +297,9 @@ label zz_smoke:
                 _zz_seen.setdefault(weekday(), set()).update(_zz_at)
                 if [w for w in _zz_at if w not in _zz_first] or who_is_here("dorm_common", "Evening") != _zz_at:
                     _zz_bad.append((_d, weekday(), _zz_in, _zz_at))
+                if who_is_here("dorm_common", "Night"):
+                    _zz_night.append((_d, weekday(), _zz_in, who_is_here("dorm_common", "Night")))
+                _zz_garden.setdefault(weekday(), set()).add(tuple(who_is_here("dorm_yard", "Night")))
                 for _p in PERIODS:
                     for _l in LOC_ORDER:
                         _zz_n = [w for w in ROSTER_ORDER if w != "gojo" and char_location(w, _p) == _l]
@@ -311,11 +317,21 @@ label zz_smoke:
               "no table puts a second year, a teacher or staff in the common room in the Evening; the first years' cells are as they were",
               _zz_cells)
         check(SCHEDULE["panda"]["Evening"] == "library" and SCHEDULE["toge"]["Evening"] == "library"
-              and SCHEDULE["panda"]["Night"] == "dorm_common"
+              and SCHEDULE["panda"]["Night"] == "dorm_yard" and "Night" not in WEEKEND.get("panda", {})
               and "Evening" not in WEEKEND.get("panda", {}) and "Evening" not in WEEKEND.get("toge", {})
-              and "library" in LOCATIONS,
-              "Panda and Toge spend the Evening in the library, weekends too; Panda's Night is still the common room",
-              (SCHEDULE["panda"], SCHEDULE["toge"]))
+              and "library" in LOCATIONS
+              and len(_zz_garden) == 7 and all(g == set([("yuji", "panda")]) for g in _zz_garden.values()),
+              "Panda and Toge spend the Evening in the library, weekends too; Panda's Night is the dormitory garden, "
+              "beside Yuji, on all seven days",
+              (SCHEDULE["panda"], SCHEDULE["toge"], _zz_garden))
+        ## "Put Panda in the garden for now" (the owner, 5 Oct 2026): nobody's
+        ## routine is the common room at Night any more.
+        _zz_cells = [(n, w) for n, tab in (("SCHEDULE", SCHEDULE), ("WEEKEND", WEEKEND))
+                     for w, t in sorted(tab.items()) if t.get("Night") == "dorm_common"]
+        _zz_cells += [("FLAG_SCHEDULES", w) for f, w, t in FLAG_SCHEDULES if t and t.get("Night") == "dorm_common"]
+        check(not _zz_night and not _zz_cells and "dorm_common" not in GOJO_SPOTS,
+              "the common room is empty at Night by routine on all seven days (days 1-14, everyone met, Gojo in and roaming; "
+              "no table has a Night cell there)", (_zz_night[:4], _zz_cells))
         check(sorted(_zz_five) == [("weekday", "Noon", "cafeteria"), ("weekend", "Afternoon", "riverside"), ("weekend", "Noon", "cafeteria")],
               "by the routine, five stand together only in the cafeteria at Noon and at the riverside on a weekend Afternoon",
               _zz_five)

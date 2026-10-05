@@ -231,8 +231,13 @@ init -2 python:
     ## library instead, on all seven days (WEEKEND has no Evening cell for
     ## either, so it falls back to these two). The library because it is a
     ## study room, as the common room is: "Study together" is still offered
-    ## with both, and nobody else is there in the Evening. Panda's Night
-    ## cell is as it was (the owner spoke of the evening).
+    ## with both, and nobody else is there in the Evening.
+    ##
+    ## After that (the owner's word, the same day: "Put Panda in the garden
+    ## for now"): Panda's Night is the dormitory garden, beside Yuji, on all
+    ## seven days (WEEKEND has no Night cell for anyone). The common room is
+    ## then empty at Night by routine. "For now": until there are
+    ## dormitories for him to sleep in (asked for after phase 2).
 
     SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
@@ -244,7 +249,7 @@ init -2 python:
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
-                   "Evening": "library",   "Night": "dorm_common"},
+                   "Evening": "library",   "Night": "dorm_yard"},
         "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
                    "Evening": "library",   "Night": "-"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
