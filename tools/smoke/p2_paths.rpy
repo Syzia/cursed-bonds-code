@@ -985,9 +985,12 @@ label zz_smoke:
               "no written scene asks for a person at a place (no ev() has both who and loc), so no move can lose one")
         ## What each old place offered that needs the place (an activity with
         ## a `loc`): the person can still be found somewhere it is offered.
-        _zz_moved = {"yuji": "dorm_common", "nobara": "classroom", "toge": "rooftop", "megumi": "forest", "shoko": "rooftop"}
+        ## After checkpoint D Panda and Toge left the common room in the
+        ## Evening for the library: the second list is theirs.
+        _zz_moved = [("yuji", "dorm_common"), ("nobara", "classroom"), ("toge", "rooftop"), ("megumi", "forest"), ("shoko", "rooftop"),
+                     ("panda", "dorm_common"), ("toge", "dorm_common")]
         _zz_lost = []
-        for _zz_w, _zz_l in sorted(_zz_moved.items()):
+        for _zz_w, _zz_l in sorted(_zz_moved):
             _zz_at = set(routine_location(_zz_w, p, we) for p in PERIODS for we in (False, True))
             for _zz_a in ACTIVITIES:
                 if _zz_a.get("loc") and _zz_l in _zz_a["loc"] and not (_zz_at & set(_zz_a["loc"])):

@@ -54,6 +54,10 @@ init python:
         ("shoko", "staff_yard"):    ("on the steps with coffee", "neutral"),
         ("yuji", "dorm_yard"):      ("by the pond, counting stars out loud", "happy"),
 
+        ## After checkpoint D: the second years' evening in the library.
+        ("panda", "library"):       ("turning pages very carefully", "happy"),
+        ("toge", "library"):        ("a book open, hands in his sleeves", "neutral"),
+
         ## Each person's fallback, anywhere else.
         ("yuji", None):             ("killing time, loudly", "happy"),
         ("megumi", None):           ("hands in his pockets", "neutral"),
@@ -117,6 +121,9 @@ init python:
         ("nobara", "dorm_common", "thread:nobara:1",    "scrolling through old photos", "neutral"),
         ("maki",   "dojo",        "thread:maki:1",      "drilling with a staff, a second one set out", "serious"),
         ("panda",  "dorm_common", "thread:panda:1",     "sharing out a bag of crisps", "happy"),
+        ## After checkpoint D his evening is in the library: the crisps go
+        ## with him (the row above still serves the common room at Night).
+        ("panda",  "library",     "thread:panda:1",     "a bag of crisps open under the table", "happy"),
         ("toge",   "cafeteria",   "thread:toge:1",      "lining up onigiri by filling", "happy"),
         ("shoko",  "infirmary",   "thread:shoko:1",     "with coffee, an old photo face down on the desk", "neutral"),
     ]

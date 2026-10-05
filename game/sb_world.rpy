@@ -225,6 +225,14 @@ init -2 python:
     ## morning, Toge in the school courtyard in the afternoon; at weekends
     ## Megumi at the foot of the mountain in the morning and Shoko on the
     ## staff building's steps in the afternoon.
+    ##
+    ## After checkpoint D (5 Oct 2026, the owner's word): in the Evening the
+    ## common room holds the first years only. Panda and Toge are in the
+    ## library instead, on all seven days (WEEKEND has no Evening cell for
+    ## either, so it falls back to these two). The library because it is a
+    ## study room, as the common room is: "Study together" is still offered
+    ## with both, and nobody else is there in the Evening. Panda's Night
+    ## cell is as it was (the owner spoke of the evening).
 
     SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
@@ -236,9 +244,9 @@ init -2 python:
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
-                   "Evening": "dorm_common", "Night": "dorm_common"},
+                   "Evening": "library",   "Night": "dorm_common"},
         "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
-                   "Evening": "dorm_common", "Night": "-"},
+                   "Evening": "library",   "Night": "-"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
         "yaga":   {"Morning": "office",    "Noon": "office",    "Afternoon": "storehouse",

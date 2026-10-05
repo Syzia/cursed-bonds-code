@@ -363,8 +363,17 @@ label zz_smoke:
         period = "Evening"
         here = "dorm_common"
         stamina = 20
+        ## After checkpoint D the schedule puts only the first years here in
+        ## the Evening; Panda is in the library. The four-people view below
+        ## is a fixture: Panda is pinned in (as "Ask them along" can bring
+        ## him).
         _on, _extra = stage_people(here)
-        check(len(_on) == 4 and not _extra, "four people in the Dorm Common Room on a weekday evening", (_on, _extra))
+        check(sorted(_on) == ["megumi", "nobara", "yuji"] and not _extra and char_location("panda") == "library",
+              "by the schedule, the Dorm Common Room on a weekday evening holds the three first years; Panda is in the library",
+              (_on, _extra, char_location("panda")))
+        pin("panda", "dorm_common")
+        _on, _extra = stage_people(here)
+        check(len(_on) == 4 and not _extra, "four people in the Dorm Common Room (Panda pinned in: a fixture)", (_on, _extra))
         toast("Yuji  bond +4", "bond", "yuji", 4)
         toast("Merit +30 — The Sun Mall", "grade")
         toast("Paper Ward", "item")
@@ -406,16 +415,22 @@ label zz_smoke:
         check(arrival_caption() is None, "the arrival caption fades after about 3 s")
         check(len(toast_visible()) == 0, "toasts expire on their own", [t["text"] for t in TOASTQ.items])
         roster.append("toge")
+        check(char_location("toge") == "library", "by the schedule Toge spends the evening in the library too", char_location("toge"))
+        pin("toge", "dorm_common")
         stamina = stamina_max
     hide screen sb_place
     show screen sb_place
     $ shot("place_overflow", wait=0.4)
     python:
         _on, _extra = stage_people(here)
-        check(len(_on) == 4 and _extra == ["toge"], "a fifth person goes to the +N chip", (_on, _extra))
+        check(len(_on) == 4 and _extra == ["toge"], "a fifth person goes to the +N chip (Toge pinned in: a fixture)", (_on, _extra))
         check(any(s == "+1" for s in zz_texts("sb_place")), "the +1 chip shows")
         check(zz_rect("sb_place", "hud_chip_stamina") is None, "no running-on-empty chip at full stamina")
         roster.remove("toge")
+        schedule_overrides.pop(("toge", day, period), None)
+        schedule_overrides.pop(("panda", day, period), None)
+        check(sorted(who_is_here(here)) == ["megumi", "nobara", "yuji"], "with the pins gone the room is the first years' again", who_is_here(here))
+        pin("panda", "dorm_common")
         companion = "nobara"
         _on, _extra = stage_people(here)
         check(_on[0] == "nobara", "the companion stands first", _on)

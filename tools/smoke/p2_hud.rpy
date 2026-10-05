@@ -1185,7 +1185,7 @@ label zz_smoke:
         _zz_diff = sorted(k for k in _zz_fresh if ambient_of(*k) != _zz_fresh[k])
         check(_zz_diff, "with sunmall_done set at least one caption differs from the fresh game's", _zz_diff)
         note("captions after the Sun Mall", [(k, ambient_of(*k)[0]) for k in _zz_diff])
-        check(len(AMBIENT_STORY) == 12 and _validate_wp7_tables() == [], "AMBIENT_STORY ships twelve rows and the validator passes",
+        check(len(AMBIENT_STORY) == 13 and _validate_wp7_tables() == [], "AMBIENT_STORY ships thirteen rows (after checkpoint D: Panda's crisps in the library) and the validator passes",
               (len(AMBIENT_STORY), _validate_wp7_tables()))
         _zz_before = ambient_of("nobara", "dorm_common")
         threads["nobara_saori"] = 1

@@ -26,7 +26,10 @@ init 999 python:
     ## P9 (D57) moved five slots into the hubs, on purpose: Yuji, Night ->
     ## dorm_yard; Nobara, Morning -> training_yard; Toge, Afternoon ->
     ## school_yard; Megumi, weekend Morning -> trailhead; Shoko, weekend
-    ## Afternoon -> staff_yard. Every other cell is as it was.
+    ## Afternoon -> staff_yard. After checkpoint D (5 Oct 2026) the owner's
+    ## word moved two more, on purpose: Panda, Evening -> library; Toge,
+    ## Evening -> library (the common room in the Evening is the first
+    ## years'). Every other cell is as it was.
     ZZ_OLD_SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "dorm_yard"},
@@ -37,9 +40,9 @@ init 999 python:
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
-                   "Evening": "dorm_common", "Night": "dorm_common"},
+                   "Evening": "library",   "Night": "dorm_common"},
         "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
-                   "Evening": "dorm_common", "Night": "-"},
+                   "Evening": "library",   "Night": "-"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
         "yaga":   {"Morning": "office",    "Noon": "office",    "Afternoon": "storehouse",
@@ -266,6 +269,59 @@ label zz_smoke:
         check(not has_flag("intensive_done") and not _bad,
               "regression: days 1-14 x 5 periods, the original 9 match the pre-phase-1 schedule and Gojo's roll",
               _bad[:6])
+
+        ## After checkpoint D (the owner's word, 5 Oct 2026): by their own
+        ## routine only the first years stand in the common room in the
+        ## Evening, on every day of the week. Everyone is on the roster, no
+        ## story pin, nobody tagging along (a companion I bring in myself is
+        ## the game's rule, not the schedule), on a day Gojo keeps office
+        ## hours and on a day he roams.
+        _zz_first = ("yuji", "megumi", "nobara")
+        _zz_r0, _zz_c0, _zz_g0, _zz_d0 = list(roster), companion, gojo_in, day
+        roster = list(ROSTER_ORDER)
+        companion = None
+        schedule_overrides = {}
+        _zz_bad = []
+        _zz_seen = {}
+        _zz_five = {}
+        for _zz_in in (False, True):
+            for _d in range(1, 15):
+                day = _d
+                gojo_in = _zz_in
+                roll_gojo()
+                gojo_in = _zz_in
+                _zz_at = [w for w in ROSTER_ORDER if char_location(w, "Evening") == "dorm_common"]
+                _zz_seen.setdefault(weekday(), set()).update(_zz_at)
+                if [w for w in _zz_at if w not in _zz_first] or who_is_here("dorm_common", "Evening") != _zz_at:
+                    _zz_bad.append((_d, weekday(), _zz_in, _zz_at))
+                for _p in PERIODS:
+                    for _l in LOC_ORDER:
+                        _zz_n = [w for w in ROSTER_ORDER if w != "gojo" and char_location(w, _p) == _l]
+                        if len(_zz_n) >= 5:
+                            _zz_five[("weekend" if is_weekend() else "weekday", _p, _l)] = _zz_n
+        check(not _zz_bad and len(_zz_seen) == 7 and _zz_seen["Mon"] == set(_zz_first),
+              "after checkpoint D: on all seven days only the first years are in the common room in the Evening "
+              "(days 1-14, everyone met, Gojo in and roaming)", (_zz_bad[:4], _zz_seen))
+        _zz_cells = [(n, w, t.get("Evening")) for n, tab in (("SCHEDULE", SCHEDULE), ("WEEKEND", WEEKEND))
+                     for w, t in sorted(tab.items()) if t.get("Evening") == "dorm_common" and w not in _zz_first]
+        _zz_cells += [("FLAG_SCHEDULES", w, t.get("Evening")) for f, w, t in FLAG_SCHEDULES
+                      if t and t.get("Evening") == "dorm_common" and w not in _zz_first]
+        check(not _zz_cells and "dorm_common" not in GOJO_SPOTS
+              and all(SCHEDULE[w]["Evening"] == "dorm_common" for w in _zz_first),
+              "no table puts a second year, a teacher or staff in the common room in the Evening; the first years' cells are as they were",
+              _zz_cells)
+        check(SCHEDULE["panda"]["Evening"] == "library" and SCHEDULE["toge"]["Evening"] == "library"
+              and SCHEDULE["panda"]["Night"] == "dorm_common"
+              and "Evening" not in WEEKEND.get("panda", {}) and "Evening" not in WEEKEND.get("toge", {})
+              and "library" in LOCATIONS,
+              "Panda and Toge spend the Evening in the library, weekends too; Panda's Night is still the common room",
+              (SCHEDULE["panda"], SCHEDULE["toge"]))
+        check(sorted(_zz_five) == [("weekday", "Noon", "cafeteria"), ("weekend", "Afternoon", "riverside"), ("weekend", "Noon", "cafeteria")],
+              "by the routine, five stand together only in the cafeteria at Noon and at the riverside on a weekend Afternoon",
+              _zz_five)
+        note("places that hold five or more by the routine (Gojo not counted: he may roam into the cafeteria)", _zz_five)
+        roster, companion, gojo_in, day = _zz_r0, _zz_c0, _zz_g0, _zz_d0
+        roll_gojo()
         roster = _nine + ["ijichi"]
 
     ## --- 3. the offices lock correctly -----------------------------------------------------
@@ -808,7 +864,8 @@ label zz_smoke:
         check(renpy.get_screen("sb_map") is not None, "the campus map renders (busy, with markers)")
         renpy.hide_screen("sb_map")
         check(map_place_name("utahime_office") == "Utahime's Office", "after she arrives, the map names her office")
-        ## A weekday Evening: the common room is the busiest row.
+        ## A weekday Evening: the common room is the busiest row (after
+        ## checkpoint D: the three first years).
         mission_markers = zz_no_markers
         period = "Evening"
         here = "courtyard"
