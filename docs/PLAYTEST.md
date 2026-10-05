@@ -2,6 +2,11 @@
 
 *About 40 minutes. Phase 2, the UI overhaul: version 0.4 ("Arc One, phase 2").*
 
+*You played this on 5 Oct 2026 and it passed. Your four answers are built or
+noted: who is in the Common Room in the evening, where the icon column's label
+opens, the build folder's version (now 0.4, like the game), and old saves
+(left for now). The steps below say what is true now.*
+
 This is the last check of phase 2. Play the game from the Ren'Py launcher (the
 SDK) as usual, on the `phase2` branch in your game folder. Running from the
 launcher also shows a small **Review tools** link at the bottom left of any
@@ -73,15 +78,21 @@ The parts are in a sensible order, but each stands alone. Tick them off.
    weekday mornings, Yuji in the Dormitory Garden at night, Megumi on the
    Mountain Path on weekend mornings and Shoko on the Staff Building Steps on
    weekend afternoons. Toge is in the School Courtyard on weekday afternoons,
-   once you have met him; before that it is empty.
+   once you have met him; before that it is empty. (In the evening Toge and
+   Panda are in the Library: see part 4.)
 6. When several people stand in a room, an exit or an object they would hide
    moves to the icon column on the right. Nothing is ever lost, only moved.
 
 ## 4. Rooms with people in them (about 4 minutes)
 
-1. Go to the **Common Room** on a weekday **evening**. People stand *in* the
-   room: each has a soft shadow, takes the evening light, and one stands
-   behind the table. They breathe, very slightly.
+1. Go to the **Common Room** on a weekday **evening**. The three first years
+   are there (Yuji, Megumi and Nobara) and nobody else: in the evening the
+   room is theirs, as you asked at D. At the weekend only Megumi is. People
+   stand *in* the room: each has a soft shadow, takes the evening light, and
+   one stands behind the table. They breathe, very slightly. **Panda and Toge
+   spend the evening in the Library** (School Building), every day, once you
+   have met them; "Study together" is offered with them there. Someone you
+   have asked along still walks into the Common Room with you.
 2. **Nobara is on the sofa, on her phone.** That is a painted pose, the first
    of two. Click her: the view eases in and she turns to you. Leave: it eases
    back.
@@ -99,7 +110,11 @@ The parts are in a sensible order, but each stands alone. Tick them off.
 ## 5. Things in rooms (about 9 minutes)
 
 Each is a small glowing icon on an object. The icon column on the right holds
-whatever isn't in the picture.
+whatever isn't in the picture. Rest the pointer on the column's top icon: its
+label opens **above** the icon (try Practice in the Courtyard). A label that
+would still hide a way out or something to click sits beside the column
+instead, a little higher or lower, so nothing is ever under it (try Hold the
+hour in the Library, and Train at the Riverside).
 
 1. **The computer** (My Room, the laptop). Read three pages. The first time
    you read a page a gold "Noted." strip says what you got from it. Then open
@@ -115,7 +130,8 @@ whatever isn't in the picture.
    casts for one hour. Wait for the float to dip, then click when the white
    marker is in the green. The **record book** button is at the bottom right.
    Packing up before the float dips is free.
-5. **Cards** (Common Room, when someone is there and you hold ¥100). Play a
+5. **Cards** (Common Room, when someone is there and you hold ¥100; in the
+   evening that is the first years, plus anyone you bring along). Play a
    few hands of **blackjack** and one of **poker**. Watch their faces: each
    person gives something away, and Megumi gives nothing. A sitting is five
    hands at most.
@@ -296,10 +312,17 @@ Every number here is one table entry. Say the word and any of them changes.
 | **Cards:** stakes of ¥100 / ¥500 / ¥1,000; five hands a sitting; at most ¥6,000 won in a day; closed at Night | C | Plays fine; no change asked. |
 | **Small things:** Library study gives Insight +4; the vending machine is ¥150 for 10 stamina, once a day | C | Plays fine; no change asked. |
 | **How the yards join up:** no direct path from the Courtyard to the Staff Building Steps (the map picture has none); the Dormitory Garden has seven exits | C | Plays fine; no change asked. |
+| **Five people in the Common Room in the evening,** with the "+1" chip at Panda's feet (the offer was to move the chip) | D | "Don't fill the common room in the evening, it only makes sense to fill it with the 1st years." Built: only Yuji, Megumi and Nobara are there in the evening. Chosen for you: **Panda and Toge spend the evening in the Library**, where you can still study with them. The chip was not moved. |
+| **The icon column's label** opened to the left, over an exit | D | "Make the label open above." Built: the column's first label opens above its icon; any column label that would still hide a way out or something to click moves up or down beside the column until nothing is under it. |
+| **The build folder** was still named 0.3 | D | "Leave the folder has Version 0.4". Built: the folder is 0.4, like the game. Your saves are untouched by it. |
+| **Old saves:** your eleven all load where they were saved; no more were tested | D | "Leave the saves for now." Left for now. |
 
 What you asked for at B, all built: the Mountain marker moved onto the
 mountain; smaller markers; walking by exits and the five yards; "Classroom"
 instead of "Classroom Building"; no "Closer: after roll call" line.
+
+What you asked for at D, all built: the Common Room in the evening is the
+first years'; the column's label opens above; the build folder is 0.4.
 
 ---
 
@@ -348,18 +371,28 @@ you want it.
 - **The old GUI pictures can't be redrawn on this Mac** without installing a
   picture library (Pillow). Nothing in the game needs it. Say if you want it
   installed.
-- **A label from the icon column opens to the left,** over whatever stands
-  beside the column. In the Courtyard, resting the pointer on Practice hides
-  the Training Yard exit under the label; the same happens over the Library's
-  exit and the Riverside's bank. Only while the pointer rests there. If it
-  bothers you, the column's first label can open above its icon instead.
-- **Five people in the Common Room (evening).** The "+1" chip sits at Panda's
-  feet, and Panda's name label opens over it. Moving the chip a little to the
-  left would clear both. Say if you want it moved.
-- **Old saves.** Your eleven saves all load where they were saved, and slot
-  1-1 (made before phase 2) is also played on for a day and saved again on
-  four screens. No save from before phase 2 that was made with the map open
-  exists to test. Is that enough, or do you want more old saves tested?
+
+**After D** (two things your answers left open)
+- **Panda at night.** You spoke of the evening, so Panda's night was left as
+  it is: he is alone in the Common Room at Night. Leave him there, or should
+  the room be empty at night too? (If he moves, say where, or leave it to me.)
+- **Where five people still stand together.** Three hours of the week: the
+  Cafeteria at noon on weekdays, the Cafeteria at noon at weekends (Yuji,
+  Megumi, Nobara and Panda on the floor, Toge on the "+1" chip; six when Gojo
+  wanders in), and the Riverside on weekend afternoons (Yuji, Nobara, Maki and
+  Panda, with Toge on the chip). In all three the chip stands clear of Panda's
+  feet, and nobody's name label is drawn over the chip. One small thing is
+  left: at the Riverside, while the pointer rests on "Toge" in the chip, his
+  label opens to the left over Panda's right foot (in the Cafeteria it stops
+  short of it). Nothing was changed there. Say if you would rather thin those
+  hours out as well, or have the chip moved after all.
+- **Would you rather see Panda and Toge outside in the evening?** The Library
+  was chosen so that you can still study with them. A yard (Panda in the
+  Dormitory Garden, Toge on the School Courtyard steps) is one small edit, but
+  "Study together" with them would then need "Ask them along" first.
+- **A moved label can touch what it moved away from.** In the Library the
+  label of Hold the hour now sits just under the exit's icon, edge to edge.
+  Nothing is hidden. A few pixels of air between them is one small edit.
 
 **Art still to make,** at your pace: twelve more poses (about $3.84) and blink
 and talk for ten more people (about $2.88). The steps are in

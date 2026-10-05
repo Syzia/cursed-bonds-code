@@ -225,13 +225,14 @@ a modal screen; a harness's own `renpy.pause` over one needs `modal=False`.
 | `load_slot.rpy` | Used by `load_all_saves.sh`: loads one save (`SMOKE_SAVES=1 SMOKE_SLOT=1-1`) and reports where it lands. |
 
 Phase 2's harnesses (the PASS counts are the merged tree's at the end of P8,
-for comparison):
+for comparison; after checkpoint D `core_flow` is 26, `wp1_world` 155 and
+`wp7_ui` 146):
 
 | harness | what it checks |
 |---|---|
 | `p2_contracts.rpy` (129) | The frozen contracts of design section 6: every shared function's signature, owning file and return shape; every `tools/none_ok.txt` example returns `None`; icon coverage; the registries' duplicate checks; init order (with `aa_zz_order.rpy`, which adds two inert hotspots, `zz_order_spot` and `zz_tv`). It also **writes `shots/layout/defaults.json`**, the code's own layout numbers, for `layout_sheet.py`. Run it **without `SMOKE_P0_STRICT`**: its notes that a wave-0 comparison "no longer holds" are expected. |
 | `p2_map.rpy` (97) | The two-level map: six markers, pins, the zoom-in, tooltips, Tokyo's districts and the night button. |
-| `p2_hud.rpy` (118) | The corner icons and chips, the icon column for every room and period, the person view, toast lanes, the banner. Its last section saves and loads inside the real loop and must stay last. About 95 s. |
+| `p2_hud.rpy` (129 after checkpoint D; 118 at the end of P8) | The corner icons and chips, the icon column for every room and period, the person view, toast lanes, the banner. Section 3b (after checkpoint D) rests the pointer on every tile of the column in every place at every period and fails if its label hides an exit, a hotspot, a corner button or the toast lane. Its last section saves and loads inside the real loop and must stay last. About 115 s. |
 | `p2_journal.rpy` (188) | The five tabs, person pages, the Me page, the 70-word budget over 214 pages, checklists, Leads. **Run it with `SMOKE_TIMEOUT=300`**: it takes about 150 s of the default 180. |
 | `p2_gear.rpy` (78) | Grade chips on the board, the armory and the fight header; tool and talisman checklists; nothing held is taken away. |
 | `p2_night.rpy` (170) | The night rule, the Gojo night against real training days, the night in Tokyo, the Black Market and its price rule. |

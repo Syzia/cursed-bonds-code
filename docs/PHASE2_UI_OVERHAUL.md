@@ -209,6 +209,15 @@ Already promised by the storyboard, now moved here.
 
 **Checkpoint C passed (5 Oct 2026).** The owner played the wave 2 build (people blended into rooms, the computer, fishing, the Library, cards, walking between places by exits, the five yards, art batch 3's two test poses and Yuji's blink): it plays fine, with no change asked for. P8 (integration) starts.
 
+**Checkpoint D passed (5 Oct 2026), with notes.** The owner played the whole phase by `docs/PLAYTEST.md`: "checkpoint D plays fine, open the PR". Four things were asked there, and the owner answered each:
+- **The Common Room in the evening:** "Don't fill the common room in the evening, it only makes sense to fill it with the 1st years." (The question was the "+1" chip on Panda's feet when five people stand there; the offer was to move the chip. The owner chose to empty the room instead.) Read as: in the Evening, on every day of the week, only Yuji, Megumi and Nobara stand in the Common Room by their own routine. Chosen for the two who left:
+  - **Panda is in the Library in the evening.** It is a study room like the Common Room, so "Study together" can still be asked of him there, and he brings the crisps.
+  - **Toge is in the Library in the evening too.** It is the one room where nobody is expected to talk, and "Study together" can still be asked of him.
+  - Panda's **Night** in the Common Room is unchanged (the owner spoke of the evening); it is asked in `docs/PLAYTEST.md`. The "+N" chip was not moved. Someone I ask along still comes into the Common Room with me: that is my doing, not their routine.
+- **The icon column's label:** "Make the label open above." Read as: the label that hid an exit opens above its icon. Built: the column's first label opens above its icon wherever nothing is in the way; and because that alone does not clear the Library's exit or the Riverside's bank, any column label that would still hide a way out, something to click, a corner button or a toast sits beside the column and moves up or down until it hides nothing.
+- **The build folder:** "Leave the folder has Version 0.4". Read as: the build folder is version 0.4, like the game (it was still named 0.3). No save depends on it.
+- **Old saves:** "Leave the saves for now." No more old-save testing now.
+
 **Still open from phase 1's review** (the design proposes a default for each):
 - Two-slot activities (sparring, a heart-to-heart, a Tokyo trip) can skip past a story beat that only happens at noon, so it comes a day late.
 - The first hangouts still narrate in "you" and can happen on day 1.

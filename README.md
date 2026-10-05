@@ -253,7 +253,9 @@ SDK a small *Review tools* link sits at the bottom left.
 ### Icons and hover labels — `ui_icons.rpy`
 Every button is an icon (`icon(name)`, `icon_btn`; 88 names in `ICONS`, each a
 picture in `images/icons/` with a kanji seal as its stand-in). A button's name
-and cost appear beside it on hover: one screen, `hover_label`, draws every
+and cost appear beside it on hover (a tile of the place view's icon column
+opens its label above the icon, or beside the column where that would hide an
+exit or a hotspot: `icon_tip_place`): one screen, `hover_label`, draws every
 tooltip, and a tooltip is the tuple `(text, key)` with a key unique on its
 screen. A button's action is a `Return(tuple)` to a label loop or
 `Function(ui_do, fn, …)`; `tools/check_content.py --action-returns` holds
