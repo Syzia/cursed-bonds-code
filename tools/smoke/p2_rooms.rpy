@@ -682,6 +682,8 @@ label zz_smoke:
                     shot("room_" + _zz_l)
                 renpy.hide_screen("sb_place")
         ## The "+N" chip (five or more in a room) and the card table beside it.
+        ## After checkpoint D the schedule never puts five here; zz_r_stage
+        ## places them as a fixture.
         _zz_chip = []
         for _zz_n in (5, len(store.roster)):
             zz_r_fix("rich", period="Afternoon", here="dorm_common")

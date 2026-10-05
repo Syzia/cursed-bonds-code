@@ -131,13 +131,16 @@ hour in the Library, and Train at the Riverside).
    marker is in the green. The **record book** button is at the bottom right.
    Packing up before the float dips is free.
 5. **Cards** (Common Room, when someone is there and you hold ¥100; in the
-   evening that is the first years, plus anyone you bring along). Play a
+   evening that is the first years, plus anyone you bring along; on a
+   weekday evening Megumi stands in front of the table, so **Play cards** is
+   in the icon column on the right). Play a
    few hands of **blackjack** and one of **poker**. Watch their faces: each
    person gives something away, and Megumi gives nothing. A sitting is five
    hands at most.
 6. **The vending machine** (Courtyard, the icon on the right-hand porch):
    ¥150 for 10 stamina, once a day.
-7. **Small looks:** the TV in the Common Room, the blackboard in the
+7. **Small looks:** the TV in the Common Room (not on a weekday evening:
+   Megumi stands in front of it), the blackboard in the
    Classroom. Their line changes from day to day.
 
 ## 6. The journal (about 4 minutes)
@@ -372,10 +375,13 @@ you want it.
   picture library (Pillow). Nothing in the game needs it. Say if you want it
   installed.
 
-**After D** (two things your answers left open)
+**After D** (what your answers left open)
 - **Panda at night.** You spoke of the evening, so Panda's night was left as
   it is: he is alone in the Common Room at Night. Leave him there, or should
   the room be empty at night too? (If he moves, say where, or leave it to me.)
+  Once his story has started his line there used to say he was sharing out
+  crisps; alone, that no longer read true, so it now says a bag of crisps is
+  open beside him.
 - **Where five people still stand together.** Three hours of the week: the
   Cafeteria at noon on weekdays, the Cafeteria at noon at weekends (Yuji,
   Megumi, Nobara and Panda on the floor, Toge on the "+1" chip; six when Gojo
@@ -389,10 +395,37 @@ you want it.
 - **Would you rather see Panda and Toge outside in the evening?** The Library
   was chosen so that you can still study with them. A yard (Panda in the
   Dormitory Garden, Toge on the School Courtyard steps) is one small edit, but
-  "Study together" with them would then need "Ask them along" first.
-- **A moved label can touch what it moved away from.** In the Library the
-  label of Hold the hour now sits just under the exit's icon, edge to edge.
-  Nothing is hidden. A few pixels of air between them is one small edit.
+  "Study together" with them would then need "Ask them along" first. One
+  thing for the yard: Panda's journal line says he does his rounds at eight in
+  the evening with crisps, and the Dormitory Garden would show that; the
+  Library does not.
+- **A label can touch an icon.** Nothing is hidden, but in four places a
+  label sits edge to edge with an icon: in the Library (Hold the hour, just
+  under the exit), at the Riverside (Train sits right on top of the fishing
+  icon and Hold the hour right under it), in the Staff Building yard (Hold the
+  hour, just under the Training Yard exit) and in the Courtyard (Practice,
+  opened above, touches the vending machine's icon). A little air can be added
+  for the labels that sit beside the column; the Courtyard's Practice label
+  would stay where it is, touching the vending machine, because with any gap
+  there it no longer fits above.
+- **A moved label can end up beside the next icon down.** In the School
+  Courtyard at night with someone walking along, the label of Go to bed moves
+  far enough down to stand level with "Let them go"; at the Riverside on a
+  weekend afternoon the Mountain Path label sits half beside Wait. The icon
+  under the pointer is still the one lit. Say if it reads wrong.
+- **The Common Room on a weekday evening: the TV and the card table.** With
+  exactly three people in the room, the third (Megumi) stands in front of the
+  card table and the TV. So there is no TV look at that hour, and cards start
+  from the icon column instead of the table. This used to happen only at
+  weekends; now it is every weekday evening. Should the third person stand
+  somewhere else, so that both stay clickable in the picture?
+- **Cards in the evening.** With three people in the room there is one
+  sitting an evening on weekdays (there were two), and at the weekend the only
+  player is Megumi. Panda and Toge play only when you bring one of them along.
+  Leave it, or say if you want it otherwise.
+- **Panda's memory "The Boy in the Car"** is still set in the Common Room in
+  the evening: that is the picture on its tile and where its replay stands.
+  Leave it, or set it in the Library now?
 
 **Art still to make,** at your pace: twelve more poses (about $3.84) and blink
 and talk for ten more people (about $2.88). The steps are in
