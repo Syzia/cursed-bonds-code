@@ -59,7 +59,9 @@ init python:
         ("toge", "library"):        ("a book open, hands in his sleeves", "neutral"),
 
         ## After that: Panda's Night in the garden, beside Yuji and his stars.
-        ("panda", "dorm_yard"):     ("out in the night air, looking up", "happy"),
+        ## Keyed on the place, not the hour: it also shows by day when he is
+        ## brought along, so it names no hour.
+        ("panda", "dorm_yard"):     ("out in the open air, looking up", "happy"),
 
         ## Each person's fallback, anywhere else.
         ("yuji", None):             ("killing time, loudly", "happy"),
