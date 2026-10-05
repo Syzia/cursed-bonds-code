@@ -26,7 +26,7 @@ define gui.show_name = True
 define config.version = "0.4 — Arc One, phase 2"
 
 ## The build folder name comes from this; it may not contain spaces.
-define build.version = "0.3"
+define build.version = "0.4"
 
 
 ## Text that is placed on the game's about screen. Place the text between the

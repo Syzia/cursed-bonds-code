@@ -56,6 +56,13 @@ label zz_smoke:
         check(set(gojo_today) >= set(PERIODS), "Gojo's day is rolled", gojo_today)
         ensure_state()
         check(save_version == SAVE_VERSION, "ensure_state brings a new game up to date", save_version)
+        ## After checkpoint D (5 Oct 2026): the build folder is version 0.4,
+        ## like the game. Only the distribution's folder and archive name
+        ## read build.version; saves keep their own folder.
+        check(build.version == "0.4" and build.directory_name == "CursedBonds-0.4" and " " not in build.directory_name
+              and config.version.startswith("0.4") and config.save_directory == "JJKgamemd-1788928056",
+              "the build folder is version 0.4 (CursedBonds-0.4), the game says 0.4, and the save folder is as it was",
+              (build.version, build.directory_name, config.version, config.save_directory))
     $ shot("after_arc_one_open")
 
     ## --- three place actions, through the loop's dispatch -------------------------
