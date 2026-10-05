@@ -82,10 +82,25 @@ init python:
         ("complete", "Mark the main story complete"),
         ("week", "Jump to day +7"),
         ("veil", "The ridge veil, again today"),
+        ## Phase 2 (4.16, D50): the rare states, for checkpoints B and C.
+        ("night", "Jump to Night"),
+        ("gojo_night", "Gojo night tonight"),
+        ("rest", "Tomorrow is a rest day"),
+        ("yen", "+¥20,000"),
+        ("market", "Find the Black Market"),
+        ("sample", "Style sample"),
     ]
 
-    ## The buttons that play a scene: the panel returns their key to dev_tools.
-    DEV_SCENES = ("story", "utahime")
+    ## The buttons that play a scene (or, for "sample", open a screen): the
+    ## panel returns their key to dev_tools.
+    DEV_SCENES = ("story", "utahime", "sample")
+
+    ## The scene buttons that never fire the story, so explore mode keeps them.
+    DEV_EXPLORE_OK = ("sample",)
+
+    ## A button's `when`: the NAME of a store function; the panel leaves the
+    ## button out while it returns False (its feature isn't built yet).
+    DEV_WHEN = dict(gojo_night="night_exists", rest="night_exists", market="market_exists")
 
     def _dev_short(text, n=90):
         text = text or ""
@@ -208,6 +223,46 @@ init python:
         toast("The veil on the ridge can be looked at again today.", "info")
         _dev_after()
 
+    def dev_night():
+        """P0 (phase 2). The clock jumps to Night, today."""
+        store.period = PERIODS[-1]
+        toast("It is Night.", "info")
+        _dev_after()
+
+    def dev_gojo_night():
+        """P0 (phase 2). A Gojo night is on tonight (night_dev, sb_night.rpy)."""
+        night_dev("gojo")
+        _dev_after()
+
+    def dev_rest():
+        """P0 (phase 2). Tomorrow is a rest day (night_dev, sb_night.rpy)."""
+        night_dev("rest")
+        _dev_after()
+
+    def dev_yen():
+        """P0 (phase 2). +20,000 yen, with a toast."""
+        add_yen(20000)
+        toast("+¥20,000 (¥%d now)." % store.yen, "item", None, 20000)
+        _dev_after()
+
+    def dev_market():
+        """P0 (phase 2). The Black Market is found (night_dev, sb_night.rpy)."""
+        night_dev("market")
+        _dev_after()
+
+    def dev_rows():
+        """P0 (phase 2). The panel's buttons right now: DEV_BUTTONS without
+        the rows whose `when` (DEV_WHEN) is False."""
+        out = []
+        for key, title in DEV_BUTTONS:
+            when = DEV_WHEN.get(key)
+            if when:
+                fn = getattr(store, when, None)
+                if fn is None or not fn():
+                    continue
+            out.append((key, title))
+        return out
+
     def _dev_play(mid):
         """mid if its scene can play now; a waiting step first moves the days
         forward. Otherwise None, with a toast that says why."""
@@ -261,10 +316,12 @@ init python:
 
     DEV_FUNCS = dict(merit=dev_merit, bond=dev_bond, tokyo=dev_tokyo, gojo=dev_gojo_in,
                      items=dev_items, armory=dev_armory, complete=dev_complete,
-                     week=dev_week, veil=dev_veil)
+                     week=dev_week, veil=dev_veil,
+                     night=dev_night, gojo_night=dev_gojo_night, rest=dev_rest,
+                     yen=dev_yen, market=dev_market)
 
     def dev_sensitive(key):
-        return not (store.explore_mode and key in DEV_SCENES)
+        return not (store.explore_mode and key in DEV_SCENES and key not in DEV_EXPLORE_OK)
 
     def dev_hint(key):
         """The small line under a button: what it will do, from here."""
@@ -279,6 +336,8 @@ init python:
             if nxt is None:
                 return "%s: as high as Arc One goes" % grade_label(cur)
             return "%s → %s" % (grade_label(cur), grade_label(nxt))
+        if key == "sample":
+            return "Icons, hover labels and grade chips"
         if key in DEV_SCENES and store.explore_mode:
             return "Not in explore mode"
         if key == "story":
@@ -318,6 +377,16 @@ init python:
             return "Day %d → Day %d" % (store.day, store.day + 7)
         if key == "veil":
             return "On the ridge, once more today"
+        if key == "night":
+            return "Already Night" if store.period == PERIODS[-1] else "%s → Night, today" % store.period
+        if key == "gojo_night":
+            return "He's on the ridge tonight"
+        if key == "rest":
+            return "No missions or training tomorrow"
+        if key == "yen":
+            return "¥%d → ¥%d" % (store.yen, store.yen + 20000)
+        if key == "market":
+            return "Found" if has_flag("market_found") else "Shibuya, after dark"
         return ""
 
     def dev_status():
@@ -360,14 +429,21 @@ screen dev_panel():
     add graded_bg()
     add Solid("#07060cd8")
 
+    ## Three columns; the rows a `when` hides are left out (3 x 6 until the
+    ## night and the market are built, then 3 x 7, drawn tighter so it fits).
+    $ _dev_rows = dev_rows()
+    $ _dev_n = (len(_dev_rows) + 2) // 3
+    $ _dev_tight = _dev_n > 6
+
     ## Left of centre, so the toast stack (top right) never covers it.
     frame:
         style "dev_frame"
         xpos 80
         yalign 0.5
+        padding ((40, 16, 40, 16) if _dev_tight else (40, 30, 40, 30))
 
         vbox:
-            spacing 16
+            spacing (8 if _dev_tight else 16)
 
             hbox:
                 spacing 24
@@ -376,9 +452,10 @@ screen dev_panel():
 
             text dev_status() style "dev_note" color gui.gold substitute False
 
-            grid 3 5:
-                spacing 12
-                for _k, _t in DEV_BUTTONS:
+            grid 3 _dev_n:
+                xspacing 12
+                yspacing (4 if _dev_tight else 12)
+                for _k, _t in _dev_rows:
                     $ _on = dev_sensitive(_k)
                     button:
                         style "sb_action_button"
@@ -388,11 +465,14 @@ screen dev_panel():
                             spacing 2
                             text _t style "sb_action_title" color (gui.paper if _on else gui.mute)
                             text dev_hint(_k) style "sb_action_hint" substitute False
+                for _dev_pad in range(-len(_dev_rows) % 3):
+                    null
 
             hbox:
                 spacing 24
-                text _("The two story buttons play their scenes, then return to campus.") style "dev_note" yalign 0.5 xsize 1040
+                text _("The two story buttons play their scenes, then return to campus. Style sample opens a page of icons and chips.") style "dev_note" yalign 0.5 xsize 1040
                 textbutton _("Close"):
+                    id "dev_close"
                     style "sb_hud_nav_button"
                     action Return("close")
 
@@ -409,4 +489,6 @@ label dev_tools:
     elif _return == "utahime":
         call start_mission(dev_utahime_mid())
         scene expression graded_bg()
+    elif _return == "sample":
+        call screen icon_sample
     return

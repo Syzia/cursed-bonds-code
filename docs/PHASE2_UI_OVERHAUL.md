@@ -2,13 +2,13 @@
 
 *Jujutsu Kaisen: Cursed Bonds · scope written 30 Sep 2026 from the owner's playtest notes on checkpoints 2 and 3 ("JJK notes", with screenshots).*
 
-This is the scope of a new phase that the owner asked for after playing the phase 1 build. It is **not yet a build plan**. Once the open questions at the end are answered and phase 1 (WP0–WP11) has passed the owner's checkpoint 4, it gets a full design in the style of `PHASE1_DESIGN.md`: work packages, contracts and acceptance.
+This is the scope of a new phase that the owner asked for after playing the phase 1 build. Phase 1 is finished and merged (1 Oct 2026), and the owner has answered the open questions (section 5). The build plan, with work packages, contracts and acceptance, is `docs/PHASE2_DESIGN.md`.
 
 ## The new phase order
 
 | # | Phase | What it is |
 |---|---|---|
-| 1 | Foundation | Built. WP0–WP11 are merged on `phase1`, pending the owner's checkpoint 4. |
+| 1 | Foundation | Done. Merged into `main` on 1 Oct 2026 after the owner's checkpoint 4. |
 | **2** | **UI overhaul** (new) | This document. |
 | 3 | Combat | Formerly phase 2: Black Flash, partner moves, tool and talisman effects, real board fights, enemy phases. |
 | 4+ | Story acts | Formerly phase 3+: the unwritten missions, districts, Sana's flashbacks, converting the chapters to "I". |
@@ -73,7 +73,7 @@ This order replaces the storyboard's build order (Foundation → Combat → Act 
 
 ### 2.B The HUD, icons and labels
 
-- **Map button:** it moves (see question 1). Journal and Menu stay where they are.
+- **Map, Journal and Menu buttons stay where they are** (the owner's answer 1: the Map button is fine for now). They become icons like everything else.
 - **Icons everywhere:** every button, place action, person choice, journal tab and map marker gets a small icon. Its name appears when the pointer rests on it. This takes most of the words off the screen.
 - **The skip tag:** it moves out from under the map and journal headers.
 
@@ -85,7 +85,7 @@ This order replaces the storyboard's build order (Foundation → Combat → Act 
   - **Their story:** the story thread (e.g. *Somebody Remembered*) and their character missions as one list of chapters, with the next step and where.
   - **Memories:** every scene you've shared with them, replayable.
   - Grade, bond and strength, as now.
-- **Scenes that aren't about one person** (story missions, the prologue) replay from Missions › Story (see question 6).
+- **A scene with several people** shows in the memories of every person in it (answer 6). Scenes with nobody from the People tab in them replay from Kaito's own page.
 - **Stats and People:** a lighter layout, less on screen at once.
 
 ### 2.D The person view
@@ -105,7 +105,7 @@ This order replaces the storyboard's build order (Foundation → Combat → Act 
 | Special Grade | Oil slick: a slow shifting rainbow sheen |
 
 - **Where it shows:** grade chips in the journal, board cards, the grade card, the combat header, cursed tools and talismans (and later, curses).
-- **Semi-grades** (Utahime's "Semi-Grade 1") and Gojo's "Off the scale": see question 7.
+- **Semi-grades** take their grade's colour (Semi-Grade 1 is red). **Every Special Grade item and person gets the oil slick,** Gojo included (answer 7).
 
 ### 2.F The place view comes alive
 
@@ -124,23 +124,20 @@ Already promised by the storyboard, now moved here.
 ### 2.G Things to do in rooms
 
 - **Hotspots:** clickable objects in the background of a place, each with an icon and a hover label. This is the framework the next three ideas sit on, and it takes "little interactive things" anywhere on the map.
-- **The bedroom computer** (see question 3). Some ideas:
-  - read the jujutsu network's rumour board, which feeds leads to Utahime's board;
-  - message friends, for a small bond gain;
-  - order supplies, which spends yen;
-  - research a curse before a job, for insight.
-- **A board game in the common room** when people are there (see question 4). A short game against whoever is present, for bond. It uses their personality: Megumi plays careful, Yuji plays chaos.
-- **Fishing at the riverside** (see question 5). A timing game; the catch goes to the cafeteria, becomes gifts, or sells for yen.
-- In this phase: build the hotspot framework plus a simple version of each idea the owner picks. Deeper versions can come later.
+- **The bedroom computer** is a small fake internet. Kaito can look things up: Sukuna, Gojo, cursed techniques, and the great clans (Gojo, Kamo, Zen'in). Some missions send him there to research something first. The clan pages are seeds for a later arc.
+- **Games in the common room** when people are there: **blackjack and poker first** (the owner's decision), both for yen against whoever is present. Chess, memory and tic-tac-toe are on the shortlist for later.
+- **Fishing at the riverside.** The owner left the design open ("a gimmick, or trying to catch the biggest fish"): the design proposes it (section 5, answer 5).
+- **The Library** is a new place in the School Building, for studying.
+- In this phase: build the hotspot framework plus a first version of each of these.
 
 ### 2.H The night rule
 
-- At Night, Kaito heads back to his room: other places are closed and the map says why.
-- **Exceptions** (see question 2) could include:
-  - story beats that happen at night;
-  - a companion who asks you to stay out (the rooftop);
-  - a night mission or patrol;
-  - Gojo on one of his days.
+- **At the last hour before morning, Kaito has to go back to his room and sleep.** Until then the night is his.
+- **Exceptions, each with a price the next day:**
+  - **A night with Gojo.** Rare. It gives more control and cursed-energy reserve than a whole day of training would. The day after, Kaito can't take missions or train.
+  - **A night out in Tokyo.** Nightclubs, once Tokyo is open. The next day is worse for it.
+  - Story beats that happen at night.
+- **The Black Market** is found on those Tokyo nights. It sells special talismans, and perhaps different outfits for characters (outfits need new sprite art, so they follow the art).
 
 ### 2.I Cursed tools and talismans with more depth
 
@@ -179,16 +176,64 @@ Already promised by the storyboard, now moved here.
 - A Library background.
 - Icons: a small matched set, made or drawn once.
 
-## 5. Questions for the owner
+## 5. The owner's answers (1 Oct 2026)
 
-1. **Map button:** where should it go?
-   - (a) bottom left, as a small compass icon;
-   - (b) top left under the day;
-   - (c) replaced by clicking the day/place name.
-2. **The night rule:** which exceptions do you want? The list in 2.H is a starting point.
-3. **The bedroom computer:** which of the ideas in 2.G, or something else?
-4. **The board game:** which game? Shogi, go, hanafuda, or a made-up jujutsu card game.
-5. **Fishing:** in or out, and what should a catch give?
-6. **Story scenes that aren't about one person:** replay from Missions › Story (proposed), or under the main person in them?
-7. **Colours:** does a semi-grade take its grade's colour, a lighter shade of it, or something else? Should Gojo's "Off the scale" use the Special oil slick?
-8. **The Library:** add it as a new place in the School Building?
+1. **Map button:** it is in a good spot for now. It stays.
+2. **The night rule:**
+   - Kaito must return to his bedroom to sleep at the latest hour before morning.
+   - Exception: training with Gojo at night. It should be rare. It grants more control and cursed-energy reserve than training every hour of the day would, but the player can't take part in any missions or training the following day.
+   - Exception: going to Tokyo, with the option to party at nightclubs. That also has a negative effect on the following day.
+   - The Black Market is found there too. It sells special talismans, and maybe different outfits for characters.
+3. **The bedroom computer:** fake internet access, where Kaito can research things like Sukuna, Gojo, cursed techniques, and clans like the Gojo, Kamo and Zen'in, as a part of missions. The clans tie into a later arc.
+4. **The board game:** the owner's shortlist was chess, blackjack, poker against the others with the in-game currency, memory, or something simpler like tic-tac-toe. **Decided (1 Oct 2026): blackjack and poker first,** both played for yen against whoever is in the common room. Chess, memory and tic-tac-toe can follow later.
+5. **Fishing:** it could be added at the riverside. The owner can't think of more than a gimmick or trying to catch the biggest fish, and asked for a proposal.
+6. **Story replays with several people:** they appear in the memories of each person in them. A separate story-replay section would also be fine.
+7. **Grade colours:** a semi-grade takes the same colour as its grade. All Special Grade items and people get the oil slick.
+8. **The Library:** add it, as a place to study.
+
+**Approved (1 Oct 2026).** The owner read the plan (`docs/PHASE2_DESIGN.md` and the visual plan page) and approved it as written, and the build starts.
+- The four checkpoint-A calls (night strictness, when character scenes start, two-hour activities, the look of icons and chips) take the plan's defaults unless the owner changes them at checkpoint A.
+- **No Special Grade talisman at the Black Market for now.** More talismans will be added later, after this phase's set.
+- **The Gojo night may push past the ceiling (decided 3 Oct 2026).** It can leave Control up to 6 above the grade's ceiling, and the reserve with it, so the night is offered at every grade whenever it is due.
+- **Checkpoint A passed (4 Oct 2026).** The owner played the wave 0 build: it plays fine. No ruling was changed, so the defaults stand: a strict Night, character scenes after roll call, two-hour activities ending early for a waiting story scene, and icons without words once they have pictures (`gui.icon_words = "auto"`). Art batch 1 (88 icons, the Tokyo map, the six area maps) is installed.
+
+**Checkpoint B passed (4 Oct 2026), with notes** ("Wave 1 Review", with screenshots):
+- **The Mountain marker sits over the lake**, not on the mountain drawn on the map. Move it onto the mountain. (The lake could be a new place one day; the mountain place, where the veil is, already exists.)
+- **The black box of each area marker is too big.** Make the markers smaller.
+- **Walking between places, new:** "Instead of always clicking on the map to travel to different places, once you're in an area of the map we should have arrows that lead to the other section. For the main gate, have an arrow that takes you to the courtyard that is interactive. For this area [the School Building], create a new courtyard location, and have all the rooms point to it for a travel location and also make all the rooms accessible from this location via the arrow method. This same principle applies to all locations. They don't have to be arrows; they can just be interactable parts of the screen to avoid clutter. This gives us more travel options, better world-building, and more places to have characters. Like Nobara on the way to the training ground. Or Yuji chilling outside."
+- Nothing seems cluttered for the moment. The faces on the map seem right. Two clicks to walk is fine.
+- **Rename "Classroom Building" to "Classroom".**
+- **Titles:** go with the ones that fit ("Taking My Measure" stays); everything gets a review after the phase.
+- **Remove the "Closer: after roll call" line**, since roll call is forced at the start of day 2.
+- Gojo's night looks good. No number was changed (the Gojo night's size, the night out's price and hangover, the market's prices stand).
+
+**Checkpoint C passed (5 Oct 2026).** The owner played the wave 2 build (people blended into rooms, the computer, fishing, the Library, cards, walking between places by exits, the five yards, art batch 3's two test poses and Yuji's blink): it plays fine, with no change asked for. P8 (integration) starts.
+
+**Checkpoint D passed (5 Oct 2026), with notes.** The owner played the whole phase by `docs/PLAYTEST.md`: "checkpoint D plays fine, open the PR". Four things were asked there, and the owner answered each:
+- **The Common Room in the evening:** "Don't fill the common room in the evening, it only makes sense to fill it with the 1st years." (The question was the "+1" chip on Panda's feet when five people stand there; the offer was to move the chip. The owner chose to empty the room instead.) Read as: in the Evening, on every day of the week, only Yuji, Megumi and Nobara stand in the Common Room by their own routine. Chosen for the two who left:
+  - **Panda is in the Library in the evening.** It is a study room like the Common Room, so "Study together" can still be asked of him there, and he brings the crisps.
+  - **Toge is in the Library in the evening too.** It is the one room where nobody is expected to talk, and "Study together" can still be asked of him.
+  - Panda's **Night** in the Common Room was left then (the owner spoke of the evening) and asked; the answer is under "After the D notes" below. The "+N" chip was not moved. Someone I ask along still comes into the Common Room with me: that is my doing, not their routine.
+- **The icon column's label:** "Make the label open above." Read as: the label that hid an exit opens above its icon. Built: the column's first label opens above its icon wherever nothing is in the way; and because that alone does not clear the Library's exit or the Riverside's bank, any column label that would still hide a way out, something to click, a corner button or a toast sits beside the column and moves up or down until it hides nothing.
+- **The build folder:** "Leave the folder has Version 0.4". Read as: the build folder is version 0.4, like the game (it was still named 0.3). No save depends on it.
+- **Old saves:** "Leave the saves for now." No more old-save testing now.
+
+**After the D notes (5 Oct 2026).** The changes above were shown to the owner with three questions: (1) Panda and Toge in the evening: the Library, as built, or outside? (2) Panda at night: leave him alone in the Common Room, or move him too? (3) The weekend card table now seats Megumi alone: leave it, or change it? The owner's words:
+- "Put Panda in the garden for now. But we do need to add dorms, instead of just girls dorms and my dorm. Also where do the teachers stay. We're going to need a teachers lounge/dorms. If they stay on campus. Gojo wont, but the other will."
+- "Leave it as megumi for now. We can add an invite feature. Like invite toge or panda etc to come play."
+- "Other than that we can merge the pr."
+
+How each was read:
+- "Put Panda in the garden for now" answers (2). Built: at Night Panda stands in the Dormitory Garden, beside Yuji, on every day of the week. The Common Room is then empty at Night unless I bring someone in. "For now" means until there are dormitories for him to sleep in.
+- Nothing was said to (1), so the evening stays as built: Panda and Toge in the Library.
+- "Leave it as megumi for now" answers (3): the weekend card table stays as built.
+- "Other than that we can merge the pr": phase 2 is merged after this change.
+
+**Asked for after phase 2 (not built).** Nothing here is designed yet.
+- **More dormitories,** not only the girls' dormitory and my room, so that everyone who lives on campus has somewhere to be at night. When they exist, Panda's Night moves from the garden to his room.
+- **Where the teachers stay:** a teachers' lounge, teachers' dormitories, or both. Gojo lives off campus; the others live on it.
+- **An invite for the card table:** ask Toge, Panda or someone else to come and play.
+
+**Still open from phase 1's review** (the design proposes a default for each):
+- Two-slot activities (sparring, a heart-to-heart, a Tokyo trip) can skip past a story beat that only happens at noon, so it comes a day late.
+- The first hangouts still narrate in "you" and can happen on day 1.

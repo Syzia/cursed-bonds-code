@@ -7,12 +7,18 @@ to spend your time.
 
 Jujutsu Kaisen is created by Gege Akutami. This is a fan work.
 
-> **Version 0.3, Arc One, phase 1.** Phase 1 laid the Arc One foundation:
+> **Version 0.4, Arc One, phase 2.** Phase 1 laid the Arc One foundation:
 > first-person narration, grades, missions, Utahime's board, items, memories,
-> Tokyo trips and a new HUD, map and journal. The plan and every decision are in
-> `docs/PHASE1_DESIGN.md` (storyboard: https://claude.ai/artifact/V6qPxrGmSUQDUn5twNWsbr);
-> the owner's review checklist is `docs/PLAYTEST.md`. Phase 2 is the UI
-> overhaul (`docs/PHASE2_UI_OVERHAUL.md`), phase 3 combat, phase 4+ the story.
+> Tokyo trips and a new HUD, map and journal (`docs/PHASE1_DESIGN.md`;
+> storyboard: https://claude.ai/artifact/V6qPxrGmSUQDUn5twNWsbr). Phase 2 is
+> the UI overhaul: a two-level map, exits you click in the picture, icons with
+> hover labels, a five-tab journal built around each person, grade colours,
+> the night rule, checklists on tools and talismans, people blended into
+> their rooms, and things to do in rooms (a computer, a library, fishing,
+> cards). Its scope and the owner's rulings are `docs/PHASE2_UI_OVERHAUL.md`,
+> its plan as built `docs/PHASE2_DESIGN.md`, its art `docs/ART_PHASE2.md`, and
+> the owner's review checklist `docs/PLAYTEST.md`. Phase 3 is combat, phase 4+
+> the story.
 
 ```bash
 ~/Desktop/renpy-8.5.3-sdk/renpy.sh ~/Desktop/JJKgame.md      # run
@@ -34,8 +40,9 @@ closes again.
 
 **Arc One: Tokyo Jujutsu High** (sandbox) — five acts, and **no deadline**.
 Story beats come in order and wait for you; the NEXT banner and the journal
-say what comes next and where. Eighteen places in six areas, eleven people on
-real schedules, a board of graded jobs, and Tokyo by car once Ijichi trusts you.
+say what comes next and where. Twenty-four places in six areas (nineteen rooms
+and five yards between them), eleven people on real schedules, a board of
+graded jobs, and Tokyo by car once Ijichi trusts you.
 
 | Act | Title | Grade band | Written in phase 1 |
 |---|---|---|---|
@@ -73,8 +80,8 @@ everyone else says "you", `[mc_name]` or `[mc_surname]`, never a literal
 camera. Expressions (neutral / happy / serious / angry / surprised / sad) work
 only on the 13 characters with an image tag: mc, yuji, megumi, nobara, maki,
 panda, toge, gojo, yaga, ijichi, shoko, utahime, sana. The Sun Mall and the
-chapters after it, and the character scenes (hangouts, which can come up from
-day 1), still say "you" until phase 4 converts them (design 5.4, D9).
+chapters after it, and the character scenes (hangouts, which wait until after
+roll call), still say "you" until phase 4 converts them (design 5.4, D9).
 `tools/check_content.py` checks all of this.
 
 ### Hooks, migrations and saves — `sb_hooks.rpy`
@@ -98,11 +105,27 @@ hour, Get patched up, Look through the racks, the veil, Gojo's lesson). New-day
 hooks then run: NPC growth, Gojo's in-day, the board's weekly offers, keepsakes.
 
 ### Places, areas and schedules — `sb_world.rpy`, `ui_map.rpy`
-`LOCATIONS` holds eighteen places, including Utahime's office (open once she
-arrives) and Gojo's office (locked, "SOON!", until his first lesson). The map
-draws them grouped into six `AREAS` (Courtyard & Gate, Classrooms,
-Dormitories, Staff Building, Training Grounds, The Mountain), each row showing
-who is there now and which missions wait there, plus a Find someone strip.
+`LOCATIONS` holds twenty-four places: nineteen rooms, including the Library,
+Utahime's office (open once she arrives) and Gojo's office (locked, "SOON!",
+until his first lesson), and five outdoor yards, one per area, that the rooms
+open onto. They are grouped into six `AREAS` (Courtyard & Gate, School
+Building, Dormitories, Staff Building, Training Grounds, The Mountain).
+
+**The map has two levels.** It opens on the six area markers, each with up to
+three faces and a gold mark when a mission waits; clicking one opens that
+area's own bird's-eye picture with its rooms as pins, and clicking a pin walks
+there. Tokyo works the same way (districts, then the district). Pin positions
+are code defaults that a sidecar file, `game/layout/area_<key>.json`, overrides.
+`person_now(who)` says where someone is and what they are doing; the journal
+shows it, and the old Find someone strip is gone.
+
+### Walking between places — `room_paths.rpy`
+Every place has **exits** you click in the picture: a room has one to its
+area's yard; a yard has one to each of its rooms and one to each neighbouring
+yard (`PATH_HUBS`, `PATH_LINKS`, `PATH_EXITS`). An exit is an action hotspot
+(below): free, instant, allowed at Night and in explore mode. A locked one is
+dimmed and says why. The labels `sb_do_path_<to>` and `path_walk` are held by
+saves: never rename them.
 
 `SCHEDULE` gives every character a place per period; `WEEKEND` overrides it on
 Sat/Sun. Gojo roams (`GOJO_SPOTS`), and after his first lesson he keeps office
@@ -113,6 +136,27 @@ everything. `usual_places(who)` and `when_at(who, loc)` put a schedule in words.
 
 On the ridge, once the tour has shown it, *Look up at the veil* is a free,
 once-a-day action with three rotating passages.
+
+### The night — `sb_night.rpy`, `sb_market.rpy`
+Night is the last hour, and it is strict (`NIGHT_STRICT`): walking and
+anything free stays, everything that costs time is closed unless its id is in
+`NIGHT_OK`, and Wait becomes **Go to bed**. If a day turns while I am away
+from my room, the loop walks me home with one line (`night_carry_home`). Two
+exceptions have a price the next day:
+
+- **A night with Gojo** on the ridge, about every ten days once his lessons
+  have begun. The gain is worked out from the game's own training rules so
+  that it always beats the best possible day (`night_day_best()` + 6 Control,
+  and 3 reserve more), and may leave both a little above the grade's ceiling.
+  The next day is a rest day: nothing in `NIGHT_REST_BLOCKS` is offered, no
+  missions, no board, and nothing raises Control or Output.
+- **A night in Tokyo** (Shibuya; Shinjuku at Grade 2), from the district's
+  view in the Evening or at Night: the club (¥1,500), the Black Market once
+  found, or home. Staying out halves the next morning's stamina.
+
+The **Black Market** (`market_screen`) sells four talismans of its own,
+sealing talismans and first aid; a validator ties every price to what the
+board pays. The two night scenes are placeholders until phase 4.
 
 ### Tokyo — `sb_tokyo.rpy`
 After Ijichi's ride-along (flag `ijichi_rides`) the map gets a Tokyo tab.
@@ -126,7 +170,9 @@ The ladder is Grade 4, Grade 3, Grade 2, Semi-Grade 1, Grade 1 and Special
 Grade (keys `g4`…`sp`). You have no grade until roll call assesses you as
 Grade 4. Your grade caps Control, Output and your reserve, sets how many
 talismans you can wear, which board jobs you can take and what the armory
-releases. Merit (from the story, missions and the board) opens each
+releases. Grades have colours everywhere (`grade_chip`, `grade_color`,
+`grade_fill`): Grade 4 green, Grade 3 blue, Grade 2 purple, Grade 1 and
+Semi-Grade 1 red, Special Grade a panning oil-slick sheen. Merit (from the story, missions and the board) opens each
 promotion: Grade 3 at 60 merit and a fight in the training hall with Maki
 watching. Everyone else has a grade too (`NPC_BASE`), grows every day, grows
 faster when you train together (`train_together`), and is promoted on their
@@ -174,8 +220,16 @@ You hold one tool and wear talismans in the slots your grade allows. Maki's
 *The Armory* opens the storehouse racks, which release tools up to your grade.
 Tool and talisman effects (`fx`) are stored now and switch on in phase 3.
 
+Requirements beyond grade live in a side table, `ITEM_REQS` (a grade, an arc,
+a story flag, a stat threshold), and show as a ticked or crossed checklist in
+the armory, the journal's Equipment and Inventory tabs and the Black Market
+(`item_requirements(id)`). The check gates taking a tool and putting a
+talisman on anew; nothing already held is taken away.
+
 ### Memories — `sb_memories.rpy`
-The journal's Memories tab replays any scene this save has seen: the prologue
+Each person's journal page replays any scene this save has seen with them (a
+scene with three people is on all three pages; the rest are on the Me page):
+the prologue
 steps, the story, every hangout and activity scene, and Sana's flashbacks
 (written in phase 4, unlocked by a trip home, her daisy clip, and Oda's
 letter). Whether a memory is seen is read from the save, never from the
@@ -183,26 +237,81 @@ machine. A replay runs in its own copy of the store, so nothing in it reaches
 the save.
 
 ### The HUD, toasts, place view and person view — `ui_hud.rpy`, `sb_screens.rpy`, `sb_activities.rpy`
-Walking around shows only the date and three buttons (MAP, JOURNAL, MENU).
-Rewards stack as toasts at the top right, merging repeated bond gains
-("Yuji bond +4"). A NEXT banner slides in when the objective changes, and a
-caption names the place and hour on arrival. Each place shows up to four people
-with what they are doing (`AMBIENT`); clicking one brings them closer with two
-to four sensible choices (`person_choices`), and they stay on screen while you
-talk. When run from the SDK a small *Review tools* button sits at the bottom
-left.
+Walking around shows only the date and three icons (Map, Journal, Menu), plus
+small status chips by the date (a moon after a hard night, low stamina,
+skipping). What a room offers is a column of icons down the right edge
+(`rail_actions`). Rewards stack as toasts, merging repeated bond gains ("Yuji
+bond +4"); they keep to their own lane and wait, clocks stopped, while a full
+screen such as the map or the journal is up (`toast_room()`). A NEXT banner
+slides in when the objective changes, and a caption names the place and hour
+on arrival. Each place shows up to four people; what they are doing
+(`AMBIENT`, and `AMBIENT_STORY` for captions that follow the story) is on
+hover. Clicking one shows their grade and two to four sensible choices
+(`person_choices`), and they stay on screen while you talk. When run from the
+SDK a small *Review tools* link sits at the bottom left.
+
+### Icons and hover labels — `ui_icons.rpy`
+Every button is an icon (`icon(name)`, `icon_btn`; 88 names in `ICONS`, each a
+picture in `images/icons/` with a kanji seal as its stand-in). A button's name
+and cost appear beside it on hover (the top tile of the place view's icon column
+opens its label above the icon when that spot is clear; every other column
+label sits beside the column, moved up or down so it hides no exit or hotspot:
+`icon_tip_place`): one screen, `hover_label`, draws every
+tooltip, and a tooltip is the tuple `(text, key)` with a key unique on its
+screen. A button's action is a `Return(tuple)` to a label loop or
+`Function(ui_do, fn, …)`; `tools/check_content.py --action-returns` holds
+screens to that.
+
+### People in their places — `view_stage.rpy`, `lighting.rpy`
+The place view's stage. People stand in per-room slots at slightly different
+depths (`VIEW_SLOTS`), breathe, cast a shadow, take the room's light and stand
+behind a foreground layer cut from the room's own picture (`images/fg/`).
+Where a painted pose exists for that person, room and hour
+(`images/place/pose_<place>__<who>[__<variant>].png`, with its box in
+`game/layout/view_<place>.json`) the game lays a soft-edged box of it over the
+room. Clicking someone eases the view in; with the blink and talk pictures
+(`images/char/fx/`) they blink and their mouth moves. A Motion switch in
+Preferences turns the loops off. Nothing un-picklable is ever shown: loops are
+top-level functions, one-shots are ATL.
+
+### Things in rooms — `sb_hotspots.rpy`, `room_*.rpy`
+A **hotspot** is an icon on an object in the picture (`register_hotspot`). An
+action hotspot stands for a place action and exists only while the room offers
+that action; a look hotspot says a line; when a person stands in front of one
+it hides and its action goes back to the icon column. Points are code defaults
+that `game/layout/hot_<place>.json` overrides. On this framework:
+
+- **the computer** in my room (`room_computer.rpy`): a small fake internet of
+  five sites and twelve pages; the first read of a page gives Insight; it can
+  cross-check the week's board jobs for a misgrade; missions can ask for
+  research with `pc_request(page, note)`, which shows as a lead in the
+  journal;
+- **the Library** (`room_library.rpy`): three shelves to study at;
+- **fishing** at the riverside (`room_fishing.rpy`): three casts an hour, a
+  timing bar, a record book, a legendary fish, now and then something cursed;
+- **cards** in the common room (`room_cards.rpy`): blackjack and five-card
+  draw for yen against whoever is there, each playing in character. Games sit
+  behind `register_minigame`, so another is one file;
+- small things (`room_spots.rpy`): a vending machine, the TV, the blackboard.
+
+Every deal, draw and settled cast blocks rollback.
 
 ### The journal — `ui_journal.rpy`
-Six tabs: People, Missions (Story / Character / Board), Memories, Stats (your
-grade, merit, stats and Last Light), Equipment and Inventory. Equipment can only
-be changed when the journal is opened on campus (from the place view).
+Five tabs: People, Missions (Story / Character / Board, with computer leads at
+the top), Stats (one pane at a time: overview, Last Light, my year), Equipment
+and Inventory. The People tab opens on cards (Me first); a person's page has
+Right now (where they are, with a go-there button), Their story (the thread
+and their missions as one list, with the NEXT step) and Memories. Equipment
+can only be changed when the journal is opened on campus (from the place view).
 
 ### Review tools — `explore.rpy`
 A developer-only panel (only when run from the SDK), reached from the place
 view: add merit, promote you or a first-year, finish the next story step, raise
 every bond, open Tokyo, make Gojo in, recruit Utahime, grant every item, open
-the armory, mark the main story complete, jump a week, and look at the ridge
-veil again today. Explore mode (on the
+the armory, mark the main story complete, jump a week, look at the ridge
+veil again today, jump to Night, call a Gojo night, make tomorrow a rest day,
+add ¥20,000, find the Black Market, and open the style sample (every icon
+mode and the five grade chips). Explore mode (on the
 main menu, also developer-only) is a free roam with every door open and no
 story.
 
@@ -473,8 +582,43 @@ expressions) in `jjk_defs.rpy` and an entry in `CHARS`; then `NPC_BASE`
 
 **An action:** `register_place_action(id, label, hint, cost=0, locs=(...),
 when="<name of a store function returning bool>")` in an init block, and a
-matching `label sb_do_<id>:` that does the work and charges the time. The
-built-in actions are in `place_actions()` (`sb_screens.rpy`) and `sb_loop.rpy`.
+matching `label sb_do_<id>:` that does the work and charges the time (use
+`advance_period_soft(n)`, which stops for a waiting story beat). The built-in
+actions are in `place_actions()` (`sb_screens.rpy`) and `sb_loop.rpy`. An
+action that costs time is closed at Night unless its id is in `NIGHT_OK`.
+
+**A hotspot** (`room_spots.rpy`, at init 0 or later):
+`register_hotspot(id, place, x, y, icon, act="<action id>")` puts an existing
+action on an object; `lines=[...]` with a `label=` makes a look instead. The
+icon must be one of the 88 names in `ICONS`. Draw it with
+`python3 tools/layout_sheet.py hot_<place>` and move it with
+`game/layout/hot_<place>.json`; lint reports a point in a lane or out of the
+frame. `front=True` when the object is part of a foreground layer.
+
+**A way between places** (`room_paths.rpy`): a row in `PATH_EXITS[<from>]`,
+`(to, x, y)`, for each direction; two yards are joined by a `PATH_LINKS` row.
+A new place needs at least an exit to its area's yard.
+
+**A page on the computer** (`room_computer.rpy`): a row in `PC_PAGES` (site,
+title, body paragraphs, links, `needs`, `gives`) and its id in
+`PC_PAGE_ORDER`. Pages are in-world documents: they never address the player.
+
+**A game at the card table** (a new file): `register_minigame(id, name,
+icon)` and `label mg_<id>(opponents, stake=0)`, which plays until I leave and
+sets `mg_result` before it returns.
+
+**A requirement on an item:** a row in `ITEM_REQS` (`sb_items.rpy`), a list of
+`("grade", key)`, `("arc", n)`, `("flag", name, words)`, `("stat", name, n)`;
+the validator checks a stat threshold is reachable under the item's own grade.
+
+**A caption that follows the story** (`sb_screens.rpy`, `AMBIENT_STORY`):
+`(who, place or None, condition, caption, expression)`, where the condition is
+a flag name, `"thread:<who>:<n>"` or `"grade:<who>:<key>"`; the last row whose
+condition holds wins. Keep captions to about six words.
+
+**New names** must carry their file's prefix (`tools/prefixes.json`), and a
+statement a save can rest on (a `call screen`, a `menu`, a `call`) must never
+change once it has shipped: `docs/PHASE2_DESIGN.md` 2.2 and 2.3.
 
 ---
 
@@ -488,8 +632,20 @@ built-in actions are in `place_actions()` (`sb_screens.rpy`) and `sb_loop.rpy`.
 | `jjk_defs.rpy` | Characters (with image tags), backgrounds, placeholder images, transforms, `CHARS` |
 | `jjk_sprites.rpy` | Sprite and side-portrait images, generated by `tools/gen_sprite_defs.py` (don't hand-edit) |
 | `jjk_screens.rpy` | Shared screen pieces: panel, section head, meter, chapter card |
-| `bg_placeholders.rpy` | Stand-in backgrounds for the alley, the ridge veil, the offices and Tokyo; real files drop in by name |
-| `lighting.rpy` | Scene light, `lit_sprite()`, contact shadows |
+| `bg_placeholders.rpy` | Stand-in backgrounds for the alley, the ridge veil, the districts, the area maps and the yards; real files drop in by name |
+| `lighting.rpy` | Scene light, `lit_sprite()`, contact shadows, the blink and talk layers |
+| `ui_icons.rpy` | The icon table, `icon()`, `icon_btn`, the hover label, the style sample |
+| `view_stage.rpy` | The place view's stage: slots, poses, foregrounds, name tags, breathing, the eased entrance |
+| `sb_hotspots.rpy` | The hotspot and mini-game registries, `hot_layer`, `hot_use` |
+| `sb_rules.rpy` | The roll-call gate for character scenes, `rule_walk_to`, layout sidecars (`rule_layout`) |
+| `sb_night.rpy` | The night rule, the Gojo night, the night in Tokyo |
+| `sb_market.rpy` | The Black Market |
+| `room_paths.rpy` | Exits between places and the five yards |
+| `room_spots.rpy` | The hotspots of each room, the vending machine, the look lines |
+| `room_computer.rpy` | The computer: sites, pages, the board cross-check, leads |
+| `room_fishing.rpy` | Fishing |
+| `room_library.rpy` | The Library's shelves |
+| `room_cards.rpy` | The card table: blackjack and poker |
 | `explore.rpy` | Explore mode and the review tools (developer builds only) |
 | `sb_hooks.rpy` | Hooks, migrations, load recovery, `toast()`, validators |
 | `sb_world.rpy` | Clock, places, areas, schedules, flag schedules, Gojo's in-days, access rules, the ridge veil |
@@ -506,9 +662,9 @@ built-in actions are in `place_actions()` (`sb_screens.rpy`) and `sb_loop.rpy`.
 | `sb_items.rpy` | Items, equipment, keepsakes, the armory |
 | `sb_memories.rpy` | Memories catalogue and replay |
 | `ui_hud.rpy` | HUD, toasts, the NEXT banner |
-| `ui_map.rpy` | The campus and Tokyo map |
-| `ui_journal.rpy` | The six-tab journal |
-| `sb_screens.rpy` | Place view, person view, `AMBIENT`, staging |
+| `ui_map.rpy` | The two-level campus and Tokyo map |
+| `ui_journal.rpy` | The five-tab journal, person pages, the Me page |
+| `sb_screens.rpy` | Place view, the icon column, person view, `AMBIENT`, `AMBIENT_STORY` |
 | `sb_loop.rpy` | Main loop and every built-in action |
 | `sb_threads.rpy` | Per-character storylines and the journal data |
 | `screens.rpy` | Ren'Py's engine screens: say (with side portraits), quick menu, preferences |
@@ -527,12 +683,15 @@ built-in actions are in `place_actions()` (`sb_screens.rpy`) and `sb_loop.rpy`.
 ## Art
 
 The 13 character sprite sets (six expressions each; the player has two
-outfits) and the 24 campus backgrounds (16 places plus 8 evening and night
+outfits) and the campus backgrounds (24 places plus 8 evening and night
 versions) are ComfyUI renders, made as `docs/ASSET_PIPELINE.md` describes.
-The prologue and story backgrounds are still procedural placeholders (their
-generators were retired; they are in git history if needed). The alley, the
-ridge veil, the two offices, the Tokyo map and the districts are tinted crops
-of existing pictures (`bg_placeholders.rpy`). The campus map
+Phase 2 added the 88 icons, the six area maps, the Tokyo map, the Library, the
+two offices, the five yards, two painted poses and Yuji's blink and talk;
+twelve more poses and blink and talk for ten more people are still to make
+(`docs/ART_PHASE2.md`). The prologue and story backgrounds are still
+procedural placeholders (their generators were retired; they are in git
+history if needed). The alley, the ridge veil and the Tokyo districts are
+tinted crops of existing pictures (`bg_placeholders.rpy`). The campus map
 (`tools/genworld.py`), the curses and the tinted stand-ins for Mom, Dad, Oda,
 Kurose and Nade (`tools/gensprite.py`) are placeholder art drawn by `tools/`.
 Drop real files in with the same names — nothing in the script changes.
@@ -542,11 +701,16 @@ Drop real files in with the same names — nothing in the script changes.
 - **Arc Two is not written.** Beginning it from the journal shows a card and
   returns to campus.
 - Board jobs play out on their own; they become fights in phase 3. Item
-  effects switch on then too.
+  effects switch on then too (a checklist gates holding and wearing today).
+- The Gojo night, the club scene and the districts' daytime places are
+  placeholders until phase 4; no mission requires research on the computer
+  yet.
+- Painted poses exist for two people and blink and talk for one; everyone
+  else stands as a blended sprite.
 - Most character missions, the unwritten story beats, the district scenes and
   Sana's flashbacks read "Written in a later build" / "Coming in a later build".
 - The Sun Mall and the chapters after it, and the character scenes (hangouts,
-  which can come up from day 1), still say "you" until phase 4 converts them
+  which now wait for roll call), still say "you" until phase 4 converts them
   (design 5.4, D9).
 - No audio. `game/audio/` is empty by design so nothing errors.
 - Sprites have one pose each (with six expressions).

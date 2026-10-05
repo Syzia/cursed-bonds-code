@@ -1,6 +1,6 @@
 #!/bin/bash
-# tools/smoke.sh v2 -- run one Ren'Py test harness in a throwaway copy of the
-# project (docs/PHASE1_DESIGN.md, section 8.1).
+# tools/smoke.sh v3 -- run one Ren'Py test harness in a throwaway copy of the
+# project (docs/PHASE1_DESIGN.md, section 8.1; docs/PHASE2_DESIGN.md, D49).
 #
 #   tools/smoke.sh <harness.rpy>
 #
@@ -11,6 +11,8 @@
 #   SMOKE_SLOT=<slot>  the slot tools/smoke/load_slot.rpy loads
 #   SMOKE_SHOTS=<dir>  where result.txt, screenshots and logs go
 #                      (default: shots/<harness name>/ in the repo)
+#   SMOKE_ASSETS=<dir> an overlay folder to use instead of
+#                      tools/smoke/assets/<harness name>/ (see 2b)
 #   HEADLESS=1         use SDL's dummy video driver. Off by default: on
 #                      macOS 27 it stalls at "Initializing sw renderer".
 #   RENPY_SDK=<dir>    the SDK (default ~/Desktop/renpy-8.5.3-sdk)
@@ -27,6 +29,20 @@
 #      backups (normally ~/Library/RenPy/backups/<project>/) are switched off
 #      with RENPY_DISABLE_BACKUPS. The only thing read outside the project is
 #      the save-token key file Ren'Py always reads (~/Library/RenPy/tokens).
+#      The harness also sees SMOKE_ROOT, the repository it was started from,
+#      so it can read (never write) files such as tools/smoke/baseline_p0.json.
+#   2a. Extra scripts. A harness line `## smoke-with: <file>.rpy` installs
+#      tools/smoke/<file>.rpy into the scratch game/ under its own name (this
+#      is how p2_contracts.rpy runs with aa_zz_order.rpy, which must sort
+#      before every game file).
+#   2b. The asset overlay (D49). When tools/smoke/assets/<harness name>/ exists,
+#      every file under its game/ folder is copied to the same path under the
+#      scratch game/ (tools/smoke/assets/p2_contracts/game/layout/x.json lands
+#      at <scratch>/game/layout/x.json). The asset folders of the scratch copy
+#      are links into the real game/, so each folder on the way is first made
+#      a real folder holding links to the original's children, and a link the
+#      file would replace is removed first: nothing is ever written through a
+#      link, and a test picture never lands in the real game/images/.
 #   3. A watchdog stops the run after SMOKE_TIMEOUT, or shortly after the
 #      harness has written its result, or after an error screen has sat
 #      there with no result (an init or parse error the harness can't catch).
@@ -36,7 +52,10 @@
 #      traceback.txt / errors.txt are kept next to the result.
 #
 # Nothing is ever written into the real game/ folder, so several harnesses can
-# run at once, even from one checkout.
+# run at once, even from one checkout. That holds when game/cache (or a folder
+# of scripts) is a symbolic link as well: such a link is followed and its
+# contents are copied. Still, never set up a worktree or a scratch root with
+# game/cache linked to another tree's.
 set -u
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -100,7 +119,9 @@ for f in "$ROOT"/game/*; do
         # Asset folders are symlinked. A folder holding scripts is copied
         # instead, or Ren'Py would compile into the real tree through the link.
         if [ -n "$(find -H "$f" \( -name '*.rpy' -o -name '*.rpym' -o -name '*.rpyc' -o -name '*.rpymc' \) -print -quit)" ]; then
-            cp -Rp "$f" "$G/$b"
+            # -L: a link (the folder itself, or one inside it) is followed and
+            # its contents copied, never the link.
+            cp -RpL "$f" "$G/$b"
         else
             ln -s "$f" "$G/$b"
         fi
@@ -112,10 +133,74 @@ for f in "$ROOT"/game/*; do
     fi
 done
 # The bytecode cache only saves start-up time; the copy is private to this run.
-[ -d "$ROOT/game/cache" ] && cp -Rp "$ROOT/game/cache" "$G/cache"
+# -L: when game/cache is a link (a worktree or a scratch root that borrows
+# another tree's cache), its contents are copied. Copying the link itself
+# would let Ren'Py write its caches through it into that other tree.
+[ -d "$ROOT/game/cache" ] && cp -RpL "$ROOT/game/cache" "$G/cache"
+[ -L "$G/cache" ] && die "the scratch game/cache is a link; refusing to run"
 
 cp "$LIB" "$G/zz_smoke_lib.rpy"
 cp "$HARNESS" "$G/zz_smoke.rpy"
+
+# Extra scripts the harness asks for: `## smoke-with: <file>.rpy` installs
+# tools/smoke/<file>.rpy under its own name.
+sed -n 's/^## smoke-with: *\([A-Za-z0-9_][A-Za-z0-9_.-]*\.rpy\) *$/\1/p' "$HARNESS" | while IFS= read -r extra; do
+    [ -f "$ROOT/tools/smoke/$extra" ] || { echo "smoke.sh: smoke-with: no tools/smoke/$extra" >&2; exit 2; }
+    cp "$ROOT/tools/smoke/$extra" "$G/$extra"
+done || exit 2
+
+# --- the asset overlay (D49) ---------------------------------------------------
+SCRATCH_REAL="$(cd "$SCRATCH" && pwd -P)"
+
+# Make every folder on the way to game/<$1> a real folder inside the scratch
+# copy. A folder that is a link into the real tree is replaced by a real one
+# holding links to the original's children.
+real_dirs() {
+    local rest="$1" cur="$G" part target child
+    while [ -n "$rest" ]; do
+        part="${rest%%/*}"
+        if [ "$part" = "$rest" ]; then rest=""; else rest="${rest#*/}"; fi
+        [ -n "$part" ] || continue
+        cur="$cur/$part"
+        if [ -L "$cur" ]; then
+            target="$(cd "$cur" 2>/dev/null && pwd -P)" || die "overlay: $cur is a link to something that is not a folder"
+            rm "$cur" && mkdir "$cur" || die "overlay: cannot make $cur a real folder"
+            for child in "$target"/* "$target"/.[!.]*; do
+                [ -e "$child" ] || [ -L "$child" ] || continue
+                ln -s "$child" "$cur/$(basename "$child")"
+            done
+        elif [ -d "$cur" ]; then
+            :
+        elif [ -e "$cur" ]; then
+            die "overlay: $cur is a file, not a folder"
+        else
+            mkdir "$cur" || die "overlay: cannot create $cur"
+        fi
+    done
+}
+
+ASSETS="${SMOKE_ASSETS:-$ROOT/tools/smoke/assets/$NAME}"
+if [ -d "$ASSETS" ]; then
+    find "$ASSETS" -type f ! -name '.DS_Store' -print | LC_ALL=C sort > "$SCRATCH/overlay.txt"
+    while IFS= read -r src; do
+        rel="${src#"$ASSETS"/}"
+        case "$rel" in
+            game/*) rel="${rel#game/}" ;;
+            *) die "overlay: $src is not under $ASSETS/game/ (only game/ is overlaid)" ;;
+        esac
+        case "/$rel/" in */../*) die "overlay: bad path $rel" ;; esac
+        dir="$(dirname "$rel")"
+        [ "$dir" = "." ] || real_dirs "$dir"
+        dest="$G/$rel"
+        # The folder the file goes into must now be real and inside the scratch copy.
+        destdir="$(cd "$(dirname "$dest")" && pwd -P)"
+        case "$destdir/" in "$SCRATCH_REAL"/*) ;; *) die "overlay: $dest would be written outside the scratch copy" ;; esac
+        # A link (to the owner's file) is removed, never written through.
+        if [ -L "$dest" ]; then rm "$dest" || die "overlay: cannot remove the link $dest"; fi
+        [ -d "$dest" ] && die "overlay: $dest is a folder"
+        cp -p "$src" "$dest" || die "overlay: cannot copy $src"
+    done < "$SCRATCH/overlay.txt"
+fi
 
 # The owner's saves, as read-only copies (SMOKE_SAVES=1).
 if [ "${SMOKE_SAVES:-0}" = "1" ]; then
@@ -143,6 +228,7 @@ class Editor(object):
 EOF
 
 export SMOKE_SHOTS="$SHOTS"
+export SMOKE_ROOT="$ROOT"
 # Ren'Py's own switch; without it every compile copies the scripts into
 # ~/Library/RenPy/backups/jjk_smoke.XXXX/.
 export RENPY_DISABLE_BACKUPS="I take responsibility for this."

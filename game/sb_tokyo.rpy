@@ -181,7 +181,7 @@ label sb_trip(key):
         call expression "district_" + key
 
     "Ijichi is waiting where he said he'd be. The drive back up the mountain is quiet."
-    $ advance_period(2)
+    $ advance_period_soft(2, loc="gate")
     $ here = "gate"
     scene expression graded_bg()
     with Dissolve(0.6)
@@ -197,6 +197,8 @@ label sb_do_car:
     $ _car = _return
     if _car[0] == "district":
         call sb_trip(_car[1])
+    elif _car[0] == "night":
+        call night_out(_car[1])
     elif _car[0] == "go":
         $ _ok, _why = can_enter(_car[1])
         if not _ok:

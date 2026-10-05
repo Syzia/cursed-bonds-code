@@ -112,11 +112,17 @@ init 999 python:
     def zz_open_state(**kw):
         """A Grade 4 player on a Monday morning in Utahime's office, board open."""
         base = dict(day=1, period="Morning", here="utahime_office", grade="g4", technique="timestop",
-                    control=12, output=10, insight=10, stamina=100, merit=0, yen=0, inventory={},
-                    roster=list(ZZ_EVERYONE), bonds={}, npc_state={}, board_offers=[], board_week=-1, board_npc=None,
-                    board_log=[], board_misgrades=0, schedule_overrides={}, explore_mode=False)
+                    control=12, output=10, insight=10, stamina=100, merit=0, yen=0,
+                    roster=list(ZZ_EVERYONE), bonds={}, board_week=-1, board_npc=None,
+                    board_misgrades=0, schedule_overrides={}, explore_mode=False)
         base.update(kw)
         fixture(**base)
+        ## The shaped variables are emptied directly: fixture() refuses them
+        ## (PHASE2 R5), and an empty container has no shape to get wrong.
+        store.inventory = {}
+        store.npc_state = {}
+        store.board_offers = []
+        store.board_log = []
         for f in ("utahime_leads_kyoto", "wakuri_clue", "armory_open"):
             flags.discard(f)
         flag("mission_board_open")
@@ -728,6 +734,13 @@ label zz_smoke:
         board_refresh()
         renpy.show_screen("board_screen")
     $ zz_shot("board_screen_unassessed")
+    ## Phase 2 (P4a, 4.8): the chips are the game's grade chips, in the grade colours.
+    python:
+        _chips = [t for t in zz_texts("board_screen") if t in ("GRADE 4", "GRADE 3")]
+        check(BOARD_GRADE_COLOR == {"g4": gui.grade_g4, "g3": gui.grade_g3, "g2": gui.grade_g2, "s1": gui.grade_g1},
+              "phase 2: BOARD_GRADE_COLOR is re-pointed at the gui.grade_* tokens", BOARD_GRADE_COLOR)
+        check(sorted(_chips) == ["GRADE 3", "GRADE 4", "GRADE 4"],
+              "phase 2: each card's chip is drawn by grade_chip (unassessed: Grade 4's board)", _chips)
     $ renpy.hide_screen("board_screen")
     python:
         _want = ["board_screen", "board_screen_taken", "board_screen_evening", "board_screen_unassessed", "board_screen_ijichi",

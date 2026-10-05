@@ -1,0 +1,6322 @@
+{
+ "about": "Written by tools/smoke/p2_contracts.rpy (zz_p0_dump_tables and the label). place_actions: 'room|period' -> [[id, label, hint, cost]]. person_choices: 'who|room|period' -> an index into choice_lists, each a list of [kind, id, label, hint, cost, gold, romance]. sb_char: who -> the place they were shown in and the Return values of the card's buttons. armory_tools: [[id, state, reason]] at the fixture's grade.",
+ "fresh": {
+  "armory_tools": [
+   [
+    "slaughter_demon",
+    "take",
+    ""
+   ],
+   [
+    "nunchaku",
+    "sealed",
+    "Sealed until Grade 3"
+   ],
+   [
+    "playful_cloud",
+    "story",
+    "Story reward"
+   ],
+   [
+    "split_soul",
+    "story",
+    "Story reward"
+   ],
+   [
+    "inverted_spear",
+    "arcii",
+    "Sealed — Arc Two"
+   ]
+  ],
+  "choice_keys": [
+   "cost",
+   "gold",
+   "hint",
+   "id",
+   "kind",
+   "label",
+   "romance"
+  ],
+  "choice_lists": [
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ]
+  ],
+  "day": 3,
+  "flags": [
+   "chose_jujutsu",
+   "dinner_listened",
+   "enrolled",
+   "roll_call",
+   "saw_the_ridge_veil",
+   "settled_in",
+   "storehouse_access"
+  ],
+  "grade": "g4",
+  "person_choices": {
+   "gojo|cafeteria|Afternoon": 1,
+   "gojo|cafeteria|Evening": 1,
+   "gojo|cafeteria|Morning": 1,
+   "gojo|cafeteria|Night": 1,
+   "gojo|cafeteria|Noon": 1,
+   "gojo|classroom|Afternoon": 1,
+   "gojo|classroom|Evening": 1,
+   "gojo|classroom|Morning": 1,
+   "gojo|classroom|Night": 1,
+   "gojo|classroom|Noon": 1,
+   "gojo|courtyard|Afternoon": 1,
+   "gojo|courtyard|Evening": 1,
+   "gojo|courtyard|Morning": 1,
+   "gojo|courtyard|Night": 1,
+   "gojo|courtyard|Noon": 1,
+   "gojo|dojo|Afternoon": 1,
+   "gojo|dojo|Evening": 1,
+   "gojo|dojo|Morning": 1,
+   "gojo|dojo|Night": 1,
+   "gojo|dojo|Noon": 1,
+   "gojo|dorm_common|Afternoon": 1,
+   "gojo|dorm_common|Evening": 1,
+   "gojo|dorm_common|Morning": 1,
+   "gojo|dorm_common|Night": 1,
+   "gojo|dorm_common|Noon": 1,
+   "gojo|dorm|Afternoon": 1,
+   "gojo|dorm|Evening": 1,
+   "gojo|dorm|Morning": 1,
+   "gojo|dorm|Night": 1,
+   "gojo|dorm|Noon": 1,
+   "gojo|forest|Afternoon": 1,
+   "gojo|forest|Evening": 1,
+   "gojo|forest|Morning": 1,
+   "gojo|forest|Night": 1,
+   "gojo|forest|Noon": 1,
+   "gojo|gate|Afternoon": 1,
+   "gojo|gate|Evening": 1,
+   "gojo|gate|Morning": 1,
+   "gojo|gate|Night": 1,
+   "gojo|gate|Noon": 1,
+   "gojo|girls_dorm|Afternoon": 1,
+   "gojo|girls_dorm|Evening": 1,
+   "gojo|girls_dorm|Morning": 1,
+   "gojo|girls_dorm|Night": 1,
+   "gojo|girls_dorm|Noon": 1,
+   "gojo|gojo_office|Afternoon": 1,
+   "gojo|gojo_office|Evening": 1,
+   "gojo|gojo_office|Morning": 1,
+   "gojo|gojo_office|Night": 1,
+   "gojo|gojo_office|Noon": 1,
+   "gojo|infirmary|Afternoon": 1,
+   "gojo|infirmary|Evening": 1,
+   "gojo|infirmary|Morning": 1,
+   "gojo|infirmary|Night": 1,
+   "gojo|infirmary|Noon": 1,
+   "gojo|office|Afternoon": 1,
+   "gojo|office|Evening": 1,
+   "gojo|office|Morning": 1,
+   "gojo|office|Night": 1,
+   "gojo|office|Noon": 1,
+   "gojo|ridge|Afternoon": 1,
+   "gojo|ridge|Evening": 1,
+   "gojo|ridge|Morning": 1,
+   "gojo|ridge|Night": 1,
+   "gojo|ridge|Noon": 1,
+   "gojo|riverside|Afternoon": 1,
+   "gojo|riverside|Evening": 1,
+   "gojo|riverside|Morning": 1,
+   "gojo|riverside|Night": 1,
+   "gojo|riverside|Noon": 1,
+   "gojo|rooftop|Afternoon": 1,
+   "gojo|rooftop|Evening": 1,
+   "gojo|rooftop|Morning": 1,
+   "gojo|rooftop|Night": 1,
+   "gojo|rooftop|Noon": 1,
+   "gojo|storehouse|Afternoon": 1,
+   "gojo|storehouse|Evening": 1,
+   "gojo|storehouse|Morning": 1,
+   "gojo|storehouse|Night": 1,
+   "gojo|storehouse|Noon": 1,
+   "gojo|training|Afternoon": 1,
+   "gojo|training|Evening": 1,
+   "gojo|training|Morning": 1,
+   "gojo|training|Night": 1,
+   "gojo|training|Noon": 1,
+   "gojo|utahime_office|Afternoon": 1,
+   "gojo|utahime_office|Evening": 1,
+   "gojo|utahime_office|Morning": 1,
+   "gojo|utahime_office|Night": 1,
+   "gojo|utahime_office|Noon": 1,
+   "ijichi|cafeteria|Afternoon": 1,
+   "ijichi|cafeteria|Evening": 1,
+   "ijichi|cafeteria|Morning": 1,
+   "ijichi|cafeteria|Night": 1,
+   "ijichi|cafeteria|Noon": 1,
+   "ijichi|classroom|Afternoon": 1,
+   "ijichi|classroom|Evening": 1,
+   "ijichi|classroom|Morning": 1,
+   "ijichi|classroom|Night": 1,
+   "ijichi|classroom|Noon": 1,
+   "ijichi|courtyard|Afternoon": 1,
+   "ijichi|courtyard|Evening": 1,
+   "ijichi|courtyard|Morning": 1,
+   "ijichi|courtyard|Night": 1,
+   "ijichi|courtyard|Noon": 1,
+   "ijichi|dojo|Afternoon": 1,
+   "ijichi|dojo|Evening": 1,
+   "ijichi|dojo|Morning": 1,
+   "ijichi|dojo|Night": 1,
+   "ijichi|dojo|Noon": 1,
+   "ijichi|dorm_common|Afternoon": 1,
+   "ijichi|dorm_common|Evening": 1,
+   "ijichi|dorm_common|Morning": 1,
+   "ijichi|dorm_common|Night": 1,
+   "ijichi|dorm_common|Noon": 1,
+   "ijichi|dorm|Afternoon": 1,
+   "ijichi|dorm|Evening": 1,
+   "ijichi|dorm|Morning": 1,
+   "ijichi|dorm|Night": 1,
+   "ijichi|dorm|Noon": 1,
+   "ijichi|forest|Afternoon": 1,
+   "ijichi|forest|Evening": 1,
+   "ijichi|forest|Morning": 1,
+   "ijichi|forest|Night": 1,
+   "ijichi|forest|Noon": 1,
+   "ijichi|gate|Afternoon": 1,
+   "ijichi|gate|Evening": 1,
+   "ijichi|gate|Morning": 1,
+   "ijichi|gate|Night": 1,
+   "ijichi|gate|Noon": 1,
+   "ijichi|girls_dorm|Afternoon": 1,
+   "ijichi|girls_dorm|Evening": 1,
+   "ijichi|girls_dorm|Morning": 1,
+   "ijichi|girls_dorm|Night": 1,
+   "ijichi|girls_dorm|Noon": 1,
+   "ijichi|gojo_office|Afternoon": 1,
+   "ijichi|gojo_office|Evening": 1,
+   "ijichi|gojo_office|Morning": 1,
+   "ijichi|gojo_office|Night": 1,
+   "ijichi|gojo_office|Noon": 1,
+   "ijichi|infirmary|Afternoon": 1,
+   "ijichi|infirmary|Evening": 1,
+   "ijichi|infirmary|Morning": 1,
+   "ijichi|infirmary|Night": 1,
+   "ijichi|infirmary|Noon": 1,
+   "ijichi|office|Afternoon": 1,
+   "ijichi|office|Evening": 1,
+   "ijichi|office|Morning": 1,
+   "ijichi|office|Night": 1,
+   "ijichi|office|Noon": 1,
+   "ijichi|ridge|Afternoon": 1,
+   "ijichi|ridge|Evening": 1,
+   "ijichi|ridge|Morning": 1,
+   "ijichi|ridge|Night": 1,
+   "ijichi|ridge|Noon": 1,
+   "ijichi|riverside|Afternoon": 1,
+   "ijichi|riverside|Evening": 1,
+   "ijichi|riverside|Morning": 1,
+   "ijichi|riverside|Night": 1,
+   "ijichi|riverside|Noon": 1,
+   "ijichi|rooftop|Afternoon": 1,
+   "ijichi|rooftop|Evening": 1,
+   "ijichi|rooftop|Morning": 1,
+   "ijichi|rooftop|Night": 1,
+   "ijichi|rooftop|Noon": 1,
+   "ijichi|storehouse|Afternoon": 1,
+   "ijichi|storehouse|Evening": 1,
+   "ijichi|storehouse|Morning": 1,
+   "ijichi|storehouse|Night": 1,
+   "ijichi|storehouse|Noon": 1,
+   "ijichi|training|Afternoon": 1,
+   "ijichi|training|Evening": 1,
+   "ijichi|training|Morning": 1,
+   "ijichi|training|Night": 1,
+   "ijichi|training|Noon": 1,
+   "ijichi|utahime_office|Afternoon": 1,
+   "ijichi|utahime_office|Evening": 1,
+   "ijichi|utahime_office|Morning": 1,
+   "ijichi|utahime_office|Night": 1,
+   "ijichi|utahime_office|Noon": 1,
+   "maki|cafeteria|Afternoon": 0,
+   "maki|cafeteria|Evening": 0,
+   "maki|cafeteria|Morning": 0,
+   "maki|cafeteria|Night": 0,
+   "maki|cafeteria|Noon": 0,
+   "maki|classroom|Afternoon": 0,
+   "maki|classroom|Evening": 0,
+   "maki|classroom|Morning": 0,
+   "maki|classroom|Night": 0,
+   "maki|classroom|Noon": 0,
+   "maki|courtyard|Afternoon": 0,
+   "maki|courtyard|Evening": 0,
+   "maki|courtyard|Morning": 0,
+   "maki|courtyard|Night": 0,
+   "maki|courtyard|Noon": 0,
+   "maki|dojo|Afternoon": 0,
+   "maki|dojo|Evening": 0,
+   "maki|dojo|Morning": 0,
+   "maki|dojo|Night": 0,
+   "maki|dojo|Noon": 0,
+   "maki|dorm_common|Afternoon": 0,
+   "maki|dorm_common|Evening": 0,
+   "maki|dorm_common|Morning": 0,
+   "maki|dorm_common|Night": 0,
+   "maki|dorm_common|Noon": 0,
+   "maki|dorm|Afternoon": 0,
+   "maki|dorm|Evening": 0,
+   "maki|dorm|Morning": 0,
+   "maki|dorm|Night": 0,
+   "maki|dorm|Noon": 0,
+   "maki|forest|Afternoon": 0,
+   "maki|forest|Evening": 0,
+   "maki|forest|Morning": 0,
+   "maki|forest|Night": 0,
+   "maki|forest|Noon": 0,
+   "maki|gate|Afternoon": 0,
+   "maki|gate|Evening": 0,
+   "maki|gate|Morning": 0,
+   "maki|gate|Night": 0,
+   "maki|gate|Noon": 0,
+   "maki|girls_dorm|Afternoon": 0,
+   "maki|girls_dorm|Evening": 0,
+   "maki|girls_dorm|Morning": 0,
+   "maki|girls_dorm|Night": 0,
+   "maki|girls_dorm|Noon": 0,
+   "maki|gojo_office|Afternoon": 0,
+   "maki|gojo_office|Evening": 0,
+   "maki|gojo_office|Morning": 0,
+   "maki|gojo_office|Night": 0,
+   "maki|gojo_office|Noon": 0,
+   "maki|infirmary|Afternoon": 0,
+   "maki|infirmary|Evening": 0,
+   "maki|infirmary|Morning": 0,
+   "maki|infirmary|Night": 0,
+   "maki|infirmary|Noon": 0,
+   "maki|office|Afternoon": 0,
+   "maki|office|Evening": 0,
+   "maki|office|Morning": 0,
+   "maki|office|Night": 0,
+   "maki|office|Noon": 0,
+   "maki|ridge|Afternoon": 0,
+   "maki|ridge|Evening": 0,
+   "maki|ridge|Morning": 0,
+   "maki|ridge|Night": 0,
+   "maki|ridge|Noon": 0,
+   "maki|riverside|Afternoon": 0,
+   "maki|riverside|Evening": 0,
+   "maki|riverside|Morning": 0,
+   "maki|riverside|Night": 0,
+   "maki|riverside|Noon": 0,
+   "maki|rooftop|Afternoon": 0,
+   "maki|rooftop|Evening": 0,
+   "maki|rooftop|Morning": 0,
+   "maki|rooftop|Night": 0,
+   "maki|rooftop|Noon": 0,
+   "maki|storehouse|Afternoon": 0,
+   "maki|storehouse|Evening": 0,
+   "maki|storehouse|Morning": 0,
+   "maki|storehouse|Night": 0,
+   "maki|storehouse|Noon": 0,
+   "maki|training|Afternoon": 0,
+   "maki|training|Evening": 0,
+   "maki|training|Morning": 0,
+   "maki|training|Night": 0,
+   "maki|training|Noon": 0,
+   "maki|utahime_office|Afternoon": 0,
+   "maki|utahime_office|Evening": 0,
+   "maki|utahime_office|Morning": 0,
+   "maki|utahime_office|Night": 0,
+   "maki|utahime_office|Noon": 0,
+   "megumi|cafeteria|Afternoon": 0,
+   "megumi|cafeteria|Evening": 0,
+   "megumi|cafeteria|Morning": 0,
+   "megumi|cafeteria|Night": 0,
+   "megumi|cafeteria|Noon": 0,
+   "megumi|classroom|Afternoon": 0,
+   "megumi|classroom|Evening": 0,
+   "megumi|classroom|Morning": 0,
+   "megumi|classroom|Night": 0,
+   "megumi|classroom|Noon": 0,
+   "megumi|courtyard|Afternoon": 0,
+   "megumi|courtyard|Evening": 0,
+   "megumi|courtyard|Morning": 0,
+   "megumi|courtyard|Night": 0,
+   "megumi|courtyard|Noon": 0,
+   "megumi|dojo|Afternoon": 0,
+   "megumi|dojo|Evening": 0,
+   "megumi|dojo|Morning": 0,
+   "megumi|dojo|Night": 0,
+   "megumi|dojo|Noon": 0,
+   "megumi|dorm_common|Afternoon": 0,
+   "megumi|dorm_common|Evening": 0,
+   "megumi|dorm_common|Morning": 0,
+   "megumi|dorm_common|Night": 0,
+   "megumi|dorm_common|Noon": 0,
+   "megumi|dorm|Afternoon": 0,
+   "megumi|dorm|Evening": 0,
+   "megumi|dorm|Morning": 0,
+   "megumi|dorm|Night": 0,
+   "megumi|dorm|Noon": 0,
+   "megumi|forest|Afternoon": 0,
+   "megumi|forest|Evening": 0,
+   "megumi|forest|Morning": 0,
+   "megumi|forest|Night": 0,
+   "megumi|forest|Noon": 0,
+   "megumi|gate|Afternoon": 0,
+   "megumi|gate|Evening": 0,
+   "megumi|gate|Morning": 0,
+   "megumi|gate|Night": 0,
+   "megumi|gate|Noon": 0,
+   "megumi|girls_dorm|Afternoon": 0,
+   "megumi|girls_dorm|Evening": 0,
+   "megumi|girls_dorm|Morning": 0,
+   "megumi|girls_dorm|Night": 0,
+   "megumi|girls_dorm|Noon": 0,
+   "megumi|gojo_office|Afternoon": 0,
+   "megumi|gojo_office|Evening": 0,
+   "megumi|gojo_office|Morning": 0,
+   "megumi|gojo_office|Night": 0,
+   "megumi|gojo_office|Noon": 0,
+   "megumi|infirmary|Afternoon": 0,
+   "megumi|infirmary|Evening": 0,
+   "megumi|infirmary|Morning": 0,
+   "megumi|infirmary|Night": 0,
+   "megumi|infirmary|Noon": 0,
+   "megumi|office|Afternoon": 0,
+   "megumi|office|Evening": 0,
+   "megumi|office|Morning": 0,
+   "megumi|office|Night": 0,
+   "megumi|office|Noon": 0,
+   "megumi|ridge|Afternoon": 0,
+   "megumi|ridge|Evening": 0,
+   "megumi|ridge|Morning": 0,
+   "megumi|ridge|Night": 0,
+   "megumi|ridge|Noon": 0,
+   "megumi|riverside|Afternoon": 0,
+   "megumi|riverside|Evening": 0,
+   "megumi|riverside|Morning": 0,
+   "megumi|riverside|Night": 0,
+   "megumi|riverside|Noon": 0,
+   "megumi|rooftop|Afternoon": 0,
+   "megumi|rooftop|Evening": 0,
+   "megumi|rooftop|Morning": 0,
+   "megumi|rooftop|Night": 0,
+   "megumi|rooftop|Noon": 0,
+   "megumi|storehouse|Afternoon": 0,
+   "megumi|storehouse|Evening": 0,
+   "megumi|storehouse|Morning": 0,
+   "megumi|storehouse|Night": 0,
+   "megumi|storehouse|Noon": 0,
+   "megumi|training|Afternoon": 0,
+   "megumi|training|Evening": 0,
+   "megumi|training|Morning": 0,
+   "megumi|training|Night": 0,
+   "megumi|training|Noon": 0,
+   "megumi|utahime_office|Afternoon": 0,
+   "megumi|utahime_office|Evening": 0,
+   "megumi|utahime_office|Morning": 0,
+   "megumi|utahime_office|Night": 0,
+   "megumi|utahime_office|Noon": 0,
+   "nobara|cafeteria|Afternoon": 0,
+   "nobara|cafeteria|Evening": 0,
+   "nobara|cafeteria|Morning": 0,
+   "nobara|cafeteria|Night": 0,
+   "nobara|cafeteria|Noon": 0,
+   "nobara|classroom|Afternoon": 0,
+   "nobara|classroom|Evening": 0,
+   "nobara|classroom|Morning": 0,
+   "nobara|classroom|Night": 0,
+   "nobara|classroom|Noon": 0,
+   "nobara|courtyard|Afternoon": 0,
+   "nobara|courtyard|Evening": 0,
+   "nobara|courtyard|Morning": 0,
+   "nobara|courtyard|Night": 0,
+   "nobara|courtyard|Noon": 0,
+   "nobara|dojo|Afternoon": 0,
+   "nobara|dojo|Evening": 0,
+   "nobara|dojo|Morning": 0,
+   "nobara|dojo|Night": 0,
+   "nobara|dojo|Noon": 0,
+   "nobara|dorm_common|Afternoon": 0,
+   "nobara|dorm_common|Evening": 0,
+   "nobara|dorm_common|Morning": 0,
+   "nobara|dorm_common|Night": 0,
+   "nobara|dorm_common|Noon": 0,
+   "nobara|dorm|Afternoon": 0,
+   "nobara|dorm|Evening": 0,
+   "nobara|dorm|Morning": 0,
+   "nobara|dorm|Night": 0,
+   "nobara|dorm|Noon": 0,
+   "nobara|forest|Afternoon": 0,
+   "nobara|forest|Evening": 0,
+   "nobara|forest|Morning": 0,
+   "nobara|forest|Night": 0,
+   "nobara|forest|Noon": 0,
+   "nobara|gate|Afternoon": 0,
+   "nobara|gate|Evening": 0,
+   "nobara|gate|Morning": 0,
+   "nobara|gate|Night": 0,
+   "nobara|gate|Noon": 0,
+   "nobara|girls_dorm|Afternoon": 0,
+   "nobara|girls_dorm|Evening": 0,
+   "nobara|girls_dorm|Morning": 0,
+   "nobara|girls_dorm|Night": 0,
+   "nobara|girls_dorm|Noon": 0,
+   "nobara|gojo_office|Afternoon": 0,
+   "nobara|gojo_office|Evening": 0,
+   "nobara|gojo_office|Morning": 0,
+   "nobara|gojo_office|Night": 0,
+   "nobara|gojo_office|Noon": 0,
+   "nobara|infirmary|Afternoon": 0,
+   "nobara|infirmary|Evening": 0,
+   "nobara|infirmary|Morning": 0,
+   "nobara|infirmary|Night": 0,
+   "nobara|infirmary|Noon": 0,
+   "nobara|office|Afternoon": 0,
+   "nobara|office|Evening": 0,
+   "nobara|office|Morning": 0,
+   "nobara|office|Night": 0,
+   "nobara|office|Noon": 0,
+   "nobara|ridge|Afternoon": 0,
+   "nobara|ridge|Evening": 0,
+   "nobara|ridge|Morning": 0,
+   "nobara|ridge|Night": 0,
+   "nobara|ridge|Noon": 0,
+   "nobara|riverside|Afternoon": 0,
+   "nobara|riverside|Evening": 0,
+   "nobara|riverside|Morning": 0,
+   "nobara|riverside|Night": 0,
+   "nobara|riverside|Noon": 0,
+   "nobara|rooftop|Afternoon": 0,
+   "nobara|rooftop|Evening": 0,
+   "nobara|rooftop|Morning": 0,
+   "nobara|rooftop|Night": 0,
+   "nobara|rooftop|Noon": 0,
+   "nobara|storehouse|Afternoon": 0,
+   "nobara|storehouse|Evening": 0,
+   "nobara|storehouse|Morning": 0,
+   "nobara|storehouse|Night": 0,
+   "nobara|storehouse|Noon": 0,
+   "nobara|training|Afternoon": 0,
+   "nobara|training|Evening": 0,
+   "nobara|training|Morning": 0,
+   "nobara|training|Night": 0,
+   "nobara|training|Noon": 0,
+   "nobara|utahime_office|Afternoon": 0,
+   "nobara|utahime_office|Evening": 0,
+   "nobara|utahime_office|Morning": 0,
+   "nobara|utahime_office|Night": 0,
+   "nobara|utahime_office|Noon": 0,
+   "panda|cafeteria|Afternoon": 0,
+   "panda|cafeteria|Evening": 0,
+   "panda|cafeteria|Morning": 0,
+   "panda|cafeteria|Night": 0,
+   "panda|cafeteria|Noon": 0,
+   "panda|classroom|Afternoon": 0,
+   "panda|classroom|Evening": 0,
+   "panda|classroom|Morning": 0,
+   "panda|classroom|Night": 0,
+   "panda|classroom|Noon": 0,
+   "panda|courtyard|Afternoon": 0,
+   "panda|courtyard|Evening": 0,
+   "panda|courtyard|Morning": 0,
+   "panda|courtyard|Night": 0,
+   "panda|courtyard|Noon": 0,
+   "panda|dojo|Afternoon": 0,
+   "panda|dojo|Evening": 0,
+   "panda|dojo|Morning": 0,
+   "panda|dojo|Night": 0,
+   "panda|dojo|Noon": 0,
+   "panda|dorm_common|Afternoon": 0,
+   "panda|dorm_common|Evening": 0,
+   "panda|dorm_common|Morning": 0,
+   "panda|dorm_common|Night": 0,
+   "panda|dorm_common|Noon": 0,
+   "panda|dorm|Afternoon": 0,
+   "panda|dorm|Evening": 0,
+   "panda|dorm|Morning": 0,
+   "panda|dorm|Night": 0,
+   "panda|dorm|Noon": 0,
+   "panda|forest|Afternoon": 0,
+   "panda|forest|Evening": 0,
+   "panda|forest|Morning": 0,
+   "panda|forest|Night": 0,
+   "panda|forest|Noon": 0,
+   "panda|gate|Afternoon": 0,
+   "panda|gate|Evening": 0,
+   "panda|gate|Morning": 0,
+   "panda|gate|Night": 0,
+   "panda|gate|Noon": 0,
+   "panda|girls_dorm|Afternoon": 0,
+   "panda|girls_dorm|Evening": 0,
+   "panda|girls_dorm|Morning": 0,
+   "panda|girls_dorm|Night": 0,
+   "panda|girls_dorm|Noon": 0,
+   "panda|gojo_office|Afternoon": 0,
+   "panda|gojo_office|Evening": 0,
+   "panda|gojo_office|Morning": 0,
+   "panda|gojo_office|Night": 0,
+   "panda|gojo_office|Noon": 0,
+   "panda|infirmary|Afternoon": 0,
+   "panda|infirmary|Evening": 0,
+   "panda|infirmary|Morning": 0,
+   "panda|infirmary|Night": 0,
+   "panda|infirmary|Noon": 0,
+   "panda|office|Afternoon": 0,
+   "panda|office|Evening": 0,
+   "panda|office|Morning": 0,
+   "panda|office|Night": 0,
+   "panda|office|Noon": 0,
+   "panda|ridge|Afternoon": 0,
+   "panda|ridge|Evening": 0,
+   "panda|ridge|Morning": 0,
+   "panda|ridge|Night": 0,
+   "panda|ridge|Noon": 0,
+   "panda|riverside|Afternoon": 0,
+   "panda|riverside|Evening": 0,
+   "panda|riverside|Morning": 0,
+   "panda|riverside|Night": 0,
+   "panda|riverside|Noon": 0,
+   "panda|rooftop|Afternoon": 0,
+   "panda|rooftop|Evening": 0,
+   "panda|rooftop|Morning": 0,
+   "panda|rooftop|Night": 0,
+   "panda|rooftop|Noon": 0,
+   "panda|storehouse|Afternoon": 0,
+   "panda|storehouse|Evening": 0,
+   "panda|storehouse|Morning": 0,
+   "panda|storehouse|Night": 0,
+   "panda|storehouse|Noon": 0,
+   "panda|training|Afternoon": 0,
+   "panda|training|Evening": 0,
+   "panda|training|Morning": 0,
+   "panda|training|Night": 0,
+   "panda|training|Noon": 0,
+   "panda|utahime_office|Afternoon": 0,
+   "panda|utahime_office|Evening": 0,
+   "panda|utahime_office|Morning": 0,
+   "panda|utahime_office|Night": 0,
+   "panda|utahime_office|Noon": 0,
+   "shoko|cafeteria|Afternoon": 0,
+   "shoko|cafeteria|Evening": 0,
+   "shoko|cafeteria|Morning": 0,
+   "shoko|cafeteria|Night": 0,
+   "shoko|cafeteria|Noon": 0,
+   "shoko|classroom|Afternoon": 0,
+   "shoko|classroom|Evening": 0,
+   "shoko|classroom|Morning": 0,
+   "shoko|classroom|Night": 0,
+   "shoko|classroom|Noon": 0,
+   "shoko|courtyard|Afternoon": 0,
+   "shoko|courtyard|Evening": 0,
+   "shoko|courtyard|Morning": 0,
+   "shoko|courtyard|Night": 0,
+   "shoko|courtyard|Noon": 0,
+   "shoko|dojo|Afternoon": 0,
+   "shoko|dojo|Evening": 0,
+   "shoko|dojo|Morning": 0,
+   "shoko|dojo|Night": 0,
+   "shoko|dojo|Noon": 0,
+   "shoko|dorm_common|Afternoon": 0,
+   "shoko|dorm_common|Evening": 0,
+   "shoko|dorm_common|Morning": 0,
+   "shoko|dorm_common|Night": 0,
+   "shoko|dorm_common|Noon": 0,
+   "shoko|dorm|Afternoon": 0,
+   "shoko|dorm|Evening": 0,
+   "shoko|dorm|Morning": 0,
+   "shoko|dorm|Night": 0,
+   "shoko|dorm|Noon": 0,
+   "shoko|forest|Afternoon": 0,
+   "shoko|forest|Evening": 0,
+   "shoko|forest|Morning": 0,
+   "shoko|forest|Night": 0,
+   "shoko|forest|Noon": 0,
+   "shoko|gate|Afternoon": 0,
+   "shoko|gate|Evening": 0,
+   "shoko|gate|Morning": 0,
+   "shoko|gate|Night": 0,
+   "shoko|gate|Noon": 0,
+   "shoko|girls_dorm|Afternoon": 0,
+   "shoko|girls_dorm|Evening": 0,
+   "shoko|girls_dorm|Morning": 0,
+   "shoko|girls_dorm|Night": 0,
+   "shoko|girls_dorm|Noon": 0,
+   "shoko|gojo_office|Afternoon": 0,
+   "shoko|gojo_office|Evening": 0,
+   "shoko|gojo_office|Morning": 0,
+   "shoko|gojo_office|Night": 0,
+   "shoko|gojo_office|Noon": 0,
+   "shoko|infirmary|Afternoon": 0,
+   "shoko|infirmary|Evening": 0,
+   "shoko|infirmary|Morning": 0,
+   "shoko|infirmary|Night": 0,
+   "shoko|infirmary|Noon": 0,
+   "shoko|office|Afternoon": 0,
+   "shoko|office|Evening": 0,
+   "shoko|office|Morning": 0,
+   "shoko|office|Night": 0,
+   "shoko|office|Noon": 0,
+   "shoko|ridge|Afternoon": 0,
+   "shoko|ridge|Evening": 0,
+   "shoko|ridge|Morning": 0,
+   "shoko|ridge|Night": 0,
+   "shoko|ridge|Noon": 0,
+   "shoko|riverside|Afternoon": 0,
+   "shoko|riverside|Evening": 0,
+   "shoko|riverside|Morning": 0,
+   "shoko|riverside|Night": 0,
+   "shoko|riverside|Noon": 0,
+   "shoko|rooftop|Afternoon": 0,
+   "shoko|rooftop|Evening": 0,
+   "shoko|rooftop|Morning": 0,
+   "shoko|rooftop|Night": 0,
+   "shoko|rooftop|Noon": 0,
+   "shoko|storehouse|Afternoon": 0,
+   "shoko|storehouse|Evening": 0,
+   "shoko|storehouse|Morning": 0,
+   "shoko|storehouse|Night": 0,
+   "shoko|storehouse|Noon": 0,
+   "shoko|training|Afternoon": 0,
+   "shoko|training|Evening": 0,
+   "shoko|training|Morning": 0,
+   "shoko|training|Night": 0,
+   "shoko|training|Noon": 0,
+   "shoko|utahime_office|Afternoon": 0,
+   "shoko|utahime_office|Evening": 0,
+   "shoko|utahime_office|Morning": 0,
+   "shoko|utahime_office|Night": 0,
+   "shoko|utahime_office|Noon": 0,
+   "toge|cafeteria|Afternoon": 0,
+   "toge|cafeteria|Evening": 0,
+   "toge|cafeteria|Morning": 0,
+   "toge|cafeteria|Night": 0,
+   "toge|cafeteria|Noon": 0,
+   "toge|classroom|Afternoon": 0,
+   "toge|classroom|Evening": 0,
+   "toge|classroom|Morning": 0,
+   "toge|classroom|Night": 0,
+   "toge|classroom|Noon": 0,
+   "toge|courtyard|Afternoon": 0,
+   "toge|courtyard|Evening": 0,
+   "toge|courtyard|Morning": 0,
+   "toge|courtyard|Night": 0,
+   "toge|courtyard|Noon": 0,
+   "toge|dojo|Afternoon": 0,
+   "toge|dojo|Evening": 0,
+   "toge|dojo|Morning": 0,
+   "toge|dojo|Night": 0,
+   "toge|dojo|Noon": 0,
+   "toge|dorm_common|Afternoon": 0,
+   "toge|dorm_common|Evening": 0,
+   "toge|dorm_common|Morning": 0,
+   "toge|dorm_common|Night": 0,
+   "toge|dorm_common|Noon": 0,
+   "toge|dorm|Afternoon": 0,
+   "toge|dorm|Evening": 0,
+   "toge|dorm|Morning": 0,
+   "toge|dorm|Night": 0,
+   "toge|dorm|Noon": 0,
+   "toge|forest|Afternoon": 0,
+   "toge|forest|Evening": 0,
+   "toge|forest|Morning": 0,
+   "toge|forest|Night": 0,
+   "toge|forest|Noon": 0,
+   "toge|gate|Afternoon": 0,
+   "toge|gate|Evening": 0,
+   "toge|gate|Morning": 0,
+   "toge|gate|Night": 0,
+   "toge|gate|Noon": 0,
+   "toge|girls_dorm|Afternoon": 0,
+   "toge|girls_dorm|Evening": 0,
+   "toge|girls_dorm|Morning": 0,
+   "toge|girls_dorm|Night": 0,
+   "toge|girls_dorm|Noon": 0,
+   "toge|gojo_office|Afternoon": 0,
+   "toge|gojo_office|Evening": 0,
+   "toge|gojo_office|Morning": 0,
+   "toge|gojo_office|Night": 0,
+   "toge|gojo_office|Noon": 0,
+   "toge|infirmary|Afternoon": 0,
+   "toge|infirmary|Evening": 0,
+   "toge|infirmary|Morning": 0,
+   "toge|infirmary|Night": 0,
+   "toge|infirmary|Noon": 0,
+   "toge|office|Afternoon": 0,
+   "toge|office|Evening": 0,
+   "toge|office|Morning": 0,
+   "toge|office|Night": 0,
+   "toge|office|Noon": 0,
+   "toge|ridge|Afternoon": 0,
+   "toge|ridge|Evening": 0,
+   "toge|ridge|Morning": 0,
+   "toge|ridge|Night": 0,
+   "toge|ridge|Noon": 0,
+   "toge|riverside|Afternoon": 0,
+   "toge|riverside|Evening": 0,
+   "toge|riverside|Morning": 0,
+   "toge|riverside|Night": 0,
+   "toge|riverside|Noon": 0,
+   "toge|rooftop|Afternoon": 0,
+   "toge|rooftop|Evening": 0,
+   "toge|rooftop|Morning": 0,
+   "toge|rooftop|Night": 0,
+   "toge|rooftop|Noon": 0,
+   "toge|storehouse|Afternoon": 0,
+   "toge|storehouse|Evening": 0,
+   "toge|storehouse|Morning": 0,
+   "toge|storehouse|Night": 0,
+   "toge|storehouse|Noon": 0,
+   "toge|training|Afternoon": 0,
+   "toge|training|Evening": 0,
+   "toge|training|Morning": 0,
+   "toge|training|Night": 0,
+   "toge|training|Noon": 0,
+   "toge|utahime_office|Afternoon": 0,
+   "toge|utahime_office|Evening": 0,
+   "toge|utahime_office|Morning": 0,
+   "toge|utahime_office|Night": 0,
+   "toge|utahime_office|Noon": 0,
+   "utahime|cafeteria|Afternoon": 1,
+   "utahime|cafeteria|Evening": 1,
+   "utahime|cafeteria|Morning": 1,
+   "utahime|cafeteria|Night": 1,
+   "utahime|cafeteria|Noon": 1,
+   "utahime|classroom|Afternoon": 1,
+   "utahime|classroom|Evening": 1,
+   "utahime|classroom|Morning": 1,
+   "utahime|classroom|Night": 1,
+   "utahime|classroom|Noon": 1,
+   "utahime|courtyard|Afternoon": 1,
+   "utahime|courtyard|Evening": 1,
+   "utahime|courtyard|Morning": 1,
+   "utahime|courtyard|Night": 1,
+   "utahime|courtyard|Noon": 1,
+   "utahime|dojo|Afternoon": 1,
+   "utahime|dojo|Evening": 1,
+   "utahime|dojo|Morning": 1,
+   "utahime|dojo|Night": 1,
+   "utahime|dojo|Noon": 1,
+   "utahime|dorm_common|Afternoon": 1,
+   "utahime|dorm_common|Evening": 1,
+   "utahime|dorm_common|Morning": 1,
+   "utahime|dorm_common|Night": 1,
+   "utahime|dorm_common|Noon": 1,
+   "utahime|dorm|Afternoon": 1,
+   "utahime|dorm|Evening": 1,
+   "utahime|dorm|Morning": 1,
+   "utahime|dorm|Night": 1,
+   "utahime|dorm|Noon": 1,
+   "utahime|forest|Afternoon": 1,
+   "utahime|forest|Evening": 1,
+   "utahime|forest|Morning": 1,
+   "utahime|forest|Night": 1,
+   "utahime|forest|Noon": 1,
+   "utahime|gate|Afternoon": 1,
+   "utahime|gate|Evening": 1,
+   "utahime|gate|Morning": 1,
+   "utahime|gate|Night": 1,
+   "utahime|gate|Noon": 1,
+   "utahime|girls_dorm|Afternoon": 1,
+   "utahime|girls_dorm|Evening": 1,
+   "utahime|girls_dorm|Morning": 1,
+   "utahime|girls_dorm|Night": 1,
+   "utahime|girls_dorm|Noon": 1,
+   "utahime|gojo_office|Afternoon": 1,
+   "utahime|gojo_office|Evening": 1,
+   "utahime|gojo_office|Morning": 1,
+   "utahime|gojo_office|Night": 1,
+   "utahime|gojo_office|Noon": 1,
+   "utahime|infirmary|Afternoon": 1,
+   "utahime|infirmary|Evening": 1,
+   "utahime|infirmary|Morning": 1,
+   "utahime|infirmary|Night": 1,
+   "utahime|infirmary|Noon": 1,
+   "utahime|office|Afternoon": 1,
+   "utahime|office|Evening": 1,
+   "utahime|office|Morning": 1,
+   "utahime|office|Night": 1,
+   "utahime|office|Noon": 1,
+   "utahime|ridge|Afternoon": 1,
+   "utahime|ridge|Evening": 1,
+   "utahime|ridge|Morning": 1,
+   "utahime|ridge|Night": 1,
+   "utahime|ridge|Noon": 1,
+   "utahime|riverside|Afternoon": 1,
+   "utahime|riverside|Evening": 1,
+   "utahime|riverside|Morning": 1,
+   "utahime|riverside|Night": 1,
+   "utahime|riverside|Noon": 1,
+   "utahime|rooftop|Afternoon": 1,
+   "utahime|rooftop|Evening": 1,
+   "utahime|rooftop|Morning": 1,
+   "utahime|rooftop|Night": 1,
+   "utahime|rooftop|Noon": 1,
+   "utahime|storehouse|Afternoon": 1,
+   "utahime|storehouse|Evening": 1,
+   "utahime|storehouse|Morning": 1,
+   "utahime|storehouse|Night": 1,
+   "utahime|storehouse|Noon": 1,
+   "utahime|training|Afternoon": 1,
+   "utahime|training|Evening": 1,
+   "utahime|training|Morning": 1,
+   "utahime|training|Night": 1,
+   "utahime|training|Noon": 1,
+   "utahime|utahime_office|Afternoon": 1,
+   "utahime|utahime_office|Evening": 1,
+   "utahime|utahime_office|Morning": 1,
+   "utahime|utahime_office|Night": 1,
+   "utahime|utahime_office|Noon": 1,
+   "yaga|cafeteria|Afternoon": 1,
+   "yaga|cafeteria|Evening": 1,
+   "yaga|cafeteria|Morning": 1,
+   "yaga|cafeteria|Night": 1,
+   "yaga|cafeteria|Noon": 1,
+   "yaga|classroom|Afternoon": 1,
+   "yaga|classroom|Evening": 1,
+   "yaga|classroom|Morning": 1,
+   "yaga|classroom|Night": 1,
+   "yaga|classroom|Noon": 1,
+   "yaga|courtyard|Afternoon": 1,
+   "yaga|courtyard|Evening": 1,
+   "yaga|courtyard|Morning": 1,
+   "yaga|courtyard|Night": 1,
+   "yaga|courtyard|Noon": 1,
+   "yaga|dojo|Afternoon": 1,
+   "yaga|dojo|Evening": 1,
+   "yaga|dojo|Morning": 1,
+   "yaga|dojo|Night": 1,
+   "yaga|dojo|Noon": 1,
+   "yaga|dorm_common|Afternoon": 1,
+   "yaga|dorm_common|Evening": 1,
+   "yaga|dorm_common|Morning": 1,
+   "yaga|dorm_common|Night": 1,
+   "yaga|dorm_common|Noon": 1,
+   "yaga|dorm|Afternoon": 1,
+   "yaga|dorm|Evening": 1,
+   "yaga|dorm|Morning": 1,
+   "yaga|dorm|Night": 1,
+   "yaga|dorm|Noon": 1,
+   "yaga|forest|Afternoon": 1,
+   "yaga|forest|Evening": 1,
+   "yaga|forest|Morning": 1,
+   "yaga|forest|Night": 1,
+   "yaga|forest|Noon": 1,
+   "yaga|gate|Afternoon": 1,
+   "yaga|gate|Evening": 1,
+   "yaga|gate|Morning": 1,
+   "yaga|gate|Night": 1,
+   "yaga|gate|Noon": 1,
+   "yaga|girls_dorm|Afternoon": 1,
+   "yaga|girls_dorm|Evening": 1,
+   "yaga|girls_dorm|Morning": 1,
+   "yaga|girls_dorm|Night": 1,
+   "yaga|girls_dorm|Noon": 1,
+   "yaga|gojo_office|Afternoon": 1,
+   "yaga|gojo_office|Evening": 1,
+   "yaga|gojo_office|Morning": 1,
+   "yaga|gojo_office|Night": 1,
+   "yaga|gojo_office|Noon": 1,
+   "yaga|infirmary|Afternoon": 1,
+   "yaga|infirmary|Evening": 1,
+   "yaga|infirmary|Morning": 1,
+   "yaga|infirmary|Night": 1,
+   "yaga|infirmary|Noon": 1,
+   "yaga|office|Afternoon": 1,
+   "yaga|office|Evening": 1,
+   "yaga|office|Morning": 1,
+   "yaga|office|Night": 1,
+   "yaga|office|Noon": 1,
+   "yaga|ridge|Afternoon": 1,
+   "yaga|ridge|Evening": 1,
+   "yaga|ridge|Morning": 1,
+   "yaga|ridge|Night": 1,
+   "yaga|ridge|Noon": 1,
+   "yaga|riverside|Afternoon": 1,
+   "yaga|riverside|Evening": 1,
+   "yaga|riverside|Morning": 1,
+   "yaga|riverside|Night": 1,
+   "yaga|riverside|Noon": 1,
+   "yaga|rooftop|Afternoon": 1,
+   "yaga|rooftop|Evening": 1,
+   "yaga|rooftop|Morning": 1,
+   "yaga|rooftop|Night": 1,
+   "yaga|rooftop|Noon": 1,
+   "yaga|storehouse|Afternoon": 1,
+   "yaga|storehouse|Evening": 1,
+   "yaga|storehouse|Morning": 1,
+   "yaga|storehouse|Night": 1,
+   "yaga|storehouse|Noon": 1,
+   "yaga|training|Afternoon": 1,
+   "yaga|training|Evening": 1,
+   "yaga|training|Morning": 1,
+   "yaga|training|Night": 1,
+   "yaga|training|Noon": 1,
+   "yaga|utahime_office|Afternoon": 1,
+   "yaga|utahime_office|Evening": 1,
+   "yaga|utahime_office|Morning": 1,
+   "yaga|utahime_office|Night": 1,
+   "yaga|utahime_office|Noon": 1,
+   "yuji|cafeteria|Afternoon": 0,
+   "yuji|cafeteria|Evening": 0,
+   "yuji|cafeteria|Morning": 0,
+   "yuji|cafeteria|Night": 0,
+   "yuji|cafeteria|Noon": 0,
+   "yuji|classroom|Afternoon": 0,
+   "yuji|classroom|Evening": 0,
+   "yuji|classroom|Morning": 0,
+   "yuji|classroom|Night": 0,
+   "yuji|classroom|Noon": 0,
+   "yuji|courtyard|Afternoon": 0,
+   "yuji|courtyard|Evening": 0,
+   "yuji|courtyard|Morning": 0,
+   "yuji|courtyard|Night": 0,
+   "yuji|courtyard|Noon": 0,
+   "yuji|dojo|Afternoon": 0,
+   "yuji|dojo|Evening": 0,
+   "yuji|dojo|Morning": 0,
+   "yuji|dojo|Night": 0,
+   "yuji|dojo|Noon": 0,
+   "yuji|dorm_common|Afternoon": 0,
+   "yuji|dorm_common|Evening": 0,
+   "yuji|dorm_common|Morning": 0,
+   "yuji|dorm_common|Night": 0,
+   "yuji|dorm_common|Noon": 0,
+   "yuji|dorm|Afternoon": 0,
+   "yuji|dorm|Evening": 0,
+   "yuji|dorm|Morning": 0,
+   "yuji|dorm|Night": 0,
+   "yuji|dorm|Noon": 0,
+   "yuji|forest|Afternoon": 0,
+   "yuji|forest|Evening": 0,
+   "yuji|forest|Morning": 0,
+   "yuji|forest|Night": 0,
+   "yuji|forest|Noon": 0,
+   "yuji|gate|Afternoon": 0,
+   "yuji|gate|Evening": 0,
+   "yuji|gate|Morning": 0,
+   "yuji|gate|Night": 0,
+   "yuji|gate|Noon": 0,
+   "yuji|girls_dorm|Afternoon": 0,
+   "yuji|girls_dorm|Evening": 0,
+   "yuji|girls_dorm|Morning": 0,
+   "yuji|girls_dorm|Night": 0,
+   "yuji|girls_dorm|Noon": 0,
+   "yuji|gojo_office|Afternoon": 0,
+   "yuji|gojo_office|Evening": 0,
+   "yuji|gojo_office|Morning": 0,
+   "yuji|gojo_office|Night": 0,
+   "yuji|gojo_office|Noon": 0,
+   "yuji|infirmary|Afternoon": 0,
+   "yuji|infirmary|Evening": 0,
+   "yuji|infirmary|Morning": 0,
+   "yuji|infirmary|Night": 0,
+   "yuji|infirmary|Noon": 0,
+   "yuji|office|Afternoon": 0,
+   "yuji|office|Evening": 0,
+   "yuji|office|Morning": 0,
+   "yuji|office|Night": 0,
+   "yuji|office|Noon": 0,
+   "yuji|ridge|Afternoon": 0,
+   "yuji|ridge|Evening": 0,
+   "yuji|ridge|Morning": 0,
+   "yuji|ridge|Night": 0,
+   "yuji|ridge|Noon": 0,
+   "yuji|riverside|Afternoon": 0,
+   "yuji|riverside|Evening": 0,
+   "yuji|riverside|Morning": 0,
+   "yuji|riverside|Night": 0,
+   "yuji|riverside|Noon": 0,
+   "yuji|rooftop|Afternoon": 0,
+   "yuji|rooftop|Evening": 0,
+   "yuji|rooftop|Morning": 0,
+   "yuji|rooftop|Night": 0,
+   "yuji|rooftop|Noon": 0,
+   "yuji|storehouse|Afternoon": 0,
+   "yuji|storehouse|Evening": 0,
+   "yuji|storehouse|Morning": 0,
+   "yuji|storehouse|Night": 0,
+   "yuji|storehouse|Noon": 0,
+   "yuji|training|Afternoon": 0,
+   "yuji|training|Evening": 0,
+   "yuji|training|Morning": 0,
+   "yuji|training|Night": 0,
+   "yuji|training|Noon": 0,
+   "yuji|utahime_office|Afternoon": 0,
+   "yuji|utahime_office|Evening": 0,
+   "yuji|utahime_office|Morning": 0,
+   "yuji|utahime_office|Night": 0,
+   "yuji|utahime_office|Noon": 0
+  },
+  "place_actions": {
+   "cafeteria|Afternoon": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Evening": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Morning": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Night": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Noon": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Afternoon": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Evening": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Morning": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Night": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Noon": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Afternoon": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Evening": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Morning": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Night": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Noon": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Afternoon": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Evening": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Morning": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Night": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Noon": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Afternoon": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Evening": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Morning": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Night": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Noon": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Afternoon": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Evening": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Morning": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Night": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Noon": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Afternoon": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Evening": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Morning": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Night": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Noon": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Afternoon": [
+    [
+     "tools",
+     "Look through the racks",
+     "Look, don't take. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Evening": [
+    [
+     "tools",
+     "Look through the racks",
+     "Look, don't take. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Morning": [
+    [
+     "tools",
+     "Look through the racks",
+     "Look, don't take. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Night": [
+    [
+     "tools",
+     "Look through the racks",
+     "Look, don't take. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Noon": [
+    [
+     "tools",
+     "Look through the racks",
+     "Look, don't take. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ]
+  },
+  "roster": [
+   "yuji",
+   "megumi",
+   "nobara",
+   "shoko",
+   "gojo",
+   "yaga",
+   "ijichi"
+  ]
+ },
+ "rich": {
+  "armory_tools": [
+   [
+    "slaughter_demon",
+    "take",
+    ""
+   ],
+   [
+    "nunchaku",
+    "take",
+    ""
+   ],
+   [
+    "playful_cloud",
+    "story",
+    "Story reward"
+   ],
+   [
+    "split_soul",
+    "story",
+    "Story reward"
+   ],
+   [
+    "inverted_spear",
+    "arcii",
+    "Sealed — Arc Two"
+   ]
+  ],
+  "choice_keys": [
+   "cost",
+   "gold",
+   "hint",
+   "id",
+   "kind",
+   "label",
+   "romance"
+  ],
+  "choice_lists": [
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "walk",
+     "Walk with them",
+     "No destination. That's the point.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "rom_town",
+     "Ask them into town",
+     "A whole afternoon, off the mountain.",
+     2,
+     false,
+     true
+    ],
+    [
+     "do",
+     "walk",
+     "Walk with them",
+     "No destination. That's the point.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "walk",
+     "Walk with them",
+     "No destination. That's the point.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "mission",
+     "cm_ijichi_1",
+     "Ride-Along",
+     "Ijichi has something for me",
+     0,
+     true,
+     false
+    ],
+    [
+     "act",
+     "car",
+     "Ask Ijichi for a ride",
+     "Into the city. Half a day.",
+     2,
+     false,
+     false
+    ],
+    [
+     "do",
+     "walk",
+     "Walk with them",
+     "No destination. That's the point.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "study",
+     "Study together",
+     "Four hundred pages, two people.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "study",
+     "Study together",
+     "Four hundred pages, two people.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "eat",
+     "Eat together",
+     "Everyone's here at noon anyway.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "eat",
+     "Eat together",
+     "Everyone's here at noon anyway.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "train",
+     "Train together",
+     "They hit harder than they need to.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "stargaze",
+     "Sit out with them",
+     "Somewhere dark, and a hundred kilometres of sky.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "stargaze",
+     "Sit out with them",
+     "Somewhere dark, and a hundred kilometres of sky.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "act",
+     "board",
+     "Mission board",
+     "Graded jobs. Bring someone.",
+     0,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "hang",
+     "Spend time together",
+     "Whatever they're doing, do it with them.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "swim",
+     "Swim together",
+     "The water is snowmelt cold.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ],
+   [
+    [
+     "do",
+     "swim",
+     "Swim together",
+     "The water is snowmelt cold.",
+     1,
+     false,
+     false
+    ],
+    [
+     "do",
+     "talk",
+     "Talk",
+     "A few minutes. Costs nothing.",
+     0,
+     false,
+     false
+    ]
+   ]
+  ],
+  "day": 9,
+  "flags": [
+   "armory_open",
+   "chose_jujutsu",
+   "dinner_listened",
+   "enrolled",
+   "ijichi_rides",
+   "intensive_done",
+   "mission_board_open",
+   "roll_call",
+   "saw_the_ridge_veil",
+   "settled_in",
+   "storehouse_access",
+   "sunmall_done",
+   "utahime_arrived"
+  ],
+  "grade": "g3",
+  "person_choices": {
+   "gojo|cafeteria|Afternoon": 6,
+   "gojo|cafeteria|Evening": 6,
+   "gojo|cafeteria|Morning": 6,
+   "gojo|cafeteria|Night": 6,
+   "gojo|cafeteria|Noon": 6,
+   "gojo|classroom|Afternoon": 4,
+   "gojo|classroom|Evening": 4,
+   "gojo|classroom|Morning": 4,
+   "gojo|classroom|Night": 4,
+   "gojo|classroom|Noon": 4,
+   "gojo|courtyard|Afternoon": 0,
+   "gojo|courtyard|Evening": 0,
+   "gojo|courtyard|Morning": 0,
+   "gojo|courtyard|Night": 0,
+   "gojo|courtyard|Noon": 0,
+   "gojo|dojo|Afternoon": 9,
+   "gojo|dojo|Evening": 9,
+   "gojo|dojo|Morning": 9,
+   "gojo|dojo|Night": 9,
+   "gojo|dojo|Noon": 9,
+   "gojo|dorm_common|Afternoon": 4,
+   "gojo|dorm_common|Evening": 4,
+   "gojo|dorm_common|Morning": 4,
+   "gojo|dorm_common|Night": 4,
+   "gojo|dorm_common|Noon": 4,
+   "gojo|dorm|Afternoon": 4,
+   "gojo|dorm|Evening": 4,
+   "gojo|dorm|Morning": 4,
+   "gojo|dorm|Night": 4,
+   "gojo|dorm|Noon": 4,
+   "gojo|forest|Afternoon": 0,
+   "gojo|forest|Evening": 0,
+   "gojo|forest|Morning": 0,
+   "gojo|forest|Night": 0,
+   "gojo|forest|Noon": 0,
+   "gojo|gate|Afternoon": 0,
+   "gojo|gate|Evening": 0,
+   "gojo|gate|Morning": 0,
+   "gojo|gate|Night": 0,
+   "gojo|gate|Noon": 0,
+   "gojo|girls_dorm|Afternoon": 9,
+   "gojo|girls_dorm|Evening": 9,
+   "gojo|girls_dorm|Morning": 9,
+   "gojo|girls_dorm|Night": 9,
+   "gojo|girls_dorm|Noon": 9,
+   "gojo|gojo_office|Afternoon": 9,
+   "gojo|gojo_office|Evening": 9,
+   "gojo|gojo_office|Morning": 9,
+   "gojo|gojo_office|Night": 9,
+   "gojo|gojo_office|Noon": 9,
+   "gojo|infirmary|Afternoon": 9,
+   "gojo|infirmary|Evening": 9,
+   "gojo|infirmary|Morning": 9,
+   "gojo|infirmary|Night": 9,
+   "gojo|infirmary|Noon": 9,
+   "gojo|office|Afternoon": 9,
+   "gojo|office|Evening": 9,
+   "gojo|office|Morning": 9,
+   "gojo|office|Night": 9,
+   "gojo|office|Noon": 9,
+   "gojo|ridge|Afternoon": 0,
+   "gojo|ridge|Evening": 11,
+   "gojo|ridge|Morning": 0,
+   "gojo|ridge|Night": 11,
+   "gojo|ridge|Noon": 0,
+   "gojo|riverside|Afternoon": 14,
+   "gojo|riverside|Evening": 11,
+   "gojo|riverside|Morning": 0,
+   "gojo|riverside|Night": 11,
+   "gojo|riverside|Noon": 14,
+   "gojo|rooftop|Afternoon": 9,
+   "gojo|rooftop|Evening": 11,
+   "gojo|rooftop|Morning": 9,
+   "gojo|rooftop|Night": 11,
+   "gojo|rooftop|Noon": 9,
+   "gojo|storehouse|Afternoon": 9,
+   "gojo|storehouse|Evening": 9,
+   "gojo|storehouse|Morning": 9,
+   "gojo|storehouse|Night": 9,
+   "gojo|storehouse|Noon": 9,
+   "gojo|training|Afternoon": 9,
+   "gojo|training|Evening": 9,
+   "gojo|training|Morning": 9,
+   "gojo|training|Night": 9,
+   "gojo|training|Noon": 9,
+   "gojo|utahime_office|Afternoon": 9,
+   "gojo|utahime_office|Evening": 9,
+   "gojo|utahime_office|Morning": 9,
+   "gojo|utahime_office|Night": 9,
+   "gojo|utahime_office|Noon": 9,
+   "ijichi|cafeteria|Afternoon": 7,
+   "ijichi|cafeteria|Evening": 7,
+   "ijichi|cafeteria|Morning": 7,
+   "ijichi|cafeteria|Night": 7,
+   "ijichi|cafeteria|Noon": 7,
+   "ijichi|classroom|Afternoon": 5,
+   "ijichi|classroom|Evening": 5,
+   "ijichi|classroom|Morning": 5,
+   "ijichi|classroom|Night": 5,
+   "ijichi|classroom|Noon": 5,
+   "ijichi|courtyard|Afternoon": 2,
+   "ijichi|courtyard|Evening": 2,
+   "ijichi|courtyard|Morning": 2,
+   "ijichi|courtyard|Night": 2,
+   "ijichi|courtyard|Noon": 2,
+   "ijichi|dojo|Afternoon": 10,
+   "ijichi|dojo|Evening": 10,
+   "ijichi|dojo|Morning": 10,
+   "ijichi|dojo|Night": 10,
+   "ijichi|dojo|Noon": 10,
+   "ijichi|dorm_common|Afternoon": 5,
+   "ijichi|dorm_common|Evening": 5,
+   "ijichi|dorm_common|Morning": 5,
+   "ijichi|dorm_common|Night": 5,
+   "ijichi|dorm_common|Noon": 5,
+   "ijichi|dorm|Afternoon": 5,
+   "ijichi|dorm|Evening": 5,
+   "ijichi|dorm|Morning": 5,
+   "ijichi|dorm|Night": 5,
+   "ijichi|dorm|Noon": 5,
+   "ijichi|forest|Afternoon": 2,
+   "ijichi|forest|Evening": 2,
+   "ijichi|forest|Morning": 2,
+   "ijichi|forest|Night": 2,
+   "ijichi|forest|Noon": 2,
+   "ijichi|gate|Afternoon": 3,
+   "ijichi|gate|Evening": 2,
+   "ijichi|gate|Morning": 3,
+   "ijichi|gate|Night": 2,
+   "ijichi|gate|Noon": 3,
+   "ijichi|girls_dorm|Afternoon": 10,
+   "ijichi|girls_dorm|Evening": 10,
+   "ijichi|girls_dorm|Morning": 10,
+   "ijichi|girls_dorm|Night": 10,
+   "ijichi|girls_dorm|Noon": 10,
+   "ijichi|gojo_office|Afternoon": 10,
+   "ijichi|gojo_office|Evening": 10,
+   "ijichi|gojo_office|Morning": 10,
+   "ijichi|gojo_office|Night": 10,
+   "ijichi|gojo_office|Noon": 10,
+   "ijichi|infirmary|Afternoon": 10,
+   "ijichi|infirmary|Evening": 10,
+   "ijichi|infirmary|Morning": 10,
+   "ijichi|infirmary|Night": 10,
+   "ijichi|infirmary|Noon": 10,
+   "ijichi|office|Afternoon": 10,
+   "ijichi|office|Evening": 10,
+   "ijichi|office|Morning": 10,
+   "ijichi|office|Night": 10,
+   "ijichi|office|Noon": 10,
+   "ijichi|ridge|Afternoon": 2,
+   "ijichi|ridge|Evening": 12,
+   "ijichi|ridge|Morning": 2,
+   "ijichi|ridge|Night": 12,
+   "ijichi|ridge|Noon": 2,
+   "ijichi|riverside|Afternoon": 15,
+   "ijichi|riverside|Evening": 12,
+   "ijichi|riverside|Morning": 2,
+   "ijichi|riverside|Night": 12,
+   "ijichi|riverside|Noon": 15,
+   "ijichi|rooftop|Afternoon": 10,
+   "ijichi|rooftop|Evening": 12,
+   "ijichi|rooftop|Morning": 10,
+   "ijichi|rooftop|Night": 12,
+   "ijichi|rooftop|Noon": 10,
+   "ijichi|storehouse|Afternoon": 10,
+   "ijichi|storehouse|Evening": 10,
+   "ijichi|storehouse|Morning": 10,
+   "ijichi|storehouse|Night": 10,
+   "ijichi|storehouse|Noon": 10,
+   "ijichi|training|Afternoon": 10,
+   "ijichi|training|Evening": 10,
+   "ijichi|training|Morning": 10,
+   "ijichi|training|Night": 10,
+   "ijichi|training|Noon": 10,
+   "ijichi|utahime_office|Afternoon": 10,
+   "ijichi|utahime_office|Evening": 10,
+   "ijichi|utahime_office|Morning": 10,
+   "ijichi|utahime_office|Night": 10,
+   "ijichi|utahime_office|Noon": 10,
+   "maki|cafeteria|Afternoon": 6,
+   "maki|cafeteria|Evening": 6,
+   "maki|cafeteria|Morning": 6,
+   "maki|cafeteria|Night": 6,
+   "maki|cafeteria|Noon": 6,
+   "maki|classroom|Afternoon": 4,
+   "maki|classroom|Evening": 4,
+   "maki|classroom|Morning": 4,
+   "maki|classroom|Night": 4,
+   "maki|classroom|Noon": 4,
+   "maki|courtyard|Afternoon": 1,
+   "maki|courtyard|Evening": 1,
+   "maki|courtyard|Morning": 1,
+   "maki|courtyard|Night": 1,
+   "maki|courtyard|Noon": 1,
+   "maki|dojo|Afternoon": 8,
+   "maki|dojo|Evening": 8,
+   "maki|dojo|Morning": 8,
+   "maki|dojo|Night": 8,
+   "maki|dojo|Noon": 8,
+   "maki|dorm_common|Afternoon": 4,
+   "maki|dorm_common|Evening": 4,
+   "maki|dorm_common|Morning": 4,
+   "maki|dorm_common|Night": 4,
+   "maki|dorm_common|Noon": 4,
+   "maki|dorm|Afternoon": 4,
+   "maki|dorm|Evening": 4,
+   "maki|dorm|Morning": 4,
+   "maki|dorm|Night": 4,
+   "maki|dorm|Noon": 4,
+   "maki|forest|Afternoon": 8,
+   "maki|forest|Evening": 8,
+   "maki|forest|Morning": 8,
+   "maki|forest|Night": 8,
+   "maki|forest|Noon": 8,
+   "maki|gate|Afternoon": 1,
+   "maki|gate|Evening": 1,
+   "maki|gate|Morning": 1,
+   "maki|gate|Night": 1,
+   "maki|gate|Noon": 1,
+   "maki|girls_dorm|Afternoon": 9,
+   "maki|girls_dorm|Evening": 9,
+   "maki|girls_dorm|Morning": 9,
+   "maki|girls_dorm|Night": 9,
+   "maki|girls_dorm|Noon": 9,
+   "maki|gojo_office|Afternoon": 9,
+   "maki|gojo_office|Evening": 9,
+   "maki|gojo_office|Morning": 9,
+   "maki|gojo_office|Night": 9,
+   "maki|gojo_office|Noon": 9,
+   "maki|infirmary|Afternoon": 9,
+   "maki|infirmary|Evening": 9,
+   "maki|infirmary|Morning": 9,
+   "maki|infirmary|Night": 9,
+   "maki|infirmary|Noon": 9,
+   "maki|office|Afternoon": 9,
+   "maki|office|Evening": 9,
+   "maki|office|Morning": 9,
+   "maki|office|Night": 9,
+   "maki|office|Noon": 9,
+   "maki|ridge|Afternoon": 8,
+   "maki|ridge|Evening": 8,
+   "maki|ridge|Morning": 8,
+   "maki|ridge|Night": 8,
+   "maki|ridge|Noon": 8,
+   "maki|riverside|Afternoon": 14,
+   "maki|riverside|Evening": 11,
+   "maki|riverside|Morning": 0,
+   "maki|riverside|Night": 11,
+   "maki|riverside|Noon": 14,
+   "maki|rooftop|Afternoon": 9,
+   "maki|rooftop|Evening": 11,
+   "maki|rooftop|Morning": 9,
+   "maki|rooftop|Night": 11,
+   "maki|rooftop|Noon": 9,
+   "maki|storehouse|Afternoon": 9,
+   "maki|storehouse|Evening": 9,
+   "maki|storehouse|Morning": 9,
+   "maki|storehouse|Night": 9,
+   "maki|storehouse|Noon": 9,
+   "maki|training|Afternoon": 8,
+   "maki|training|Evening": 8,
+   "maki|training|Morning": 8,
+   "maki|training|Night": 8,
+   "maki|training|Noon": 8,
+   "maki|utahime_office|Afternoon": 9,
+   "maki|utahime_office|Evening": 9,
+   "maki|utahime_office|Morning": 9,
+   "maki|utahime_office|Night": 9,
+   "maki|utahime_office|Noon": 9,
+   "megumi|cafeteria|Afternoon": 6,
+   "megumi|cafeteria|Evening": 6,
+   "megumi|cafeteria|Morning": 6,
+   "megumi|cafeteria|Night": 6,
+   "megumi|cafeteria|Noon": 6,
+   "megumi|classroom|Afternoon": 4,
+   "megumi|classroom|Evening": 4,
+   "megumi|classroom|Morning": 4,
+   "megumi|classroom|Night": 4,
+   "megumi|classroom|Noon": 4,
+   "megumi|courtyard|Afternoon": 0,
+   "megumi|courtyard|Evening": 0,
+   "megumi|courtyard|Morning": 0,
+   "megumi|courtyard|Night": 0,
+   "megumi|courtyard|Noon": 0,
+   "megumi|dojo|Afternoon": 8,
+   "megumi|dojo|Evening": 8,
+   "megumi|dojo|Morning": 8,
+   "megumi|dojo|Night": 8,
+   "megumi|dojo|Noon": 8,
+   "megumi|dorm_common|Afternoon": 4,
+   "megumi|dorm_common|Evening": 4,
+   "megumi|dorm_common|Morning": 4,
+   "megumi|dorm_common|Night": 4,
+   "megumi|dorm_common|Noon": 4,
+   "megumi|dorm|Afternoon": 4,
+   "megumi|dorm|Evening": 4,
+   "megumi|dorm|Morning": 4,
+   "megumi|dorm|Night": 4,
+   "megumi|dorm|Noon": 4,
+   "megumi|forest|Afternoon": 8,
+   "megumi|forest|Evening": 8,
+   "megumi|forest|Morning": 8,
+   "megumi|forest|Night": 8,
+   "megumi|forest|Noon": 8,
+   "megumi|gate|Afternoon": 0,
+   "megumi|gate|Evening": 0,
+   "megumi|gate|Morning": 0,
+   "megumi|gate|Night": 0,
+   "megumi|gate|Noon": 0,
+   "megumi|girls_dorm|Afternoon": 9,
+   "megumi|girls_dorm|Evening": 9,
+   "megumi|girls_dorm|Morning": 9,
+   "megumi|girls_dorm|Night": 9,
+   "megumi|girls_dorm|Noon": 9,
+   "megumi|gojo_office|Afternoon": 9,
+   "megumi|gojo_office|Evening": 9,
+   "megumi|gojo_office|Morning": 9,
+   "megumi|gojo_office|Night": 9,
+   "megumi|gojo_office|Noon": 9,
+   "megumi|infirmary|Afternoon": 9,
+   "megumi|infirmary|Evening": 9,
+   "megumi|infirmary|Morning": 9,
+   "megumi|infirmary|Night": 9,
+   "megumi|infirmary|Noon": 9,
+   "megumi|office|Afternoon": 9,
+   "megumi|office|Evening": 9,
+   "megumi|office|Morning": 9,
+   "megumi|office|Night": 9,
+   "megumi|office|Noon": 9,
+   "megumi|ridge|Afternoon": 8,
+   "megumi|ridge|Evening": 8,
+   "megumi|ridge|Morning": 8,
+   "megumi|ridge|Night": 8,
+   "megumi|ridge|Noon": 8,
+   "megumi|riverside|Afternoon": 14,
+   "megumi|riverside|Evening": 11,
+   "megumi|riverside|Morning": 0,
+   "megumi|riverside|Night": 11,
+   "megumi|riverside|Noon": 14,
+   "megumi|rooftop|Afternoon": 9,
+   "megumi|rooftop|Evening": 11,
+   "megumi|rooftop|Morning": 9,
+   "megumi|rooftop|Night": 11,
+   "megumi|rooftop|Noon": 9,
+   "megumi|storehouse|Afternoon": 9,
+   "megumi|storehouse|Evening": 9,
+   "megumi|storehouse|Morning": 9,
+   "megumi|storehouse|Night": 9,
+   "megumi|storehouse|Noon": 9,
+   "megumi|training|Afternoon": 8,
+   "megumi|training|Evening": 8,
+   "megumi|training|Morning": 8,
+   "megumi|training|Night": 8,
+   "megumi|training|Noon": 8,
+   "megumi|utahime_office|Afternoon": 9,
+   "megumi|utahime_office|Evening": 9,
+   "megumi|utahime_office|Morning": 9,
+   "megumi|utahime_office|Night": 9,
+   "megumi|utahime_office|Noon": 9,
+   "nobara|cafeteria|Afternoon": 6,
+   "nobara|cafeteria|Evening": 6,
+   "nobara|cafeteria|Morning": 6,
+   "nobara|cafeteria|Night": 6,
+   "nobara|cafeteria|Noon": 6,
+   "nobara|classroom|Afternoon": 4,
+   "nobara|classroom|Evening": 4,
+   "nobara|classroom|Morning": 4,
+   "nobara|classroom|Night": 4,
+   "nobara|classroom|Noon": 4,
+   "nobara|courtyard|Afternoon": 1,
+   "nobara|courtyard|Evening": 1,
+   "nobara|courtyard|Morning": 1,
+   "nobara|courtyard|Night": 1,
+   "nobara|courtyard|Noon": 1,
+   "nobara|dojo|Afternoon": 8,
+   "nobara|dojo|Evening": 8,
+   "nobara|dojo|Morning": 8,
+   "nobara|dojo|Night": 8,
+   "nobara|dojo|Noon": 8,
+   "nobara|dorm_common|Afternoon": 4,
+   "nobara|dorm_common|Evening": 4,
+   "nobara|dorm_common|Morning": 4,
+   "nobara|dorm_common|Night": 4,
+   "nobara|dorm_common|Noon": 4,
+   "nobara|dorm|Afternoon": 4,
+   "nobara|dorm|Evening": 4,
+   "nobara|dorm|Morning": 4,
+   "nobara|dorm|Night": 4,
+   "nobara|dorm|Noon": 4,
+   "nobara|forest|Afternoon": 8,
+   "nobara|forest|Evening": 8,
+   "nobara|forest|Morning": 8,
+   "nobara|forest|Night": 8,
+   "nobara|forest|Noon": 8,
+   "nobara|gate|Afternoon": 1,
+   "nobara|gate|Evening": 1,
+   "nobara|gate|Morning": 1,
+   "nobara|gate|Night": 1,
+   "nobara|gate|Noon": 1,
+   "nobara|girls_dorm|Afternoon": 9,
+   "nobara|girls_dorm|Evening": 9,
+   "nobara|girls_dorm|Morning": 9,
+   "nobara|girls_dorm|Night": 9,
+   "nobara|girls_dorm|Noon": 9,
+   "nobara|gojo_office|Afternoon": 9,
+   "nobara|gojo_office|Evening": 9,
+   "nobara|gojo_office|Morning": 9,
+   "nobara|gojo_office|Night": 9,
+   "nobara|gojo_office|Noon": 9,
+   "nobara|infirmary|Afternoon": 9,
+   "nobara|infirmary|Evening": 9,
+   "nobara|infirmary|Morning": 9,
+   "nobara|infirmary|Night": 9,
+   "nobara|infirmary|Noon": 9,
+   "nobara|office|Afternoon": 9,
+   "nobara|office|Evening": 9,
+   "nobara|office|Morning": 9,
+   "nobara|office|Night": 9,
+   "nobara|office|Noon": 9,
+   "nobara|ridge|Afternoon": 8,
+   "nobara|ridge|Evening": 8,
+   "nobara|ridge|Morning": 8,
+   "nobara|ridge|Night": 8,
+   "nobara|ridge|Noon": 8,
+   "nobara|riverside|Afternoon": 14,
+   "nobara|riverside|Evening": 11,
+   "nobara|riverside|Morning": 0,
+   "nobara|riverside|Night": 11,
+   "nobara|riverside|Noon": 14,
+   "nobara|rooftop|Afternoon": 9,
+   "nobara|rooftop|Evening": 11,
+   "nobara|rooftop|Morning": 9,
+   "nobara|rooftop|Night": 11,
+   "nobara|rooftop|Noon": 9,
+   "nobara|storehouse|Afternoon": 9,
+   "nobara|storehouse|Evening": 9,
+   "nobara|storehouse|Morning": 9,
+   "nobara|storehouse|Night": 9,
+   "nobara|storehouse|Noon": 9,
+   "nobara|training|Afternoon": 8,
+   "nobara|training|Evening": 8,
+   "nobara|training|Morning": 8,
+   "nobara|training|Night": 8,
+   "nobara|training|Noon": 8,
+   "nobara|utahime_office|Afternoon": 9,
+   "nobara|utahime_office|Evening": 9,
+   "nobara|utahime_office|Morning": 9,
+   "nobara|utahime_office|Night": 9,
+   "nobara|utahime_office|Noon": 9,
+   "panda|cafeteria|Afternoon": 6,
+   "panda|cafeteria|Evening": 6,
+   "panda|cafeteria|Morning": 6,
+   "panda|cafeteria|Night": 6,
+   "panda|cafeteria|Noon": 6,
+   "panda|classroom|Afternoon": 4,
+   "panda|classroom|Evening": 4,
+   "panda|classroom|Morning": 4,
+   "panda|classroom|Night": 4,
+   "panda|classroom|Noon": 4,
+   "panda|courtyard|Afternoon": 0,
+   "panda|courtyard|Evening": 0,
+   "panda|courtyard|Morning": 0,
+   "panda|courtyard|Night": 0,
+   "panda|courtyard|Noon": 0,
+   "panda|dojo|Afternoon": 8,
+   "panda|dojo|Evening": 8,
+   "panda|dojo|Morning": 8,
+   "panda|dojo|Night": 8,
+   "panda|dojo|Noon": 8,
+   "panda|dorm_common|Afternoon": 4,
+   "panda|dorm_common|Evening": 4,
+   "panda|dorm_common|Morning": 4,
+   "panda|dorm_common|Night": 4,
+   "panda|dorm_common|Noon": 4,
+   "panda|dorm|Afternoon": 4,
+   "panda|dorm|Evening": 4,
+   "panda|dorm|Morning": 4,
+   "panda|dorm|Night": 4,
+   "panda|dorm|Noon": 4,
+   "panda|forest|Afternoon": 8,
+   "panda|forest|Evening": 8,
+   "panda|forest|Morning": 8,
+   "panda|forest|Night": 8,
+   "panda|forest|Noon": 8,
+   "panda|gate|Afternoon": 0,
+   "panda|gate|Evening": 0,
+   "panda|gate|Morning": 0,
+   "panda|gate|Night": 0,
+   "panda|gate|Noon": 0,
+   "panda|girls_dorm|Afternoon": 9,
+   "panda|girls_dorm|Evening": 9,
+   "panda|girls_dorm|Morning": 9,
+   "panda|girls_dorm|Night": 9,
+   "panda|girls_dorm|Noon": 9,
+   "panda|gojo_office|Afternoon": 9,
+   "panda|gojo_office|Evening": 9,
+   "panda|gojo_office|Morning": 9,
+   "panda|gojo_office|Night": 9,
+   "panda|gojo_office|Noon": 9,
+   "panda|infirmary|Afternoon": 9,
+   "panda|infirmary|Evening": 9,
+   "panda|infirmary|Morning": 9,
+   "panda|infirmary|Night": 9,
+   "panda|infirmary|Noon": 9,
+   "panda|office|Afternoon": 9,
+   "panda|office|Evening": 9,
+   "panda|office|Morning": 9,
+   "panda|office|Night": 9,
+   "panda|office|Noon": 9,
+   "panda|ridge|Afternoon": 8,
+   "panda|ridge|Evening": 8,
+   "panda|ridge|Morning": 8,
+   "panda|ridge|Night": 8,
+   "panda|ridge|Noon": 8,
+   "panda|riverside|Afternoon": 14,
+   "panda|riverside|Evening": 11,
+   "panda|riverside|Morning": 0,
+   "panda|riverside|Night": 11,
+   "panda|riverside|Noon": 14,
+   "panda|rooftop|Afternoon": 9,
+   "panda|rooftop|Evening": 11,
+   "panda|rooftop|Morning": 9,
+   "panda|rooftop|Night": 11,
+   "panda|rooftop|Noon": 9,
+   "panda|storehouse|Afternoon": 9,
+   "panda|storehouse|Evening": 9,
+   "panda|storehouse|Morning": 9,
+   "panda|storehouse|Night": 9,
+   "panda|storehouse|Noon": 9,
+   "panda|training|Afternoon": 8,
+   "panda|training|Evening": 8,
+   "panda|training|Morning": 8,
+   "panda|training|Night": 8,
+   "panda|training|Noon": 8,
+   "panda|utahime_office|Afternoon": 9,
+   "panda|utahime_office|Evening": 9,
+   "panda|utahime_office|Morning": 9,
+   "panda|utahime_office|Night": 9,
+   "panda|utahime_office|Noon": 9,
+   "shoko|cafeteria|Afternoon": 6,
+   "shoko|cafeteria|Evening": 6,
+   "shoko|cafeteria|Morning": 6,
+   "shoko|cafeteria|Night": 6,
+   "shoko|cafeteria|Noon": 6,
+   "shoko|classroom|Afternoon": 4,
+   "shoko|classroom|Evening": 4,
+   "shoko|classroom|Morning": 4,
+   "shoko|classroom|Night": 4,
+   "shoko|classroom|Noon": 4,
+   "shoko|courtyard|Afternoon": 1,
+   "shoko|courtyard|Evening": 1,
+   "shoko|courtyard|Morning": 1,
+   "shoko|courtyard|Night": 1,
+   "shoko|courtyard|Noon": 1,
+   "shoko|dojo|Afternoon": 9,
+   "shoko|dojo|Evening": 9,
+   "shoko|dojo|Morning": 9,
+   "shoko|dojo|Night": 9,
+   "shoko|dojo|Noon": 9,
+   "shoko|dorm_common|Afternoon": 4,
+   "shoko|dorm_common|Evening": 4,
+   "shoko|dorm_common|Morning": 4,
+   "shoko|dorm_common|Night": 4,
+   "shoko|dorm_common|Noon": 4,
+   "shoko|dorm|Afternoon": 4,
+   "shoko|dorm|Evening": 4,
+   "shoko|dorm|Morning": 4,
+   "shoko|dorm|Night": 4,
+   "shoko|dorm|Noon": 4,
+   "shoko|forest|Afternoon": 0,
+   "shoko|forest|Evening": 0,
+   "shoko|forest|Morning": 0,
+   "shoko|forest|Night": 0,
+   "shoko|forest|Noon": 0,
+   "shoko|gate|Afternoon": 1,
+   "shoko|gate|Evening": 1,
+   "shoko|gate|Morning": 1,
+   "shoko|gate|Night": 1,
+   "shoko|gate|Noon": 1,
+   "shoko|girls_dorm|Afternoon": 9,
+   "shoko|girls_dorm|Evening": 9,
+   "shoko|girls_dorm|Morning": 9,
+   "shoko|girls_dorm|Night": 9,
+   "shoko|girls_dorm|Noon": 9,
+   "shoko|gojo_office|Afternoon": 9,
+   "shoko|gojo_office|Evening": 9,
+   "shoko|gojo_office|Morning": 9,
+   "shoko|gojo_office|Night": 9,
+   "shoko|gojo_office|Noon": 9,
+   "shoko|infirmary|Afternoon": 9,
+   "shoko|infirmary|Evening": 9,
+   "shoko|infirmary|Morning": 9,
+   "shoko|infirmary|Night": 9,
+   "shoko|infirmary|Noon": 9,
+   "shoko|office|Afternoon": 9,
+   "shoko|office|Evening": 9,
+   "shoko|office|Morning": 9,
+   "shoko|office|Night": 9,
+   "shoko|office|Noon": 9,
+   "shoko|ridge|Afternoon": 0,
+   "shoko|ridge|Evening": 11,
+   "shoko|ridge|Morning": 0,
+   "shoko|ridge|Night": 11,
+   "shoko|ridge|Noon": 0,
+   "shoko|riverside|Afternoon": 14,
+   "shoko|riverside|Evening": 11,
+   "shoko|riverside|Morning": 0,
+   "shoko|riverside|Night": 11,
+   "shoko|riverside|Noon": 14,
+   "shoko|rooftop|Afternoon": 9,
+   "shoko|rooftop|Evening": 11,
+   "shoko|rooftop|Morning": 9,
+   "shoko|rooftop|Night": 11,
+   "shoko|rooftop|Noon": 9,
+   "shoko|storehouse|Afternoon": 9,
+   "shoko|storehouse|Evening": 9,
+   "shoko|storehouse|Morning": 9,
+   "shoko|storehouse|Night": 9,
+   "shoko|storehouse|Noon": 9,
+   "shoko|training|Afternoon": 9,
+   "shoko|training|Evening": 9,
+   "shoko|training|Morning": 9,
+   "shoko|training|Night": 9,
+   "shoko|training|Noon": 9,
+   "shoko|utahime_office|Afternoon": 9,
+   "shoko|utahime_office|Evening": 9,
+   "shoko|utahime_office|Morning": 9,
+   "shoko|utahime_office|Night": 9,
+   "shoko|utahime_office|Noon": 9,
+   "toge|cafeteria|Afternoon": 6,
+   "toge|cafeteria|Evening": 6,
+   "toge|cafeteria|Morning": 6,
+   "toge|cafeteria|Night": 6,
+   "toge|cafeteria|Noon": 6,
+   "toge|classroom|Afternoon": 4,
+   "toge|classroom|Evening": 4,
+   "toge|classroom|Morning": 4,
+   "toge|classroom|Night": 4,
+   "toge|classroom|Noon": 4,
+   "toge|courtyard|Afternoon": 0,
+   "toge|courtyard|Evening": 0,
+   "toge|courtyard|Morning": 0,
+   "toge|courtyard|Night": 0,
+   "toge|courtyard|Noon": 0,
+   "toge|dojo|Afternoon": 8,
+   "toge|dojo|Evening": 8,
+   "toge|dojo|Morning": 8,
+   "toge|dojo|Night": 8,
+   "toge|dojo|Noon": 8,
+   "toge|dorm_common|Afternoon": 4,
+   "toge|dorm_common|Evening": 4,
+   "toge|dorm_common|Morning": 4,
+   "toge|dorm_common|Night": 4,
+   "toge|dorm_common|Noon": 4,
+   "toge|dorm|Afternoon": 4,
+   "toge|dorm|Evening": 4,
+   "toge|dorm|Morning": 4,
+   "toge|dorm|Night": 4,
+   "toge|dorm|Noon": 4,
+   "toge|forest|Afternoon": 8,
+   "toge|forest|Evening": 8,
+   "toge|forest|Morning": 8,
+   "toge|forest|Night": 8,
+   "toge|forest|Noon": 8,
+   "toge|gate|Afternoon": 0,
+   "toge|gate|Evening": 0,
+   "toge|gate|Morning": 0,
+   "toge|gate|Night": 0,
+   "toge|gate|Noon": 0,
+   "toge|girls_dorm|Afternoon": 9,
+   "toge|girls_dorm|Evening": 9,
+   "toge|girls_dorm|Morning": 9,
+   "toge|girls_dorm|Night": 9,
+   "toge|girls_dorm|Noon": 9,
+   "toge|gojo_office|Afternoon": 9,
+   "toge|gojo_office|Evening": 9,
+   "toge|gojo_office|Morning": 9,
+   "toge|gojo_office|Night": 9,
+   "toge|gojo_office|Noon": 9,
+   "toge|infirmary|Afternoon": 9,
+   "toge|infirmary|Evening": 9,
+   "toge|infirmary|Morning": 9,
+   "toge|infirmary|Night": 9,
+   "toge|infirmary|Noon": 9,
+   "toge|office|Afternoon": 9,
+   "toge|office|Evening": 9,
+   "toge|office|Morning": 9,
+   "toge|office|Night": 9,
+   "toge|office|Noon": 9,
+   "toge|ridge|Afternoon": 8,
+   "toge|ridge|Evening": 8,
+   "toge|ridge|Morning": 8,
+   "toge|ridge|Night": 8,
+   "toge|ridge|Noon": 8,
+   "toge|riverside|Afternoon": 14,
+   "toge|riverside|Evening": 11,
+   "toge|riverside|Morning": 0,
+   "toge|riverside|Night": 11,
+   "toge|riverside|Noon": 14,
+   "toge|rooftop|Afternoon": 9,
+   "toge|rooftop|Evening": 11,
+   "toge|rooftop|Morning": 9,
+   "toge|rooftop|Night": 11,
+   "toge|rooftop|Noon": 9,
+   "toge|storehouse|Afternoon": 9,
+   "toge|storehouse|Evening": 9,
+   "toge|storehouse|Morning": 9,
+   "toge|storehouse|Night": 9,
+   "toge|storehouse|Noon": 9,
+   "toge|training|Afternoon": 8,
+   "toge|training|Evening": 8,
+   "toge|training|Morning": 8,
+   "toge|training|Night": 8,
+   "toge|training|Noon": 8,
+   "toge|utahime_office|Afternoon": 9,
+   "toge|utahime_office|Evening": 9,
+   "toge|utahime_office|Morning": 9,
+   "toge|utahime_office|Night": 9,
+   "toge|utahime_office|Noon": 9,
+   "utahime|cafeteria|Afternoon": 7,
+   "utahime|cafeteria|Evening": 7,
+   "utahime|cafeteria|Morning": 7,
+   "utahime|cafeteria|Night": 7,
+   "utahime|cafeteria|Noon": 7,
+   "utahime|classroom|Afternoon": 5,
+   "utahime|classroom|Evening": 5,
+   "utahime|classroom|Morning": 5,
+   "utahime|classroom|Night": 5,
+   "utahime|classroom|Noon": 5,
+   "utahime|courtyard|Afternoon": 2,
+   "utahime|courtyard|Evening": 2,
+   "utahime|courtyard|Morning": 2,
+   "utahime|courtyard|Night": 2,
+   "utahime|courtyard|Noon": 2,
+   "utahime|dojo|Afternoon": 10,
+   "utahime|dojo|Evening": 10,
+   "utahime|dojo|Morning": 10,
+   "utahime|dojo|Night": 10,
+   "utahime|dojo|Noon": 10,
+   "utahime|dorm_common|Afternoon": 5,
+   "utahime|dorm_common|Evening": 5,
+   "utahime|dorm_common|Morning": 5,
+   "utahime|dorm_common|Night": 5,
+   "utahime|dorm_common|Noon": 5,
+   "utahime|dorm|Afternoon": 5,
+   "utahime|dorm|Evening": 5,
+   "utahime|dorm|Morning": 5,
+   "utahime|dorm|Night": 5,
+   "utahime|dorm|Noon": 5,
+   "utahime|forest|Afternoon": 2,
+   "utahime|forest|Evening": 2,
+   "utahime|forest|Morning": 2,
+   "utahime|forest|Night": 2,
+   "utahime|forest|Noon": 2,
+   "utahime|gate|Afternoon": 2,
+   "utahime|gate|Evening": 2,
+   "utahime|gate|Morning": 2,
+   "utahime|gate|Night": 2,
+   "utahime|gate|Noon": 2,
+   "utahime|girls_dorm|Afternoon": 10,
+   "utahime|girls_dorm|Evening": 10,
+   "utahime|girls_dorm|Morning": 10,
+   "utahime|girls_dorm|Night": 10,
+   "utahime|girls_dorm|Noon": 10,
+   "utahime|gojo_office|Afternoon": 10,
+   "utahime|gojo_office|Evening": 10,
+   "utahime|gojo_office|Morning": 10,
+   "utahime|gojo_office|Night": 10,
+   "utahime|gojo_office|Noon": 10,
+   "utahime|infirmary|Afternoon": 10,
+   "utahime|infirmary|Evening": 10,
+   "utahime|infirmary|Morning": 10,
+   "utahime|infirmary|Night": 10,
+   "utahime|infirmary|Noon": 10,
+   "utahime|office|Afternoon": 10,
+   "utahime|office|Evening": 10,
+   "utahime|office|Morning": 10,
+   "utahime|office|Night": 10,
+   "utahime|office|Noon": 10,
+   "utahime|ridge|Afternoon": 2,
+   "utahime|ridge|Evening": 12,
+   "utahime|ridge|Morning": 2,
+   "utahime|ridge|Night": 12,
+   "utahime|ridge|Noon": 2,
+   "utahime|riverside|Afternoon": 15,
+   "utahime|riverside|Evening": 12,
+   "utahime|riverside|Morning": 2,
+   "utahime|riverside|Night": 12,
+   "utahime|riverside|Noon": 15,
+   "utahime|rooftop|Afternoon": 10,
+   "utahime|rooftop|Evening": 12,
+   "utahime|rooftop|Morning": 10,
+   "utahime|rooftop|Night": 12,
+   "utahime|rooftop|Noon": 10,
+   "utahime|storehouse|Afternoon": 10,
+   "utahime|storehouse|Evening": 10,
+   "utahime|storehouse|Morning": 10,
+   "utahime|storehouse|Night": 10,
+   "utahime|storehouse|Noon": 10,
+   "utahime|training|Afternoon": 10,
+   "utahime|training|Evening": 10,
+   "utahime|training|Morning": 10,
+   "utahime|training|Night": 10,
+   "utahime|training|Noon": 10,
+   "utahime|utahime_office|Afternoon": 13,
+   "utahime|utahime_office|Evening": 10,
+   "utahime|utahime_office|Morning": 13,
+   "utahime|utahime_office|Night": 10,
+   "utahime|utahime_office|Noon": 13,
+   "yaga|cafeteria|Afternoon": 6,
+   "yaga|cafeteria|Evening": 6,
+   "yaga|cafeteria|Morning": 6,
+   "yaga|cafeteria|Night": 6,
+   "yaga|cafeteria|Noon": 6,
+   "yaga|classroom|Afternoon": 4,
+   "yaga|classroom|Evening": 4,
+   "yaga|classroom|Morning": 4,
+   "yaga|classroom|Night": 4,
+   "yaga|classroom|Noon": 4,
+   "yaga|courtyard|Afternoon": 0,
+   "yaga|courtyard|Evening": 0,
+   "yaga|courtyard|Morning": 0,
+   "yaga|courtyard|Night": 0,
+   "yaga|courtyard|Noon": 0,
+   "yaga|dojo|Afternoon": 9,
+   "yaga|dojo|Evening": 9,
+   "yaga|dojo|Morning": 9,
+   "yaga|dojo|Night": 9,
+   "yaga|dojo|Noon": 9,
+   "yaga|dorm_common|Afternoon": 4,
+   "yaga|dorm_common|Evening": 4,
+   "yaga|dorm_common|Morning": 4,
+   "yaga|dorm_common|Night": 4,
+   "yaga|dorm_common|Noon": 4,
+   "yaga|dorm|Afternoon": 4,
+   "yaga|dorm|Evening": 4,
+   "yaga|dorm|Morning": 4,
+   "yaga|dorm|Night": 4,
+   "yaga|dorm|Noon": 4,
+   "yaga|forest|Afternoon": 0,
+   "yaga|forest|Evening": 0,
+   "yaga|forest|Morning": 0,
+   "yaga|forest|Night": 0,
+   "yaga|forest|Noon": 0,
+   "yaga|gate|Afternoon": 0,
+   "yaga|gate|Evening": 0,
+   "yaga|gate|Morning": 0,
+   "yaga|gate|Night": 0,
+   "yaga|gate|Noon": 0,
+   "yaga|girls_dorm|Afternoon": 9,
+   "yaga|girls_dorm|Evening": 9,
+   "yaga|girls_dorm|Morning": 9,
+   "yaga|girls_dorm|Night": 9,
+   "yaga|girls_dorm|Noon": 9,
+   "yaga|gojo_office|Afternoon": 9,
+   "yaga|gojo_office|Evening": 9,
+   "yaga|gojo_office|Morning": 9,
+   "yaga|gojo_office|Night": 9,
+   "yaga|gojo_office|Noon": 9,
+   "yaga|infirmary|Afternoon": 9,
+   "yaga|infirmary|Evening": 9,
+   "yaga|infirmary|Morning": 9,
+   "yaga|infirmary|Night": 9,
+   "yaga|infirmary|Noon": 9,
+   "yaga|office|Afternoon": 9,
+   "yaga|office|Evening": 9,
+   "yaga|office|Morning": 9,
+   "yaga|office|Night": 9,
+   "yaga|office|Noon": 9,
+   "yaga|ridge|Afternoon": 0,
+   "yaga|ridge|Evening": 11,
+   "yaga|ridge|Morning": 0,
+   "yaga|ridge|Night": 11,
+   "yaga|ridge|Noon": 0,
+   "yaga|riverside|Afternoon": 14,
+   "yaga|riverside|Evening": 11,
+   "yaga|riverside|Morning": 0,
+   "yaga|riverside|Night": 11,
+   "yaga|riverside|Noon": 14,
+   "yaga|rooftop|Afternoon": 9,
+   "yaga|rooftop|Evening": 11,
+   "yaga|rooftop|Morning": 9,
+   "yaga|rooftop|Night": 11,
+   "yaga|rooftop|Noon": 9,
+   "yaga|storehouse|Afternoon": 9,
+   "yaga|storehouse|Evening": 9,
+   "yaga|storehouse|Morning": 9,
+   "yaga|storehouse|Night": 9,
+   "yaga|storehouse|Noon": 9,
+   "yaga|training|Afternoon": 9,
+   "yaga|training|Evening": 9,
+   "yaga|training|Morning": 9,
+   "yaga|training|Night": 9,
+   "yaga|training|Noon": 9,
+   "yaga|utahime_office|Afternoon": 9,
+   "yaga|utahime_office|Evening": 9,
+   "yaga|utahime_office|Morning": 9,
+   "yaga|utahime_office|Night": 9,
+   "yaga|utahime_office|Noon": 9,
+   "yuji|cafeteria|Afternoon": 6,
+   "yuji|cafeteria|Evening": 6,
+   "yuji|cafeteria|Morning": 6,
+   "yuji|cafeteria|Night": 6,
+   "yuji|cafeteria|Noon": 6,
+   "yuji|classroom|Afternoon": 4,
+   "yuji|classroom|Evening": 4,
+   "yuji|classroom|Morning": 4,
+   "yuji|classroom|Night": 4,
+   "yuji|classroom|Noon": 4,
+   "yuji|courtyard|Afternoon": 0,
+   "yuji|courtyard|Evening": 0,
+   "yuji|courtyard|Morning": 0,
+   "yuji|courtyard|Night": 0,
+   "yuji|courtyard|Noon": 0,
+   "yuji|dojo|Afternoon": 8,
+   "yuji|dojo|Evening": 8,
+   "yuji|dojo|Morning": 8,
+   "yuji|dojo|Night": 8,
+   "yuji|dojo|Noon": 8,
+   "yuji|dorm_common|Afternoon": 4,
+   "yuji|dorm_common|Evening": 4,
+   "yuji|dorm_common|Morning": 4,
+   "yuji|dorm_common|Night": 4,
+   "yuji|dorm_common|Noon": 4,
+   "yuji|dorm|Afternoon": 4,
+   "yuji|dorm|Evening": 4,
+   "yuji|dorm|Morning": 4,
+   "yuji|dorm|Night": 4,
+   "yuji|dorm|Noon": 4,
+   "yuji|forest|Afternoon": 8,
+   "yuji|forest|Evening": 8,
+   "yuji|forest|Morning": 8,
+   "yuji|forest|Night": 8,
+   "yuji|forest|Noon": 8,
+   "yuji|gate|Afternoon": 0,
+   "yuji|gate|Evening": 0,
+   "yuji|gate|Morning": 0,
+   "yuji|gate|Night": 0,
+   "yuji|gate|Noon": 0,
+   "yuji|girls_dorm|Afternoon": 9,
+   "yuji|girls_dorm|Evening": 9,
+   "yuji|girls_dorm|Morning": 9,
+   "yuji|girls_dorm|Night": 9,
+   "yuji|girls_dorm|Noon": 9,
+   "yuji|gojo_office|Afternoon": 9,
+   "yuji|gojo_office|Evening": 9,
+   "yuji|gojo_office|Morning": 9,
+   "yuji|gojo_office|Night": 9,
+   "yuji|gojo_office|Noon": 9,
+   "yuji|infirmary|Afternoon": 9,
+   "yuji|infirmary|Evening": 9,
+   "yuji|infirmary|Morning": 9,
+   "yuji|infirmary|Night": 9,
+   "yuji|infirmary|Noon": 9,
+   "yuji|office|Afternoon": 9,
+   "yuji|office|Evening": 9,
+   "yuji|office|Morning": 9,
+   "yuji|office|Night": 9,
+   "yuji|office|Noon": 9,
+   "yuji|ridge|Afternoon": 8,
+   "yuji|ridge|Evening": 8,
+   "yuji|ridge|Morning": 8,
+   "yuji|ridge|Night": 8,
+   "yuji|ridge|Noon": 8,
+   "yuji|riverside|Afternoon": 14,
+   "yuji|riverside|Evening": 11,
+   "yuji|riverside|Morning": 0,
+   "yuji|riverside|Night": 11,
+   "yuji|riverside|Noon": 14,
+   "yuji|rooftop|Afternoon": 9,
+   "yuji|rooftop|Evening": 11,
+   "yuji|rooftop|Morning": 9,
+   "yuji|rooftop|Night": 11,
+   "yuji|rooftop|Noon": 9,
+   "yuji|storehouse|Afternoon": 9,
+   "yuji|storehouse|Evening": 9,
+   "yuji|storehouse|Morning": 9,
+   "yuji|storehouse|Night": 9,
+   "yuji|storehouse|Noon": 9,
+   "yuji|training|Afternoon": 8,
+   "yuji|training|Evening": 8,
+   "yuji|training|Morning": 8,
+   "yuji|training|Night": 8,
+   "yuji|training|Noon": 8,
+   "yuji|utahime_office|Afternoon": 9,
+   "yuji|utahime_office|Evening": 9,
+   "yuji|utahime_office|Morning": 9,
+   "yuji|utahime_office|Night": 9,
+   "yuji|utahime_office|Noon": 9
+  },
+  "place_actions": {
+   "cafeteria|Afternoon": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Evening": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Morning": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Night": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "cafeteria|Noon": [
+    [
+     "eat",
+     "Eat",
+     "Stamina. Everyone's here at noon.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Afternoon": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Evening": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Morning": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Night": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "classroom|Noon": [
+    [
+     "study",
+     "Study",
+     "Insight. The textbook is four hundred pages.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Afternoon": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Evening": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Morning": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Night": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "courtyard|Noon": [
+    [
+     "train",
+     "Practice",
+     "Forms, in the open, where people can see.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dojo|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm_common|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Afternoon": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Evening": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Morning": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Night": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "dorm|Noon": [
+    [
+     "sleep",
+     "Sleep",
+     "End the day. Everything comes back.",
+     0
+    ],
+    [
+     "study",
+     "Study",
+     "Insight. Quiet. Nobody bothers me.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "forest|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "car",
+     "Ask Ijichi for a ride",
+     "Into the city. Half a day.",
+     2
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "car",
+     "Ask Ijichi for a ride",
+     "Into the city. Half a day.",
+     2
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gate|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "car",
+     "Ask Ijichi for a ride",
+     "Into the city. Half a day.",
+     2
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "girls_dorm|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "gojo_office|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Afternoon": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Evening": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Morning": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Night": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "infirmary|Noon": [
+    [
+     "rest",
+     "Get patched up",
+     "Rest, and Shoko if she's in. Once a day.",
+     0
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "office|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "ridge|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "veil",
+     "Look up at the veil",
+     "Free. Once a day.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Afternoon": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Evening": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Morning": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Night": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "riverside|Noon": [
+    [
+     "swim",
+     "Swim",
+     "Cold. Clears my head.",
+     1
+    ],
+    [
+     "train",
+     "Train",
+     "Rough ground. Good footwork.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Afternoon": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Evening": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Morning": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Night": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "rooftop|Noon": [
+    [
+     "think",
+     "Sit a while",
+     "Nothing happens. That's the point.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "armory",
+     "Armory",
+     "Cursed tools, released up to my grade.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "armory",
+     "Armory",
+     "Cursed tools, released up to my grade.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "armory",
+     "Armory",
+     "Cursed tools, released up to my grade.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "armory",
+     "Armory",
+     "Cursed tools, released up to my grade.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "storehouse|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "armory",
+     "Armory",
+     "Cursed tools, released up to my grade.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Afternoon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Evening": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Morning": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Night": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "training|Noon": [
+    [
+     "train",
+     "Train",
+     "Push my cursed energy. Costs stamina.",
+     1
+    ],
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Afternoon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "board",
+     "Mission board",
+     "Graded jobs. Bring someone.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Evening": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Morning": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "board",
+     "Mission board",
+     "Graded jobs. Bring someone.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Night": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ],
+   "utahime_office|Noon": [
+    [
+     "hold",
+     "Hold the hour",
+     "Last Light. Once a day; costs reserve.",
+     0
+    ],
+    [
+     "board",
+     "Mission board",
+     "Graded jobs. Bring someone.",
+     0
+    ],
+    [
+     "wait",
+     "Wait",
+     "Let the period pass.",
+     1
+    ]
+   ]
+  },
+  "roster": [
+   "yuji",
+   "megumi",
+   "nobara",
+   "shoko",
+   "gojo",
+   "yaga",
+   "ijichi",
+   "maki",
+   "panda",
+   "toge",
+   "utahime"
+  ]
+ },
+ "sb_char": {
+  "gojo": {
+   "here": "training",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "gojo"
+    ],
+    [
+     "do",
+     "talk",
+     "gojo"
+    ],
+    [
+     "do",
+     "invite",
+     "gojo"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "ijichi": {
+   "here": "gate",
+   "returns": [
+    [
+     "mission",
+     "cm_ijichi_1"
+    ],
+    [
+     "act",
+     "car"
+    ],
+    [
+     "do",
+     "walk",
+     "ijichi"
+    ],
+    [
+     "do",
+     "talk",
+     "ijichi"
+    ],
+    [
+     "do",
+     "invite",
+     "ijichi"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "maki": {
+   "here": "dojo",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "maki"
+    ],
+    [
+     "do",
+     "train",
+     "maki"
+    ],
+    [
+     "do",
+     "talk",
+     "maki"
+    ],
+    [
+     "do",
+     "invite",
+     "maki"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "megumi": {
+   "here": "cafeteria",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "megumi"
+    ],
+    [
+     "do",
+     "eat",
+     "megumi"
+    ],
+    [
+     "do",
+     "talk",
+     "megumi"
+    ],
+    [
+     "do",
+     "invite",
+     "megumi"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "nobara": {
+   "here": "cafeteria",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "nobara"
+    ],
+    [
+     "do",
+     "eat",
+     "nobara"
+    ],
+    [
+     "do",
+     "talk",
+     "nobara"
+    ],
+    [
+     "do",
+     "invite",
+     "nobara"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "panda": {
+   "here": "cafeteria",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "panda"
+    ],
+    [
+     "do",
+     "eat",
+     "panda"
+    ],
+    [
+     "do",
+     "talk",
+     "panda"
+    ],
+    [
+     "do",
+     "invite",
+     "panda"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "shoko": {
+   "here": "infirmary",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "shoko"
+    ],
+    [
+     "do",
+     "talk",
+     "shoko"
+    ],
+    [
+     "do",
+     "invite",
+     "shoko"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "toge": {
+   "here": "cafeteria",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "toge"
+    ],
+    [
+     "do",
+     "eat",
+     "toge"
+    ],
+    [
+     "do",
+     "talk",
+     "toge"
+    ],
+    [
+     "do",
+     "invite",
+     "toge"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "utahime": {
+   "here": "utahime_office",
+   "returns": [
+    [
+     "act",
+     "board"
+    ],
+    [
+     "do",
+     "talk",
+     "utahime"
+    ],
+    [
+     "do",
+     "invite",
+     "utahime"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "yaga": {
+   "here": "office",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "yaga"
+    ],
+    [
+     "do",
+     "talk",
+     "yaga"
+    ],
+    [
+     "do",
+     "invite",
+     "yaga"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  },
+  "yuji": {
+   "here": "cafeteria",
+   "returns": [
+    [
+     "do",
+     "hang",
+     "yuji"
+    ],
+    [
+     "do",
+     "eat",
+     "yuji"
+    ],
+    [
+     "do",
+     "talk",
+     "yuji"
+    ],
+    [
+     "do",
+     "invite",
+     "yuji"
+    ],
+    [
+     "cancel"
+    ]
+   ]
+  }
+ },
+ "shots": {
+  "person": {
+   "here": "cafeteria",
+   "period": "Noon",
+   "who": "yuji"
+  },
+  "place": {
+   "day": 9,
+   "extra": [
+    "toge"
+   ],
+   "here": "cafeteria",
+   "period": "Noon",
+   "stage": [
+    "yuji",
+    "megumi",
+    "nobara",
+    "panda"
+   ]
+  }
+ }
+}

@@ -154,7 +154,7 @@ init 999 python:
         ("grade_card", ["key", "kicker"]), ("board_screen", []), ("board_partner", ["offer"]),
         ("armory", []), ("sb_hud", ["on_map", "person"]), ("toasts", []),
         ("objective_toast", ["text"]), ("sb_place", []), ("sb_char", ["who"]),
-        ("sb_map", ["layer"]), ("journal", ["tab"]), ("jjk_status", []), ("jjk_journal", []),
+        ("sb_map", ["layer", "area"]), ("journal", ["tab"]), ("jjk_status", []), ("jjk_journal", []),
     ]
 
     def zz_sig(name):
@@ -346,11 +346,11 @@ label zz_smoke:
         check("temper" not in [a[0] for a in place_actions("storehouse")], "no Emberfall temper action")  # legacy-technique
         technique = _tech
         explore_mode = True
-        _ids = [a[0] for a in place_actions("courtyard")]
+        _ids = [a[0] for a in place_actions("courtyard") if not a[0].startswith("path_")]
         check(_ids == ["explore_time", "zzexp"], "explore mode keeps explore=True actions", _ids)
         explore_mode = False
         check("zzexp" in [a[0] for a in place_actions("courtyard")], "explore action also offered normally")
-        check(registered_place_actions("dorm") == [("zzact", "Zed", "A test action.", 1)], "registered_place_actions tuples", registered_place_actions("dorm"))
+        check([a for a in registered_place_actions("dorm") if a[0].startswith("zz")] == [("zzact", "Zed", "A test action.", 1)], "registered_place_actions tuples", registered_place_actions("dorm"))
         check(_validate_place_actions() == [], "place action validator is clean", _validate_place_actions())
 
     ## --- the prologue plan (3.13) -----------------------------------------------------------

@@ -323,13 +323,21 @@ label zz_smoke:
 
     ## --- tools and D4 (retain_after_load) ------------------------------------------------------
     python:
+        ## Phase 2 (P4a, 4.9): Playful Cloud has a checklist now (Grade 2,
+        ## Output 50), so at Grade 4 it no longer jumps into an empty hand.
+        ## The first-tool checks use the two tools with no checklist.
         zz_reset(grade="g4")
         give_item("playful_cloud", quiet=True)
-        check(equipped_tool == "playful_cloud", "a first tool goes straight into an empty hand", equipped_tool)
+        check(equipped_tool is None and can_hold("playful_cloud") == (False, "Needs Grade 2"),
+              "phase 2: a tool whose checklist I don't meet stays out of an empty hand", (equipped_tool, can_hold("playful_cloud")))
+        zz_reset(grade="g4")
+        give_item("nunchaku", quiet=True)
+        check(equipped_tool == "nunchaku", "a first tool goes straight into an empty hand", equipped_tool)
         give_item("slaughter_demon", quiet=True)
-        check(equipped_tool == "playful_cloud", "a second tool doesn't take the hand", equipped_tool)
+        check(equipped_tool == "nunchaku", "a second tool doesn't take the hand", equipped_tool)
         check(equip_tool("slaughter_demon") and equipped_tool == "slaughter_demon", "equip_tool swaps the tool")
-        check(not equip_tool("nunchaku") and equipped_tool == "slaughter_demon", "an unowned tool can't be held")
+        check(can_hold("playful_cloud") == (False, "Not in my inventory") and not equip_tool("playful_cloud")
+              and equipped_tool == "slaughter_demon", "an unowned tool can't be held", can_hold("playful_cloud"))
         give_item("inverted_spear", quiet=True)
         check(can_hold("inverted_spear") == (False, "Sealed — Arc Two") and not equip_tool("inverted_spear"),
               "a sealed tool can't be held")
@@ -349,6 +357,41 @@ label zz_smoke:
             renpy.retain_after_load = _orig
         check((_a, _b, _c) == (1, 2, 3), "equip_tool / equip_talisman / unequip_talisman each call retain_after_load (D4)",
               (_a, _b, _c))
+
+    ## --- phase 2 (P4a): requirements, pinned here; tools/smoke/p2_gear.rpy has the rest ------
+    python:
+        zz_reset(grade="g4")
+        check(len(_ITEM_FIELDS) == 12 and all(len(it) == 12 for it in ITEMS.values()),
+              "phase 2: every ITEMS record still has exactly 12 fields (requirements live in ITEM_REQS)")
+        check(sorted(ITEM_REQS) == ["afterglow", "black_sun", "inverted_spear", "playful_cloud", "split_soul"]
+              or set(ITEM_REQS) > {"afterglow", "black_sun", "inverted_spear", "playful_cloud", "split_soul"},
+              "phase 2: ITEM_REQS has the three tools and the two Grade 1 talismans (more once the market is in)",
+              sorted(ITEM_REQS))
+        check(item_requirements("slaughter_demon") == [] and item_requirements_met("slaughter_demon")
+              and [l for l, ok in item_requirements("inverted_spear")]
+                  == ["Arc Two", "Special Grade", "The seal broken", "Yaga's signature"],
+              "phase 2: item_requirements: nothing for a plain tool, four lines for the spear",
+              item_requirements("inverted_spear"))
+        zz_reset(grade="g1", control=62)
+        give_item("afterglow", quiet=True)
+        check(can_wear("afterglow") == (False, "Control 80 · I have 62") and not equip_talisman("afterglow"),
+              "phase 2: can_wear refuses on the first unmet line, after its own checks", can_wear("afterglow"))
+        control = 80
+        check(can_wear("afterglow") == (True, "") and equip_talisman("afterglow"), "phase 2: and allows it once the line is met")
+        control = 62
+        check(equipped_talismans == ["afterglow"] and can_wear("afterglow") == (False, "Already worn"),
+              "phase 2: a talisman already worn stays worn (D28)", equipped_talismans)
+        zz_reset(grade="g2", output=50)
+        give_item("playful_cloud", quiet=True)
+        output = 30
+        give_item("slaughter_demon", quiet=True)
+        check(equipped_tool == "playful_cloud" and can_hold("playful_cloud") == (True, ""),
+              "phase 2: the tool in my hand is never asked again (D28)", (equipped_tool, can_hold("playful_cloud")))
+        equip_tool("slaughter_demon")
+        check(can_hold("playful_cloud") == (False, "Output 50 · I have 30") and not equip_tool("playful_cloud"),
+              "phase 2: can_hold refuses an owned tool that isn't in hand, with the unmet line", can_hold("playful_cloud"))
+        check(item_validate_reqs() == [] and bound_specials == set(), "phase 2: the requirement rows pass their validator",
+              item_validate_reqs())
 
     ## --- ACC 4: the armory at Grade 4 ------------------------------------------------------
     python:
@@ -427,6 +470,15 @@ label zz_smoke:
               equipped_tool)
         check(ZZ_TOASTS[-1:] and "Nunchaku in my hand" in ZZ_TOASTS[-1][0], "the return toast says what is in my hand now",
               ZZ_TOASTS)
+        armory_return("nunchaku")
+        check(equipped_tool is None and has_item("playful_cloud"),
+              "phase 2: a story tool whose checklist I don't meet doesn't take its place (bare hands)", equipped_tool)
+        ## Phase 2 (P4a, 4.9): the story tool takes the hand once I meet its
+        ## checklist (Grade 2, Output 50).
+        zz_reset(grade="g2", output=50)
+        give_item("playful_cloud", quiet=True)
+        give_item("nunchaku", quiet=True)
+        equip_tool("nunchaku")
         armory_return("nunchaku")
         check(equipped_tool == "playful_cloud", "then a story tool, if that is all I own", equipped_tool)
         give_item("nunchaku", quiet=True)

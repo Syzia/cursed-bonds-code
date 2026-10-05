@@ -3,6 +3,7 @@ Build a ComfyUI workflow that asks edit models for a character's expressions.
 
     python3 tools/make_edit_workflow.py megumi
     python3 tools/make_edit_workflow.py megumi --only angry,surprised --editors seedream
+    python3 tools/make_edit_workflow.py yuji --only blink,talk      # phase 2: see below
 
 Loads `<character>_edit_in.png` (the head close-up from
 `composite_face.py --prepare`) and, for each expression, sends it to each
@@ -12,6 +13,11 @@ editors side by side on the character's actual face.
 
 Both editors are paid partner nodes -- they run on the provider's servers, not
 this Mac -- so the file's note states what a Run costs before anyone presses it.
+
+Blink and talk (phase 2) are two more rows, run on their own: `--only
+blink,talk` loads `<character>_fx_in.png` (from `tools/install_face.py
+--prepare <character>`, a close-up cut from the game's sprite) and writes
+`<character>_fx.json`. Their results go to tools/install_face.py.
 
 The node definitions are copied from the ComfyUI install's own templates
 (tools/comfy_nodes/edit_nodes.json), so the widgets are in the order this
@@ -49,7 +55,22 @@ EXPRESSIONS = {
     "surprised": "Change {his} facial expression to strong surprise: eyes opened wide so the whole round "
                  "iris shows with white visible around it, small pupils, eyebrows raised high and arched, "
                  "mouth dropped open in a small oval.",
+    # Blink and talk (phase 2, D39): not expressions, but two edits of the
+    # neutral face that the game lays over the sprite as small boxes (the
+    # eyes; the mouth). Each changes one thing and says what must not move,
+    # because only that box is used. Their close-up is <character>_fx_in.png
+    # (tools/install_face.py --prepare), cut from the game's own sprite.
+    "blink":     "Close {his} eyes, as in the middle of a relaxed blink: both upper eyelids fully lowered so "
+                 "each eye is a single soft downward-curving line of lashes, with no iris or white showing. "
+                 "Keep the eyebrows, the nose and the mouth exactly as they are.",
+    "talk":      "Open {his} mouth a little, as in the middle of saying a word: lips parted in a small relaxed "
+                 "oval with the dark inside of the mouth showing, no teeth clenched, the jaw barely lowered. "
+                 "Keep the eyes, the eyebrows and the nose exactly as they are.",
 }
+# The two that are installed with tools/install_face.py, not composite_face.py.
+FACE_FX = ("blink", "talk")
+# No eye box: his eyes are under a blindfold; his are behind dark glasses.
+NO_BLINK = {"gojo", "yaga"}
 KEEP = ("Change only the facial expression. Keep everything else exactly the same: same character, "
         "same framing, same head position and size, same hair, same clothes, same flat green "
         "background, and the same flat anime cel shading and line art.")
@@ -235,7 +256,7 @@ CHAR_KEEP = {
 }
 
 
-def build(char, exprs, editors):
+def build(char, exprs, editors, image_name=None):
     src = json.load(open(os.path.join(ROOT, "tools", "comfy_nodes", "edit_nodes.json")))
     proto = src["nodes"]
     nodes, links = [], []
@@ -268,7 +289,7 @@ def build(char, exprs, editors):
         b["inputs"][slot]["link"] = ids["l"]
 
     his = "her" if char in HER else "his"
-    image_name = "%s_edit_in.png" % char
+    image_name = image_name or "%s_edit_in.png" % char
     cost = sum(EDITORS[e][2] for e in editors) * len(exprs)
 
     ids["n"] += 1
@@ -356,15 +377,26 @@ if __name__ == "__main__":
     for e in editors:
         if e not in EDITORS: raise SystemExit("unknown editor %r" % e)
 
-    inp = os.path.join(IMAGES, "%s_edit_in.png" % char)
-    if not os.path.exists(inp):
-        raise SystemExit("no close-up at %s -- run composite_face.py --prepare first" % inp)
+    fx = [e for e in exprs if e in FACE_FX]
+    if fx and len(fx) != len(exprs):
+        raise SystemExit("blink and talk are edited from their own close-up: run them on their own, "
+                         "--only blink,talk")
+    if "blink" in exprs and char in NO_BLINK:
+        raise SystemExit("%s has no eyes to close on the sprite: --only talk" % char)
+    if fx:
+        inp = os.path.join(IMAGES, "%s_fx_in.png" % char)
+        if not os.path.exists(inp):
+            raise SystemExit("no close-up at %s -- run tools/install_face.py --prepare %s first" % (inp, char))
+    else:
+        inp = os.path.join(IMAGES, "%s_edit_in.png" % char)
+        if not os.path.exists(inp):
+            raise SystemExit("no close-up at %s -- run composite_face.py --prepare first" % inp)
     if os.path.isdir(COMFY_INPUT):
         import shutil
         shutil.copy(inp, os.path.join(COMFY_INPUT, os.path.basename(inp)))
 
-    wf, cost = build(char, exprs, editors)
-    out = os.path.join(IMAGES, "%s_edit.json" % char)
+    wf, cost = build(char, exprs, editors, os.path.basename(inp))
+    out = os.path.join(IMAGES, "%s_%s.json" % (char, "fx" if fx else "edit"))
     json.dump(wf, open(out, "w"), indent=1)
     print("rows      %s" % ", ".join(exprs))
     print("editors   %s" % ", ".join(EDITORS[e][3] for e in editors))

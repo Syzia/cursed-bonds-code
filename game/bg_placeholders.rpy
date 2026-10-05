@@ -5,8 +5,11 @@
 ## tinted so it reads as somewhere else. The real art drops in by filename
 ## with no script change: when images/bg/<name>.png exists it is used instead
 ## (alley, alley_dark, ridge_veil, utahime_office, gojo_office, map_tokyo,
-## shibuya, harajuku, shinjuku, kawasaki, yotsuka). Their light rows are in
-## BG_LIGHT in lighting.rpy.
+## shibuya, harajuku, shinjuku, kawasaki, yotsuka, library, the six
+## area_<key> pictures of the map's second level, and the five hubs:
+## school_yard, dorm_yard, staff_yard, training_yard, trailhead). Their light
+## rows are in BG_LIGHT in lighting.rpy (the hubs have none: they are outdoor
+## places and take the outdoor light).
 ################################################################################
 
 init -3 python:
@@ -55,6 +58,14 @@ init -3 python:
     renpy.image("bg gojo_office", bg_placeholder("images/bg/gojo_office.png",
         _bg_tinted("dorm_common.png", TintMatrix("#ffd2e2") * BrightnessMatrix(0.03), xzoom=-1.0)))
 
+    ## The Library (phase 2, D34): the classroom, pulled in a little and warmed
+    ## like lamplight on old paper. It is still plainly the classroom (the
+    ## desks fill the lower half) until images/bg/library.png is painted
+    ## (tools/bgs/prompts/library.txt).
+    renpy.image("bg library", bg_placeholder("images/bg/library.png",
+        _bg_tinted("classroom.png", TintMatrix("#ffdcb0") * SaturationMatrix(0.8) * BrightnessMatrix(-0.05),
+                   crop=(120, 60, 1280, 720), xysize=(1920, 1080))))
+
     ## The Tokyo map: the skyline at night, dimmed under the cards.
     renpy.image("bg map_tokyo", bg_placeholder("images/bg/map_tokyo.png",
         _bg_tinted("city_night.png", SaturationMatrix(0.7) * BrightnessMatrix(-0.3))))
@@ -78,3 +89,29 @@ init -3 python:
                    crop=(1180, 130, 740, 416), xysize=(1920, 1080))))
     renpy.image("bg yotsuka", bg_placeholder("images/bg/yotsuka.png",
         _bg_tinted("street_morning.png", TintMatrix("#ffe4c4"))))
+
+
+## The six area pictures of the map's second level (phase 2, 4.1): the painted
+## images/bg/area_<key>.png, or until it exists a piece of map_campus.png
+## around the area's anchor, clamped to the picture, enlarged and darkened
+## (world_area_bg in sb_world.rpy, which knows the anchors; this block runs
+## after it).
+init -1 python:
+
+    renpy.image("bg area_heart", world_area_bg("heart"))
+    renpy.image("bg area_school", world_area_bg("school"))
+    renpy.image("bg area_dorms", world_area_bg("dorms"))
+    renpy.image("bg area_staff", world_area_bg("staff"))
+    renpy.image("bg area_grounds", world_area_bg("grounds"))
+    renpy.image("bg area_mountain", world_area_bg("mountain"))
+
+    ## The five hubs (phase 2, D53 and D58): the outdoor place each area's
+    ## rooms open onto. images/bg/<name>.png when it is painted
+    ## (tools/bgs/prompts/<name>.txt), else a stand-in borrowed from the
+    ## courtyard or the forest trail (world_hub_bg in sb_world.rpy, which
+    ## holds the table: WORLD_HUB_STANDINS).
+    renpy.image("bg school_yard", world_hub_bg("school_yard"))
+    renpy.image("bg dorm_yard", world_hub_bg("dorm_yard"))
+    renpy.image("bg staff_yard", world_hub_bg("staff_yard"))
+    renpy.image("bg training_yard", world_hub_bg("training_yard"))
+    renpy.image("bg trailhead", world_hub_bg("trailhead"))

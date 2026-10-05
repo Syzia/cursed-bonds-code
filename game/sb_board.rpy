@@ -111,7 +111,10 @@ init -1 python:
         "slaughter_demon": "Slaughter Demon", "nunchaku": "Nunchaku",
     }
 
-    BOARD_GRADE_COLOR = {"g4": "#9d95ae", "g3": "#c79bff", "g2": "#ffd166", "s1": "#e8334f"}
+    ## Phase 2 (4.8): the board's grades in the game's grade colours (the
+    ## gui.grade_* tokens; Semi-Grade 1 shares Grade 1's red). The chips are
+    ## drawn by grade_chip (sb_grades.rpy); this table stays for readers.
+    BOARD_GRADE_COLOR = {"g4": gui.grade_g4, "g3": gui.grade_g3, "g2": gui.grade_g2, "s1": gui.grade_g1}
 
     ## Never partners (teachers, the doctor, the driver, the dead), whatever
     ## their grade. Anyone else rostered with a grade can come, if on campus.
@@ -535,6 +538,8 @@ init -1 python:
 
     def board_take_reason(offer):
         """WP4. Why a card can't be taken right now, in the player's words, or ""."""
+        if not night_can_work():        ## phase 2: a rest day (sb_night.rpy)
+            return night_block_reason() or "Not today"
         if store.period in ("Evening", "Night"):
             return "Evenings: %s doesn't send anyone out after dark" % _board_host_name()
         if store.stamina < BOARD_STAMINA:
@@ -549,6 +554,8 @@ init -1 python:
 
     def board_refusal(offer, who):
         """WP4. The narration line that stops a run, or "" when it can go."""
+        if not night_can_work():        ## phase 2: a rest day (sb_night.rpy)
+            return night_block_reason() or "Not today."
         if not offer:
             return "That card is already off the board."
         if store.period in ("Evening", "Night"):
@@ -956,12 +963,10 @@ style board_chip_text is text:
     size 26
     kerning 2
 
-## A grade chip in the grade's colour.
+## A grade chip in the grade's colour. Phase 2 (4.8): the name stays, the
+## chip is the game's one grade chip (sb_grades.rpy).
 screen board_grade_chip(g, size=26):
-    frame:
-        background Solid(BOARD_GRADE_COLOR.get(g, "#9d95ae"))
-        padding (14, 4)
-        text grade_label(g).upper() style "board_chip_text" size size
+    use grade_chip(g, size)
 
 
 ## One job card, 400 x 620.

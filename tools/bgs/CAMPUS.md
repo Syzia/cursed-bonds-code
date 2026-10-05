@@ -33,7 +33,7 @@ for it.
 | **Main Gate** (`gate`) | south, the foot of the campus | A stone torii across a flagstone approach lined with stone lanterns, climbing through tall cedars. The only road down the mountain starts below it. |
 | **Courtyard** (`courtyard`) | the centre | A wide flagstone yard between halls, with the main hall ahead to the north and the pagoda behind it. |
 | **Cafeteria** (`cafeteria`) | lower west, near the gate | A single-storey dining hall with long tables and a serving counter. |
-| **Classroom Building** (`classroom`) | west of the courtyard | A two-storey wooden school building. The first-years' room looks west onto the forest. |
+| **Classroom** (`classroom`) | west of the courtyard | A two-storey wooden school building. The first-years' room looks west onto the forest. |
 | **Infirmary** (`infirmary`) | upper west, at the forest edge | A quiet clinic room: beds, curtains, cabinets, and Shoko's desk with an ashtray. |
 | **Training Hall** (`training`) | east of the courtyard | A big hall that is **much bigger inside than out**: a vast wooden floor and pillars fading into haze. |
 | **Dojo** (`dojo`) | lower east | A long single-storey hall with a row of windows, a polished floor and a weapon rack. The long windowed building in style_ref_2 is its outside. |
@@ -46,6 +46,15 @@ for it.
 | **Forest Trail** (`forest`) | north-west, off campus | A trail through old cedars, 40 minutes long. There are no buildings on it. |
 | **Riverside** (`riverside`) | north, off campus | A clear mountain river with a pebble bank and a deep pool. It feeds the campus ponds. |
 | **Mountain Ridge** (`ridge`) | north-east, off campus | Grass and rock above the treeline. The campus roofs are tiny, far below. |
+| **School Courtyard** (`school_yard`) | west, between the school buildings | The yard the classroom, the cafeteria, the infirmary and the library open onto: packed earth, built for a few hundred students and nearly always empty. |
+| **Dormitory Garden** (`dorm_yard`) | north, between the dormitories | A stone path through a kept garden. Both dormitories and the way up to the rooftop open onto it. |
+| **Staff Building Steps** (`staff_yard`) | upper east, below the principal's hall | Wide stone steps. The principal's office and the teachers' offices open onto them. |
+| **Training Yard** (`training_yard`) | east, between the training hall, the dojo and the storehouse | Bare dirt and striking posts. |
+| **Mountain Path** (`trailhead`) | north, the top edge of the campus | Where the stone path gives out and the mountain starts: level into the forest, down to the river, or up the steps to the ridge. |
+
+The last five are the yards (phase 2, D53): the outdoor place each group of
+rooms opens onto. Walking from a room to a room in another part of the campus
+goes through them, and through the courtyard in the middle.
 
 ## What each place sees
 
@@ -72,7 +81,7 @@ These are the ones worth relighting, going by the schedules in
 | Infirmary | Shoko, at night | night (done) |
 | Rooftop | Shoko in the evening, and Gojo at any hour | evening and night (done) |
 | Riverside | Maki in the evening | evening (done) |
-| Dorm common room | nearly everyone, evening and night | evening and night (done) |
+| Dorm common room | the first years in the evening (after checkpoint D); nobody at night by routine (Panda's night is in the dormitory garden for now), only whoever the player brings in | evening and night (done) |
 | Girls' dormitory | Nobara and Maki, at night | night (done) |
 | Courtyard, dojo, cafeteria | weekend evenings | the tint is enough for now |
 | Principal's office | nobody after dark | none needed: it's candlelit at every hour |

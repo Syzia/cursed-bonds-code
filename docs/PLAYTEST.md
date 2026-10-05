@@ -1,164 +1,454 @@
-# Checkpoint 4 playtest
+# Checkpoint D playtest
 
-*About 20 minutes. Phase 1, version 0.3 ("Arc One, phase 1").*
+*About 40 minutes. Phase 2, the UI overhaul: version 0.4 ("Arc One, phase 2").*
 
-This is the last check of phase 1. Play the game from the Ren'Py launcher (the
-SDK) as usual, on the `phase1` branch in your game folder. Running from the
-launcher also shows a small **Review tools** button at the bottom left of any
-place on campus. It lets you jump ahead without playing for hours.
+*You played this on 5 Oct 2026 and it passed. Your four answers are built or
+noted: who is in the Common Room in the evening, where the icon column's label
+opens, the build folder's version (now 0.4, like the game), and old saves
+(left for now). One more answer came after: Panda is in the Dormitory Garden
+at night, for now. The steps below say what is true now.*
+
+This is the last check of phase 2. Play the game from the Ren'Py launcher (the
+SDK) as usual, on the `phase2` branch in your game folder. Running from the
+launcher also shows a small **Review tools** link at the bottom left of any
+place on campus. It lets you reach the rare things (Night, a Gojo night, the
+Black Market) without playing for hours.
 
 Keep a note as you go. For anything that looks wrong, write down what you did,
 what you saw, and the day and time of day shown at the top left. If you can,
 save to a new slot right there.
 
-Two tips:
+Three tips:
 - **Skip** (in the quick menu at the bottom) fast-forwards only text you have
-  already read, so the prologue goes quickly the second time.
-- Before part 3, save to a **spare slot**: beginning Arc Two changes that save.
+  already read, so the prologue goes quickly.
+- **Rest the pointer on anything** to see its name and what it costs. Icons
+  have no words under them any more.
+- Use a **spare save slot** for parts 8 to 11: the Review tools change that
+  save (yen, grades, items).
+
+The parts are in a sensible order, but each stands alone. Tick them off.
 
 ---
 
-## 1. A new game, from the alley to Utahime's first board job (about 10 minutes)
+## 1. A new game, through the prologue (about 6 minutes)
 
-1. **Start a new game.** Skip through the parts you read at checkpoint 2.
-   Glance at:
-   - the alley: Sana tells you "the thing" in the dark, and there are no
-     portraits beside the text while the lights are out;
-   - no technique choice: Last Light wakes on its own, the picture goes grey,
-     and one warm lamp stays lit over the fire door;
-   - the fight ends after four exchanges;
-   - the tour ends with Gojo pointing up at the veil on the ridge.
-2. **Day 1 on campus.** The top of the screen shows only the date and three
-   buttons: MAP, JOURNAL and MENU. A "NEXT" banner slides down with your next
+1. **Start a new game** and skip through the prologue. Glance at:
+   - the "SKIPPING" tag: it shows only over story scenes, never over the map
+     or the journal;
+   - everything is still told as "I", and Kaito is never on screen.
+2. **Day 1 on campus.** At the top left is the date. At the top right are
+   three icons: Map, Journal, Menu. A "NEXT" banner slides down with the next
    goal.
-3. **Sleep.** Open the map, go to My Room (Dormitories) and choose Sleep.
-4. **Day 2, morning: roll call.** It starts by itself wherever you are. Yaga
-   assesses you, and a card shows **Grade 4 · ASSESSED**.
-5. **Sleep again. Day 3, morning to afternoon: Utahime arrives.** This scene
-   also finds you wherever you are. Afterwards, toasts at the top right show a
-   Paper Ward and two sealing talismans.
-6. **Her board.** Open the map and go to the Staff Building, then Utahime's
-   Office. Press **Mission board**.
-   - Three job cards. Two are at your grade or under it; the third is a grade
-     up and needs a senior partner.
-   - Take a Grade 4 job, and pick a partner (Nobara, say).
-   - Read the result. The rewards stack as toasts at the top right.
-   - Open the Journal: the merit shows under **Stats**, and the job under
-     **Missions → Board**.
+3. **Nobody offers a "new scene" yet.** The character scenes wait until after
+   roll call (the morning of day 2).
+4. **Sleep** (walk to My Room; the bed is an icon in the picture). Day 2
+   starts with roll call and the **Grade 4** card, in green.
 
-   The board is closed in the evening and at night ("Utahime doesn't send
-   anyone out after dark"), needs some stamina left, and your partner has to
-   be on campus. If a card says why you can't take it, that's the reason.
+## 2. The map, in two levels (about 3 minutes)
+
+1. Click the **Map** icon (or press M). You see "Jujutsu High" at the top and
+   **six area markers**, nothing else. Each marker shows up to three faces and
+   a gold mark if a mission waits there. Your own area says **I'M HERE**.
+2. The **Mountain** marker sits on the mountain now, not over the lake, and
+   the markers are smaller than at checkpoint B.
+3. Click **School Building**. The view moves in to that area's own picture,
+   with its rooms as pins: School Courtyard, Classroom, Cafeteria, Infirmary,
+   Library. Rest the pointer on a pin: it says what the room is and who is
+   there.
+4. Click a pin. Now you walk there. (Clicking an area only looks at it; you
+   move on the second click.) Walking is free.
+5. Open the map again. **Back** (top left, "Jujutsu High") returns to the six
+   areas. **Stay here** (bottom right) closes the map. Esc does both in turn.
+6. There is no row of faces on the map any more. Each person's journal page
+   says where they are (part 6).
+
+## 3. Walking without the map: exits and the five yards (about 4 minutes)
+
+1. In **My Room**, click the small house icon on the left wall (rest the
+   pointer on it: "To the Dormitory Garden"). You are in the
+   **Dormitory Garden**. No time passes.
+2. Keep clicking icons in the picture: Courtyard, then Training Yard, then
+   the Training Hall. Each exit sits on the door, steps or path it leads to.
+3. Visit all five yards: **School Courtyard**, **Dormitory Garden**, **Staff
+   Building Steps**, **Training Yard**, **Mountain Path**. Each has its own
+   painted picture now. From a yard you can reach every room of its area.
+4. A **locked door** (the girls' dormitory in the evening, an office you
+   can't enter yet) is dimmed. Rest the pointer on it for the reason. Clicking
+   it does nothing.
+5. People stand in the yards at some hours: Nobara in the Training Yard on
+   weekday mornings, Yuji and Panda in the Dormitory Garden at night, Megumi
+   on the Mountain Path on weekend mornings and Shoko on the Staff Building
+   Steps on weekend afternoons. Toge is in the School Courtyard on weekday afternoons,
+   once you have met him; before that it is empty. (In the evening Toge and
+   Panda are in the Library: see part 4.)
+6. When several people stand in a room, an exit or an object they would hide
+   moves to the icon column on the right. Nothing is ever lost, only moved.
+
+## 4. Rooms with people in them (about 4 minutes)
+
+1. Go to the **Common Room** on a weekday **evening**. The three first years
+   are there (Yuji, Megumi and Nobara) and nobody else: in the evening the
+   room is theirs, as you asked at D. At the weekend only Megumi is. People
+   stand *in* the room: each has a soft shadow, takes the evening light, and
+   one stands behind the table. They breathe, very slightly. **Panda and Toge
+   spend the evening in the Library** (School Building), every day, once you
+   have met them; "Study together" is offered with them there. Someone you
+   have asked along still walks into the Common Room with you.
+2. **Nobara is on the sofa, on her phone.** That is a painted pose, the first
+   of two. Click her: the view eases in and she turns to you. Leave: it eases
+   back.
+3. **Utahime at her desk** is the second pose. She is in her office (Staff
+   Building) on a weekday before evening, once she has arrived (day 3, or
+   Review tools → *Recruit Utahime*).
+4. **Yuji blinks, and his mouth moves when he talks.** Talk to him anywhere.
+   He blinks on most of his faces; his mouth moves on his neutral face only.
+5. Click anyone. You see their **grade** and three or four **choices**, each
+   with an icon. No name, no bars, no story diamonds (a choice that takes time
+   still shows a small diamond at its right edge).
+6. In Menu → Preferences, **Motion** turns the breathing, the shimmer and the
+   pulsing icons off.
+
+## 5. Things in rooms (about 9 minutes)
+
+Each is a small glowing icon on an object. The icon column on the right holds
+whatever isn't in the picture. Rest the pointer on the column's top icon: its
+label opens **above** the icon (try Practice in the Courtyard in the morning,
+before you have held the hour that day and with nobody walking along). A label
+that would still hide a way out or something to click sits beside the column
+instead, a little higher or lower, so nothing is ever under it (try Hold the
+hour in the Library, and Train at the Riverside). The Courtyard's Practice
+label does that too once you have held the hour that day, or while someone
+walks along and nobody else is standing there (at noon, say): Practice is
+then one step lower or higher in the column, and its label sits beside the
+column, just under the Training Yard exit or between the
+vending machine and that exit, still hiding nothing.
+
+1. **The computer** (My Room, the laptop). Read three pages. The first time
+   you read a page a gold "Noted." strip says what you got from it. Then open
+   *Posted assignments* and **cross-check the board** (one hour, once a week;
+   it needs Utahime's board to be open). A job that "doesn't add up" is marked
+   in gold. At Night that button is shut.
+2. **A lead.** Journal → Missions shows "What was that on the ridge? — my
+   computer" at the top until you read that page.
+3. **The Library** (School Building). Click the shelves on the left: one hour,
+   three shelves to choose from. The locked cabinet on the right is just a
+   look.
+4. **Fishing** (The Mountain → Riverside, the icon on the flat rock). Three
+   casts for one hour. Wait for the float to dip, then click when the white
+   marker is in the green. The **record book** button is at the bottom right.
+   Packing up before the float dips is free.
+5. **Cards** (Common Room, when someone is there and you hold ¥100; in the
+   evening that is the first years; someone you bring along sits only when
+   a seat is free, so not on a weekday evening; on a
+   weekday evening Megumi stands in front of the table, so **Play cards** is
+   in the icon column on the right). Play a
+   few hands of **blackjack** and one of **poker**. Watch their faces: each
+   person gives something away, and Megumi gives nothing. A sitting is five
+   hands at most.
+6. **The vending machine** (Courtyard, the icon on the right-hand porch):
+   ¥150 for 10 stamina, once a day.
+7. **Small looks:** the TV in the Common Room (not on a weekday evening:
+   Megumi stands in front of it), the blackboard in the
+   Classroom. Their line changes from day to day.
+
+## 6. The journal (about 4 minutes)
+
+1. Click the **Journal** icon (or press J). **Five tabs:** People, Missions,
+   Stats, Equipment, Inventory. Memories is gone as a tab.
+2. **People.** The first card is **Me**. Every other card shows a face, a
+   name, a grade chip, a bond bar and where that person is right now.
+3. **Open Nobara.** Her page has three parts:
+   - **Right now:** where she is and what she is doing, with a *go there*
+     button when you can walk to her;
+   - **Their story:** *Somebody Remembered*, with what you have learned so far
+     and a gold **NEXT** row saying the next step and where;
+   - **Memories:** every scene you have shared with her, replayable.
+4. A scene with several people (the first-years, say) is on each of their
+   pages. **Me → My story** holds the main story by act and the scenes nobody
+   else is in. **Me → Records** lists the pages you have read, your fishing
+   records and today's card winnings.
+5. **Stats** shows one pane at a time: Overview, Last Light, My year.
+6. Pop-ups (toasts) never draw over the journal, the map, the board or the
+   armory. They wait and show when you close the screen.
+
+## 7. Grade colours (about 1 minute)
+
+- Grade 4 **green**, Grade 3 **blue**, Grade 2 **purple**, Grade 1 and
+  Semi-Grade 1 **red**, Special Grade a slow **oil-slick** shimmer.
+- Look at: the People cards (Gojo's chip shimmers and reads "OFF THE SCALE"),
+  Utahime's board, the armory, the grade card.
+- Review tools → **Style sample** shows all five chips side by side.
+
+## 8. The armory and talisman checklists (about 3 minutes, spare slot)
+
+1. Review tools → **Open the armory**. Go to the Storehouse (Training Grounds)
+   and click the racks.
+2. Under each tool is a **checklist**: what it asks of me, ticked or crossed.
+   The **Inverted Spear of Heaven** shows four boxes, none ticked. None can be
+   ticked before Arc Two.
+3. Review tools → **Grant one of every item**. Open Journal → Equipment and
+   Inventory: talismans show the same kind of checklist. One I can't wear yet
+   says why.
+
+Three things that are meant to be so:
+- **Playful Cloud no longer jumps into an empty hand** below Grade 2 and
+  Output 50. It waits on its checklist.
+- "One of every item" hands over tools and Grade 1 talismans that I **cannot
+  hold or wear until their checklist is met**. That is the gate working.
+- Nothing I already hold or wear is taken away by a checklist. But a tool held
+  that way, once put down for another, does not come back by itself.
+
+## 9. A normal night (about 2 minutes, spare slot)
+
+1. Review tools → **Jump to Night** (or play until Night).
+2. Anything that takes time is gone from the room. I can still walk, talk,
+   eat, use my computer and look at things.
+3. **Wait has become "Go to bed".** Click it anywhere: I walk to my room,
+   sleep, and wake there.
+4. If a day ever ends while I am not in my room (a mission ran late), one line
+   walks me home the next morning.
+
+## 10. A Gojo night, and the day after (about 3 minutes, spare slot)
+
+1. Review tools → **Gojo night tonight**. A pop-up says "Gojo: the ridge,
+   tonight", and the Mountain marker on the map shows a moon.
+2. **Jump to Night**, then walk to the **Mountain Ridge**. Gojo is there.
+   A gold icon in the column: **Train until morning**.
+3. Take it. A short scene, a big gain in Control and reserve, and I wake in my
+   room.
+4. **The next day is a rest day.** A moon chip sits by the date ("Worn out").
+   Train, Practice, Train together, Gojo's lesson, Hold the hour and swimming
+   are closed, missions are not offered and the board refuses. Studying,
+   eating, talking, cards, fishing and the computer still work.
+5. Journal → Stats may show **a value above its cap** after this night, and
+   says so ("cap 40, +6 from the ridge"). That is intended: your ruling lets
+   this one night pass the ceiling.
+
+## 11. A night in Tokyo and the Black Market (about 3 minutes, spare slot)
+
+1. Review tools → **Open Tokyo**, and **+¥20,000**.
+2. In the **Evening**, open the map, switch to **Tokyo**, click **Shibuya**,
+   then **A night in Shibuya**.
+3. Choose **the club** (¥1,500). The first time, I find the stairs down to the
+   **Black Market**. Go in.
+4. The market sells four talismans of its own (¥9,000 to ¥45,000), sealing
+   talismans and first aid. Each talisman shows its grade colour and its
+   checklist. Buy something.
+5. I wake in my room with **half my stamina** and less cursed energy, and a
+   moon chip that says "Rough morning". Missions and training are still
+   allowed. I can't go out two nights running.
+6. With less than ¥1,500 the menu offers "The club · ¥1,500 · Not enough yen":
+   it says one line and brings the menu back. "Head home" costs nothing.
+
+## 12. An old save (about 2 minutes)
+
+1. **Load one of your older saves** (an autosave from an earlier checkpoint,
+   and slot 1-1). Each should load with no error screen, where you left it.
+2. A save made **on the map with an area open** comes back on the six areas
+   (one more click). A save made **in the journal on a person's page** comes
+   back on the People tab.
+3. A save parked **at Night away from my room** shows "Go to bed" in the
+   column; the next morning walks it home.
+4. A save made **while fishing, at the bite,** comes back on the same cast and
+   the same fish, with the marker starting again. A save made in a
+   **blackjack** hand comes back with the same cards dealt.
 
 ---
 
-## 2. An old save (about 3 minutes)
+## Stand-ins still in the game (these are not bugs)
 
-1. **Load one of your older saves**: slot 1-1 (from before phase 1) and an
-   autosave from checkpoint 3 (auto-2, day 7) are good ones. Slot 1-1 was saved
-   in Explore mode, so it opens in Explore mode: no story runs there, and the
-   Journal's NEXT line reads "Explore mode: no story here", and so does
-   Missions → Story (the veil of step 5 isn't offered there either). Use an
-   autosave for steps 3 and 5.
-2. It should load with no error screen. If the game can't put you back at the
-   exact line, it says "This save came from an older version of the game" and
-   picks up on campus, or at the start of the prologue scene you were in. Both
-   are expected.
-3. **Open the Journal → Missions → Story.** The NEXT line at the top and the
-   highlighted step should match where that save had got to. For example, a
-   save past roll call that never met Utahime reads "Someone is moving into
-   the room next to Yaga's". Every old save meets Utahime once, whenever it
-   reaches her.
-4. **People** shows your bonds as you left them. **Inventory** has the keepsake
-   you packed (a save from before the keepsake choice, like 1-1, has none).
-5. The ridge (Mountain Ridge) offers *Look up at the veil* in an old save
-   too: loading a save that finished the prologue marks the veil as seen, so
-   you don't have to replay the tour for it. Once a day; the Review tools'
-   **The ridge veil, again today** button opens it again.
+**Pictures that are still stand-ins**
+- **The courtyard has no vending machine painted in.** The icon sits on the
+  right-hand building's porch.
+- **The fishing float and the timing bar** are plain shapes drawn by the game.
+- **Painted poses exist for two people only:** Nobara on the sofa in the
+  evening, Utahime at her desk. Everyone else stands as a blended sprite.
+  Twelve more poses are planned (`docs/ART_PHASE2.md`).
+- **Only Yuji blinks and talks** (his mouth moves on his neutral face only).
+  Ten more people are planned.
+- **Tokyo's districts** (Shibuya, Harajuku, Shinjuku, Kawasaki, Yotsuka) are
+  tinted versions of existing pictures, and their pins say "Later build" and
+  sit on arbitrary spots.
+- **The alley and the ridge veil** are still tinted stand-ins from phase 1.
+- **The classroom has no foreground layer:** people there stand in the front
+  aisle, over the nearest desks.
+- **Playing cards and the computer's pages** are drawn by the game. That is by
+  design, not a stand-in.
 
----
+**Scenes that are still stand-ins** (rewritten in phase 4)
+- **The Gojo night** is a short placeholder scene.
+- **The club scene** and the line your companion says there are placeholders.
+- **A trip to a district** by day still plays a short arrival and brings you
+  back.
 
-## 3. The Review tools, up to Arc Two (about 3 minutes)
-
-Use your spare slot for this part: beginning Arc Two closes every character
-story you haven't finished in that save.
-
-1. In any place on campus, click **Review tools** (bottom left).
-2. Press the button that marks the **main story complete**, then close the panel.
-3. Open the **Journal** (the JOURNAL button, or the J key) → **Missions** →
-   **Story**. A **Begin Arc Two** card appears.
-4. Click it. The warning must read, word for word:
-
-   > This begins Arc Two. Character stories you haven't finished in Arc One will close.
-
-   with two choices, **Begin Arc Two** and **Not yet**.
-5. **Not yet** takes you back. **Begin Arc Two** shows a card, "ARC TWO ·
-   Shibuya Is a Long Way Off · Arc Two arrives in a later build. Everything you
-   finished stays in your journal.", and then you are back on campus.
-
-The panel's other buttons, for looking around faster: +50 merit, promote me one
-grade, promote Yuji / Megumi / Nobara, finish the next story step, +20 bond
-with everyone, open Tokyo, Gojo in today, recruit Utahime (plays her scene),
-one of every item, open the armory, jump a week ahead, and the ridge veil
-again today. The special talismans from "one of every item" can be worn only
-once the story binds them, and the Inverted Spear stays "Sealed — Arc Two".
+**Things that are not built yet**
+- **Tools and talismans do nothing in a fight.** That is phase 3. The market's
+  footer says so.
+- **Board jobs play out on their own;** the fights come in phase 3.
+- **No mission is locked behind the computer.** The one lead is optional.
+- **Outfits** at the Black Market are an empty shelf until there is sprite art.
+- **No Special Grade talisman is for sale** (your answer of 1 Oct).
+- **The early character scenes still say "you".** They wait for roll call now;
+  phase 4 converts them.
+- **Chess, memory and tic-tac-toe** are not built.
 
 ---
 
-## 4. A glance at checkpoints 2 and 3, and what's new (about 4 minutes)
+## The five rulings, as built
 
-From checkpoint 2 (the prologue):
-- Everything is "I"; everyone else says "you" or your name, and the name you
-  chose appears everywhere.
-- Faces change during scenes, and a portrait appears beside whoever is
-  speaking off screen. Menu → Preferences → the portrait setting (it
-  carries your name, or reads "MY PORTRAIT" on the main menu) → Hide turns
-  off your own.
+| # | Ruling | What is built |
+|---|---|---|
+| 1 | The night rule's strictness | **Strict.** At Night nothing that takes time is allowed, except the listed exceptions (the Gojo night, stargazing, the late scenes with someone close). You played it at A and B and left it. |
+| 2 | When character scenes start | **After roll call** (day 2). Old saves already past roll call are never held. |
+| 3 | Two-hour activities | **They end an hour early** when a story scene is waiting, so the scene isn't pushed to tomorrow. The hour isn't lost. |
+| 4 | The look of icons and chips | **Pictures without words.** All 88 icons have pictures (art batch 1), so no word shows under them; the name is on hover. Grade chips are filled, with dark text. |
+| 5 | The Gojo night and the grade ceiling | **It may pass the ceiling** (your decision, 3 Oct): Control up to 6 above, reserve up to 3 above. It is offered at every grade whenever it is due. |
 
-From checkpoint 3 (the campus):
-- Click Yuji at noon in the cafeteria: two to four sensible choices (three
-  when he has a new scene or a mission), and he stays on screen while you
-  talk and eat.
-- Bond gains stack ("Yuji bond +4"), and the NEXT banner slides in when your
-  goal changes.
-- Review tools → open Tokyo. At the gate, mornings to afternoons, *Ask Ijichi
-  for a ride* → Shibuya. The trip takes half a day and brings you back to the
-  gate.
+## What was chosen for you, and what you said
 
-New in this checkpoint:
-- **Memories tab** (Journal): read through the titles, the hints on memories
-  you haven't seen, the line "Someone you haven't met yet." and the places the
-  replays open on. Replay one (Roll Call, say) and come back: nothing in your
-  save should have changed.
-- **The six journal tabs** read well, with nothing overlapping.
-- **The Sun Mall and Nade's first mission:** Kaito never appears on screen,
-  Last Light is the only technique named, and nothing mentions "three weeks".
-- **The ridge**: *Look up at the veil* is free, once a day, and
-  the third look ends "It's facing the school."
+Every number here is one table entry. Say the word and any of them changes.
+
+| Chosen for you | Asked at | What you said |
+|---|---|---|
+| **The map moves me on the second click,** not the first | B | "Two clicks to walk is fine." You then asked for exits as well, which is part 3. |
+| **Faces on the map:** three a marker, then "+2" | B | "The faces on the map seem right." "Nothing seems cluttered for the moment." |
+| **The Gojo night:** a full day's training plus 6 Control and 3 reserve; at most once every 10 days | B | "Gojo's night looks good." No number changed. |
+| **The day after a Gojo night:** no training of any kind, no missions, no board; nothing raises Control or Output | B | No change. |
+| **The night in Tokyo:** ¥1,500 for the club; half stamina and 70% cursed energy next morning; not two nights running | B | No change. |
+| **Market prices:** ¥9,000, ¥12,000, ¥24,000, ¥45,000 | B | No change. |
+| **A Special Grade talisman at the market** | approval, 1 Oct | None for now; more talismans come later. |
+| **Story titles** ("Taking My Measure" for Gojo's) | B | Go with the ones that fit; "Taking My Measure" stays. Everything gets a review after the phase. |
+| **Fishing:** three casts an hour, a timing bar, six species and a record book, one legendary fish in the evening, something cursed about once a week | C | Plays fine; no change asked. |
+| **The computer:** five sites, twelve pages, the weekly board cross-check | C | Plays fine; no change asked. |
+| **Cards:** stakes of ¥100 / ¥500 / ¥1,000; five hands a sitting; at most ¥6,000 won in a day; closed at Night | C | Plays fine; no change asked. |
+| **Small things:** Library study gives Insight +4; the vending machine is ¥150 for 10 stamina, once a day | C | Plays fine; no change asked. |
+| **How the yards join up:** no direct path from the Courtyard to the Staff Building Steps (the map picture has none); the Dormitory Garden has seven exits | C | Plays fine; no change asked. |
+| **Five people in the Common Room in the evening,** with the "+1" chip at Panda's feet (the offer was to move the chip) | D | "Don't fill the common room in the evening, it only makes sense to fill it with the 1st years." Built: only Yuji, Megumi and Nobara are there in the evening. Chosen for you: **Panda and Toge spend the evening in the Library**, where you can still study with them. The chip was not moved. |
+| **The icon column's label** opened to the left, over an exit | D | "Make the label open above." Built: the column's first label opens above its icon; any column label that would still hide a way out or something to click moves up or down beside the column until nothing is under it. |
+| **The build folder** was still named 0.3 | D | "Leave the folder has Version 0.4". Built: the folder is 0.4, like the game. Your saves are untouched by it. |
+| **Old saves:** your eleven all load where they were saved; no more were tested | D | "Leave the saves for now." Left for now. |
+| **Panda at night:** alone in the Common Room | after D | "Put Panda in the garden for now." Built: at Night Panda is in the Dormitory Garden with Yuji, every day. The Common Room is empty at Night unless you bring someone in. With nobody there, the card table's icon is not shown at Night; it was closed at Night anyway. Only in the look-around mode ("Explore the campus", where the night rule is off): "Study together" with Panda at Night is no longer offered; he is in the Library in the evening for that. |
+| **Panda and Toge in the evening:** the Library, or outside | after D | You said nothing against it, so the Library stays. |
+| **The weekend card table** seats Megumi alone | after D | "Leave it as megumi for now." Left as it is. |
+
+What you asked for at B, all built: the Mountain marker moved onto the
+mountain; smaller markers; walking by exits and the five yards; "Classroom"
+instead of "Classroom Building"; no "Closer: after roll call" line.
+
+What you asked for at D, all built: the Common Room in the evening is the
+first years'; the column's label opens above; the build folder is 0.4.
+After D: Panda is in the garden at night.
+
+**Asked for later (not built, nothing designed yet):** more dormitories, so
+that everyone who lives on campus has somewhere to be at night (Panda's night
+then moves from the garden to his room); somewhere for the teachers to stay (a
+teachers' lounge, dormitories, or both; Gojo lives off campus, the others on
+it); and an invite for the card table (ask Toge, Panda or someone else to come
+and play).
 
 ---
 
-## 5. Known placeholders (these are not bugs)
+## Things to look at once more at D
 
-- **Board jobs play out on their own**; there is no fight yet. The board's
-  footer says the fights come in a later build (phase 3, combat).
-- **Most character missions** read "Written in a later build". Two are
-  playable: Ijichi's *Ride-Along* and Maki's *The Armory*.
-- **Talismans and cursed tools** can be collected and equipped, but they don't
-  change anything yet ("Takes effect in combat from the combat update").
-- **Tokyo districts** play a short arrival and bring you back.
-- **Story beats not written yet** (the detention center, Nanami, Kyoto and the
-  rest) show in the journal as "Coming in a later build". Sana's three
-  flashbacks read "Written in a later build" once unlocked.
-- **Placeholder pictures:** the alley, the ridge veil, both new offices, the
-  Tokyo map and the districts are tinted versions of existing pictures.
-- **"You" in the older scenes:** the Sun Mall and the chapters after it, and
-  the character scenes (a person's "new scene"), which can come up from day 1,
-  still say "you". Phase 4 converts them to "I".
-- **Arc Two** is only a card for now.
-- **Toasts can sit over the top right** of the journal, the board and the
-  partner picker for a moment. They don't block clicks. The UI overhaul
-  (phase 2) moves them.
+None of these was changed, because you didn't ask. Each is a small edit if
+you want it.
 
-Your UI notes from checkpoints 2 and 3 are already planned as phase 2, the UI
-overhaul (`docs/PHASE2_UI_OVERHAUL.md`), so there's no need to repeat them here.
+**From checkpoint B**
+- **Tight journal pages show short names.** A person's page is held to about
+  70 words. On a full page the older story lines show as one or two words,
+  with the whole line on hover. Raising the limit to about 95 would print
+  every line whole.
+- **A finished story** shows a green RESOLVED chip, a NEXT row and "n more
+  chapters in a later build" together.
+- **A Gojo invitation I don't take** comes back on his next day in, about
+  weekly. One line would make it rarer.
+- **A save with a map area open** reloads on the six areas.
+
+**From checkpoint C**
+- **Fishing: is it too fast or too slow?** The marker's speed, the wait before
+  the bite and the width of the green zone are three numbers. You fished at C
+  and asked for no change; say so again after a longer session, or say what
+  felt off.
+- **Card balance.** One good poker hand can win ¥3,500, so the ¥6,000 day
+  limit can come in one or two hands. Two questions: should losing ¥3,000 stop
+  a sitting at once (today it is checked between hands, so a sitting can end
+  ¥4,000 or ¥5,000 down)? And should the card table's icon go away once the
+  day's ¥6,000 is won (today it does)?
+- **"Walk with them" from a yard.** It is offered at the courtyard, gate,
+  forest, riverside and ridge only. Should a walk also start from the five
+  yards?
+- **The classroom:** keep everyone in the front aisle, or put a person back
+  behind a desk?
+- **In dialogue, the table stays in front of the person only in the
+  cafeteria.** In the common room and Utahime's office the person steps in
+  front. Say if you want it the other way.
+- **Utahime's pose:** her scar is faint, and the desk hides her feet.
+
+**New at D**
+- **Money piles up.** With one board job a day at Grade 3 (about ¥8,000) a
+  30-day run holds about ¥100,000 by day 24, while the whole Black Market
+  costs ¥90,000 and the club ¥1,500. Nothing is wrong by the rules as set.
+  Should yen stay this easy? (It could also wait for phase 3, when talismans
+  start to matter.)
+- **The old GUI pictures can't be redrawn on this Mac** without installing a
+  picture library (Pillow). Nothing in the game needs it. Say if you want it
+  installed.
+
+**After D** (what your answers left open)
+
+Settled by your second answer (5 Oct):
+- Panda at night: the Dormitory Garden, for now.
+- Panda and Toge in the evening: the Library stays.
+- The weekend card table: Megumi alone, for now. An invite is asked for later.
+
+Still open:
+- **Where five people still stand together.** Three hours of the week: the
+  Cafeteria at noon on weekdays, the Cafeteria at noon at weekends (Yuji,
+  Megumi, Nobara and Panda on the floor, Toge on the "+1" chip; six when Gojo
+  wanders in), and the Riverside on weekend afternoons (Yuji, Nobara, Maki and
+  Panda, with Toge on the chip). In all three the chip stands clear of Panda's
+  feet, and nobody's name label is drawn over the chip. One small thing is
+  left: at the Riverside, while the pointer rests on "Toge" in the chip, his
+  label opens to the left over Panda's right foot (in the Cafeteria it stops
+  short of it). Nothing was changed there. Say if you would rather thin those
+  hours out as well, or have the chip moved after all.
+- **A label can touch an icon.** Nothing is hidden, but in these places a
+  label sits edge to edge with an icon: in the Library (Hold the hour, just
+  under the exit), at the Riverside (Train sits right on top of the fishing
+  icon and Hold the hour right under it), in the Staff Building yard (Hold the
+  hour, just under the Training Yard exit) and in the Courtyard (Practice,
+  opened above, touches the vending machine's icon; once you have held the
+  hour that day its label sits beside the column, right under the Training
+  Yard exit; with someone walking along and nobody else there it sits beside
+  the column, right under the vending machine). There may be others like them. A little air
+  can be added for the labels that sit beside the column; the Courtyard's
+  Practice label, when it opens above, would stay where it is, touching the
+  vending machine, because with any gap there it no longer fits above.
+- **A moved label can end up beside the next icon up or down.** In the School
+  Courtyard at night with someone walking along, the label of Go to bed moves
+  far enough down to stand level with "Let them go"; at the Riverside on a
+  weekend afternoon the Mountain Path label sits half beside Wait. In the
+  Courtyard with someone walking along and nobody else standing there (at
+  noon, say), before you have held the hour, the label of Hold the hour moves
+  up and sits beside Practice, almost where Practice's own label sits. The
+  icon under the pointer is still the one lit. Say if it reads wrong.
+- **The Dormitory Garden at night with someone walking along.** Three people
+  stand there then, most exits move to the icon column, and the column gains a
+  second column of one icon, Hold the hour. Until you have held the hour that
+  day, the label of "Let them go" opens over that icon. No exit is hidden.
+  Say if it reads wrong.
+- **The Common Room on a weekday evening: the TV and the card table.** On a
+  weekday evening Nobara is on the sofa and the last person standing (Megumi)
+  is placed in front of the card table and the TV. So there is no TV look at
+  that hour, and cards start from the icon column instead of the table. It
+  was already so before your change (Panda stood there then; Megumi does
+  now). At the weekend it is better than before: Megumi is alone, and both
+  can be clicked in the picture. Should the last person stand somewhere else
+  on weekdays, so that both stay clickable in the picture?
+- **Panda's memory "The Boy in the Car"** is still set in the Common Room in
+  the evening: that is the picture on its tile and where its replay stands.
+  Leave it, or set it in the Library now?
+
+**Art still to make,** at your pace: twelve more poses (about $3.84) and blink
+and talk for ten more people (about $2.88). The steps are in
+`docs/ART_PHASE2.md`.

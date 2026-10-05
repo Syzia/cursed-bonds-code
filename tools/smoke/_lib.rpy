@@ -1,4 +1,5 @@
-## tools/smoke/_lib.rpy -- the smoke-test library (docs/PHASE1_DESIGN.md, 8.2).
+## tools/smoke/_lib.rpy -- the smoke-test library (docs/PHASE1_DESIGN.md, 8.2;
+## docs/PHASE2_DESIGN.md 2.2 R5 and R6, section 8).
 ##
 ## tools/smoke.sh installs this file as game/zz_smoke_lib.rpy and the harness
 ## as game/zz_smoke.rpy, in a scratch copy of the project. Never copy either
@@ -28,10 +29,52 @@
 ##   autoplay(on=True)             sets smoke_autoplay, auto-picks menu choices
 ##                                 after 0.05 s and fast-skips all text
 ##   fixture(**kw)                 sets store variables (a list given for a set
-##                                 variable becomes a set)
+##                                 variable becomes a set). It raises
+##                                 ZZFixtureError, which fails the run, for a
+##                                 name the store doesn't have (a typo), and for
+##                                 a shaped variable (ZZ_SHAPED: board_offers,
+##                                 inventory, npc_state ...): build those with
+##                                 their owner's functions (board_generate(),
+##                                 give_item(), promote() ...), so a harness
+##                                 never invents a record's shape (R5).
 ##   settle(**kw)                  fixture(**kw), then a post-prologue state:
 ##                                 flag settled_in, roll_gojo(), ensure_state()
 ##   smoke_env(name, default=None) reads an environment variable (SMOKE_SLOT...)
+##
+## Measuring helpers (phase 2). Each renders first when called from script (a
+## short hard pause), so it sees the screens as they are now. They work over a
+## modal screen too (their waits, and shot()'s, are not held by one):
+##   zz_render(seconds=0.15)       one real interaction, skipping suspended
+##   zz_rect(screen, wid)          (x, y, w, h) of the button with `id wid` on
+##                                 a shown screen, from the focus list of the
+##                                 last frame; None if it isn't there. Buttons
+##                                 only: a plain frame has no rectangle here.
+##   zz_buttons(screen)            how many focusable widgets the screen holds
+##                                 (the screens it `use`s included)
+##   zz_words(screen)              the tokens that contain a letter, from every
+##                                 Text in the screen's tree whose style is not
+##                                 icon_glyph (a stand-in icon's kanji). Text
+##                                 tags are stripped; "+2" and "◆ 1" are not
+##                                 words. It counts what is in the tree, drawn
+##                                 see-through or not.
+##   zz_texts(screen)              every Text's string in the screen's tree
+##   zz_calls(fn_name, seconds)    wraps the store function of that name, runs
+##                                 an interaction for that long by the wall
+##                                 clock, and returns how often it was called.
+##                                 It counts calls made through the store name;
+##                                 a transform that already holds the function
+##                                 itself is not seen.
+##   zz_layer_tags(layer)          the set of tags showing on a layer
+##   zz_worst(screen, *args, hover=None, name=None)
+##                                 the worst case for a full screen (R6): four
+##                                 toasts queued (over sb_place three show, the
+##                                 fourth waits), the objective banner up
+##                                 (the arrival caption aged out of its way),
+##                                 skipping on, `screen` shown with *args, and
+##                                 (hover=) the button with that id focused;
+##                                 saves worst_<screen>.png (or <name>.png).
+##                                 The screen stays up for measuring; the
+##                                 banner and the skipping are put back.
 ##
 ## An uncaught exception anywhere in the script is caught by
 ## config.exception_handler: it records the traceback, writes RESULT FAIL and
@@ -108,7 +151,9 @@ init 999 python:
             config.skipping = None
             zz_smoke_state.autoplay = False
             try:
-                renpy.pause(wait, hard=True)
+                ## modal=False: a modal screen must not hold the wait open
+                ## (config.modal_blocks_pause is True by default).
+                renpy.pause(wait, hard=True, modal=False)
             finally:
                 config.skipping, zz_smoke_state.autoplay = skipping, auto
         try:
@@ -199,17 +244,37 @@ init 999 python:
 
     config.start_interact_callbacks.append(zz_smoke_autoplay_cb)
 
+    ## Variables whose records have a shape their owner defines (R5). A
+    ## harness builds them with the owner's functions: board_generate(),
+    ## board_take(), give_item(), promote(), start_mission / the mission API,
+    ## the combat labels, night_set_cost(), market_buy(), cards_new(),
+    ## cards_sit_down(), fish_land(), pc_request(). To empty one, assign the empty value directly
+    ## (`store.inventory = {}`): an empty container has no shape to get wrong.
+    ZZ_SHAPED = ("board_offers", "board_log", "npc_state", "inventory", "mission_state", "cb",
+                 "cards_state", "cards_sit", "fish_state", "fish_log", "pc_requests")
+
+    class ZZFixtureError(Exception):
+        """fixture() was asked for a name the store doesn't have, or for a
+        shaped variable."""
+
     def fixture(**kw):
         """Set store variables, e.g. fixture(day=4, here="dojo", flags={"roll_call"}).
         A list or tuple given for a variable that holds a set becomes a set.
-        A name the store doesn't have yet is set anyway, with a NOTE (typo guard)."""
+        Raises ZZFixtureError, setting nothing, for a name the store doesn't
+        have (a typo) and for a shaped variable (ZZ_SHAPED, R5)."""
+        shaped = [k for k in sorted(kw) if k in ZZ_SHAPED]
+        if shaped:
+            raise ZZFixtureError("fixture(): %s %s shaped; build %s with the owner's functions "
+                                 "(see ZZ_SHAPED in tools/smoke/_lib.rpy)" % (
+                                     ", ".join(shaped), "is" if len(shaped) == 1 else "are",
+                                     "it" if len(shaped) == 1 else "them"))
+        unknown = [k for k in sorted(kw) if not hasattr(store, k)]
+        if unknown:
+            raise ZZFixtureError("fixture(): the store has no variable named %s" % ", ".join(unknown))
         for k, v in sorted(kw.items()):
-            if not hasattr(store, k):
-                note("fixture", "new store variable " + k)
-            else:
-                cur = getattr(store, k)
-                if isinstance(cur, (set, frozenset)) and isinstance(v, (list, tuple)):
-                    v = set(v)
+            cur = getattr(store, k)
+            if isinstance(cur, (set, frozenset)) and isinstance(v, (list, tuple)):
+                v = set(v)
             setattr(store, k, v)
 
     def settle(**kw):
@@ -223,6 +288,189 @@ init 999 python:
             note("settle", "ensure_state() is not defined yet; skipped")
         else:
             fn()
+
+    ## Measuring helpers (phase 2) -------------------------------------------------
+
+    import re as zz_re
+    import unicodedata as zz_unicodedata
+
+    ZZ_TEXT_TAG = zz_re.compile(r"\{[^{}]*\}")
+
+    def zz_render(seconds=0.15):
+        """One real interaction of `seconds`, with skipping and autoplay
+        suspended, so every shown screen is built and drawn. Inside an
+        interaction (a screen action, a callback) it does nothing."""
+        ctx = renpy.game.context()
+        if ctx.init_phase or ctx.interacting:
+            return
+        skipping, auto = config.skipping, zz_smoke_state.autoplay
+        config.skipping = None
+        zz_smoke_state.autoplay = False
+        try:
+            ## modal=False: over a modal screen (pc_screen, fish_screen, the
+            ## review panel) a timed pause would otherwise never end.
+            renpy.pause(seconds, hard=True, modal=False)
+        finally:
+            config.skipping, zz_smoke_state.autoplay = skipping, auto
+
+    def zz_rect(screen, wid):
+        """(x, y, w, h), as ints, of the button with `id wid` on a shown
+        screen, read from the focus list after a render. None when the screen
+        or the id isn't there, or the widget can't take focus (buttons only)."""
+        zz_render()
+        if renpy.get_screen(screen) is None:
+            return None
+        want = [renpy.get_displayable(screen, wid, base=True), renpy.get_displayable(screen, wid)]
+        want = [w for w in want if w is not None]
+        if not want:
+            return None
+        for f in renpy.display.focus.focus_list:
+            if f.x is not None and any(f.widget is w for w in want):
+                return (int(round(f.x)), int(round(f.y)), int(round(f.w)), int(round(f.h)))
+        return None
+
+    def zz_buttons(screen):
+        """How many focusable widgets a shown screen holds, the screens it
+        `use`s included, after a render."""
+        zz_render()
+        sc = renpy.get_screen(screen)
+        if sc is None:
+            return 0
+        seen = builtins.set()
+        for f in renpy.display.focus.focus_list:
+            if f.screen is sc and f.widget is not None and f.x is not None:
+                seen.add(id(f.widget))
+        return len(seen)
+
+    def zz_text_nodes(screen):
+        """Every Text displayable in a shown screen's tree."""
+        out = builtins.list()
+        sc = renpy.get_screen(screen)
+        if sc is None:
+            return out
+
+        def each(d):
+            if isinstance(d, renpy.text.text.Text):
+                out.append(d)
+
+        sc.visit_all(each)
+        return out
+
+    def zz_text_string(d):
+        try:
+            return d.get_all_text()
+        except Exception:
+            return " ".join(x for x in (d.text or []) if isinstance(x, str))
+
+    def zz_is_glyph(d):
+        """True for a Text drawn in the style icon_glyph (a stand-in icon's
+        kanji), or in a style that inherits from it."""
+        name = getattr(d.style, "parent", None)
+        for _i in range(8):
+            if not name:
+                return False
+            if name[-1] == "icon_glyph":
+                return True
+            try:
+                name = getattr(store.style, name[-1]).parent
+            except Exception:
+                return False
+        return False
+
+    def zz_is_word(tok):
+        for ch in tok:
+            if ch.isalpha() and zz_unicodedata.name(ch, "").startswith("LATIN"):
+                return True
+        return False
+
+    def zz_texts(screen):
+        """The string of every Text in a shown screen's tree (to assert that
+        a line is there, or gone)."""
+        zz_render()
+        return [zz_text_string(d) for d in zz_text_nodes(screen)]
+
+    def zz_words(screen):
+        """The tokens that contain a letter, from every Text in a shown
+        screen's tree whose style is not icon_glyph. len() of it is the
+        screen's word count for the clutter budget (4.0)."""
+        zz_render()
+        out = builtins.list()
+        for d in zz_text_nodes(screen):
+            if zz_is_glyph(d):
+                continue
+            plain = ZZ_TEXT_TAG.sub(" ", zz_text_string(d).replace("{{", " "))
+            out.extend(t for t in plain.split() if zz_is_word(t))
+        return out
+
+    def zz_calls(fn_name, seconds):
+        """How many times the store function `fn_name` is called while an
+        interaction runs for `seconds` by the wall clock. The function is
+        wrapped under its store name for that span and then put back."""
+        orig = getattr(store, fn_name)
+        count = builtins.list([0])
+
+        def zz_counting(*args, **kwargs):
+            count[0] += 1
+            return orig(*args, **kwargs)
+
+        setattr(store, fn_name, zz_counting)
+        try:
+            t_end = time.time() + seconds
+            zz_render(seconds)
+            ## A pause can end early; keep rendering until the span is over.
+            while time.time() < t_end - 0.01:
+                zz_render(builtins.max(0.02, t_end - time.time()))
+        finally:
+            setattr(store, fn_name, orig)
+        return count[0]
+
+    def zz_layer_tags(layer="master"):
+        """The set of tags showing on a layer."""
+        return builtins.set(renpy.get_showing_tags(layer))
+
+    def zz_worst(screen, *args, **kwargs):
+        """The worst case for a full screen (R6): four two-line toasts queued
+        (over sb_place three show and the fourth waits, toast_wraps), the
+        objective banner up, skipping on, `screen` shown with *args and, with
+        hover=<id>, that button focused. Saves worst_<screen>.png (name= for
+        another file name) and returns True if it was written. `screen` stays
+        shown, for measuring; the banner, the indicator and the skipping are
+        put back, and the toasts are cleared."""
+        hover = kwargs.pop("hover", None)
+        name = kwargs.pop("name", None) or ("worst_" + screen)
+        skipping, auto = config.skipping, zz_smoke_state.autoplay
+        toast_clear()
+        for i, (kind, who) in enumerate((("grade", None), ("bond", "yuji"), ("item", None), ("stat", None))):
+            toast("Worst case %d: a reward line long enough to wrap onto a second line" % (i + 1), kind, who)
+        ## The banner waits for the arrival caption of a new (day, period,
+        ## place) to fade, about 3 s (objective_delay): age the caption, so
+        ## the banner really is in the picture. The wp-era harnesses that run
+        ## on stubs have no caption to age.
+        _cap, _arr = getattr(store, "arrival_caption", None), getattr(store, "ARRIVAL", None)
+        if callable(_cap) and _arr is not None:
+            _cap()
+            _arr[1] -= 10
+        renpy.show_screen("objective_toast", "Worst case: an objective long enough to fill the banner from edge to edge")
+        renpy.show_screen(screen, *args, **kwargs)
+        ## Let the banner slide in and the toasts fade in before skipping starts.
+        zz_render(0.7)
+        if hover is not None:
+            renpy.set_focus(screen, hover)
+        zz_smoke_state.autoplay = False
+        config.skipping = "slow"
+        try:
+            ## A bare timed interaction: a pause statement would be dismissed
+            ## by the skipping before a frame with the indicator was drawn.
+            renpy.ui.pausebehavior(0.4, False, modal=False)
+            renpy.ui.interact(mouse="pause", type="pause", roll_forward=None)
+            ok = shot(name, wait=0)
+        finally:
+            config.skipping, zz_smoke_state.autoplay = skipping, auto
+            renpy.hide_screen("objective_toast")
+            if not config.skipping:
+                renpy.hide_screen("skip_indicator")
+            toast_clear()
+        return ok
 
     ## Boot straight into the harness.
     config.label_overrides["splashscreen"] = "zz_skip"

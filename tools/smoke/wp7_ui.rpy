@@ -9,6 +9,12 @@
 ## screens), the objective toast, the arrival caption and the tables'
 ## validator. Screenshots go to shots/wp7_ui/.
 ##
+## Phase 2 (P2, PHASE2_DESIGN.md 4.2, 4.4, 4.6): the HUD's three buttons are
+## icons, what I can do in a room is an icon column (rail_rows), and the person
+## view shows a grade chip and the choices only; the checks below read button
+## ids and hover labels where they used to read words. tools/smoke/p2_hud.rpy
+## holds P2's own acceptance.
+##
 ## Other packages' functions are the WP0 stubs here; where a check needs one to
 ## say yes (a mission, the board, Gojo's in-day), the harness swaps in a
 ## stand-in for that check only and puts the original back.
@@ -32,32 +38,18 @@ init 999 python:
 
     config.label_callbacks.append(zz_label_cb)
 
-    def zz_texts(screen_name):
-        """Every string drawn by a shown screen (after an interaction)."""
-        out = []
-        seen = set()
-
-        def walk(d, depth):
-            if d is None or depth > 80 or id(d) in seen:
-                return
-            seen.add(id(d))
-            if isinstance(d, renpy.text.text.Text):
-                try:
-                    out.append(d.get_all_text())
-                except Exception:
-                    out.append(" ".join(x for x in d.text if isinstance(x, str)))
-            try:
-                kids = d.visit() or []
-            except Exception:
-                kids = []
-            for k in kids:
-                walk(k, depth + 1)
-
-        walk(renpy.get_screen(screen_name), 0)
-        return out
+    ## zz_texts(screen) is the library's (tools/smoke/_lib.rpy).
 
     def zz_has_text(screen_name, s):
         return any(s in t for t in zz_texts(screen_name))
+
+    def zz_tip(screen_name, wid):
+        """The hover label (text, key) of the button with `id wid`, or None."""
+        d = renpy.get_displayable(screen_name, wid, base=True) or renpy.get_displayable(screen_name, wid)
+        try:
+            return d._get_tooltip() if d is not None else None
+        except Exception:
+            return None
 
     def zz_swap(name, fn):
         """Replace a store function; returns the original."""
@@ -371,8 +363,17 @@ label zz_smoke:
         period = "Evening"
         here = "dorm_common"
         stamina = 20
+        ## After checkpoint D the schedule puts only the first years here in
+        ## the Evening; Panda is in the library. The four-people view below
+        ## is a fixture: Panda is pinned in (as "Ask them along" can bring
+        ## him).
         _on, _extra = stage_people(here)
-        check(len(_on) == 4 and not _extra, "four people in the Dorm Common Room on a weekday evening", (_on, _extra))
+        check(sorted(_on) == ["megumi", "nobara", "yuji"] and not _extra and char_location("panda") == "library",
+              "by the schedule, the Dorm Common Room on a weekday evening holds the three first years; Panda is in the library",
+              (_on, _extra, char_location("panda")))
+        pin("panda", "dorm_common")
+        _on, _extra = stage_people(here)
+        check(len(_on) == 4 and not _extra, "four people in the Dorm Common Room (Panda pinned in: a fixture)", (_on, _extra))
         toast("Yuji  bond +4", "bond", "yuji", 4)
         toast("Merit +30 — The Sun Mall", "grade")
         toast("Paper Ward", "item")
@@ -385,33 +386,51 @@ label zz_smoke:
         _names = [CAST[w]["short"] for w in _on]
         check(all(any(n in s for s in _t) for n in _names), "sb_place renders four people with nameplates", _t)
         _caps = [ambient_of(w, here)[0] for w in _on]
-        check(any("on her phone" in s for s in _t), "nameplates carry what they're doing", _caps)
         check(any("Dorm Common Room" in s for s in _t), "the arrival caption names the place")
-        check(any("running on empty" in s for s in _t), "the running-on-empty line shows below 25 stamina")
-        check(any(s == "MAP" for s in _t) and any(s == "JOURNAL" for s in _t) and any(s == "MENU" for s in _t),
-              "the place view's HUD: MAP, JOURNAL, MENU")
+        check(zz_rect("sb_place", "hud_chip_stamina") is not None
+              and zz_tip("sb_place", "hud_chip_stamina") == ("Running on empty. Eat or sleep.", "hud_chip_stamina")
+              and not any("running on empty" in s for s in _t),
+              "below 25 stamina the running-on-empty chip sits by the date (phase 2: no longer a line)")
+        check(all(zz_rect("sb_place", w) is not None for w in ("hud_map", "hud_journal", "hud_menu"))
+              and not any(s in ("MAP", "JOURNAL", "MENU") for s in _t),
+              "the place view's HUD: Map, Journal, Menu, as icons (phase 2)")
         check(not any("STATUS" in s or "SAVE" == s or "CURSED ENERGY" in s for s in _t), "the old HUD readouts are gone")
         check(any("Day 1 · Monday" in s for s in _t), "the date chip reads Day 1 · Monday")
-        check(any("Wait" == s for s in _t), "Wait is on the action card")
+        check(zz_rect("sb_place", "rail_wait") is not None and (zz_tip("sb_place", "rail_wait") or ("",))[0].startswith("Wait\n"),
+              "Wait is in the icon column (phase 2), named by its hover label", zz_tip("sb_place", "rail_wait"))
         check(bool(renpy.get_screen(("sandbox", "menu"))) and not (quick_menu and not renpy.get_screen(("sandbox", "menu"))),
               "renpy.get_screen((sandbox, menu)) hides the quick menu over the place view")
         _t0 = arrival_caption()
         check(_t0 is not None and arrival_caption() == _t0, "the arrival caption shows once per (day, period, here)")
+        ## Phase 2 (P5, 4.5): the tag is the short name; what they're doing is
+        ## the hover label, over the person or the tag.
+        check(not any("on her phone" in s for s in _t) and "on her phone" in _caps
+              and all(zz_tip("sb_place", p + w) == (CAST[w]["short"] + "\n" + ambient_of(w, here)[0], p + w)
+                      for w in _on for p in ("stage_", "tag_")),
+              "what they're doing is the hover label of the person and of the name tag, no longer printed (phase 2)", _caps)
+        check(all((zz_rect("sb_place", "tag_" + w) or (0, 0, 0, 0))[1::2] == (1036, 36) for w in _on),
+              "the name tags are one 36-high line under the feet (phase 2)", [zz_rect("sb_place", "tag_" + w) for w in _on])
     $ renpy.pause(3.6, hard=True)
     python:
         check(arrival_caption() is None, "the arrival caption fades after about 3 s")
         check(len(toast_visible()) == 0, "toasts expire on their own", [t["text"] for t in TOASTQ.items])
         roster.append("toge")
+        check(char_location("toge") == "library", "by the schedule Toge spends the evening in the library too", char_location("toge"))
+        pin("toge", "dorm_common")
         stamina = stamina_max
     hide screen sb_place
     show screen sb_place
     $ shot("place_overflow", wait=0.4)
     python:
         _on, _extra = stage_people(here)
-        check(len(_on) == 4 and _extra == ["toge"], "a fifth person goes to the +N chip", (_on, _extra))
+        check(len(_on) == 4 and _extra == ["toge"], "a fifth person goes to the +N chip (Toge pinned in: a fixture)", (_on, _extra))
         check(any(s == "+1" for s in zz_texts("sb_place")), "the +1 chip shows")
-        check(not any("running on empty" in s for s in zz_texts("sb_place")), "no running-on-empty line at full stamina")
+        check(zz_rect("sb_place", "hud_chip_stamina") is None, "no running-on-empty chip at full stamina")
         roster.remove("toge")
+        schedule_overrides.pop(("toge", day, period), None)
+        schedule_overrides.pop(("panda", day, period), None)
+        check(sorted(who_is_here(here)) == ["megumi", "nobara", "yuji"], "with the pins gone the room is the first years' again", who_is_here(here))
+        pin("panda", "dorm_common")
         companion = "nobara"
         _on, _extra = stage_people(here)
         check(_on[0] == "nobara", "the companion stands first", _on)
@@ -419,7 +438,9 @@ label zz_smoke:
     show screen sb_place
     $ shot("place_companion", wait=0.3)
     python:
-        check(any("Nobara is with me" in s for s in zz_texts("sb_place")), "the let-them-go line shows with a companion")
+        check(zz_rect("sb_place", "rail_release") is not None and rail_rows(here)[-1][0] == ("act", "release")
+              and zz_tip("sb_place", "rail_release") == ("Let them go\nThey go back to their own day.", "rail_release"),
+              "with a companion, 'Let them go' is the column's last tile (phase 2)", zz_tip("sb_place", "rail_release"))
         companion = None
         here = "office"
         period = "Morning"
@@ -431,7 +452,9 @@ label zz_smoke:
     $ shot("place_mission", wait=0.4)
     python:
         _t = zz_texts("sb_place")
-        check(any("The Sun Mall" in s for s in _t), "a mission shows as a gold button on the action card")
+        check(zz_rect("sb_place", "rail_m_m_sunmall") is not None and rail_rows(here)[0][:3] == (("mission", "m_sunmall"), "mission", True)
+              and (zz_tip("sb_place", "rail_m_m_sunmall") or ("",))[0].startswith("The Sun Mall\n"),
+              "a mission is the column's first tile, gold (phase 2)", (rail_rows(here)[0], zz_tip("sb_place", "rail_m_m_sunmall")))
         check(any(u"「!」" in s for s in _t), "the giver's nameplate shows the 「!」 badge")
         zz_swap("missions_here", _old_mh)
         zz_swap("missions_with", _old_mw)
@@ -442,8 +465,15 @@ label zz_smoke:
     show screen sb_place
     $ shot("place_empty", wait=0.4)
     python:
-        check(not stage_people(here)[0] and any("Nobody here right now" in s for s in zz_texts("sb_place")),
-              "an empty place says nobody is here")
+        check(not stage_people(here)[0] and "Nobody here right now." in zz_texts("sb_place"),
+              "an empty place says nobody is here, and no more than that (phase 2)", zz_texts("sb_place"))
+    hide screen sb_place
+    $ here = "dorm"
+    show screen sb_place
+    python:
+        zz_render(0.2)
+        check(not stage_people(here)[0] and "Nobody here right now." not in zz_texts("sb_place"),
+              "but not in my own room", zz_texts("sb_place"))
     hide screen sb_place
 
     ## --- the person view ---------------------------------------------------------------------
@@ -457,12 +487,19 @@ label zz_smoke:
     $ shot("person_yuji", wait=0.6)
     python:
         _t = zz_texts("sb_char")
-        check(any("Yuji Itadori" in s for s in _t), "sb_char shows the name")
-        check(any("First-year · Grade 4" in s for s in _t), "sb_char shows the role line", [s for s in _t if "year" in s])
-        check(any("Ask them along" in s for s in _t), "the invite link is in the footer")
-        check(any(s.startswith("Closer:") for s in _t), "one gold Closer hint", [s for s in _t if "Closer" in s])
-        check(any(s == "MENU" for s in _t) and not any(s in ("MAP", "JOURNAL") for s in _t), "the person view's HUD: date and MENU")
+        check(not any("Yuji" in s for s in _t), "sb_char no longer shows the name (phase 2, D19)", _t)
+        check("GRADE 4" in _t and not any("First-year" in s for s in _t),
+              "sb_char shows the grade as a chip, not the role line", _t)
+        check(zz_rect("sb_char", "sb_char_invite") is not None
+              and (zz_tip("sb_char", "sb_char_invite") or ("",))[0].startswith("Ask them along\n"),
+              "the invite button is in the footer", zz_tip("sb_char", "sb_char_invite"))
+        check(not any(s.startswith("Closer:") for s in _t) and not any(s in ("BOND", "AFFECTION") for s in _t),
+              "no Closer hint and no bond bar on the card (they are on the journal page)", _t)
+        check(zz_rect("sb_char", "hud_menu") is not None and zz_rect("sb_char", "hud_map") is None
+              and zz_rect("sb_char", "hud_journal") is None, "the person view's HUD: date and Menu")
         check(any("Eat together" in s for s in _t) and any(s == "Talk" for s in _t), "the choices are drawn")
+        check(zz_tip("sb_char", "sb_char_%d" % (len(person_choices("yuji", here)) - 1)) == ("Talk\nA few minutes. Costs nothing.", "sb_char_%d" % (len(person_choices("yuji", here)) - 1)),
+              "a choice's hint is its hover label")
         bonds["nobara"] = 70
         affection["nobara"] = 55
     hide screen sb_char
@@ -470,7 +507,7 @@ label zz_smoke:
     show screen sb_char("nobara")
     $ shot("person_nobara", wait=0.6)
     python:
-        check(any("AFFECTION" in s for s in zz_texts("sb_char")), "romanceable with affection shows the heart meter")
+        check(not any("AFFECTION" in s for s in zz_texts("sb_char")), "no affection meter on the card either (phase 2)")
     hide screen sb_char
     python:
         here = "infirmary"
@@ -479,7 +516,7 @@ label zz_smoke:
     show screen sb_char("shoko")
     $ shot("person_shoko", wait=0.5)
     python:
-        check(any(s == "Doctor" for s in zz_texts("sb_char")), "the ungraded show their role (Doctor)")
+        check("DOCTOR" in zz_texts("sb_char"), "the ungraded show their role in a plain chip (DOCTOR)", zz_texts("sb_char"))
     hide screen sb_char
 
     ## --- the person view's worst case: it must fit on screen, Back included ----------------
@@ -502,15 +539,13 @@ label zz_smoke:
     show screen sb_char("nobara")
     $ shot("person_tall_nobara", wait=0.8)
     python:
-        _back = renpy.get_widget("sb_char", "sb_char_back")
+        _back = zz_rect("sb_char", "sb_char_back")
         _fs = [f for f in renpy.display.focus.focus_list if f.widget is not None and f.x is not None]
-        ## get_widget gives the textbutton's text; the focus is its button.
-        _bf = [f for f in _fs if f.widget is _back or getattr(f.widget, "child", None) is _back]
-        check(_bf and _bf[0].y + _bf[0].h <= 1060, "the tallest person card keeps Back on screen (ends above y 1060)",
-              [(f.x, f.y, f.w, f.h) for f in _bf])
+        check(_back and _back[1] + _back[3] <= 1060, "the tallest person card keeps Back on screen (ends above y 1060)", _back)
         _low = max([f.y + f.h for f in _fs if f.screen is not None and f.screen.screen_name[0] == "sb_char"] or [0])
         check(_low <= 1060, "every button on the tallest card is on screen", _low)
-        check(any("know them better" in s for s in zz_texts("sb_char")), "the cap note sits on the affection row")
+        check(not any("know them better" in s for s in zz_texts("sb_char")),
+              "the affection row and its cap note are off the card (phase 2: the journal page has them)")
     hide screen sb_char
     ## Toasts over the person view: two at a time, beside MENU, above the card.
     ## Four already showing on campus: the two it hides wait, and none is lost.
@@ -562,17 +597,8 @@ label zz_smoke:
     $ shot("person_confession_ready", wait=0.5)
     python:
         _t = zz_texts("sb_char")
-        check(not any("know them better" in s for s in _t) and any(u"Say it" in s for s in _t),
-              "at the ceiling the card offers Say it without 'know them better'", [s for s in _t if "/" in s or "Say" in s])
-        check(any("the rest is up to me" in s for s in _t), "and says the rest is up to me")
-        bonds["nobara"] = 30
-        affection["nobara"] = aff_cap("nobara")
-        check(0 < aff_cap("nobara") < AFF_BASE_MAX, "fixture: Nobara's affection is held back by the bond", aff_cap("nobara"))
-    hide screen sb_char
-    show screen sb_char("nobara")
-    $ renpy.pause(0.1, hard=True)
-    python:
-        check(any("know them better" in s for s in zz_texts("sb_char")), "while the bond holds affection back, the note shows")
+        check(any(u"Say it" in s for s in _t) and not any("know them better" in s or "the rest is up to me" in s for s in _t),
+              "at the ceiling the card offers Say it, with no affection notes (phase 2)", [s for s in _t if "Say" in s])
     hide screen sb_char
     python:
         bonds["nobara"] = 0
@@ -596,8 +622,8 @@ label zz_smoke:
     show screen sb_map
     $ shot("map_hud", wait=0.3)
     python:
-        _t = zz_texts("sb_map")
-        check(any(s == "MENU" for s in _t) and not any(s in ("MAP", "JOURNAL") for s in _t), "the map's HUD: date and MENU (D33)")
+        check(zz_rect("sb_map", "hud_menu") is not None and zz_rect("sb_map", "hud_map") is None
+              and zz_rect("sb_map", "hud_journal") is None, "the map's HUD: date and Menu (D33)")
     hide screen sb_map
 
     ## --- the objective toast, and the arrival caption it waits for ---------------------------
@@ -619,11 +645,21 @@ label zz_smoke:
         _left = ARRIVAL[1] + ARRIVAL_IN + ARRIVAL_HOLD + ARRIVAL_OUT - OBJ_SHOWN[0]
         check(_t0 is not None and OBJ_SHOWN[1] >= _left - 0.01,
               "the objective toast waits until the arrival caption has faded", (OBJ_SHOWN[1], _left))
+        ## ... and by what is drawn, not only by the number: the banner's
+        ## slide is still at alpha 0 while the caption is up.
+        _ob = []
+        renpy.get_screen("objective_toast").visit_all(
+            lambda d: _ob.append(d.state.alpha) if isinstance(d, renpy.display.transform.ATLTransform) else None)
+        check(_ob and _ob[0] == 0.0, "while the arrival caption is up the objective banner is not drawn", _ob)
     $ renpy.pause(3.4, hard=True)
     $ shot("objective_toast", wait=0.4)
     python:
         check(arrival_caption() is None and renpy.get_screen("objective_toast") is not None,
               "then the objective toast slides in on its own")
+        _ob = []
+        renpy.get_screen("objective_toast").visit_all(
+            lambda d: _ob.append(d.state.alpha) if isinstance(d, renpy.display.transform.ATLTransform) else None)
+        check(_ob and _ob[0] == 1.0, "and is fully drawn once the caption has faded", _ob)
         ## Leaving the place view takes it down; read by now, so it stays gone.
         OBJ_SHOWN[0] -= 10
         objective_leave()

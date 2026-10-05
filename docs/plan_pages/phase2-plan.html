@@ -1,0 +1,660 @@
+<title>Cursed Bonds Phase Two</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the Arc One storyboard's system. A sticky contents rail, one reading column, and dark 16:9 "game screens" that scale with the column. */
+:root{
+  --paper:#F3F3F6; --surface:#FFFFFF; --sunk:#E9E9EF;
+  --ink:#15162A; --ink2:#3F4360; --muted:#6A6E86; --rule:#D9DAE3;
+  --accent:#5A46D2; --accent-soft:#ECE8FB;
+  --seal:#B3312A; --seal-soft:#F7E5E3;
+  --gold:#9A700F; --gold-soft:#F5ECD5;
+  --ok:#23857A;
+  --gr4:#5FBF7F; --gr3:#5B9BF0; --gr2:#A27BF2; --gr1:#E8605A; --gr-ink:#10101A;
+  --screen:#0C0B13; --screen2:#171624; --screen-ink:#ECEAF6; --screen-muted:#9894AE; --screen-rule:#2B2940;
+  --s-gold:#E1B754; --s-seal:#E2444E; --s-violet:#A193FF; --s-panel:rgba(12,11,19,.84);
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0D0C14; --surface:#161522; --sunk:#1D1C2B;
+    --ink:#ECEAF6; --ink2:#C7C4DA; --muted:#928EAA; --rule:#2B2A3C;
+    --accent:#A193FF; --accent-soft:#231F40;
+    --seal:#E2665C; --seal-soft:#341A1B;
+    --gold:#E1B754; --gold-soft:#2E2512;
+    --ok:#4CC0B2;
+    --screen:#08070E; --screen2:#12111C;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0D0C14; --surface:#161522; --sunk:#1D1C2B;
+  --ink:#ECEAF6; --ink2:#C7C4DA; --muted:#928EAA; --rule:#2B2A3C;
+  --accent:#A193FF; --accent-soft:#231F40;
+  --seal:#E2665C; --seal-soft:#341A1B;
+  --gold:#E1B754; --gold-soft:#2E2512;
+  --ok:#4CC0B2;
+  --screen:#08070E; --screen2:#12111C;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;padding-inline:20px;padding-block:0 80px}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:210px minmax(0,1fr);gap:56px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-top:48px;max-height:100vh;overflow:auto}
+nav.toc p{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+nav.toc a{display:block;color:var(--ink2);text-decoration:none;font-size:14px;padding:5px 0 5px 12px;border-left:2px solid var(--rule)}
+nav.toc a:hover{color:var(--accent);border-left-color:var(--accent)}
+main{min-width:0;max-width:980px}
+header.top{padding:56px 0 28px;border-bottom:1px solid var(--rule);margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,50px);line-height:1.12;margin:10px 0 14px;text-wrap:balance}
+h1 .jp{font-size:.5em;color:var(--seal);font-weight:600;margin-left:.3em;letter-spacing:.1em;vertical-align:.25em}
+.lede{font-size:18px;color:var(--ink2);max-width:62ch;margin:0}
+section{padding:44px 0 8px;border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:0}
+h2{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.25;margin:0 0 6px;display:flex;align-items:center;gap:12px;text-wrap:balance}
+h2 .sealmark{flex:none;width:30px;height:30px;border-radius:4px;background:var(--seal);color:#fff;font-family:var(--display);font-weight:800;font-size:17px;display:grid;place-items:center;line-height:1}
+.sub{color:var(--muted);margin:0 0 22px;max-width:65ch}
+h3{font-family:var(--display);font-weight:800;font-size:20px;margin:30px 0 8px;text-wrap:balance}
+p{margin:0 0 14px;max-width:68ch}
+ul,ol{margin:0 0 16px;padding-left:22px;max-width:66ch}
+li{margin:4px 0}
+.muted{color:var(--muted)}
+strong{font-weight:700}
+.note{font-size:14px;color:var(--muted);margin:-8px 0 20px;max-width:70ch}
+.callout{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:18px 20px;margin:18px 0}
+.callout .tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--seal);margin-bottom:6px;display:block}
+.callout p:last-child,.callout ul:last-child{margin-bottom:0}
+.take{display:grid;gap:0;margin:6px 0 10px}
+.take .row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:12px 0;border-top:1px solid var(--rule)}
+.take .row:first-child{border-top:0}
+.take .k{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.take .row p{margin:0}
+.tablewrap{overflow-x:auto;margin:10px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.two>div{min-width:0}
+.cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* grade chips */
+.gc{display:inline-block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:3px;color:var(--gr-ink);white-space:nowrap;line-height:1.5;vertical-align:middle}
+.gc.g4{background:var(--gr4)} .gc.g3{background:var(--gr3)} .gc.g2{background:var(--gr2)} .gc.g1{background:var(--gr1)}
+.gc.sp{color:#fff;background:linear-gradient(110deg,#1b1147,#2a5fd0,#22b6a0,#d8d24a,#e0528f,#6b3fd6,#1b1147);background-size:300% 100%;animation:sheen 14s linear infinite;text-shadow:0 1px 2px rgba(0,0,0,.55)}
+.gc.role{background:transparent;border:1px solid var(--screen-muted);color:var(--screen-muted)}
+.gc.dim{opacity:.45}
+@keyframes sheen{to{background-position:300% 0}}
+.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0 18px}
+.sw{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;font-size:14px}
+.sw i{display:block;height:34px;border-radius:5px;margin-bottom:8px}
+.sw b{display:block;font-family:var(--display);font-size:16px}
+
+/* dark panels that are not 16:9 */
+.screen{background:var(--screen);color:var(--screen-ink);border-radius:10px;padding:16px;margin:8px 0 22px;border:1px solid var(--screen-rule);font-size:14px;line-height:1.5}
+.screen .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--screen-muted)}
+.sealbox{display:inline-grid;place-items:center;width:1.9em;height:1.9em;border:1.5px solid var(--s-seal);color:var(--s-seal);font-family:var(--display);font-weight:800;line-height:1;border-radius:2px;flex:none;font-style:normal}
+.sealbox.gold{border-color:var(--s-gold);color:var(--s-gold)}
+.face{display:inline-block;width:2.2em;height:2.2em;border-radius:4px;background:#1d1b2c var(--f) 50% 6%/265% auto no-repeat;border:1px solid var(--screen-rule);flex:none;vertical-align:middle}
+
+/* the 16:9 game screen */
+.stage{position:relative;aspect-ratio:16/9;container-type:inline-size;border-radius:8px;overflow:hidden;background:#0c0b13 center/cover no-repeat;border:1px solid var(--screen-rule);color:var(--screen-ink);margin:0 0 22px;max-width:100%}
+.stage>*{position:absolute}
+.stage .date{left:2.1%;top:2.4%;background:var(--s-panel);font-family:var(--display);font-weight:600;font-size:1.75cqw;padding:.55cqw 1.15cqw;white-space:nowrap}
+.stage .ttl{left:50%;top:2.6%;transform:translateX(-50%);font-family:var(--display);font-weight:800;font-size:1.9cqw;letter-spacing:.06em;white-space:nowrap;text-shadow:0 2px 8px #000}
+.stage .navr{right:2.1%;top:2.4%;display:flex;gap:.5cqw}
+.ib{display:grid;place-items:center;width:3.4cqw;height:2.8cqw;background:var(--s-panel);border:1px solid #37344f;font-family:var(--display);font-weight:800;font-size:1.5cqw;color:var(--s-seal);font-style:normal;position:relative}
+.stage>.ib{position:absolute}
+.ib.gold{color:var(--s-gold);border-color:#6b5a1c}
+.ib.sq{width:3.75cqw;height:3.75cqw;font-size:1.8cqw}
+.ib small{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-family:var(--body);font-weight:500;font-size:.72cqw;color:var(--screen-ink);white-space:nowrap;padding-top:.15cqw;text-shadow:0 1px 3px #000}
+.tip{background:rgba(8,7,14,.94);border:1px solid #403c5c;padding:.6cqw .9cqw;font-size:1.1cqw;line-height:1.35;white-space:nowrap;box-shadow:0 .3cqw 1cqw rgba(0,0,0,.5);z-index:5}
+.tip b{display:block;font-family:var(--display);font-size:1.35cqw}
+.tip span{color:var(--screen-muted)}
+.stage .words{background:var(--s-panel);font-family:var(--mono);letter-spacing:.14em;font-size:.9cqw;padding:.75cqw 1.3cqw;color:#c9c6dc}
+
+/* map */
+.mk{transform:translate(-50%,-50%);width:17%;min-height:12.2%;background:var(--s-panel);border:1px solid #37344f;padding:.6cqw .7cqw;display:flex;flex-direction:column;gap:.35cqw}
+.mk.here{border-color:var(--s-violet);background:rgba(40,30,84,.9)}
+.mk b{display:flex;align-items:center;gap:.5cqw;font-family:var(--display);font-size:1.4cqw;font-weight:600;line-height:1.1}
+.mk .sealbox{font-size:1.15cqw}
+.mk .row{display:flex;align-items:center;gap:.3cqw;font-size:.85cqw;color:var(--screen-muted)}
+.mk .face{width:2.5cqw;height:2.5cqw;border-radius:.2cqw}
+.mk .gold{color:var(--s-gold);font-size:1.15cqw}
+.mk .you{color:var(--s-violet);font-family:var(--mono);font-size:.78cqw;letter-spacing:.14em}
+.pin{transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.35cqw}
+.pin .disc{width:3.75cqw;height:3.75cqw;border-radius:50%;background:var(--s-panel);border:1.5px solid #4b4768;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.7cqw;color:var(--s-seal)}
+.pin.here .disc{border-color:var(--s-violet);box-shadow:0 0 0 .25cqw rgba(161,147,255,.35)}
+.pin.lock .disc{color:#6d6988;border-style:dashed}
+.pin .plate{background:var(--s-panel);font-family:var(--display);font-size:1.3cqw;padding:.2cqw .7cqw;white-space:nowrap}
+.pin .who{display:flex;gap:.25cqw;position:absolute;left:calc(50% + 2.3cqw);top:.6cqw}
+.pin .who .face{width:2.5cqw;height:2.5cqw;border-radius:.2cqw}
+.pin .news{position:absolute;left:calc(50% + 1.1cqw);top:-.5cqw;background:var(--s-gold);color:#1a1404;font-weight:700;font-size:.8cqw;width:1.3cqw;height:1.3cqw;border-radius:50%;display:grid;place-items:center}
+.backb{left:2.1%;top:9.5%;background:var(--s-panel);border:1px solid #37344f;font-size:1.2cqw;padding:.45cqw .9cqw;display:flex;align-items:center;gap:.5cqw;white-space:nowrap}
+.backb .sealbox{font-size:.95cqw}
+
+/* place and person views */
+.spr{bottom:0;transform:translateX(-50%);width:auto;max-width:none}
+.shadow{height:3.2%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(20,8,4,.62) 0,rgba(20,8,4,.28) 45%,transparent 70%)}
+.fgcut{inset:0;background:inherit;background-position:center;background-size:cover}
+.ntag{transform:translateX(-50%);background:var(--s-panel);font-family:var(--display);font-size:1.25cqw;padding:.2cqw .75cqw;white-space:nowrap;display:flex;gap:.45cqw;align-items:center}
+.ntag em{font-style:normal;font-family:var(--mono);font-size:.72cqw;background:var(--s-gold);color:#1a1404;padding:0 .35cqw;letter-spacing:.08em}
+.plate2{transform:translateX(-50%);background:var(--s-panel);border:1px solid #6b5a1c;padding:.4cqw .9cqw;text-align:center;font-size:.95cqw;color:var(--screen-muted);font-style:italic;white-space:nowrap}
+.plate2 b{display:block;font-family:var(--display);font-style:normal;font-size:1.25cqw}
+.oldcard{right:2.1%;bottom:3.5%;width:22.5%;background:var(--s-panel);padding:1cqw;display:grid;gap:.6cqw}
+.oldcard div{border:1px solid #2f2c45;padding:.6cqw .8cqw;font-size:.92cqw;color:var(--screen-muted)}
+.oldcard b{display:block;font-family:var(--display);font-size:1.2cqw;color:var(--screen-ink)}
+.col{right:2.1%;bottom:3.7%;display:flex;flex-direction:column;gap:.5cqw}
+.hot{transform:translate(-50%,-50%);width:3.75cqw;height:3.75cqw;border-radius:50%;display:grid;place-items:center;background:rgba(12,11,19,.72);border:1.5px solid var(--s-gold);color:var(--s-gold);font-family:var(--display);font-weight:800;font-size:1.6cqw;box-shadow:0 0 0 .5cqw rgba(225,183,84,.22);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 .9cqw rgba(225,183,84,.08)}}
+.pcard{left:61.5%;top:17.6%;width:33.3%;background:var(--s-panel);border:1px solid #37344f;padding:1.05cqw;display:grid;gap:.7cqw}
+.pcard .ch{display:flex;align-items:center;gap:.8cqw;border:1px solid #2f2c45;padding:.7cqw .9cqw;font-family:var(--display);font-size:1.45cqw}
+.pcard .ch .sealbox{font-size:1.05cqw}
+.pcard .ch i.pips{margin-left:auto;color:var(--s-violet);font-style:normal;font-size:.95cqw}
+.pcard .ch.gold{color:var(--s-gold);border-color:#6b5a1c}
+.pcard .foot{display:flex;justify-content:space-between;align-items:center;font-size:1.1cqw;color:var(--screen-muted)}
+.stage .gc{font-size:.95cqw;padding:.15cqw .6cqw;border-radius:.15cqw}
+
+/* journal */
+.jr{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px}
+.rail{display:grid;gap:6px;align-content:start}
+.rail span{display:flex;align-items:center;gap:8px;border:1px solid var(--screen-rule);padding:7px 9px;font-family:var(--display);font-size:15px;color:var(--screen-muted)}
+.rail span.on{color:var(--screen-ink);border-color:var(--s-violet);background:#231d4a}
+.rail .sealbox{font-size:12px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.pc{border:1px solid var(--screen-rule);background:var(--screen2);padding:9px;display:grid;gap:5px;align-content:start;font-size:12px}
+.pc .face{width:42px;height:42px}
+.pc b{font-family:var(--display);font-size:15px;line-height:1.15}
+.pc .bar{height:4px;background:#262438;border-radius:2px;overflow:hidden}
+.pc .bar i{display:block;height:100%}
+.pc .where{color:var(--screen-muted);font-size:11.5px}
+.pc.sil{opacity:.55}
+.pp{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;align-items:start}
+.pp img{width:100%;height:auto;display:block}
+.pp h4{font-family:var(--display);font-size:24px;margin:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.now{border:1px solid var(--screen-rule);background:var(--screen2);padding:10px 12px;margin:10px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
+.now b{font-weight:500;font-size:15px}
+.now span{color:var(--screen-muted);font-size:12.5px;grid-column:1}
+.now .gold{color:var(--s-gold)}
+.now .go{grid-row:1/4;grid-column:2;border:1px solid #6b5a1c;color:var(--s-gold);padding:6px 10px;font-size:12.5px;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 8px}
+.chips span{border:1px solid var(--screen-rule);padding:3px 10px;font-size:12.5px;color:var(--screen-muted)}
+.chips span.on{border-color:var(--s-violet);color:var(--screen-ink)}
+.story{display:grid;gap:6px}
+.story div{border-left:3px solid #3a3752;background:var(--screen2);padding:7px 10px;font-size:13px}
+.story .head{border:0;background:none;padding:0;font-family:var(--display);font-size:16px}
+.story .next{border-left-color:var(--s-gold)}
+.story .next b{color:var(--s-gold);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;margin-right:6px}
+.story .later{color:var(--screen-muted);border-left-style:dashed}
+
+/* armory, market, misc panels */
+.arow{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:6px 14px;align-items:start;border:1px solid var(--screen-rule);background:var(--screen2);padding:10px 12px;margin-top:8px}
+.arow b{font-family:var(--display);font-size:16px}
+.arow p{margin:2px 0 6px;color:var(--screen-muted);font-size:12.5px;max-width:none}
+.arow .state{font-size:12px;color:var(--screen-muted);white-space:nowrap}
+.req{display:flex;gap:6px;flex-wrap:wrap}
+.req span{font-size:12px;border:1px solid #3a3752;padding:1px 8px;white-space:nowrap}
+.req .y{color:var(--screen-ink)} .req .n{color:#ef7a72;border-color:#6a2a2a}
+.daystrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:12px 0 6px;min-width:520px}
+.daystrip div{border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:9px 10px;font-size:13px;line-height:1.45}
+.daystrip b{display:block;font-family:var(--display);font-size:15px}
+.daystrip .night{background:var(--screen);color:var(--screen-ink);border-color:var(--screen-rule)}
+.scroll{overflow-x:auto}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0 18px}
+.cardp{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px 16px;font-size:14.5px}
+.cardp h4{font-family:var(--display);font-size:17px;margin:0 0 6px}
+.cardp p{margin:0 0 8px}
+.cardp .price{font-family:var(--mono);font-size:12px;color:var(--seal)}
+.browser{border:1px solid var(--screen-rule);background:var(--screen2)}
+.browser .bar{display:flex;gap:8px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--screen-rule);font-family:var(--mono);font-size:11.5px;color:var(--screen-muted)}
+.browser .bar i{flex:1;background:var(--screen);padding:3px 10px;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.browser .body{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0}
+.browser .side{border-right:1px solid var(--screen-rule);padding:10px;font-size:12.5px;display:grid;gap:3px;align-content:start}
+.browser .side b{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--screen-muted);margin-top:6px;font-weight:500}
+.browser .side span{color:#d6d3e8}
+.browser .side span.u::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--s-gold);margin-right:6px}
+.browser .page{padding:14px 16px}
+.browser .page small{color:#7fb2ff;font-family:var(--mono);font-size:11px}
+.browser .page h5{font-family:var(--display);font-size:20px;margin:2px 0 6px}
+.browser .page p{font-size:13px;color:#d6d3e8;margin:0 0 8px;max-width:none}
+.browser .page .noted{color:var(--s-gold);font-size:12.5px}
+.table{display:grid;gap:10px}
+.hand{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pcd{width:44px;height:62px;border-radius:4px;background:#f1eef8;color:#16152a;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:17px;line-height:1}
+.pcd.r{color:#c2313a}
+.pcd.back{background:repeating-linear-gradient(45deg,#3b2f7a 0 5px,#2b2260 5px 10px)}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btns span{border:1px solid var(--screen-rule);padding:4px 12px;font-size:13px}
+.fishbar{left:34.4%;top:79.6%;width:31.25%;height:2.6%;background:rgba(12,11,19,.85);border:1px solid #37344f}
+.fishbar i{position:absolute;top:0;bottom:0;left:56%;width:14%;background:#3fae6a}
+.fishbar u{position:absolute;top:-35%;bottom:-35%;left:61%;width:.5cqw;background:#fff}
+.steps{list-style:none;padding:0;margin:12px 0 18px;display:grid;gap:10px;max-width:none}
+.steps li{margin:0;border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:13px 16px;display:grid;grid-template-columns:118px minmax(0,1fr);gap:4px 16px}
+.steps li.play{border-color:var(--gold);background:var(--gold-soft)}
+.steps .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.steps li.play .k{color:var(--gold)}
+.steps b{font-family:var(--display);font-size:17px;display:block}
+.steps p{margin:0;font-size:14.5px}
+.qs{counter-reset:q;list-style:none;padding:0;margin:10px 0;display:grid;gap:10px;max-width:none}
+.qs li{counter-increment:q;margin:0;border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 16px 12px 52px;position:relative}
+.qs li::before{content:counter(q);position:absolute;left:14px;top:12px;width:26px;height:26px;border-radius:4px;background:var(--seal);color:#fff;font-family:var(--display);font-weight:800;display:grid;place-items:center;font-size:14px}
+.qs b{font-family:var(--display);font-size:17px}
+.qs .opt{display:block;font-size:14.5px;color:var(--ink2);margin-top:4px}
+.qs .opt i{font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ok);margin-right:6px}
+.qs .opt.alt i{color:var(--muted)}
+footer{padding:28px 0 0;color:var(--muted);font-size:13px}
+@media (max-width:980px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  nav.toc{position:static;padding-top:20px;max-height:none;display:flex;gap:4px 14px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:14px}
+  nav.toc p{width:100%}
+  nav.toc a{border-left:0;padding:2px 0}
+  header.top{padding-top:28px}
+}
+@media (max-width:720px){
+  .two,.jr,.pp,.browser .body{grid-template-columns:minmax(0,1fr)}
+  .rail{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+  .pp img{max-width:110px}
+  .browser .side{border-right:0;border-bottom:1px solid var(--screen-rule)}
+  .take .row,.steps li{grid-template-columns:minmax(0,1fr);gap:4px}
+  .arow{grid-template-columns:minmax(0,1fr)}
+  body{font-size:15.5px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <p>Phase Two</p>
+  <a href="#glance">At a glance</a>
+  <a href="#map">The map</a>
+  <a href="#icons">Icons and labels</a>
+  <a href="#place">Rooms with people in them</a>
+  <a href="#person">Clicking a person</a>
+  <a href="#journal">The journal</a>
+  <a href="#grades">Grade colours</a>
+  <a href="#gear">Tools and talismans</a>
+  <a href="#night">The night</a>
+  <a href="#rooms">Things to do in rooms</a>
+  <a href="#order">Build order</a>
+  <a href="#art">Art you'll make</a>
+  <a href="#calls">Your calls</a>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">Jujutsu Kaisen: Cursed Bonds · plan for review · 1 Oct 2026</div>
+  <h1>Phase Two <span class="jp">画面</span></h1>
+  <p class="lede">The UI overhaul, drawn from your playtest notes and your answers. Nothing here is built yet. The pictures below are sketches made with your real backgrounds and sprites, so you can judge the layout before any credits are spent on building it.</p>
+</header>
+
+<section id="glance">
+  <h2><span class="sealmark">見</span>At a glance</h2>
+  <div class="take">
+    <div class="row"><div class="k">What changes</div><p>A calmer map in two levels. Icons in place of words. A journal built around each person. Grade colours everywhere. A night rule with two exceptions. Rooms you can poke at: a computer, a card table, fishing, a Library. People who look like they belong in the room.</p></div>
+    <div class="row"><div class="k">What doesn't</div><p>Your saves. Every screen keeps its name and what it hands back to the game, so no save needs converting.</p></div>
+    <div class="row"><div class="k">How it's built</div><p>Wiring first, then five pieces at once, then three, then a final pass. You play four checkpoints along the way.</p></div>
+    <div class="row"><div class="k">Art</div><p>About 47 pictures, about $12.50 in all, in five small batches. Everything has a stand-in, so the build never waits for a picture.</p></div>
+    <div class="row"><div class="k">From you</div><p>Four decisions still open, each with a default that gets built if you say nothing. They're at <a href="#calls">the end</a>. You approved the plan on 1 Oct; the build has started.</p></div>
+  </div>
+</section>
+
+<section id="map">
+  <h2><span class="sealmark">図</span>The map</h2>
+  <p class="sub">Your note: too cluttered, show the main areas and then the places inside one. "Jujutsu High" at the top.</p>
+
+  <div class="cap"><span>Level one · six areas</span><span>opens here</span></div>
+  <div class="stage" style="background-image:linear-gradient(rgba(8,7,14,.38),rgba(8,7,14,.38)),url(assets/map_campus.jpg)">
+    <span class="date">Day 6 · Saturday</span>
+    <span class="ttl">Jujutsu High</span>
+    <span class="navr"><i class="ib" style="color:#A193FF;border-color:#A193FF">校</i><i class="ib" style="opacity:.5">京</i><i class="ib" style="margin-left:1.4cqw">目</i></span>
+    <div class="mk" style="left:38.5%;top:26.9%"><b><i class="sealbox">山</i>The Mountain</b><span class="row"><span class="face" style="--f:url(assets/f_gojo.png)"></span></span></div>
+    <div class="mk here" style="left:46.9%;top:51.9%"><b><i class="sealbox">寮</i>Dormitories</b><span class="row"><span class="face" style="--f:url(assets/f_yuji.png)"></span><span class="face" style="--f:url(assets/f_nobara.png)"></span></span><span class="you">YOU ARE HERE</span></div>
+    <div class="mk" style="left:21.9%;top:68.5%"><b><i class="sealbox">校</i>School Building</b><span class="row"><span class="face" style="--f:url(assets/f_megumi.png)"></span><span class="face" style="--f:url(assets/f_shoko.png)"></span></span></div>
+    <div class="mk" style="left:81.25%;top:38%"><b><i class="sealbox">職</i>Staff Building</b><span class="row"><span class="face" style="--f:url(assets/f_utahime.png)"></span><span class="face" style="--f:url(assets/f_yaga.png)"></span><span class="gold">◆ 1</span></span></div>
+    <div class="mk" style="left:81.25%;top:70.4%"><b><i class="sealbox">練</i>Training Grounds</b><span class="row"><span class="face" style="--f:url(assets/f_maki.png)"></span><span class="face" style="--f:url(assets/f_panda.png)"></span><span class="face" style="--f:url(assets/f_toge.png)"></span></span></div>
+    <div class="mk" style="left:50%;top:86%"><b><i class="sealbox">門</i>Courtyard &amp; Gate</b><span class="row"><span class="face" style="--f:url(assets/f_ijichi.png)"></span><span class="gold">◆ 1</span></span></div>
+    <div class="tip" style="left:30.5%;top:62%"><b>School Building</b><span>Classroom · Cafeteria · Infirmary · Library</span></div>
+    <i class="ib sq" style="right:2.1%;bottom:3%">留</i>
+  </div>
+  <p class="note">Six markers and nothing else. Each shows up to three faces, then "+2", and a gold mark when a mission is waiting there. The room list appears when the pointer rests on a marker. The row of faces along the bottom is gone; finding someone moves to the journal.</p>
+
+  <div class="cap"><span>Level two · inside an area</span><span>after clicking School Building</span></div>
+  <div class="stage" style="background:linear-gradient(rgba(8,7,14,.34),rgba(8,7,14,.34)),url(assets/map_campus.jpg) 11% 86%/255% auto no-repeat #0c0b13">
+    <span class="date">Day 6 · Saturday</span>
+    <span class="ttl">School Building</span>
+    <span class="navr"><i class="ib" style="color:#A193FF;border-color:#A193FF">校</i><i class="ib" style="opacity:.5">京</i><i class="ib" style="margin-left:1.4cqw">目</i></span>
+    <span class="backb"><i class="sealbox">戻</i>Jujutsu High</span>
+    <div class="pin" style="left:27%;top:36%"><span class="disc">教</span><span class="plate">Classroom</span><span class="who"><span class="face" style="--f:url(assets/f_megumi.png)"></span></span></div>
+    <div class="pin" style="left:67.7%;top:39%"><span class="disc">食</span><span class="plate">Cafeteria</span></div>
+    <div class="pin" style="left:32.3%;top:70.4%"><span class="disc">医</span><span class="plate">Infirmary</span><span class="who"><span class="face" style="--f:url(assets/f_shoko.png)"></span></span><span class="news">!</span></div>
+    <div class="pin" style="left:69.8%;top:72.2%"><span class="disc">書</span><span class="plate">Library</span></div>
+    <div class="tip" style="left:74%;top:66%"><b>Library</b><span>Quiet. The best place to study.</span></div>
+  </div>
+  <p class="note">The view moves in to the area's own picture, with its rooms as pins. Clicking an area only looks at it; you walk when you pick a room, so anywhere is two clicks. Until you make the six area pictures, each is an enlarged piece of the campus map, as here. Tokyo works the same way: districts first, then the district.</p>
+</section>
+
+<section id="icons">
+  <h2><span class="sealmark">印</span>Icons and labels</h2>
+  <p class="sub">Your note: mini sprites for every feature, with the word popping up when you point at it.</p>
+  <div class="two">
+    <div>
+      <div class="cap"><span>Before the icon art</span></div>
+      <div class="stage" style="aspect-ratio:16/6;background:#15131f">
+        <span class="navr" style="left:50%;right:auto;top:26%;transform:translateX(-50%);gap:1.6cqw">
+          <i class="ib" style="width:9cqw;height:8cqw;font-size:4.2cqw">図<small style="font-size:2cqw">Map</small></i>
+          <i class="ib" style="width:9cqw;height:8cqw;font-size:4.2cqw">記<small style="font-size:2cqw">Journal</small></i>
+          <i class="ib" style="width:9cqw;height:8cqw;font-size:4.2cqw">目<small style="font-size:2cqw">Menu</small></i>
+        </span>
+      </div>
+      <p class="note">A kanji seal with its word underneath, so nothing is a mystery.</p>
+    </div>
+    <div>
+      <div class="cap"><span>After the icon sheet (art batch 1)</span></div>
+      <div class="stage" style="aspect-ratio:16/6;background:#15131f">
+        <span class="navr" style="left:50%;right:auto;top:26%;transform:translateX(-50%);gap:1.6cqw">
+          <i class="ib" style="width:9cqw;height:8cqw"><svg viewBox="0 0 24 24" width="55%" fill="none" stroke="#ECEAF6" stroke-width="1.6" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg></i>
+          <i class="ib" style="width:9cqw;height:8cqw"><svg viewBox="0 0 24 24" width="55%" fill="none" stroke="#ECEAF6" stroke-width="1.6" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg></i>
+          <i class="ib" style="width:9cqw;height:8cqw"><svg viewBox="0 0 24 24" width="55%" fill="none" stroke="#ECEAF6" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></i>
+        </span>
+        <div class="tip" style="left:55%;top:66%;font-size:2.2cqw;padding:1cqw 1.6cqw"><b style="font-size:2.6cqw">Journal (J)</b></div>
+      </div>
+      <p class="note">White line icons. The word shows only while the pointer rests on one.</p>
+    </div>
+  </div>
+  <p>Map, Journal and Menu stay in their corner, as you asked. The same treatment goes on every room action, person choice, journal tab and map marker: 88 icons in all, made as three sheets. The SKIPPING tag becomes a small icon beside the date, so it stops sitting on the map and journal titles.</p>
+</section>
+
+<section id="place">
+  <h2><span class="sealmark">場</span>Rooms with people in them</h2>
+  <p class="sub">Your note: they look like floating PNGs waiting for the player, and the screen says they're doing something they aren't.</p>
+
+  <div class="cap"><span>Today</span></div>
+  <div class="stage" style="background-image:url(assets/dorm_common_evening.jpg)">
+    <span class="date">Day 6 · Saturday</span>
+    <span class="navr"><i class="words">MAP</i><i class="words">JOURNAL</i><i class="words">MENU</i></span>
+    <img class="spr" src="assets/sp_yuji.png" alt="Yuji" style="left:17.2%;height:70%;bottom:9%">
+    <img class="spr" src="assets/sp_megumi.png" alt="Megumi" style="left:36.5%;height:70%;bottom:9%">
+    <img class="spr" src="assets/sp_nobara.png" alt="Nobara" style="left:55.7%;height:68%;bottom:9%">
+    <div class="plate2" style="left:17.2%;bottom:1.5%"><b style="color:#ff8fa0">Yuji <span style="background:#E1B754;color:#1a1404;font-family:var(--mono);font-size:.6cqw;padding:0 .3cqw">NEW</span></b>killing time, loudly</div>
+    <div class="plate2" style="left:36.5%;bottom:1.5%"><b style="color:#8fb0ff">Megumi</b>hands in his pockets</div>
+    <div class="plate2" style="left:55.7%;bottom:1.5%"><b style="color:#ffb37a">Nobara</b>on her phone</div>
+    <div class="oldcard"><div><b>Hold the hour</b>Last Light. Once a day; costs reserve.</div><div><b>Wait</b>Let an hour pass.</div></div>
+  </div>
+
+  <div class="cap"><span>Phase two · standing sprites, blended</span><span>no new art needed</span></div>
+  <div class="stage" id="after" style="background-image:url(assets/dorm_common_evening.jpg)">
+    <span class="date">Day 6 · Saturday</span>
+    <span class="navr"><i class="ib">図</i><i class="ib">記</i><i class="ib">目</i></span>
+    <div class="shadow" style="left:50%;bottom:19.6%;width:11%"></div>
+    <img class="spr" src="assets/sp_megumi.png" alt="Megumi" style="left:50%;height:58%;bottom:21%;filter:brightness(.8) sepia(.3) saturate(1.1)">
+    <div class="fgcut" style="clip-path:polygon(39.3% 66.8%,60.2% 66.8%,60.2% 71%,58.8% 71%,58.8% 84.6%,56.2% 84.6%,56.2% 71%,43.2% 71%,43.2% 84.6%,40.6% 84.6%,40.6% 71%,39.3% 71%)"></div>
+    <div class="shadow" style="left:17.2%;bottom:2.6%;width:14%"></div>
+    <img class="spr" src="assets/sp_yuji.png" alt="Yuji" style="left:17.2%;height:71%;bottom:4%;filter:brightness(.9) sepia(.28) saturate(1.15)">
+    <div class="shadow" style="left:72%;bottom:3.6%;width:13%"></div>
+    <img class="spr" src="assets/sp_nobara.png" alt="Nobara" style="left:72%;height:68%;bottom:5%;filter:brightness(.9) sepia(.28) saturate(1.15)">
+    <span class="ntag" style="left:17.2%;bottom:.6%"><span style="color:#ff8fa0">Yuji</span><em>NEW</em></span>
+    <span class="ntag" style="left:50%;bottom:.6%"><span style="color:#8fb0ff">Megumi</span></span>
+    <span class="ntag" style="left:72%;bottom:.6%"><span style="color:#ffb37a">Nobara</span></span>
+    <i class="hot" style="left:57.5%;top:63.5%">札</i>
+    <i class="hot" style="left:83%;top:46%">見</i>
+    <div class="tip" style="left:60.5%;top:56%"><b>Play cards</b><span>Blackjack or poker, for yen · 1 hour</span></div>
+    <span class="col"><i class="ib sq gold">任</i><i class="ib sq">刻</i><i class="ib sq">待</i></span>
+  </div>
+  <ul>
+    <li><strong>They sit in the room.</strong> A shadow at the feet, the room's evening light on them, people further back a little smaller and softer, and furniture drawn in front (Megumi stands behind the table).</li>
+    <li><strong>Less text.</strong> A short name tag under each person. What they're doing shows when you point at them.</li>
+    <li><strong>The action card becomes an icon column</strong> down the right edge. Things that live on an object move onto it as a glowing icon: the card table, the TV.</li>
+    <li><strong>Click someone</strong> and the view eases in while they turn to you, and eases back when you leave.</li>
+  </ul>
+  <div class="callout"><span class="tag">Then, as you make the pictures</span><p>Each person is painted into their place doing what the caption says: Nobara on the sofa with her phone, Utahime at her desk under paperwork, Yuji halfway through a bowl. Fourteen to start. Your two examples are made first as a test, and nothing else is paid for until you've seen them in the game.</p></div>
+</section>
+
+<section id="person">
+  <h2><span class="sealmark">人</span>Clicking a person</h2>
+  <p class="sub">Your note: too cluttered, no need for the name, keep the grade and the choices.</p>
+  <div class="stage" style="background-image:linear-gradient(rgba(8,7,14,.25),rgba(8,7,14,.25)),url(assets/dorm_common_evening.jpg)">
+    <span class="date">Day 6 · Saturday</span>
+    <span class="navr"><i class="ib">目</i></span>
+    <div class="shadow" style="left:27%;bottom:.5%;width:18%"></div>
+    <img class="spr" src="assets/sp_nobara.png" alt="Nobara" style="left:27%;height:88%;bottom:2%;filter:brightness(.92) sepia(.25) saturate(1.12)">
+    <div class="pcard">
+      <div><span class="gc g3">Grade 3</span></div>
+      <div class="ch"><i class="sealbox">話</i>Talk</div>
+      <div class="ch"><i class="sealbox">遊</i>Spend time together<i class="pips">◆</i></div>
+      <div class="ch"><i class="sealbox">鍛</i>Train together<i class="pips">◆◆</i></div>
+      <div class="ch gold"><i class="sealbox gold">任</i>The Courtyard Curse<i class="pips" style="color:#E1B754">◆◆</i></div>
+      <div class="foot"><span><i class="sealbox" style="font-size:.9cqw;margin-right:.4cqw">誘</i>Ask her along</span><span>Back</span></div>
+    </div>
+  </div>
+  <p class="note">Gone from here: the name, "First-year", the caption, the bond bar, the "Closer" hint, and the line you asked about. <strong>"Somebody Remembered" was never a quest.</strong> It's the title of Nobara's own story, and the diamonds were her progress through it. All of that moves to her page in the journal.</p>
+</section>
+
+<section id="journal">
+  <h2><span class="sealmark">記</span>The journal</h2>
+  <p class="sub">Your notes: put Memories into People, and move "Find someone" here.</p>
+
+  <div class="cap"><span>People · five tabs</span></div>
+  <div class="screen">
+    <div class="jr">
+      <div class="rail">
+        <span class="on"><i class="sealbox">人</i>People</span>
+        <span><i class="sealbox">任</i>Missions</span>
+        <span><i class="sealbox">力</i>Stats</span>
+        <span><i class="sealbox">装</i>Equipment</span>
+        <span><i class="sealbox">品</i>Inventory</span>
+      </div>
+      <div>
+        <div class="pgrid">
+          <div class="pc" style="border-color:#6b5a1c"><span class="face" style="--f:url(assets/f_mc.png)"></span><b>Me</b><span><span class="gc g4">Grade 4</span></span><span class="where">My story · records</span></div>
+          <div class="pc"><span class="face" style="--f:url(assets/f_yuji.png)"></span><b style="color:#ff8fa0">Yuji</b><span><span class="gc g4">Grade 4</span></span><span class="bar"><i style="width:18%;background:#ff8fa0"></i></span><span class="where">Dorm Common Room</span></div>
+          <div class="pc"><span class="face" style="--f:url(assets/f_megumi.png)"></span><b style="color:#8fb0ff">Megumi</b><span><span class="gc g2">Grade 2</span></span><span class="bar"><i style="width:26%;background:#8fb0ff"></i></span><span class="where">Classroom</span></div>
+          <div class="pc"><span class="face" style="--f:url(assets/f_nobara.png)"></span><b style="color:#ffb37a">Nobara</b><span><span class="gc g3">Grade 3</span></span><span class="bar"><i style="width:19%;background:#ffb37a"></i></span><span class="where">Dorm Common Room</span></div>
+          <div class="pc"><span class="face" style="--f:url(assets/f_gojo.png)"></span><b style="color:#9fd4ff">Gojo</b><span><span class="gc sp">Off the scale</span></span><span class="bar"><i style="width:8%;background:#9fd4ff"></i></span><span class="where">Off campus</span></div>
+          <div class="pc"><span class="face" style="--f:url(assets/f_utahime.png)"></span><b style="color:#d2a6ff">Utahime</b><span><span class="gc g1">Semi-Grade 1</span></span><span class="bar"><i style="width:6%;background:#d2a6ff"></i></span><span class="where">Her office</span></div>
+          <div class="pc"><span class="face" style="--f:url(assets/f_shoko.png)"></span><b>Shoko</b><span><span class="gc role">Doctor</span></span><span class="bar"><i style="width:5%;background:#c9c6dc"></i></span><span class="where">Infirmary</span></div>
+          <div class="pc"><span class="face" style="--f:url(assets/f_yaga.png)"></span><b>Yaga</b><span><span class="gc g1">Grade 1</span></span><span class="bar"><i style="width:4%;background:#c9c6dc"></i></span><span class="where">Principal's Office</span></div>
+          <div class="pc sil"><span class="face" style="background:#15141f"></span><b>Not met yet</b><span class="where">A second-year. She trains at dawn.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="note">Each card says where that person is right now, which is what the strip of faces on the map used to do. A "Me" card comes first: the main story by act, and the scenes nobody else is in.</p>
+
+  <div class="cap"><span>A person's page</span></div>
+  <div class="screen">
+    <div class="pp">
+      <img src="assets/sp_nobara.png" alt="Nobara">
+      <div>
+        <h4><span style="color:#ffb37a">Nobara Kugisaki</span><span class="gc g3">Grade 3</span></h4>
+        <div class="now">
+          <b>Dorm Common Room, on her phone</b>
+          <span>Usually: Classroom (mornings) · Cafeteria (noon) · Dorm Common Room (evenings)</span>
+          <span class="gold">Closer: Train together at Bond 20</span>
+          <span class="go">Go there →</span>
+        </div>
+        <div class="chips"><span class="on">Her story</span><span>Memories 3 / 9</span></div>
+        <div class="story">
+          <div class="head">Somebody Remembered</div>
+          <div>She decided she liked me inside a week and won't be asked why.</div>
+          <div class="next"><b>NEXT</b>Spend time together · Bond 35 · usually the Dorm Common Room in the evening</div>
+          <div class="later">2 more chapters in a later build</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="note">Three parts: where she is right now, her story as chapters with the next step spelled out, and every scene you've shared, replayable. A scene with three people in it shows on all three pages, as you answered.</p>
+</section>
+
+<section id="grades">
+  <h2><span class="sealmark">級</span>Grade colours</h2>
+  <p class="sub">Your scheme, used everywhere a grade appears: people, board jobs, the grade card, fights, tools and talismans.</p>
+  <div class="swatches">
+    <div class="sw"><i style="background:var(--gr4)"></i><b>Grade 4</b>Green</div>
+    <div class="sw"><i style="background:var(--gr3)"></i><b>Grade 3</b>Blue</div>
+    <div class="sw"><i style="background:var(--gr2)"></i><b>Grade 2</b>Purple</div>
+    <div class="sw"><i style="background:var(--gr1)"></i><b>Grade 1</b>Red, semi-grades too</div>
+    <div class="sw"><i class="gc sp" style="display:block;padding:0"></i><b>Special Grade</b>Oil slick, slowly moving</div>
+  </div>
+  <p>A semi-grade takes its grade's colour, so Utahime's Semi-Grade 1 is red. Everything Special Grade gets the sheen, Gojo included: <span class="gc sp">Off the scale</span>. A "Motion" switch in Preferences holds it still if you'd rather.</p>
+</section>
+
+<section id="gear">
+  <h2><span class="sealmark">蔵</span>Tools and talismans</h2>
+  <p class="sub">Your note: more depth and requirements, especially the Inverted Spear of Heaven, and the same system for talismans.</p>
+  <div class="screen">
+    <div class="lbl">The Armory</div>
+    <div class="arow"><span><span class="gc g4">Grade 4</span></span><div><b>Slaughter Demon</b><p>A short cursed knife. It wants to be used.</p><div class="req"><span class="y">✓ Grade 4</span></div></div><span class="state">In my hand</span></div>
+    <div class="arow"><span><span class="gc g2 dim">Grade 2</span></span><div><b>Playful Cloud</b><p>A three-section staff. No technique of its own; it hits as hard as whoever swings it.</p><div class="req"><span class="n">✗ Grade 2 · I'm Grade 4</span><span class="n">✗ Output 50 · I have 32</span></div></div><span class="state">Sealed</span></div>
+    <div class="arow"><span><span class="gc g1 dim">Semi-Grade 1</span></span><div><b>Split Soul Katana</b><p>It cuts the soul, not the body.</p><div class="req"><span class="n">✗ Semi-Grade 1</span><span class="n">✗ Insight 60 · I have 22</span></div></div><span class="state">Sealed</span></div>
+    <div class="arow"><span><span class="gc sp dim">Special Grade</span></span><div><b>Inverted Spear of Heaven</b><p>Cancels any technique it touches.</p><div class="req"><span class="n">✗ Arc Two</span><span class="n">✗ Special Grade</span><span class="n">✗ The seal is broken</span><span class="n">✗ Yaga's signature</span></div></div><span class="state">Sealed</span></div>
+  </div>
+  <p class="note">A checklist under each tool: what it asks, ticked or not. Talismans get the same checklist in the journal and at the Black Market. Nothing you already hold is taken away. What a tool does in a fight still arrives with the combat phase; this phase is about what it takes to carry one.</p>
+</section>
+
+<section id="night">
+  <h2><span class="sealmark">夜</span>The night</h2>
+  <p class="sub">Your rule: in bed by the last hour before morning, with a rare night with Gojo and a night out in Tokyo as exceptions that cost you the next day.</p>
+  <div class="scroll"><div class="daystrip">
+    <div><b>Morning</b>Everything open</div>
+    <div><b>Noon</b>Everything open</div>
+    <div><b>Afternoon</b>Everything open</div>
+    <div><b>Evening</b>Everything open. Tokyo's night starts here.</div>
+    <div class="night"><b>Night</b>Walk, talk, eat, use my computer. Anything that takes time is closed. Wait becomes <strong>Go to bed</strong>.</div>
+  </div></div>
+  <div class="cards3">
+    <div class="cardp"><h4>A night with Gojo</h4><p>Rare, at most once every ten days, announced that morning. On the ridge. It always gives more Control and reserve than the best day of training would have, Gojo's own lesson included.</p><span class="price">Next day: no missions, board jobs or training</span></div>
+    <div class="cardp"><h4>A night in Tokyo</h4><p>Shibuya from your first ride, Shinjuku at Grade 2. Once there: the club, the Black Market, or head home.</p><span class="price">¥1,500 at the door · wake with half stamina</span></div>
+    <div class="cardp"><h4>The Black Market</h4><p>Found on your first Shibuya club night, or from a rumour on your computer. Four talismans of its own, sealing talismans and first aid.</p><span class="price">¥9,000 to ¥45,000 a talisman</span></div>
+  </div>
+  <p class="note">Story scenes that happen at night still happen. Outfits at the market are an empty shelf until there's sprite art for them.</p>
+</section>
+
+<section id="rooms">
+  <h2><span class="sealmark">室</span>Things to do in rooms</h2>
+  <p class="sub">Your notes: a computer in the bedroom, a game in the common room, fishing, little interactive things around the map.</p>
+
+  <div class="cap"><span>My room · glowing icons on objects</span></div>
+  <div class="stage" style="background-image:url(assets/your_room.jpg)">
+    <span class="date">Day 6 · Saturday</span>
+    <span class="navr"><i class="ib">図</i><i class="ib">記</i><i class="ib">目</i></span>
+    <i class="hot" style="left:25%;top:58%">網</i>
+    <i class="hot" style="left:68%;top:66%">眠</i>
+    <div class="tip" style="left:28.5%;top:50%"><b>My computer</b><span>Look something up · free</span></div>
+    <span class="col"><i class="ib sq">学</i><i class="ib sq">刻</i><i class="ib sq">待</i></span>
+  </div>
+
+  <div class="two">
+    <div>
+      <div class="cap"><span>The computer</span></div>
+      <div class="screen" style="padding:0;overflow:hidden">
+        <div class="browser">
+          <div class="bar"><span>✕</span><i>kaidan-wiki.example/ryomen-sukuna</i></div>
+          <div class="body">
+            <div class="side"><b>Folklore wiki</b><span>Sukuna in folklore</span><span class="u">Ryomen Sukuna</span><b>Rumour blog</b><span class="u">The man in the blindfold</span><b>School intranet</b><span>Cursed techniques</span><span>This week's reports</span><b>Genealogy</b><span class="u">The three great clans</span><b>Legends board</b><span class="u">A market under Shibuya</span></div>
+            <div class="page"><small>Folklore wiki</small><h5>Ryomen Sukuna</h5><p>A figure of the Heian period described with two faces and four arms. Later accounts disagree on whether he was a man.</p><p class="noted">Noted.</p></div>
+          </div>
+        </div>
+      </div>
+      <p class="note">Five made-up sites, each in its own voice, with pages on Sukuna, Gojo, techniques and the Gojo, Kamo and Zen'in clans. It can also cross-check this week's board jobs and flag one that doesn't add up.</p>
+    </div>
+    <div>
+      <div class="cap"><span>The card table · blackjack</span></div>
+      <div class="screen">
+        <div class="table">
+          <div class="hand"><span class="face" style="--f:url(assets/f_megumi.png);width:46px;height:46px"></span><span class="pcd back"></span><span class="pcd">9♠</span><span class="lbl" style="margin-left:6px">Megumi deals · shows 9</span></div>
+          <div style="color:var(--screen-muted);font-style:italic;font-size:13px">"Take your time. It's your money."</div>
+          <div class="hand"><span class="pcd r">K♥</span><span class="pcd">5♣</span><span class="lbl" style="margin-left:6px">Me · 15 · stake ¥500</span></div>
+          <div class="btns"><span>Hit</span><span>Stand</span><span>Double</span><span>Leave</span></div>
+        </div>
+      </div>
+      <p class="note">Blackjack and poker for yen against whoever is in the common room. Each person plays in character, and in poker their face is the tell: Yuji can't bluff, Megumi shows nothing.</p>
+    </div>
+  </div>
+
+  <div class="cap"><span>Fishing at the riverside</span></div>
+  <div class="stage" style="background-image:url(assets/riverside_evening.jpg)">
+    <span class="date">Day 6 · Saturday</span>
+    <span class="words" style="left:2.1%;top:10%;letter-spacing:.04em;font-family:var(--body);font-size:1cqw">Cast 2 of 3</span>
+    <span class="fishbar"><i></i><u></u></span>
+    <span class="ib" style="left:50%;top:85%;transform:translateX(-50%);width:auto;height:auto;padding:.5cqw 1.6cqw;font-family:var(--display);font-size:1.3cqw;color:#ECEAF6">Hook!</span>
+    <div class="tip" style="left:2.1%;top:16%"><b>Record book</b><span>Ayu · 21 cm<br>Carp · 48 cm<br>River Lord · ???</span></div>
+  </div>
+  <p class="note">The proposal you asked for: three casts an hour, press when the marker crosses the green zone, a record book of your biggest catches, one legendary fish in the evening, and about once a week something cursed on the line. Fish sell for yen by size.</p>
+  <p>Also in this phase: <strong>the Library</strong>, a new room in the School Building and the best place to study; a vending machine in the courtyard; the TV and the blackboard to look at.</p>
+</section>
+
+<section id="order">
+  <h2><span class="sealmark">順</span>Build order</h2>
+  <p class="sub">The same method as phase one: wiring first, then pieces built side by side, each tested, with you playing in between.</p>
+  <ol class="steps">
+    <li><span class="k">Wiring</span><div><b>Three small steps</b><p>Tools and checks, then the hooks every later piece plugs into, then the art tools. The Library exists as an empty room.</p></div></li>
+    <li class="play"><span class="k">You play · A</span><div><b>About 10 minutes</b><p>The game looks almost the same. You look at a style sample of the icons and grade chips, with the real Special Grade sheen, and make your four remaining calls.</p></div></li>
+    <li><span class="k">Five at once</span><div><b>Map · icons and person view · journal · grades and gear · the night and the market</b></div></li>
+    <li class="play"><span class="k">You play · B</span><div><b>About 30 minutes</b><p>The new map, icons, journal, colours, armory, a normal night, a Gojo night and a night out.</p></div></li>
+    <li><span class="k">Three at once</span><div><b>Rooms that feel alive · computer, Library and fishing · cards</b></div></li>
+    <li class="play"><span class="k">You play · C</span><div><b>About 30 minutes</b><p>Blended people, the computer, fishing, the Library, cards. Then the first test pictures.</p></div></li>
+    <li><span class="k">Final pass</span><div><b>Everything together</b><p>All the pieces merged and tested as one game.</p></div></li>
+    <li class="play"><span class="k">You play · D</span><div><b>A full playthrough</b><p>With a checklist, as at the end of phase one.</p></div></li>
+  </ol>
+  <p class="note">If credits run short, poker and then the Black Market are the first things that would wait. You'd be asked first; nothing you decided is dropped without your say.</p>
+</section>
+
+<section id="art">
+  <h2><span class="sealmark">絵</span>Art you'll make</h2>
+  <p class="sub">Each is a drag-in file with numbered steps, as with the sprites. Nothing in the build waits for any of it.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Batch</th><th>When</th><th>What</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>After checkpoint A</td><td>Three icon sheets, the six area pictures, the Tokyo overview</td><td class="num">$1.45</td></tr>
+      <tr><td>2</td><td>After checkpoint B</td><td>The Library, Utahime's office, Gojo's office</td><td class="num">$0.21</td></tr>
+      <tr><td>3</td><td>After checkpoint C</td><td>The tests: Yuji's blink and talk, Nobara on the sofa, Utahime at her desk</td><td class="num">$1.28</td></tr>
+      <tr><td>4</td><td>If batch 3 looks right</td><td>Twelve more people-in-places pictures</td><td class="num">$3.84</td></tr>
+      <tr><td>5</td><td>If Yuji's blink looks right</td><td>Blink and talk for the other ten</td><td class="num">$5.76</td></tr>
+      <tr><td colspan="3"><strong>47 pictures in all</strong></td><td class="num"><strong>about $12.50</strong></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="calls">
+  <h2><span class="sealmark">決</span>Your calls</h2>
+  <p class="sub">Five decisions. The first four each have a default that gets built unless you say otherwise, and you can answer now or at checkpoint A. The fifth you've decided.</p>
+  <ol class="qs">
+    <li><b>How strict is the night?</b>
+      <span class="opt"><i>Default</i>At Night nothing that takes time is allowed, apart from the exceptions. Wait becomes "Go to bed".</span>
+      <span class="opt alt"><i>Or</i>Night stays usable, and Kaito just wakes up in his room afterwards.</span></li>
+    <li><b>When do the character scenes start?</b>
+      <span class="opt"><i>Default</i>After roll call, on day 2. They still narrate in "you" until the story phase converts them.</span>
+      <span class="opt alt"><i>Or</i>After the Sun Mall, around day 4. That keeps "you" further from the prologue but leaves the first days with no bond scenes.</span></li>
+    <li><b>Two-hour activities and a waiting story scene</b>
+      <span class="opt"><i>Default</i>A trip into town with someone, a day off together or the Tokyo trip ends an hour early when a story scene is waiting, so the scene isn't pushed to tomorrow. The hour isn't lost. A spar is one hour and is never cut short.</span>
+      <span class="opt alt"><i>Or</i>Leave it as it is: the scene comes a day late.</span></li>
+    <li><b>The look of the icons and grade chips</b>
+      <span class="opt"><i>Default</i>Judged from a sample screen in the game at checkpoint A, since a sketch on this page can't stand in for the real thing.</span></li>
+    <li><b>The Gojo night and your grade's ceiling</b>
+      <span class="opt"><i>Decided</i>The night may push past the ceiling: Control up to 6 above it, and the reserve up to 3 above its own. So it's offered at every grade whenever it's due. If Control already sits 6 above the ceiling from an earlier night, the next one waits for a promotion.</span></li>
+  </ol>
+
+  <h3>Chosen for you</h3>
+  <p>Say the word and any of these changes. Each is one number in a table.</p>
+  <ul>
+    <li><strong>Cards:</strong> stakes of ¥100, ¥500 or ¥1,000. A sitting is five hands at most. At most ¥6,000 won in a day. The table is closed at Night.</li>
+    <li><strong>The Gojo night:</strong> whatever the best day of training would give (his lesson, four sessions on the ridge and Hold the hour), plus 6 Control and 3 reserve. From Control 30 that's +29 Control and +12 reserve, against a best day's +23 and +9. At most once every ten days.</li>
+    <li><strong>The day after:</strong> training, Gojo's lesson, Hold the hour and swimming are closed. Studying, eating, talking, cards, fishing and the computer stay open, but nothing raises Control or Output that day.</li>
+    <li><strong>A night in Tokyo:</strong> ¥1,500 for the club. You wake with half stamina and 70% cursed energy. Not two nights running.</li>
+    <li><strong>The map moves you on the second click.</strong> Clicking an area only opens it.</li>
+    <li><strong>Small numbers:</strong> studying in the Library gives Insight +4, against +3 at a desk. The vending machine is ¥150 for 10 stamina, once a day.</li>
+  </ul>
+  <div class="callout"><span class="tag">Answered</span><p>No Special Grade talisman is for sale at the Black Market for now: the three in the game stay story rewards. More talismans get added later, as you said.</p></div>
+</section>
+
+<footer>The full build plan, with every screen measured and every piece's tests, is <code>docs/PHASE2_DESIGN.md</code> in the project. Your notes and answers are in <code>docs/PHASE2_UI_OVERHAUL.md</code>.</footer>
+</main>
+</div>

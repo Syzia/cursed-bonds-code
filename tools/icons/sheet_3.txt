@@ -1,0 +1,31 @@
+# Icon sheet 3 of 3: the names on it, left to right, top row first (6 x 5 cells).
+# Generated from ICONS (game/ui_icons.rpy) by: python3 tools/make_icon_workflow.py --names
+# Read by tools/make_icon_workflow.py (what to ask for) and tools/cut_icons.py (what to cut).
+armory
+veil
+car
+board
+release
+mission
+act
+talk
+hang
+lesson
+walk
+stargaze
+confide
+stand
+heart
+invite
+pc_open
+cards_play
+fish_cast
+lib_study
+look
+spot_vend
+night_gojo
+night_out
+market
+buy
+take
+record

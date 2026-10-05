@@ -1,0 +1,9 @@
+{
+  "spots": {
+    "dorm_yard": [960, 520],
+    "rooftop": [975, 215],
+    "dorm": [560, 530],
+    "girls_dorm": [1390, 530],
+    "dorm_common": [960, 750]
+  }
+}

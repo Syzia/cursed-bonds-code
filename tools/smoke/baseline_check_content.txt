@@ -1,506 +1,109 @@
-game/ch1_alley.rpy:19: no-mc-on-screen: show mc at pos_l
-game/ch1_alley.rpy:22: narration-person: "Thursday. The counter place two streets from the station, which is not good, and which you have been coming to since you were fourteen because it is nine hundred yen and it is yours."
-game/ch1_alley.rpy:49: narration-person: "You argue about a projector for eleven minutes. It is the best eleven minutes of the week and neither of you notices that at the time."
-game/ch1_alley.rpy:58: narration-person: "She says it lightly, and it is not light, and you both let it go past."
-game/ch1_alley.rpy:63: narration-person: "You let her run, because she is good at this and because she has been having a long month and this is what she does instead of talking about it."
-game/ch1_alley.rpy:66: narration-person: "She orders a second bowl she does not finish and pushes it at you halfway through, which she has done every time for two years, and has never once acknowledged doing."
-game/ch1_alley.rpy:86: narration-person: "She is delighted with herself. You pay, badly, in coins. She says she'll get it next time."
-game/ch1_alley.rpy:90: narration-person: "Outside it is cold in the way October gets at about nine, and she walks with her hands pulled up into her sleeves and keeps not telling you the thing."
-game/ch1_alley.rpy:102: narration-person: "You cut through the alley behind the arcade because it saves four minutes and because you always do."
-game/ch1_alley.rpy:118: narration-person: "There is no sound. That is the part your body notices before your mind does: a town makes a noise all the time, and this one has stopped."
-game/ch1_alley.rpy:121: narration-person: "You cannot see your own hands."
-game/ch1_alley.rpy:125: narration-person: "You find her sleeve. She grips back, hard, and laughs the way people laugh when they want something to be funny."
-game/ch1_alley.rpy:130: narration-person: "You put yourself between her and the dark end of the alley, which is a guess, because there is no reason to think the dark end is the one that matters."
-game/ch1_alley.rpy:136: narration-person: "You listen, and you hear one thing: a soft, wet, unhurried sound, about nine metres away, that has not moved and is not breathing."
-game/ch1_alley.rpy:138: narration-person: "Something hits you both."
-game/ch1_alley.rpy:140: narration-person: "You do not see it arrive and you never see it leave. There is simply a moment where you are standing and a moment where you are twelve feet down the alley with the whole left side of your body rin...
-game/ch1_alley.rpy:144: narration-person: "Sana is screaming your name."
-game/ch1_alley.rpy:150: narration-person: "You get up because getting up is the only instruction your body has left. You cannot see her. You cannot see anything. You go toward where the sound stopped, with both hands out, and your hands fi...
-game/ch1_alley.rpy:158: narration-person: "She is warm and she is not moving and there is something else in the alley, standing over her, and you know it is there because you can feel the air it is displacing on your face."
-game/ch1_alley.rpy:160: narration-person: "You cannot see it."
-game/ch1_alley.rpy:162: narration-person: "You have never been able to see it, and neither could she, and neither could anyone, and that — {i}that{/i} — is the thing your chest does not survive."
-game/ch1_alley.rpy:170: narration-person: "And the world — the whole world, the alley, the fire door, the shape standing over your friend — {b}arrives.{/b}"
-game/ch1_alley.rpy:176: narration-person: "You can see it."
-game/ch1_alley.rpy:192: narration-person: "And underneath the seeing — underneath the sick, total clarity of it — there is a second thing, newer, pressing outward from behind your sternum, and it has been there your whole life waiting to b...
-game/ch1_alley.rpy:195: narration-person: "It is going to take you in about a second and a half. You can feel the shape of what is inside you. You get to decide what it becomes, and you get exactly this long."
-game/ch1_alley.rpy:197: one-technique: "{b}Make the second stop.{/b} — Stillness":
-game/ch1_alley.rpy:199: narration-person: "You do not want to be faster. You do not want to be stronger. You want the second to {b}stop{/b} — the one where she was talking, the one where the lights went, the one that is arriving now."
-game/ch1_alley.rpy:202: narration-person: "The alley holds. Dust hangs in the air like it has been pinned there. The thing above you is exactly, perfectly still, mid-reach, four feet away."
-game/ch1_alley.rpy:203: narration-person: "You have one second. You are standing inside it."
-game/ch1_alley.rpy:204: narration-person: "Nothing in you knows what to do with it yet. You spend it looking at Sana, because you cannot help it, and then the world starts again and you are still holding nothing."
-game/ch1_alley.rpy:206: one-technique: "Threads. Everywhere at once. — Filament":
-game/ch1_alley.rpy:207: one-technique: $ technique = "filament"
-game/ch1_alley.rpy:208: narration-person: "It goes out of you as lines — hundreds, finer than hair, filling the alley and reporting back."
-game/ch1_alley.rpy:209: narration-person: "You know where the walls are. You know where its joints bend. You know, with sick precision, exactly how still Sana is."
-game/ch1_alley.rpy:210: narration-person: "You close your fist and something comes off it at the third elbow, and it does not appear to notice."
-game/ch1_alley.rpy:212: one-technique: "Heat. Slow, and staying. — Emberfall":
-game/ch1_alley.rpy:213: one-technique: $ technique = "emberfall"
-game/ch1_alley.rpy:214: narration-person: "Your hands are not on fire. Everything you touch simply begins, quietly, to keep burning."
-game/ch1_alley.rpy:215: narration-person: "You get one palm on it and it recoils — and the place you touched is still getting hotter, and will be in a minute, and in five."
-game/ch1_alley.rpy:216: narration-person: "It looks at the mark. Then it looks at you, with more interest than you wanted."
-game/ch1_alley.rpy:220: narration-person: "It comes at you."
-game/ch1_alley.rpy:226: narration-person: "You do not win."
-game/ch1_alley.rpy:228: narration-person: "Nobody could have told you that in advance in a way you would have heard, so you find it out the long way: you put everything you have into it, twice, and it is not a fight, it is a thing happenin...
-game/ch1_alley.rpy:230: narration-person: "You are on the ground somewhere near the fire door with one arm not working when the alley fills with light."
-game/ch1_alley.rpy:244: narration-person: "There is no noise and no flash and no gesture you could describe afterwards. It is there, and then there is a grey smear settling out of the air where it used to be, and the smear is already thinn...
-game/ch1_alley.rpy:250: narration-person: "He crouches by Sana for a while. He is careful with her in a way that makes your throat close."
-game/ch1_alley.rpy:252: narration-person: "Then he sits back on his heels and does not say anything for long enough that you know."
-game/ch1_alley.rpy:260: narration-person: "He says it plainly, without softening it, and you will be grateful for that later and not for a long time."
-game/ch1_alley.rpy:268: narration-person: "He stands up. The blindfold turns toward you, and even through cloth you have the distinct sensation of being read cover to cover."
-game/ch1b_the_offer.rpy:11: no-mc-on-screen: show mc at pos_l
-game/ch1b_the_offer.rpy:14: narration-person: "There is an ambulance somewhere behind you that will not be needed and a woman from the flats above who has come down and been sent back up again without appearing to notice she was sent."
-game/ch1b_the_offer.rpy:49: narration-person: "It is the first thing you have said that makes him stop moving."
-game/ch1b_the_offer.rpy:63: narration-person: "You take your time."
-game/ch1b_the_offer.rpy:102: narration-person: "You get home at eleven. Your mother is still up, because the school rang, because somebody has already made a call you did not hear about."
-game/ch1b_the_offer.rpy:104: narration-person: "She has been crying. She hugs you for a very long time and does not ask a single question about the alley."
-game/ch1b_the_offer.rpy:108: narration-person: "You could correct her. You watch yourself not correct her, and file the feeling for later."
-game/ch1b_the_offer.rpy:111: narration-person: "Your father is standing in the kitchen doorway with a tea he has not drunk."
-game/ch1b_the_offer.rpy:116: narration-person: "You tell them all of it. The dark, the thing in the alley, the man in the blindfold, the school in a mountain."
-game/ch1b_the_offer.rpy:117: narration-person: "They listen. They believe you — you can see them believing you."
-game/ch1b_the_offer.rpy:118: narration-person: "And then, somewhere around the third sentence, it goes out of them like water out of a cupped hand, and your mother says {i}well, a scholarship, that's wonderful{/i} in a voice with nothing wrong ...
-game/ch1b_the_offer.rpy:126: narration-person: "Your father is so proud of you that you have to look at the floor."
-game/ch1b_the_offer.rpy:127: narration-person: "It is a clean lie and it fits them perfectly and you understand, putting it on them, that you have just done to your parents exactly what Gojo offered to do to you."
-game/ch1b_the_offer.rpy:132: narration-person: "You say you're going away to school, and that it's a good one, and that it happened fast."
-game/ch1b_the_offer.rpy:133: narration-person: "Your mother makes you eat something. Your father says {i}well{/i} four times over an hour."
-game/ch1b_the_offer.rpy:140: narration-person: "In the morning your mother makes breakfast for four."
-game/ch1b_the_offer.rpy:148: narration-person: "It lasts about a second and a half. You watch her look at the fourth place and not be able to get to the end of the thought, and then go smoothly, terribly around it."
-game/ch1b_the_offer.rpy:162: narration-person: "You pack at two in the morning."
-game/ch1b_the_offer.rpy:170: narration-person: "Three years old. Sana has her arm around your neck and is pulling you sideways out of frame, and you are laughing, and it is not a good photograph."
-game/ch1b_the_offer.rpy:174: narration-person: "She left it at yours in October and never asked for it back. Her name is inside the band in marker, in her handwriting."
-game/ch1b_the_offer.rpy:179: narration-person: "It has been in the drawer since before you were born. He puts it in your hand at the door in the morning and says {i}for the exams,{/i} and he thinks there are going to be exams."
-game/ch1b_the_offer.rpy:184: narration-person: "You take clothes. You have decided, without being able to explain it, that you do not want anything from this house touching the next one."
-game/ch1b_the_offer.rpy:188: narration-person: "The car is black and completely unremarkable and there is a man in a suit beside it who apologises to your father for the hour."
-game/ch1b_the_offer.rpy:190: narration-person: "Your mother hugs you the correct amount. Your father shakes your hand, which he has never done."
-game/ch1b_the_offer.rpy:192: narration-person: "As the door closes your mother puts her hand flat against the window."
-game/ch1b_the_offer.rpy:206: narration-person: "For something to do, you decide to count."
-game/ch1b_the_offer.rpy:224: narration-person: "He puts two fingers against your forehead, almost gently."
-game/ch1b_the_offer.rpy:230: narration-person: "There was a power cut on a Thursday in October and your friend Sana Torii had an accident in the alley behind the arcade."
-game/ch1b_the_offer.rpy:236: narration-person: "Winter comes. You go back to school in January because that is what there is to do."
-game/ch1b_the_offer.rpy:238: narration-person: "You are fine. Everyone tells you how well you are doing and you agree with them."
-game/ch1b_the_offer.rpy:240: narration-person: "Occasionally, in a shop or on a platform, you look at a place where there is nothing, for slightly too long, and then you stop."
-game/ch1b_the_offer.rpy:246: narration-person: "In March your mother is in the kitchen at about six in the evening, and you are upstairs, and the lights go out."
-game/ch1b_the_offer.rpy:252: narration-person: "You come down in the dark, because that is what a person does."
-game/ch1b_the_offer.rpy:254: narration-person: "You call out. She does not answer."
-game/ch1b_the_offer.rpy:256: narration-person: "You cannot see anything. You have never been able to see anything. That is the arrangement you agreed to in an alley in October and then forgot agreeing to."
-game/ch1b_the_offer.rpy:258: narration-person: "You find her at the bottom of the stairs."
-game/ch1b_the_offer.rpy:260: narration-person: "Something opens in you, four months late, for the second time in your life — and this time there is nobody in the doorway with his hands in his pockets."
-game/ch1b_the_offer.rpy:264: narration-person: "You can see it."
-game/ch1b_the_offer.rpy:266: narration-person: "You can see it, and you have no idea what to do, and the thing in your chest goes off like a dropped glass — all of it, at once, in every direction, with no shape on it at all."
-game/ch1b_the_offer.rpy:281: narration-person: "Some choices are made before you know what you are choosing."
-game/ch1b_the_offer.rpy:283: narration-person: "This was one, and it was offered fairly, and it was yours."
-game/ch2_tour.rpy:24: narration-person: "He says it to the windscreen, at the correct moment, having clearly decided in advance to say it, and it lands better than most of what the adults will say to you this week."
-game/ch2_tour.rpy:28: no-mc-on-screen: show mc at pos_l
-game/ch2_tour.rpy:39: narration-person: "He walks you through it at a pace that suggests he has somewhere else to be and no intention of going there."
-game/ch2_tour.rpy:98: narration-person: "You can feel it from the door. It is like standing near an open freezer, except the cold is interested in you."
-game/ch2_tour.rpy:131: narration-person: "You look at it and it is, unmistakably, looking back — not with eyes, and not in a way you could describe, but with the flat patient attention of something taking your measurement."
-game/ch2_tour.rpy:145: narration-person: "Masamichi Yaga does not stand up when you come in."
-game/ch2_tour.rpy:154: narration-person: "It is not conversation. The assessment started before you sat down."
-game/ch2_tour.rpy:179: narration-person: "Yaga looks at you for a long moment."
-game/ch2_tour.rpy:224: narration-person: "The pink-haired one drops out of his handstand, sees you, and lights up like a vending machine."
-game/ch2_tour.rpy:232: narration-person: "They already know. You can tell in about four seconds: nobody asks how your week was."
-game/ch2_tour.rpy:243: narration-person: "Three people you met ninety seconds ago, and an afternoon."
-game/ch2_tour.rpy:251: narration-person: "So they show you."
-game/ch2_tour.rpy:252: narration-person: "Megumi puts two white dogs out of his own shadow and they are perfectly, ordinarily real, and one of them sniffs your knee."
-game/ch2_tour.rpy:253: narration-person: "Nobara drives a nail through a straw doll on the far wall and something in the rafters that you had not known was there comes apart."
-game/ch2_tour.rpy:268: narration-person: "Megumi answers second, in about eleven words, and you understand from the shape of them that there is a great deal underneath."
-game/ch2_tour.rpy:281: narration-person: "Nobody makes you talk. Somebody produces snacks from somewhere. You sit on the floor of an enormous room with three strangers for about an hour and it is the first hour since the alley that has no...
-game/ch2_tour.rpy:287: narration-person: "Your room has a bed, a desk, and a window facing a mountain that is also Tokyo."
-game/ch2_tour.rpy:289: narration-person: "Your bag is on the floor, unpacked."
-game/ch2_tour.rpy:292: narration-person: "You put the photograph on the desk, face up, where you will have to look at it."
-game/ch2_tour.rpy:294: narration-person: "You put the hachimaki in the drawer, and then take it out, and then put it on the desk."
-game/ch2_tour.rpy:296: narration-person: "You put your father's watch on the desk. It is four minutes fast and you decide not to fix it."
-game/ch2_tour.rpy:298: narration-person: "There is nothing to put out. You had thought that would feel cleaner than it does."
-game/ch2_tour.rpy:306: narration-person: "You sleep for eleven hours."
-game/ch4_mission.rpy:45: no-mc-on-screen: show mc at pos_fr
-game/ch4_mission.rpy:58: narration-person: "It isn't a suggestion, and it isn't a favour. He says it the way you'd state a fact that was already on the paperwork."
-game/ch4_mission.rpy:87: no-mc-on-screen: hide mc
-game/ch4_mission.rpy:90: narration-person: "Inside, the mall smells the way the alley behind the arcade smelled, and your whole body reports for duty before your brain has finished the comparison."
-game/ch4_mission.rpy:102: no-mc-on-screen: show mc at pos_l
-game/ch4_mission.rpy:119: narration-person: "You work the second floor shop by shop."
-game/ch4_mission.rpy:142: narration-person: "You do not look at the wall. You have decided, very deliberately, that you will look at the wall on the way out, if there is a way out."
-game/ch4_mission.rpy:143: narration-person: "It is the first cold decision you have ever made and you file the feeling away for later examination."
-game/ch4_mission.rpy:148: one-technique: if technique == "filament":
-game/ch4_mission.rpy:149: narration-person: "You feed threads down the service corridor, a metre at a time, reading the air."
-game/ch4_mission.rpy:152: one-technique: elif technique == "emberfall":
-game/ch4_mission.rpy:153: narration-person: "You touch the corridor wall and leave a slow warm mark in it, a beacon you'll be able to find in the dark from anywhere in the building."
-game/ch4_mission.rpy:154: narration-person: "Ninety seconds later you feel the heat move, because something has torn that section of wall down and carried it somewhere else."
-game/ch4_mission.rpy:156: narration-person: "You let the corridor replay."
-game/ch4_mission.rpy:187: narration-person: "She has a hammer out and four nails between her fingers before you have finished being afraid."
-game/ch4_mission.rpy:190: narration-person: "Somewhere below you, one storey down, you hear the other two start running."
-game/ch4_mission.rpy:192: narration-person: "And then you see her."
-game/ch4_mission.rpy:201: narration-person: "It hasn't noticed her. It has noticed you. You have perhaps four seconds to choose what this fight is about."
-game/ch4_mission.rpy:218: narration-person: "You move for the stairs and you make absolutely no attempt to be quiet about it."
-game/ch4_mission.rpy:220: narration-person: "Its attention comes off the atrium and onto you like a spotlight, which is the entire point, and which is also the worst thing you have ever voluntarily arranged."
-game/ch4_mission.rpy:232: narration-person: "You reach the railing. The woman looks at you with an expression you will still be able to draw in ten years."
-game/ch4_mission.rpy:240: narration-person: "You tell her, and watch her start the arithmetic, and watch her decide not to finish it."
-game/ch4_mission.rpy:244: one-technique: if technique == "filament":
-game/ch4_mission.rpy:245: narration-person: "You anchor a dozen threads to the balcony above and a dozen to the ground floor, and you make a line, and you put her on it."
-game/ch4_mission.rpy:246: narration-person: "It is not elegant. She goes down the atrium in a controlled fall with your cursed energy screaming through your forearms, and she lands, and she is nineteen metres from the thing and moving."
-game/ch4_mission.rpy:247: one-technique: elif technique == "emberfall":
-game/ch4_mission.rpy:248: narration-person: "You put your palm flat on the escalator housing and pour everything you have into it, and the metal goes from cold to searing in four seconds."
-game/ch4_mission.rpy:249: narration-person: "The curse puts a limb on it to climb and recoils, and while it is dealing with a staircase that is now hostile, you get her over the rail and down."
-game/ch4_mission.rpy:251: narration-person: "The last hour of this atrium is still playing. You know exactly which route the thing took to reach the escalator well, three times, because it took the same one every time."
-game/ch4_mission.rpy:252: narration-person: "You take the other one. You take the one it never uses, and you take her down it, and it does not think to look there."
-game/ch4_mission.rpy:254: narration-person: "You put her behind a shuttered pharmacy on the ground floor and you tell her not to move and she says {i}I wasn't planning to{/i} with something that is almost a laugh, and that almost-laugh is go...
-game/ch4_mission.rpy:261: narration-person: "You do not go for her. You go for it."
-game/ch4_mission.rpy:271: narration-person: "You have never fought alongside anyone. It turns out that Yuji Itadori makes it very easy, because Yuji Itadori simply assumes you will be where he needs you and then behaves as though you already...
-game/ch4_mission.rpy:274: narration-person: "You take the left side. You do not improvise. It is the single most useful thing anyone has ever told you."
-game/ch4_mission.rpy:279: narration-person: "You hit it eleven times in ninety seconds and it barely notices nine of them."
-game/ch4_mission.rpy:283: one-technique: if technique == "filament":
-game/ch4_mission.rpy:284: narration-person: "Threads find the seam where the accumulated mass is thinnest, and you pull, and something inside it comes apart with a sound like a rope bridge."
-game/ch4_mission.rpy:285: one-technique: elif technique == "emberfall":
-game/ch4_mission.rpy:286: narration-person: "You leave three burns in it, deep, and they do not go out, and it starts trying to tear its own mass off to get away from them."
-game/ch4_mission.rpy:288: narration-person: "You have watched it swing forty times in the last four seconds. You know which shoulder drops. You put everything you have into the space it is about to be."
-game/ch4_mission.rpy:310: narration-person: "This is the part nobody can teach you. This is the second and a half."
-game/ch4_mission.rpy:314: narration-person: "And you already know where everyone is."
-game/ch4_mission.rpy:316: narration-person: "Maki made you name three exits in every room you walked into. You named them on the way in without noticing you were doing it."
-game/ch4_mission.rpy:318: narration-person: "Somewhere along the way you started counting the exits in every room. You counted them on the way in without noticing you were doing it."
-game/ch4_mission.rpy:319: narration-person: "You know where the woman is. You know where your partner is. You know where the stairwell is and how many strides, and you have four hundred repetitions of one bad punch in your arms, and not long...
-game/ch4_mission.rpy:324: narration-person: "And you are running on almost nothing."
-game/ch4_mission.rpy:325: narration-person: "Your cursed energy is a coin at the bottom of a well. Your arms have stopped taking instructions. There is a very reasonable voice in your head suggesting that you have already done more than anyo...
-game/ch4_mission.rpy:332: narration-person: "He is. He has been the whole time. He puts himself between the thing and the stairwell and takes a hit meant for you and gets up so fast it looks like a rewind."
-game/ch4_mission.rpy:341: narration-person: "You step in."
-game/ch4_mission.rpy:343: one-technique: if technique == "filament":
-game/ch4_mission.rpy:344: narration-person: "Every thread you have, all of them, into one place — the knot at the centre where all the faces are pointing."
-game/ch4_mission.rpy:345: narration-person: "You have spent eleven days learning the difference between reaching and aiming."
-game/ch4_mission.rpy:346: narration-person: "You aim."
-game/ch4_mission.rpy:347: one-technique: elif technique == "emberfall":
-game/ch4_mission.rpy:348: narration-person: "You get one hand on the centre of it and you stop holding anything back."
-game/ch4_mission.rpy:349: narration-person: "Everything you have, all at once, into a fire that will not go out and does not need you to stay and watch it."
-game/ch4_mission.rpy:351: narration-person: "The last four seconds of the atrium play, and play, and play, and you know exactly where it is going to be."
-game/ch4_mission.rpy:352: narration-person: "You are already there."
-game/ch4_mission.rpy:357: narration-person: "And then Yuji and Nobara and Megumi are all in the atrium at once, and it is over in a way that is much louder and much faster than anything you did, and the four of you are standing in a dead sho...
-game/ch4_mission.rpy:365: no-mc-on-screen: show mc at pos_fr
-game/ch5_debrief.rpy:78: no-mc-on-screen: show mc at pos_l
-game/ch5_debrief.rpy:87: narration-person: "He is sitting on the railing with his back to a hundred-kilometre drop, eating something from a convenience store bag, and it is impossible to tell whether he is looking at you."
-game/ch5_debrief.rpy:120: narration-person: "For the first time since you met him, Satoru Gojo stops moving."
-game/ch5_debrief.rpy:146: no-mc-on-screen: show mc at pos_c
-game/ch5_debrief.rpy:149: narration-person: "You stay on the roof for a while."
-game/ch5_debrief.rpy:151: narration-person: "The other week you were frightened of an alley. You are still frightened of the alley. You have simply added several other things."
-game/ch5_debrief.rpy:154: narration-person: "Below you, in the courtyard, three first-years are arguing about whether a person could punch a whale."
-game/ch5_debrief.rpy:155: narration-person: "One of them looks up, sees you, and shouts your name loud enough to carry four floors."
-game/ch5_debrief.rpy:159: narration-person: "Below you, in the courtyard, three first-years are arguing about something you can't hear."
-game/ch5_debrief.rpy:160: narration-person: "You watch them for a while, from up here, and then you go down."
-game/events_activities.rpy:83: narration-person: "You get food and sit with [_n]."
-game/events_activities.rpy:107: narration-person: "Afterwards you lie on the warm stones and let the cold come out of your hands."
-game/events_activities.rpy:166: narration-person: "[_n] falls into step beside you."
-game/events_activities.rpy:167: narration-person: "[_n] will stay with you until the day ends."
-game/events_activities.rpy:180: narration-person: "There is a version of this conversation you have been not having for weeks."
-game/events_activities.rpy:214: narration-person: "You tell him. All of it — Kurose's forms, the alley, the girl nobody but you remembers properly now."
-game/events_activities.rpy:215: narration-person: "He listens the way he does everything, completely, and when you finish he takes out his phone and types for a long time."
-game/events_arc1.rpy:58: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:61: narration-person: "You find Itadori on the roof of the dormitory block, doing push-ups, badly, while eating."
-game/events_arc1.rpy:69: narration-person: "He rolls onto his back and squints up at you, and for a second the constant motion of him stops."
-game/events_arc1.rpy:88: narration-person: "He's smiling. He's been smiling since you walked up here."
-game/events_arc1.rpy:95: narration-person: "He sits up properly. He looks out at the mountains instead of at you."
-game/events_arc1.rpy:100: narration-person: "He taps his own chest, twice, the way you'd knock on a door you didn't want opened."
-game/events_arc1.rpy:107: narration-person: "He looks over. The grin comes back on, and this time you can see exactly how much it costs him to put it on."
-game/events_arc1.rpy:119: narration-person: "He thinks about it. It takes him longer than you expected."
-game/events_arc1.rpy:131: narration-person: "For ninety minutes, Yuji Itadori teaches you to hit things, and he is a startlingly good teacher, because he explains every single thing twice, in two different ways, without ever once making you ...
-game/events_arc1.rpy:134: narration-person: "Somewhere around the sixtieth repetition you stop thinking about your hands."
-game/events_arc1.rpy:139: narration-person: "By the time the sun goes down, the strawberry ones are gone and your knuckles hurt and you have learned exactly one thing about Yuji Itadori."
-game/events_arc1.rpy:151: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:171: narration-person: "Ten minutes of silence. He hasn't told you to leave."
-game/events_arc1.rpy:177: narration-person: "You stand there."
-game/events_arc1.rpy:178: narration-person: "It is, for the first four minutes, unbearable. Your brain offers you eleven conversation topics and you decline all of them."
-game/events_arc1.rpy:181: narration-person: "You hold a second, out of curiosity, with nothing in it to escape."
-game/events_arc1.rpy:184: one-technique: elif technique == "filament":
-game/events_arc1.rpy:185: narration-person: "Your threads drift out on their own and find the trees, the roots, the cold seam of water under the hill."
-game/events_arc1.rpy:188: narration-person: "The heat under your sternum stops straining outward and just... sits there, banked, patient."
-game/events_arc1.rpy:196: narration-person: "From Megumi Fushiguro, you are beginning to understand, that is roughly a declaration of eternal friendship."
-game/events_arc1.rpy:224: narration-person: "They are perfectly, ordinarily real. One of them sniffs your knee."
-game/events_arc1.rpy:229: narration-person: "He scratches the white one behind the ear when he thinks you aren't looking."
-game/events_arc1.rpy:231: narration-person: "You walk back down the mountain in a silence that is somehow companionable."
-game/events_arc1.rpy:243: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:246: narration-person: "You do not choose to spend the afternoon with Kugisaki. Kugisaki informs you that you are spending the afternoon with her, and then a train happens."
-game/events_arc1.rpy:252: narration-person: "By the fourth shop you have stopped protesting. It is, and you would not admit this under interrogation, the first time since the alley that nothing has been trying to kill you."
-game/events_arc1.rpy:261: narration-person: "She's not wrong. You've been carrying something around all week."
-game/events_arc1.rpy:267: narration-person: "She sits on a step outside a shop and pats the concrete next to her, and you sit."
-game/events_arc1.rpy:302: narration-person: "She hands you two of the bags without breaking stride."
-game/events_arc1.rpy:308: narration-person: "You get back to the school after dark, loaded like a pack animal, and Kugisaki is still talking, and you realise with mild horror that you have been laughing for about an hour."
-game/events_arc1.rpy:320: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:323: narration-person: "Maki does not do conversation. Maki does repetitions, and if you happen to be in the room, conversation occasionally falls out."
-game/events_arc1.rpy:333: narration-person: "Two hours. You have hit a post four hundred times and you have stopped being able to feel your forearms."
-game/events_arc1.rpy:372: narration-person: "She takes you into the middle of the hall and puts you in the centre of it and then goes and stands somewhere else."
-game/events_arc1.rpy:379: narration-person: "You have to think about it. That is, apparently, the point."
-game/events_arc1.rpy:385: narration-person: "You limp back to the dormitory at nine, and you have never been this tired, and you are already planning tomorrow."
-game/events_arc1.rpy:398: narration-person: "There is a knock on your door at eight in the evening, and it is a panda holding two cans of coffee and a bag of crisps, and behind him is Toge Inumaki holding nothing and looking mildly apologeti...
-game/events_arc1.rpy:406: narration-person: "You open your mouth. You close it."
-game/events_arc1.rpy:415: narration-person: "The panda has sat down on your floor and is opening the crisps like this is his room."
-game/events_arc1.rpy:451: narration-person: "Inumaki says something you don't catch, and Panda looks at him for a long moment."
-game/events_arc1.rpy:456: narration-person: "You will remember that. Later, in the dark, it will matter."
-game/events_arc1.rpy:458: narration-person: "They stay until midnight. Nobody asks you a single thing about the alley."
-game/events_arc1.rpy:462: narration-person: "You sleep, that night, for six unbroken hours. It's the most anyone has given you all week."
-game/events_arc1.rpy:475: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:478: narration-person: "Inumaki is on the roof with his hood up and his phone out, and he lifts two fingers when he sees you, which you have learned means {i}sit down{/i}."
-game/events_arc1.rpy:499: narration-person: "He's watching you read it."
-game/events_arc1.rpy:505: narration-person: "Then he pulls the collar down, and looks at you, and says — quietly, carefully, aiming it at nothing:"
-game/events_arc1.rpy:507: narration-person: "It hits you in the chest like a hand pushing you gently backwards. Not a command. Just a word with a whole person's cursed energy behind it."
-game/events_arc1.rpy:509: narration-person: "He pulls the collar back up, and you can see the corners of his eyes go, and that's how you learn what Toge Inumaki laughing looks like."
-game/events_arc1.rpy:519: narration-person: "He points at you and then at his own head, which even you can translate."
-game/events_arc1.rpy:520: narration-person: "You spend an hour on the roof going through them, and by the end you are wrong about four times in ten, which he indicates is extremely good."
-game/events_arc1.rpy:529: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:532: narration-person: "You come in for a wrist you're fairly sure is fine. Shoko Ieiri looks at it for four seconds and tells you it is not fine."
-game/events_arc1.rpy:540: narration-person: "She puts two fingers on your wrist and something green and unbearably warm goes through it, and the pain leaves in a way that feels like it's being politely escorted out."
-game/events_arc1.rpy:550: narration-person: "She lights a cigarette off nothing in particular and does not offer any further information, which is, you are learning, a thing she does."
-game/events_arc1.rpy:553: narration-person: "She's waiting to see whether you'll push."
-game/events_arc1.rpy:566: narration-person: "She doesn't answer it. But she doesn't leave, either, and you sit in the infirmary for another twenty minutes not talking, and it seems to be what she wants."
-game/events_arc1.rpy:585: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:588: narration-person: "Itadori has cooked. It is nine in the evening and there is enough food on the table for eleven people and there are two of you."
-game/events_arc1.rpy:592: narration-person: "You eat something. It is, annoyingly, excellent."
-game/events_arc1.rpy:613: narration-person: "You do not say it's going to be fine, because he would know."
-game/events_arc1.rpy:617: narration-person: "He laughs, wetly, and puts more food on your plate, because that is the only thing he knows how to do with a feeling."
-game/events_arc1.rpy:635: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:642: narration-person: "He says it out of nowhere, forty minutes into a silence, which is how you learn he has been building up to it for forty minutes."
-game/events_arc1.rpy:681: narration-person: "He doesn't say yes. But three days later a folder appears under your door with everything he has on it, in handwriting so small it's almost a code, and that is Megumi Fushiguro saying yes."
-game/events_arc1.rpy:690: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:693: narration-person: "Kugisaki is sitting on the steps with her shoes off, and she does not look up when you sit down."
-game/events_arc1.rpy:724: narration-person: "She finally looks up, and her eyes are dry and absolutely furious, which you now understand is what Nobara Kugisaki looks like when she's sad."
-game/events_arc1.rpy:745: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:809: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:820: narration-person: "She says the third name the way you'd set down something heavy."
-game/events_arc1.rpy:853: narration-person: "She says it, and then she doesn't leave, and the two of you watch the light go off the mountains."
-game/events_arc1.rpy:876: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:879: narration-person: "She drags you down to the water on a Sunday with a bag she will not let you look in."
-game/events_arc1.rpy:883: narration-person: "She produces, in order: two drinks, something wrapped in paper that turns out to be genuinely good, and a scarf, which she throws at your head."
-game/events_arc1.rpy:889: narration-person: "It is, you notice, exactly the colour you would have picked. She has never asked you what colour you would have picked."
-game/events_arc1.rpy:905: narration-person: "She goes red from the ears inward, which is a process you have never seen before and will be thinking about later."
-game/events_arc1.rpy:909: narration-person: "She hits you with the bag. It's empty. It doesn't hurt at all."
-game/events_arc1.rpy:910: narration-person: "Then she sits back down a little closer than she was before, and neither of you mentions that, and the river goes on doing what rivers do."
-game/events_arc1.rpy:924: narration-person: "She does not, however, move away, and after a while her shoulder ends up against yours and stays there."
-game/events_arc1.rpy:933: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:936: narration-person: "It's past eleven and the dojo lamps are down to one, and Maki is still working, and so are you, because that is apparently what the two of you are now."
-game/events_arc1.rpy:940: narration-person: "She takes the training blade out of your hands and then, instead of putting it on the rack, turns your wrist over and looks at it."
-game/events_arc1.rpy:951: narration-person: "She hasn't let go of your hand."
-game/events_arc1.rpy:972: narration-person: "Neither of you says anything for a while, and the one lamp does what one lamp does, and somewhere outside a bird is having a bad night."
-game/events_arc1.rpy:979: narration-person: "It is not a no. It is a date, set at an unspecified point in the future, by the least sentimental person you have ever met, and you decide to treat it as binding."
-game/events_arc1.rpy:988: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:991: narration-person: "You come in at two in the morning because you cannot sleep, and the light is on, because it always is."
-game/events_arc1.rpy:1014: narration-person: "It's two in the morning and neither of you is going anywhere."
-game/events_arc1.rpy:1023: narration-person: "She looks at you for a while."
-game/events_arc1.rpy:1027: narration-person: "You stay. She works. Neither of you says much."
-game/events_arc1.rpy:1028: narration-person: "You fall asleep in the chair around four, and when you wake up there's a blanket on you and she is pretending very hard to have not done it."
-game/events_arc1.rpy:1038: narration-person: "You laugh, and she looks briefly, genuinely delighted with herself, and then puts it away."
-game/events_arc1.rpy:1059: narration-person: "This is not a request, but he is watching your face."
-game/events_arc1.rpy:1095: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1098: narration-person: "He asks you up to the roof, which he has never done. Itadori doesn't ask; he arrives."
-game/events_arc1.rpy:1108: narration-person: "You wait."
-game/events_arc1.rpy:1117: narration-person: "He's looking at the mountains, not at you."
-game/events_arc1.rpy:1123: narration-person: "He tells you how many fingers are left, and roughly how long the higher-ups will tolerate the delay, and what the two most likely versions of the end look like."
-game/events_arc1.rpy:1124: narration-person: "It takes about four minutes. You don't interrupt once."
-game/events_arc1.rpy:1131: narration-person: "You sit up there until it's properly dark. He doesn't make a single joke, which from Yuji Itadori is the loudest thing he has ever done."
-game/events_arc1.rpy:1143: narration-person: "Later, going down the stairs, he catches your sleeve."
-game/events_arc1.rpy:1158: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1161: narration-person: "The folder has been on your desk for two weeks. You have read it eleven times."
-game/events_arc1.rpy:1163: narration-person: "Tonight you put it on the table in front of him and open it to a page he has annotated four separate times in four different years of handwriting."
-game/events_arc1.rpy:1196: narration-person: "It is the closest to undone you have ever seen him."
-game/events_arc1.rpy:1207: narration-person: "He closes the folder and pushes it back across the table to you."
-game/events_arc1.rpy:1214: narration-person: "You go through it properly. It takes until four in the morning and most of a pot of terrible coffee."
-game/events_arc1.rpy:1215: narration-person: "You find two more things. Neither is an answer. Both are the first new information in this folder for a year."
-game/events_arc1.rpy:1227: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1242: narration-person: "You don't tell her the odds. You stand next to her and you look too."
-game/events_arc1.rpy:1281: narration-person: "She takes your arm on the way to the station, briskly, like it's a logistical decision, and does not let go until they announce the train."
-game/events_arc1.rpy:1290: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1293: narration-person: "You bring her coffee at four in the morning."
-game/events_arc1.rpy:1295: narration-person: "You do it three nights running before she says anything about it."
-game/events_arc1.rpy:1318: narration-person: "She is looking at the cup, not at you."
-game/events_arc1.rpy:1356: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1367: narration-person: "You wait, because there is clearly more, and because there is no reasonable follow-up to that sentence."
-game/events_arc1.rpy:1398: narration-person: "He's quiet for long enough that you wonder if you've done something wrong."
-game/events_arc1.rpy:1410: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1413: narration-person: "Inumaki goes up to the ridge at 5:40 every single morning. You have known this for weeks — it's in the schedule of the place, if you pay attention."
-game/events_arc1.rpy:1415: narration-person: "Today you go with him."
-game/events_arc1.rpy:1417: narration-person: "He doesn't seem surprised. He points at a spot about ten metres off and taps his own throat, which you have learned means {i}stand back, I'm going to talk properly.{/i}"
-game/events_arc1.rpy:1434: narration-person: "He's got the phone out, waiting to see what you make of it."
-game/events_arc1.rpy:1446: narration-person: "He looks at you for a second."
-game/events_arc1.rpy:1448: narration-person: "He doubles them when he means it. You are starting to be able to hear it."
-game/events_arc1.rpy:1470: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1477: narration-person: "You walk with him. He does not go anywhere in particular."
-game/events_arc1.rpy:1509: narration-person: "He stops walking, which you have never seen him do mid-sentence."
-game/events_arc1.rpy:1532: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1535: narration-person: "Yaga is in the back of the storehouse with a half-finished cursed corpse on the bench, and he does not send you away, which from Yaga is an invitation."
-game/events_arc1.rpy:1539: narration-person: "You hold it. It is heavier than it looks and it is warm, which you decide not to think about."
-game/events_arc1.rpy:1588: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1591: narration-person: "You find him on the roof at an hour when he has no business being anywhere, sitting on the railing, not eating anything."
-game/events_arc1.rpy:1644: narration-person: "There is not, particularly, a difference. You both know it. Neither of you says so."
-game/events_arc1.rpy:1654: no-mc-on-screen: show mc at pos_l
-game/events_arc1.rpy:1657: narration-person: "There is a photograph on the shelf behind Yaga's desk that you have looked at every time you've been in this room and never once asked about."
-game/events_arc1.rpy:1659: narration-person: "Today you ask about it."
-game/events_arc1.rpy:1667: narration-person: "In the photograph they are laughing at something outside the frame, and one of them has his arm around another's shoulders, and none of the three faces looks anything like the two you know."
-game/events_intimate.rpy:21: narration-person: "You lie in the dark and she talks about her grandmother for about an hour, and then stops mid-sentence, asleep."
-game/events_intimate.rpy:22: narration-person: "In the morning the futon has moved. Neither of you mentions it. She makes very aggressive eye contact over breakfast, daring you to."
-game/events_intimate.rpy:29: narration-person: "She gives you the good blanket and takes the thin one and refuses to discuss it. She sleeps like someone who has decided to, immediately and completely, the way she does everything."
-game/events_intimate.rpy:30: narration-person: "At some point in the night she says your name, asleep, in a tone you have never heard her use awake — unguarded, and slightly worried, and checking."
-game/events_intimate.rpy:31: narration-person: "You say {i}I'm here{/i} into the dark and she goes quiet again."
-game/events_intimate.rpy:37: narration-person: "She works until two and you fall asleep to the sound of a pen. At some point it stops."
-game/events_intimate.rpy:38: narration-person: "When you wake at five she is asleep at the desk with her head on her arms, and there is a blanket over you that you did not put there, and the lamp has been turned down rather than off."
-game/events_intimate.rpy:51: narration-person: "The first hour of the day, before anybody needs either of you for anything."
-game/events_intimate.rpy:56: narration-person: "You hand her that. Twenty minutes later she is entirely herself again and pretending the previous twenty did not occur."
-game/events_intimate.rpy:70: narration-person: "Shoko Ieiri, at six in the morning, without a cigarette, drinking tea instead of coffee because you left the tea out."
-game/events_intimate.rpy:77: narration-person: "She makes a thing of it herself about four minutes later by putting her head on your shoulder and not explaining."
-game/events_intimate.rpy:89: narration-person: "You take an entire day. No training, no board, nobody told."
-game/events_intimate.rpy:92: narration-person: "You swim, badly. She judges your form out of ten and gives you a three and then a four when you improve, and the four is delivered like a medal."
-game/events_intimate.rpy:93: narration-person: "She has brought an amount of food that suggests she was worried you would be hungry at some point and could not admit to the worry."
-game/events_intimate.rpy:97: narration-person: "Later, lying on the warm stones with her head on your stomach, she says something so quietly that you have to ask her to repeat it, and she refuses, and you are fairly sure it was your name."
-game/events_intimate.rpy:104: narration-person: "By the afternoon she has managed it. She lies in the sun with her glasses off and her eyes shut and her hand in yours, and does not say anything for two hours, and at the end of it:"
-game/events_intimate.rpy:109: narration-person: "You get her off the mountain for a full day, which takes a written note to Yaga and a genuine argument."
-game/events_intimate.rpy:110: narration-person: "She spends the first hour checking her phone. The second hour she checks it twice. After that she forgets it exists, and you watch eleven years come off her face in real time."
-game/events_intimate.rpy:128: narration-person: "You talk about it anyway."
-game/events_intimate.rpy:151: narration-person: "You wait."
-game/events_romance.rpy:12: no-mc-on-screen: show mc at pos_l
-game/events_romance.rpy:17: narration-person: "You get the bus down the mountain together, which takes ninety minutes and costs a whole afternoon, and neither of you calls it anything."
-game/events_romance.rpy:23: narration-person: "She takes you through four shops with the focus of a woman running a mission. You pick, twice. She buys the one you picked, twice, and says nothing about it."
-game/events_romance.rpy:24: narration-person: "On the bus back she falls asleep somewhere around the third tunnel and does not lean on your shoulder, but ends up quite close to it."
-game/events_romance.rpy:29: narration-person: "It takes eleven minutes. You have four hours left."
-game/events_romance.rpy:31: narration-person: "So you walk. She is bad at this in a way you find unreasonably reassuring — she keeps naming exits, and then catching herself doing it, and stopping."
-game/events_romance.rpy:41: narration-person: "She takes you to a coffee place she used to go to at eighteen, which is now a different coffee place, and she is quietly, genuinely upset about it for about four seconds."
-game/events_romance.rpy:43: narration-person: "She buys you the expensive one. She does not let you pay. She is very firm about it in a way that closes the subject."
-game/events_romance.rpy:57: narration-person: "Whatever you were doing has finished, and neither of you has stood up."
-game/events_romance.rpy:63: narration-person: "She says it to the middle distance, like a weather report, and then glances over to see whether you heard it as one."
-game/events_romance.rpy:66: narration-person: "She shifts about four centimetres closer and spends the next hour talking about absolutely nothing, and you have never listened to anything so carefully."
-game/events_romance.rpy:69: narration-person: "Zenin doesn't do endings. She does the last repetition and then the next one. So when she stops, and stays stopped, you notice."
-game/events_romance.rpy:77: narration-person: "It costs her something visible to say, and she says it looking straight at you, because Maki Zenin does not flinch on purpose."
-game/events_romance.rpy:84: narration-person: "She turns the desk lamp down instead of off, which is not the same as asking you to stay, and is not different from it either."
-game/events_romance.rpy:101: narration-person: "You have been carrying the sentence around for about a week and it has not got any lighter."
-game/events_romance.rpy:111: narration-person: "She takes your collar in both hands and does not appear to know what she intends to do with it."
-game/events_romance.rpy:116: narration-person: "You say it badly. You have rehearsed it and it comes out in the wrong order and you say it anyway."
-game/events_romance.rpy:148: narration-person: "You pass her the form. Her hand is not entirely steady."
-game/events_stand.rpy:40: narration-person: "He shakes your hand on it like a man closing a contract, and holds on about two seconds longer than the joke requires."
-game/events_stand.rpy:48: narration-person: "He is not looking at you, which is how you know this is the ask."
-game/events_stand.rpy:55: narration-person: "You go on Sunday. It is two hours each way and there is nothing to do when you get there."
-game/events_stand.rpy:56: narration-person: "He talks to her for forty minutes about a boy called Itadori who eats too much, and about someone new who has been asking him difficult questions, and he does not once mention that you are in the ...
-game/events_stand.rpy:79: narration-person: "She looks at you for a second and then away, fast."
-game/events_stand.rpy:81: narration-person: "She does not bring it up again. Two days later she buys you lunch and refuses to explain why."
-game/events_stand.rpy:106: narration-person: "It is, as far as you can establish, the first time she has said it to anyone at this school."
-game/events_stand.rpy:133: narration-person: "He drinks his coffee. You drink yours."
-game/events_stand.rpy:141: narration-person: "He hands you the phone with a message already typed, which is how you know it is serious. He usually types in front of you."
-game/events_stand.rpy:151: narration-person: "The word goes through you the way his words do — not a command, this one, just a whole person's worth of asking, delivered at close range."
-game/events_stand.rpy:170: narration-person: "You write your name on the line. She looks at it for slightly too long and then files it without comment."
-game/events_stand.rpy:172: narration-person: "You are almost through the door when she says, to the paperwork rather than to you:"
-game/events_stand.rpy:181: narration-person: "Gojo asks you for something exactly once, and he does it so lightly that you almost miss that it was an ask."
-game/events_stand.rpy:190: narration-person: "It is the first time he has said that name to you without decorating it."
-game/missions_arc1.rpy:33: narration-person: "He does not raise his voice. He has not raised his voice once since you arrived, and it is beginning to occur to you that this is not calm."
-game/missions_arc1.rpy:44: no-mc-on-screen: show mc at pos_l
-game/missions_arc1.rpy:50: narration-person: "You hold the room. Dust hangs. And in the held second you have time to walk the whole floor and read what the survey missed — chalk marks at the roof beams, six weeks old, where somebody measured ...
-game/missions_arc1.rpy:54: narration-person: "[_pn] gets a hand on your sleeve before you are four metres in."
-game/missions_arc1.rpy:77: narration-person: "You go down on the concrete and the last thing you see is [_pn] putting themselves between you and it."
-game/missions_arc1.rpy:78: narration-person: "You wake in the infirmary with Shoko already halfway through the paperwork, and a headache, and both of you alive."
-game/missions_arc1.rpy:83: narration-person: "You get out. Both of you, through the fire door, into an afternoon that has no idea."
-game/missions_arc1.rpy:115: no-mc-on-screen: show mc at pos_l
-game/missions_arc1.rpy:128: one-technique: if technique == "filament":
-game/missions_arc1.rpy:129: narration-person: "Your threads find the drawer under the desk before your hands do. There is a phone in it, switched off, and a second one that is not."
-game/missions_arc1.rpy:133: narration-person: "You hold the annexe and go through the desk at your leisure, in a second that is not passing."
-game/missions_arc1.rpy:148: narration-person: "You wake up on the annexe floor with your cheek on a survey form and no idea how long you were out."
-game/missions_arc1.rpy:149: narration-person: "Nothing has taken anything. It was never here to kill you. It was here to make you slow."
-game/missions_arc1.rpy:152: narration-person: "You get out with a fistful of the pre-signed forms and a shikigami still standing between you and the stairs."
-game/missions_arc1.rpy:154: narration-person: "You take a form with you. Blank, signed, waiting for a number."
-game/missions_arc1.rpy:175: no-mc-on-screen: show mc at pos_l
-game/missions_arc1.rpy:178: narration-person: "Ryōsuke Nade is forty-six and has not slept properly in some time. He opens the door before you knock."
-game/missions_arc1.rpy:189: narration-person: "He has not invited you in and he has not closed the door."
-game/missions_arc1.rpy:209: narration-person: "You let the silence sit on the doorstep with him."
-game/missions_arc1.rpy:233: narration-person: "The twelfth is around a town you know extremely well, because you grew up in it, and the date beside it is four years before the alley."
-game/missions_arc1.rpy:254: narration-person: "Yaga Masamichi sits down, which you have never seen him do in his own office."
-game/sb_combat.rpy:44: one-technique: "filament": [
-game/sb_combat.rpy:45: one-technique: dict(id="thread", name="Filament", tier=0, ce=6,
-game/sb_combat.rpy:52: one-technique: "emberfall": [
-game/sb_energy.rpy:14: one-technique: "filament": dict(
-game/sb_energy.rpy:15: one-technique: name="Filament",
-game/sb_energy.rpy:25: one-technique: ("Filament",   "Threads that cut and read a room.", 0),
-game/sb_energy.rpy:31: one-technique: "emberfall": dict(
-game/sb_energy.rpy:32: one-technique: name="Emberfall",
-game/sb_energy.rpy:49: one-technique: name="Stillness",
-game/sb_energy.rpy:137: one-technique: default technique = "filament"
-game/sb_events.rpy:132: narration-person: "[_n] is busy with something. You leave it."
-game/sb_loop.rpy:98: narration-person: "You let the time pass."
-game/sb_loop.rpy:105: narration-person: "You sleep."
-game/sb_loop.rpy:113: narration-person: "You sit at the desk with the one textbook Ijichi gave you and read the same four hundred pages again."
-game/sb_loop.rpy:122: narration-person: "You're not hungry."
-game/sb_loop.rpy:124: narration-person: "You eat. It is astonishing how much of being a sorcerer is remembering to eat."
-game/sb_loop.rpy:133: narration-person: "She runs something warm and green over your forearms and the ache goes out of them."
-game/sb_loop.rpy:136: narration-person: "The infirmary is empty. You lie down on the paper-covered bed for twenty minutes and it helps more than it should."
-game/sb_loop.rpy:143: narration-person: "You sit on the roof with your legs through the railing and do nothing at all."
-game/sb_loop.rpy:152: narration-person: "You are far too tired to get in that water."
-game/sb_loop.rpy:159: narration-person: "[_n] is already in, and makes a noise you will be hearing for a week when you go under."
-game/sb_loop.rpy:164: narration-person: "The water is snowmelt cold and you lose about nine seconds of thinking to it."
-game/sb_loop.rpy:165: narration-person: "You swim until your arms complain, and climb out onto the warm stones, and lie there."
-game/sb_loop.rpy:176: narration-person: "You're too tired to get anything out of it. Eat, or sleep."
-game/sb_loop.rpy:180: narration-person: "You train. [_spot], alone, until the light goes."
-game/sb_loop.rpy:202: narration-person: "You've got nothing left in the tank. Not today."
-game/sb_loop.rpy:211: narration-person: "She puts you on the floor eleven times and explains exactly why each time, and the eleventh explanation is different from the first."
-game/sb_loop.rpy:216: narration-person: "Yuji Itadori is a startlingly good teacher, because he explains everything twice in two different ways and never once makes you feel stupid."
-game/sb_loop.rpy:220: narration-person: "He barely says another word for an hour. He just keeps being a step to the left of wherever you aimed, until you finally start aiming there."
-game/sb_loop.rpy:225: narration-person: "She is not going easy on you. She fights like she's settling a grudge she had before you arrived, and she laughs every time you get back up."
-game/sb_loop.rpy:230: narration-person: "He taps the collar over his mouth, which you take to mean no Cursed Speech, and then spends an hour being very quick and very hard to find."
-game/sb_loop.rpy:235: narration-person: "Hitting a two-metre cursed corpse turns out to be excellent for confidence and terrible for your knuckles."
-game/sb_loop.rpy:239: narration-person: "[_n] doesn't go easy on you, which is the kindest thing anyone does for you all day."
-game/sb_loop.rpy:260: narration-person: "Not nearly enough reserve. Holding an hour costs most of everything you have."
-game/sb_loop.rpy:263: narration-person: "You take the hour out of the world."
-game/sb_loop.rpy:267: narration-person: "You stand in it alone for as long as you can hold it, and then you let it go, and it arrives exactly where it was."
-game/sb_loop.rpy:273: narration-person: "The period does not pass. You have it twice."
-game/sb_loop.rpy:283: one-technique: "You work the forge in the back of the storehouse, feeding Emberfall into a blade until the heat stops needing you."
-game/sb_loop.rpy:283: narration-person: "You work the forge in the back of the storehouse, feeding Emberfall into a blade until the heat stops needing you."
-game/sb_loop.rpy:328: narration-person: "You and [_pn] spend four hours in a stairwell that smells of wet concrete, and kill something the size of a dog, and fill in a form about it."
-game/script.rpy:63: no-mc-on-screen: show mc at pos_c with dissolve
-game/script.rpy:75: no-mc-on-screen: hide mc with dissolve
-game/script.rpy:77: narration-person: "Three weeks until the exchange event with Kyoto. Until then the campus is open, the clock runs whether you use it or not, and the three of them have somewhere they'll be."
-game/script.rpy:81: narration-person: "You go out into the courtyard, because it is the middle of everything and somebody is always crossing it."
-game/story_arc1.rpy:4: no-deadline: ## Twenty-one days until Kyoto. These fire on the calendar, wherever you are,
-game/story_arc1.rpy:39: narration-person: "Ijichi finds you before breakfast and says the word 'mandatory' twice, which for Ijichi is shouting."
-game/story_arc1.rpy:43: no-deadline: yaga "Three weeks from today, Kyoto sends their second and third years here for the Goodwill Event."
-game/story_arc1.rpy:55: narration-person: "He looks along the row and stops on you."
-game/story_arc1.rpy:57: no-deadline: yaga "[mc_surname]. Last week you didn't know cursed energy existed. In three weeks you'll be on that field."
-game/story_arc1.rpy:100: narration-person: "A folded notice appears on your door sometime before dawn, in Ijichi's handwriting, apologising for the folded notice."
-game/story_arc1.rpy:125: narration-person: "[_an] gets there the same moment you do."
-game/story_arc1.rpy:141: narration-person: "It's small, it's fast, and it is between you and the dormitories."
-game/story_arc1.rpy:147: narration-person: "You go straight at it and make yourself the loudest thing in the courtyard, and it commits to you completely, which is exactly the plan and feels nothing like a plan while it happens."
-game/story_arc1.rpy:154: narration-person: "You hang back for four seconds and watch it move, and in those four seconds you learn that it always breaks left after it lunges."
-game/story_arc1.rpy:165: narration-person: "It takes nine seconds and both of you come out of it bleeding slightly and laughing in a way that is mostly adrenaline."
-game/story_arc1.rpy:201: narration-person: "The morning after Saitama, Shoko Ieiri goes through all four of you in order and does not say anything at all until she's finished."
-game/story_arc1.rpy:207: narration-person: "She turns your hands over."
-game/story_arc1.rpy:218: narration-person: "She hasn't let go of your hands."
-game/story_arc1.rpy:226: narration-person: "She presses two fingers just under your sternum."
-game/story_arc1.rpy:228: narration-person: "You feel for it. There is, astonishingly, something there."
-game/story_arc1.rpy:239: narration-person: "She lets go of your hands."
-game/story_arc1.rpy:255: no-mc-on-screen: show mc at pos_l
-game/story_arc1.rpy:280: narration-person: "Eleven minutes. He meant it literally; you can feel them going."
-game/story_arc1.rpy:287: narration-person: "You do it wrong four times."
-game/story_arc1.rpy:288: narration-person: "On the fifth you feel the difference in your chest — not a thing you are pushing out, a thing you are simply {i}being{/i} — and you hold it for nine entire seconds before it collapses."
-game/story_arc1.rpy:311: narration-person: "He's gone before you've stood up. He does not appear on campus again for two days."
-game/story_arc1.rpy:321: no-mc-on-screen: show mc at pos_l
-game/story_arc1.rpy:381: narration-person: "Nobody organises it. That's the part you remember afterwards — nobody sends a message, nobody suggests it."
-game/story_arc1.rpy:383: narration-person: "You go up to the roof the night before Kyoto because you can't sleep, and everyone else is already there, because none of them could either."
-game/story_arc1.rpy:406: narration-person: "[_cn] shifts over without being asked, and you end up sitting close enough that your shoulders touch, and neither of you says anything about it."
-game/story_arc1.rpy:408: narration-person: "You find a space at the edge and sit in it."
-game/story_arc1.rpy:410: narration-person: "Not so long ago you were on the ground in the alley behind the arcade with your hands full of something you couldn't name."
-game/story_arc1.rpy:431: narration-person: "Somebody starts an argument about whether Panda counts as a first-year for scoring purposes. It goes on for forty minutes. It is the best forty minutes you have had since you arrived."
-game/story_arc1.rpy:443: narration-person: "The light comes up over the mountains at about four and none of you have moved."
-game/story_arc1.rpy:445: no-deadline: $ arc = 2
-check_content: 505 findings in 43 files (no-mc-on-screen 41, one-technique 26, no-deadline 5, narration-person 433)
-game/story_arc1.rpy:450: no-deadline: show screen chapter_card("END OF ARC ONE", "Three Weeks", "The Kyoto Goodwill Event — next build.")
-game/story_arc1.rpy:467: narration-person: "There have been three other people on this campus all week. You have seen them at a distance, at meals, crossing the courtyard, and nobody has introduced anybody, because nobody here does that."
-game/story_arc1.rpy:469: narration-person: "Today one of them walks into the training hall while you are in it, carrying a naginata over one shoulder like a shopping bag."
-game/story_arc1.rpy:506: narration-person: "She swings — not fast, not gently, at exactly the speed of someone establishing a baseline — and you get out of the way badly and entirely on instinct."
-game/story_kurose.rpy:24: narration-person: "There is a man waiting outside the principal's office who is not a teacher and is not a sorcerer, and who stands up when you arrive and bows to you before he says anything."
-game/story_kurose.rpy:64: narration-person: "You take the folder and go through it properly while he waits, which he permits without any sign of impatience."
-game/story_kurose.rpy:65: narration-person: "Three of the four are ordinary. The fourth is one sheet, no letterhead, no stamp, one signature line, and the sentences do not stay the same length when you look away and back."
-game/story_kurose.rpy:69: narration-person: "You sign. There is no version of the afternoon where you do not sign, and he has not once pretended otherwise."
-game/story_kurose.rpy:95: narration-person: "It is the single most useful sentence anybody says to you that week."
-game/story_kurose.rpy:120: narration-person: "An envelope has been put under your door, squarely, by somebody who did not knock."
-game/story_kurose.rpy:128: narration-person: "The surveyor's signature is a name you do not know yet."
-game/story_kurose.rpy:138: narration-person: "You put it in the drawer with your father's watch, or your photograph, or the nothing you brought with you."
-game/story_oda.rpy:24: narration-person: "There is a letter on your desk."
-game/story_oda.rpy:26: narration-person: "Not an envelope under the door — a letter, stamped, addressed, that has come through an actual postal system to a school whose name your own mother cannot hold in her head."
-game/story_oda.rpy:28: narration-person: "The handwriting is small and fast and you know it from two years of corrected homework."
-game/story_oda.rpy:61: narration-person: "You write four pages and send three of them."
-game/story_oda.rpy:62: narration-person: "You tell her that Sana did not fall, that there was something in the alley, that you can see them now and could not before, and that the school is real and is in a mountain."
-game/story_oda.rpy:63: narration-person: "You do not expect her to be able to keep it. You have watched your mother fail to keep considerably less."
-game/story_oda.rpy:71: narration-person: "You write half a page that says you are all right, that the school is real, and that she was right to notice and should now stop."
-game/story_oda.rpy:72: narration-person: "It is a kind letter and a closed door and you are aware of building it."
-game/story_oda.rpy:79: narration-person: "You put the letter in the drawer."
-game/story_oda.rpy:80: narration-person: "You take it out twice over the following week and put it back both times, which is its own kind of answer."
-game/story_oda.rpy:96: narration-person: "Oda-sensei writes again, and this one is not a letter about you."
-game/story_oda.rpy:113: narration-person: "You have seen that signature before. It was on the compliments slip that came under your door."
-game/story_oda.rpy:117: narration-person: "You do not know the signature. You copy it out anyway and put it in the drawer."
-game/story_oda.rpy:134: narration-person: "You write one page. You tell her exactly what she is close to, in plain terms, without softening it — and that the man in February was real, and that the next one will not ask politely."
-game/story_oda.rpy:143: narration-person: "You ask for the names, and the dates, and anything she can get without being seen getting it."
-game/story_oda.rpy:152: narration-person: "You put the letter on Yaga's desk and say nothing while he reads it."
+# tools/smoke/baseline_check_content.txt -- the findings of
+# `tools/check_content.py --all game/ tools/smoke/` that the tree had when this
+# file was last written (by --write-baseline: at P0a, before phase 2 changed a
+# game file, and again by P8 at the end of the phase; frozen in between).
+# A finding with the same file, rule and text is counted, not listed; line
+# numbers are not compared. --no-baseline lists them. (Names have their own
+# baseline, baseline_globals.txt.)
+tools/smoke/wp10_chapters.rpy:90: no-deadline: ##   arc1_complete   story_arc1 5.4.2: `$ arc = 2` + `flag("arc1_complete")`
+tools/smoke/wp10_chapters.rpy:93: one-technique: ##   found_the_phone missions_arc1 5.4.1: the Filament branch is deleted
+tools/smoke/wp10_chapters.rpy:99: one-technique: WP10_TECH = re.compile(r"filament|emberfall|aftersound|stillness", re.IGNORECASE)
+tools/smoke/wp10_chapters.rpy:100: no-deadline: WP10_DEADLINE = re.compile(r"KYOTO_DAY|days_left\(|days until Kyoto|TO KYOTO|Three weeks from today"
+tools/smoke/wp10_chapters.rpy:101: no-deadline: r"|In three weeks|\barc\s*=\s*2\b|END OF ARC ONE")
+tools/smoke/wp10_chapters.rpy:102: no-deadline: WP10_GREP = ["technique ==", "tname", "min_day", "arc = 2", "min(160", "min(140", "grade = "]
+tools/smoke/wp10_chapters.rpy:250: no-deadline: check(not _grep, "static: no technique==/tname/min_day/arc = 2/min(160/min(140/grade = ", _grep)
+tools/smoke/wp10_chapters.rpy:394: no-deadline: and "END OF ARC ONE" not in _nb, "st_night_before: the card is THE NIGHT BEFORE / Goodwill")
+tools/smoke/wp10_chapters.rpy:411: one-technique: technique = "filament"
+tools/smoke/wp10_chapters.rpy:488: one-technique: technique = "filament"
+tools/smoke/wp10_chapters.rpy:522: one-technique: technique = "filament"
+tools/smoke/wp10_chapters.rpy:605: one-technique: check(not _techs, "no line shown names Filament, Emberfall, Aftersound or Stillness", _techs[:5])
+tools/smoke/wp1_world.rpy:237: no-literal-name: check(not _you, "no place name or description says you/your (Kaito narrates in I)", _you)
+tools/smoke/wp2_grades.rpy:185: one-technique: ## acc: migration 10 on an Emberfall fixture, twice.
+tools/smoke/wp2_grades.rpy:191: one-technique: "acc: migration 10 on Emberfall gives control >= output", (technique, control, output))
+tools/smoke/wp2_grades.rpy:201: one-technique: "migration 10 on Filament: Last Light, control unchanged", (technique, control))
+tools/smoke/wp7_ui.rpy:870: one-technique: check("The forge is cold." in _tp and "Emberfall" not in _tp and "gain(" not in _tp and "advance_period" not in _tp,
+tools/smoke/wp9_prologue.rpy:174: one-technique: fixture(technique="filament", mc_name="Ren", mc_surname="Tachibana")
+game/images/side/gojo_angry.png:1: art-names: the image name gojo_angry is also game/images/char/gojo_angry.png
+game/images/side/gojo_happy.png:1: art-names: the image name gojo_happy is also game/images/char/gojo_happy.png
+game/images/side/gojo_neutral.png:1: art-names: the image name gojo_neutral is also game/images/char/gojo_neutral.png
+game/images/side/gojo_sad.png:1: art-names: the image name gojo_sad is also game/images/char/gojo_sad.png
+game/images/side/gojo_serious.png:1: art-names: the image name gojo_serious is also game/images/char/gojo_serious.png
+game/images/side/gojo_surprised.png:1: art-names: the image name gojo_surprised is also game/images/char/gojo_surprised.png
+game/images/side/ijichi_angry.png:1: art-names: the image name ijichi_angry is also game/images/char/ijichi_angry.png
+game/images/side/ijichi_happy.png:1: art-names: the image name ijichi_happy is also game/images/char/ijichi_happy.png
+game/images/side/ijichi_neutral.png:1: art-names: the image name ijichi_neutral is also game/images/char/ijichi_neutral.png
+game/images/side/ijichi_sad.png:1: art-names: the image name ijichi_sad is also game/images/char/ijichi_sad.png
+game/images/side/ijichi_serious.png:1: art-names: the image name ijichi_serious is also game/images/char/ijichi_serious.png
+game/images/side/ijichi_surprised.png:1: art-names: the image name ijichi_surprised is also game/images/char/ijichi_surprised.png
+game/images/side/maki_angry.png:1: art-names: the image name maki_angry is also game/images/char/maki_angry.png
+game/images/side/maki_happy.png:1: art-names: the image name maki_happy is also game/images/char/maki_happy.png
+game/images/side/maki_neutral.png:1: art-names: the image name maki_neutral is also game/images/char/maki_neutral.png
+game/images/side/maki_sad.png:1: art-names: the image name maki_sad is also game/images/char/maki_sad.png
+game/images/side/maki_serious.png:1: art-names: the image name maki_serious is also game/images/char/maki_serious.png
+game/images/side/maki_surprised.png:1: art-names: the image name maki_surprised is also game/images/char/maki_surprised.png
+game/images/side/mc_angry.png:1: art-names: the image name mc_angry is also game/images/char/mc_angry.png
+game/images/side/mc_happy.png:1: art-names: the image name mc_happy is also game/images/char/mc_happy.png
+game/images/side/mc_neutral.png:1: art-names: the image name mc_neutral is also game/images/char/mc_neutral.png
+game/images/side/mc_sad.png:1: art-names: the image name mc_sad is also game/images/char/mc_sad.png
+game/images/side/mc_serious.png:1: art-names: the image name mc_serious is also game/images/char/mc_serious.png
+game/images/side/mc_surprised.png:1: art-names: the image name mc_surprised is also game/images/char/mc_surprised.png
+game/images/side/mcyotsuka_angry.png:1: art-names: the image name mcyotsuka_angry is also game/images/char/mcyotsuka_angry.png
+game/images/side/mcyotsuka_happy.png:1: art-names: the image name mcyotsuka_happy is also game/images/char/mcyotsuka_happy.png
+game/images/side/mcyotsuka_neutral.png:1: art-names: the image name mcyotsuka_neutral is also game/images/char/mcyotsuka_neutral.png
+game/images/side/mcyotsuka_sad.png:1: art-names: the image name mcyotsuka_sad is also game/images/char/mcyotsuka_sad.png
+game/images/side/mcyotsuka_serious.png:1: art-names: the image name mcyotsuka_serious is also game/images/char/mcyotsuka_serious.png
+game/images/side/mcyotsuka_surprised.png:1: art-names: the image name mcyotsuka_surprised is also game/images/char/mcyotsuka_surprised.png
+game/images/side/megumi_angry.png:1: art-names: the image name megumi_angry is also game/images/char/megumi_angry.png
+game/images/side/megumi_happy.png:1: art-names: the image name megumi_happy is also game/images/char/megumi_happy.png
+game/images/side/megumi_neutral.png:1: art-names: the image name megumi_neutral is also game/images/char/megumi_neutral.png
+game/images/side/megumi_sad.png:1: art-names: the image name megumi_sad is also game/images/char/megumi_sad.png
+game/images/side/megumi_serious.png:1: art-names: the image name megumi_serious is also game/images/char/megumi_serious.png
+game/images/side/megumi_surprised.png:1: art-names: the image name megumi_surprised is also game/images/char/megumi_surprised.png
+game/images/side/nobara_angry.png:1: art-names: the image name nobara_angry is also game/images/char/nobara_angry.png
+game/images/side/nobara_happy.png:1: art-names: the image name nobara_happy is also game/images/char/nobara_happy.png
+game/images/side/nobara_neutral.png:1: art-names: the image name nobara_neutral is also game/images/char/nobara_neutral.png
+game/images/side/nobara_sad.png:1: art-names: the image name nobara_sad is also game/images/char/nobara_sad.png
+game/images/side/nobara_serious.png:1: art-names: the image name nobara_serious is also game/images/char/nobara_serious.png
+game/images/side/nobara_surprised.png:1: art-names: the image name nobara_surprised is also game/images/char/nobara_surprised.png
+game/images/side/panda_angry.png:1: art-names: the image name panda_angry is also game/images/char/panda_angry.png
+game/images/side/panda_happy.png:1: art-names: the image name panda_happy is also game/images/char/panda_happy.png
+game/images/side/panda_neutral.png:1: art-names: the image name panda_neutral is also game/images/char/panda_neutral.png
+game/images/side/panda_sad.png:1: art-names: the image name panda_sad is also game/images/char/panda_sad.png
+game/images/side/panda_serious.png:1: art-names: the image name panda_serious is also game/images/char/panda_serious.png
+game/images/side/panda_surprised.png:1: art-names: the image name panda_surprised is also game/images/char/panda_surprised.png
+game/images/side/sana_angry.png:1: art-names: the image name sana_angry is also game/images/char/sana_angry.png
+game/images/side/sana_happy.png:1: art-names: the image name sana_happy is also game/images/char/sana_happy.png
+game/images/side/sana_neutral.png:1: art-names: the image name sana_neutral is also game/images/char/sana_neutral.png
+game/images/side/sana_sad.png:1: art-names: the image name sana_sad is also game/images/char/sana_sad.png
+game/images/side/sana_serious.png:1: art-names: the image name sana_serious is also game/images/char/sana_serious.png
+game/images/side/sana_surprised.png:1: art-names: the image name sana_surprised is also game/images/char/sana_surprised.png
+game/images/side/shoko_angry.png:1: art-names: the image name shoko_angry is also game/images/char/shoko_angry.png
+game/images/side/shoko_happy.png:1: art-names: the image name shoko_happy is also game/images/char/shoko_happy.png
+game/images/side/shoko_neutral.png:1: art-names: the image name shoko_neutral is also game/images/char/shoko_neutral.png
+game/images/side/shoko_sad.png:1: art-names: the image name shoko_sad is also game/images/char/shoko_sad.png
+game/images/side/shoko_serious.png:1: art-names: the image name shoko_serious is also game/images/char/shoko_serious.png
+game/images/side/shoko_surprised.png:1: art-names: the image name shoko_surprised is also game/images/char/shoko_surprised.png
+game/images/side/toge_angry.png:1: art-names: the image name toge_angry is also game/images/char/toge_angry.png
+game/images/side/toge_happy.png:1: art-names: the image name toge_happy is also game/images/char/toge_happy.png
+game/images/side/toge_neutral.png:1: art-names: the image name toge_neutral is also game/images/char/toge_neutral.png
+game/images/side/toge_sad.png:1: art-names: the image name toge_sad is also game/images/char/toge_sad.png
+game/images/side/toge_serious.png:1: art-names: the image name toge_serious is also game/images/char/toge_serious.png
+game/images/side/toge_surprised.png:1: art-names: the image name toge_surprised is also game/images/char/toge_surprised.png
+game/images/side/utahime_angry.png:1: art-names: the image name utahime_angry is also game/images/char/utahime_angry.png
+game/images/side/utahime_happy.png:1: art-names: the image name utahime_happy is also game/images/char/utahime_happy.png
+game/images/side/utahime_neutral.png:1: art-names: the image name utahime_neutral is also game/images/char/utahime_neutral.png
+game/images/side/utahime_sad.png:1: art-names: the image name utahime_sad is also game/images/char/utahime_sad.png
+game/images/side/utahime_serious.png:1: art-names: the image name utahime_serious is also game/images/char/utahime_serious.png
+game/images/side/utahime_surprised.png:1: art-names: the image name utahime_surprised is also game/images/char/utahime_surprised.png
+game/images/side/yaga_angry.png:1: art-names: the image name yaga_angry is also game/images/char/yaga_angry.png
+game/images/side/yaga_happy.png:1: art-names: the image name yaga_happy is also game/images/char/yaga_happy.png
+game/images/side/yaga_neutral.png:1: art-names: the image name yaga_neutral is also game/images/char/yaga_neutral.png
+game/images/side/yaga_sad.png:1: art-names: the image name yaga_sad is also game/images/char/yaga_sad.png
+game/images/side/yaga_serious.png:1: art-names: the image name yaga_serious is also game/images/char/yaga_serious.png
+game/images/side/yaga_surprised.png:1: art-names: the image name yaga_surprised is also game/images/char/yaga_surprised.png
+game/images/side/yuji_angry.png:1: art-names: the image name yuji_angry is also game/images/char/yuji_angry.png
+game/images/side/yuji_happy.png:1: art-names: the image name yuji_happy is also game/images/char/yuji_happy.png
+game/images/side/yuji_neutral.png:1: art-names: the image name yuji_neutral is also game/images/char/yuji_neutral.png
+game/images/side/yuji_sad.png:1: art-names: the image name yuji_sad is also game/images/char/yuji_sad.png
+game/images/side/yuji_serious.png:1: art-names: the image name yuji_serious is also game/images/char/yuji_serious.png
+game/images/side/yuji_surprised.png:1: art-names: the image name yuji_surprised is also game/images/char/yuji_surprised.png

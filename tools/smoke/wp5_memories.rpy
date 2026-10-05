@@ -28,7 +28,8 @@
 ##                hint; a journal opened inside a replay reads the save's
 ##                memories, and no replay starts inside another.
 ## Screenshots (shots/wp5_memories/): the memories by person and by act, as a
-## harness-drawn board (the journal's real tab is WP8's), and a replayed scene.
+## harness-drawn board (the journal's own tiles are on the people's pages and
+## the Me page since phase 2; tools/smoke/p2_journal.rpy), and a replayed scene.
 
 init 999 python:
     import builtins
@@ -108,7 +109,8 @@ init 999 python:
             store.memories_seen[name] = store.day
 
     def zz_probe():
-        ## What the journal's Memories tab reads.
+        ## What the journal's memory tiles read (phase 2: on a person's page
+        ## and the Me page; the Memories tab is gone).
         return (memory_counts(), memory_state("confide:shoko"), memory_state("confide:yuji"),
                 memory_state("st_roll_call"), memory_state("sana_mem_diner"), memory_state("sana_mem_daisy"),
                 [(t, len(es)) for t, es in memory_groups("person")])
@@ -243,6 +245,9 @@ label zz_smoke:
               and memory_entry("ev_yuji_1")["text"] == "Time with Yuji.",
               "fresh game: a hangout with someone unmet has a hint that doesn't name them",
               [memory_entry(i)["text"] for i in ("ev_maki_1", "ev_panda_1", "ev_yuji_1")])
+        ## Phase 2 (P3): the hint is in the first person, like every tile's text.
+        check(MEMORY_UNMET_HINT == "Someone I haven't met yet." and " you" not in MEMORY_UNMET_HINT.lower(),
+              "the unmet hint reads \"Someone I haven't met yet.\"", MEMORY_UNMET_HINT)
         check([t for t, es in memory_groups("act")] == ["Prologue · The Lights", "Act I · Grade Four",
               "Act II · The Ones Who Stay", "Act III · Overtime", "Act IV · Goodwill", "Bonds", "Sana"],
               "by act: the acts in order, empty ones left out", [t for t, es in memory_groups("act")])

@@ -4,6 +4,13 @@
 ##
 ##   tools/smoke.sh tools/smoke/wp1_world.rpy
 ##
+## Phase 2 (P1): the map has two levels. A room's pin (row_<loc>) is on its
+## area's view, so the harness opens the map on that area (sb_map(area=...))
+## before pressing it; a district marker only opens the district, so a trip is
+## two presses (district_<key>, then district_go). Hover lines are tuples
+## (text, key). Megumi's weekend afternoon is the Library (the frozen copy
+## below follows it).
+##
 ## Every acceptance bullet is a named check. Screenshots of both map layers go
 ## to shots/wp1/ (as well as this harness's own shots/wp1_world/), with more
 ## of the placeholder backgrounds and the map in other states.
@@ -15,19 +22,28 @@ init 999 python:
 
     ## --- a frozen copy of the world before phase 1 (commit 57eb3db) ----------
     ## The regression check compares today's char_location against this.
+    ## Phase 2 changed one row on purpose: Megumi, weekend Afternoon -> library.
+    ## P9 (D57) moved five slots into the hubs, on purpose: Yuji, Night ->
+    ## dorm_yard; Nobara, Morning -> training_yard; Toge, Afternoon ->
+    ## school_yard; Megumi, weekend Morning -> trailhead; Shoko, weekend
+    ## Afternoon -> staff_yard. After checkpoint D (5 Oct 2026) the owner's
+    ## word moved two more, on purpose: Panda, Evening -> library; Toge,
+    ## Evening -> library (the common room in the Evening is the first
+    ## years'); and then one more: Panda, Night -> dorm_yard ("Put Panda in
+    ## the garden for now"). Every other cell is as it was.
     ZZ_OLD_SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
-                   "Evening": "dorm_common", "Night": "dorm_common"},
+                   "Evening": "dorm_common", "Night": "dorm_yard"},
         "megumi": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "forest",
                    "Evening": "dorm_common", "Night": "-"},
-        "nobara": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "courtyard",
+        "nobara": {"Morning": "training_yard", "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "girls_dorm"},
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
-                   "Evening": "dorm_common", "Night": "dorm_common"},
-        "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "rooftop",
-                   "Evening": "dorm_common", "Night": "-"},
+                   "Evening": "library",   "Night": "dorm_yard"},
+        "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
+                   "Evening": "library",   "Night": "-"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
         "yaga":   {"Morning": "office",    "Noon": "office",    "Afternoon": "storehouse",
@@ -37,12 +53,12 @@ init 999 python:
     }
     ZZ_OLD_WEEKEND = {
         "yuji":   {"Morning": "dorm_common", "Afternoon": "riverside", "Evening": "cafeteria"},
-        "megumi": {"Morning": "forest",      "Afternoon": "ridge"},
+        "megumi": {"Morning": "trailhead",   "Afternoon": "library"},
         "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
         "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
         "panda":  {"Afternoon": "riverside"},
         "toge":   {"Morning": "rooftop",     "Afternoon": "riverside"},
-        "shoko":  {"Afternoon": "rooftop"},
+        "shoko":  {"Afternoon": "staff_yard"},
         "yaga":   {"Morning": "-", "Noon": "-", "Afternoon": "-", "Evening": "-"},
     }
     ZZ_OLD_GOJO_SPOTS = ["-", "-", "-", "rooftop", "courtyard", "office", "cafeteria", "training"]
@@ -108,6 +124,17 @@ init 999 python:
     ## --- what the script says (narration and dialogue), captured -----------------
     import builtins as zz_builtins
     ZZ_SAID = zz_builtins.list()
+
+    ## Phase 2 (D26): a trip's clock stops early where a story beat is waiting
+    ## (advance_period_soft). These trip tests call sb_trip directly, outside
+    ## the loop that would have played the beat first, so while ZZ_QUIET[0]
+    ## is set this gate holds every story beat: the trips take their half day.
+    ZZ_QUIET = zz_builtins.list([False])
+
+    def zz_quiet_gate(e):
+        return not (ZZ_QUIET[0] and e["kind"] == "story")
+
+    register_event_gate(zz_quiet_gate)
     _zz_filter0 = config.say_menu_text_filter
 
     def zz_said_filter(t):
@@ -125,6 +152,16 @@ init 999 python:
     ## screen gave it, so these checks test what the map's rows and cards do.
     ZZ_PRESSED = zz_builtins.list()
 
+    def zz_run_on_map(a):
+        """Run a button's action with sb_map as the current screen, as a
+        real click does: SetScreenVariable writes to renpy.current_screen(),
+        and a timer on another screen would otherwise write to its own."""
+        renpy.display.screen.push_current_screen(renpy.get_screen("sb_map"))
+        try:
+            return renpy.run(a)
+        finally:
+            renpy.display.screen.pop_current_screen()
+
     def zz_press_fn(wid):
         w = renpy.get_widget("sb_map", wid)
         if w is None:
@@ -132,8 +169,25 @@ init 999 python:
             return ("zz_missing", wid)
         a = getattr(w, "action", None)
         ZZ_PRESSED.append((wid, a, getattr(w, "_tooltip", None)))
-        rv = renpy.run(a)
+        rv = zz_run_on_map(a)
         return rv if rv is not None else ("zz_nothing", wid)
+
+    def zz_open_fn(wid):
+        """Press a marker that only opens its level (it returns nothing, and
+        the interaction goes on)."""
+        w = renpy.get_widget("sb_map", wid)
+        a = getattr(w, "action", None) if w is not None else None
+        ZZ_PRESSED.append((wid, a, getattr(w, "_tooltip", None)))
+        if w is None:
+            return ("zz_missing", wid)
+        rv = zz_run_on_map(a)
+        if rv is not None:
+            return rv           ## phase 1's map returned here; phase 2's must not
+        return None
+
+    def zz_tip_text(t):
+        """The words of a hover line: the first element of a (text, key) tuple."""
+        return t[0] if isinstance(t, tuple) and len(t) == 2 else None
 
     def zz_pressed(wid):
         """(action, tooltip) of the last press of wid."""
@@ -149,9 +203,15 @@ screen zz_ret(value, delay=0.4):
     timer delay action [Hide("zz_ret"), Return(value)]
 
 ## Presses one of sb_map's buttons (by id) inside the running interaction.
-screen zz_press(wid, delay=0.4):
+## With first=<id>, that marker is pressed first (it opens its level and
+## returns nothing), then wid half a second later.
+screen zz_press(wid, delay=0.4, first=None):
     zorder 200
-    timer delay action [Hide("zz_press"), Function(zz_press_fn, wid)]
+    if first:
+        timer delay action Function(zz_open_fn, first)
+        timer (delay + 0.5) action [Hide("zz_press"), Function(zz_press_fn, wid)]
+    else:
+        timer delay action [Hide("zz_press"), Function(zz_press_fn, wid)]
 
 
 label zz_smoke:
@@ -181,9 +241,11 @@ label zz_smoke:
         check(not _you, "no place name or description says you/your (Kaito narrates in I)", _you)
         check([a["key"] for a in AREAS] == ["heart", "school", "dorms", "staff", "grounds", "mountain"], "AREAS order")
         check([a["seal"] for a in AREAS] == ["門", "校", "寮", "職", "練", "山"], "AREAS seals")
-        check([a["anchor"] for a in AREAS] == [(960, 900), (420, 740), (900, 560), (1560, 440), (1560, 760), (740, 290)], "AREAS anchors")
-        check(places_in("staff") == ["office", "utahime_office", "gojo_office"] and places_in("dorms") == ["dorm", "dorm_common", "girls_dorm", "rooftop"],
-              "places_in", (places_in("staff"), places_in("dorms")))
+        check([a["anchor"] for a in AREAS] == [(960, 900), (420, 740), (900, 560), (1560, 440), (1560, 760), (1290, 215)],
+              "AREAS anchors (P9, D59: the Mountain's sits on the mountain, it was (740, 290) over the lake)")
+        check(places_in("staff") == ["staff_yard", "office", "utahime_office", "gojo_office"]
+              and places_in("dorms") == ["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop"],
+              "places_in (P9, D53: each area's hub is first)", (places_in("staff"), places_in("dorms")))
         check(area_of("gate") == "heart" and area_of("ridge") == "mountain" and area_of("gojo_office") == "staff" and area_of("zz") is None, "area_of")
         _counts = {l: sum(1 for a in AREAS if l in a["places"]) for l in LOCATIONS}
         check(all(n == 1 for n in _counts.values()), "every place is in exactly one area", _counts)
@@ -208,6 +270,74 @@ label zz_smoke:
         check(not has_flag("intensive_done") and not _bad,
               "regression: days 1-14 x 5 periods, the original 9 match the pre-phase-1 schedule and Gojo's roll",
               _bad[:6])
+
+        ## After checkpoint D (the owner's word, 5 Oct 2026): by their own
+        ## routine only the first years stand in the common room in the
+        ## Evening, on every day of the week. Everyone is on the roster, no
+        ## story pin, nobody tagging along (a companion I bring in myself is
+        ## the game's rule, not the schedule), on a day Gojo keeps office
+        ## hours and on a day he roams.
+        _zz_first = ("yuji", "megumi", "nobara")
+        _zz_r0, _zz_c0, _zz_g0, _zz_d0 = list(roster), companion, gojo_in, day
+        roster = list(ROSTER_ORDER)
+        companion = None
+        schedule_overrides = {}
+        _zz_bad = []
+        _zz_seen = {}
+        _zz_five = {}
+        _zz_night = []
+        _zz_garden = {}
+        for _zz_in in (False, True):
+            for _d in range(1, 15):
+                day = _d
+                gojo_in = _zz_in
+                roll_gojo()
+                gojo_in = _zz_in
+                _zz_at = [w for w in ROSTER_ORDER if char_location(w, "Evening") == "dorm_common"]
+                _zz_seen.setdefault(weekday(), set()).update(_zz_at)
+                if [w for w in _zz_at if w not in _zz_first] or who_is_here("dorm_common", "Evening") != _zz_at:
+                    _zz_bad.append((_d, weekday(), _zz_in, _zz_at))
+                if who_is_here("dorm_common", "Night"):
+                    _zz_night.append((_d, weekday(), _zz_in, who_is_here("dorm_common", "Night")))
+                _zz_garden.setdefault(weekday(), set()).add(tuple(who_is_here("dorm_yard", "Night")))
+                for _p in PERIODS:
+                    for _l in LOC_ORDER:
+                        _zz_n = [w for w in ROSTER_ORDER if w != "gojo" and char_location(w, _p) == _l]
+                        if len(_zz_n) >= 5:
+                            _zz_five[("weekend" if is_weekend() else "weekday", _p, _l)] = _zz_n
+        check(not _zz_bad and len(_zz_seen) == 7 and _zz_seen["Mon"] == set(_zz_first),
+              "after checkpoint D: on all seven days only the first years are in the common room in the Evening "
+              "(days 1-14, everyone met, Gojo in and roaming)", (_zz_bad[:4], _zz_seen))
+        _zz_cells = [(n, w, t.get("Evening")) for n, tab in (("SCHEDULE", SCHEDULE), ("WEEKEND", WEEKEND))
+                     for w, t in sorted(tab.items()) if t.get("Evening") == "dorm_common" and w not in _zz_first]
+        _zz_cells += [("FLAG_SCHEDULES", w, t.get("Evening")) for f, w, t in FLAG_SCHEDULES
+                      if t and t.get("Evening") == "dorm_common" and w not in _zz_first]
+        check(not _zz_cells and "dorm_common" not in GOJO_SPOTS
+              and all(SCHEDULE[w]["Evening"] == "dorm_common" for w in _zz_first),
+              "no table puts a second year, a teacher or staff in the common room in the Evening; the first years' cells are as they were",
+              _zz_cells)
+        check(SCHEDULE["panda"]["Evening"] == "library" and SCHEDULE["toge"]["Evening"] == "library"
+              and SCHEDULE["panda"]["Night"] == "dorm_yard" and "Night" not in WEEKEND.get("panda", {})
+              and "Evening" not in WEEKEND.get("panda", {}) and "Evening" not in WEEKEND.get("toge", {})
+              and "library" in LOCATIONS
+              and len(_zz_garden) == 7 and all(g == set([("yuji", "panda")]) for g in _zz_garden.values()),
+              "Panda and Toge spend the Evening in the library, weekends too; Panda's Night is the dormitory garden, "
+              "beside Yuji, on all seven days",
+              (SCHEDULE["panda"], SCHEDULE["toge"], _zz_garden))
+        ## "Put Panda in the garden for now" (the owner, 5 Oct 2026): nobody's
+        ## routine is the common room at Night any more.
+        _zz_cells = [(n, w) for n, tab in (("SCHEDULE", SCHEDULE), ("WEEKEND", WEEKEND))
+                     for w, t in sorted(tab.items()) if t.get("Night") == "dorm_common"]
+        _zz_cells += [("FLAG_SCHEDULES", w) for f, w, t in FLAG_SCHEDULES if t and t.get("Night") == "dorm_common"]
+        check(not _zz_night and not _zz_cells and "dorm_common" not in GOJO_SPOTS,
+              "the common room is empty at Night by routine on all seven days (days 1-14, everyone met, Gojo in and roaming; "
+              "no table has a Night cell there)", (_zz_night[:4], _zz_cells))
+        check(sorted(_zz_five) == [("weekday", "Noon", "cafeteria"), ("weekend", "Afternoon", "riverside"), ("weekend", "Noon", "cafeteria")],
+              "by the routine, five stand together only in the cafeteria at Noon and at the riverside on a weekend Afternoon",
+              _zz_five)
+        note("places that hold five or more by the routine (Gojo not counted: he may roam into the cafeteria)", _zz_five)
+        roster, companion, gojo_in, day = _zz_r0, _zz_c0, _zz_g0, _zz_d0
+        roll_gojo()
         roster = _nine + ["ijichi"]
 
     ## --- 3. the offices lock correctly -----------------------------------------------------
@@ -524,6 +654,7 @@ label zz_smoke:
         flag("ijichi_rides")
 
     ## sb_trip under autoplay, from the Morning.
+    $ ZZ_QUIET[0] = True
     $ day = 2
     $ period = "Morning"
     $ here = "courtyard"
@@ -610,17 +741,39 @@ label zz_smoke:
     call sb_trip("shinjuku")
     $ check(period == "Morning" and "shinjuku" not in districts_visited, "no trip to a locked district")
 
-    ## The car action: pressing the Yotsuka card on the Tokyo map starts the trip.
+    ## The car action: opening Yotsuka on the Tokyo map and pressing "Ride
+    ## with Ijichi" starts the trip (phase 2: two presses).
     $ day = 3
     $ period = "Noon"
     $ here = "gate"
     $ grade = "g4"
     $ autoplay()
-    show screen zz_press("district_yotsuka")
+    show screen zz_press("district_go", first="district_yotsuka")
     call sb_do_car
     $ autoplay(False)
     $ check((day, period, here) == (3, "Evening", "gate") and "yotsuka" in districts_visited,
-            "the car: pressing a district card -> half a day (Noon -> Evening)", (day, period, here, districts_visited))
+            "the car: a district marker, then district_go -> half a day (Noon -> Evening)", (day, period, here, districts_visited))
+    $ check(zz_pressed("district_yotsuka")[0].__class__.__name__ == "SetScreenVariable",
+            "the car: the district marker itself only opens the district", zz_pressed("district_yotsuka"))
+
+    ## Phase 2 (D26): with a story beat waiting at the gate the same trip ends
+    ## an hour early, so the beat isn't pushed to tomorrow.
+    $ ZZ_QUIET[0] = False
+    python:
+        day = 4
+        period = "Morning"
+        here = "courtyard"
+        _zz_beat = has_event("story", loc="gate")
+        autoplay()
+    call sb_trip("yotsuka")
+    python:
+        autoplay(False)
+        if _zz_beat or has_event("story", loc="gate"):
+            check((day, period, here) == (4, "Noon", "gate"),
+                  "a trip with a story beat waiting at the gate ends an hour early (Morning -> Noon)", (day, period, here))
+        else:
+            check((day, period, here) == (4, "Afternoon", "gate"),
+                  "a trip with no story beat waiting takes its half day", (day, period, here))
 
     ## sb_do_car's other returns (the Campus tab's walk, cancel), fed by a
     ## timer: these test sb_do_car's handling, not the map's buttons.
@@ -634,43 +787,58 @@ label zz_smoke:
     call sb_do_car
     $ check((period, here) == ("Morning", "gate"), "sb_do_car: a returned cancel stays put")
 
-    ## The map's real buttons, pressed inside the protected-style call.
+    ## The map's real buttons, pressed inside the protected-style call. A
+    ## room's pin is on its area's view (phase 2), so the map opens there.
     $ here = "gate"
     $ period = "Morning"
     $ flags.discard("storehouse_access")
     show screen zz_press("row_cafeteria")
+    call screen sb_map(area=area_of("cafeteria"))
+    $ check(_return == ("go", "cafeteria"), "sb_map: pressing an open room's pin returns ('go', place) to the call", _return)
+    show screen zz_press("row_cafeteria", first="area_school")
     call screen sb_map
-    $ check(_return == ("go", "cafeteria"), "sb_map: pressing an open row returns ('go', place) to the call", _return)
+    $ check(_return == ("go", "cafeteria") and zz_pressed("area_school")[0].__class__.__name__ == "SetScreenVariable",
+            "sb_map: from the six areas, an area marker then a pin: two presses to anywhere", (_return, zz_pressed("area_school")))
+    show screen zz_press("row_cafeteria")
+    call screen sb_map
+    $ check(_return == ("zz_missing", "row_cafeteria"), "sb_map: the six areas show no room pins", _return)
     show screen zz_press("row_storehouse")
-    call screen sb_map
+    call screen sb_map(area=area_of("storehouse"))
     $ _a, _t = zz_pressed("row_storehouse")
     $ check(_return == ("zz_nothing", "row_storehouse") and _a.__class__.__name__ == "NullAction",
-            "sb_map: a locked row's action is NullAction", (_return, _a))
-    $ check(_t == can_enter("storehouse")[1], "sb_map: a locked row's tooltip is can_enter's reason", _t)
+            "sb_map: a locked pin's action is NullAction", (_return, _a))
+    $ check(isinstance(_t, tuple) and _t[1] == "row_storehouse" and can_enter("storehouse")[1] in zz_tip_text(_t),
+            "sb_map: a locked pin's hover line holds can_enter's reason", _t)
     show screen zz_press("row_gate")
-    call screen sb_map
+    call screen sb_map(area=area_of("gate"))
     $ _a, _t = zz_pressed("row_gate")
-    $ check(_a.__class__.__name__ == "NullAction", "sb_map: my own row does nothing", _a)
+    $ check(_a.__class__.__name__ == "NullAction", "sb_map: my own pin does nothing", _a)
+    show screen zz_press("district_go", first="district_harajuku")
+    call screen sb_map(layer="tokyo")
+    $ check(_return == ("district", "harajuku"),
+            "sb_map(layer='tokyo'): an open district, then district_go, returns ('district', key)", _return)
     show screen zz_press("district_harajuku")
     call screen sb_map(layer="tokyo")
-    $ check(_return == ("district", "harajuku"), "sb_map(layer='tokyo'): pressing an open district returns ('district', key)", _return)
+    $ check(_return == ("zz_nothing", "district_harajuku"),
+            "sb_map(layer='tokyo'): a district marker returns nothing by itself (it opens the district)", _return)
     show screen zz_press("district_shinjuku")
     call screen sb_map(layer="tokyo")
     $ _a, _t = zz_pressed("district_shinjuku")
     $ check(_a.__class__.__name__ == "NullAction", "sb_map(layer='tokyo'): a locked district (Shinjuku at g4) does nothing", _a)
+    $ check("Grade 2" in (zz_tip_text(_t) or ""), "sb_map(layer='tokyo'): a locked district's hover line says why", _t)
     $ period = "Evening"
-    show screen zz_press("district_harajuku")
+    show screen zz_press("district_go", first="district_harajuku")
     call screen sb_map(layer="tokyo")
-    $ _a, _t = zz_pressed("district_harajuku")
-    $ check(_a.__class__.__name__ == "NullAction" and _t == "Ijichi drives from the gate, mornings to afternoons.",
-            "sb_map(layer='tokyo'): an open district in the Evening does nothing and says when he drives", (_a, _t))
+    $ _a, _t = zz_pressed("district_go")
+    $ check(_a.__class__.__name__ == "NullAction" and "Ijichi drives from the gate, mornings to afternoons." in (zz_tip_text(_t) or ""),
+            "sb_map(layer='tokyo'): in the Evening district_go does nothing and says when he drives", (_a, _t))
     $ period = "Morning"
     $ pin("ijichi", "office")
-    show screen zz_press("district_harajuku")
+    show screen zz_press("district_go", first="district_harajuku")
     call screen sb_map(layer="tokyo")
-    $ _a, _t = zz_pressed("district_harajuku")
-    $ check(_a.__class__.__name__ == "NullAction" and _t == "Ijichi isn't at the gate right now.",
-            "sb_map(layer='tokyo'): in the morning with Ijichi elsewhere, a district says he isn't at the gate", (_a, _t))
+    $ _a, _t = zz_pressed("district_go")
+    $ check(_a.__class__.__name__ == "NullAction" and "Ijichi isn't at the gate right now." in (zz_tip_text(_t) or ""),
+            "sb_map(layer='tokyo'): in the morning with Ijichi elsewhere, district_go says he isn't at the gate", (_a, _t))
     $ schedule_overrides.pop(("ijichi", day, "Morning"), None)
     python:
         check(not any(("Junpei" in DISTRICTS[k]["places"]) or ("(later)" in DISTRICTS[k]["places"]) or ("at night" in DISTRICTS[k]["places"])
@@ -712,7 +880,8 @@ label zz_smoke:
         check(renpy.get_screen("sb_map") is not None, "the campus map renders (busy, with markers)")
         renpy.hide_screen("sb_map")
         check(map_place_name("utahime_office") == "Utahime's Office", "after she arrives, the map names her office")
-        ## A weekday Evening: the common room is the busiest row.
+        ## A weekday Evening: the common room is the busiest row (after
+        ## checkpoint D: the three first years).
         mission_markers = zz_no_markers
         period = "Evening"
         here = "courtyard"

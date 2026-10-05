@@ -1,0 +1,33 @@
+# Icon sheet 2 of 3: the names on it, left to right, top row first (6 x 5 cells).
+# Generated from ICONS (game/ui_icons.rpy) by: python3 tools/make_icon_workflow.py --names
+# Read by tools/make_icon_workflow.py (what to ask for) and tools/cut_icons.py (what to cut).
+place_courtyard
+place_classroom
+place_cafeteria
+place_training
+place_dojo
+place_dorm_common
+place_dorm
+place_girls_dorm
+place_rooftop
+place_infirmary
+place_office
+place_utahime_office
+place_gojo_office
+place_storehouse
+place_forest
+place_riverside
+place_ridge
+place_library
+place_later
+sleep
+night_bed
+wait
+study
+train
+swim
+eat
+rest
+think
+hold
+tools

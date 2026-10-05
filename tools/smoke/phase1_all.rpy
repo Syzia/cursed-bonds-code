@@ -73,6 +73,10 @@ init 999 python:
             self.board_tried = False
             self.person_done = False
             self.map_target = None
+            self.map_open = False              # one render counted per opening
+            self.map_step = 0
+            self.map_go = builtins.list()      # (day, area, place) journeys made through the map
+            self.map_bad = builtins.list()     # journeys whose pin was missing or did nothing
             self.missions = builtins.list()    # (day, period, id) started
             self.board_jobs = builtins.list()  # (day, partner)
             self.journals = 0
@@ -336,16 +340,65 @@ init 999 python:
         zzp.people.append((store.day, who, "nothing offered"))
         return ("cancel",)
 
+    def zzp_press(screen, wid):
+        """Press a button by id, as a click does: its action is run with its
+        screen current (SetScreenVariable writes there). Returns what the
+        action returns; "zz_missing" when the button isn't on the screen."""
+        sc = renpy.get_screen(screen)
+        w = renpy.get_widget(screen, wid) if sc is not None else None
+        if w is not None and not isinstance(w, renpy.display.behavior.Button):
+            ## A textbutton's id names the Text inside it: take the button
+            ## around it, which carries the action.
+            found = []
+
+            def around(d):
+                if isinstance(d, renpy.display.behavior.Button) and w in d.visit():
+                    found.append(d)
+
+            sc.visit_all(around)
+            w = found[0] if found else None
+        if w is None or getattr(w, "action", None) is None:
+            return "zz_missing"
+        renpy.display.screen.push_current_screen(sc)
+        try:
+            return renpy.run(w.action)
+        finally:
+            renpy.display.screen.pop_current_screen()
+
     def zzp_map():
-        vals = [v for v, s in zzp_rets("sb_map") if s and isinstance(v, tuple)]
+        """The map is two levels (the campus, then one area): a journey
+        presses the area's pin, and on the next tick the place's row. The
+        same walk as zzq_map's "go" branch in phase2_all.rpy."""
+        sc = renpy.get_screen("sb_map")
+        if not zzp.map_open:
+            zzp.map_open = True
+            zzp.map_step = 0
+            zzp.maps += 1
+            zzp_shot("loop_map")
         t = zzp.map_target
+        if not t:
+            zzp.map_open = False
+            return ("cancel",)
+        zzp.map_step += 1
+        area = area_of(t)
+        v = "zz_missing"
+        if zzp.map_step <= 6:
+            if sc.scope.get("view") != "campus":
+                wid = "map_campus"
+            elif sc.scope.get("zone") != area:
+                wid = "area_%s" % area
+            else:
+                wid = "row_" + t
+            v = zzp_press("sb_map", wid)
+            if v is None:
+                ## A level changed; the next tick presses the next button.
+                return None
         zzp.map_target = None
-        zzp.maps += 1
-        zzp_shot("loop_map")
-        if t:
-            if ("go", t) not in vals:
-                note("map", "no sensitive Go button for %s (day %s %s); going anyway" % (t, store.day, store.period))
-            return ("go", t)
+        zzp.map_open = False
+        if isinstance(v, tuple):
+            zzp.map_go.append((store.day, area, t))
+            return v
+        zzp.map_bad.append("d%s %s: %s (%r, access %r)" % (store.day, store.period, t, v, place_access(t)))
         return ("cancel",)
 
     def zzp_board():
@@ -394,7 +447,8 @@ init 999 python:
                     if v == "finish":
                         zzp_finish()
                         return None
-                    zzp.decisions.append("d%s %s %s: %s -> %r" % (store.day, store.period, store.here, scr, v))
+                    if v is not None:
+                        zzp.decisions.append("d%s %s %s: %s -> %r" % (store.day, store.period, store.here, scr, v))
                     return v
         except renpy.game.CONTROL_EXCEPTIONS:
             raise
@@ -514,6 +568,11 @@ label zzp_report:
         note("map renders", zzp.maps)
         check(zzp.journals >= _days - 1, "the journal renders every day")
         check(zzp.maps >= _days - 1, "the map renders every day")
+        ## Every journey goes through both levels of the map: the area's pin,
+        ## then the place's row, and the row's own value is what travels.
+        note("map journeys", "%d: %s" % (builtins.len(zzp.map_go), "; ".join("d%s %s>%s" % x for x in zzp.map_go)))
+        check(not zzp.map_bad, "every journey's pin is on the map and goes there", "; ".join(zzp.map_bad))
+        check(builtins.len(zzp.map_go) >= 5, "journeys are made through the map", "%d" % builtins.len(zzp.map_go))
         note("board jobs", repr(zzp.board_jobs))
         note("board jobs held back for a story beat", repr(zzp.board_held))
         check(builtins.len(zzp.board_jobs) >= 1, "at least one board job ran")

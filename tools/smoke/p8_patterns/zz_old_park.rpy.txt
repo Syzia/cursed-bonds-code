@@ -1,0 +1,97 @@
+## Scratch (review): on the PRE-phase-2 tree, park on sb_map, sb_char, a say
+## after stage_person, the journal and sb_place; save each; copy the files out.
+init 999 python:
+    import builtins, os, shutil, time
+
+    class ZZO(builtins.object):
+        def __init__(self):
+            self.on = False
+            self.step = 0
+            self.saved = builtins.list()
+            self.t0 = time.time()
+    zzo = ZZO()
+
+    def zzo_save(name):
+        if name in zzo.saved:
+            return
+        zzo.saved.append(name)
+        renpy.save(name)
+        src = None
+        for d in (config.savedir, os.path.join(config.gamedir, "saves")):
+            p = os.path.join(d, name + renpy.savegame_suffix)
+            if os.path.exists(p):
+                src = p
+        out = os.path.join(zz_smoke_state.shots, "saves")
+        if not os.path.isdir(out):
+            os.makedirs(out)
+        check(src is not None, "saved " + name, "no file")
+        if src:
+            shutil.copy(src, out)
+        fn, ln = renpy.get_filename_line()
+        note("parked " + name, "%s:%d depth %d day %s %s %s" % (fn, ln, renpy.call_stack_depth(), store.day, store.period, store.here))
+
+    def zzo_tick():
+        if not zzo.on or not renpy.game.context().interacting:
+            return None
+        if time.time() - zzo.t0 > 120:
+            check(False, "old park driver timed out at step %d" % zzo.step)
+            zzo.on = False
+            finish()
+        if renpy.get_screen("journal") is not None:
+            zzo_save("zzold_journal")
+            return True
+        if renpy.get_screen("sb_map") is not None:
+            zzo_save("zzold_map")
+            return ("cancel",)
+        if renpy.get_screen("sb_char") is not None:
+            zzo_save("zzold_char")
+            who = renpy.get_screen("sb_char").scope.get("who")
+            autoplay(False)
+            zzo.step = 2
+            return ("do", "talk", who)
+        if renpy.get_screen("sb_place") is not None:
+            if zzo.step == 0:
+                zzo.step = 1
+                return ("map",)
+            if zzo.step == 1:
+                on, extra = stage_people(store.here)
+                check(bool(on), "someone is on stage", store.here)
+                return ("char", on[0])
+            if zzo.step in (2, 3):
+                check("zzold_say" in zzo.saved, "the say after stage_person was saved")
+                zzo.step = 4
+                return ("journal", "people")
+            if zzo.step == 4:
+                zzo_save("zzold_place")
+                zzo.on = False
+                finish()
+            return None
+        if zzo.step == 2 and renpy.get_screen("say") is not None:
+            zzo_save("zzold_say")
+            zzo.step = 3
+            autoplay(True)
+            renpy.restart_interaction()
+        return None
+
+    config.overlay_screens.append("zzo_driver")
+
+screen zzo_driver():
+    zorder 400
+    if zzo.on:
+        timer 0.15 repeat True action Function(zzo_tick)
+
+label zz_smoke:
+    python:
+        settle(mc_name="Tester", mc_surname="Harness", day=9, period="Noon", here="cafeteria", yen=5000)
+        for w in ROSTER_ORDER:
+            if w not in store.roster:
+                store.roster.append(w)
+            store.bonds[w] = 60
+        flag("roll_call")
+        store.done_events.add("st_roll_call")
+        roll_gojo()
+        note("people", repr(stage_people("cafeteria")))
+        autoplay(True)
+        zzo.on = True
+        zzo.t0 = time.time()
+    jump sandbox

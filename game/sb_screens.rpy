@@ -1,11 +1,13 @@
 ################################################################################
 ## Cursed Bonds — sandbox interface: the place view and the person view.
 ##
-## WP7 (PHASE1_DESIGN.md 4.4, 4.5).
+## WP7 (PHASE1_DESIGN.md 4.4, 4.5); phase 2, P2 (PHASE2_DESIGN.md 4.4, 4.6, D19,
+## D19b): the icon column in the place view, the lighter person view, and
+## captions that follow the story (AMBIENT_STORY).
 ##
 ## Screens return tuples to sb_loop.rpy:
 ##   sb_place  ("map",) ("journal", tab) ("char", who) ("act", id)
-##             ("mission", mid) ("dev",)
+##             ("mission", mid) ("dev",) ("hot", id)
 ##   sb_char   ("do", aid, who) ("mission", mid) ("act", id) ("cancel",)
 ## Nothing here changes game state.
 ##
@@ -29,6 +31,7 @@ init python:
         ("yuji", "cafeteria"):      ("halfway through an enormous bowl", "happy"),
         ("yuji", "courtyard"):      ("at the vending machine", "neutral"),
         ("megumi", "classroom"):    ("reading", "serious"),
+        ("megumi", "library"):      ("three books deep", "serious"),
         ("megumi", "forest"):       ("with a Divine Dog", "neutral"),
         ("megumi", "riverside"):    ("with a Divine Dog", "neutral"),
         ("nobara", "dorm_common"):  ("on her phone", "neutral"),
@@ -43,6 +46,22 @@ init python:
         ("shoko", None):            ("with coffee", "neutral"),
         ("yaga", "office"):         ("sewing a cursed doll", "serious"),
         ("ijichi", "gate"):         ("on the phone beside the car", "neutral"),
+
+        ## The five yards between the buildings (D57).
+        ("nobara", "training_yard"): ("on her way to the training hall", "neutral"),
+        ("toge", "school_yard"):    ("on the steps, onigiri in hand", "happy"),
+        ("megumi", "trailhead"):    ("with a Divine Dog, heading up", "neutral"),
+        ("shoko", "staff_yard"):    ("on the steps with coffee", "neutral"),
+        ("yuji", "dorm_yard"):      ("by the pond, counting stars out loud", "happy"),
+
+        ## After checkpoint D: the second years' evening in the library.
+        ("panda", "library"):       ("turning pages very carefully", "happy"),
+        ("toge", "library"):        ("a book open, hands in his sleeves", "neutral"),
+
+        ## After that: Panda's Night in the garden, beside Yuji and his stars.
+        ## Keyed on the place, not the hour: it also shows by day when he is
+        ## brought along, so it names no hour.
+        ("panda", "dorm_yard"):     ("out in the open air, looking up", "happy"),
 
         ## Each person's fallback, anywhere else.
         ("yuji", None):             ("killing time, loudly", "happy"),
@@ -90,10 +109,64 @@ init python:
     ## Where the stage puts 1-4 people (x centres, 4.4).
     STAGE_CENTRES = {1: [700], 2: [470, 930], 3: [330, 700, 1070], 4: [240, 540, 860, 1160]}
 
+    ## Captions that follow the story (phase 2, D19b). Rows are (who, place or
+    ## None for anywhere, condition, caption, expression), read before AMBIENT:
+    ## the LAST row whose condition holds wins, so later rows are later in the
+    ## story. A condition is a flag name, "thread:<who>:<n>" (their thread has
+    ## reached stage n) or "grade:<who>:<key>" (they are at least that grade;
+    ## "mc" is me). Phase 4 adds rows per act: add a row, no code.
+    AMBIENT_STORY = [
+        ("megumi", "classroom",   "sunmall_done",       "writing up the Sun Mall, slowly", "serious"),
+        ("nobara", "dorm_common", "sunmall_done",       "re-taping the grip of her hammer", "neutral"),
+        ("yaga",   "office",      "sunmall_done",       "reading the Sun Mall report again", "serious"),
+        ("utahime", "utahime_office", "mission_board_open", "pinning new jobs to the board", "serious"),
+        ("yuji",   "training",    "grade:yuji:g3",      "working a combination he couldn't do last month", "happy"),
+        ("yuji",   "dorm_common", "thread:yuji:1",      "by the window, quiet for once", "neutral"),
+        ("megumi", "classroom",   "thread:megumi:2",    "going back through Tsumiki's folder", "serious"),
+        ("nobara", "dorm_common", "thread:nobara:1",    "scrolling through old photos", "neutral"),
+        ("maki",   "dojo",        "thread:maki:1",      "drilling with a staff, a second one set out", "serious"),
+        ("panda",  "dorm_common", "thread:panda:1",     "a bag of crisps open beside him", "happy"),
+        ## After checkpoint D his evening is in the library: the crisps go
+        ## with him. His Night is in the garden now, so the row above shows
+        ## only when I bring him into the common room myself. The garden has
+        ## no row: his thread's crisps are an evening, indoors.
+        ("panda",  "library",     "thread:panda:1",     "a bag of crisps open under the table", "happy"),
+        ("toge",   "cafeteria",   "thread:toge:1",      "lining up onigiri by filling", "happy"),
+        ("shoko",  "infirmary",   "thread:shoko:1",     "with coffee, an old photo face down on the desk", "neutral"),
+    ]
+
+    def rail_story_ok(cond):
+        """P2 (sb_screens.rpy). bool: an AMBIENT_STORY condition holds now: a
+        flag name, "thread:<who>:<n>" or "grade:<who>:<key>"."""
+        if cond.startswith("thread:"):
+            _kind, who, n = cond.split(":")
+            tid = next((t for t in THREAD_ORDER if THREADS[t]["who"] == who), None)
+            return tid is not None and thread_stage(tid) >= int(n)
+        if cond.startswith("grade:"):
+            _kind, who, key = cond.split(":")
+            g = player_grade() if who == "mc" else (npc_stats(who) or {}).get("grade")
+            return grade_rank(g) >= grade_rank(key)
+        return has_flag(cond)
+
+    def rail_story_caption(who, loc):
+        """P2 (sb_screens.rpy). (caption, expression) from the last
+        AMBIENT_STORY row for this person and place whose condition holds,
+        or None."""
+        found = None
+        for w, place, cond, cap, expr in AMBIENT_STORY:
+            if w == who and (place is None or place == loc) and rail_story_ok(cond):
+                found = (cap, expr)
+        return found
+
     def ambient_of(who, loc):
         """WP7. (caption, expression) for someone at a place, e.g.
-        ("halfway through an enormous bowl", "happy") (4.4). A caption that
-        names someone else (AMBIENT_NEEDS) only shows while they're there."""
+        ("halfway through an enormous bowl", "happy") (4.4). Phase 2: a
+        caption that follows the story (AMBIENT_STORY) comes first. A
+        caption that names someone else (AMBIENT_NEEDS) only shows while
+        they're there."""
+        story = rail_story_caption(who, loc)
+        if story:
+            return story
         row = AMBIENT.get((who, loc))
         need = AMBIENT_NEEDS.get((who, loc))
         if row and need and need[0] not in who_is_here(loc):
@@ -123,10 +196,10 @@ init python:
     def stage_x(who, loc=None):
         """WP7. The x centre someone stands at in the place view (700 if
         they are not on the stage)."""
-        on, _extra = stage_people(loc)
-        if who in on:
-            return STAGE_CENTRES[len(on)][on.index(who)]
-        return 700
+        ## Phase 2: the row's own x (view_stage.rpy), so someone painted
+        ## into the room answers with their pose's centre, not a slot's.
+        row = [r for r in view_stage_rows(loc or store.here) if r["who"] == who]
+        return row[0]["x"] if row else 700
 
     ## Missions, as the screens draw them --------------------------------------------
 
@@ -188,6 +261,163 @@ init python:
         a.extend(registered_place_actions(loc))
         a.append(("wait", "Wait", "Let the period pass.", 1))
         return a
+
+    def rail_actions(loc):
+        """P0 (sb_screens.rpy), final (PHASE2_DESIGN.md 6.1, D30). What the
+        place view offers here, as a list of (id, label, hint, cost, icon,
+        gold): place_actions(loc) as the night rule leaves it
+        (night_filter_actions), without the actions a visible hotspot already
+        offers (hot_covers), and then, when someone is tagging along, the
+        row ("release", "Let them go", hint, 0, "release", False), last.
+        place_actions() itself is unchanged."""
+        covered = hot_covers(loc)
+        out = []
+        for a in night_filter_actions(loc, place_actions(loc)):
+            if a[0] in covered:
+                continue
+            name = icon_for("act", a[0])
+            out.append((a[0], a[1], a[2], a[3], name, name in ICON_GOLD))
+        if store.companion:
+            out.append(("release", "Let them go", "They go back to their own day.", 0, "release", False))
+        return out
+
+    ## The icon column (phase 2, 4.4) ------------------------------------------------
+    ##
+    ## 72 px tiles down the right edge, bottom up: x 1808 to 1880; a second
+    ## column at x 1726 to 1798 when the first is full. The first column never
+    ## rises above y 360; a column further left sits under the toast lane
+    ## (x 1330 to 1790) and stops at y 430, so a stack of four two-line toasts
+    ## (which ends near y 416) still clears it (R6).
+    RAIL_TILE = 72
+    RAIL_GAP = 10
+    RAIL_BOTTOM = 1040
+    RAIL_TOP = 360
+    RAIL_TOP_INNER = 430
+    RAIL_MAX = 8            # tiles in a column
+    RAIL_MAX_WORDS = 6      # while icons show their words underneath
+    RAIL_COLUMNS = 2        # a third column would stand on the stage (x 40 to 1700)
+    RAIL_CARD_Y = 250       # the person view's card: its top edge
+    RAIL_MORE_POS = (1400, 1040)    # the "+N" chip: its bottom left corner
+
+    def rail_tip(label, hint="", cost=0):
+        """P2 (sb_screens.rpy). A hover label's text: "Train\nPush my cursed
+        energy. Costs stamina. · 1 period" (the name, then the hint and
+        what it costs)."""
+        tail = hint or ""
+        if cost:
+            tail = (tail + u" · " if tail else "") + ("1 period" if cost == 1 else "%d periods" % cost)
+        return (label + "\n" + tail) if tail else label
+
+    def rail_missions(loc):
+        """P2 (sb_screens.rpy). [(mid, title, hint)]: the missions the place
+        view offers here now. None in explore mode or on a rest day
+        (night_can_work), and only the ones the night allows."""
+        if store.explore_mode or not night_can_work():
+            return []
+        out = []
+        for m in missions_here(loc):
+            mv = mission_view(m)
+            if night_allows("mission:" + mv[0], (MISSION_BY_ID.get(mv[0]) or {}).get("cost", 0)):
+                out.append(mv)
+        return out
+
+    def rail_rows(loc):
+        """P2 (sb_screens.rpy). The icon column's tiles, top to bottom, as
+        plain tuples (returns, icon, gold, hover text, cost, id): the gold
+        missions first, then rail_actions(loc) in its own order (the
+        actions, Wait or Go to bed, and "Let them go" last). `returns` is
+        ("mission", mid) or ("act", id); the id is unique in the column."""
+        out = []
+        seen = set()
+
+        def wid(base):
+            name, n = base, 2
+            while name in seen:
+                name = "%s_%d" % (base, n)
+                n += 1
+            seen.add(name)
+            return name
+
+        for mid, title, hint in rail_missions(loc):
+            out.append((("mission", mid), "mission", True, rail_tip(title, hint), 0, wid("rail_m_%s" % mid)))
+        for aid, label, hint, cost, name, gold in rail_actions(loc):
+            ## At Night one of the night's own actions takes what is left of
+            ## the night, not a period: no diamond and no "1 period".
+            shown = 0 if (aid in NIGHT_OK and night_on() and night_is_night()) else cost
+            out.append((("act", aid), name, gold, rail_tip(label, hint, shown), shown, wid("rail_%s" % aid)))
+        return out
+
+    def rail_word(row):
+        """P2 (sb_screens.rpy). The word under a tile while icons show their
+        words: an action's own name (the first line of its hover text:
+        "Practice", not the icon's "Train"), so two actions that share an
+        icon read differently; a mission keeps the icon's word."""
+        if row[0][0] == "act":
+            return row[3].split("\n")[0]
+        return icon_label(row[1])
+
+    def rail_height(name, pips=0, word=None, words=True):
+        """P2 (sb_screens.rpy). How tall one tile is, at most: 72, or more
+        while icons show their words: the icon, its diamonds, and 20 px for
+        each line of the word (`word`, or the icon's own; a 72 px tile fits
+        about nine letters a line). `words` False: the column has dropped
+        its words (rail_layout), so 72."""
+        if not words or not icon_words_shown(name):
+            return RAIL_TILE
+        lines, used = 1, 0
+        for word in (word or icon_label(name)).split():
+            if used and used + 1 + len(word) > 9:
+                lines += 1
+                used = 0
+            used += len(word) + (1 if used else 0)
+        return max(RAIL_TILE, 8 + 50 + (14 if pips else 0) + 2 + 20 * lines)
+
+    def rail_columns(rows, words=True):
+        """P2 (sb_screens.rpy). rail_rows() split into columns, the one at
+        the screen's edge first; each keeps the rows' order, and the last
+        rows (Wait, "Let them go") stay at the foot of the edge column. A
+        column takes eight tiles (six while words show) and never more
+        than fit under its top line (RAIL_TOP, RAIL_TOP_INNER). There is
+        room for two columns (fifteen tiles): a third would stand on the
+        stage, and p2_hud fails a room that needs one. `words` False
+        lays the tiles out without their words (rail_layout)."""
+        cap = RAIL_MAX_WORDS if words and any(icon_words_shown(r[1]) for r in rows) else RAIL_MAX
+        cols, cur, used = [], [], 0
+        for r in reversed(rows):
+            room = RAIL_BOTTOM - (RAIL_TOP_INNER if cols else RAIL_TOP)
+            h = rail_height(r[1], r[4], rail_word(r), words)
+            if cur and (len(cur) >= cap or used + RAIL_GAP + h > room):
+                cols.append(cur[::-1])
+                cur, used = [], 0
+            used += h + (RAIL_GAP if cur else 0)
+            cur.append(r)
+        if cur:
+            cols.append(cur[::-1])
+        return cols
+
+    def rail_layout(rows):
+        """P2 (sb_screens.rpy). (columns, words): rail_columns(rows), and
+        whether the tiles carry their words. While icons show words the
+        tiles are taller, and long names can ask for a third column, which
+        would stand on the stage: the column then drops its words (the
+        hover label still names each tile) so that fifteen tiles fit in
+        two columns, as they do with pictures."""
+        cols = rail_columns(rows)
+        if len(cols) > RAIL_COLUMNS:
+            return rail_columns(rows, words=False), False
+        return cols, True
+
+    def rail_chip(who):
+        """P2 (sb_screens.rpy). (grade key or None, text or None) for the
+        person view's chip: ("g2", None) reads "GRADE 2"; Gojo is ("sp",
+        "Off the scale"); someone with no grade shows their role in a plain
+        chip (None, "Doctor"); (None, None) draws nothing."""
+        st = npc_stats(who) or {}
+        if st.get("off_scale"):
+            return ("sp", "Off the scale")
+        if st.get("grade") is not None:
+            return (st.get("grade"), None)
+        return (None, st.get("role") or None)
 
     ## The arrival caption (4.3, D35) ------------------------------------------------
     ##
@@ -291,6 +521,32 @@ init python:
                 out.append("AMBIENT_NEEDS (%s, %s): %r is not a person" % (who, loc, need))
             if expr not in EXPRESSIONS or not renpy.has_image("%s %s" % (who, expr)):
                 out.append("AMBIENT_NEEDS (%s, %s): no image '%s %s'" % (who, loc, who, expr))
+        for row in AMBIENT_STORY:
+            if not (isinstance(row, tuple) and len(row) == 5):
+                out.append("AMBIENT_STORY: %r is not (who, place, condition, caption, expression)" % (row,))
+                continue
+            who, loc, cond, cap, expr = row
+            if who not in CAST:
+                out.append("AMBIENT_STORY: %r is not a person" % who)
+            if loc is not None and loc not in places:
+                out.append("AMBIENT_STORY: %r is not a place" % loc)
+            if not cap:
+                out.append("AMBIENT_STORY (%s, %s): no caption" % (who, loc))
+            if expr not in EXPRESSIONS or (who in CAST and not renpy.has_image("%s %s" % (who, expr))):
+                out.append("AMBIENT_STORY (%s, %s): no image '%s %s'" % (who, loc, who, expr))
+            bits = str(cond).split(":")
+            if bits[0] == "thread" and len(bits) == 3:
+                tid = next((t for t in THREAD_ORDER if THREADS[t]["who"] == bits[1]), None)
+                if tid is None or not bits[2].isdigit() or int(bits[2]) >= len(THREADS[tid]["stages"]):
+                    out.append("AMBIENT_STORY (%s, %s): %r names no thread stage" % (who, loc, cond))
+            elif bits[0] == "grade" and len(bits) == 3:
+                if bits[2] not in GRADES or not (bits[1] == "mc" or bits[1] in NPC_BASE):
+                    out.append("AMBIENT_STORY (%s, %s): %r names no grade" % (who, loc, cond))
+                elif bits[1] != "mc" and NPC_BASE[bits[1]].get("grade") is None:
+                    ## Shoko, Ijichi: grade_rank(None) is -1, so the row could never hold.
+                    out.append("AMBIENT_STORY (%s, %s): %r names someone with no grade" % (who, loc, cond))
+            elif len(bits) != 1 or not cond:
+                out.append("AMBIENT_STORY (%s, %s): %r is not a flag, thread:<who>:<n> or grade:<who>:<key>" % (who, loc, cond))
         for loc, st in PLACE_STAGING.items():
             if loc not in places:
                 out.append("PLACE_STAGING: %r is not a place" % loc)
@@ -340,9 +596,9 @@ style sb_link_text is text:
     size 19
 
 style sb_choice_button is sb_action_button:
-    xsize 780
-    yminimum 72
-    padding (22, 8, 22, 8)
+    xsize 600
+    yminimum 60
+    padding (16, 8, 16, 8)
 
 style sb_choice_gold_button is sb_choice_button:
     background Frame("gui/panel_gold.png", 4, 4)
@@ -374,7 +630,43 @@ screen sb_cost(n):
                 add "gui/pip_small.png" yalign 0.5
 
 
+## One tile of the icon column (4.4): icon_btn's look, hover label and word
+## rule (ui_icons.rpy), at a fixed 72 x 72: a 50 px icon with the cost as
+## diamonds under it. (icon_btn itself is as tall as its icon plus its
+## diamonds, so a column of them would be uneven.) While icons show their
+## words the tile grows downward by the word's lines.
+screen rail_btn(name, action, tip, wid, gold=False, pips=0, word=None, words=True):
+    button:
+        id wid
+        style "icon_btn_button"
+        xsize RAIL_TILE
+        yminimum RAIL_TILE
+        action action
+        tooltip (tip, wid)
+        vbox:
+            xalign 0.5
+            yalign 0.5
+            spacing 2
+            add icon(name, 50, (gold or name in ICON_GOLD)) xalign 0.5
+            if pips:
+                hbox:
+                    xalign 0.5
+                    spacing 3
+                    for _rail_k in range(pips):
+                        add "gui/pip_small.png"
+            if words and icon_words_shown(name):
+                text (word or icon_label(name)):
+                    style "icon_btn_word"
+                    substitute False
+                    xalign 0.5
+                    xmaximum RAIL_TILE - 8
+
+
 ## Place view (4.4) #############################################################
+##
+## Bottom to top: the room; the hotspots behind the people; the people
+## (view_stage.rpy); the foreground; the hotspots in front; the overflow chip;
+## the arrival caption; the icon column down the right edge; the HUD.
 
 screen sb_place():
 
@@ -386,14 +678,10 @@ screen sb_place():
     on ("show", "replace") action Function(check_objective)
 
     $ _stage, _extra = stage_people(here)
-    $ _xs = STAGE_CENTRES.get(len(_stage), [])
-    $ _st = PLACE_STAGING.get(here, {})
-    $ _zoom = _st.get("zoom", 0.52)
-    $ _yoff = -40 + _st.get("y", 0)
-    $ _acts = place_actions(here)
-    $ _wait = [a for a in _acts if a[0] == "wait"]
-    $ _acts = [a for a in _acts if a[0] != "wait"]
-    $ _missions = [] if explore_mode else [mission_view(m) for m in missions_here(here)]
+    ## Phase 2: the column is rail_rows(here): the missions the night allows,
+    ## then rail_actions (the night rule and the hotspots reach it).
+    ## (rail_layout drops the tiles' words rather than open a third column.)
+    $ _rail, _rail_words = rail_layout(rail_rows(here))
     $ _t0 = arrival_caption()
     $ _pname = LOCATIONS[here]["name"] if here in LOCATIONS else here
     $ _pdesc = LOCATIONS[here]["desc"] if here in LOCATIONS else ""
@@ -402,61 +690,21 @@ screen sb_place():
     add graded_bg()
     add Solid(gui.ink) alpha 0.10
 
-    ## --- the stage: the people here, clickable --------------------------------
-    for _i, _who in enumerate(_stage):
-        $ _cap, _expr = ambient_of(_who, here)
-        $ _img = person_image(_who, _expr)
-        imagebutton:
-            idle Transform(_img, zoom=_zoom)
-            hover Transform(_img, zoom=_zoom, matrixcolor=BrightnessMatrix(0.08))
-            focus_mask True
-            xcenter _xs[_i]
-            yalign 1.0
-            yoffset _yoff
-            action Return(("char", _who))
+    ## --- the stage (phase 2: view_stage.rpy) and the hotspots, behind and in
+    ## front of the people (sb_hotspots.rpy) ------------------------------------
+    use hot_layer(here)
+    use view_stage(here)
+    use view_fg(here)
+    use hot_layer(here, front=True)
 
-    ## Nameplates go over every sprite, so a neighbour never covers one.
-    for _i, _who in enumerate(_stage):
-        $ _c = CAST[_who]
-        $ _nm = _c["short"]
-        $ _cap = ambient_of(_who, here)[0]
-        $ _job = (not explore_mode) and bool(missions_with(_who, here))
-        $ _new = has_event("hangout", _who, here)
-        button:
-            xcenter _xs[_i]
-            ypos 944
-            background Frame("gui/panel_dark.png", 4, 4)
-            hover_background Frame("gui/panel_hover.png", 4, 4)
-            padding (18, 6, 18, 8)
-            xmaximum 300
-            action Return(("char", _who))
-            vbox:
-                spacing 0
-                xalign 0.5
-                hbox:
-                    spacing 10
-                    xalign 0.5
-                    text "[_nm]" style "sb_plate_name" color _c["color"] yalign 0.5
-                    if _job:
-                        text u"「!」" font gui.display_heavy_font color gui.gold size 22 yalign 0.5
-                    if _new:
-                        frame:
-                            background Solid(gui.gold)
-                            padding (6, 2)
-                            yalign 0.5
-                            text _("NEW"):
-                                font gui.body_bold_font
-                                color gui.ink
-                                size 11
-                                kerning 2
-                if _cap:
-                    text "[_cap]" style "sb_plate_caption" xalign 0.5 text_align 0.5
-
-    ## More than four: a chip with the rest.
+    ## More than four: a chip with the rest, at the foot of the screen
+    ## between the fourth person (whose sprite ends at x 1358) and the
+    ## icon column.
     if _extra:
         $ _more = "+%d" % len(_extra)
         vbox:
-            pos (1300, 900)
+            id "rail_more"
+            pos RAIL_MORE_POS
             yanchor 1.0
             spacing 4
             frame:
@@ -465,22 +713,25 @@ screen sb_place():
                 text _more font gui.display_font color gui.paper size 22
             for _w in _extra:
                 textbutton CAST[_w]["short"]:
+                    id "rail_more_" + _w
                     background Frame("gui/panel_dark.png", 4, 4)
                     hover_background Frame("gui/panel_hover.png", 4, 4)
                     padding (14, 4)
                     text_font gui.display_font
                     text_color CAST[_w]["color"]
                     text_size 20
+                    tooltip (rail_tip(CAST[_w]["short"], ambient_of(_w, here)[0]), "rail_more_" + _w)
                     action Return(("char", _w))
 
-    ## Nobody home.
-    if not _stage:
+    ## Nobody home. (Not said in my own room, where it is the only line on
+    ## the screen and I am the one who is there.)
+    if not _stage and here != "dorm":
         frame:
             xcenter 700
             ycenter 640
             background Frame("gui/panel_ghost.png", 4, 4)
             padding (28, 14)
-            text _("Nobody here right now. The map shows who's where."):
+            text _("Nobody here right now."):
                 color gui.dim
                 size 22
 
@@ -499,227 +750,108 @@ screen sb_place():
                 if _pdesc:
                     text "[_pdesc]" style "sb_arrival_text" color gui.dim size 20 xmaximum 700
 
-    ## --- the action card ----------------------------------------------------------
-    vbox:
-        xpos 1440
+    ## --- the icon column (phase 2, 4.4) -------------------------------------------
+    ## Gold missions first, then what I can do here, Wait (or Go to bed), and
+    ## "Let them go" last. The name, the hint and the cost are the hover label.
+    hbox:
+        id "rail_column"
+        xalign 1.0
+        xoffset -40
         yalign 1.0
         yoffset -40
-        xsize 440
-        spacing 10
-
-        if stamina < 25 and not explore_mode:
-            frame:
-                xalign 1.0
-                background Frame("gui/panel_ghost.png", 4, 4)
-                padding (16, 6)
-                text _("I'm running on empty. Eat or sleep."):
-                    color gui.seal
-                    size 20
-
-        frame:
-            background Frame("gui/panel_dark.png", 4, 4)
-            padding (24, 20)
-            xfill True
-
+        spacing RAIL_GAP
+        for _col in _rail[::-1]:
             vbox:
-                spacing 8
-
-                for _mid, _mtitle, _mhint in _missions:
-                    button:
-                        style "sb_mission_button"
-                        action Return(("mission", _mid))
-                        vbox:
-                            spacing 2
-                            text "[_mtitle]" style "sb_action_title" color gui.gold
-                            if _mhint:
-                                text "[_mhint]" style "sb_action_hint"
-
-                for _aid, _alabel, _ahint, _acost in _acts:
-                    button:
-                        style "sb_action_button"
-                        action Return(("act", _aid))
-                        hbox:
-                            xfill True
-                            vbox:
-                                spacing 2
-                                xmaximum 320
-                                text "[_alabel]" style "sb_action_title"
-                                text "[_ahint]" style "sb_action_hint"
-                            if _acost:
-                                hbox:
-                                    xalign 1.0
-                                    yalign 0.5
-                                    use sb_cost(_acost)
-
-                if _wait:
-                    button:
-                        style "empty"
-                        padding (4, 6)
-                        action Return(("act", "wait"))
-                        hbox:
-                            spacing 10
-                            text _("Wait") style "sb_link_text"
-                            use sb_cost(_wait[0][3])
-
-                if companion and not explore_mode:
-                    $ _cn = CAST[companion]["short"]
-                    textbutton _("[_cn] is with me · let them go"):
-                        padding (4, 2)
-                        background None
-                        text_style "sb_link_text"
-                        text_size 17
-                        action Return(("act", "release"))
+                yalign 1.0
+                spacing RAIL_GAP
+                for _row in _col:
+                    $ _ret, _ic, _gold, _tip, _pips, _wid = _row
+                    use rail_btn(_ic, Return(_ret), _tip, _wid, gold=_gold, pips=_pips, word=rail_word(_row), words=_rail_words)
 
     use sb_hud
 
 
-## Person view (4.5) ############################################################
-
-transform char_focus(x0):
-    xcenter x0 yalign 1.0 yoffset -40 zoom 0.52
-    easein 0.35 xcenter 520 yoffset -20 zoom 0.66
+## Person view (4.5; phase 2: 4.6) ##############################################
+## (The focus transform, char_focus, moved to view_stage.rpy with the stage.)
+##
+## The grade chip, the choices (an icon, the name, the cost; the hint is the
+## hover label), then "Ask them along" and Back. The name, the caption, the
+## bond and affection bars, the thread and the "Closer" hint are on the
+## person's journal page (D19).
 
 screen sb_char(who):
 
     tag sandbox
 
-    $ _c = CAST[who]
-    $ _nm = _c["name"]
-    $ _col = _c["color"]
-    $ _role = role_line(who)
-    $ _b = bonds.get(who, 0)
-    $ _brank = bond_rank(_b)[1]
-    $ _rom = is_romanceable(who)
-    $ _a = affection.get(who, 0)
-    $ _arank = aff_rank(_a)[1]
-    $ _cap = aff_cap(who)
-    $ _thr = person_thread(who)
-    $ _amb = ambient_of(who, here)[0]
+    $ _chip = rail_chip(who)
     $ _choices = person_choices(who, here)
     $ _inv_ok = activity_state(ACT_BY_ID["invite"], who, here)[0]
-    $ _inv_label = _("Let them go") if companion == who else _("Ask them along")
-    $ _unlock = unlock_line(who)
-    $ _x0 = stage_x(who, here)
+    $ _inv_tip = (rail_tip(_("Let them go"), _("They go back to their own day.")) if companion == who
+                  else rail_tip(_("Ask them along"), ACT_BY_ID["invite"]["hint"]))
 
     add graded_bg()
     add Solid(gui.ink) alpha 0.35
 
-    add person_image(who) at char_focus(_x0)
+    use view_focus(who)
 
-    ## The card fits its worst case (a mission with a two-line hint, three
-    ## more choices, affection at the cap, a thread) with room to spare:
-    ## ymaximum keeps it on screen whatever grows.
+    ## The card starts at y 250: two toasts sit above it, beside Menu, and
+    ## two three-line ones (26 + 97 + 8 + 97) still end above it.
     frame:
         style "jjk_panel"
-        xpos 1000
-        ypos 150
-        xsize 820
-        ymaximum 890
-        padding (20, 22)
+        xpos 1180
+        ypos RAIL_CARD_Y
+        xsize 640
+        ymaximum 1040 - RAIL_CARD_Y
+        padding (20, 20)
 
         vbox:
-            spacing 12
+            spacing 14
 
-            ## --- who they are, and what they're doing --------------------------
-            vbox:
-                spacing 2
-                text "[_nm]" font gui.display_font color _col size 46
-                if _role:
-                    text "[_role]" style "jjk_label" size 20
-                if _amb:
-                    text "[_amb]" italic True color gui.dim size 20
-
-            ## --- bond, affection, thread -----------------------------------
-            vbox:
-                spacing 6
+            ## --- their grade (or their role) ---------------------------------
+            if _chip[0] is not None or _chip[1]:
                 hbox:
-                    spacing 12
-                    text _("BOND") style "jjk_label" yalign 0.5
-                    text "[_brank]" color gui.paper size 20 yalign 0.5
-                    text "([_b]/100)" style "jjk_label" yalign 0.5
-                use meter(_b, width=740, height=10, fill=_col)
-
-            if _rom and _a > 0:
-                ## The note shows only while the bond is what holds affection
-                ## back; at the pre-confession ceiling the rest is up to me.
-                $ _capped = _a >= _cap and _cap < AFF_BASE_MAX
-                $ _ready = confession_ready(who)
-                vbox:
-                    spacing 6
-                    hbox:
-                        spacing 12
-                        text _("AFFECTION") style "jjk_label" yalign 0.5
-                        text "[_arank]" color gui.romance size 20 yalign 0.5
-                        if _capped:
-                            text _("([_a]/[_cap] · I'd have to know them better)") style "jjk_label" yalign 0.5
-                        elif _ready:
-                            text _("([_a]/[_cap] · the rest is up to me)") style "jjk_label" yalign 0.5
-                        else:
-                            text "([_a]/[_cap])" style "jjk_label" yalign 0.5
-                    use meter(_a, max(1, _cap), width=740, height=10, fill=gui.romance)
-
-            if _thr:
-                $ _ttitle, _tstage, _ttotal = _thr
-                hbox:
-                    spacing 12
-                    text "[_ttitle]" color gui.gold size 19 yalign 0.5
-                    hbox:
-                        spacing 4
-                        yalign 0.5
-                        for _k in range(_ttotal):
-                            add ("gui/pip_gold.png" if _k <= _tstage else "gui/pip_off.png") yalign 0.5
+                    use grade_chip(_chip[0], size=18, text=_chip[1])
 
             ## --- what I can do with them ------------------------------------
             vbox:
                 spacing 8
-                for _ch in _choices:
+                for _i, _ch in enumerate(_choices):
                     $ _gold = _ch.get("gold")
                     $ _romc = _ch.get("romance")
                     $ _ret = (("do", _ch["id"], who) if _ch["kind"] == "do" else (_ch["kind"], _ch["id"]))
-                    $ _lbl = (u"♡ " + _ch["label"]) if _romc else _ch["label"]
-                    $ _hint = _ch.get("hint") or ""
+                    $ _lbl = _ch["label"]
                     button:
+                        id "sb_char_%d" % _i
                         style ("sb_choice_gold_button" if _gold else "sb_choice_button")
                         action Return(_ret)
+                        tooltip (rail_tip(_lbl, _ch.get("hint") or "", _ch.get("cost") or 0), "sb_char_%d" % _i)
                         hbox:
                             xfill True
-                            vbox:
-                                spacing 2
-                                xmaximum 660
+                            hbox:
+                                spacing 14
                                 yalign 0.5
-                                text "[_lbl]":
+                                add icon(_ch["icon"], 40, _gold) yalign 0.5
+                                text _lbl:
+                                    substitute False
                                     font gui.display_font
-                                    size 26
+                                    size 24
+                                    yalign 0.5
+                                    xmaximum 440
                                     color (gui.gold if _gold else (gui.romance if _romc else gui.paper))
-                                if _hint:
-                                    text "[_hint]" color gui.dim size 18
                             if _ch.get("cost"):
                                 hbox:
                                     xalign 1.0
                                     yalign 0.5
                                     use sb_cost(_ch["cost"])
 
-            ## --- footer: the Closer hint, then invite and Back on one line ----
-            if _unlock:
-                text "[_unlock]" color gui.gold size 18
+            ## --- footer: ask them along (or let them go), and Back -------------
             hbox:
                 xfill True
                 if _inv_ok or companion == who:
-                    textbutton _inv_label:
-                        padding (2, 2)
-                        background None
-                        text_style "sb_link_text"
-                        yalign 0.5
-                        action Return(("do", "invite", who))
-                textbutton _("Back"):
-                    id "sb_char_back"
+                    use icon_btn("invite", Return(("do", "invite", who)), tip=_inv_tip, size=40, w=64, wid="sb_char_invite")
+                hbox:
                     xalign 1.0
-                    yalign 0.5
-                    padding (2, 2)
-                    background None
-                    text_style "sb_link_text"
-                    text_size 22
-                    action Return(("cancel",))
+                    use icon_btn("back", Return(("cancel",)), tip=_("Back"), size=40, w=64, wid="sb_char_back")
 
     key "game_menu" action Return(("cancel",))
 
