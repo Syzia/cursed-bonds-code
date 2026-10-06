@@ -26,8 +26,10 @@ cut-out our own tool made:
                       the backdrop. Fainter specks are counted apart: the new
                       edge leaves a few hundred single pixels under a tenth
                       solid within four pixels of a real render's outline;
-                      they show on no ground and are gone once the sprite is
-                      fitted to the game's canvas.
+                      they show on no ground and are almost always gone once
+                      the sprite is fitted to the game's canvas (Yuji's is
+                      one piece; Maki's keeps a 2-pixel speck). Count the
+                      pieces of the fitted sprite before installing.
 
 A line of the report is a place to look at on a close-up, not a verdict: the
 model is wrong about as often as the cut-out is.

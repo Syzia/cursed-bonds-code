@@ -4,7 +4,7 @@ The sixteen exact test pictures for the cut-out's edge, and their score.
     python3 tools/make_key_tests.py <folder>                 # build the pictures and their true cut-outs
     python3 tools/make_key_tests.py --score <folder>         # score both edges; exit 1 if a bound is passed
     python3 tools/make_key_tests.py --score <folder> --edge new
-    python3 tools/make_key_tests.py --prove <folder>         # break two rules on purpose: the tests must notice
+    python3 tools/make_key_tests.py --prove <folder>         # break three rules on purpose: the tests must notice
     (tools/test_keying.sh does both, and the rest of the keying tests)
 
 A cut-out can only be scored against a picture whose true cut-out is known,
@@ -46,7 +46,14 @@ are solid, none of either may come out thinned or with its colour changed.
 rule in a copy held in memory (the file is not touched), and scores the four
 pink pictures again: with the hue test switched off (every colour counts as
 the backdrop's hue) the red hood must come out eaten, and with the tint rule
-made to forget the figure's own lean the pink hair must. If a break goes
+made to forget the figure's own lean the pink hair must. A third break lets
+rule 4 take any nearby colour that fits as the figure's colour (not only a
+solid one deeper in and far from the backdrop): that eats nothing deep inside,
+it only roughens crisp outlines, so it is judged by the bound instead, and the
+crisp pink four must pass 800 (it measured 879 on 7 Oct, against 622 as
+built). That margin is thin. If a redrawn sprite moves the numbers and this
+break slips under the bound, --prove fails and says so: the bound, or the
+test, then needs looking at, not a refreshed number. If a break goes
 unnoticed, the tests have gone soft and this fails.
 
 The pictures are rebuilt from the sprites in the game as they are on the day,
@@ -225,7 +232,11 @@ def score(folder, which):
     return 1 if fails else 0
 
 
-# (what is broken, the source text replaced, what replaces it, which colour must come out eaten)
+# (what is broken, the source text replaced, what replaces it, how it must be
+# noticed: the name of a colour that must come out eaten on both kinds of
+# outline, or PAST_BOUND for a break that must push the crisp pink four past
+# its bound)
+PAST_BOUND = "past the crisp bound"
 BREAKS = (
     ("the hue test switched off",
      "    kc = k0 - k0.mean()\n    ch = c - c.mean(axis=2, keepdims=True)\n    return (ch * kc)",
@@ -233,6 +244,8 @@ BREAKS = (
      "red hood"),
     ("the tint rule forgetting the figure's own lean",
      "np.maximum(expected, 0.0) + 0.02", "0.0 + 0.02", "pink hair"),
+    ("any nearby colour that fits taken as the figure's",
+     "(depth[qy, qx] > pd + 0.3) & (den > far * far) & (res < fit_max)", "(res < fit_max)", PAST_BOUND),
 )
 
 
@@ -267,7 +280,11 @@ def prove(folder):
                   % (label, edge, total, BOUND[edge], eaten["pink hair"], eaten["red hood"]))
             if colour is None and (eaten["pink hair"] or eaten["red hood"] or total > BOUND[edge]):
                 fails.append("the edge as built fails on %s outlines" % edge)
-            if colour is not None and not eaten[colour]:
+            if colour == PAST_BOUND:
+                if edge == "crisp" and total <= BOUND[edge]:
+                    fails.append("with %s, the crisp pink four stayed inside its bound (%d, the bound is %d): "
+                                 "the test has gone soft" % (label, total, BOUND[edge]))
+            elif colour is not None and not eaten[colour]:
                 fails.append("with %s, the %s was not reported eaten (%s outlines): the test has gone soft"
                              % (label, colour, edge))
     for f in fails:

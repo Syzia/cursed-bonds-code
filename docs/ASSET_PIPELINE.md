@@ -157,8 +157,10 @@ twelve times worse. No model's result is ever used as a cut-out.
 
 **What to expect, so it is not taken for a fault.**
 - A few hundred single pixels, each under a tenth solid, within four pixels of
-  a real render's outline. They show on no ground and are gone once the sprite
-  is fitted to the 760x1400 canvas.
+  a real render's outline. They show on no ground and are almost always gone
+  once the sprite is fitted to the 760x1400 canvas: Yuji's fitted sprite is one
+  piece, Maki's keeps a 2-pixel speck beside her. Count the pieces of the
+  fitted sprite before installing it.
 - Where a render traps a sliver of backdrop in a very thin gap (Maki's wrist
   against her skirt) the new edge can leave a faint line of the backdrop's
   colour that the old keying cleared: 62 faintly tinted pixels on her render
@@ -178,6 +180,11 @@ outside the repository (`~/Desktop/JJK Game images/maki_base_00001_.png` and
 `redo_yuji/yuji_base.png`); a step that needs an absent one says SKIP. Run it
 after any change to `keyedge.py` or `keysprite.py`. The numbers move a little
 when a sprite in the game is redrawn, since the pictures are made from them.
+One of the three rules broken on purpose (any nearby colour taken as the
+figure's) is noticed only by the crisp bound, and by a thin margin: 879
+against 800. If the test says that break "stayed inside its bound" after a
+sprite is redrawn, the edge is not at fault; the test has lost its grip on
+that rule and needs a sharper measure, not a new number.
 
 ## The character pass: grounding and light (done 2026-09-23)
 

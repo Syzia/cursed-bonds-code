@@ -35,6 +35,13 @@ The rules, in the order they run; the reason for each is beside it in the code:
      a pocket of backdrop and is cleared;
   7. the faintest edge pixels take the colour of the solid pixel beside them.
 
+What holds each rule: tools/make_key_tests.py scores the whole step, and its
+--prove breaks the hue test, the tint rule (5) and rule 4's choice of figure
+colour and must notice each. Rule 7, the glow rule and the floor on a are NOT
+held by the score (the crisp scores do not get worse without them): they are
+there for what the eye sees at 4x on a real render, and the close-up sheet is
+what holds them. Do not take one out because the numbers allow it.
+
 It will not cut a figure off grey or white: a backdrop with no hue gives it
 nothing to go by, and measured about twelve times worse (D58). Render on a
 colour the character does not wear.

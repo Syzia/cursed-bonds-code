@@ -21,7 +21,9 @@
 #      old on every four. Yuji's pink hair and red hood on pink must come
 #      through whole.
 #   3  the tests test: with a rule of the new edge broken on purpose (in
-#      memory) the hood, then the hair, must be reported eaten
+#      memory) the hood, then the hair, must be reported eaten, and with any
+#      nearby colour taken as the figure's the crisp pink four must pass its
+#      bound
 #   4  --edge old, and no option, give byte for byte what keysprite gave
 #      before the option existed, on two kept renders (Maki on pink, Yuji on
 #      green): the sprite and the side portrait, against sums recorded from
@@ -78,7 +80,11 @@ skip() { SKIPS=$((SKIPS + 1)); echo "SKIP  $1"; }
 sum() { shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; }
 # a scratch project root holding a copy of the tools an install needs: what
 # keysprite calls "the game" is then <scratch>/game
+# The folder is emptied first: with KEY_TESTS_DIR kept from an earlier run, a
+# sprite left there by that run would otherwise answer for a keysprite that
+# crashed before writing.
 scratch_root() {
+    rm -rf "$WORK/$1"
     mkdir -p "$WORK/$1/tools"
     cp "$TOOLS/keysprite.py" "$TOOLS/raster.py" "$TOOLS/pngread.py" "$TOOLS/keyedge.py" "$WORK/$1/tools/"
 }
@@ -99,7 +105,7 @@ fi
 
 echo "== 3  the tests test"
 if python3 "$TOOLS/make_key_tests.py" --prove "$WORK/pics"; then
-    pass "a broken rule is noticed: the hood, then the hair, reported eaten"
+    pass "a broken rule is noticed: the hood eaten, the hair eaten, the crisp bound passed"
 else
     fail "a broken rule went unnoticed, or the edge as built fails"
 fi
@@ -225,6 +231,7 @@ fi
 if [ $WITH_MODEL = 1 ]; then
     echo "== 8  cutcheck.py with the model"
     if [ -f "$YUJI" ]; then
+        rm -f "$WORK/yuji_cut.png"        # never an earlier run's cut-out
         python3 "$TOOLS/keyedge.py" "$YUJI" "$WORK/yuji_cut.png" > /dev/null
         B1="$(sum "$YUJI")"; B2="$(sum "$WORK/yuji_cut.png")"
         OUT="$(python3 "$TOOLS/cutcheck.py" "$YUJI" "$WORK/yuji_cut.png" 2>&1)"; CODE=$?
