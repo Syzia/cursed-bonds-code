@@ -118,18 +118,26 @@ Courtyards, two new Libraries.
   schoolhouse with shoe lockers on the left, an open training hall with a
   weapon rack, straw posts and a painted vending machine on the right. They
   differ in the middle: a **gateway** with steps uphill to the dormitories, or
-  a **main hall** with the dormitory path beside it. *The owner has not chosen
-  yet.* Claude's pick: the gateway, because then every building leads
-  somewhere.
+  a **main hall** with the dormitory path beside it. **The owner chose the
+  gateway:** "Courtyard - I think we go with the gate in the middle aswell."
 - The **bright Library** is in the right style and keeps the old room's
   layout (shelves left, a locked cabinet right, open floor). The two-level
-  hall came out in a flatter, cartoon style. *The owner has not chosen yet.*
+  hall came out in a flatter, cartoon style. **The owner chose the bright
+  room:** "Library - I also think we go with the Bright room, the two level
+  is just overcomplicating it."
 - The Common Room came out clean but **empty**: told to put nothing on the
   floor or the furniture, the editor took the room's own things away.
 
 **Third test** (two pictures): the same clean look with every object kept, on
 the Common Room and the Cafeteria. It worked on both: nothing moved, nothing
 is missing, the walls are clean and the windows show trees, roofs and sky.
+
+The two chosen pictures are kept in
+`~/Desktop/JJK Game images/look_test/chosen/` (as rendered, 2752x1536, and
+fitted to 1920x1080). They are the designs the campus layout starts from: the
+Courtyard has the school building on its left, the gateway to the dormitories
+ahead and the training hall on its right. Neither is installed in the game
+yet: the icons, exits and standing spots have to be laid out on them first.
 
 **The lesson, for every picture redone in place:** say what clean means (no
 stains, no dust, no litter, no leaves) and say that every object in the
