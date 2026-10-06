@@ -4,6 +4,7 @@ Build the ComfyUI workflow that tries two redos of the characters that feel off.
     python3 tools/make_char_look_workflow.py
     python3 tools/make_char_look_workflow.py --who yuji,maki
     python3 tools/make_char_look_workflow.py --list      # every prompt, and what a Run costs
+    python3 tools/make_char_look_workflow.py --set 2     # the second round (below)
 
 The owner (7 Oct 2026): "redoing the characters aswell. Some of them feel
 off", and, asked which: "Yuji, maki, shoko, maybe nobara". This is the look
@@ -48,6 +49,23 @@ Cost: Nano Banana Pro is a paid partner node. Its own price data
 (/object_info/GeminiImage2Node, price_badge) gives 1K and 2K as $0.1608 a
 picture and 4K as $0.288. Eight boxes at 2K: about $1.29 a Run. Nothing runs
 on this Mac's GPU.
+
+The second round (`--set 2`, 7 Oct): the first round put Yuji right in both
+columns and left Nobara as she was, but missed twice. Maki's jacket and skirt
+came back drawn as tight as before in A and in B, and Shoko's A lost her tired
+half-closed eyes (the prompt asked for "larger" eyes) while her B kept the
+long half-real face. Each box of the second round takes one first-round
+RESULT and asks for one change only, which is what the editor follows best:
+
+    Maki C    B's pose, the uniform drawn hanging loose
+    Maki D    A's pose, the same change
+    Shoko C   A's clean face, the eyes made tired again
+    Shoko D   B's tired face, drawn as simply as the rest of her
+
+It writes `look_chars_2.json` and `look_chars_2.md`, copies the four
+first-round pictures it starts from as `look_char2_in_<who>_<A|B>.png`, and
+its results land as `look_char2_<who>_<C|D>_0000N_.png`. Four boxes at 2K:
+about $0.64 a Run.
 
 Pillow: the system python3 has none. If it is missing, this script starts
 itself again with ComfyUI's own Python.
@@ -295,6 +313,182 @@ def make(who_list, out_dir=None):
     return out
 
 
+# ---------------------------------------------------------------- the second round
+COMFY_OUTPUT = os.path.expanduser("~/ComfyUI-Shared/output")
+SEED2 = 2921
+
+HEAD2 = ("This is a full-body standing character sprite for a visual novel, in cel-shaded anime style, on a "
+         "plain grey background. Redraw this exact picture and change one thing only, described below. "
+         "Everything else stays exactly as it is: the same person at the same age, the same pose, the same "
+         "hair, the same clothes and colours, the same outlines and shading style, the same size and place "
+         "in the frame. The character stays fully and ordinarily dressed: do not remove, shorten, open or "
+         "add any piece of clothing. Background: one flat, even mid-grey, with no floor, no cast shadow, no "
+         "gradient and no text. Output a 9:16 picture.")
+
+MAKI_CLOTH = ("THE ONE CHANGE: how the cloth of the school uniform is drawn. At present the jacket and the "
+              "skirt are drawn tight against the body. Draw them as a sturdy, boxy school uniform of thick "
+              "cloth that hangs loose and straight, the way a blazer does. The jacket falls straight down "
+              "from the shoulders to its hem and does not follow the shape of the body underneath: its "
+              "front is one plain, nearly flat surface with the same simple two-tone shading as the "
+              "sleeves, with no curved shadow shapes on the chest and no creases pulling across it. The "
+              "skirt is a plain straight uniform skirt of the same length as now, hanging straight from "
+              "the waist to its hem, with a flat plain front: no dark V-shaped shadow on it. The face, the "
+              "glasses, the hair, the arms and hands, the legs, the socks and the shoes stay exactly as "
+              "they are.")
+MAKI_SPECK = (" One shoe has a small stray bright green speck on it: paint over it in the shoe's own "
+              "brown.")                       # B carried it over from today's sprite; A did not
+SHOKO_EYES = ("THE ONE CHANGE: the eyes. She is a tired, unhurried adult doctor who has not slept enough. "
+              "Redraw the eyes smaller and half-closed: heavy upper eyelids resting low over the irises, so "
+              "that only the lower half of each iris shows; the brows relaxed and level; one flat "
+              "grey-brown shadow under each eye. Calm and a little bored, not sad and not surprised. Keep "
+              "the small mole under the eye, on the same side as now. The shape of the face, the nose and "
+              "the mouth stay exactly as they are.")
+SHOKO_FACE = ("THE ONE CHANGE: the drawing of the face, which is in a more realistic style than the rest of "
+              "the picture. Redraw the face as a simple anime face in the same clean style as the body: a "
+              "slightly shorter face with a softer jaw, a small simple nose drawn with one short line, a "
+              "simple mouth line with no drawn lips, clean simple eyes. Keep what makes her herself: the "
+              "eyes stay half-closed and tired under heavy upper eyelids, with one flat grey-brown shadow "
+              "under each eye in place of the many fine lines there now, and the small mole stays under the "
+              "eye on the same side as now. She stays an adult woman of the same age.")
+
+# who, this box's letter, the first-round result it starts from, the label, the one change
+SET2 = [
+    ("maki", "C", "B", "B's pose, uniform hanging loose", MAKI_CLOTH + MAKI_SPECK),
+    ("maki", "D", "A", "A's pose, uniform hanging loose", MAKI_CLOTH),
+    ("shoko", "C", "A", "A's clean face, tired eyes", SHOKO_EYES),
+    ("shoko", "D", "B", "B's tired face, drawn simpler", SHOKO_FACE),
+]
+
+
+def stem2(who, letter):
+    return "look_char2_%s_%s" % (who, letter)
+
+
+def in_name2(who, src):
+    return "look_char2_in_%s_%s.png" % (who, src)
+
+
+def first_round(who, src):
+    return os.path.join(COMFY_OUTPUT, "%s_00001_.png" % stem(who, src))
+
+
+def build2():
+    shell, nodes, links, ids, add, wire = kit()
+    count = len(SET2)
+    ids["n"] += 1
+    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [0, -560], "size": [CELL_W * 2 - 40, 460],
+                  "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
+                  "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
+        "## The character look test, second round: Maki and Shoko\n\n"
+        "Run this in the **local ComfyUI**. Press **Run** once.\n\n"
+        "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro, about $%.2f a picture, charged to your "
+        "Comfy account).\n\n"
+        "Each pair of boxes is one try: on the left a picture **from the first round**, on the right the "
+        "same picture with **one thing changed**. If a left box shows an error, click **choose file to "
+        "upload** and pick its `look_char2_in_...png` from `JJK Game images/look_test`.\n\n"
+        "- **Maki C and D:** the uniform drawn hanging loose, like a school uniform. C keeps B's pose "
+        "(hand on hip), D keeps A's.\n"
+        "- **Shoko C:** A's clean face with her tired, half-closed eyes back.\n"
+        "- **Shoko D:** B's tired face, drawn as simply as the rest of her.\n\n"
+        "Nothing in the game changes from this test. The results go to ComfyUI's output folder and Claude "
+        "picks them up from there.\n\n"
+        "If it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a "
+        "finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
+        % (count, count * COST, COST)]})
+    groups = []
+    rows = []
+    for box in SET2:
+        if box[0] not in rows: rows.append(box[0])
+    for i, (who, letter, src, label, change) in enumerate(SET2):
+        r = rows.index(who)
+        c = sum(1 for b in SET2[:i] if b[0] == who)
+        x, y = c * 2 * CELL_W, r * ROW_H
+        load = add("LoadImage", (x, y), (CELL_W - 40, GEM_H + 20 + SAVE_H),
+                   title="Load Image: %s, %s from the first round" % (NAMES[who], src))
+        load["widgets_values"] = [in_name2(who, src), "image"]
+        g = add("GeminiImage2Node", (x + CELL_W, y), (CELL_W - 40, GEM_H),
+                title="Nano Banana Pro: %s %s, %s" % (NAMES[who], letter, label))
+        w = g["widgets_values"]
+        w[0], w[2], w[3], w[4], w[5], w[6] = "%s %s" % (HEAD2, change), SEED2 + i, "fixed", ASPECT, RESOLUTION, "IMAGE"
+        wire(load, 0, g, "images")
+        s = add("SaveImage", (x + CELL_W, y + GEM_H + 60), (CELL_W - 40, SAVE_H),
+                title="%s %s: %s" % (NAMES[who], letter, label))
+        s["widgets_values"] = [stem2(who, letter)]
+        wire(g, 0, s, "images")
+    for r, who in enumerate(rows):
+        mine = [b for b in SET2 if b[0] == who]
+        groups.append({"id": r + 1,
+                       "title": "%s:  %s" % (NAMES[who].upper(), "   |   ".join(
+                           "%s from the first round  >  %s, %s" % (b[2], b[1], b[3]) for b in mine)),
+                       "bounding": [-20, r * ROW_H - 50, len(mine) * 2 * CELL_W, CELL_H + 70],
+                       "color": "#3f4f5a", "font_size": 24, "flags": {}})
+    wf = finish(shell, nodes, links, ids, groups)
+    wf["extra"]["ds"] = {"scale": 0.4, "offset": [80, 600]}
+    return wf
+
+
+NOTES2 = """# The character look test, second round: Maki and Shoko
+
+One workflow file is in this folder: `look_chars_2.json`. Drag it into the
+**local ComfyUI** (Comfy Desktop) and press **Run**, like the first round.
+
+Only run this if you agree with Claude's read of the first round:
+
+- **Maki:** in A and in B the jacket and skirt are still drawn tight against
+  her, where Nobara's uniform hangs like cloth.
+- **Shoko:** A has a clean face in the others' style but lost her tired,
+  half-closed eyes, so she reads as someone younger. B kept her tired eyes but
+  also the long, half-real face.
+
+If something else is what feels off about either of them, say so instead and
+Claude will aim a round at that.
+
+**Nothing in the game changes from this test.**
+
+**Total: %d pictures, about $%.2f** (Nano Banana Pro, about $%.2f a picture).
+
+## Steps
+
+1. Open Comfy Desktop.
+2. Drag `look_chars_2.json` from this folder onto the ComfyUI window.
+3. Each left-hand box should show a picture from the first round. If one shows
+   an error, click **choose file to upload** in that box and pick its
+   `look_char2_in_...png` from this folder.
+4. Press **Run** once. Four pictures, about $%.2f.
+5. Wait until all four show a picture, then tell Claude.
+
+## The four tries
+
+Each one takes a first-round picture and changes one thing.
+
+- **Maki C:** B (hand on hip), with the uniform drawn hanging loose.
+- **Maki D:** A (standing), with the same change.
+- **Shoko C:** A's clean face, with her tired, half-closed eyes back.
+- **Shoko D:** B's tired face, drawn as simply as the rest of her.
+"""
+
+
+def make2(out_dir=None):
+    out_dir = out_dir or OUT
+    os.makedirs(out_dir, exist_ok=True)
+    dirs = [out_dir] + ([COMFY_INPUT] if out_dir == OUT and os.path.isdir(COMFY_INPUT) else [])
+    for who, letter, src, label, _ in SET2:
+        if not os.path.exists(first_round(who, src)):
+            raise SystemExit("no first-round picture at %s" % first_round(who, src))
+    for who, src in sorted({(b[0], b[2]) for b in SET2}):
+        for d in dirs:
+            shutil.copyfile(first_round(who, src), os.path.join(d, in_name2(who, src)))
+    for who, letter, src, label, _ in SET2:
+        print("%-6s %s  from %-28s -> %s   (%s)" % (who, letter, in_name2(who, src), stem2(who, letter), label))
+    out = os.path.join(out_dir, "look_chars_2.json")
+    json.dump(build2(), open(out, "w"), indent=1)
+    cost = len(SET2) * COST
+    open(os.path.join(out_dir, "look_chars_2.md"), "w").write(NOTES2 % (len(SET2), cost, COST, cost))
+    print("%d pictures at %s %s, about $%.2f" % (len(SET2), ASPECT, RESOLUTION, cost))
+    print("   workflow -> %s" % out)
+    return out
+
+
 def main(argv):
     def opt(flag):
         if flag in argv:
@@ -306,7 +500,20 @@ def main(argv):
             return v
         return None
 
-    out_dir, who = opt("--out"), opt("--who")
+    out_dir, who, which = opt("--out"), opt("--who"), opt("--set")
+    if which == "2":
+        if "--list" in argv:
+            for who2, letter, src, label, change in SET2:
+                print("%s  (%s %s: %s; from the first round's %s)\n   %s %s\n" % (
+                    stem2(who2, letter), NAMES[who2], letter, label, src, HEAD2, change))
+            print("%d pictures, about $%.2f a Run" % (len(SET2), len(SET2) * COST))
+            return
+        if argv or who:
+            print(__doc__); raise SystemExit(1)
+        make2(out_dir)
+        return
+    if which not in (None, "1"):
+        raise SystemExit("--set is 1 or 2")
     who_list = [w.lower() for w in who.split(",") if w] if who else list(WHO)
     for w in who_list:
         if w not in CHARS:

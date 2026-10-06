@@ -88,6 +88,7 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | (In chat, 7 Oct.) | "Are there any comfyUI extensions that would benefit us with this build?" and, with screenshots of three extension pages, "These?" | The owner installed two: ComfyUI-RMBG (cuts a figure out of its background) and rgthree-comfy (a side-by-side picture comparer). |
 | | In chat, 7 Oct: "They're installed, run the cut-out test" | The first cut-out test (section 3d). |
 | The same pack has a second family of models, untried because it meant another download. | In chat, 7 Oct: "lets download the models" | Four models of the second family were downloaded and tried (section 3d). |
+| The character look test (`look_chars.json`, eight pictures). | In chat, 7 Oct: "The character look test finished, take a look." | Run by the owner. What came out is in section 3e. The owner's choice for each character is still to come. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
@@ -226,6 +227,38 @@ Kept: the scripts, the test pictures and every model's result in
 `cutout_models_maki.png` (second) in `~/Desktop/JJK Game images/look_test/`.
 The five models are in `~/ComfyUI-Installs/ComfyUI/ComfyUI/models/RMBG/`
 (3.3 GB).
+
+## 3e. The character look test (7 Oct)
+
+Eight pictures, run by the owner: Yuji, Maki, Shoko and Nobara, each as **A**
+(corrected, same pose) and **B** (redrawn, relaxed pose), from the sprite the
+game has today.
+
+- **Yuji:** both put right what looked off. Sharper eyes and a firmer jaw,
+  broader shoulders, and navy clothes with the same folds and lighter streaks
+  as Megumi's and the player's in place of flat black. A keeps the old stance
+  with the arms a little out; B stands with a hand in his pocket.
+- **Maki:** A and B have a firmer line and B has a hand on her hip, but the
+  jacket and skirt came back drawn as tight against her as before in both.
+  B carried the green speck on her shoe over.
+- **Shoko:** A has a clean face in the others' style but lost her tired,
+  half-closed eyes (the prompt asked for larger eyes), so she reads as someone
+  younger. B is today's Shoko with a firmer line: the tired eyes are kept and
+  so is the long, half-real face. She has one hand in a pocket, not both.
+- **Nobara:** A and B are all but the same as today's.
+
+**Claude's picks, told to the owner:** Yuji B. Nobara kept as she is. For Maki
+and Shoko, B is the better of the two, and a second round is ready if the
+owner agrees with the read above: `look_chars_2.json`, four pictures, about
+$0.64, each taking one first-round picture and changing one thing (Maki's
+uniform drawn hanging loose, on B's pose and on A's; Shoko's tired eyes back
+on A's face; B's face drawn as simply as the rest of her).
+**The owner has not chosen yet.**
+
+Sheets, in `~/Desktop/JJK Game images/look_test/`: `chars_<who>.jpg` (today,
+A, B), `chars_faces.jpg` (the faces close up) and `lineup_<who>.jpg` (each
+standing in the new Courtyard beside unchanged characters, at the size the
+game shows them).
 
 ## 4. How the review was read
 
