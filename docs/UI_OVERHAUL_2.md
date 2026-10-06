@@ -93,6 +93,7 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | Claude's picks after the second round: Yuji B, Maki C, Shoko C, Nobara kept as she is. | In chat, 7 Oct: "Should we not put yuji in his school uniform like megumi with his red collar?" | Yes. Today's sprite has Yuji in an open jacket over a red hoodie, and both redos kept that. He is to wear the school uniform, like Megumi's, with his red hood at the collar. Two tries are made from his redraw B: one keeps his white trainers, one gives him red ones (section 3e). The other three picks were not answered and are still to be confirmed. |
 | The redos of Maki and Shoko (C, on their flat colours), and Nobara kept as she is. | In chat, 7 Oct, while the last file was running: "our current Maki and Shoko are still better than the new ones. same with Nobara" | Maki, Shoko and Nobara stay exactly as they are in the game. No redo of any of them is installed. |
 | Yuji E (white trainers) or F (red trainers), both in the school uniform with the red hood. | In chat, 7 Oct: "The renders finished. The Yujis F's are better than the Yuji E's" | Yuji F is his new sprite. |
+| Yuji F, shown standing beside the others. | In chat, 7 Oct: "Yujis redrawn. But the characters clothing isnt consistent. The textures are all different" | Read as: the same school uniform is drawn differently from one character to the next. Measured, it is: Megumi's and Toge's cloth match each other, Yuji's new one came out lighter and purplish, Nobara's darker with soft shading, Maki's bluer, the player's without highlights. A fix that changes only the cloth (section 3f) is shown to the owner; nothing is applied until they say so. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
@@ -316,6 +317,37 @@ game shows them); for the second round `chars2_<who>.jpg`,
 `chars2_faces.jpg`, `lineup_maki_2.jpg`, `lineup_shoko_2.jpg` and
 `lineup_picks.jpg` (the four picks together); for Yuji's uniform
 `chars3_yuji.jpg`, `chars3_yuji_details.jpg` and `lineup_yuji_uniform.jpg`.
+
+## 3f. One cloth for the school uniform (7 Oct, proposed)
+
+The owner, looking at the redrawn Yuji beside the others: "the characters
+clothing isnt consistent. The textures are all different".
+
+**What was measured.** Six people wear the school uniform: Megumi, Yuji,
+Nobara, Maki, Toge and the player. The cloth's main tone is (37,34,50) on
+Megumi and (35,33,49) on Toge, with thin crisp streaks of (64,68,120). On the
+others: Yuji F (49,43,58), lighter and purplish, with lavender streaks;
+Nobara (25,24,37), darker, with broad soft highlights; Maki (37,39,59),
+bluer, with soft-edged shading; the player (34,35,47), with almost no
+highlights. Claude had told the owner that Yuji F's clothes matched
+Megumi's; side by side the colour does not.
+
+**What is proposed: a cloth match.** No picture is run and nothing is
+redrawn. Each uniform's cloth pixels are moved onto one colour ramp, Megumi's
+and Toge's, by their own brightness, and the soft shading on Nobara and Maki
+is made crisp like the others'. Faces, hair, hands, legs, shoes, buttons, the
+red hood, the shapes of the folds and the cut-out's edge are not touched;
+Megumi and Toge barely change, being the reference. The prototype and its six
+results are in `~/Desktop/JJK_worktrees/ui2_design_work/cloth_match/`; the
+before and after are `uniform_now.jpg`, `uniform_matched.jpg` and
+`uniform_closeups.jpg` in the look-test folder.
+
+**What it does not do.** It does not add highlights where a drawing has none
+(the player) or change how many there are. It leaves Gojo's darker uniform,
+the adults' clothes, and the grey uniform of the player's old school and
+Sana's.
+
+**Not applied.** The owner has not answered yet.
 
 ## 4. How the review was read
 
