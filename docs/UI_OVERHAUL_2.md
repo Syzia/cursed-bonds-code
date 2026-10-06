@@ -65,6 +65,9 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | Sprites for the people who are still block figures (the parents, Kurose, Nade) and the curses, or backgrounds only? | "Yes plan sprites too" | The plan includes sprites for them. |
 | The dormitories: a corridor of doors like the girls' one, or rooms I can walk into? | "rooms you can walk into" | The boys' dormitory has rooms that are places. |
 | | "But make the boys dorm you the place where the mc stays." | My room is in the boys' dormitory: it is reached through it, not straight from the garden. |
+| Whose rooms can I walk into? (The plan proposed five: Yuji's, Megumi's, the one Panda and Toge share, Nobara's, Maki's.) | "All five rooms" | All five are built. |
+| The budget: about $36 of pictures, allow $43, in twenty-four sittings, with the plan's cut order if credits run short. | "budget is fine" | Approved, cut order included. The owner is still asked before each cut. |
+| Is the Comfy Cloud plan still active (the base pictures for the four new people are made there)? | "Comfy Cloud is active" | The new people's base pictures are made in Comfy Cloud; no test of a local route is needed first. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
