@@ -89,6 +89,7 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | | In chat, 7 Oct: "They're installed, run the cut-out test" | The first cut-out test (section 3d). |
 | The same pack has a second family of models, untried because it meant another download. | In chat, 7 Oct: "lets download the models" | Four models of the second family were downloaded and tried (section 3d). |
 | The character look test (`look_chars.json`, eight pictures). | In chat, 7 Oct: "The character look test finished, take a look." | Run by the owner. What came out is in section 3e. The owner's choice for each character is still to come. |
+| The second round, offered for Maki and Shoko (`look_chars_2.json`, four pictures). | In chat, 7 Oct: "The second character test finished, take a look." | Run by the owner, which is read as agreeing that Maki's uniform and Shoko's face were what missed. What came out is in section 3e. The owner's choice for each character is still to come. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
@@ -247,18 +248,42 @@ game has today.
   so is the long, half-real face. She has one hand in a pocket, not both.
 - **Nobara:** A and B are all but the same as today's.
 
-**Claude's picks, told to the owner:** Yuji B. Nobara kept as she is. For Maki
-and Shoko, B is the better of the two, and a second round is ready if the
-owner agrees with the read above: `look_chars_2.json`, four pictures, about
-$0.64, each taking one first-round picture and changing one thing (Maki's
-uniform drawn hanging loose, on B's pose and on A's; Shoko's tired eyes back
-on A's face; B's face drawn as simply as the rest of her).
-**The owner has not chosen yet.**
+**The second round** (four pictures, run by the owner). Each took one
+first-round picture and changed one thing, and both changes worked:
+
+- **Maki C** (B's pose) and **D** (A's pose): the jacket now falls straight
+  from the shoulders with a plain front, and the skirt is plain and straight.
+  She reads as a student in uniform beside Nobara and Megumi. C keeps the hand
+  on her hip; D stands with her arms down and the jacket looks shapeless. The
+  green speck is gone in both. Her eyes drifted from amber to red-brown.
+- **Shoko C** (A's clean face, the eyes changed): half-closed, tired eyes
+  with a shadow under each and the mole kept. She is drawn like the rest of
+  the cast and is still herself. The shadows are a little heavy.
+- **Shoko D** (B's face drawn simpler): the lips and the fine lines are gone
+  but the long face is still there.
+
+**The lesson:** the editor follows one named change on a picture far better
+than a list of corrections beside a long list of things to keep.
+
+**Claude's picks, told to the owner:** Yuji **B**, Maki **C**, Shoko **C**,
+Nobara **kept as she is**. **The owner has not chosen yet.**
+
+**Cutting them out.** A sprite cannot be cut cleanly off grey: on the exact
+test pictures the cut from a grey backdrop left about twelve times as many
+wrong edge pixels as the cut from a flat saturated colour, because grey lies
+between the backdrop and the dark uniforms and shading reads as
+transparency. So each pick is drawn once more with only the background
+changed (`look_chars_final.json`, three pictures, about $0.48): green for
+Yuji and Shoko, magenta pink for Maki. Two corrections ride along: Maki's
+eyes back to amber, and the shadows under Shoko's eyes lighter. The file is
+built for the picks above and is rebuilt if the owner chooses differently.
 
 Sheets, in `~/Desktop/JJK Game images/look_test/`: `chars_<who>.jpg` (today,
 A, B), `chars_faces.jpg` (the faces close up) and `lineup_<who>.jpg` (each
 standing in the new Courtyard beside unchanged characters, at the size the
-game shows them).
+game shows them); for the second round `chars2_<who>.jpg`,
+`chars2_faces.jpg`, `lineup_maki_2.jpg`, `lineup_shoko_2.jpg` and
+`lineup_picks.jpg` (the four picks together).
 
 ## 4. How the review was read
 

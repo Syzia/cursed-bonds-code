@@ -5,6 +5,7 @@ Build the ComfyUI workflow that tries two redos of the characters that feel off.
     python3 tools/make_char_look_workflow.py --who yuji,maki
     python3 tools/make_char_look_workflow.py --list      # every prompt, and what a Run costs
     python3 tools/make_char_look_workflow.py --set 2     # the second round (below)
+    python3 tools/make_char_look_workflow.py --set 3     # the picks on a flat colour, for cutting out
 
 The owner (7 Oct 2026): "redoing the characters aswell. Some of them feel
 off", and, asked which: "Yuji, maki, shoko, maybe nobara". This is the look
@@ -66,6 +67,20 @@ It writes `look_chars_2.json` and `look_chars_2.md`, copies the four
 first-round pictures it starts from as `look_char2_in_<who>_<A|B>.png`, and
 its results land as `look_char2_<who>_<C|D>_0000N_.png`. Four boxes at 2K:
 about $0.64 a Run.
+
+The picks on a flat colour (`--set 3`, 7 Oct): the second round's two changes
+both worked. Claude's picks are Yuji B, Maki C and Shoko C, with Nobara kept
+as she is. A sprite cannot be cut cleanly off grey: on test pictures whose
+true outline is known, the cut from a grey backdrop left about twelve times
+as many wrong edge pixels as the cut from a flat saturated colour (grey lies
+on the line between the backdrop and the dark uniforms, so shading reads as
+transparency). So each pick is drawn once more with only the background
+changed, to a colour the character does not wear: green for Yuji and Shoko,
+magenta pink for Maki (her hair is green). Two small corrections ride along:
+Maki's eyes drifted from amber to red-brown, and the shadows under Shoko's
+eyes came out heavy. It writes `look_chars_final.json` and
+`look_chars_final.md`; results land as `look_char_final_<who>_0000N_.png`.
+Three boxes at 2K: about $0.48 a Run. Nothing is installed by it.
 
 Pillow: the system python3 has none. If it is missing, this script starts
 itself again with ComfyUI's own Python.
@@ -489,6 +504,153 @@ def make2(out_dir=None):
     return out
 
 
+# ---------------------------------------------------------------- the picks, on a flat colour
+SEED3 = 2931
+
+HEAD3 = ("This is a full-body standing character sprite for a visual novel, in cel-shaded anime style, on a "
+         "plain grey background. Redraw this exact picture. The figure stays exactly as it is, line for "
+         "line: the same person at the same age, the same pose, the same face and expression, the same "
+         "hair, the same clothes and colours, the same outlines and shading, at the same size and in the "
+         "same place in the frame, the whole figure from the top of the hair to the soles of the shoes. "
+         "The character stays fully and ordinarily dressed: do not remove, shorten, open or add any piece "
+         "of clothing.")
+BACKDROP3 = ("THE BACKGROUND: replace the grey with one flat, even, fully saturated %s, the same colour from "
+             "corner to corner like a studio chroma-key screen: no floor, no cast shadow under the feet, no "
+             "gradient, no vignette, no texture and no text. That colour must not tint the figure: the "
+             "figure's outlines stay dark and its colours stay as they are right up to its edge.")
+GREEN3 = "pure green (about RGB 0, 200, 60)"
+PINK3 = "magenta pink (about RGB 220, 40, 160)"
+
+# who, the picture it starts from (round, letter), the backdrop, a correction or None, the label
+SET3 = [
+    ("yuji", 1, "B", GREEN3, None, "B on green"),
+    ("maki", 2, "C", PINK3,
+     "ONE CORRECTION: the irises of the eyes are amber, a warm golden brown, and not red-brown. Nothing "
+     "else about the face changes.", "C on magenta pink, amber eyes"),
+    ("shoko", 2, "C", GREEN3,
+     "ONE CORRECTION: the shadows under the eyes are a little too heavy. Keep them, but make each one "
+     "smaller and paler, a soft pale grey-brown that reads as tiredness. Nothing else about the face "
+     "changes.", "C on green, lighter shadows under the eyes"),
+]
+
+
+def source3(who, rnd, letter):
+    return os.path.join(COMFY_OUTPUT, "%s_00001_.png" % (stem(who, letter) if rnd == 1 else stem2(who, letter)))
+
+
+def in_name3(who):
+    return "look_char3_in_%s.png" % who
+
+
+def stem3(who):
+    return "look_char_final_%s" % who
+
+
+def prompt3(colour, fix):
+    return " ".join(x for x in (HEAD3, BACKDROP3 % colour, fix, "Output a 9:16 picture.") if x)
+
+
+def build3():
+    shell, nodes, links, ids, add, wire = kit()
+    count = len(SET3)
+    ids["n"] += 1
+    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [0, -500], "size": [CELL_W * 2 - 40, 400],
+                  "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
+                  "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
+        "## The character picks, on a flat colour\n\n"
+        "Run this in the **local ComfyUI**. Press **Run** once.\n\n"
+        "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro, about $%.2f a picture, charged to your "
+        "Comfy account).\n\n"
+        "Each pair of boxes is one character: on the left the picture **picked from the look tests**, on "
+        "the right the same picture on a **flat green or pink** background. The colour is only there so "
+        "the figure can be cut out cleanly; it never shows in the game. If a left box shows an error, "
+        "click **choose file to upload** and pick its `look_char3_in_...png` from "
+        "`JJK Game images/look_test`.\n\n"
+        "Nothing in the game changes from this. The results go to ComfyUI's output folder and Claude picks "
+        "them up from there.\n\n"
+        "If it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a "
+        "finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
+        % (count, count * COST, COST)]})
+    groups = []
+    for i, (who, rnd, letter, colour, fix, label) in enumerate(SET3):
+        x, y = 0, i * ROW_H
+        load = add("LoadImage", (x, y), (CELL_W - 40, GEM_H + 20 + SAVE_H),
+                   title="Load Image: %s %s, as picked" % (NAMES[who], letter))
+        load["widgets_values"] = [in_name3(who), "image"]
+        g = add("GeminiImage2Node", (x + CELL_W, y), (CELL_W - 40, GEM_H),
+                title="Nano Banana Pro: %s, %s" % (NAMES[who], label))
+        w = g["widgets_values"]
+        w[0], w[2], w[3], w[4], w[5], w[6] = prompt3(colour, fix), SEED3 + i, "fixed", ASPECT, RESOLUTION, "IMAGE"
+        wire(load, 0, g, "images")
+        sv = add("SaveImage", (x + CELL_W, y + GEM_H + 60), (CELL_W - 40, SAVE_H),
+                 title="%s: %s" % (NAMES[who], label))
+        sv["widgets_values"] = [stem3(who)]
+        wire(g, 0, sv, "images")
+        groups.append({"id": i + 1, "title": "%s:  %s as picked  >  %s" % (NAMES[who].upper(), letter, label),
+                       "bounding": [-20, y - 50, 2 * CELL_W, CELL_H + 70],
+                       "color": "#3f4f5a", "font_size": 24, "flags": {}})
+    wf = finish(shell, nodes, links, ids, groups)
+    wf["extra"]["ds"] = {"scale": 0.4, "offset": [80, 560]}
+    return wf
+
+
+NOTES3 = """# The character picks, on a flat colour
+
+One workflow file is in this folder: `look_chars_final.json`. Drag it into the
+**local ComfyUI** (Comfy Desktop) and press **Run**.
+
+Only run this if you agree with Claude's picks:
+
+- **Yuji: B** (the redraw with a hand in his pocket).
+- **Maki: C** (hand on hip, the uniform hanging loose).
+- **Shoko: C** (the clean face with her tired eyes).
+- **Nobara: kept as she is** (nothing to run for her).
+
+If you would pick differently for any of them, say so instead and Claude will
+rebuild this file.
+
+It draws each pick once more with only the background changed, to flat green
+or flat pink. The colour is there so the figure can be cut out cleanly: it
+never shows in the game. Two small corrections ride along: Maki's eyes back to
+amber (they drifted to red-brown), and the shadows under Shoko's eyes a little
+lighter.
+
+**Nothing in the game changes from this.**
+
+**Total: %d pictures, about $%.2f** (Nano Banana Pro, about $%.2f a picture).
+
+## Steps
+
+1. Open Comfy Desktop.
+2. Drag `look_chars_final.json` from this folder onto the ComfyUI window.
+3. Each left-hand box should show a picked picture. If one shows an error,
+   click **choose file to upload** in that box and pick its
+   `look_char3_in_...png` from this folder.
+4. Press **Run** once. Three pictures, about $%.2f.
+5. Wait until all three show a picture, then tell Claude.
+"""
+
+
+def make3(out_dir=None):
+    out_dir = out_dir or OUT
+    os.makedirs(out_dir, exist_ok=True)
+    dirs = [out_dir] + ([COMFY_INPUT] if out_dir == OUT and os.path.isdir(COMFY_INPUT) else [])
+    for who, rnd, letter, colour, fix, label in SET3:
+        if not os.path.exists(source3(who, rnd, letter)):
+            raise SystemExit("no picked picture at %s" % source3(who, rnd, letter))
+    for who, rnd, letter, colour, fix, label in SET3:
+        for d in dirs:
+            shutil.copyfile(source3(who, rnd, letter), os.path.join(d, in_name3(who)))
+        print("%-6s from %-24s -> %s   (%s)" % (who, in_name3(who), stem3(who), label))
+    out = os.path.join(out_dir, "look_chars_final.json")
+    json.dump(build3(), open(out, "w"), indent=1)
+    cost = len(SET3) * COST
+    open(os.path.join(out_dir, "look_chars_final.md"), "w").write(NOTES3 % (len(SET3), cost, COST, cost))
+    print("%d pictures at %s %s, about $%.2f" % (len(SET3), ASPECT, RESOLUTION, cost))
+    print("   workflow -> %s" % out)
+    return out
+
+
 def main(argv):
     def opt(flag):
         if flag in argv:
@@ -512,8 +674,19 @@ def main(argv):
             print(__doc__); raise SystemExit(1)
         make2(out_dir)
         return
+    if which == "3":
+        if "--list" in argv:
+            for who3, rnd, letter, colour, fix, label in SET3:
+                print("%s  (%s: %s; from round %d's %s)\n   %s\n" % (
+                    stem3(who3), NAMES[who3], label, rnd, letter, prompt3(colour, fix)))
+            print("%d pictures, about $%.2f a Run" % (len(SET3), len(SET3) * COST))
+            return
+        if argv or who:
+            print(__doc__); raise SystemExit(1)
+        make3(out_dir)
+        return
     if which not in (None, "1"):
-        raise SystemExit("--set is 1 or 2")
+        raise SystemExit("--set is 1, 2 or 3")
     who_list = [w.lower() for w in who.split(",") if w] if who else list(WHO)
     for w in who_list:
         if w not in CHARS:
