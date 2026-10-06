@@ -81,6 +81,13 @@ HER = {"nobara", "maki", "shoko", "utahime", "sana"}
 # jaw, as they do in the anime. Asked for eyes or brows, an editor draws eyes on
 # the cloth or takes it off.
 CHAR_EXPRESSIONS = {
+    # Yuji rests on a friendly smile (the sprite redrawn in his school uniform,
+    # Oct 2026), so the stock "warm smile" reads the same as his neutral face.
+    "yuji": {
+        "happy":     "Change his facial expression to a big, open, cheerful grin: mouth open wide in a "
+                     "broad smile showing his upper teeth, cheeks lifted, eyes bright and slightly "
+                     "narrowed by the smile, eyebrows raised.",
+    },
     "gojo": {
         "happy":     "Change his facial expression to a big delighted grin: mouth wide open in a broad "
                      "smile showing his upper teeth, cheeks lifted.",

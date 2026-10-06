@@ -91,6 +91,8 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | The character look test (`look_chars.json`, eight pictures). | In chat, 7 Oct: "The character look test finished, take a look." | Run by the owner. What came out is in section 3e. The owner's choice for each character is still to come. |
 | The second round, offered for Maki and Shoko (`look_chars_2.json`, four pictures). | In chat, 7 Oct: "The second character test finished, take a look." | Run by the owner, which is read as agreeing that Maki's uniform and Shoko's face were what missed. What came out is in section 3e. The owner's choice for each character is still to come. |
 | Claude's picks after the second round: Yuji B, Maki C, Shoko C, Nobara kept as she is. | In chat, 7 Oct: "Should we not put yuji in his school uniform like megumi with his red collar?" | Yes. Today's sprite has Yuji in an open jacket over a red hoodie, and both redos kept that. He is to wear the school uniform, like Megumi's, with his red hood at the collar. Two tries are made from his redraw B: one keeps his white trainers, one gives him red ones (section 3e). The other three picks were not answered and are still to be confirmed. |
+| The redos of Maki and Shoko (C, on their flat colours), and Nobara kept as she is. | In chat, 7 Oct, while the last file was running: "our current Maki and Shoko are still better than the new ones. same with Nobara" | Maki, Shoko and Nobara stay exactly as they are in the game. No redo of any of them is installed. |
+| Yuji E (white trainers) or F (red trainers), both in the school uniform with the red hood. | In chat, 7 Oct: "The renders finished. The Yujis F's are better than the Yuji E's" | Yuji F is his new sprite. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
@@ -277,28 +279,43 @@ a red hood sewn to its collar. So two more tries are made from B (the pose
 and face stay): the editor is given B and, as a guide to the cloth and cut,
 Megumi's unchanged sprite, and is asked for one change, the clothes.
 **E** keeps the white trainers; **F** gives him red ones.
-**The owner has not yet said yes or no to Maki C, Shoko C and keeping
-Nobara.**
+**The owner's word, 7 Oct, after the last file ran** (six pictures):
+"our current Maki and Shoko are still better than the new ones. same with
+Nobara", and "The Yujis F's are better than the Yuji E's".
 
-**Cutting them out.** A sprite cannot be cut cleanly off grey: on the exact
-test pictures with crisp edges the cut from a grey backdrop left about twelve
-times as many wrong edge pixels as the cut from a flat saturated colour,
-because grey lies between the backdrop and the dark uniforms and shading
-reads as transparency. So each pick is drawn once more with only the
-background changed: green for Yuji and Shoko, magenta pink for Maki. Two
-corrections ride along: Maki's eyes back to amber, and the shadows under
-Shoko's eyes lighter.
+**So the character work ends here:**
+- **Yuji is redrawn:** F, the redraw with a hand in his pocket, in the school
+  uniform (the same jacket as Megumi's, with the school's swirl button), a red
+  hood at the collar and red trainers. Both tries came out right at the first
+  attempt; E has white trainers and no red at the wrists, F red trainers and a
+  red cuff showing at each wrist. Stood beside Megumi and Nobara at game size
+  he reads as one of three first years in one uniform.
+- **Maki, Shoko and Nobara are kept exactly as they are.** The pictures made
+  of them (A to D, and Maki's and Shoko's on flat colours) are not used.
+- **One fault in a kept sprite is repaired:** the pocket of green screen
+  inside a shoelace loop on Maki's left shoe, 28 pixels on each of her six
+  sprites, now clear (commit 517815d). No other sprite carries any.
 
-**One file does all of it:** `look_chars_final.json`, six pictures, about
-$0.96. Yuji E and F in the uniform, each chained straight on to green; Maki C
-on pink; Shoko C on green. It is rebuilt if the owner chooses differently.
+**What is made from Yuji F.** The chosen picture is kept as
+`~/Desktop/JJK Game images/redo_yuji/yuji_base.png` (1536x2752, on flat
+green), with its face mask and face close-up beside it. His five other faces
+are one run of five (`yuji_edit.json`, about $0.80; his happy face is a real
+grin, since his calm face is already a smile). His blink and talking mouth
+are bought again from the new face. Everything of his is installed in one
+step during the build (`docs/UI2_DESIGN.md` D57), cut out with the new edge
+step (D58): on this render it left no tinted pixel where today's keying left
+22 strongly and 2,700 faintly green ones, and it cleared a teal pocket inside
+a lace loop that today's keying left solid.
+
+**Cost of the character look tests:** eighteen pictures, about $2.89.
 
 Sheets, in `~/Desktop/JJK Game images/look_test/`: `chars_<who>.jpg` (today,
 A, B), `chars_faces.jpg` (the faces close up) and `lineup_<who>.jpg` (each
 standing in the new Courtyard beside unchanged characters, at the size the
 game shows them); for the second round `chars2_<who>.jpg`,
 `chars2_faces.jpg`, `lineup_maki_2.jpg`, `lineup_shoko_2.jpg` and
-`lineup_picks.jpg` (the four picks together).
+`lineup_picks.jpg` (the four picks together); for Yuji's uniform
+`chars3_yuji.jpg`, `chars3_yuji_details.jpg` and `lineup_yuji_uniform.jpg`.
 
 ## 4. How the review was read
 
