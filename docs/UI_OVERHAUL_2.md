@@ -66,19 +66,62 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | The dormitories: a corridor of doors like the girls' one, or rooms I can walk into? | "rooms you can walk into" | The boys' dormitory has rooms that are places. |
 | | "But make the boys dorm you the place where the mc stays." | My room is in the boys' dormitory: it is reached through it, not straight from the garden. |
 
+## 3b. The look test and the owner's ruling (6 Oct)
+
+The owner ran the look test: the Courtyard, the Common Room and the Library,
+each redone three ways from the current picture (A a clean anime frame, B a
+real place, C a clean-up only). Measured afterwards: nothing moved in any of
+the nine, so redoing a picture in place keeps its icons, exits and standing
+spots. C changed almost nothing. The owner, verbatim:
+
+> We should go with B, but we need to make it feel clean as-well. If you take
+> a look at tge dorm they're leaves on the floor inside, Same goes for the
+> library.
+>
+> The walls are also sure dirty, we still want to the clean anime look.
+>
+> I think we should just redo the whole library. Our current one feels to
+> outdated.
+>
+> I also think we should redo the courtyard, All 3 buildings look the same.
+> But all 3 lead to different locations. We want the map to flow. But also
+> feel accurate.
+
+Read as:
+- **The look is settled: B, kept clean.** A real place (believable materials,
+  light and depth, clear views through the windows) with a clean anime
+  finish: fresh even walls, tidy floors with nothing scattered on them, crisp
+  edges, clean colour, no grain. Nothing is added on seats, floors or open
+  ground.
+- **Not every picture is redone in place.** A room whose design is fine is
+  redone from the current picture. A picture whose design is the problem is
+  designed again: the **Library** from scratch, and the **Courtyard** so that
+  its three buildings look different and each reads as what it leads to (the
+  School Building, the way to the Dormitories, the Training Grounds).
+- **"We want the map to flow. But also feel accurate."** The campus is one
+  coherent place: what I see standing somewhere agrees with the map, an exit
+  sits on the thing it leads to, each building has its own look and keeps it
+  on the map, from the yards and at its door, and it stays true to the school
+  as the series shows it. So the plan starts from one layout of the whole
+  campus, with every building named, placed and described, and the map, the
+  area maps and the outdoor pictures are made from that.
+
+A second small test (`look_test_2`, five pictures) shows the settled look on
+the Common Room and two readings each of the new Courtyard and the new
+Library.
+
 ## 4. How the review was read
 
 - **Every campus location is redone.** The audit had counted the 24 campus
   pictures as finished (painted, one style). The owner's eye says otherwise,
   and that decides it.
-- **"Actual sceneries", not "artworks":** read as a sharp, clean frame of a
-  real place, like a background from the anime, with a clear view through the
-  windows, and not a soft, grainy painting. A look test on three places
-  (`~/Desktop/JJK Game images/look_test/`) settles this before anything else
-  is redone.
-- **Redone in place:** each picture is redone from the current one, same
-  camera and layout, so the icons, exits and standing spots that sit on it
-  stay where they are.
+- **"Actual sceneries", not "artworks":** settled by the look test, section
+  3b: a real place, kept clean.
+- **Redone in place where the design is fine:** such a picture is redone from
+  the current one, same camera and layout, so the icons, exits and standing
+  spots that sit on it stay where they are. Where the design is the problem
+  (section 3b), the picture is composed again and everything on it is laid
+  out again.
 - **"Blend the characters into the background":** read as people who look
   like they stand in the room: a shadow under them, their colours matched to
   the room's light, a believable size and floor line, furniture in front of
