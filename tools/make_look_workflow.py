@@ -6,6 +6,7 @@ Build the ComfyUI workflow that tries three looks on three places.
     python3 tools/make_look_workflow.py --treatments A,C
     python3 tools/make_look_workflow.py --list        # the treatments and what a Run costs
     python3 tools/make_look_workflow.py --set 2       # the second test (see the end of this note)
+    python3 tools/make_look_workflow.py --set 3       # the third test
 
 A look test is the picture the game already has, painted again IN PLACE: the
 same camera, the same walls, doors and paths, only the way it is rendered
@@ -47,6 +48,13 @@ SET2 below, five boxes with a prompt each, written to look_test_2.json.
 One box is in place (the Common Room in the settled look); the other four are
 redesigns and are MEANT to move things. Results: `look2_<name>_0000N_.png`.
 Five boxes, about $0.80 a Run. --places and --treatments do not apply to it.
+
+THE THIRD TEST (--set 3) corrects the second's one in-place box. Told to put
+nothing on the floor or the furniture, the editor emptied the Common Room: the
+books, the board games, the kettle and the cushions all went. SET3 asks for
+the same clean look with every object kept, on the Common Room and on one
+more room (the Cafeteria) to see that the wording holds elsewhere. Two boxes,
+about $0.32 a Run, written to look_test_3.json; results `look3_<name>_...`.
 """
 import sys, os, json, copy, uuid, shutil
 
@@ -299,30 +307,69 @@ SET2 = [
 SET2_ROWS = ["dorm_common", "courtyard", "library"]      # the order the owner reads them in
 SET2_SEED = 2701                                         # then 2702, 2703...: fixed, all different
 
+# The third test. LOOK2 said "nothing scattered" and the room lost everything
+# in it; LOOK3 names only what clean means and says the room's things stay.
+LOOK3 = ("THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable "
+         "materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable "
+         "daylight with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and "
+         "even, with no stains, cracks, peeling, water marks or dirt, and there is no dust, litter or fallen "
+         "leaves on the floor; everything that belongs to the room is still there. Crisp precise edges, clean "
+         "clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow "
+         "washing out detail. Through every window a clear, in-focus view of trees, tiled roofs and sky. No "
+         "people, no animals, no text, no logos. Output a 16:9 picture.")
+KEEP = ("This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, "
+        "angle and framing exactly as they are. Keep every wall, door, window and piece of furniture exactly "
+        "where it is, at the same size and shape. Keep every object that is in the picture now, however "
+        "small, each in its place: the books and boxes on the shelves, the appliances, the cushions, the "
+        "bags, the plants, the things on the tables and counters. Do not remove, tidy away or add anything. "
+        "Keep the time of day and the direction of the light.")
+SET3 = [
+    ("look3_dorm_common_keep", "dorm_common", "clean, everything kept",
+     "the room you have, clean, with all its things still in it.", KEEP),
+    ("look3_cafeteria_keep", "cafeteria", "clean, everything kept",
+     "a second room, to see that the same wording works elsewhere.", KEEP),
+]
+SET3_ROWS = ["dorm_common", "cafeteria"]
+SET3_SEED = 2801
 
-def build2():
+# which: what build2 and make2 need to write that test.
+TESTS = {
+    "2": dict(entries=SET2, rows=SET2_ROWS, seed=SET2_SEED, look=LOOK2, file="look_test_2.json",
+              heading="The second look test: the clean look, a new Courtyard, a new Library",
+              note="The Common Room should not move at all. The Courtyard and the Library are **redesigns**: "
+                   "new buildings, a new room. Things moving there is expected."),
+    "3": dict(entries=SET3, rows=SET3_ROWS, seed=SET3_SEED, look=LOOK3, file="look_test_3.json",
+              heading="The third look test: clean, with everything still in the room",
+              note="Nothing should move, and nothing that is in the room now should be missing: the books, "
+                   "the boxes, the cushions, the things on the tables and counters."),
+}
+
+
+def build2(which="2"):
+    t = TESTS[which]
+    entries = t["entries"]
     shell, nodes, links, ids, add, wire = kit()
-    rows = [(place, [e for e in SET2 if e[1] == place]) for place in SET2_ROWS]
-    assert sum(len(boxes) for _, boxes in rows) == len(SET2)
+    rows = [(place, [e for e in entries if e[1] == place]) for place in t["rows"]]
+    assert sum(len(boxes) for _, boxes in rows) == len(entries)
     ids["n"] += 1
     nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [0, -620], "size": [CELL_W * 2 - 40, 520],
                   "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
                   "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
-        "## The second look test: the clean look, a new Courtyard, a new Library\n\n"
+        "## %s\n\n"
         "Run this in the **local ComfyUI**. Press **Run** once.\n\n"
         "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro, about $%.2f a picture, charged to your "
         "Comfy account).\n\n"
         "Each row is a place. The first box in a row is the picture **as it is now**. If it shows an "
         "error, click **choose file to upload** and pick the `look_in_...png` of that place from "
         "`JJK Game images/look_test`. The boxes after it:\n\n%s\n\n"
-        "The Common Room should not move at all. The Courtyard and the Library are **redesigns**: new "
-        "buildings, a new room. Things moving there is expected.\n\n"
+        "%s\n\n"
         "Nothing in the game changes from this test. You don't need to save anything: the results go to "
         "ComfyUI's output folder and Claude picks them up from there.\n\n"
         "If it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a "
         "finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
-        % (len(SET2), len(SET2) * COST, COST,
-           "\n".join("- **%s, %s:** %s" % (label(e[1]), e[2], e[3]) for _, boxes in rows for e in boxes))]})
+        % (t["heading"], len(entries), len(entries) * COST, COST,
+           "\n".join("- **%s, %s:** %s" % (label(e[1]), e[2], e[3]) for _, boxes in rows for e in boxes),
+           t["note"])]})
 
     groups = []
     for r, (place, boxes) in enumerate(rows):
@@ -337,8 +384,8 @@ def build2():
             w = g["widgets_values"]
             # The same settings as the first test: one picture in, 16:9, 2K, a
             # fixed seed so a Run that stops can be pressed again.
-            seed = SET2_SEED + SET2.index(next(e for e in SET2 if e[0] == name))
-            w[0], w[2], w[3], w[4], w[5], w[6] = body + " " + LOOK2, seed, "fixed", "16:9", RESOLUTION, "IMAGE"
+            seed = t["seed"] + entries.index(next(e for e in entries if e[0] == name))
+            w[0], w[2], w[3], w[4], w[5], w[6] = body + " " + t["look"], seed, "fixed", "16:9", RESOLUTION, "IMAGE"
             wire(src, 0, g, "images")
             s = add("SaveImage", (x, y + GEM_H + 60), (CELL_W - 40, SAVE_H),
                     title="%s: %s" % (label(place), short))
@@ -353,22 +400,23 @@ def build2():
     return wf
 
 
-def make2(out_dir=None):
+def make2(out_dir=None, which="2"):
+    t = TESTS[which]
     out_dir = out_dir or OUT
     os.makedirs(out_dir, exist_ok=True)
-    # The pictures are the first test's. Only a missing one is copied again.
-    for place in SET2_ROWS:
+    # The pictures are the first test's where it had them. Only a missing one is copied.
+    for place in t["rows"]:
         dirs = [out_dir] + ([COMFY_INPUT] if out_dir == OUT and os.path.isdir(COMFY_INPUT) else [])
         for d in dirs:
             if not os.path.exists(os.path.join(d, in_name(place))):
                 if not os.path.exists(bg_file(place)):
                     raise SystemExit("no picture at %s" % bg_file(place))
                 shutil.copy(bg_file(place), os.path.join(d, in_name(place)))
-    out = os.path.join(out_dir, "look_test_2.json")
-    json.dump(build2(), open(out, "w"), indent=1)
-    for name, place, short, _, _ in SET2:
+    out = os.path.join(out_dir, t["file"])
+    json.dump(build2(which), open(out, "w"), indent=1)
+    for name, place, short, _, _ in t["entries"]:
         print("%-26s %-14s %s" % (name, place, short))
-    print("%d pictures at %s, about $%.2f" % (len(SET2), RESOLUTION, len(SET2) * COST))
+    print("%d pictures at %s, about $%.2f" % (len(t["entries"]), RESOLUTION, len(t["entries"]) * COST))
     print("   workflow -> %s" % out)
     return out
 
@@ -405,20 +453,21 @@ def main(argv):
         return None
 
     which = opt("--set") or "1"
-    if which not in ("1", "2"):
-        raise SystemExit("--set is 1 or 2")
+    if which not in ("1", "2", "3"):
+        raise SystemExit("--set is 1, 2 or 3")
     out_dir, places, letters = opt("--out"), opt("--places"), opt("--treatments")
-    if which == "2":
+    if which in TESTS:
+        t = TESTS[which]
         if places or letters:
-            raise SystemExit("--set 2 is a fixed list of five: --places and --treatments do not apply")
+            raise SystemExit("--set %s is a fixed list: --places and --treatments do not apply" % which)
         if "--list" in argv:
-            for name, place, short, what, body in SET2:
-                print("%s  (%s, %s)\n   %s %s\n" % (name, place, short, body, LOOK2))
-            print("%d pictures, about $%.2f a Run" % (len(SET2), len(SET2) * COST))
+            for name, place, short, what, body in t["entries"]:
+                print("%s  (%s, %s)\n   %s %s\n" % (name, place, short, body, t["look"]))
+            print("%d pictures, about $%.2f a Run" % (len(t["entries"]), len(t["entries"]) * COST))
             return
         if argv:
             print(__doc__); raise SystemExit(1)
-        make2(out_dir)
+        make2(out_dir, which)
         return
     places = [p for p in places.split(",") if p] if places else list(PLACES)
     letters = [l.upper() for l in letters.split(",") if l] if letters else sorted(TREATMENTS)
