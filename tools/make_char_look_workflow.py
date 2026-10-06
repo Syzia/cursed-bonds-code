@@ -69,18 +69,28 @@ its results land as `look_char2_<who>_<C|D>_0000N_.png`. Four boxes at 2K:
 about $0.64 a Run.
 
 The picks on a flat colour (`--set 3`, 7 Oct): the second round's two changes
-both worked. Claude's picks are Yuji B, Maki C and Shoko C, with Nobara kept
-as she is. A sprite cannot be cut cleanly off grey: on test pictures whose
-true outline is known, the cut from a grey backdrop left about twelve times
-as many wrong edge pixels as the cut from a flat saturated colour (grey lies
-on the line between the backdrop and the dark uniforms, so shading reads as
-transparency). So each pick is drawn once more with only the background
+both worked. Claude's picks are Maki C and Shoko C, with Nobara kept as she
+is, and for Yuji the redraw B. Then the owner asked: "Should we not put yuji
+in his school uniform like megumi with his red collar?" Today's sprite has
+him in an open jacket over a red hoodie, so both redos do too. This set
+dresses B in the school uniform: the editor is given B and, as a guide to the
+cloth and the cut, the unchanged sprite of Megumi, and is asked for one
+change, the clothes, with a red hood sewn to the collar. Two tries: E keeps
+his white trainers, F gives him red ones.
+
+A sprite cannot be cut cleanly off grey: on test pictures whose true outline
+is known, the cut from a grey backdrop left about twelve times as many wrong
+edge pixels as the cut from a flat saturated colour (grey lies on the line
+between the backdrop and the dark uniforms, so shading reads as
+transparency). So every pick is drawn once more with only the background
 changed, to a colour the character does not wear: green for Yuji and Shoko,
-magenta pink for Maki (her hair is green). Two small corrections ride along:
-Maki's eyes drifted from amber to red-brown, and the shadows under Shoko's
-eyes came out heavy. It writes `look_chars_final.json` and
-`look_chars_final.md`; results land as `look_char_final_<who>_0000N_.png`.
-Three boxes at 2K: about $0.48 a Run. Nothing is installed by it.
+magenta pink for Maki (her hair is green). Yuji's two tries are each chained
+straight into that step. Two small corrections ride along: Maki's eyes
+drifted from amber to red-brown, and the shadows under Shoko's eyes came out
+heavy. It writes `look_chars_final.json` and `look_chars_final.md`; results
+land as `look_char_yuji_<E|F>_0000N_.png` (the uniform on grey),
+`look_char_final_yuji_<E|F>_0000N_.png` and `look_char_final_<who>_0000N_.png`.
+Six boxes at 2K: about $0.96 a Run. Nothing is installed by it.
 
 Pillow: the system python3 has none. If it is missing, this script starts
 itself again with ComfyUI's own Python.
@@ -521,9 +531,39 @@ BACKDROP3 = ("THE BACKGROUND: replace the grey with one flat, even, fully satura
 GREEN3 = "pure green (about RGB 0, 200, 60)"
 PINK3 = "magenta pink (about RGB 220, 40, 160)"
 
+# Yuji's school uniform. The owner, 7 Oct: "Should we not put yuji in his school uniform like megumi
+# with his red collar?" Today's sprite, and so both redos of it, has him in an open jacket over a red
+# hoodie. Two pictures go to the editor: his redraw (B), and the unchanged sprite of the student whose
+# uniform it is, as a guide to the cloth and the cut. The red hood sewn to the collar is his own.
+UNIFORM_GUIDE = "megumi"
+YUJI_FROM = (1, "B")
+YUJI_UNIFORM = (
+    "Two pictures are given. The FIRST is the character to redraw: a full-body standing character sprite "
+    "for a visual novel, in cel-shaded anime style, on a plain grey background. The SECOND shows another "
+    "student and is a guide to one thing only, the school uniform. Redraw the FIRST picture and change one "
+    "thing only: his clothes. Everything else stays exactly as in the first picture: the same person at "
+    "the same age, the same head, face and expression, the same hair, the same pose with one hand in his "
+    "trouser pocket, the same hands, the same size and place in the frame, the same outlines and shading "
+    "style, the same flat grey background. Copy nothing else from the second picture: not that student's "
+    "face, hair, pose, trousers or boots. "
+    "THE ONE CHANGE: he wears the school's uniform in place of the open jacket and the red hoodie. The "
+    "jacket is the one in the second picture: the same dark navy cloth with the same lighter streaks along "
+    "the folds, a high stand-up collar, a closed front and one gold button with a swirl on it. It is a "
+    "short jacket that ends at his waist. Sewn to its collar is a bright red hood, which is his alone: the "
+    "hood is down, lying behind his neck and across the back of his shoulders, and its red cloth shows all "
+    "the way round the collar at the front. Below the jacket, straight full-length trousers of the same "
+    "dark navy cloth. There is no hoodie under the jacket: no drawstrings, no red hem below the jacket and "
+    "no red cuffs at the wrists. %s "
+    "The character stays fully and ordinarily dressed. Output a 9:16 picture showing the whole figure from "
+    "the top of the hair to the soles of the shoes.")
+YUJI_TRIES = [   # letter, the shoes, the label
+    ("E", "His white lace-up trainers stay exactly as they are.", "school uniform, red hood, white trainers"),
+    ("F", "His trainers become red, with white soles and white laces, in the same shape as now.",
+     "school uniform, red hood, red trainers"),
+]
+
 # who, the picture it starts from (round, letter), the backdrop, a correction or None, the label
 SET3 = [
-    ("yuji", 1, "B", GREEN3, None, "B on green"),
     ("maki", 2, "C", PINK3,
      "ONE CORRECTION: the irises of the eyes are amber, a warm golden brown, and not red-brown. Nothing "
      "else about the face changes.", "C on magenta pink, amber eyes"),
@@ -542,78 +582,122 @@ def in_name3(who):
     return "look_char3_in_%s.png" % who
 
 
-def stem3(who):
-    return "look_char_final_%s" % who
+def guide_name3():
+    return "look_char3_guide_%s.png" % UNIFORM_GUIDE
+
+
+def stem3(who, letter=None):
+    return "look_char_final_%s" % who + ("_%s" % letter if letter else "")
 
 
 def prompt3(colour, fix):
     return " ".join(x for x in (HEAD3, BACKDROP3 % colour, fix, "Output a 9:16 picture.") if x)
 
 
+def count3():
+    return 2 * len(YUJI_TRIES) + len(SET3)
+
+
 def build3():
     shell, nodes, links, ids, add, wire = kit()
-    count = len(SET3)
+    count = count3()
     ids["n"] += 1
-    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [0, -500], "size": [CELL_W * 2 - 40, 400],
+    nodes.append({"id": ids["n"], "type": "MarkdownNote", "pos": [0, -600], "size": [CELL_W * 2 - 40, 500],
                   "flags": {}, "order": 0, "mode": 0, "inputs": [], "outputs": [], "properties": {},
                   "title": "Start here", "color": "#222", "bgcolor": "#000", "widgets_values": [
-        "## The character picks, on a flat colour\n\n"
+        "## Yuji in his school uniform, and the picks on a flat colour\n\n"
         "Run this in the **local ComfyUI**. Press **Run** once.\n\n"
         "**Cost:** %d pictures, about **$%.2f** (Nano Banana Pro, about $%.2f a picture, charged to your "
         "Comfy account).\n\n"
-        "Each pair of boxes is one character: on the left the picture **picked from the look tests**, on "
-        "the right the same picture on a **flat green or pink** background. The colour is only there so "
-        "the figure can be cut out cleanly; it never shows in the game. If a left box shows an error, "
-        "click **choose file to upload** and pick its `look_char3_in_...png` from "
-        "`JJK Game images/look_test`.\n\n"
+        "- **Yuji** (the top block): his redraw is dressed in the school uniform, like Megumi's, with a red "
+        "hood sewn to the collar. Two tries: **E** keeps his white trainers, **F** gives him red ones. Each "
+        "is then drawn once more on flat green.\n"
+        "- **Maki** and **Shoko:** the picked picture drawn once more on flat pink or green.\n\n"
+        "The green and pink are only there so the figures can be cut out cleanly; they never show in the "
+        "game. If a left-hand box shows an error, click **choose file to upload** and pick its "
+        "`look_char3_...png` from `JJK Game images/look_test`.\n\n"
         "Nothing in the game changes from this. The results go to ComfyUI's output folder and Claude picks "
         "them up from there.\n\n"
         "If it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a "
         "finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
         % (count, count * COST, COST)]})
     groups = []
+    # Yuji: his redraw and the guide go in together; each try is then put on green
+    who = "yuji"
+    load = add("LoadImage", (0, 0), (CELL_W - 40, 760), title="Load Image: Yuji %s, as picked" % YUJI_FROM[1])
+    load["widgets_values"] = [in_name3(who), "image"]
+    guide = add("LoadImage", (0, 800), (CELL_W - 40, 760),
+                title="Load Image: %s, for the uniform" % UNIFORM_GUIDE.capitalize())
+    guide["widgets_values"] = [guide_name3(), "image"]
+    both = add("BatchImagesNode", (0, 1600), (CELL_W - 40, 120), title="Both pictures: Yuji first")
+    wire(load, 0, both, "images.image0")
+    wire(guide, 0, both, "images.image1")
+    for k, (letter, shoes, label) in enumerate(YUJI_TRIES):
+        y = k * ROW_H
+        g = add("GeminiImage2Node", (CELL_W, y), (CELL_W - 40, GEM_H),
+                title="Nano Banana Pro: Yuji %s, %s" % (letter, label))
+        w = g["widgets_values"]
+        w[0], w[2], w[3], w[4], w[5], w[6] = YUJI_UNIFORM % shoes, 2941 + 2 * k, "fixed", ASPECT, RESOLUTION, "IMAGE"
+        wire(both, 0, g, "images")
+        sv = add("SaveImage", (CELL_W, y + GEM_H + 60), (CELL_W - 40, SAVE_H), title="Yuji %s: %s" % (letter, label))
+        sv["widgets_values"] = [stem(who, letter)]
+        wire(g, 0, sv, "images")
+        g2 = add("GeminiImage2Node", (2 * CELL_W, y), (CELL_W - 40, GEM_H),
+                 title="Nano Banana Pro: Yuji %s on green" % letter)
+        w = g2["widgets_values"]
+        w[0], w[2], w[3], w[4], w[5], w[6] = prompt3(GREEN3, None), 2942 + 2 * k, "fixed", ASPECT, RESOLUTION, "IMAGE"
+        wire(g, 0, g2, "images")
+        sv2 = add("SaveImage", (2 * CELL_W, y + GEM_H + 60), (CELL_W - 40, SAVE_H), title="Yuji %s on green" % letter)
+        sv2["widgets_values"] = [stem3(who, letter)]
+        wire(g2, 0, sv2, "images")
+    groups.append({"id": 1, "title": "YUJI:  %s as picked + the uniform  >  %s  >  each on green" % (
+                       YUJI_FROM[1], "  |  ".join("%s %s" % (t[0], t[2]) for t in YUJI_TRIES)),
+                   "bounding": [-20, -50, 3 * CELL_W, len(YUJI_TRIES) * ROW_H - 50],
+                   "color": "#3f4f5a", "font_size": 24, "flags": {}})
     for i, (who, rnd, letter, colour, fix, label) in enumerate(SET3):
-        x, y = 0, i * ROW_H
-        load = add("LoadImage", (x, y), (CELL_W - 40, GEM_H + 20 + SAVE_H),
+        y = (len(YUJI_TRIES) + i) * ROW_H
+        load = add("LoadImage", (0, y), (CELL_W - 40, GEM_H + 20 + SAVE_H),
                    title="Load Image: %s %s, as picked" % (NAMES[who], letter))
         load["widgets_values"] = [in_name3(who), "image"]
-        g = add("GeminiImage2Node", (x + CELL_W, y), (CELL_W - 40, GEM_H),
+        g = add("GeminiImage2Node", (CELL_W, y), (CELL_W - 40, GEM_H),
                 title="Nano Banana Pro: %s, %s" % (NAMES[who], label))
         w = g["widgets_values"]
-        w[0], w[2], w[3], w[4], w[5], w[6] = prompt3(colour, fix), SEED3 + i, "fixed", ASPECT, RESOLUTION, "IMAGE"
+        w[0], w[2], w[3], w[4], w[5], w[6] = prompt3(colour, fix), SEED3 + 1 + i, "fixed", ASPECT, RESOLUTION, "IMAGE"
         wire(load, 0, g, "images")
-        sv = add("SaveImage", (x + CELL_W, y + GEM_H + 60), (CELL_W - 40, SAVE_H),
-                 title="%s: %s" % (NAMES[who], label))
+        sv = add("SaveImage", (CELL_W, y + GEM_H + 60), (CELL_W - 40, SAVE_H), title="%s: %s" % (NAMES[who], label))
         sv["widgets_values"] = [stem3(who)]
         wire(g, 0, sv, "images")
-        groups.append({"id": i + 1, "title": "%s:  %s as picked  >  %s" % (NAMES[who].upper(), letter, label),
+        groups.append({"id": i + 2, "title": "%s:  %s as picked  >  %s" % (NAMES[who].upper(), letter, label),
                        "bounding": [-20, y - 50, 2 * CELL_W, CELL_H + 70],
                        "color": "#3f4f5a", "font_size": 24, "flags": {}})
     wf = finish(shell, nodes, links, ids, groups)
-    wf["extra"]["ds"] = {"scale": 0.4, "offset": [80, 560]}
+    wf["extra"]["ds"] = {"scale": 0.3, "offset": [80, 700]}
     return wf
 
 
-NOTES3 = """# The character picks, on a flat colour
+NOTES3 = """# Yuji in his school uniform, and the picks on a flat colour
 
 One workflow file is in this folder: `look_chars_final.json`. Drag it into the
 **local ComfyUI** (Comfy Desktop) and press **Run**.
 
-Only run this if you agree with Claude's picks:
+## What it makes
 
-- **Yuji: B** (the redraw with a hand in his pocket).
-- **Maki: C** (hand on hip, the uniform hanging loose).
-- **Shoko: C** (the clean face with her tired eyes).
-- **Nobara: kept as she is** (nothing to run for her).
+- **Yuji in his school uniform.** You asked: "Should we not put yuji in his
+  school uniform like megumi with his red collar?" Yes. His redraw (B, hand in
+  his pocket) is dressed in the same uniform as Megumi's, with a red hood sewn
+  to the collar. Two tries: **E** keeps his white trainers, **F** gives him
+  red ones. Each is then drawn once more on flat green.
+- **Maki C** and **Shoko C**, each drawn once more with only the background
+  changed, to flat pink (Maki) and flat green (Shoko). Two small corrections
+  ride along: Maki's eyes back to amber (they drifted to red-brown), and the
+  shadows under Shoko's eyes a little lighter.
 
-If you would pick differently for any of them, say so instead and Claude will
-rebuild this file.
+The green and pink are there so the figures can be cut out cleanly. They
+never show in the game.
 
-It draws each pick once more with only the background changed, to flat green
-or flat pink. The colour is there so the figure can be cut out cleanly: it
-never shows in the game. Two small corrections ride along: Maki's eyes back to
-amber (they drifted to red-brown), and the shadows under Shoko's eyes a little
-lighter.
+If you would rather have Maki D, Shoko D, or something else for either of
+them, say so instead of running this and Claude will rebuild the file.
+Nobara is kept as she is: nothing is made for her.
 
 **Nothing in the game changes from this.**
 
@@ -623,11 +707,11 @@ lighter.
 
 1. Open Comfy Desktop.
 2. Drag `look_chars_final.json` from this folder onto the ComfyUI window.
-3. Each left-hand box should show a picked picture. If one shows an error,
-   click **choose file to upload** in that box and pick its
-   `look_char3_in_...png` from this folder.
-4. Press **Run** once. Three pictures, about $%.2f.
-5. Wait until all three show a picture, then tell Claude.
+3. The left-hand boxes should show Yuji, Megumi, Maki and Shoko. If one shows
+   an error, click **choose file to upload** in that box and pick its
+   `look_char3_...png` from this folder.
+4. Press **Run** once. Six pictures, about $%.2f.
+5. Wait until all six show a picture, then tell Claude.
 """
 
 
@@ -635,18 +719,31 @@ def make3(out_dir=None):
     out_dir = out_dir or OUT
     os.makedirs(out_dir, exist_ok=True)
     dirs = [out_dir] + ([COMFY_INPUT] if out_dir == OUT and os.path.isdir(COMFY_INPUT) else [])
-    for who, rnd, letter, colour, fix, label in SET3:
+    picks = [("yuji",) + YUJI_FROM] + [(b[0], b[1], b[2]) for b in SET3]
+    for who, rnd, letter in picks:
         if not os.path.exists(source3(who, rnd, letter)):
             raise SystemExit("no picked picture at %s" % source3(who, rnd, letter))
-    for who, rnd, letter, colour, fix, label in SET3:
+    for who, rnd, letter in picks:
         for d in dirs:
             shutil.copyfile(source3(who, rnd, letter), os.path.join(d, in_name3(who)))
+    # the guide: the unchanged sprite on grey, at the size of the picture it travels with
+    size = Image.open(source3("yuji", *YUJI_FROM)).size
+    tmp = out_dir
+    prepare(UNIFORM_GUIDE, [tmp])
+    ref = Image.open(os.path.join(tmp, in_name(UNIFORM_GUIDE))).convert("RGB").resize(size, Image.LANCZOS)
+    os.remove(os.path.join(tmp, in_name(UNIFORM_GUIDE)))
+    for d in dirs:
+        ref.save(os.path.join(d, guide_name3()))
+    for letter, shoes, label in YUJI_TRIES:
+        print("yuji   %s  from %s + %s -> %s, then %s   (%s)" % (
+            letter, in_name3("yuji"), guide_name3(), stem("yuji", letter), stem3("yuji", letter), label))
+    for who, rnd, letter, colour, fix, label in SET3:
         print("%-6s from %-24s -> %s   (%s)" % (who, in_name3(who), stem3(who), label))
     out = os.path.join(out_dir, "look_chars_final.json")
     json.dump(build3(), open(out, "w"), indent=1)
-    cost = len(SET3) * COST
-    open(os.path.join(out_dir, "look_chars_final.md"), "w").write(NOTES3 % (len(SET3), cost, COST, cost))
-    print("%d pictures at %s %s, about $%.2f" % (len(SET3), ASPECT, RESOLUTION, cost))
+    cost = count3() * COST
+    open(os.path.join(out_dir, "look_chars_final.md"), "w").write(NOTES3 % (count3(), cost, COST, cost))
+    print("%d pictures at %s %s, about $%.2f" % (count3(), ASPECT, RESOLUTION, cost))
     print("   workflow -> %s" % out)
     return out
 
@@ -676,10 +773,15 @@ def main(argv):
         return
     if which == "3":
         if "--list" in argv:
+            for letter, shoes, label in YUJI_TRIES:
+                print("%s  (Yuji %s: %s; from round %d's %s and %s's sprite)\n   %s\n" % (
+                    stem("yuji", letter), letter, label, YUJI_FROM[0], YUJI_FROM[1], UNIFORM_GUIDE,
+                    YUJI_UNIFORM % shoes))
+                print("%s  (Yuji %s on green)\n   %s\n" % (stem3("yuji", letter), letter, prompt3(GREEN3, None)))
             for who3, rnd, letter, colour, fix, label in SET3:
                 print("%s  (%s: %s; from round %d's %s)\n   %s\n" % (
                     stem3(who3), NAMES[who3], label, rnd, letter, prompt3(colour, fix)))
-            print("%d pictures, about $%.2f a Run" % (len(SET3), len(SET3) * COST))
+            print("%d pictures, about $%.2f a Run" % (count3(), count3() * COST))
             return
         if argv or who:
             print(__doc__); raise SystemExit(1)

@@ -90,6 +90,7 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | The same pack has a second family of models, untried because it meant another download. | In chat, 7 Oct: "lets download the models" | Four models of the second family were downloaded and tried (section 3d). |
 | The character look test (`look_chars.json`, eight pictures). | In chat, 7 Oct: "The character look test finished, take a look." | Run by the owner. What came out is in section 3e. The owner's choice for each character is still to come. |
 | The second round, offered for Maki and Shoko (`look_chars_2.json`, four pictures). | In chat, 7 Oct: "The second character test finished, take a look." | Run by the owner, which is read as agreeing that Maki's uniform and Shoko's face were what missed. What came out is in section 3e. The owner's choice for each character is still to come. |
+| Claude's picks after the second round: Yuji B, Maki C, Shoko C, Nobara kept as she is. | In chat, 7 Oct: "Should we not put yuji in his school uniform like megumi with his red collar?" | Yes. Today's sprite has Yuji in an open jacket over a red hoodie, and both redos kept that. He is to wear the school uniform, like Megumi's, with his red hood at the collar. Two tries are made from his redraw B: one keeps his white trainers, one gives him red ones (section 3e). The other three picks were not answered and are still to be confirmed. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
@@ -266,17 +267,31 @@ first-round picture and changed one thing, and both changes worked:
 than a list of corrections beside a long list of things to keep.
 
 **Claude's picks, told to the owner:** Yuji **B**, Maki **C**, Shoko **C**,
-Nobara **kept as she is**. **The owner has not chosen yet.**
+Nobara **kept as she is**.
+
+**The owner on Yuji:** "Should we not put yuji in his school uniform like
+megumi with his red collar?" He should. Today's sprite has him in an open
+jacket over a red hoodie with white trainers, and A and B both kept that. In
+the school uniform he wears the same dark navy jacket as Megumi, closed, with
+a red hood sewn to its collar. So two more tries are made from B (the pose
+and face stay): the editor is given B and, as a guide to the cloth and cut,
+Megumi's unchanged sprite, and is asked for one change, the clothes.
+**E** keeps the white trainers; **F** gives him red ones.
+**The owner has not yet said yes or no to Maki C, Shoko C and keeping
+Nobara.**
 
 **Cutting them out.** A sprite cannot be cut cleanly off grey: on the exact
-test pictures the cut from a grey backdrop left about twelve times as many
-wrong edge pixels as the cut from a flat saturated colour, because grey lies
-between the backdrop and the dark uniforms and shading reads as
-transparency. So each pick is drawn once more with only the background
-changed (`look_chars_final.json`, three pictures, about $0.48): green for
-Yuji and Shoko, magenta pink for Maki. Two corrections ride along: Maki's
-eyes back to amber, and the shadows under Shoko's eyes lighter. The file is
-built for the picks above and is rebuilt if the owner chooses differently.
+test pictures with crisp edges the cut from a grey backdrop left about twelve
+times as many wrong edge pixels as the cut from a flat saturated colour,
+because grey lies between the backdrop and the dark uniforms and shading
+reads as transparency. So each pick is drawn once more with only the
+background changed: green for Yuji and Shoko, magenta pink for Maki. Two
+corrections ride along: Maki's eyes back to amber, and the shadows under
+Shoko's eyes lighter.
+
+**One file does all of it:** `look_chars_final.json`, six pictures, about
+$0.96. Yuji E and F in the uniform, each chained straight on to green; Maki C
+on pink; Shoko C on green. It is rebuilt if the owner chooses differently.
 
 Sheets, in `~/Desktop/JJK Game images/look_test/`: `chars_<who>.jpg` (today,
 A, B), `chars_faces.jpg` (the faces close up) and `lineup_<who>.jpg` (each
