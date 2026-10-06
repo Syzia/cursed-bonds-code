@@ -110,6 +110,32 @@ A second small test (`look_test_2`, five pictures) shows the settled look on
 the Common Room and two readings each of the new Courtyard and the new
 Library.
 
+## 3c. The second and third look tests (6 Oct)
+
+**Second test** (five pictures): the Common Room in the settled look, two new
+Courtyards, two new Libraries.
+- Both Courtyards have three buildings that can be told apart: a two-storey
+  schoolhouse with shoe lockers on the left, an open training hall with a
+  weapon rack, straw posts and a painted vending machine on the right. They
+  differ in the middle: a **gateway** with steps uphill to the dormitories, or
+  a **main hall** with the dormitory path beside it. *The owner has not chosen
+  yet.* Claude's pick: the gateway, because then every building leads
+  somewhere.
+- The **bright Library** is in the right style and keeps the old room's
+  layout (shelves left, a locked cabinet right, open floor). The two-level
+  hall came out in a flatter, cartoon style. *The owner has not chosen yet.*
+- The Common Room came out clean but **empty**: told to put nothing on the
+  floor or the furniture, the editor took the room's own things away.
+
+**Third test** (two pictures): the same clean look with every object kept, on
+the Common Room and the Cafeteria. It worked on both: nothing moved, nothing
+is missing, the walls are clean and the windows show trees, roofs and sky.
+
+**The lesson, for every picture redone in place:** say what clean means (no
+stains, no dust, no litter, no leaves) and say that every object in the
+picture stays. Never say "nothing on the floor". The wording that worked is
+`KEEP` and `LOOK3` in `tools/make_look_workflow.py`.
+
 ## 4. How the review was read
 
 - **Every campus location is redone.** The audit had counted the 24 campus
