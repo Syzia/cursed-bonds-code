@@ -94,6 +94,7 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | The redos of Maki and Shoko (C, on their flat colours), and Nobara kept as she is. | In chat, 7 Oct, while the last file was running: "our current Maki and Shoko are still better than the new ones. same with Nobara" | Maki, Shoko and Nobara stay exactly as they are in the game. No redo of any of them is installed. |
 | Yuji E (white trainers) or F (red trainers), both in the school uniform with the red hood. | In chat, 7 Oct: "The renders finished. The Yujis F's are better than the Yuji E's" | Yuji F is his new sprite. |
 | Yuji F, shown standing beside the others. | In chat, 7 Oct: "Yujis redrawn. But the characters clothing isnt consistent. The textures are all different" | Read as: the same school uniform is drawn differently from one character to the next. Measured, it is: Megumi's and Toge's cloth match each other, Yuji's new one came out lighter and purplish, Nobara's darker with soft shading, Maki's bluer, the player's without highlights. A fix that changes only the cloth (section 3f) is shown to the owner; nothing is applied until they say so. |
+| The six who wear the school uniform, before and after a match of their cloth. | In chat, 7 Oct: "Yes that's what I meant, apply it to all six" | Applied the same day to the five who are in the game in that uniform; Yuji's is matched when his school-uniform set goes in (section 3f). |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
@@ -318,7 +319,7 @@ game shows them); for the second round `chars2_<who>.jpg`,
 `lineup_picks.jpg` (the four picks together); for Yuji's uniform
 `chars3_yuji.jpg`, `chars3_yuji_details.jpg` and `lineup_yuji_uniform.jpg`.
 
-## 3f. One cloth for the school uniform (7 Oct, proposed)
+## 3f. One cloth for the school uniform (7 Oct, applied)
 
 The owner, looking at the redrawn Yuji beside the others: "the characters
 clothing isnt consistent. The textures are all different".
@@ -347,7 +348,37 @@ before and after are `uniform_now.jpg`, `uniform_matched.jpg` and
 the adults' clothes, and the grey uniform of the player's old school and
 Sana's.
 
-**Not applied.** The owner has not answered yet.
+**The owner's answer:** "Yes that's what I meant, apply it to all six".
+
+**Applied, 7 Oct.** `tools/cloth_match.py` is the prototype moved into the
+tree, with its limits set on each person's hems and cuffs (the player's
+black boots and the grey blend at a white cuff are not cloth, and a first dry
+run had caught both). It was run on a copy of the sprites first and the copy
+was looked at; the game's sixty files are pixel for pixel that copy.
+
+| who | cloth pixels on a sprite | mean change | off the ramp, before to after |
+|---|---|---|---|
+| Megumi | 190,261 | 2.0 levels | 1.19 to 0.26 |
+| Toge | 209,296 | 2.6 | 1.25 to 0.26 |
+| Nobara | 127,974 | 14.7 | 2.72 to 0.28 |
+| Maki | 133,105 | 8.0 | 2.77 to 0.27 |
+| the player | 176,943 | 4.9 | 2.80 to 0.33 |
+
+Thirty sprites and thirty side portraits changed (the portraits are made
+again from the sprites by the tool that made them, which reproduces today's
+exactly). On every sprite the alpha channel is unchanged and no pixel outside
+the cloth changed; the tool refuses to write otherwise. Nothing else in the
+game changed: no script and no image name. All eleven saved games load: ten
+land exactly where they were saved, and the eleventh, an autosave of 6 Oct
+taken at a label, runs on to its first line of dialogue, which is what a save
+taken there does. The
+sprites as they were are in git and in
+`~/Desktop/JJK_worktrees/ui2_design_work/cloth_match/before/`.
+
+**Yuji** is matched when his school-uniform set is installed
+(`cloth_match.py --apply yuji --redrawn`; the plan's D57 and D59). The sprite
+the game shows of him today is the old one, in a jacket and hoodie, and is
+left alone.
 
 ## 4. How the review was read
 
