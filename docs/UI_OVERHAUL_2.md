@@ -85,6 +85,9 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | The revised plan's one question: a painted pose for every person in every place they go? (The plan painted 32; the other 35 person-and-place pairs would be six more sittings, 46 in all, and about $11.) | A comment on the plan page, 7 Oct: "Yes" | Every person-and-place pair gets a painted pose: 67 in all, 46 sittings, about $11 more. The pose test still comes first (three before the rest). |
 | (In chat, 7 Oct, after the plan was revised.) | "Lets Do a character UI overhaul, redoing the characters aswell. Some of them feel off. after this we can start the build" | The character sprites are redone as part of this overhaul. Which characters feel off, and what is off about each, is asked of the owner (a sheet of all fourteen sprites was sent), and a character look test like the background ones settles the look before any is redone. Read as: once the characters are added to the plan, building starts. Poses, blink and talk, and the six faces of a redone character are made from the new sprite, so the characters come before them in the art order. |
 | Which characters feel off, and what is off about each? | In chat, 7 Oct: "The characters that feel off. Yuji, maki, shoko, maybe nobara" | Yuji, Maki and Shoko are redone; Nobara is included in the test and redone if the owner prefers the result. What is off was not said, so a character look test shows each of the four redone two ways and the owner picks. |
+| (In chat, 7 Oct.) | "Are there any comfyUI extensions that would benefit us with this build?" and, with screenshots of three extension pages, "These?" | The owner installed two: ComfyUI-RMBG (cuts a figure out of its background) and rgthree-comfy (a side-by-side picture comparer). |
+| | In chat, 7 Oct: "They're installed, run the cut-out test" | The first cut-out test (section 3d). |
+| The same pack has a second family of models, untried because it meant another download. | In chat, 7 Oct: "lets download the models" | Four models of the second family were downloaded and tried (section 3d). |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
@@ -163,6 +166,66 @@ yet: the icons, exits and standing spots have to be laid out on them first.
 stains, no dust, no litter, no leaves) and say that every object in the
 picture stays. Never say "nothing on the floor". The wording that worked is
 `KEEP` and `LOOK3` in `tools/make_look_workflow.py`.
+
+## 3d. The cut-out tests (7 Oct)
+
+How a character is cut out of its render decides how clean every sprite's
+outline is. Two rounds, both free: everything ran on this Mac.
+
+**What was tried.** Five models from the ComfyUI-RMBG pack (RMBG-2.0, and
+from its second family BiRefNet_toonout, which is trained on anime
+characters, BiRefNet-general, BiRefNet-HR and BiRefNet-HR-matting); today's
+own tool, `tools/keysprite.py`; and a prototype finishing step that reads the
+edge off the flat backdrop colour.
+
+**The pictures.** Maki's real render on pink. Today's sprites of Maki, Yuji,
+Shoko and Nobara set on flat grey, where the true outline is known to the
+pixel. The same four set on flat pink and flat green with crisp and with soft
+edges, as a fresh render would be: sixteen pictures whose true cut-out is
+known.
+
+**Results.**
+- **Finding the figure** (grey, four characters): the anime-trained model is
+  the most reliable. At the two larger working sizes it lost 20 to 37 pixels
+  of figure in all, where RMBG-2.0 lost 602 to 870 and the other three 66 to
+  940. Its error along the outline is about a fifth lower than the next best.
+- **No model's result is a finished cut-out on a flat backdrop.** Each leaves
+  the backdrop's colour on the outline. On the exact pictures with crisp
+  edges a model's result as it comes has 20,000 to 27,000 visibly wrong
+  pixels (four characters together), against 15,600 for today's tool. The
+  pack's "refine foreground" switch only darkens the edge colours: the pink
+  stays. **The first round's advice, RMBG-2.0 with that switch at double
+  working size, was wrong and is withdrawn.**
+- **Today's tool** is clean: no backdrop colour is left. Its edges are hard.
+- **The prototype** has 560 to 620 visibly wrong pixels on crisp edges, about
+  twenty-five times fewer than today's tool, and 6,400 to 7,600 on soft edges
+  against 35,700, about five times fewer. On Maki's real render it is level
+  with today's tool by eye, with softer edges and fuller thin strands of
+  hair, and it leaves a few dozen stray edge pixels where today's tool leaves
+  a handful. It is not in `tools/` yet.
+- **The second family cannot be used through the pack's own node on this
+  Mac.** The node runs it in half precision on the processor: one picture ran
+  for sixteen minutes. The same models run directly take 6 to 20 seconds.
+
+**What follows.**
+- New sprites are still rendered on a flat key colour that the character does
+  not wear (pink for Maki, not pink for Yuji).
+- The cut-out stays our own tool. The prototype's edge step is built into it
+  in the art tools package and replaces today's keying only if it is at least
+  as clean on every render we already have. The sixteen exact pictures become
+  its tests.
+- The anime-trained model is run directly beside it as a check (a gap left
+  filled, a piece cut off, a stray mark), and it is the cutter for any picture
+  that is not on a flat backdrop.
+- The pack's nodes are not part of the sprite pipeline. rgthree's picture
+  comparer goes into the look-test workflow files.
+
+Kept: the scripts, the test pictures and every model's result in
+`~/Desktop/JJK_worktrees/ui2_design_work/cutout_test/`; the close-up sheets
+`cutout_test_maki.jpg`, `cutout_test_maki_hand.jpg` (first round) and
+`cutout_models_maki.png` (second) in `~/Desktop/JJK Game images/look_test/`.
+The five models are in `~/ComfyUI-Installs/ComfyUI/ComfyUI/models/RMBG/`
+(3.3 GB).
 
 ## 4. How the review was read
 
