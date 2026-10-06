@@ -1,0 +1,494 @@
+<title>Cursed Bonds Campus Overhaul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the project's plan-page system (as the phase two page). A sticky contents rail, one reading column, pictures at the column's full width. */
+:root{
+  --paper:#F3F3F6; --surface:#FFFFFF; --sunk:#E9E9EF;
+  --ink:#15162A; --ink2:#3F4360; --muted:#6A6E86; --rule:#D9DAE3;
+  --accent:#5A46D2; --accent-soft:#ECE8FB;
+  --seal:#B3312A; --seal-soft:#F7E5E3;
+  --gold:#9A700F; --gold-soft:#F5ECD5;
+  --ok:#23857A; --ok-soft:#E0F1EE;
+  --tag-ink:#FFFFFF; --tag-bg:rgba(12,11,19,.82);
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0D0C14; --surface:#161522; --sunk:#1D1C2B;
+    --ink:#ECEAF6; --ink2:#C7C4DA; --muted:#928EAA; --rule:#2B2A3C;
+    --accent:#A193FF; --accent-soft:#231F40;
+    --seal:#E2665C; --seal-soft:#341A1B;
+    --gold:#E1B754; --gold-soft:#2E2512;
+    --ok:#4CC0B2; --ok-soft:#12302C;
+    --tag-ink:#FFFFFF; --tag-bg:rgba(12,11,19,.82);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0D0C14; --surface:#161522; --sunk:#1D1C2B;
+  --ink:#ECEAF6; --ink2:#C7C4DA; --muted:#928EAA; --rule:#2B2A3C;
+  --accent:#A193FF; --accent-soft:#231F40;
+  --seal:#E2665C; --seal-soft:#341A1B;
+  --gold:#E1B754; --gold-soft:#2E2512;
+  --ok:#4CC0B2; --ok-soft:#12302C;
+  --tag-ink:#FFFFFF; --tag-bg:rgba(12,11,19,.82);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;padding-inline:20px;padding-block:0 80px}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:210px minmax(0,1fr);gap:56px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-top:48px;max-height:100vh;overflow:auto}
+nav.toc p{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+nav.toc a{display:block;color:var(--ink2);text-decoration:none;font-size:14px;padding:5px 0 5px 12px;border-left:2px solid var(--rule)}
+nav.toc a:hover{color:var(--accent);border-left-color:var(--accent)}
+main{min-width:0;max-width:980px}
+header.top{padding:56px 0 28px;border-bottom:1px solid var(--rule);margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,50px);line-height:1.12;margin:10px 0 14px;text-wrap:balance}
+h1 .jp{font-size:.5em;color:var(--seal);font-weight:600;margin-left:.3em;letter-spacing:.1em;vertical-align:.25em}
+.lede{font-size:18px;color:var(--ink2);max-width:62ch;margin:0}
+section{padding:44px 0 8px;border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:0}
+h2{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.25;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 22px;max-width:65ch}
+h3{font-family:var(--display);font-weight:800;font-size:20px;margin:30px 0 8px;text-wrap:balance}
+p{margin:0 0 14px;max-width:68ch}
+ul,ol{margin:0 0 16px;padding-left:22px;max-width:66ch}
+li{margin:4px 0}
+strong{font-weight:700}
+.note{font-size:14px;color:var(--muted);margin:-4px 0 20px;max-width:70ch}
+
+.callout{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:18px 20px;margin:18px 0}
+.callout .tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--seal);margin-bottom:6px;display:block}
+.callout p:last-child,.callout ul:last-child{margin-bottom:0}
+.take{display:grid;gap:0;margin:6px 0 10px}
+.take .row{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;padding:12px 0;border-top:1px solid var(--rule)}
+.take .row:first-child{border-top:0}
+.take .k{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.take .row p{margin:0}
+.tablewrap{overflow-x:auto;margin:10px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:700;background:var(--sunk)}
+
+/* a picture pair: as it is now, and redone */
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 6px}
+.shot{position:relative;margin:0;min-width:0}
+.shot img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:6px;border:1px solid var(--rule);background:var(--sunk)}
+.shot figcaption{position:absolute;left:10px;top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tag-ink);background:var(--tag-bg);padding:3px 9px;border-radius:3px}
+.shot.new figcaption{background:var(--seal)}
+.pairnote{font-size:14.5px;color:var(--ink2);margin:0 0 26px;max-width:72ch}
+.pairnote b{font-family:var(--display);font-size:17px;color:var(--ink);margin-right:6px}
+
+.places{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:14px 0 18px}
+.place{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px 16px;font-size:14.5px;min-width:0}
+.place h4{font-family:var(--display);font-size:18px;margin:0 0 2px}
+.place .where{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px}
+.place p{margin:0 0 6px}
+.place p:last-child{margin-bottom:0}
+.place .do{color:var(--ink2)}
+.place .do b{color:var(--ok);font-weight:700}
+
+.diagram{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px;margin:12px 0 10px;overflow-x:auto}
+.diagram pre{margin:0;min-width:640px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin:0 0 20px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.legend .n{background:#5A46D2}
+.legend .y{background:#23857A}
+.legend .o{background:var(--sunk);border:1px solid var(--rule)}
+
+.steps{list-style:none;padding:0;margin:12px 0 18px;display:grid;gap:10px;max-width:none}
+.steps li{margin:0;border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:13px 16px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 16px}
+.steps li.play{border-color:var(--gold);background:var(--gold-soft)}
+.steps .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.steps li.play .k{color:var(--gold)}
+.steps b{font-family:var(--display);font-size:17px;display:block}
+.steps p{margin:0;font-size:14.5px;max-width:none}
+.steps .cost{font-family:var(--mono);font-size:12px;color:var(--seal);display:block;margin-top:4px}
+
+.qs{list-style:none;padding:0;margin:10px 0;display:grid;gap:10px;max-width:none}
+.qs li{margin:0;border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px 18px}
+.qs li.open{border-color:var(--seal)}
+.qs b{font-family:var(--display);font-size:18px;display:block;margin-bottom:4px}
+.qs p{margin:0 0 8px;font-size:15px;max-width:none}
+.qs p:last-child{margin-bottom:0}
+.qs .state{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;display:inline-block;padding:2px 8px;border-radius:3px;margin-bottom:8px}
+.qs .state.now{background:var(--seal);color:#fff}
+.qs .state.done{background:var(--ok-soft);color:var(--ok)}
+.qs .state.later{background:var(--sunk);color:var(--muted)}
+.qs ul{margin:0 0 8px;max-width:none}
+details{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:0 16px;margin:8px 0}
+details summary{cursor:pointer;font-family:var(--display);font-weight:800;font-size:17px;padding:12px 0;list-style-position:outside}
+details[open] summary{border-bottom:1px solid var(--rule);margin-bottom:12px}
+details ul{max-width:none}
+footer{padding:28px 0 0;color:var(--muted);font-size:13px}
+@media (max-width:980px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  nav.toc{position:static;padding-top:20px;max-height:none;display:flex;gap:4px 14px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:14px}
+  nav.toc p{width:100%}
+  nav.toc a{border-left:0;padding:2px 0}
+  header.top{padding-top:28px}
+}
+@media (max-width:720px){
+  .pair{grid-template-columns:minmax(0,1fr)}
+  .take .row,.steps li{grid-template-columns:minmax(0,1fr);gap:4px}
+  body{font-size:15.5px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <p>The plan</p>
+  <a href="#ask">Two questions</a>
+  <a href="#look">The look</a>
+  <a href="#notice">What changes</a>
+  <a href="#places">Eleven new places</a>
+  <a href="#campus">How it connects</a>
+  <a href="#order">The order</a>
+  <a href="#you">What you do</a>
+  <a href="#cost">What it costs</a>
+  <a href="#unfinished">Unfinished for a while</a>
+  <a href="#chosen">Chosen for you</a>
+  <a href="#checked">How it was checked</a>
+</nav>
+
+<main>
+<header class="top">
+  <span class="eyebrow">Plan for approval · 6 Oct 2026 · nothing is built yet</span>
+  <h1>The campus, redone <span class="jp">高専</span></h1>
+  <p class="lede">Every place on campus in the look you chose, eleven new places, people who belong in the rooms, and all the backgrounds we missed. This page is what you would be saying yes to.</p>
+</header>
+
+<section id="ask">
+  <h2>Two questions before building starts</h2>
+  <p class="sub">The first step of building rests on both, and neither needs a drawing. Everything else you were asked is already answered.</p>
+  <ol class="qs">
+    <li class="open">
+      <span class="state now">Asked now</span>
+      <b>1. Where the new buildings connect</b>
+      <p>The plan puts them like this. Yes, or say where instead.</p>
+      <ul>
+        <li>The Bathhouse is reached from the Mountain Path.</li>
+        <li>The Swimming Pool is reached from the Training Yard, behind the dojo.</li>
+        <li>The teachers' house is reached from the Staff Building Steps.</li>
+        <li>The Boys' Dormitory is the house on the left of the Dormitory Garden. The Girls' is the one on the right.</li>
+      </ul>
+      <p>Nothing more can open off the Dormitory Garden itself. It already has seven ways out, which is as many as fit.</p>
+    </li>
+    <li class="open">
+      <span class="state now">Asked now</span>
+      <b>2. When a friend's door is open</b>
+      <p>A friend's room is open while they are in it. By their routine that is mostly at Night, when you can talk and look but cannot start anything that takes an hour.</p>
+      <p>So the plan also puts each friend at home for one daytime hour at weekends. Then every room is seen by day once a week, and "Study together" works in the rooms that offer it. Keep that, or doors at Night only?</p>
+      <p>Night only means four of the day pictures are hardly ever seen, and "Study together" comes out of Yuji's and Megumi's rooms.</p>
+    </li>
+    <li>
+      <span class="state later">At the first checkpoint</span>
+      <b>3. The campus from above</b>
+      <p>You will be shown one drawing of the whole school: where each building stands and what it looks like. You say yes, or move something. Every outdoor picture is made from it.</p>
+    </li>
+    <li>
+      <span class="state done">Answered 6 Oct</span>
+      <b>Whose rooms, the budget, Comfy Cloud</b>
+      <p>All five friends' rooms are built. The budget and the cut order are fine. Your Comfy Cloud plan is active.</p>
+    </li>
+  </ol>
+</section>
+
+<section id="look">
+  <h2>The look you chose</h2>
+  <p class="sub">A real place, kept clean. Your three tests settled it, and showed that a room can be redone without anything in it moving.</p>
+
+  <div class="pair">
+    <figure class="shot"><img src="ui2_img/cr_now.jpg" alt="The Common Room as it is in the game now: soft and grainy, with a pale green blur in the windows." width="1280" height="720"><figcaption>Now</figcaption></figure>
+    <figure class="shot new"><img src="ui2_img/cr_new.jpg" alt="The Common Room redone: the same sofa, shelf, table and television, with clean walls and a clear view of trees and a tiled roof through the windows." width="1280" height="715"><figcaption>Redone in place</figcaption></figure>
+  </div>
+  <p class="pairnote"><b>Common Room.</b> Same camera, same furniture, every object kept. Clean walls, and windows that show trees and a roof. Sixteen rooms are redone this way, so what you click in them stays where it is.</p>
+
+  <div class="pair">
+    <figure class="shot"><img src="ui2_img/caf_now.jpg" alt="The Cafeteria as it is now, with hazy green windows." width="1280" height="720"><figcaption>Now</figcaption></figure>
+    <figure class="shot new"><img src="ui2_img/caf_new.jpg" alt="The Cafeteria redone, with the same tables and counter and a clear view of roofs, trees and sky." width="1280" height="715"><figcaption>Redone in place</figcaption></figure>
+  </div>
+  <p class="pairnote"><b>Cafeteria.</b> The same instruction on a second room, to check it holds. It does.</p>
+
+  <div class="pair">
+    <figure class="shot"><img src="ui2_img/court_now.jpg" alt="The Courtyard as it is now: three similar temple halls around a flagstone court." width="1280" height="720"><figcaption>Now</figcaption></figure>
+    <figure class="shot new"><img src="ui2_img/court_new.jpg" alt="The Courtyard you chose: a two-storey schoolhouse on the left, a roofed gateway with steps uphill in the middle, an open training hall with a vending machine on the right." width="1280" height="715"><figcaption>Designed again</figcaption></figure>
+  </div>
+  <p class="pairnote"><b>Courtyard.</b> The gateway version you chose. The school is on the left, the way to the dormitories is through the gate, the training hall is on the right, and the vending machine is finally painted in.</p>
+
+  <div class="pair">
+    <figure class="shot"><img src="ui2_img/lib_now.jpg" alt="The Library as it is now: a dark room with heavy shelves." width="1280" height="720"><figcaption>Now</figcaption></figure>
+    <figure class="shot new"><img src="ui2_img/lib_new.jpg" alt="The Library you chose: a bright room with tall shelves and a ladder, reading tables with green lamps, and a locked scroll cabinet." width="1280" height="715"><figcaption>Designed again</figcaption></figure>
+  </div>
+  <p class="pairnote"><b>Library.</b> The bright room you chose. Shelves on the left, a locked cabinet on the right, open floor in the middle.</p>
+
+  <p>These four pictures are already made. They go into the game for free on the day of the first checkpoint. The five yards, the Main Gate and all seven maps are designed again like the Courtyard, so the whole campus agrees with itself.</p>
+</section>
+
+<section id="notice">
+  <h2>What you will notice when you play</h2>
+  <div class="take">
+    <div class="row"><span class="k">Every place</span><p>All 24 campus places redone in this look. Three rooms gain one thing each: a laptop on your desk, a desk and photograph for Yaga, the veil beyond the ridge.</p></div>
+    <div class="row"><span class="k">One campus</span><p>The building on your left in a yard is the building on the left of the map. Every exit sits on the door or path it leads to.</p></div>
+    <div class="row"><span class="k">Your room</span><p>It is inside the Boys' Dormitory now. You walk into the corridor from the garden, and your door is the one at the end. "Go to bed" works as before.</p></div>
+    <div class="row"><span class="k">Night</span><p>Everybody but Gojo sleeps on campus. Friends are in their rooms, awake, and you can walk in when they are home. The teachers are in their sitting room.</p></div>
+    <div class="row"><span class="k">People in rooms</span><p>Each place gets its own floor line and size for people, light taken from the picture, a shadow that leans with the light, and furniture in front of people where there is furniture.</p></div>
+    <div class="row"><span class="k">People doing things</span><p>A real line for every person in every place they go, and 22 painted poses: each person in their main place, and the students, Shoko and Gojo at Night.</p></div>
+    <div class="row"><span class="k">Things to click</span><p>Every place has at least one thing in the picture besides its exits. You can soak, sit out the sauna and swim. At the card table you can ask someone over.</p></div>
+    <div class="row"><span class="k">Missing backgrounds</span><p>The prologue (alley, diner, home, street, car, city), the Sun Mall, the warehouse and the annexe, the board's job sites, the five Tokyo districts, the club and the Black Market, and a painted campus map.</p></div>
+    <div class="row"><span class="k">Real people</span><p>Mom, Dad, Kurose and Nade become sprites instead of block figures, and the curses are painted.</p></div>
+    <div class="row"><span class="k">Screens</span><p>A title picture of its own and a Continue button. Saves that say "Day 9 · Tue · Evening · Cafeteria". A "How to play" page and six small one-time hints. A "Show names" setting. Choices moved to the side so they stop covering faces.</p></div>
+    <div class="row"><span class="k">Faces</span><p>Faces move again in the character scenes. This needs no new art.</p></div>
+    <div class="row"><span class="k">Old saves</span><p>They keep loading where they were saved.</p></div>
+  </div>
+  <div class="callout">
+    <span class="tag">Not in this overhaul</span>
+    <p>Combat and its screen. New story scenes and the storyboard's new cast. Outfits, music and sound, video. Tokyo places you can walk into. Chess and the other table games. Item and fish pictures.</p>
+  </div>
+</section>
+
+<section id="places">
+  <h2>Eleven new places</h2>
+  <p class="sub">The campus goes from 24 places to 35. Each new place has a reason to go there.</p>
+  <div class="places">
+    <div class="place"><h4>Boys' Dormitory</h4><span class="where">Off the Dormitory Garden</span><p>The first-year corridor: a shoe rack at the head of the stairs, sliding doors on both sides, and your door at the far end.</p><p class="do"><b>Do:</b> look at the shoe rack and the notice board.</p></div>
+    <div class="place"><h4>Yuji's Room</h4><span class="where">Off the Boys' Dormitory</span><p>Film posters, a floor cushion, a small television.</p><p class="do"><b>Do:</b> talk, study together, look at the film shelf.</p></div>
+    <div class="place"><h4>Megumi's Room</h4><span class="where">Off the Boys' Dormitory</span><p>Spare and tidy, a full bookshelf, shoes in a line.</p><p class="do"><b>Do:</b> talk, study together, look at the bookshelf.</p></div>
+    <div class="place"><h4>Panda and Toge's Room</h4><span class="where">Off the Boys' Dormitory</span><p>The big corner room: one very large futon, one neat one, a shogi board between them.</p><p class="do"><b>Do:</b> talk, look at the shogi board.</p></div>
+    <div class="place"><h4>Nobara's Room</h4><span class="where">Off the Girls' Dormitory</span><p>A dressing mirror, shopping bags in a row, a tool roll on the desk.</p><p class="do"><b>Do:</b> talk, study together, look at the mirror.</p></div>
+    <div class="place"><h4>Maki's Room</h4><span class="where">Off the Girls' Dormitory</span><p>Bare, a weapon case, a pull-up bar in the door frame.</p><p class="do"><b>Do:</b> talk, look at the weapon case.</p></div>
+    <div class="place"><h4>Teachers' Lounge</h4><span class="where">Off the Staff Building Steps</span><p>Sofas round a low table, a kitchenette, a television, the staff rota on the wall, stairs up.</p><p class="do"><b>Do:</b> talk to teachers off duty. The rota says where each teacher is this hour and whether Gojo is in today.</p></div>
+    <div class="place"><h4>Teachers' Dormitory</h4><span class="where">Upstairs from the Lounge</span><p>A sitting room round a sunken hearth, Yaga's workbench under the window, four doors with name plates.</p><p class="do"><b>Do:</b> talk, look at the workbench and the name plates. The bedrooms stay doors.</p></div>
+    <div class="place"><h4>Bathhouse</h4><span class="where">Off the Mountain Path</span><p>The rest hall of a timber bathhouse at the edge of the trees, with the stone hot spring steaming beyond open screens.</p><p class="do"><b>Do:</b> soak, once a day, to bring stamina back. Closed at Night.</p></div>
+    <div class="place"><h4>Sauna</h4><span class="where">Off the Bathhouse</span><p>A cedar box, a stove, a bucket and a bench.</p><p class="do"><b>Do:</b> sit it out, to bring cursed energy back.</p></div>
+    <div class="place"><h4>Swimming Pool</h4><span class="where">Off the Training Yard</span><p>An open-air 25 m pool on a timber deck behind the dojo, the mountains beyond.</p><p class="do"><b>Do:</b> swim, or swim together. The gate is chained at Night.</p></div>
+  </div>
+  <div class="callout">
+    <span class="tag">A rule the plan sets</span>
+    <p>Nobody is ever drawn or described in the bath, the sauna or the pool's water, and nothing romantic is offered in those three places. People there stand in the rest hall or on the deck as their usual sprites, in uniform. A soak or a swim is a few lines about heat, cold and tiredness over the picture. The tools refuse to make a painted pose in any of the three.</p>
+  </div>
+</section>
+
+<section id="campus">
+  <h2>How the campus connects</h2>
+  <p class="sub">Every line is a way you can walk, both directions. Violet is new. Your room keeps its place on the map and moves behind the corridor.</p>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  gate[Main Gate] --- court[Courtyard]
+  court --- school[School Courtyard]
+  court --- garden[Dormitory Garden]
+  court --- train[Training Yard]
+  garden --- staff[Staff Building Steps]
+  garden --- trail[Mountain Path]
+  train --- staff
+
+  school --- classroom[Classroom]
+  school --- cafeteria[Cafeteria]
+  school --- infirmary[Infirmary]
+  school --- library[Library]
+
+  garden --- boys[Boys' Dormitory]:::new
+  boys --- mine[My Room]:::mine
+  boys --- yuji[Yuji's Room]:::new
+  boys --- megumi[Megumi's Room]:::new
+  boys --- senpai[Panda and Toge's Room]:::new
+  garden --- common[Common Room]
+  garden --- girls[Girls' Dormitory]
+  girls --- nobara[Nobara's Room]:::new
+  girls --- maki[Maki's Room]:::new
+  garden --- roof[Rooftop]
+
+  staff --- office[Principal's Office]
+  staff --- uta[Utahime's Office]
+  staff --- gojo[Gojo's Office]
+  staff --- lounge[Teachers' Lounge]:::new
+  lounge --- tdorm[Teachers' Dormitory]:::new
+
+  train --- hall[Training Hall]
+  train --- dojo[Dojo]
+  train --- store[Storehouse]
+  train --- pool[Swimming Pool]:::new
+
+  trail --- forest[Forest Trail]
+  trail --- ridge[Ridge]
+  trail --- river[Riverside]
+  trail --- bath[Bathhouse]:::new
+  bath --- sauna[Sauna]:::new
+
+  classDef new fill:#5A46D2,stroke:#3B2CA0,color:#FFFFFF
+  classDef mine fill:#23857A,stroke:#17594F,color:#FFFFFF
+</pre>
+  </div>
+  <p class="legend"><span><i class="n"></i>New place</span><span><i class="y"></i>Your room, moved inside the Boys' Dormitory</span><span><i class="o"></i>A place you have today</span></p>
+  <h3>What the drawing at the first checkpoint will show</h3>
+  <p>Besides the four new buildings, these are on it and you would notice them:</p>
+  <ul>
+    <li>The Training Yard's hall and dojo swap sides, so the hall is on the Courtyard's side.</li>
+    <li>Gojo's office is on the left of the staff steps and Utahime's on the right, on the steps and on the map alike.</li>
+    <li>The School Courtyard is laid out afresh.</li>
+    <li>The two matching timber houses either side of the gateway in your Courtyard picture are drawn as a pair of gate lodges, not as the dormitories.</li>
+    <li>A low archive wing stands behind the Library. It is the grey roof your Library's windows show.</li>
+    <li>From the Main Gate you look up at the Courtyard, not at a hall.</li>
+  </ul>
+</section>
+
+<section id="order">
+  <h2>The order you will see it in</h2>
+  <p class="sub">Four checkpoints to play, with art sittings between them. Nothing in the game waits for a picture: until one exists the game shows what it shows today, or a clearly marked stand-in.</p>
+  <ol class="steps">
+    <li class="play"><span class="k">Checkpoint A<br>about 30 min</span><div><b>The wiring</b><p>The game looks almost the same, and that is expected. Your room is down a corridor in the Boys' Dormitory. All eleven new places are there on borrowed, tinted pictures. Everyone who lives on campus has somewhere to be at Night. Your old saves load where they were. You approve the drawing of the campus from above.</p></div></li>
+    <li><span class="k">The same day</span><div><b>Four pictures go in, free</b><p>The gateway Courtyard, the bright Library, the Common Room and the Cafeteria. Nothing to run.</p></div></li>
+    <li><span class="k">Sittings 1 to 6</span><div><b>Evenings, yards and maps</b><p>The rooms where every evening is spent, with their evenings and nights. Nobara back on the sofa as a painted pose. The five yards, the icons, the six area maps and the painted campus map.</p><span class="cost">37 pictures · about $5.90</span></div></li>
+    <li class="play"><span class="k">Checkpoint B<br>about 45 min</span><div><b>A day and a night on the new campus</b><p>Walk it by exits alone, soak, swim, ask Toge to cards, click one dead thing in each area that now answers, visit a friend at Night, find the teachers at home. People standing properly in the rooms.</p></div></li>
+    <li><span class="k">Sittings 7 to 13</span><div><b>The rest of the campus</b><p>Every other room. The gate, the rooftop and the mountain. The campus after dark. The dormitories, the teachers' house, the baths and the pool as themselves. Then two painted people as a test.</p><span class="cost">57 pictures · about $9.10</span></div></li>
+    <li class="play"><span class="k">Checkpoint C<br>about 30 min</span><div><b>The whole campus</b><p>All 35 places, by day and after dark. Faces in two character scenes. The title screen's new buttons, a save, choices at the side. The two painted people beside the standing ones.</p></div></li>
+    <li><span class="k">Sittings 14 to 28</span><div><b>Everything off campus, and the people</b><p>The other painted poses. The prologue. The Sun Mall and the board. Tokyo. The title picture. Blink and talk. The curses. Then Dad, Mom, Kurose and Nade, a sitting each.</p><span class="cost">about 99 pictures and the four people · about $21</span></div></li>
+    <li class="play"><span class="k">Checkpoint D</span><div><b>Everything together</b><p>From New Game, with your old saves, and the list of titles, captions and numbers to review.</p></div></li>
+  </ol>
+</section>
+
+<section id="you">
+  <h2>What you do</h2>
+  <div class="take">
+    <div class="row"><span class="k">Checkpoints</span><p>Four, played from the Ren'Py launcher as before.</p></div>
+    <div class="row"><span class="k">Art sittings</span><p>Twenty-eight, of twelve pictures or fewer. Most are: drag one file into ComfyUI, press Run, say which version you like. Each comes with a page of numbered steps.</p></div>
+    <div class="row"><span class="k">Two-file sittings</span><p>Eleven sittings have two files. You run the first and say which results you accept. They are installed, which takes about ten minutes. Then you run the second, which is made from the first: a room's evening from its new day picture, for example.</p></div>
+    <div class="row"><span class="k">The four new people</span><p>Dad, Mom, Kurose and Nade are a different kind of sitting: a base picture made on Comfy Cloud, then two or three short repair runs in your own ComfyUI. Allow an evening for Dad and less for the others.</p></div>
+    <div class="row"><span class="k">What the tools do</span><p>They check that nothing moved, vanished or was added, and say in plain words if a picture has to be run again. For a room redone in place the result is in the game as soon as you relaunch. For a yard, a map or a new place, its layout is done for you after you choose a version, which takes about forty minutes.</p></div>
+  </div>
+</section>
+
+<section id="cost">
+  <h2>What it costs</h2>
+  <p class="sub">You approved this on 6 Oct. The second check recounted every sitting, and the totals held.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>When</th><th>What</th><th>Pictures</th><th>About</th></tr></thead>
+      <tbody>
+        <tr><td>First checkpoint</td><td>Code only, and the four pictures already made</td><td class="num">0</td><td class="num">$0</td></tr>
+        <tr><td>Before checkpoint B</td><td>Evenings, yards, icons, maps</td><td class="num">37</td><td class="num">$5.90</td></tr>
+        <tr><td>Before checkpoint C</td><td>All other rooms, the new places, the campus at night, a pose test</td><td class="num">57</td><td class="num">$9.10</td></tr>
+        <tr><td>After checkpoint C</td><td>Poses, prologue, Sun Mall, Tokyo, title, blink and talk, curses, four people</td><td class="num">about 99, and the four people</td><td class="num">about $21</td></tr>
+        <tr class="total"><td>Whole plan</td><td>About 150 pictures installed</td><td class="num">about 190</td><td class="num">about $36</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Allow $43 for pictures that have to be run twice. The campus itself, through checkpoint C, is about $15 of the total. The Comfy Cloud plan is separate from these figures. It is only needed for the four new people, who come last.</p>
+  <h3>If credits run short</h3>
+  <p>These wait first, in this order, and you are asked before each. Cutting any of them blocks no other picture.</p>
+  <ol>
+    <li>Blink and talk for the other ten people ($2.88).</li>
+    <li>The second set of at-home-at-Night poses ($1.28).</li>
+    <li>The club, the Black Market and the board's job sites ($1.12).</li>
+    <li>The night pictures of the School Courtyard, the staff steps and the Training Yard ($0.48).</li>
+    <li>Nobara's and Maki's rooms ($1.28 with their poses). Their doors then stay shut.</li>
+  </ol>
+</section>
+
+<section id="unfinished">
+  <h2>What will look unfinished for a while</h2>
+  <p class="sub">All of this is expected. None of it is a fault.</p>
+  <ul>
+    <li>At checkpoint B the eleven new places are still borrowed pictures. The Bathhouse is the infirmary tinted teal, the pool is the river cropped, and friends' rooms are your room mirrored. Their own pictures come in sittings 10 to 12. If you would rather judge the baths and the pool as themselves at checkpoint B, sitting 12 (7 pictures, $1.12) can be run early.</li>
+    <li>In the eleven new places people stand on general spots until each place has its own picture.</li>
+    <li>Nobara's painted pose on the sofa disappears when the first four pictures go in and comes back at sitting 2. Utahime's disappears at sitting 7 and comes back at sitting 13.</li>
+    <li>Until sittings 3 and 4 the new Courtyard sits beside old yards that disagree with it, and the doors to the four new buildings float on the old yard pictures. The gate still looks up at a hall until sitting 8.</li>
+    <li>Between checkpoints A and B, Yuji, Nobara and Panda are at the pool on weekend afternoons, but there is nothing to do there yet.</li>
+    <li>The Common Room and the Cafeteria, which you have approved, are run once more in sitting 1 so their windows show the campus. They may come back looking a little different.</li>
+    <li>The title keeps the gate picture until sitting 21.</li>
+    <li>Saves you already have keep their clock-time line. Only new saves read "Day 9 · Tue · Evening · Cafeteria".</li>
+  </ul>
+</section>
+
+<section id="chosen">
+  <h2>Chosen for you</h2>
+  <p class="sub">The audit raised 54 questions. The plan answers most of them itself. Say the word and any of these changes; each is one table entry or one line of an instruction.</p>
+  <details open>
+    <summary>Living on campus</summary>
+    <ul>
+      <li>Panda and Toge share a room. Maki is in the Girls' Dormitory.</li>
+      <li>Yaga, Utahime and Ijichi live in the teachers' house. Shoko spends her nights in the infirmary on purpose. Gojo is never on campus at Night except on his own night.</li>
+      <li>The Common Room stays empty at Night, as you ruled.</li>
+      <li>At Night Yuji is in his room on weekdays and by the garden pond at weekends. Panda is no longer in the garden at Night.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Doors</summary>
+    <ul>
+      <li>A friend's room is open whenever they are in it.</li>
+      <li>The girls' corridor after dark opens once Nobara or Maki knows you well enough (Bond 30). Today nothing ever opens it. After dark each girl's own door asks the same of her.</li>
+      <li>The teachers' sitting room is open at any hour. Their bedrooms are doors.</li>
+      <li>You can always walk out of a room you are in.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Weekends</summary>
+    <ul>
+      <li>The river crowd splits: Yuji, Nobara and Panda swim at the pool.</li>
+      <li>Nobara and Utahime spend weekend Evenings at the baths. Maki is at the Bathhouse on weekend Nights.</li>
+      <li>The teachers use their lounge off duty. Yaga is on campus at weekends except the afternoon.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>The baths, the pool and the card invite</summary>
+    <ul>
+      <li>One bath a day. A soak brings stamina back to full, the sauna cursed energy. Each takes an hour, so both are closed at Night. The two refills are new numbers and are on checkpoint D's review list.</li>
+      <li>The card invite: any student you have met who is on campus this hour, with no Bond level needed, free, not at Night. They walk over and sit down for that hour.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Pictures</summary>
+    <ul>
+      <li>The veil shows in the sky beyond the far mountains every time you stand on the ridge. Sukuna's body is not shown.</li>
+      <li>Yaga's office keeps its doll hall and gains a low desk with the photograph.</li>
+      <li>No car at the gate, which has a footpath and no road. Ijichi is "on the phone by the torii".</li>
+      <li>Painted evenings and nights wherever people stand after dark, and a real night sky for the six yards and the ridge. Everywhere else keeps the tint, so evening windows in the dojo, the classroom, the training hall and the offices still show daylight under it.</li>
+      <li>Painted poses are single figures, never groups.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Screens</summary>
+    <ul>
+      <li>The title is proposed as the torii and the steps at blue hour with the campus roofs above, the name as text. You are asked at checkpoint C, before it is made.</li>
+      <li>A small card when the day turns. The hour and yen stay off the HUD.</li>
+      <li>Buttons become icons, with one Close everywhere.</li>
+      <li>Notes about later builds are hidden where they are only notes. The cards that mark where the story stops for now stay.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>You will also be asked later</summary>
+    <ul>
+      <li>At checkpoint B: whether Yuji's talking mouth looks right before ten more are made, and to read the list of new captions.</li>
+      <li>At checkpoint C: whether a painted person sits right beside the standing ones (three are made before nineteen more), and what the title should show.</li>
+      <li>At checkpoint D: the review of titles, captions and numbers.</li>
+    </ul>
+  </details>
+</section>
+
+<section id="checked">
+  <h2>How the plan was checked</h2>
+  <p>The plan was built from three competing designs, scored by three judges and merged into one. It was then reviewed twice by independent readers working against the game's code and your pictures.</p>
+  <div class="take">
+    <div class="row"><span class="k">First review</span><p>45 problems, none blocking. All corrected.</p></div>
+    <div class="row"><span class="k">Second review</span><p>59 problems, one blocking: the lists did not agree that nobody is ever painted at the baths or the pool. That is now a firm rule. All corrected.</p></div>
+    <div class="row"><span class="k">Confirming read</span><p>Ten left, all about how the builders prove their work. All ten were corrected and checked again. Four small edits made after that have not had a second reader.</p></div>
+    <div class="row"><span class="k">What held up</span><p>Every count and price on this page against the detailed tables. The campus layout, by hand: what stands left, right and ahead in each yard, and where each map pin goes. That old saves keep their place, including saves made inside story scenes.</p></div>
+    <div class="row"><span class="k">Only trying can tell</span><p>Whether the picture editor follows the campus drawing when composing the yards. Sitting 3 is the test, and the plan says what to do if it does not. Whether a painted person matches the standing sprites in the new look. Three are made before the other nineteen.</p></div>
+  </div>
+  <footer>The full plan is docs/UI2_DESIGN.md in the game's folder. Your notes and answers are in docs/UI_OVERHAUL_2.md.</footer>
+</section>
+</main>
+</div>
