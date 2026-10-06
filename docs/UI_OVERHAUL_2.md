@@ -68,6 +68,7 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | Whose rooms can I walk into? (The plan proposed five: Yuji's, Megumi's, the one Panda and Toge share, Nobara's, Maki's.) | "All five rooms" | All five are built. |
 | The budget: about $36 of pictures, allow $43, in twenty-four sittings, with the plan's cut order if credits run short. | "budget is fine" | Approved, cut order included. The owner is still asked before each cut. |
 | Is the Comfy Cloud plan still active (the base pictures for the four new people are made there)? | "Comfy Cloud is active" | The new people's base pictures are made in Comfy Cloud; no test of a local route is needed first. |
+| Where the new buildings connect (the plan page's first question: baths off the Mountain Path, pool off the Training Yard, teachers' house off the staff steps, Boys' Dormitory left of the garden and Girls' right). | A comment on the plan page, 6 Oct: "Having the Bathhouse being reached from the mountain path is a cool idea, Could have like a mountain osen. Or mountain sauna/cold plunge recovery room." | The baths stay off the Mountain Path, as a mountain onsen: the place is named Onsen in the game, and the sauna gains a cold plunge. The pool, the teachers' house and the dormitories' sides are not answered yet. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 

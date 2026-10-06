@@ -177,9 +177,9 @@ footer{padding:28px 0 0;color:var(--muted);font-size:13px}
     <li class="open">
       <span class="state now">Asked now</span>
       <b>1. Where the new buildings connect</b>
-      <p>The plan puts them like this. Yes, or say where instead.</p>
+      <p>You have settled the first: the baths stay up the Mountain Path, as a mountain onsen with a sauna and a cold plunge. The other three are still open. Yes, or say where instead.</p>
       <ul>
-        <li>The Bathhouse is reached from the Mountain Path.</li>
+        <li><strong>Settled:</strong> the onsen is reached from the Mountain Path.</li>
         <li>The Swimming Pool is reached from the Training Yard, behind the dojo.</li>
         <li>The teachers' house is reached from the Staff Building Steps.</li>
         <li>The Boys' Dormitory is the house on the left of the Dormitory Garden. The Girls' is the one on the right.</li>
@@ -246,7 +246,7 @@ footer{padding:28px 0 0;color:var(--muted);font-size:13px}
     <div class="row"><span class="k">Night</span><p>Everybody but Gojo sleeps on campus. Friends are in their rooms, awake, and you can walk in when they are home. The teachers are in their sitting room.</p></div>
     <div class="row"><span class="k">People in rooms</span><p>Each place gets its own floor line and size for people, light taken from the picture, a shadow that leans with the light, and furniture in front of people where there is furniture.</p></div>
     <div class="row"><span class="k">People doing things</span><p>A real line for every person in every place they go, and 22 painted poses: each person in their main place, and the students, Shoko and Gojo at Night.</p></div>
-    <div class="row"><span class="k">Things to click</span><p>Every place has at least one thing in the picture besides its exits. You can soak, sit out the sauna and swim. At the card table you can ask someone over.</p></div>
+    <div class="row"><span class="k">Things to click</span><p>Every place has at least one thing in the picture besides its exits. You can soak at the mountain onsen, sit out the sauna and take its cold plunge, and swim at the pool. At the card table you can ask someone over.</p></div>
     <div class="row"><span class="k">Missing backgrounds</span><p>The prologue (alley, diner, home, street, car, city), the Sun Mall, the warehouse and the annexe, the board's job sites, the five Tokyo districts, the club and the Black Market, and a painted campus map.</p></div>
     <div class="row"><span class="k">Real people</span><p>Mom, Dad, Kurose and Nade become sprites instead of block figures, and the curses are painted.</p></div>
     <div class="row"><span class="k">Screens</span><p>A title picture of its own and a Continue button. Saves that say "Day 9 · Tue · Evening · Cafeteria". A "How to play" page and six small one-time hints. A "Show names" setting. Choices moved to the side so they stop covering faces.</p></div>
@@ -271,13 +271,13 @@ footer{padding:28px 0 0;color:var(--muted);font-size:13px}
     <div class="place"><h4>Maki's Room</h4><span class="where">Off the Girls' Dormitory</span><p>Bare, a weapon case, a pull-up bar in the door frame.</p><p class="do"><b>Do:</b> talk, look at the weapon case.</p></div>
     <div class="place"><h4>Teachers' Lounge</h4><span class="where">Off the Staff Building Steps</span><p>Sofas round a low table, a kitchenette, a television, the staff rota on the wall, stairs up.</p><p class="do"><b>Do:</b> talk to teachers off duty. The rota says where each teacher is this hour and whether Gojo is in today.</p></div>
     <div class="place"><h4>Teachers' Dormitory</h4><span class="where">Upstairs from the Lounge</span><p>A sitting room round a sunken hearth, Yaga's workbench under the window, four doors with name plates.</p><p class="do"><b>Do:</b> talk, look at the workbench and the name plates. The bedrooms stay doors.</p></div>
-    <div class="place"><h4>Bathhouse</h4><span class="where">Off the Mountain Path</span><p>The rest hall of a timber bathhouse at the edge of the trees, with the stone hot spring steaming beyond open screens.</p><p class="do"><b>Do:</b> soak, once a day, to bring stamina back. Closed at Night.</p></div>
-    <div class="place"><h4>Sauna</h4><span class="where">Off the Bathhouse</span><p>A cedar box, a stove, a bucket and a bench.</p><p class="do"><b>Do:</b> sit it out, to bring cursed energy back.</p></div>
+    <div class="place"><h4>Onsen</h4><span class="where">Off the Mountain Path</span><p>The rest hall of a timber mountain onsen at the edge of the trees, with the stone hot spring steaming beyond open screens.</p><p class="do"><b>Do:</b> soak, once a day, to bring stamina back. Closed at Night.</p></div>
+    <div class="place"><h4>Sauna</h4><span class="where">Off the Onsen</span><p>A cedar box, a stove, a bucket and a bench, with a stone cold-plunge tub beside the door.</p><p class="do"><b>Do:</b> sit it out, then take the cold plunge, to bring cursed energy back.</p></div>
     <div class="place"><h4>Swimming Pool</h4><span class="where">Off the Training Yard</span><p>An open-air 25 m pool on a timber deck behind the dojo, the mountains beyond.</p><p class="do"><b>Do:</b> swim, or swim together. The gate is chained at Night.</p></div>
   </div>
   <div class="callout">
     <span class="tag">A rule the plan sets</span>
-    <p>Nobody is ever drawn or described in the bath, the sauna or the pool's water, and nothing romantic is offered in those three places. People there stand in the rest hall or on the deck as their usual sprites, in uniform. A soak or a swim is a few lines about heat, cold and tiredness over the picture. The tools refuse to make a painted pose in any of the three.</p>
+    <p>Nobody is ever drawn or described in the bath, the sauna, the cold plunge or the pool's water, and nothing romantic is offered at the onsen, the sauna or the pool. People there stand in the rest hall or on the deck as their usual sprites, in uniform. A soak or a swim is a few lines about heat, cold and tiredness over the picture. The tools refuse to make a painted pose in any of the three.</p>
   </div>
 </section>
 
@@ -325,8 +325,8 @@ flowchart LR
   trail --- forest[Forest Trail]
   trail --- ridge[Ridge]
   trail --- river[Riverside]
-  trail --- bath[Bathhouse]:::new
-  bath --- sauna[Sauna]:::new
+  trail --- bath[Onsen]:::new
+  bath --- sauna[Sauna and cold plunge]:::new
 
   classDef new fill:#5A46D2,stroke:#3B2CA0,color:#FFFFFF
   classDef mine fill:#23857A,stroke:#17594F,color:#FFFFFF
@@ -402,7 +402,7 @@ flowchart LR
   <h2>What will look unfinished for a while</h2>
   <p class="sub">All of this is expected. None of it is a fault.</p>
   <ul>
-    <li>At checkpoint B the eleven new places are still borrowed pictures. The Bathhouse is the infirmary tinted teal, the pool is the river cropped, and friends' rooms are your room mirrored. Their own pictures come in sittings 10 to 12. If you would rather judge the baths and the pool as themselves at checkpoint B, sitting 12 (7 pictures, $1.12) can be run early.</li>
+    <li>At checkpoint B the eleven new places are still borrowed pictures. The onsen is the infirmary tinted teal, the pool is the river cropped, and friends' rooms are your room mirrored. Their own pictures come in sittings 10 to 12. If you would rather judge the onsen and the pool as themselves at checkpoint B, sitting 12 (7 pictures, $1.12) can be run early.</li>
     <li>In the eleven new places people stand on general spots until each place has its own picture.</li>
     <li>Nobara's painted pose on the sofa disappears when the first four pictures go in and comes back at sitting 2. Utahime's disappears at sitting 7 and comes back at sitting 13.</li>
     <li>Until sittings 3 and 4 the new Courtyard sits beside old yards that disagree with it, and the doors to the four new buildings float on the old yard pictures. The gate still looks up at a hall until sitting 8.</li>
@@ -438,7 +438,7 @@ flowchart LR
     <summary>Weekends</summary>
     <ul>
       <li>The river crowd splits: Yuji, Nobara and Panda swim at the pool.</li>
-      <li>Nobara and Utahime spend weekend Evenings at the baths. Maki is at the Bathhouse on weekend Nights.</li>
+      <li>Nobara and Utahime spend weekend Evenings at the baths. Maki is at the onsen on weekend Nights.</li>
       <li>The teachers use their lounge off duty. Yaga is on campus at weekends except the afternoon.</li>
     </ul>
   </details>
