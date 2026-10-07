@@ -98,9 +98,37 @@ init -1 python:
 
         dict(id="int_after", label="Talk about after",  hint="What happens when all this is over.",
              kind="intimate", min_aff=175, cost=1),
+
+        ## ---- the second UI overhaul (docs/UI2_DESIGN.md 3.1, 4.7, D34) -----
+        ## "Swim together" at the pool: `swim`'s kind, Bond, cost and hours,
+        ## with a scene of its own (label act_swim_pool, room_pool.rpy)
+        ## because act_swim shows the river. Appended by the scaffold so the
+        ## id exists from wave 0; hidden while pool_ok() is False, which it
+        ## is until the pool is built. `swim` itself stays at the riverside.
+        dict(id="swim_pool", label="Swim together",    hint="Lengths, side by side, until one of us gives in.",
+             kind="friend", min_bond=35, cost=1, loc=("pool",),
+             per=("Noon", "Afternoon"), when="pool_ok"),
     ]
 
     ACT_BY_ID = {a["id"]: a for a in ACTIVITIES}
+
+    ## The second overhaul (K16): the kinds of activity that are not offered
+    ## while I stand in the baths or at the pool, and those places.
+    ACT_ROMANCE_KINDS = ("romance", "confession", "intimate")
+    ACT_NO_ROMANCE = ("bathhouse", "sauna", "pool")
+
+    def _act_tokyo_bound(who):
+        """U0c2 (7.6). bool: this hour, or the next, is this person's hour
+        in Tokyo (WORLD_AWAY), by their routine: they are about to leave for
+        the train, or have left. The same test the clock uses to let a
+        companion go (world_away_leave, sb_world.rpy)."""
+        if who not in WORLD_AWAY or flag_schedule(who)[0]:
+            return False
+        i = period_index()
+        for per in PERIODS[i:i + 2]:
+            if world_away_cell(who, per) and (who, store.day, per) not in store.schedule_overrides:
+                return True
+        return False
 
     def _act_place_ok(a, loc):
         return (not a.get("loc")) or loc in a["loc"]
@@ -111,6 +139,19 @@ init -1 python:
     def activity_state(a, who, loc=None):
         """(available, reason) — reason explains the lock, in the player's words."""
         loc = loc or store.here
+
+        ## The second overhaul (K16): the romance, confession and intimate
+        ## kinds are not offered while I stand in the Bathhouse, the Sauna
+        ## or at the Pool (`rom_close` and `int_night` have no place of
+        ## their own, and the strict Night allows both).
+        if a["kind"] in ACT_ROMANCE_KINDS and (loc in ACT_NO_ROMANCE or store.here in ACT_NO_ROMANCE):
+            return False, None                      # hidden entirely
+
+        ## The second overhaul (7.6): "Ask them along" is not offered with a
+        ## friend in their Tokyo hour or the hour before it, so nobody is
+        ## waved off at the gate and then met in town.
+        if a["id"] == "invite" and _act_tokyo_bound(who):
+            return False, None                      # hidden entirely
 
         if a["kind"] in ("romance", "confession", "intimate") and not is_romanceable(who):
             return False, None                      # hidden entirely

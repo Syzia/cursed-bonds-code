@@ -28,6 +28,9 @@
 ##      path_keep_clear and the validator's applied points, hover-label sides
 ##   C  "Show names" and the held N key; SPOT_PLANNED and the points lint
 ##      accepts for it; the generic dim state; the faces at an exit's tile
+##   D  the night's tables and night_club_bg; the three new actions and the
+##      activity swim_pool, registered and closed; K16's test (no romance in
+##      the baths or at the pool); "Ask them along" and a friend bound for Tokyo
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
@@ -785,5 +788,165 @@ label zz_smoke:
         store.schedule_overrides = {}
         zzc_back()
     hide screen sb_place
+
+    ## --- D. the night, the activities and Tokyo: hooks, and the K16 test (3.1, 7.6, D34) ---
+    python:
+        settle(day=2, period="Noon", here="courtyard")
+        store.schedule_overrides = {}
+        for _zz_w in ROSTER_ORDER:
+            if _zz_w not in store.roster:
+                store.roster.append(_zz_w)
+        ## -- the night's tables
+        check({"pool_swim", "swim_pool", "swim", "train", "lesson", "hold"} <= builtins.set(NIGHT_REST_BLOCKS) and night_validate() == [],
+              "D: pool_swim and swim_pool are in NIGHT_REST_BLOCKS, and the night's validator knows both ids", night_validate())
+        check(NIGHT_CARRY_LINES["nobara_room"] == NIGHT_CARRY_LINES["girls_dorm"] == NIGHT_CARRY_LINES["maki_room"]
+              and NIGHT_CARRY_LINES["girls_dorm"] != NIGHT_CARRY_LINES["dorms"],
+              "D: the two girls' rooms take the girls' corridor's walk-home line")
+        _zz_lines = {}
+        for _zz_l in ("nobara_room", "maki_room", "girls_dorm", "yuji_room", "dorm_common"):
+            store.night_carried = _zz_l
+            _zz_lines[_zz_l] = night_carry_line()
+        store.night_carried = ""
+        check(_zz_lines["nobara_room"] == _zz_lines["maki_room"] == _zz_lines["girls_dorm"] == NIGHT_CARRY_LINES["girls_dorm"]
+              and _zz_lines["yuji_room"] == _zz_lines["dorm_common"] == NIGHT_CARRY_LINES["dorms"],
+              "D: night_carry_line says it for a day that turned in either room (a boy's room still takes the dormitories')", _zz_lines)
+        check(zzc_owner(night_club_bg, "sb_night.rpy") and zzc_sig(night_club_bg) == "(key)"
+              and all(isinstance(night_club_bg(k), str)
+                      and night_club_bg(k) == ("bg club" if renpy.has_image("bg club", exact=True) else night_bg(k)) for k in NIGHT_DISTRICTS)
+              and all(renpy.has_image(night_club_bg(k), exact=True) for k in NIGHT_DISTRICTS),
+              "D: night_club_bg(key) is an image name that exists: bg club once that picture exists, else the district's own night",
+              [night_club_bg(k) for k in NIGHT_DISTRICTS])
+
+        ## -- the three new actions: registered, closed, labels that only return
+        _zz_pa = builtins.dict((a["id"], a) for a in PLACE_ACTIONS)
+        check(all(i in _zz_pa for i in ("bath_soak", "bath_sauna", "pool_swim"))
+              and (_zz_pa["bath_soak"]["locs"], _zz_pa["bath_soak"]["when"], _zz_pa["bath_soak"]["cost"]) == (("bathhouse",), "bath_ok", 1)
+              and (_zz_pa["bath_sauna"]["locs"], _zz_pa["bath_sauna"]["when"], _zz_pa["bath_sauna"]["cost"]) == (("sauna",), "bath_ok", 1)
+              and (_zz_pa["pool_swim"]["locs"], _zz_pa["pool_swim"]["when"], _zz_pa["pool_swim"]["cost"]) == (("pool",), "pool_ok", 1)
+              and all(renpy.has_label(l) for l in ("sb_do_bath_soak", "sb_do_bath_sauna", "sb_do_pool_swim", "act_swim_pool"))
+              and zzc_owner(bath_ok, "room_bath.rpy") and zzc_owner(pool_ok, "room_pool.rpy")
+              and isinstance(bath_ok(), bool) and isinstance(pool_ok(), bool)
+              and all(icon_for("act", i) == i for i in ("bath_soak", "bath_sauna", "pool_swim")),
+              "D: bath_soak, bath_sauna and pool_swim are registered place actions with their labels and icons; bath_ok() and pool_ok() are bools")
+        _zz_filled = bath_ok() or pool_ok()
+        if not _zz_filled:
+            _zz_off = [(l, p) for l in LOC_ORDER for p in PERIODS
+                       if fixture(period=p) or builtins.set(a[0] for a in place_actions(l)) & {"bath_soak", "bath_sauna", "pool_swim"}]
+            check(_zz_off == [], "D (the stubs): with bath_ok() and pool_ok() False, none of the three is offered in any place at any hour", _zz_off)
+            fixture(period="Noon")
+            _zz_b, _zz_p = store.bath_ok, store.pool_ok
+            store.bath_ok = store.pool_ok = lambda: True
+            check([a[0] for a in place_actions("bathhouse") if a[0].startswith(("bath_", "pool_"))] == ["bath_soak"]
+                  and [a[0] for a in place_actions("sauna") if a[0].startswith(("bath_", "pool_"))] == ["bath_sauna"]
+                  and [a[0] for a in place_actions("pool") if a[0].startswith(("bath_", "pool_"))] == ["pool_swim"]
+                  and not [a[0] for a in place_actions("riverside") if a[0].startswith(("bath_", "pool_"))],
+                  "D (the stubs): and the day the two functions answer True, each is offered in its own place and nowhere else")
+            store.bath_ok, store.pool_ok = _zz_b, _zz_p
+        else:
+            note("D", "bath_ok() or pool_ok() is filled (wave 1): the stub-only checks are skipped")
+
+    ## the labels only return (the stubs): nothing is spent, nothing is shown
+    if not (bath_ok() or pool_ok()):
+        $ _zz_before = (store.period, store.day, store.stamina, store.here, builtins.sorted(store.actions_today))
+        call sb_do_bath_soak
+        call sb_do_bath_sauna
+        call sb_do_pool_swim
+        call act_swim_pool("yuji")
+        $ check(_zz_before == (store.period, store.day, store.stamina, store.here, builtins.sorted(store.actions_today)),
+                "D (the stubs): the four labels only return: no hour, no stamina, no mark")
+
+    python:
+        ## -- the swim_pool row
+        _zz_row, _zz_swim = ACT_BY_ID.get("swim_pool"), ACT_BY_ID["swim"]
+        check(_zz_row is not None and ACTIVITIES[-1] is _zz_row
+              and all(_zz_row[k] == _zz_swim[k] for k in ("kind", "min_bond", "cost", "per", "label"))
+              and _zz_row["loc"] == ("pool",) and _zz_row["when"] == "pool_ok" and _zz_swim["loc"] == ("riverside",) and "when" not in _zz_swim
+              and icon_for("do", "swim_pool") == "swim" and icon_for("do", "swim_pool") in ICONS,
+              "D: the activity swim_pool is appended last: swim's kind, Bond 35, cost and hours, at the pool, hidden by pool_ok; it takes the swim icon; swim stays at the riverside", _zz_row)
+        store.bonds = builtins.dict((w, 100) for w in CAST)
+        store.spent_today = builtins.set()
+        store.stamina = 100
+        if not pool_ok():
+            _zz_seen = [(w, l, p) for w in ROSTER_ORDER for l in LOC_ORDER for p in PERIODS
+                        if fixture(period=p, here=l) or activity_state(_zz_row, w, l) != (False, None)
+                        or any(a["id"] == "swim_pool" for a, ok, why in activities_for(w, l))]
+            check(_zz_seen == [], "D (the stub): \"Swim together\" at the pool is offered nowhere, with nobody, at no hour, at Bond 100", _zz_seen[:5])
+            _zz_p = store.pool_ok
+            store.pool_ok = lambda: True
+            fixture(period="Afternoon", here="pool")
+            check(activity_state(_zz_row, "yuji", "pool") == (True, None) and activity_state(_zz_row, "yuji", "riverside")[0] is False
+                  and activity_state(_zz_swim, "yuji", "riverside") == (True, None),
+                  "D (the stub): the day pool_ok() answers True it is offered at the pool, and swim at the river as before")
+            store.pool_ok = _zz_p
+
+        ## -- K16: no romance in the baths or at the pool
+        check(ACT_NO_ROMANCE == ("bathhouse", "sauna", "pool") and builtins.set(ACT_ROMANCE_KINDS) == {"romance", "confession", "intimate"}
+              and builtins.set(a["kind"] for a in ACTIVITIES) == {"friend", "romance", "confession", "intimate"},
+              "D: the three kinds K16 names are every kind there is besides friend")
+        store.affection = builtins.dict((w, 200) for w in CAST)
+        store.together = ["maki", "shoko"]
+        store.schedule_overrides = {}
+        store.companion = None
+        fixture(day=6, period="Evening", here="bathhouse")       # a Saturday
+        _zz_here = who_is_here("bathhouse")
+        _zz_at = activities_for("maki", "bathhouse")
+        check(weekday() == "Sat" and "maki" in _zz_here and "maki" in stage_people("bathhouse")[0]
+              and not any(a["kind"] in ACT_ROMANCE_KINDS for a, ok, why in _zz_at)
+              and not any(a["id"] in ("rom_close", "int_night") for a, ok, why in _zz_at)
+              and any(a["id"] == "talk" and ok for a, ok, why in _zz_at)
+              and not any(c.get("romance") for c in person_choices("maki", "bathhouse")),
+              "D (K16): with Maki at the Bathhouse on a weekend Evening, Bond and affection high and the two of us together, neither \"Stay a while longer\" nor \"Stay the night\" is offered there (Talk is)",
+              [(a["id"], ok, why) for a, ok, why in _zz_at])
+        _zz_leak = []
+        for _zz_l in ACT_NO_ROMANCE:
+            for _zz_p in PERIODS:
+                fixture(period=_zz_p, here=_zz_l)
+                for _zz_w in ROSTER_ORDER:
+                    for _zz_tg in (["maki", "shoko", "nobara"], []):
+                        store.together = _zz_tg
+                        for a in ACTIVITIES:
+                            if a["kind"] in ACT_ROMANCE_KINDS and activity_state(a, _zz_w, _zz_l) != (False, None):
+                                _zz_leak.append((_zz_l, _zz_p, _zz_w, a["id"]))
+        ## and not by asking about another place while I stand in one of the three
+        fixture(period="Evening", here="sauna")
+        store.together = ["maki"]
+        _zz_leak += [("from the sauna", a["id"]) for a in ACTIVITIES
+                     if a["kind"] in ACT_ROMANCE_KINDS and activity_state(a, "maki", "rooftop") != (False, None)]
+        check(_zz_leak == [],
+              "D (K16): no romance, confession or intimate activity is offered in the Bathhouse, the Sauna or at the Pool: with anyone, at any hour, before the confession or after", _zz_leak[:6])
+        store.together = ["maki", "shoko"]
+        fixture(day=6, period="Night", here="maki_room")
+        _zz_at = builtins.dict((a["id"], (ok, why)) for a, ok, why in activities_for("maki", "maki_room"))
+        check(not world_asleep("maki") and "maki" in stage_people("maki_room")[0]
+              and _zz_at.get("rom_close") == (True, None) and _zz_at.get("int_night") == (True, None),
+              "D (K16): both are offered in her room on a Night she is awake (a Saturday)", _zz_at)
+        fixture(day=2, period="Night", here="maki_room")
+        check(world_asleep("maki") and "maki" in who_is_here("maki_room") and stage_people("maki_room") == ([], [])
+              and rail_missions("maki_room") == [],
+              "D (K16): and on a Night she is asleep (a Tuesday) she is not on the stage, so nothing at all is offered with her")
+
+        ## -- 7.6: "Ask them along" and a friend bound for Tokyo
+        _zz_inv = ACT_BY_ID["invite"]
+        store.together = []
+        store.affection = builtins.dict((w, 0) for w in CAST)
+        _zz_got = {}
+        for _zz_d, _zz_p in ((7, "Morning"), (7, "Noon"), (7, "Afternoon"), (7, "Evening"), (6, "Noon"), (6, "Afternoon")):
+            fixture(day=_zz_d, period=_zz_p, here="cafeteria")
+            for _zz_w in ("nobara", "maki", "yuji", "megumi"):
+                _zz_got[(_zz_d, _zz_p, _zz_w)] = activity_state(_zz_inv, _zz_w, "cafeteria")
+        check(all(_zz_got[(7, p, w)] == (False, None) for p in ("Noon", "Afternoon") for w in ("nobara", "maki", "yuji"))
+              and all(_zz_got[(7, p, w)] == (True, None) for p in ("Morning", "Evening") for w in ("nobara", "maki", "yuji"))
+              and all(_zz_got[(6, p, w)] == (True, None) for p in ("Noon", "Afternoon") for w in ("nobara", "maki", "yuji"))
+              and all(_zz_got[(d, p, "megumi")] == (True, None) for d, p, w in _zz_got if w == "megumi"),
+              "D (7.6): \"Ask them along\" is not offered with Nobara, Maki or Yuji on a Sunday at Noon or in the Afternoon; it is on Sunday Morning and Evening, on a Saturday, and always with Megumi",
+              builtins.sorted((k, v) for k, v in _zz_got.items() if v != (True, None)))
+        fixture(day=7, period="Noon", here="cafeteria")
+        pin("nobara", "cafeteria", per="Afternoon")
+        _zz_a = activity_state(_zz_inv, "nobara", "cafeteria")
+        store.schedule_overrides = {}
+        check(_zz_a == (True, None) and WORLD_AWAY["nobara"] == {("Sun", "Afternoon"): "harajuku"},
+              "D (7.6): someone a story pin keeps on campus that afternoon can be asked along (the same test as the clock's)", _zz_a)
+        settle(day=2, period="Noon", here="courtyard")
+        store.bonds = builtins.dict((w, 0) for w in CAST)
 
     $ finish()

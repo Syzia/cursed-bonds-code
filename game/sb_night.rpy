@@ -35,7 +35,9 @@ init -1 python:
 
     ## Action and activity ids closed on a rest day (the day after a Gojo
     ## night). `train` is Train, Practice and "Train together".
-    NIGHT_REST_BLOCKS = {"train", "lesson", "hold", "swim"}
+    ## (The second overhaul, D34: the pool's own swim, `pool_swim`, and the
+    ## shared one there, `swim_pool`, are closed as `swim` is.)
+    NIGHT_REST_BLOCKS = {"train", "lesson", "hold", "swim", "pool_swim", "swim_pool"}
 
     ## The Gojo night (D23). day_step and day_hold mirror sb_do_train on the
     ## ridge and sb_do_hold; day_lesson and day_lesson_reserve mirror
@@ -66,6 +68,11 @@ init -1 python:
         "school":   "The school building is dark, and my footsteps are the loudest thing in it. I walk back to my room.",
         "dorms":    "The dormitory is a row of closed doors and one that isn't. Mine. I'm through it before anyone is up.",
         "girls_dorm": "I let myself out before the corridor wakes.",
+        ## The second overhaul (3.1): the two rooms off that corridor take its
+        ## line (the table looks up the place, then its area, so without
+        ## these a day that turned in her room would get the dormitory's).
+        "nobara_room": "I let myself out before the corridor wakes.",
+        "maki_room":   "I let myself out before the corridor wakes.",
         "staff":    "The staff building's lamps are still on from last night, and nobody is left to turn them off. I walk back to my room as it gets light.",
         "grounds":  "The dew is already down on the training grounds. I get to my room as it turns light.",
         "mountain": "The path down the mountain is easier to find than it has any right to be. I'm in my room before the sun is.",
@@ -394,6 +401,16 @@ init -1 python:
         if renpy.has_image(name + " night", exact=True):
             return name + " night"
         return name
+
+    def night_club_bg(key):
+        """U0c2 (sb_night.rpy; docs/UI2_DESIGN.md 3.1, 8.1). str: the picture
+        the club plays over on a night out in a district: "bg club" once
+        that picture exists, else what night_bg(key) answers (the district's
+        own night, or the district): until the club is painted, a night in
+        Shinjuku stays in Shinjuku."""
+        if renpy.has_image("bg club", exact=True):
+            return "bg club"
+        return night_bg(key)
 
     ## The review tools (4.16) ------------------------------------------------------
 
