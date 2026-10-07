@@ -25,5 +25,14 @@
     10939
    ]
   }
- ]
+ ],
+ "chosen": {
+  "said": "the owner, in chat, 7 Oct 2026: \"Batch is done. I think second pair version B is the pick\"",
+  "girls_dorm": {
+   "version": "second pair, version B",
+   "render": "ui2_girls_dorm5x_b_00001_.png",
+   "sha256": "ac8d95807809f1ac393cea1061aaee9bd6be0526caf94bf4eef5ae29195c5c0f",
+   "note": "CHOSEN. A corridor seen straight down its middle: three evenly spaced doors on each side, each facing the one opposite; no window in either side wall; one window at the far end with a potted plant beside it; the shoe rack against the left wall between the first and second doors; three ceiling lights; open floor across the bottom. It is a NEW composition: the place is laid out afresh (Nobara's room is the first door on the left, Maki's the first on the right; four spare doors)."
+  }
+ }
 }
