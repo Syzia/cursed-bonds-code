@@ -1,0 +1,15 @@
+{
+ "about": [
+  "Sitting 4, again, written by hand on 7 Oct 2026 at the owner's word ('We need to redo the girls dorms as there are doors that lead to nothing'): the girls' corridor redone in place from the game's own picture, with ONE named change in the keep text: only the nearest door on each side stays (Nobara's on the left, Maki's on the right); every other door becomes plain wall. This takes back the spare doors of D50 for this corridor."
+ ],
+ "written": "2026-10-07",
+ "prompt_sha256": "4ef58914262bf017d70fee8a927cf50f427e200d468b61a74ffbcd8420227702",
+ "seeds": [
+  7972,
+  7973
+ ],
+ "saves": [
+  "ui2_girls_dorm2_a",
+  "ui2_girls_dorm2_b"
+ ]
+}

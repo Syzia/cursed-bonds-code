@@ -52,5 +52,19 @@
     }
    ]
   }
- ]
+ ],
+ "chosen": {
+  "said": "the owner, in chat, 7 Oct 2026: \"New cafetières look good. We need to redo the girls dorms as there are doors that lead to nothing.\"",
+  "cafeteria": {
+   "version": "a, unless the owner says b (both 'look good'; no letter was named)",
+   "render": "ui2_cafeteria_a_00001_.png",
+   "sha256": "b7c5f2cdc4782dc4ca9da7267133aa515fd4706e48a57c2e66de84c35b05d8f5",
+   "install_redo_dry": "version a PASS (nothing moved: 19 points, none off; nothing vanished or added; 12.0 times sharper). Version b LOOK (one window's view; 7.4 times sharper).",
+   "by_eye": "Version a's windows show packed earth and a long white building under a grey roof, which is the School Courtyard the owner chose; version b's show only trees."
+  },
+  "girls_dorm": {
+   "version": "neither",
+   "note": "TO BE REDONE at the owner's word: the corridor has eight doors and two rooms (Nobara's, the first door on the left; Maki's, the first door on the right), so six doors lead nowhere. Painted again as art_4r.json: the same corridor with only those two doors. (For the record, the check refused both versions of this sitting, for the same kinds of false alarm as in art_3a_early.json.)"
+  }
+ }
 }
