@@ -1200,6 +1200,10 @@ DECENCY_ROW = {
     "AMBIENT": re.compile(r"""\(\s*["'](\w+)["']\s*,\s*(?:["'](\w+)["']|(None))\s*\)\s*:"""),
     "AMBIENT_STORY": re.compile(r"""^\s*\(\s*["'](\w+)["']\s*,\s*(?:["'](\w+)["']|(None))\s*,"""),
 }
+# A caption put into one of the tables from outside its literal:
+# AMBIENT[("who", "place")] = ..., AMBIENT.update({...}), SPOT_LINES["id"] = ...,
+# AMBIENT_STORY.append((...)) and the like.
+DECENCY_LATE = re.compile(r"\b(AMBIENT|AMBIENT_STORY|SPOT_LINES)\s*(?:\[|\.\s*(?:update|append|extend|insert|setdefault)\s*\()")
 POSES_TOOL = os.path.join(ROOT, "tools", "make_pose_workflow.py")
 
 
@@ -1256,6 +1260,29 @@ def decency_findings(files, cache):
                     hits(path, ln, "in the SPOT_LINES row %r (%s)" % (key, spot_place[key]))
             else:
                 key = None
+        # A row added from outside the table's literal. The statement is read
+        # to the bracket that closes it; it is checked when it names one of
+        # the places (or a hotspot of one), or, for AMBIENT_STORY, no place.
+        span, depth, late = [], 0, None
+        for ln in lines:
+            if not span:
+                m = DECENCY_LATE.search(ln.bare)
+                if not m or ln.n in docs or any(ln.n in v for v in inside.values()):
+                    continue
+                late, depth = m.group(1), 0
+            span.append(ln)
+            for ch in ln.bare:
+                if ch in "([{":
+                    depth += 1
+                elif ch in ")]}":
+                    depth -= 1
+            if depth <= 0:
+                named = [s for r in span for s in r.strings if s in DECENCY_PLACES or s in spot_place]
+                if named or (late == "AMBIENT_STORY" and any(re.search(r"\bNone\b", r.bare) for r in span)):
+                    where = named[0] if named else "any place"
+                    for r in span:
+                        hits(path, r, "in a row put into %s for %s" % (late, spot_place.get(where, where)))
+                span = []
     # The pose plan is a tool's table; it is read whenever the rule runs.
     if os.path.isfile(POSES_TOOL):
         lines = read_lines(POSES_TOOL, cache)

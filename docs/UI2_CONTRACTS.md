@@ -48,7 +48,7 @@ on, parts of it differ on purpose.
 | `baseline_u2.json` | `where` and `here` (who is where, a whole week, every hour), `actions` (`place_actions` for every place and hour, a Tuesday and a Saturday), `rail`, `exits`, `links`, `hubs`, and the fixture they were read in | U0c2 ("place_actions for the 24 old places equals the baseline apart from exits"); U1's `u2_world` (the new week against the old) |
 | `baseline_story_names.json` | `{file: {statement name: [kind, line, hash of diff_info()]}}` for every node of the frozen files and of U9's files, **except `sb_night.rpy`** | U9's `u2_names`; U7 |
 | `baseline_night_names_u0a.json` | the same for `sb_night.rpy` before U0c2 | U0c2 (every node outside its edited init blocks keeps its name); **U0c2 then adds `game/sb_night.rpy` to `baseline_story_names.json` as its last step** |
-| `baseline_sprite_tree.txt` | what `lit_sprite` builds for Yuji, with and without the blink and talk pictures, and the sha256 of its pickle (K9) | U3's `u2_blend` |
+| `baseline_sprite_tree.txt` | what `lit_sprite` builds for Yuji, with and without the blink and talk pictures, and the sha256 of its pickle (K9). Built from his real arguments, read from the `image yuji = lit_sprite(...)` line of `game/jjk_sprites.rpy` | U3's `u2_blend`; **L rewrites it** (see below) |
 | `baseline_shots/ui2/` | `place.png`, `person.png`, `map_campus.png`, `map_area.png`, `main_menu.png`, and `shots.json` (the pictures' size, the fixture, each file's sha256) | U0c2 ("pixel-identical to U0a's") |
 
 A statement's name is `json.dumps(node.name)`: a label's name, or
@@ -67,7 +67,27 @@ is not a change in the game. The baseline was taken on a display of scale 1.0
 five pictures and nothing else is first suspected of the display, and the
 check says so. **For U0c2** ("pixel-identical to U0a's"): the evidence is the
 five `picture:` lines of `tools/smoke.sh u2_baseline` reading PASS, with the
-`pictures:` line above them.
+`pictures:` line above them. **The picture evidence is taken with the external
+monitor as the main display** (scale 1.0), as the baseline was. On the
+laptop's own panel (two pixels to the point) the five have never been
+compared: nobody knows yet whether a 640 x 360 point window there gives the
+baseline's bytes. It is tried once at checkpoint A, or whenever the monitor is
+unplugged; if the five differ there, U0a's harness is changed so that a
+display of another scale gets the one `pictures:` line ("taken at scale 2.0,
+baseline at 1.0: not compared") and not five failures.
+
+**The sprite tree and Yuji's new set (D57).** The pickle holds Yuji's feet
+numbers, today `(389, 1365, 313)`. L replaces his whole set during wave 1 and
+measures his feet and contact shadow again, so from that install the line
+"K9: and its pickle is byte for byte what it was" differs by design, and so
+does any comparison U3's `u2_blend` makes with the pickle's hash. That is not
+a change to `lit_sprite`. The line "K9: lit_sprite builds the tree it built"
+stays meaningful and must still pass. **L**, in the commit that installs the
+set: first see that tree line pass, then rewrite the file with
+`U2_BASELINE_WRITE=1 tools/smoke.sh u2_baseline` and commit only
+`tools/smoke/baseline_sprite_tree.txt` from what that run wrote (the other
+baselines are not rewritten). **U3**: a pickle difference before L's install
+is a finding; after it, compare with the rewritten file.
 
 ### A3. `tools/art/game_layout.json` (the one file the art tools read the game through)
 
@@ -126,7 +146,16 @@ file it is a finding unless `pictures.json` calls that place's picture
 
 **For U0c2 to settle and then tighten here and in the rule:** the exact inner
 shape of `floor` (both forms are accepted today), of `slot_light`, and which
-of the two teachers' keys carries `spare`.
+of the two teachers' keys carries `spare`; and **the key or keys of
+`faces.json` that hold a person's eye and mouth boxes** (D57; the plan's 10.2,
+U0c2 and U0d2). Today the rule allows only `blink_also` in `faces.json`, as
+the plan's table in 3.2 does, so a file with the boxes in it is a finding
+(`unknown key`). U0c2 names the keys, adds them with their shape to the
+`faces` branch of `layout_file_findings` in `tools/check_content.py` in the
+same commit as the reader, and adds them to the table above. This must be in
+before `install_face.py` / `install_set.py` (U0d2) write the boxes and before
+L installs Yuji's set, or `check_content.py --all` fails in the owner's folder
+and in every worktree that merges it; the art role may not edit a tool.
 
 ### A5. Names (`tools/prefixes.json`)
 
@@ -155,6 +184,13 @@ for the package that wrote the line.
   row may be wrapped onto several lines: every line of it is read. An
   `AMBIENT_STORY` row whose place is `None` shows everywhere, so it is read
   too. (A new caption table would not be read: captions go in these two.)
+  A caption belongs inside the table's own literal. A row put in from
+  outside it (`AMBIENT[(who, place)] = ...`, `AMBIENT.update({...})`,
+  `AMBIENT_STORY.append(...)`, `SPOT_LINES[id] = ...`, also `.extend`,
+  `.insert`, `.setdefault`) is read as well when the statement names one of
+  those places or a hotspot of one, or, for `AMBIENT_STORY`, `None`; a row
+  added any other way (through another name, `setattr`, a loop over a second
+  table) is not read and is a review finding.
 - `--baths-optional`: `"bath"`, `bath_soak`, `bath_sauna`, `bath_ok`,
   `pool_swim` anywhere under `game/` outside `room_bath.rpy` and
   `room_pool.rpy`, except in `ICONS` / `ICON_FOR` (`ui_icons.rpy`),

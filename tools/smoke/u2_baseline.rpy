@@ -65,7 +65,10 @@
 ## so ("the window could not be made ..."), which is about the screen and not
 ## about the game. The baseline's five were taken on a display of scale 1.0
 ## (shots.json says which); a run on a display of another scale that fails
-## all five and nothing else is first suspected of the display.
+## all five and nothing else is first suspected of the display. On the
+## laptop's own panel (two pixels to the point) the five have not been
+## compared yet: the picture evidence is taken with the external monitor as
+## the main display (docs/UI2_CONTRACTS.md, A2).
 ##
 ## A statement's name is what a save rests on. Ren'Py gives a node of a
 ## changed file its old name when its diff_info() is unchanged

@@ -400,7 +400,9 @@ A4 and A6). The first three are part of `--all`:
   `AMBIENT_STORY`, `SPOT_LINES` and `POSES` row for the Bathhouse, the Sauna,
   the Pool or a friend's room. A row wrapped onto several lines is read to
   its end, and an `AMBIENT_STORY` row for no place in particular (`None`) is
-  read as one for every place;
+  read as one for every place. A row put into one of the three caption
+  tables from outside its literal (`AMBIENT[...] = ...`, `.update(...)`,
+  `.append(...)`, `.extend`, `.insert`, `.setdefault`) is read too;
 - `--baths-optional` (K17) — `"bath"`, `bath_soak`, `bath_sauna`, `bath_ok`
   or `pool_swim` outside `room_bath.rpy` and `room_pool.rpy`, apart from the
   four places the plan itself puts them. In a `register_hotspot(...)` call
@@ -426,4 +428,9 @@ plan (and the standing set), draws a layout sheet for each of its places'
 layout files, and runs the content checks, all into `shots/review/U3/` with
 an `INDEX.txt`. `--list` says what it would do; `--no-harness` makes the
 sheets only. A harness a later package has yet to write is listed as "not
-written yet".
+written yet". `u2_dump`'s file goes into the pack
+(`shots/review/<package>/u2_dump/game_layout.json`), never over the committed
+`tools/art/game_layout.json`. Exit status: 0 when every harness that ran
+passed, 1 when one failed, 3 when none failed but one was REFUSED (a game was
+open, or the wait for the pointer ran out; `INDEX.txt` says which): run it
+again.

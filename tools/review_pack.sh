@@ -20,7 +20,10 @@
 # pointer lock for the ones that need it, so this can be started from any
 # worktree at any time. A harness that does not exist yet (a later package's)
 # is listed as "not written yet", not failed. Exit status 0 when every harness
-# that ran ended RESULT PASS.
+# that ran ended RESULT PASS; 1 when one failed; 3 when none failed but one was
+# REFUSED (a game was open, or the wait for the pointer ran out): run it again.
+# u2_dump's file goes to <pack>/u2_dump/game_layout.json, never to the
+# committed tools/art/game_layout.json.
 set -u
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -103,6 +106,7 @@ DIRTY="$( [ -n "$(git -C "$ROOT" status --porcelain 2>/dev/null)" ] && echo ' + 
 } > "$INDEX"
 
 FAILED=0
+REFUSED=0
 export RENPY_DISABLE_BACKUPS="I take responsibility for this."
 if [ "$NOH" = "0" ]; then
     echo "Harnesses" >> "$INDEX"
@@ -112,7 +116,21 @@ if [ "$NOH" = "0" ]; then
             continue
         fi
         echo "review_pack: $h"
-        SMOKE_TIMEOUT="${SMOKE_TIMEOUT:-420}" SMOKE_SHOTS="$OUT/$h" "$ROOT/tools/smoke.sh" "$ROOT/tools/smoke/$h.rpy" > "$OUT/$h.out" 2>&1
+        # u2_dump writes tools/art/game_layout.json, which is committed only
+        # from the owner's folder (the plan's 5.4): a pack gets its own copy.
+        if [ "$h" = "u2_dump" ]; then
+            SMOKE_TIMEOUT="${SMOKE_TIMEOUT:-420}" SMOKE_SHOTS="$OUT/$h" "$ROOT/tools/smoke.sh" "$ROOT/tools/smoke/$h.rpy" --out "$OUT/u2_dump/game_layout.json" > "$OUT/$h.out" 2>&1
+        else
+            SMOKE_TIMEOUT="${SMOKE_TIMEOUT:-420}" SMOKE_SHOTS="$OUT/$h" "$ROOT/tools/smoke.sh" "$ROOT/tools/smoke/$h.rpy" > "$OUT/$h.out" 2>&1
+        fi
+        rc=$?
+        if [ "$rc" = "3" ]; then
+            # Not a verdict on the harness: a game was open, or the wait for
+            # the pointer ran out (tools/smoke.sh, exit status 3).
+            printf '  %-16s REFUSED (a game was open or the wait ran out: run it again)\n' "$h" >> "$INDEX"
+            REFUSED=1
+            continue
+        fi
         last="$(tail -n 1 "$OUT/$h/result.txt" 2>/dev/null)"
         n_pass="$(grep -c '^PASS' "$OUT/$h/result.txt" 2>/dev/null)"
         n_fail="$(grep -c '^FAIL' "$OUT/$h/result.txt" 2>/dev/null)"
@@ -168,4 +186,6 @@ echo "  content.txt: $(grep -m 1 '^check_content: \(clean\|[0-9]* finding\)' "$O
 cat "$INDEX"
 echo
 echo "review_pack: $OUT"
-exit "$FAILED"
+[ "$FAILED" = "1" ] && exit 1
+[ "$REFUSED" = "1" ] && exit 3
+exit 0
