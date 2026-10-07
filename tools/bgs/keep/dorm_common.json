@@ -1,0 +1,34 @@
+{
+ "keep": [
+  {"name": "the floor cushions by the low table", "box": [1140, 815, 320, 105]},
+  {"name": "the manga on the bookshelf", "box": [520, 450, 215, 215]},
+  {"name": "the board games on top of the bookshelf", "box": [525, 370, 230, 80]},
+  {"name": "the kettle on the counter", "box": [1285, 483, 65, 72]},
+  {"name": "the microwave on the counter", "box": [1340, 478, 160, 78]},
+  {"name": "the cups on the counter", "box": [1232, 503, 55, 52]},
+  {"name": "the bag by the sofa", "box": [190, 745, 125, 240]},
+  {"name": "the green bag beside the fridge", "box": [1125, 640, 100, 165]},
+  {"name": "the bowl and the game controller on the low table", "box": [900, 693, 212, 55]},
+  {"name": "the cushion on the sofa", "box": [497, 618, 145, 104]},
+  {"name": "the plant by the door on the right", "box": [1715, 600, 110, 335]},
+  {"name": "the television", "box": [1497, 380, 190, 322]},
+  {"name": "the air conditioner", "box": [520, 140, 282, 106]},
+  {"name": "the fridge", "box": [1208, 565, 172, 242]},
+  {"name": "the things in the television cabinet", "box": [1455, 735, 165, 55]},
+  {"name": "the sofa", "box": [190, 550, 550, 400]}
+ ],
+ "empty": [
+  {"name": "the sofa's near arm", "box": [330, 650, 172, 215]},
+  {"name": "the sofa seat", "box": [570, 718, 160, 52]},
+  {"name": "the low table's top, left of the bowl", "box": [772, 722, 128, 24]},
+  {"name": "the floor under the low table", "box": [835, 792, 245, 36]},
+  {"name": "the floor", "poly": [[200, 992], [540, 952], [1630, 952], [1790, 1000], [1790, 1075], [200, 1075]]}
+ ],
+ "allow": [],
+ "change": [],
+ "doors": [
+  {"name": "the sliding glass door on the left, where I stand, to the garden", "box": [0, 0, 190, 1010]},
+  {"name": "the sliding door at the right edge", "box": [1800, 0, 120, 1010]}
+ ],
+ "scale": [447, 235, 830]
+}

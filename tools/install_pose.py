@@ -4,15 +4,20 @@ Put a painted pose into the game.
     python3 tools/install_pose.py "~/ComfyUI-Shared/output/pose_dorm_common__nobara__evening_a_00001_.png"
     python3 tools/install_pose.py <render.png> --box 400,300,500,700
     python3 tools/install_pose.py <render.png> --name pose_cafeteria__yuji
+    python3 tools/install_pose.py <render.png> --dry                  # every check and the preview; writes nothing else
+    options: --root <a copy of the project>  --layout-dump <file>  --bg <picture>  --plan <rows.json>
+             --match-cloth   --no-game (with --root and --bg: a test room that is not the game's)
 
 A pose is a whole picture of a room with one person painted in
-(tools/make_pose_workflow.py; PHASE2_DESIGN.md D36, D37). The game lays only
-a box around the person over the room, so this tool has to know where the
-person is, and has to be sure the rest of the room was left alone.
+(tools/make_pose_workflow.py; PHASE2_DESIGN.md D36, D37; docs/UI2_DESIGN.md
+5.12). The game lays only a box around the person over the room, so this tool
+has to know where the person is, has to be sure the rest of the room was left
+alone, and has to be sure the box leaves the room usable.
 
 What it does:
-  1. Reads the name: pose_<place>__<who>[__<variant>], from the file's own
-     name (the workflow's `_a_00001_` tail is ignored) or from --name.
+  1. Reads the name: pose_<place>__<who>[__<variant>][__asleep], from the
+     file's own name (the workflow's `_a_00001_` tail is ignored) or from
+     --name. A pose at the Bathhouse, the Sauna or the Pool is refused (K16).
   2. Brings the render to 1920x1080 (scaled to the full width; the height
      is then padded with the room's own rows, or cropped, about the centre:
      a 2752x1536 render is the room at 1920x1072, 4 px down) and compares it
@@ -26,20 +31,52 @@ What it does:
      changed region within 12 px of it (feet or a shadow cut off from the
      body), grown by 24 px (the feathered edge needs room). --box x,y,w,h
      sets it by hand.
-  5. Writes the box to game/layout/view_<place>.json under "poses" (the only
-     file it writes there; slots and other poses in it are kept, and
-     hot_<place>.json is never touched), a side-by-side preview to
-     shots/art/<name>.png, and the picture to game/images/place/<name>.png.
+  5. KEEPS THE ROOM USABLE. The box is refused, and the point or the other
+     pose is named, when it
+       - covers an exit point of its room;
+       - covers a hotspot point, unless that hotspot is the one the pose's
+         row names in `at` (the reading table a person is painted at);
+       - overlaps the box of another installed pose of the same room and
+         hour picture THAT CAN SHOW AT THE SAME TIME. A pose reaches the
+         game as an opaque box cut from a whole-room render, so an overlap
+         would paint empty room over the other person. Who can show with
+         whom is read from the schedule, the weekend table and the asleep
+         and away tables in the layout dump: the same person awake and
+         asleep never show together and may share a bed; two people the
+         game sends to one Tokyo district the same hour may not overlap.
+     The points are the ones the game draws today, from the layout dump
+     (tools/game_layout.py), which refuses a dump that is out of date; in a
+     worktree pass --layout-dump <file>.
+  6. THE UNIFORM'S CLOTH (D59). For someone in the school uniform the cloth
+     inside the box is measured against the ramp of tools/cloth_match.py and
+     reported. --match-cloth runs the same match on the figure's box before
+     the picture is installed. (It needs ComfyUI's Python; without it the
+     line reads SKIPPED.)
+  7. Writes the box to game/layout/pose_<place>.json under "poses" (the only
+     file it writes a box to: the room's view_ and hot_ files are never
+     touched, K15), the pose's row to game/layout/pictures.json (which room
+     picture, at which revision, it was painted on: without that row a pose
+     on a revised picture counts as stale and would not show), the picture
+     to game/images/place/<name>.png, and a side-by-side preview to
+     shots/art/<name>.png.
 
---dry does everything but write the sidecar and the picture. --root <dir>
-writes under another folder than the project (the harness uses it).
+--dry does everything but write the sidecar, the row and the picture. --root
+<dir> reads the room from, and writes under, another folder than the project.
+--plan <file> reads the pose rows from a JSON list instead of POSES (tests).
+--no-game is for a harness's own test room: nothing of the game is read, so
+none of step 5 or 6 runs and no row is written; it needs --root and --bg.
+
+AFTER AN INSTALL the layout dump is out of date (it covers game/layout/):
+run tools/smoke.sh u2_dump again before the next tool.
+
 Pure Python: raster.py and pngread.py.
 """
-import sys, os, re, json
+import sys, os, re, json, subprocess, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pngread import load
 from raster import Img, resample
+import game_layout
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 W, H = 1920, 1080
@@ -49,26 +86,30 @@ REFUSE = 0.35               # more of the room than this changed: refuse
 GROW = 24                   # the box is the region grown by this many pixels
 NEAR = 3                    # a region this many blocks (12 px) or less from the person is part of them
 NEAR_MIN = 4                # ... when it has at least this many blocks (a lone speck is not)
+UNIFORM = ("megumi", "toge", "nobara", "maki", "mc", "yuji")        # tools/cloth_match.py: who wears the school uniform
 
-NAME_RE = re.compile(r"^(pose_(.+?)__([a-z0-9]+?)(?:__([a-z0-9]+?))?)(?:_[ab])?(?:_\d+_?)?$")
+NAME_RE = re.compile(r"^(pose_(.+?)__([a-z0-9]+?)(?:__(?!asleep)([a-z0-9]+?))?(__asleep)?)(?:_[ab])?(?:_\d+_?)?$")
+KEY_RE = re.compile(r"^([a-z0-9]+?)(?:__(?!asleep)([a-z0-9]+?))?(__asleep)?$")
 
 
 def parse_name(text):
-    """(stem, place, who, variant) from a file name or a --name value."""
+    """(stem, place, who, variant, state) from a file name or a --name value."""
     base = os.path.splitext(os.path.basename(text))[0]
     m = NAME_RE.match(base)
     if not m:
         raise SystemExit("can't tell the place and the person from %r: the name must be "
-                         "pose_<place>__<who> or pose_<place>__<who>__<variant> (pass --name)" % base)
-    return m.group(1), m.group(2), m.group(3), m.group(4) or ""
+                         "pose_<place>__<who>, pose_<place>__<who>__<variant> or ...__asleep (pass --name)" % base)
+    return m.group(1), m.group(2), m.group(3), m.group(4) or "", "asleep" if m.group(5) else "awake"
 
 
-def place_bg(place):
-    src = open(os.path.join(ROOT, "game", "sb_world.rpy"), encoding="utf-8").read()
-    m = re.search(r'"%s":\s*dict\(\s*indoor=\w+,\s*name="[^"]*",\s*bg="bg (\w+)"' % re.escape(place), src)
-    if not m:
-        raise SystemExit("no place %r in game/sb_world.rpy (LOCATIONS); pass --bg for a picture of your own" % place)
-    return m.group(1)
+def pose_key(who, variant="", state="awake"):
+    """The key a pose's box is written under: yuji, nobara__evening, megumi__night__asleep."""
+    return who + ("__" + variant if variant else "") + ("__asleep" if state == "asleep" else "")
+
+
+def parse_key(key):
+    m = KEY_RE.match(key)
+    return (m.group(1), m.group(2) or "", "asleep" if m.group(3) else "awake") if m else None
 
 
 def rgb(im):
@@ -255,21 +296,19 @@ def preview(bg, pose, box, grid, path):
     sheet.save(path)
 
 
-def write_sidecar(path, key, box):
-    """Set poses[key] in the view sidecar, keeping everything else in it."""
-    data = {}
-    if os.path.exists(path):
-        try:
-            data = json.load(open(path, encoding="utf-8"))
-        except ValueError as e:
-            raise SystemExit("%s is not JSON (%s): fix it or remove it first" % (path, e))
-        if not isinstance(data, dict):
-            raise SystemExit("%s must be a JSON object" % path)
-    poses = data.get("poses")
-    if not isinstance(poses, dict):
-        poses = {}
-    poses[key] = [int(v) for v in box]
-    data["poses"] = poses
+def read_json(path, what):
+    if not os.path.exists(path):
+        return {}
+    try:
+        data = json.load(open(path, encoding="utf-8"))
+    except ValueError as e:
+        raise SystemExit("%s is not JSON (%s): fix it or remove it first" % (path, e))
+    if not isinstance(data, dict):
+        raise SystemExit("%s must be a JSON object" % path)
+    return data
+
+
+def write_json(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -278,15 +317,182 @@ def write_sidecar(path, key, box):
     os.replace(tmp, path)
 
 
-def install(src, name=None, box=None, bg_path=None, root=None, dry=False):
+def write_sidecar(path, key, box):
+    """Set poses[key] in the pose sidecar, keeping every other box in it."""
+    data = read_json(path, "the pose sidecar")
+    poses = data.get("poses")
+    if not isinstance(poses, dict):
+        poses = {}
+    poses[key] = [int(v) for v in box]
+    data["poses"] = poses
+    write_json(path, data)
+
+
+# ---- who can show with whom -------------------------------------------------------------------------------
+def plan_rows(plan_path=None):
+    if plan_path:
+        rows = json.load(open(plan_path, encoding="utf-8"))
+        if not isinstance(rows, list):
+            raise SystemExit("%s must be a JSON list of pose rows" % plan_path)
+        return rows
+    import make_pose_workflow
+    return make_pose_workflow.POSES
+
+
+def plan_row(rows, place, who, variant, state):
+    for row in rows:
+        if (row.get("who"), row.get("place"), row.get("variant", ""), row.get("state") or "awake") == (who, place, variant, state):
+            return row
+    return {"who": who, "place": place, "variant": variant, "state": state}
+
+
+def show_cells(lay, row):
+    """The (weekday, period) cells at which a row's pose can be on screen; None when nothing says (a `via`
+    row: something other than the routine puts the person there)."""
+    if row.get("via"):
+        return None
+    who, place, variant = row["who"], row["place"], row.get("variant", "")
+    state = row.get("state") or "awake"
+    periods = lay.periods_showing(place, variant) if lay.has_place(place) else set(lay.d.get("periods", []))
+    out = set()
+    for day, per in lay.cells():
+        weekend = day in game_layout.WEEKEND_DAYS
+        if (row.get("days") == "weekdays" and weekend) or (row.get("days") == "weekends" and not weekend):
+            continue
+        if per not in periods or lay.where(who, day, per) != place:
+            continue
+        asleep = lay.asleep(who, day, per)
+        if asleep is not None and asleep != (state == "asleep"):
+            continue
+        out.add((day, per))
+    return out
+
+
+def together(lay, a, b):
+    """A cell at which both rows' poses can show, or None. One person is never in two of their own poses."""
+    if a["who"] == b["who"]:
+        return None
+    ca, cb = show_cells(lay, a), show_cells(lay, b)
+    if ca is None and cb is None:
+        return ("any day", "Night")
+    if ca is None or cb is None:
+        both = sorted(ca if cb is None else cb)
+        return both[0] if both else None
+    both = [c for c in lay.cells() if c in ca and c in cb]
+    return both[0] if both else None
+
+
+def fresh(manifest, stem, parent):
+    """5.5: is a dependant picture still the one made for its parent's revision?"""
+    import check_campus
+    row = (manifest.get("pictures") or {}).get(stem)
+    now = check_campus.rev_of(manifest, parent)
+    if row is None:
+        return now == 1
+    return row.get("of_rev", now) == now
+
+
+def inside(pt, box):
+    x, y, w, h = box
+    return x <= pt[0] < x + w and y <= pt[1] < y + h
+
+
+def overlap(a, b):
+    return min(a[0] + a[2], b[0] + b[2]) > max(a[0], b[0]) and min(a[1] + a[3], b[1] + b[3]) > max(a[1], b[1])
+
+
+def room_refusals(lay, rows, root, manifest, stem, place, who, variant, state, box):
+    """Why this box cannot go into this room: [text]. Empty when it can."""
+    out = []
+    row = plan_row(rows, place, who, variant, state)
+    if lay.has_place(place):
+        for pt in lay.points(place, root):
+            if not inside(pt["at"], box):
+                continue
+            if pt["kind"] == "exit":
+                out.append("the box covers an exit of the room: %s at (%d, %d). Move the spot and run the pose again."
+                           % (pt["name"], pt["at"][0], pt["at"][1]))
+            elif pt["id"] != row.get("at"):
+                out.append("the box covers %s at (%d, %d), which the pose's row does not name in `at`%s. Move the "
+                           "spot, or name the hotspot in `at` if the person is painted at that thing."
+                           % (pt["name"], pt["at"][0], pt["at"][1],
+                              " (its `at` is %s)" % row["at"] if row.get("at") else ""))
+    base = lay.bg_stem(place) if lay.has_place(place) else place
+    parent = base + ("_" + variant if variant else "")
+    boxes = dict(read_json(os.path.join(root, "game", "layout", "view_%s.json" % place), "").get("poses") or {})
+    boxes.update(read_json(os.path.join(root, "game", "layout", "pose_%s.json" % place), "").get("poses") or {})
+    mine = pose_key(who, variant, state)
+    for key, other in sorted(boxes.items()):
+        got = parse_key(key)
+        if key == mine or got is None or got[1] != variant or not overlap(box, other):
+            continue
+        o_who, o_variant, o_state = got
+        o_stem = "pose_%s__%s" % (place, key)
+        if not os.path.exists(os.path.join(root, "game", "images", "place", o_stem + ".png")):
+            continue
+        if not fresh(manifest, o_stem, parent):
+            print("   note: %s overlaps this box but is stale (made for an older %s.png), so it is not shown" % (o_stem, parent))
+            continue
+        cell = together(lay, row, plan_row(rows, place, o_who, o_variant, o_state))
+        if cell is None:
+            print("   note: the box overlaps %s's, and the two never show together (%s)"
+                  % (o_stem, "the same person" if o_who == who else "the schedule never has both there"))
+            continue
+        out.append("the box (%d,%d %dx%d) overlaps the box of %s (%d,%d %dx%d), and the two can show together (%s, "
+                   "%s): one would paint empty room over the other. Give this pose a place of its own and run it again."
+                   % (box[0], box[1], box[2], box[3], o_stem, other[0], other[1], other[2], other[3], cell[0], cell[1]))
+    return out
+
+
+def cloth(pose_png, room_png, box, match_to=None):
+    """D59: the uniform's cloth in the box against the ramp. Prints the tool's lines; True when a matched
+    picture was written to `match_to`."""
+    tools = os.path.dirname(os.path.abspath(__file__))
+    cmd = ["/bin/bash", os.path.join(tools, "py_art.sh"), os.path.join(tools, "pose_cloth.py"), pose_png, room_png,
+           "%d,%d,%d,%d" % tuple(box)]
+    if match_to:
+        cmd += ["--match", match_to]
+    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    text = p.stdout.decode("utf-8", "replace").strip()
+    if p.returncode == 69:
+        print("   cloth     SKIPPED (no ComfyUI python): the uniform's cloth was not measured against the ramp")
+        return False
+    for line in text.splitlines():
+        print("   cloth     " + line)
+    if p.returncode != 0:
+        raise SystemExit("the cloth measure failed (see the lines above); nothing was written")
+    return bool(match_to) and os.path.exists(match_to)
+
+
+def install(src, name=None, box=None, bg_path=None, root=None, dry=False, dump_path=None, plan_path=None,
+            no_game=False, match_cloth=False):
     root = root or ROOT
     src = os.path.expanduser(src)
     if not os.path.exists(src):
         raise SystemExit("no picture at %s" % src)
-    stem, place, who, variant = parse_name(name or src)
-    if bg_path is None:
-        bg_path = os.path.join(ROOT, "game", "images", "bg",
-                               place_bg(place) + ("_" + variant if variant else "") + ".png")
+    stem, place, who, variant, state = parse_name(name or src)
+    if place in game_layout.NO_POSE_PLACES:
+        raise SystemExit("REFUSED: no pose is ever installed at the Bathhouse, the Sauna or the Pool (K16)")
+    lay = manifest = rows = None
+    if no_game:
+        if root == ROOT or bg_path is None:
+            raise SystemExit("--no-game is for a test room: it needs --root <another folder> and --bg <its picture>")
+    else:
+        import check_campus
+        lay = game_layout.load(dump_path, root)
+        manifest = check_campus.load_manifest(root)
+        rows = plan_rows(plan_path)
+        if not lay.has_place(place):
+            districts = lay.districts()
+            if districts is None or place not in districts:
+                raise SystemExit("no place %r in the game, and it is not a Tokyo district the game sends anyone to%s"
+                                 % (place, "" if districts is not None else " (the layout dump has no away table)"))
+            sent = set(d for day, per in lay.cells() for d in [lay.away(who, day, per)] if d)
+            if place not in sent:
+                raise SystemExit("REFUSED: the game never sends %s to %s (WORLD_AWAY)" % (who, place))
+        if bg_path is None:
+            base = lay.bg_stem(place) if lay.has_place(place) else place
+            bg_path = os.path.join(root, "game", "images", "bg", base + ("_" + variant if variant else "") + ".png")
     if not os.path.exists(bg_path):
         raise SystemExit("no room picture at %s to compare with" % bg_path)
     bg = fit(load(bg_path))
@@ -325,16 +531,47 @@ def install(src, name=None, box=None, bg_path=None, root=None, dry=False):
     print("   box %d,%d  %dx%d" % box)
     preview(bg, pose, box, grid, prev)
     print("   preview -> %s" % prev)
+
+    if not no_game:
+        why = room_refusals(lay, rows, root, manifest, stem, place, who, variant, state, box)
+        if why:
+            raise SystemExit("REFUSED: " + "\nREFUSED: ".join(why))
+        if who in UNIFORM and state != "asleep":
+            tmp = tempfile.mkdtemp(prefix="pose_cloth_")
+            try:
+                a, b = os.path.join(tmp, "pose.png"), os.path.join(tmp, "room.png")
+                pose.save(a); bg.save(b)
+                out = os.path.join(tmp, "matched.png") if match_cloth else None
+                if cloth(a, b, box, out):
+                    pose = fit(load(out))
+            finally:
+                import shutil
+                shutil.rmtree(tmp, ignore_errors=True)
     if dry:
         return box
-    key = who + ("__" + variant if variant else "")
-    side = os.path.join(root, "game", "layout", "view_%s.json" % place)
+    key = pose_key(who, variant, state)
+    side = os.path.join(root, "game", "layout", "pose_%s.json" % place)
     write_sidecar(side, key, box)
     print("   box written -> %s (poses[%r])" % (side, key))
+    if not no_game:
+        import check_campus
+        base = lay.bg_stem(place) if lay.has_place(place) else place
+        parent = base + ("_" + variant if variant else "")
+        mpath = os.path.join(root, "game", "layout", "pictures.json")
+        data = read_json(mpath, "the manifest")
+        pics = data.get("pictures")
+        if not isinstance(pics, dict):
+            pics = {}
+        pics[stem] = {"of": parent, "of_rev": check_campus.rev_of({"pictures": pics}, parent)}
+        data["pictures"] = pics
+        write_json(mpath, data)
+        print("   row written -> %s (%s: painted on %s.png at revision %d)" % (mpath, stem, parent, pics[stem]["of_rev"]))
     dest = os.path.join(root, "game", "images", "place", stem + ".png")
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     pose.save(dest)
     print("   installed -> %s" % dest)
+    if not no_game:
+        print("   the layout dump is now out of date: run tools/smoke.sh u2_dump before the next tool")
     return box
 
 
@@ -349,10 +586,12 @@ def main(argv):
             return v
         return None
 
-    box, name, bg, root = opt("--box"), opt("--name"), opt("--bg"), opt("--root")
-    dry = "--dry" in argv
+    box, name, bg, root, plan = opt("--box"), opt("--name"), opt("--bg"), opt("--root"), opt("--plan")
+    dump_path = game_layout.pop_dump_arg(argv)
+    known = ("--dry", "--no-game", "--match-cloth")
+    dry, no_game, match_cloth = [f in argv for f in known]
     args = [a for a in argv if not a.startswith("--")]
-    if len(args) != 1 or [a for a in argv if a.startswith("--") and a != "--dry"]:
+    if len(args) != 1 or [a for a in argv if a.startswith("--") and a not in known]:
         print(__doc__); raise SystemExit(1)
     if box is not None:
         try:
@@ -360,7 +599,8 @@ def main(argv):
             assert len(box) == 4
         except (ValueError, AssertionError):
             raise SystemExit("--box takes four whole numbers: x,y,w,h")
-    install(args[0], name=name, box=box, bg_path=bg, root=root, dry=dry)
+    install(args[0], name=name, box=box, bg_path=bg, root=root, dry=dry, dump_path=dump_path, plan_path=plan,
+            no_game=no_game, match_cloth=match_cloth)
 
 
 if __name__ == "__main__":

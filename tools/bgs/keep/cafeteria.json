@@ -1,0 +1,25 @@
+{
+ "keep": [
+  {"name": "the water cooler", "box": [765, 468, 70, 292]},
+  {"name": "the potted plants by the windows", "box": [612, 560, 165, 285]},
+  {"name": "the food warmer on the counter", "box": [975, 490, 318, 142]},
+  {"name": "the stacked trays on the counter", "box": [1423, 482, 497, 138]},
+  {"name": "the food laid out along the counter", "box": [1000, 598, 920, 38]},
+  {"name": "the paper lamp over the counter", "box": [1063, 123, 108, 98]},
+  {"name": "the paper lamp on the right", "box": [1783, 123, 110, 98]},
+  {"name": "the paper lamp at the top", "box": [1138, 0, 142, 56]},
+  {"name": "the tied-back curtain by the first window", "box": [255, 0, 100, 850]},
+  {"name": "the curtain by the second window", "box": [558, 215, 64, 500]},
+  {"name": "the chairs at the tables", "box": [1100, 675, 820, 182]},
+  {"name": "the counter", "box": [915, 625, 1005, 190]}
+ ],
+ "empty": [
+  {"name": "the near table's top", "box": [1185, 885, 720, 60]},
+  {"name": "the middle table's top, between the chairs", "box": [1415, 765, 90, 38]},
+  {"name": "the floor", "poly": [[620, 862], [900, 762], [920, 822], [1030, 832], [1095, 1075], [430, 1075]]}
+ ],
+ "allow": [],
+ "change": [],
+ "doors": [],
+ "scale": [1015, 318, 800]
+}

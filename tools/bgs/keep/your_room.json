@@ -1,0 +1,29 @@
+{
+ "keep": [
+  {"name": "the desk and its chair", "box": [365, 580, 272, 322]},
+  {"name": "the box on the desk", "box": [375, 565, 70, 70]},
+  {"name": "the wardrobe", "box": [410, 310, 282, 530]},
+  {"name": "the folded blanket on top of the wardrobe", "box": [430, 255, 240, 66]},
+  {"name": "the air conditioner", "box": [370, 100, 118, 188]},
+  {"name": "the cardboard boxes by the wardrobe", "box": [685, 700, 112, 142]},
+  {"name": "the bed and its bedding", "box": [1035, 600, 577, 297]},
+  {"name": "the pillow on the bed", "box": [1105, 665, 152, 34]},
+  {"name": "the ceiling lamp", "box": [888, 165, 166, 80]},
+  {"name": "the open boxes in the right corner", "box": [1560, 775, 360, 227]},
+  {"name": "the clothes in the open box", "box": [1580, 798, 162, 78]},
+  {"name": "the small frame on the far wall", "box": [1096, 271, 38, 38]},
+  {"name": "the calendar by the door", "box": [368, 343, 26, 158]}
+ ],
+ "empty": [
+  {"name": "the desk top", "box": [462, 598, 124, 36]},
+  {"name": "the bed's cover", "box": [1250, 705, 335, 72]},
+  {"name": "the floor", "poly": [[800, 832], [1040, 812], [1270, 897], [1555, 902], [1740, 1002], [1800, 1075], [330, 1075], [385, 922], [640, 902]]}
+ ],
+ "allow": [
+  {"name": "a closed laptop on the desk", "box": [452, 586, 136, 52]}
+ ],
+ "change": [],
+ "doors": [
+  {"name": "the sliding door on the left, to the corridor", "box": [100, 0, 252, 1000]}
+ ]
+}

@@ -1,0 +1,697 @@
+{
+ "about": [
+  "tools/art/redo_measures.json -- what tools/install_redo.py measured on the renders whose answers are known (docs/UI2_DESIGN.md 5.4, 5.7), written by tools/test_art_tools.sh --write-measures on 7 Oct 2026.",
+  "`thresholds` are the constants of tools/redo_measure.py as they stood (the file is a record: the tool reads its own constants).",
+  "`renders` are the sixteen look-test renders, each judged in place against the game's picture of that place.",
+  "Five of them are a LOOK, not a PASS, since review round 2 (7 Oct): nothing in them moved, vanished or appeared, and each has a new view through a window or a doorway, which step 6 shows in 120 px cells and does not refuse.",
+  "`relight_pairs` are the eight day and hour pairs the game has; all eight line up with their day picture to 0 px, so all eight were made as relights and none is left out. The relight's own \"vanished\" rule (gone only when a thing agrees under RELIGHT_GONE_REL of what the picture does AND keeps under RELIGHT_GONE_EDGE of its edge) was set so that every one of them passes: the window at the end of the girls' corridor, lit at night, keeps 0.39 of its agreement and 43% of its edge, and is the weakest kept thing of the eight.",
+  "In `figures`: shift is the whole picture's, in px; keep_weakest is [agreement against the picture's own, share of its edge] of the weakest kept thing; empty_most is [rise, levels] of the empty place that gained most; sharp is [revision 1, this render]; empty_cell_most is the same as empty_most for the 160 px part of a wide empty place (a floor) that gained most; cells_different is how many 120 px cells step 6 shows."
+ ],
+ "canary_shape": {
+  "figures": {
+   "agree": 0.955,
+   "cells_different": 2,
+   "empty_cell_most": [
+    1.011,
+    0.06
+   ],
+   "empty_most": [
+    1.012,
+    0.18
+   ],
+   "gain": 1.047,
+   "keep_weakest": [
+    0.981,
+    0.945
+   ],
+   "sharp": [
+    28.9,
+    89.6
+   ],
+   "shift": [
+    0,
+    0
+   ],
+   "tiles_agree": 0.988,
+   "tiles_different": 0,
+   "tiles_moved": 0
+  },
+  "render": "look3_dorm_common_keep_00001_.png"
+ },
+ "relight_pairs": [
+  {
+   "day": "dorm_common.png",
+   "figures": {
+    "agree": 0.886,
+    "gain": 0.777,
+    "keep_weakest": [
+     0.702,
+     0.992
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.945,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "hour": "dorm_common_evening.png",
+   "verdict": "PASS"
+  },
+  {
+   "day": "dorm_common.png",
+   "figures": {
+    "agree": 0.821,
+    "gain": 0.894,
+    "keep_weakest": [
+     0.832,
+     0.361
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.881,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "hour": "dorm_common_night.png",
+   "verdict": "PASS"
+  },
+  {
+   "day": "rooftop.png",
+   "figures": {
+    "agree": 0.919,
+    "gain": 0.839,
+    "keep_weakest": null,
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.949,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "hour": "rooftop_evening.png",
+   "verdict": "PASS"
+  },
+  {
+   "day": "rooftop.png",
+   "figures": {
+    "agree": 0.843,
+    "gain": 0.616,
+    "keep_weakest": null,
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.885,
+    "tiles_different": 1,
+    "tiles_moved": 0
+   },
+   "hour": "rooftop_night.png",
+   "verdict": "LOOK"
+  },
+  {
+   "day": "riverside.png",
+   "figures": {
+    "agree": 0.936,
+    "gain": 0.918,
+    "keep_weakest": [
+     1.03,
+     1.063
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.944,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "hour": "riverside_evening.png",
+   "verdict": "PASS"
+  },
+  {
+   "day": "infirmary.png",
+   "figures": {
+    "agree": 0.726,
+    "gain": 1.081,
+    "keep_weakest": [
+     1.15,
+     1.037
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.849,
+    "tiles_different": 1,
+    "tiles_moved": 0
+   },
+   "hour": "infirmary_night.png",
+   "verdict": "LOOK"
+  },
+  {
+   "day": "girls_dorm.png",
+   "figures": {
+    "agree": 0.957,
+    "gain": 0.975,
+    "keep_weakest": [
+     0.392,
+     0.427
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.985,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "hour": "girls_dorm_night.png",
+   "verdict": "PASS"
+  },
+  {
+   "day": "your_room.png",
+   "figures": {
+    "agree": 0.763,
+    "gain": 0.909,
+    "keep_weakest": [
+     0.523,
+     0.792
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.894,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "hour": "your_room_night.png",
+   "verdict": "LOOK"
+  }
+ ],
+ "renders": [
+  {
+   "figures": {
+    "agree": 0.955,
+    "cells_different": 2,
+    "empty_cell_most": [
+     1.011,
+     0.06
+    ],
+    "empty_most": [
+     1.012,
+     0.18
+    ],
+    "gain": 1.047,
+    "keep_weakest": [
+     0.981,
+     0.945
+    ],
+    "sharp": [
+     28.9,
+     89.6
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.988,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "dorm_common",
+   "render": "look3_dorm_common_keep_00001_.png",
+   "verdict": "LOOK"
+  },
+  {
+   "figures": {
+    "agree": 0.943,
+    "cells_different": 0,
+    "empty_cell_most": [
+     1.048,
+     0.24
+    ],
+    "empty_most": [
+     1.016,
+     0.15
+    ],
+    "gain": 1.089,
+    "keep_weakest": [
+     0.928,
+     0.991
+    ],
+    "sharp": [
+     26.4,
+     205.7
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.98,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "cafeteria",
+   "render": "look3_cafeteria_keep_00001_.png",
+   "verdict": "PASS"
+  },
+  {
+   "figures": {
+    "agree": 0.887,
+    "cells_different": 2,
+    "empty_cell_most": [
+     1.029,
+     0.16
+    ],
+    "empty_most": [
+     1.076,
+     1.18
+    ],
+    "gain": 1.077,
+    "keep_weakest": [
+     0.857,
+     0.906
+    ],
+    "sharp": [
+     28.9,
+     144.6
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.973,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "dorm_common",
+   "render": "look_dorm_common_A_00001_.png",
+   "verdict": "LOOK"
+  },
+  {
+   "figures": {
+    "agree": 0.958,
+    "cells_different": 1,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.074,
+    "keep_weakest": [
+     0.968,
+     0.989
+    ],
+    "sharp": [
+     101.0,
+     495.2
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.971,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "courtyard",
+   "render": "look_courtyard_A_00001_.png",
+   "verdict": "LOOK"
+  },
+  {
+   "figures": {
+    "agree": 0.81,
+    "cells_different": 1,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.297,
+    "keep_weakest": [
+     1.028,
+     0.984
+    ],
+    "sharp": [
+     11.6,
+     92.8
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.92,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "library",
+   "render": "look_library_A_00001_.png",
+   "verdict": "LOOK"
+  },
+  {
+   "figures": {
+    "agree": 0.621,
+    "cells_different": 5,
+    "empty_cell_most": [
+     1.54,
+     2.66
+    ],
+    "empty_most": [
+     1.975,
+     3.83
+    ],
+    "gain": 0.989,
+    "keep_weakest": [
+     0.572,
+     0.589
+    ],
+    "sharp": [
+     28.9,
+     430.8
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.605,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "dorm_common",
+   "render": "look_dorm_common_B_00001_.png",
+   "verdict": "REFUSED"
+  },
+  {
+   "figures": {
+    "agree": 0.854,
+    "cells_different": 2,
+    "empty_cell_most": [
+     1.142,
+     1.01
+    ],
+    "empty_most": [
+     1.086,
+     0.44
+    ],
+    "gain": 0.952,
+    "keep_weakest": [
+     -0.07,
+     0.075
+    ],
+    "sharp": [
+     28.9,
+     70.7
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.866,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "dorm_common",
+   "render": "look2_dorm_common_clean_00001_.png",
+   "verdict": "REFUSED"
+  },
+  {
+   "figures": {
+    "agree": 0.987,
+    "cells_different": 0,
+    "empty_cell_most": [
+     1.063,
+     0.51
+    ],
+    "empty_most": [
+     1.025,
+     0.42
+    ],
+    "gain": 1.079,
+    "keep_weakest": [
+     0.975,
+     1.026
+    ],
+    "sharp": [
+     28.9,
+     140.2
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.987,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "dorm_common",
+   "render": "look_dorm_common_C_00001_.png",
+   "verdict": "PASS"
+  },
+  {
+   "figures": {
+    "agree": 0.831,
+    "cells_different": 0,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.135,
+    "keep_weakest": [
+     0.848,
+     0.789
+    ],
+    "sharp": [
+     101.0,
+     1304.6
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.851,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "courtyard",
+   "render": "look_courtyard_B_00001_.png",
+   "verdict": "PASS"
+  },
+  {
+   "figures": {
+    "agree": 0.955,
+    "cells_different": 0,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.074,
+    "keep_weakest": [
+     0.941,
+     0.981
+    ],
+    "sharp": [
+     101.0,
+     582.3
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.971,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "courtyard",
+   "render": "look_courtyard_C_00001_.png",
+   "verdict": "PASS"
+  },
+  {
+   "figures": {
+    "agree": 0.819,
+    "cells_different": 2,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.253,
+    "keep_weakest": [
+     1.024,
+     1.205
+    ],
+    "sharp": [
+     11.6,
+     233.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.919,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "library",
+   "render": "look_library_B_00001_.png",
+   "verdict": "LOOK"
+  },
+  {
+   "figures": {
+    "agree": 0.983,
+    "cells_different": 0,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.126,
+    "keep_weakest": [
+     0.981,
+     1.073
+    ],
+    "sharp": [
+     11.6,
+     57.7
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.982,
+    "tiles_different": 0,
+    "tiles_moved": 0
+   },
+   "picture": "library",
+   "render": "look_library_C_00001_.png",
+   "verdict": "PASS"
+  },
+  {
+   "figures": {
+    "agree": 0.453,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.054,
+    "keep_weakest": [
+     0.299,
+     0.452
+    ],
+    "sharp": [
+     101.0,
+     611.6
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.512,
+    "tiles_different": 8,
+    "tiles_moved": 0
+   },
+   "picture": "courtyard",
+   "render": "look2_courtyard_gateway_00001_.png",
+   "verdict": "REFUSED"
+  },
+  {
+   "figures": {
+    "agree": 0.392,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.119,
+    "keep_weakest": [
+     0.386,
+     0.381
+    ],
+    "sharp": [
+     101.0,
+     1310.9
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.5,
+    "tiles_different": 7,
+    "tiles_moved": 0
+   },
+   "picture": "courtyard",
+   "render": "look2_courtyard_mainhall_00001_.png",
+   "verdict": "REFUSED"
+  },
+  {
+   "figures": {
+    "agree": 0.585,
+    "cells_different": 18,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.662,
+    "keep_weakest": [
+     0.243,
+     0.986
+    ],
+    "sharp": [
+     11.6,
+     690.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "tiles_agree": 0.642,
+    "tiles_different": 1,
+    "tiles_moved": 0
+   },
+   "picture": "library",
+   "render": "look2_library_bright_00001_.png",
+   "verdict": "REFUSED"
+  },
+  {
+   "figures": {
+    "agree": 0.024,
+    "empty_cell_most": null,
+    "empty_most": null,
+    "gain": 1.545,
+    "keep_weakest": [
+     -0.03,
+     0.14
+    ],
+    "sharp": [
+     11.6,
+     1602.4
+    ],
+    "shift": [
+     13,
+     15
+    ],
+    "tiles_agree": 0.5,
+    "tiles_different": 22,
+    "tiles_moved": 0
+   },
+   "picture": "library",
+   "render": "look2_library_gallery_00001_.png",
+   "verdict": "REFUSED"
+  }
+ ],
+ "thresholds": {
+  "ADDED_MIN": 1.2,
+  "ADDED_RISE": 1.16,
+  "CELL": 160,
+  "CELL_ADD": 1.5,
+  "CELL_FROM": 250,
+  "CELL_MIN": 3000,
+  "CELL_RISE": 1.22,
+  "CELL_STEP": 80,
+  "DIFFERENT": 0.2,
+  "EDGE_ROWS": 8,
+  "FLAT": 1.2,
+  "GONE_EDGE": 0.4,
+  "GONE_REL": 0.54,
+  "H": 1080,
+  "LOCK": 0.3,
+  "LOCK_GAIN": 0.08,
+  "LOCK_ZERO": 0.7,
+  "LOOK_CELL": 120,
+  "LOOK_DIFF": 0.3,
+  "LOOK_MANY": 6,
+  "MOVED_TILES": 0.25,
+  "RELIGHT_GONE_EDGE": 0.5,
+  "RELIGHT_GONE_REL": 0.3,
+  "REL_FLOOR": 0.5,
+  "SEARCH": 24,
+  "SHARP_LOOK": 1.3,
+  "SHARP_PASS": 2.0,
+  "SHIFT_POINT": 3,
+  "SHIFT_WHOLE": 1,
+  "W": 1920,
+  "WINDOW": 192
+ }
+}
