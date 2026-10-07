@@ -37,6 +37,8 @@
 ##   F  the pictures: the menus' own files, the five lenders' copies, the ten
 ##      names that always exist and the three that exist only with their file,
 ##      the board's job sites, the guarded stand-in people in three states
+##   G  the test that settles D31: a pose kept on the person view by its
+##      screen reaches no save
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
@@ -219,6 +221,62 @@ init 999 python:
             return None
         return builtins.sorted(builtins.set(builtins.str(x.filename) for x in zzc_tree(d) if isinstance(x, renpy.display.im.Image)))
 
+    def zzc_saved_pictures(path, screen=None):
+        """How many displayables a save made NOW would hold that draw the
+        picture file `path` (with screen=: how many times that screen is in
+        it instead). What a save pickles of what is on screen is this
+        context's scene lists; they are pickled as a save pickles them,
+        read back, and every object in the copy is walked. (A path kept as
+        a plain string, in a screen's scope, is not a displayable: a screen
+        is built again after a load and asks for its pictures again.)"""
+        data = renpy.compat.pickle.loads(renpy.compat.pickle.dumps(renpy.game.context().scene_lists))
+        seen, todo, n = builtins.set(), [data], 0
+        while todo:
+            o = todo.pop()
+            if id(o) in seen or isinstance(o, (str, bytes, int, float, bool, type(None))):
+                continue
+            seen.add(id(o))
+            if screen is not None:
+                if type(o).__name__ == "ScreenDisplayable" and screen in builtins.str(getattr(o, "screen_name", "")):
+                    n += 1
+            elif isinstance(o, renpy.display.displayable.Displayable) and builtins.str(getattr(o, "filename", "")) == path:
+                n += 1
+            if isinstance(o, builtins.dict):
+                todo.extend(o.keys())
+                todo.extend(o.values())
+            elif isinstance(o, (builtins.list, builtins.tuple, builtins.set, builtins.frozenset)):
+                todo.extend(o)
+            else:
+                d = getattr(o, "__dict__", None)
+                if isinstance(d, builtins.dict):
+                    todo.extend(d.values())
+                for cls in type(o).__mro__:
+                    slots = cls.__dict__.get("__slots__", ())
+                    for k in ((slots,) if isinstance(slots, str) else slots):
+                        if isinstance(k, str) and hasattr(o, k):
+                            todo.append(getattr(o, k))
+        return n
+
+    def zzc_action(wid, screen="sb_place"):
+        """(class name, value) of what a button does; plain values, so that
+        no displayable is kept in a variable a save would pickle."""
+        w = renpy.get_displayable(screen, wid)
+        if w is None:
+            return None
+        a = w.action
+        return (type(a).__name__, getattr(a, "value", None))
+
+    def zzc_live(loc):
+        """Where a place's own hotspots sit now (the sidecar applied): a set
+        of (x, y), read straight from the registry."""
+        side = rule_layout("hot_" + loc).get("spots") or {}
+        out = builtins.set()
+        for h in HOT_SPOTS:
+            if h["place"] == loc and not h["id"].startswith("go_") and not h["id"].startswith("zz"):
+                p = side.get(h["id"]) or (h["x"], h["y"])
+                out.add((p[0], p[1]))
+        return out
+
     def zz_dim_test():
         """A test dim function: the reason, or "" (ZZC_DIM[0])."""
         return ZZC_DIM[0]
@@ -234,6 +292,16 @@ init 999 python:
 
     def zzc_sig(fn):
         return builtins.str(inspect.signature(fn))
+
+
+## D31's test screen: the person view as U3 would build it, with the painted
+## pose kept in place (no fade) while the card is open.
+screen zz_d31_keep(who):
+    $ _zz_row = ([r for r in view_stage_rows(here) if r["who"] == who] or [None])[0]
+    add graded_bg()
+    if _zz_row is not None and _zz_row["pose"]:
+        add view_pose_patch(_zz_row["pose"], here, ink=VIEW_INK_PERSON):
+            pos (_zz_row["rect"][0], _zz_row["rect"][1])
 
 
 label zz_smoke:
@@ -594,17 +662,9 @@ label zz_smoke:
               "B: view_face_layers, view_pose and view_slots keep their signatures")
 
         ## -- path_keep_clear and the validator's applied points (3.1)
-        def _zz_live(loc):
-            side = rule_layout("hot_" + loc).get("spots") or {}
-            out = builtins.set()
-            for h in HOT_SPOTS:
-                if h["place"] == loc and not h["id"].startswith("go_") and not h["id"].startswith("zz"):
-                    p = side.get(h["id"]) or (h["x"], h["y"])
-                    out.add((p[0], p[1]))
-            return out
         check(zzc_sig(path_keep_clear) == "(loc)" and zzc_owner(path_keep_clear, "room_paths.rpy")
               and all(isinstance(path_keep_clear(l), builtins.list) and all(isinstance(p, builtins.tuple) and len(p) == 2 for p in path_keep_clear(l))
-                      and builtins.set(path_keep_clear(l)) == _zz_live(l) and len(path_keep_clear(l)) == len(_zz_live(l)) for l in LOC_ORDER)
+                      and builtins.set(path_keep_clear(l)) == zzc_live(l) and len(path_keep_clear(l)) == len(zzc_live(l)) for l in LOC_ORDER)
               and path_keep_clear("zz") == [] and len(path_keep_clear("courtyard")) >= 1,
               "B: path_keep_clear(loc) is a list of (x, y): the place's own hotspots where they sit now, each point once",
               [(l, path_keep_clear(l)) for l in LOC_ORDER if path_keep_clear(l)])
@@ -787,26 +847,22 @@ label zz_smoke:
               and zzc_sig(hot_set_dim) == "(hot_id, fn)",
               "C: no hotspot names a dim function today; hot_set_dim(hot_id, fn) is how one does")
         zzc_alone("courtyard")
-        _zz_w = renpy.get_displayable("sb_place", "hot_spot_vend")
-        _zz_act0 = _zz_w.action
-        _zz_tip0 = _zz_w.style.tooltip if hasattr(_zz_w.style, "tooltip") else None
-        check(zzc_alpha("hot_spot_vend") == 1.0 and isinstance(_zz_act0, Return) and _zz_act0.value == ("act", "spot_vend"),
-              "C: the vending machine, not dim: drawn at full strength, and pressing it returns its action", (zzc_alpha("hot_spot_vend"), _zz_act0))
+        check(zzc_alpha("hot_spot_vend") == 1.0 and zzc_action("hot_spot_vend") == ("Return", ("act", "spot_vend")),
+              "C: the vending machine, not dim: drawn at full strength, and pressing it returns its action", (zzc_alpha("hot_spot_vend"), zzc_action("hot_spot_vend")))
         _zz_rv = hot_set_dim("spot_vend", "zz_dim_test")
         check(_zz_rv is None and hot_validate() == [], "C: hot_set_dim returns None, and lint accepts a dim function that exists", hot_validate())
         renpy.restart_interaction()
         zz_render(0.2)
-        check(zzc_alpha("hot_spot_vend") == 1.0 and renpy.get_displayable("sb_place", "hot_spot_vend").action.value == ("act", "spot_vend"),
+        check(zzc_alpha("hot_spot_vend") == 1.0 and zzc_action("hot_spot_vend") == ("Return", ("act", "spot_vend")),
               "C: a dim function that returns \"\" changes nothing")
         ZZC_DIM[0] = "Sold out till morning."
         renpy.restart_interaction()
         zz_render(0.2)
-        _zz_w = renpy.get_displayable("sb_place", "hot_spot_vend")
-        check(zzc_alpha("hot_spot_vend") == HOT_DIM_ALPHA and isinstance(_zz_w.action, NullAction)
+        check(zzc_alpha("hot_spot_vend") == HOT_DIM_ALPHA and zzc_action("hot_spot_vend")[0] == "NullAction"
               and hot_dim_reason([h for h in hot_spots_for("courtyard") if h["id"] == "spot_vend"][0]) == "Sold out till morning."
               and zz_rect("sb_place", "hot_spot_vend") is not None,
               "C: while it returns a reason the hotspot is drawn at the dimmed strength and pressing it does nothing; it stays where it was",
-              (zzc_alpha("hot_spot_vend"), _zz_w.action))
+              (zzc_alpha("hot_spot_vend"), zzc_action("hot_spot_vend")))
         renpy.set_focus("sb_place", "hot_spot_vend")
         zz_render(0.3)
         _zz_tip = GetTooltip()
@@ -825,7 +881,6 @@ label zz_smoke:
         ## -- an exit's tile shows the faces path_faces returns
         zzc_alone("dorm_yard")
         _zz_exit = [h for h in hot_spots_for("dorm_yard") if h["id"] == "go_dorm_yard__boys_dorm"][0]
-        _zz_sc = renpy.get_screen("sb_place")
         check(hot_faces(_zz_exit) == [] and path_faces("boys_dorm") == []
               and zzc_face_count("megumi") == 0 and zzc_face_count("yuji") == 0,
               "C: with the stub, no exit's tile shows a face")
@@ -833,8 +888,6 @@ label zz_smoke:
         store.path_faces = zz_two_faces
         renpy.restart_interaction()
         zz_render(0.3)
-        _zz_sc = renpy.get_screen("sb_place")
-        _zz_all = zzc_tree(_zz_sc)
         check(hot_faces(_zz_exit) == ["megumi", "yuji"]
               and zzc_face_count("megumi") == 1 and zzc_face_count("yuji") == 1 and zzc_face_count("panda") == 0
               and hot_faces([h for h in hot_spots_for("dorm_yard") if h["id"] == "go_dorm_yard__dorm_common"][0]) == []
@@ -1040,6 +1093,7 @@ label zz_smoke:
             elif not _zz_ok(_zz_call()):
                 _zz_bad.append((_zz_n, "returned", _zz_call()))
         check(not _zz_bad, "E: every stub function of 9.2 exists in its own file with its signature, a docstring and its return shape (%d)" % len(_zz_stubs), _zz_bad)
+        del _zz_stubs, _zz_call, _zz_ok      # they hold lambdas, and section G saves
         check(tky_here("harajuku") == [] and tky_caption("nobara", "harajuku") == "" and map_district_people("harajuku") == []
               and view_asleep("senpai_room") == [] and cards_invitable() == [] and hint_show("zz") is None
               or (bath_ok() or pool_ok()),
@@ -1235,5 +1289,58 @@ label zz_smoke:
         shot("standin_people")
     hide mother
     hide nade
+
+    ## --- G. the test that settles D31: is a pose kept on the person view screen-only? ---
+    python:
+        ## The sections above left displayables and test functions in their
+        ## working variables; a save pickles the store, so they go first.
+        for _zz_k in [k for k in builtins.vars(store) if k.startswith("_zz_")]:
+            builtins.delattr(store, _zz_k)
+        settle(day=2, period="Noon", here="utahime_office")
+        flag("utahime_arrived")
+        store.schedule_overrides = {}
+        store.companion = None
+        for _zz_w in ROSTER_ORDER:
+            pin(_zz_w, "-")
+        if "utahime" not in store.roster:
+            store.roster.append("utahime")
+        pin("utahime", "utahime_office")
+        zzc_hold()
+        zzc_layout("pose_utahime_office", dict(poses=dict(utahime=[200, 300, 500, 700])))
+        _zz_pose = view_pose("utahime", "utahime_office")
+        _zz_path = "images/place/pose_utahime_office__utahime.png"
+        check(_zz_pose is not None and _zz_pose["image"] == _zz_path and stage_people("utahime_office")[0] == ["utahime"],
+              "G: (fixture) Utahime is painted into her office", _zz_pose)
+    scene expression graded_bg()
+    show screen zz_d31_keep("utahime")
+    python:
+        zz_render(0.3)
+        _zz_in_tree = any(builtins.str(getattr(d, "filename", "")) == _zz_path for d in zzc_tree(renpy.get_screen("zz_d31_keep")))
+        shot("d31_pose_kept")
+        _zz_a = zzc_saved_pictures(_zz_path)
+        _zz_a_sc = zzc_saved_pictures(_zz_path, screen="zz_d31_keep")
+    hide screen zz_d31_keep
+    show screen sb_char("utahime")
+    python:
+        zz_render(0.5)
+        _zz_b = zzc_saved_pictures(_zz_path)
+        _zz_b_sc = zzc_saved_pictures(_zz_path, screen="sb_char")
+    hide screen sb_char
+    ## the control: the same picture SHOWN as an image, which a save does hold
+    show expression Image(_zz_path) as zz_d31_shown
+    python:
+        zz_render(0.2)
+        _zz_c = zzc_saved_pictures(_zz_path)
+    hide zz_d31_shown
+    python:
+        check(_zz_in_tree and _zz_c >= 1 and _zz_a_sc >= 1 and _zz_b_sc >= 1,
+              "G: (control) the kept pose is drawn by the screen; each screen is in what a save made on it would hold; and the same picture shown as an image IS held, as a displayable",
+              (_zz_in_tree, _zz_c, _zz_a_sc, _zz_b_sc))
+        check(_zz_a == 0 and _zz_b == 0,
+              "G: D31 is settled: a pose kept in place by the person view's screen is screen-only. A save made on it, and one made on today's person view, would hold no displayable of the pose picture (K9)", (_zz_a, _zz_b))
+        note("D31", "screen-only: U3 may keep the painted person painted while their card is open (6.2 row 8), as long as the patch is added by the screen and never shown as an image")
+        zzc_back()
+        settle(day=2, period="Noon", here="courtyard")
+        store.schedule_overrides = {}
 
     $ finish()
