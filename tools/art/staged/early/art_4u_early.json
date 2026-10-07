@@ -1,0 +1,29 @@
+{
+ "about": [
+  "Sitting 4, fifth go, written by hand on 7 Oct 2026. The fourth go's four pictures all came back with the old door positions: the editor copies the layout of any picture of the corridor it is given, whatever the words say (a 'laid out again' prompt with the corridor as picture 1 copied it too). So this go gives it NO picture of the corridor: only a swatch (one door with its wall and floor) for the materials, and composes the corridor from words, looking straight down its middle, three evenly spaced doors a side. The result is a new composition and is laid out afresh. LESSON: to change a layout, do not hand the editor the old layout."
+ ],
+ "written": "2026-10-07",
+ "prompt_sha256": "5494cf80cf04844ec7f3a270b95f20ee59ec1f75d61f680f5940b84f7c362ee9",
+ "rows": [
+  {
+   "saves": [
+    "ui2_girls_dorm5_a",
+    "ui2_girls_dorm5_b"
+   ],
+   "seeds": [
+    8038,
+    8039
+   ]
+  },
+  {
+   "saves": [
+    "ui2_girls_dorm5x_a",
+    "ui2_girls_dorm5x_b"
+   ],
+   "seeds": [
+    10938,
+    10939
+   ]
+  }
+ ]
+}
