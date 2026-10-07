@@ -3,6 +3,7 @@ Turn green-screen character renders into game-ready sprites.
 
     python3 tools/keysprite.py ~/Downloads/render.png yuji_neutral   # one file
     python3 tools/keysprite.py --batch "~/Desktop/JJK Game images"   # a whole folder
+    python3 tools/keysprite.py --edge new <render.png> <character>_<expression>
 
 Keys out the chroma background, removes the green fringe that keying leaves in
 hair edges, crops to the figure, and places it on the 760x1400 canvas the game
@@ -17,6 +18,14 @@ render needs to announce itself.
 Characters are scaled against each other rather than each being stretched to
 fill the canvas — see HEIGHT_CM. Feet land on the same line whatever the height,
 so the sprites can be drawn at a common baseline.
+
+`--edge new|old` chooses how the outline is cut (docs/UI2_DESIGN.md D58).
+`old`, and no option at all, is `key_out` below: every sprite in the game was
+keyed by it, and with it any of them can be rebuilt exactly as it is. `new` is
+for a sprite that is not in the game yet: tools/keyedge.py reads the edge off
+the flat backdrop colour, and left about twenty-five times fewer visibly wrong
+pixels on pictures whose true cut-out is known (tools/test_keying.sh). The
+sprites already in the game are not keyed again.
 """
 import sys, os, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -336,6 +345,51 @@ def key_out(im, bg=None, cut=0.62, feather=0.30):
     return out
 
 
+EDGES = ("old", "new")
+
+
+def key_new(src_path):
+    """The render cut out by tools/keyedge.py, as an RGBA Img of the render's
+    own size: the same thing key_out returns, by the new edge.
+
+    keyedge needs numpy and scipy and this file is plain Python on purpose, so
+    it is run as a program of its own (it starts itself with ComfyUI's Python)
+    and its cut-out is read back from a file. key_out is not involved and is
+    not changed."""
+    import subprocess, tempfile
+    tool = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keyedge.py")
+    fd, tmp = tempfile.mkstemp(prefix="keyedge_", suffix=".png")
+    os.close(fd)
+    try:
+        done = subprocess.run([sys.executable, tool, os.path.expanduser(src_path), tmp])
+        if done.returncode:
+            raise SystemExit("the new edge could not cut %s (see the line above); nothing was written" % src_path)
+        return load(tmp)
+    finally:
+        os.remove(tmp)
+
+
+def pop_edge(argv):
+    """(edge, the other arguments) from a command line that may carry
+    `--edge new`, `--edge old`, `--edge=new` or `--edge=old`. No option is old."""
+    edge, rest, i = "old", [], 0
+    while i < len(argv):
+        a = argv[i]
+        if a == "--edge":
+            if i + 1 >= len(argv):
+                raise SystemExit("--edge needs new or old")
+            edge = argv[i + 1]; i += 2
+            continue
+        if a.startswith("--edge="):
+            edge = a[len("--edge="):]
+        else:
+            rest.append(a)
+        i += 1
+    if edge not in EDGES:
+        raise SystemExit("--edge is new or old, not %r" % edge)
+    return edge, rest
+
+
 def _grow(mask, w, h, r):
     """The mask grown by r px in every direction, as a new bytearray."""
     tmp = bytearray(w * h)
@@ -460,13 +514,16 @@ def qa(src, keyed, name):
     return problems
 
 
-def install(src_path, name, quiet=False):
-    """Key one render and write both the sprite and its side portrait."""
+def install(src_path, name, quiet=False, edge="old"):
+    """Key one render and write both the sprite and its side portrait.
+
+    edge "old" is key_out; "new" is tools/keyedge.py, for a sprite that is not
+    in the game yet (see the top of this file)."""
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     key = name.split("_")[0]
 
     im = load(os.path.expanduser(src_path))
-    keyed = key_out(im)
+    keyed = key_out(im) if edge == "old" else key_new(src_path)
     problems = qa(im, keyed, name)
     sprite = fit(keyed, HEIGHT_CM.get(key), CANVAS_W.get(key, OUT_W))
 
@@ -483,7 +540,7 @@ def install(src_path, name, quiet=False):
     return problems
 
 
-def batch(folder):
+def batch(folder, edge="old"):
     """Ingest every `<character>_<expression>.png` in a folder."""
     folder = os.path.expanduser(folder)
     names = sorted(f for f in os.listdir(folder) if f.lower().endswith(".png"))
@@ -497,7 +554,7 @@ def batch(folder):
             continue
         name = bits[0] + "_" + bits[1]
         print("%-28s -> %s" % (f, name))
-        problems = install(os.path.join(folder, f), name)
+        problems = install(os.path.join(folder, f), name, edge=edge)
         for pr in problems:
             print("   !! " + pr)
         (flagged if problems else done).append(name)
@@ -527,16 +584,16 @@ def side_portrait(sprite, size=360):
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
+    edge, args = pop_edge(sys.argv[1:])
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     if args and args[0] == "--batch":
         if len(args) < 2:
             print(__doc__); raise SystemExit(1)
-        batch(args[1])
+        batch(args[1], edge=edge)
     elif len(args) >= 2:
         print("reading", args[0])
-        for pr in install(args[0], args[1]):
+        for pr in install(args[0], args[1], edge=edge):
             print("   !! " + pr)
     else:
         print(__doc__); raise SystemExit(1)

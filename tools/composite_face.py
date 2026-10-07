@@ -27,6 +27,11 @@ seam shows.
 
 Writes composited/<character>_<expression>.png beside the base for the record,
 and installs the game sprite and side portrait through keysprite.
+
+`--edge new|old` is handed to keysprite for that install (new: a sprite that is
+not in the game yet; old, and no option: as every sprite in the game was
+keyed). It changes nothing else here: the head is still found, and the
+pictures lined up, on keysprite's own keying.
 """
 import sys, os
 
@@ -259,7 +264,7 @@ def place(base, raw, crop_rec):
     return ed
 
 
-def run(base_path, edited_path, char, expr, mask_path=None, install=True, crop_rec=None):
+def run(base_path, edited_path, char, expr, mask_path=None, install=True, crop_rec=None, edge="old"):
     base_path, edited_path = os.path.expanduser(base_path), os.path.expanduser(edited_path)
     folder = os.path.dirname(base_path)
     mask_path = mask_path or os.path.join(folder, "masks", char + "_face.png")
@@ -291,7 +296,7 @@ def run(base_path, edited_path, char, expr, mask_path=None, install=True, crop_r
     print("composite -> %s" % path)
     if install:
         from keysprite import install as key_install
-        for pr in key_install(path, "%s_%s" % (char, expr), quiet=True):
+        for pr in key_install(path, "%s_%s" % (char, expr), quiet=True, edge=edge):
             if "runs off the bottom" not in pr:
                 print("   !! " + pr)
         print("installed -> game/images/char/%s_%s.png (run tools/gen_sprite_defs.py)" % (char, expr))
@@ -299,10 +304,12 @@ def run(base_path, edited_path, char, expr, mask_path=None, install=True, crop_r
 
 
 if __name__ == "__main__":
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    if "--prepare" in sys.argv and len(args) >= 2:
+    from keysprite import pop_edge
+    edge, argv = pop_edge(sys.argv[1:])
+    args = [a for a in argv if not a.startswith("--")]
+    if "--prepare" in argv and len(args) >= 2:
         prepare(args[0], args[1])
     elif len(args) >= 4:
-        run(args[0], args[1], args[2], args[3], install="--no-install" not in sys.argv)
+        run(args[0], args[1], args[2], args[3], install="--no-install" not in argv, edge=edge)
     else:
         print(__doc__); raise SystemExit(1)

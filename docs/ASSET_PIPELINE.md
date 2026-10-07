@@ -98,6 +98,94 @@ Typical cost per character, besides the base run on the Comfy Cloud plan:
 $0.50–1.50 of repairs and $0.80 of expressions, at Nano Banana Pro's
 $0.16 a picture.
 
+## The cut-out's edge: new sprites only (2026-10-07)
+
+`docs/UI2_DESIGN.md` D58; the tests behind it are in `docs/UI_OVERHAUL_2.md` 3d.
+
+**What it is.** `tools/keyedge.py` cuts a figure off a flat backdrop by reading
+the edge off the backdrop's colour: a pixel on the outline is a mix of the
+backdrop and the figure colour just inside it, so how much of it is figure,
+and the figure's own colour, can be worked out exactly. Each rule has its
+reason beside it in the file. keysprite's own keying (`key_out`) is clean but
+leaves a hard edge. On sixteen pictures whose true cut-out is known:
+
+| visibly wrong pixels, four characters together | crisp outlines | soft outlines |
+|---|---|---|
+| keysprite's own keying (`--edge old`) | 15,600 | 35,700 |
+| the new edge (`--edge new`) | 530 to 620 | 6,400 to 7,400 |
+| a model's result as it comes (7 Oct) | 20,000 to 27,000 | |
+
+**When to use it.** For a sprite that is not in the game yet: Yuji's
+school-uniform set, the four people, the curses.
+
+    python3 tools/keysprite.py --edge new <render.png> <character>_<expression>
+    python3 tools/composite_face.py --edge new <base.png> <edited.png> <character> <expression>
+
+**When not to.** The sprites already in the game are not keyed again. With
+`--edge old`, and with no option at all, keysprite does exactly what it did
+before the option existed, byte for byte, so any sprite in the game can be
+rebuilt as it is. `fix_edges.py`, `fix_feet.py` and `facemask.py` still use
+the old keying: they find heads, faces and feet with it, and the first two
+install with it.
+
+**The render it needs.** A flat, saturated backdrop in a colour the character
+does not wear (pink for Maki, whose hair is green; green for Yuji, whose hair
+is pink). It refuses grey and white: with no hue to go by it measured about
+twelve times worse. No model's result is ever used as a cut-out.
+
+**Looking at one cut-out.**
+
+    python3 tools/keyedge.py <render.png> <cutout.png>        # the cut-out at the render's own size
+    python3 tools/keyedge.py --check <render.png> [<cutout.png>]
+    python3 tools/cutcheck.py <render.png> [<cutout.png>]
+
+- `--check` counts what a cut-out still carries of the backdrop: strongly
+  tinted pixels, faintly tinted ones, and pockets of backdrop left solid
+  (inside a lace loop, between fingers). It exits 1 on a strong pixel or a
+  pocket. Given a cut-out it judges that one, so it works on the old keying's
+  too. On Yuji's school-uniform render: the old keying 15 strong, 4,133 faint
+  and both lace loops left solid; the new edge 0, 53 and none.
+- `cutcheck.py` runs the anime-trained model (BiRefNet_toonout) directly as a
+  second pair of eyes and reports three things: a piece cut off, a gap left
+  filled, stray marks. It changes nothing. Each line is a place to look at,
+  not a verdict: on Yuji's render its two "pieces cut off" are the two lace
+  loops, which the model fills in and the edge rightly opens. About 20 seconds
+  and 13 GB a picture on this Mac; where the model's files are absent it says
+  so and exits 0. It never downloads anything. Do not run the model through
+  ComfyUI's node (sixteen minutes a picture) or at a square 2048 (26 GB).
+- Then read the outline at 4x on a light and a dark ground, as for any sprite.
+
+**What to expect, so it is not taken for a fault.**
+- A few hundred single pixels, each under a tenth solid, within four pixels of
+  a real render's outline. They show on no ground and are almost always gone
+  once the sprite is fitted to the 760x1400 canvas: Yuji's fitted sprite is one
+  piece, Maki's keeps a 2-pixel speck beside her. Count the pieces of the
+  fitted sprite before installing it.
+- Where a render traps a sliver of backdrop in a very thin gap (Maki's wrist
+  against her skirt) the new edge can leave a faint line of the backdrop's
+  colour that the old keying cleared: 62 faintly tinted pixels on her render
+  against 6. If a new sprite shows one, it is in `--check`'s faint count.
+- `--check` on a render whose backdrop the character does wear counts the
+  character's own colour as tint.
+
+**The tests.** `tools/test_keying.sh` (about two minutes; no Ren'Py, no
+window; `--model` also runs the model once). It builds the sixteen pictures
+from the sprites in the game (`tools/make_key_tests.py`), scores both edges
+against the true cut-outs and fails if the new edge passes a bound (800 on a
+crisp four, 9,000 on a soft four); checks that Yuji's pink hair and red hood
+on pink come through whole, and that breaking a rule on purpose is noticed;
+proves `--edge old` byte for byte on Maki's render on pink and Yuji's on
+green; and checks those two renders for tint and pockets. The two renders are
+outside the repository (`~/Desktop/JJK Game images/maki_base_00001_.png` and
+`redo_yuji/yuji_base.png`); a step that needs an absent one says SKIP. Run it
+after any change to `keyedge.py` or `keysprite.py`. The numbers move a little
+when a sprite in the game is redrawn, since the pictures are made from them.
+One of the three rules broken on purpose (any nearby colour taken as the
+figure's) is noticed only by the crisp bound, and by a thin margin: 879
+against 800. If the test says that break "stayed inside its bound" after a
+sprite is redrawn, the edge is not at fault; the test has lost its grip on
+that rule and needs a sharper measure, not a new number.
+
 ## The character pass: grounding and light (done 2026-09-23)
 
 Spotted by standing Yuji and Megumi in the first real background
