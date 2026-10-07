@@ -164,8 +164,28 @@ code is 0 only on a pass. A Ren'Py window opens briefly. Results, screenshots
 and logs go to `shots/<harness name>/` (or `SMOKE_SHOTS=<dir>`). Other
 settings: `SMOKE_TIMEOUT` (seconds, default 180), `SMOKE_SAVES=1` (read-only
 copies of the owner's saves), `SMOKE_SLOT` (for `load_slot.rpy`), `HEADLESS=1`,
-`RENPY_SDK`. Several harnesses can run at once, except the ones that need the
-pointer (below).
+`RENPY_SDK`. Several harnesses can run at once; the ones that need the pointer
+take their turn by themselves (the pointer lock, below).
+
+The second UI overhaul (U0a) added:
+- **A bare name.** `tools/smoke.sh p2_map` is `tools/smoke/p2_map.rpy`.
+- **The pointer lock.** A harness on the pointer list, or with a line
+  `## smoke-pointer`, takes a machine-wide lock
+  (`~/Library/Caches/jjk_smoke/pointer.lock`), waits for the other smoke runs
+  to finish, and refuses with one line (exit status 3, a `result.txt` that
+  says REFUSED) while a Ren'Py game that is not a smoke run is open; the
+  launcher's own window does not count. Every other harness waits while the
+  lock is held. It works across worktrees. `SMOKE_LOCK_WAIT` (seconds, default
+  3600) is how long a run waits; `SMOKE_POINTER=1` or `0` overrides the list.
+- **A file for the repository.** A harness line `## smoke-out: <file> ->
+  <path>` names a file the harness writes into its results folder and where
+  it belongs; after a pass the script copies it there, or to `--out <file>`.
+  `tools/smoke.sh u2_dump` rewrites `tools/art/game_layout.json`;
+  `tools/smoke.sh u2_dump --out shots/art/game_layout.json` writes a local
+  copy (what a worktree does: the committed file is only ever written in the
+  owner's folder).
+- **`SMOKE_SAVES_FROM=<dir>[:<dir>]`** with `SMOKE_SAVES=1`: the saves of
+  those folders instead of the owner's.
 
 Phase 2 added:
 - **`## smoke-with: <file>.rpy`**, a line in a harness: `tools/smoke/<file>.rpy`
@@ -244,13 +264,29 @@ for comparison; after checkpoint D `core_flow` is 26, `wp1_world` 156 and
 | `p2_saves.rpy` (187) | Saves are tested by saving: `tools/smoke.sh tools/smoke/p2_saves.rpy` (about 50 s). In one run inside the real loop it makes and reloads 22 saves (the armory, the board, a yard, the map, the computer, the journal, the person view, dialogue, blackjack, fishing at the bite, the night's menus, the market, the Gojo night, the rest day, the walk home's line) and checks each comes back on its own statement with the same state, without `load_recover`. It also rolls back through `stage_person`, through a market purchase, through the Gojo night's `new_day()` and onto the walk home's line. Not covered: a save inside a fight or on the grade card (the owner's phase-1 saves cover those). `p8_patterns/` holds the two patterns it was built from, with a README on the two load pitfalls. |
 | `p2_oldsave.rpy` (21 on slot 1-1, 14 on the others) | One of the owner's saves, played on: `SMOKE_SAVES=1 SMOKE_SLOT=1-1 tools/smoke.sh tools/smoke/p2_oldsave.rpy` (about 10 s). It loads the slot (1-1 was made before phase 2), checks it lands on its statement with phase 2's variables at their defaults, plays through the real loop to the next morning, then saves and loads on the place view, the map, the person view and the journal. |
 
-**Hover checks need the pointer.** `p2_contracts.rpy`, `p2_hud.rpy`,
-`p2_map.rpy`, `p2_paths.rpy` and `p2_view.rpy` have checks that hold the pointer over a button (or use
-`renpy.set_focus`). They fail while another Ren'Py window is open: run these
-five one at a time, with no other harness and no game running, and never in
-parallel from several worktrees on one desktop. When one fails on a hover or
-tooltip check, run it again alone a few minutes later before treating it as
-real.
+The second UI overhaul's harnesses (wave 0; each later package adds its own):
+
+| harness | what it checks |
+|---|---|
+| `u2_dump.rpy` (9) | Writes `tools/art/game_layout.json`, the one file the art tools read the game's numbers from: exits and hotspots with their default and applied points, slots, frames and lanes, areas and pins, each person's canvas, the light and grade tables, the schedule, and a hash of the `.rpy` files and `game/layout/*.json` it was read from. Not pointer-dependent. `--out <file>` writes a local copy. Its header lists every key. |
+| `u2_baseline.rpy` (51 on the untouched tree) | Compares a tree with the overhaul's baselines (`baseline_u2.json`, `baseline_story_names.json`, `baseline_night_names_u0a.json`, `baseline_sprite_tree.txt`, `baseline_shots/ui2/`), one check for each part. A tool, not a member of the standing set: from U0b on, parts differ on purpose. `U2_BASELINE_WRITE=1` writes them afresh into the results folder (U0a did, once). It parks the pointer, so it takes the pointer lock. |
+| `u2_mksaves.rpy` | How the nineteen made saves in `assets/ui2_saves/` were made (`U2_SAVES=campus`, `sunmall`, `warehouse`, `roster`, `prologue`). Kept as the record; the saves are not made again. |
+
+**Hover checks need the pointer.** `p2_contracts`, `p2_hud`, `p2_map`,
+`p2_journal`, `p2_view`, `p2_rooms`, `p2_paths`, `p2_cards`, `p2_saves` and
+`phase2_all` hold the pointer over a button, use `renpy.set_focus`, or drive
+the loop's screens. They fail while another Ren'Py window is open. Since the
+second UI overhaul `tools/smoke.sh` arranges this itself (the pointer lock,
+above): start them whenever you like, from any worktree, and each waits its
+turn. What the lock cannot do is close the owner's game: with a game open a
+pointer harness refuses, in one line. When one still fails on a hover or
+tooltip check, run it again by itself before treating it as real.
+
+**Since U0a these harnesses pin rules, not coordinates** (`docs/UI2_DESIGN.md`
+K3; the lines are listed in `docs/UI2_PINS.md`): a check on an exit, a slot, a
+pin or a polygon asks "inside the frame, clear of the lanes, apart from its
+neighbours", and a count of art-dependent rows is read from its table. A
+literal coordinate added to a harness now is a review finding.
 
 **The strict wave-0 evidence** (the place view and person view pixel-identical
 to the tree before phase 2) is `SMOKE_P0_STRICT=1` with
@@ -260,12 +296,18 @@ screenshots directly in `baseline_shots/` are 2666x1499, from before this
 Mac's window size changed; the per-size folder is kept rather than retaking
 them.
 
-### `load_all_saves.sh [slot ...]` — the save regression
+### `load_all_saves.sh [--from <folder> ...] [slot ...]` — the save regression
 
 Loads every save (or just the slots named) in `game/saves` and
 `~/Library/RenPy/JJKgamemd-1788928056`, each through `load_slot.rpy` with
 read-only copies, and writes `shots/load_report.txt` (`LOAD_SHOTS=<dir>` puts
-it elsewhere). Names with spaces are skipped. The report's header counts the
+it elsewhere). **`--from <folder>`** (any number of times) loads the saves of
+those folders instead. The second UI overhaul's save set is thirty saves:
+`--from ~/Desktop/JJK_backup_ui2_20261007/snapshot` (the owner's eleven as
+they stood on 7 Oct 2026, and the nineteen made on purpose), or, from the
+repository alone, `--from tools/smoke/assets/ui2_saves` (the nineteen). The
+table's last column gives each slot's dead return sites; `none` is wanted.
+`docs/load_report_ui2_wave0.txt` is the reference for the overhaul. Names with spaces are skipped. The report's header counts the
 slots by status, then a table gives each slot's status, where it was saved and
 where it landed, then each slot's summary (version, technique, grade, arc, day,
 roster size, merit, the story step, the objective, keepsakes and where it
@@ -338,6 +380,23 @@ Phase 2's rules (design 2.2, R1, R2 and R4):
   question mark in the game. An argument that is not one plain string is not
   read.
 
+The second UI overhaul's rules (`docs/UI2_DESIGN.md`; `docs/UI2_CONTRACTS.md`
+A4 and A6). The first three are part of `--all`:
+
+- `--layout-files` — every `game/layout/*.json`: a known file name, only that
+  kind's keys, each key's shape; `for_rev` only where `pictures.json` calls
+  the place's picture composed. `--layout-dir <dir>` reads another folder;
+- `--decency` (K16) — a word list over the text of `room_bath.rpy`,
+  `room_pool.rpy` and `room_tokyo.rpy`, and over every `AMBIENT`,
+  `SPOT_LINES` and `POSES` row for the Bathhouse, the Sauna, the Pool or a
+  friend's room;
+- `--baths-optional` (K17) — `"bath"`, `bath_soak`, `bath_sauna`, `bath_ok`
+  or `pool_swim` outside `room_bath.rpy` and `room_pool.rpy`, apart from the
+  four places the plan itself puts them;
+- `--later-notes` (not in `--all`) — "later build" and "combat update" in
+  text a player can read, less the lines `tools/later_ok.txt` allows. A
+  report (exit 0) until integration; `--strict` makes its lines findings.
+
 `smoke/baseline_check_content.txt` holds the known findings of the tree as it
 stood before phase 2; they are subtracted by file, rule and text (not line
 number), and `--no-baseline` lists them. `--write-baseline` rewrites both
@@ -346,3 +405,12 @@ never run it in a package.
 
 What the name rules do not read: a plain `import x`, `except ... as NAME`, a
 one-line `if x: a = 1`, and names set through `setattr` or `globals()`.
+
+### `review_pack.sh <package>` — what a reviewer looks at
+
+`tools/review_pack.sh U3` runs the harnesses of that package's row in the
+plan (and the standing set), draws a layout sheet for each of its places'
+layout files, and runs the content checks, all into `shots/review/U3/` with
+an `INDEX.txt`. `--list` says what it would do; `--no-harness` makes the
+sheets only. A harness a later package has yet to write is listed as "not
+written yet".

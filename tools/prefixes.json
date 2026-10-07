@@ -7,7 +7,7 @@
     "A file with no row here may gain no new top-level name.",
     "`exceptions` are the contract symbols of section 6 that live in a file whose prefix they do not carry, by name and file.",
     "`harness` is what every top-level name in tools/smoke/*.rpy starts with (--harness-names).",
-    "Frozen after wave 0."
+    "Frozen after wave 0 of phase 2; opened once by U0a of the second UI overhaul (docs/UI2_DESIGN.md 10.2, step 5) for the rows and exceptions marked UI2, then frozen again."
   ],
   "files": {
     "game/ui_icons.rpy": [
@@ -99,11 +99,13 @@
       "light_"
     ],
     "game/screens.rpy": [
-      "pref_"
+      "pref_",
+      "sys_"
     ],
     "game/gui.rpy": [
       "gui.grade_",
-      "gui.icon_"
+      "gui.icon_",
+      "gui.sys_"
     ],
     "game/explore.rpy": [
       "dev_",
@@ -111,11 +113,31 @@
     ],
     "game/bg_placeholders.rpy": [
       "bg area_",
-      "bg library"
+      "bg library",
+      "bg ",
+      "standin_"
     ],
     "game/room_paths.rpy": [
       "path_",
       "PATH_"
+    ],
+    "game/jjk_defs.rpy": [
+      "standin_"
+    ],
+    "game/art_manifest.rpy": [
+      "art_"
+    ],
+    "game/room_bath.rpy": [
+      "bath_"
+    ],
+    "game/room_pool.rpy": [
+      "pool_"
+    ],
+    "game/room_tokyo.rpy": [
+      "tky_"
+    ],
+    "game/ui_hints.rpy": [
+      "hint_"
     ]
   },
   "exceptions": [
@@ -148,6 +170,39 @@
       "name": "persistent.motion",
       "file": "game/view_stage.rpy",
       "why": "the Motion preference (D17; 6.3 puts its default here)"
+    },
+    {
+      "name": "district_harajuku",
+      "file": "game/room_tokyo.rpy",
+      "namespace": "label",
+      "why": "UI2: the frozen label sb_trip calls \"district_\" + key (2.3)"
+    },
+    {
+      "name": "district_shibuya",
+      "file": "game/room_tokyo.rpy",
+      "namespace": "label",
+      "why": "UI2: the frozen label sb_trip calls \"district_\" + key (2.3)"
+    },
+    {
+      "name": "act_swim_pool",
+      "file": "game/room_pool.rpy",
+      "namespace": "label",
+      "why": "UI2: the loop calls an activity by \"act_\" + id (2.3)"
+    },
+    {
+      "name": "SPOT_PLANNED",
+      "file": "game/sb_hotspots.rpy",
+      "why": "UI2: the planned hotspot ids live with the validator that reads them (3.2)"
+    },
+    {
+      "name": "persistent.show_names",
+      "file": "game/ui_icons.rpy",
+      "why": "UI2: the Show names setting (3.3), if its default sits beside icon_words_shown, which reads it"
+    },
+    {
+      "name": "persistent.show_names",
+      "file": "game/screens.rpy",
+      "why": "UI2: the Show names setting (3.3), if its default sits beside the Preferences row"
     }
   ],
   "harness": [

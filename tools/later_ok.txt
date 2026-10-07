@@ -1,0 +1,27 @@
+# tools/later_ok.txt -- the "later build" and "combat update" lines that stay
+# on screen on purpose (docs/UI2_DESIGN.md 8.3): they mark where the build
+# really stops, and saying nothing there would be worse.
+#
+# tools/check_content.py --later-notes reads player-visible text (string
+# literals; not comments or docstrings) in game/*.rpy for those two phrases.
+# Each row here allows ONE line: the file, a tab, a piece of that line's text,
+# a tab, why it stays. Every other line it finds is a note that waves 1 and 2
+# hide (U6 in ui_journal.rpy, U2 in ui_map.rpy, U8 in sb_items.rpy,
+# sb_market.rpy and sb_board.rpy). It is a report until integration; U10 runs
+# it with --strict, when a line not on this list, or a row here that matches
+# nothing, is a finding.
+
+# On screen, on purpose.
+game/sb_memories.rpy	MEMORY_LATER = "Written in a later build"	a memory tile for a scene that is not written
+game/sb_missions.rpy	return ("unwritten", "Written in a later build", 0)	a journal row for a mission that is not written (frozen file)
+game/sb_missions.rpy	The story continues in a later build.	the objective line once the written story ends (frozen file)
+game/sb_missions.rpy	Arc Two arrives in a later build.	the closing chapter card (frozen file)
+game/story_arc1.rpy	coming in a later build.	the closing chapter card (frozen file)
+game/sb_items.rpy	source="The infirmary (a later build).")	where one item will come from
+game/ui_journal.rpy	line = "Written in a later build" if character else "Coming in a later build"	a journal row for a scene that is not written
+game/ui_journal.rpy	text _("Written in a later build") color gui.gold size 15	the same, on a memory tile in the journal
+
+# Not on screen once U2 has hidden the fifteen Tokyo pins: the word of the
+# icon they are drawn with. The icon keeps its name (the sheets hold it), so
+# the row stays in the table.
+game/ui_icons.rpy	"place_later":	an icon's word; drawn only by the Tokyo pins U2 hides

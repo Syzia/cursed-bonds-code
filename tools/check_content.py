@@ -85,8 +85,31 @@ Rules (flags):
                       that is not one plain string (`icon(_s["icon"])`,
                       `icon("area_" + _k)`) is not read; icon_validate()
                       checks the data tables at start-up.
-  --all               Every rule. This is also the default when no rule flag
-                      is given.
+  --layout-files      (UI overhaul 2, 3.2) Every game/layout/*.json: a known
+                      file name (hot_<place>, view_<place>, pose_<place>,
+                      light_<place>, area_<key>, light, map_campus, faces,
+                      pictures), only that kind's keys, and each key's shape.
+                      `for_rev` in a hot_ or view_ file is a finding unless
+                      pictures.json calls that place's picture "composed".
+                      --layout-dir <dir> reads another folder.
+  --decency           (K16) A word list (towel, naked, undress, strip,
+                      swimsuit, bikini, skin, bare, changing) over the text of
+                      room_bath.rpy, room_pool.rpy and room_tokyo.rpy, and over
+                      every AMBIENT, SPOT_LINES and POSES row whose place is
+                      the Bathhouse, the Sauna, the Pool or a friend's room.
+  --baths-optional    (K17) `"bath"`, bath_soak, bath_sauna, bath_ok or
+                      pool_swim in a game file other than room_bath.rpy and
+                      room_pool.rpy. Allowed only: a row of ICONS or ICON_FOR
+                      in ui_icons.rpy, a row of SPOT_PLANNED in
+                      sb_hotspots.rpy, a register_hotspot row, and the tuple
+                      NIGHT_REST_BLOCKS in sb_night.rpy.
+  --later-notes       (8.3) "later build" and "combat update" in text a player
+                      can read (string literals; not comments or docstrings),
+                      less the rows of tools/later_ok.txt. NOT part of --all:
+                      it is a report (exit 0) until integration; with
+                      --strict its lines are findings.
+  --all               Every rule but --later-notes. This is also the default
+                      when no rule flag is given.
   --no-baseline       List the findings tools/smoke/baseline_check_content.txt
                       already records as well. By default a finding whose
                       file, rule and text are in that file is counted on
@@ -137,7 +160,14 @@ RULES = [
     "art-names",
     "action-returns",
     "icon-names",
+    "layout-files",
+    "decency",
+    "baths-optional",
 ]
+# Asked for by name only (UI overhaul 2, 8.3): a report until integration.
+REPORT_RULES = ["later-notes"]
+LATER_OK = os.path.join(ROOT, "tools", "later_ok.txt")
+LAYOUT = os.path.join(GAME, "layout")
 
 MC_ON_SCREEN = re.compile(r"^\s*(show|hide)\s+mc\b")
 TECHNIQUE = re.compile(r"filament|emberfall|aftersound|stillness", re.IGNORECASE)
@@ -816,6 +846,503 @@ def load_known(path=BASELINE_FINDINGS):
     return known
 
 
+
+# --- UI overhaul 2: layout files, decency, the baths, the "later" notes --------
+
+def table_lines(lines, names):
+    """The line numbers inside each top-level assignment `NAME = ( / [ / {`
+    whose NAME is in `names`, from its first line to the one that closes it:
+    {NAME: set of line numbers}."""
+    out = {}
+    cur, depth = None, 0
+    rx = re.compile(r"^\s*([A-Za-z_]\w*)\s*=\s*[\(\[\{]")
+    for ln in lines:
+        if cur is None:
+            m = rx.match(ln.bare)
+            if not m or m.group(1) not in names:
+                continue
+            cur, depth = m.group(1), 0
+        out.setdefault(cur, set()).add(ln.n)
+        for ch in ln.bare:
+            if ch in "([{":
+                depth += 1
+            elif ch in ")]}":
+                depth -= 1
+        if depth <= 0:
+            cur = None
+    return out
+
+
+def call_lines(lines, fn):
+    """The line numbers of every `fn( ... )` call, continuation lines included."""
+    out = set()
+    depth, inside = 0, False
+    rx = re.compile(r"(?<![\w.])" + re.escape(fn) + r"\s*\(")
+    for ln in lines:
+        if not inside:
+            m = rx.search(ln.bare)
+            if not m:
+                continue
+            inside, depth = True, 0
+            text = ln.bare[m.start():]
+        else:
+            text = ln.bare
+        out.add(ln.n)
+        for ch in text:
+            if ch in "([{":
+                depth += 1
+            elif ch in ")]}":
+                depth -= 1
+        if depth <= 0:
+            inside = False
+    return out
+
+
+TRIPLE = ('"' * 3, "'" * 3)
+
+
+def docstring_lines(lines):
+    """The line numbers that are (part of) a triple-quoted string."""
+    out = set()
+    inside = None
+    for ln in lines:
+        raw = ln.raw
+        i = 0
+        hit = inside is not None
+        while True:
+            if inside is None:
+                found = [c for c in (raw.find(q, i) for q in TRIPLE) if c >= 0]
+                if not found:
+                    break
+                c = min(found)
+                inside = raw[c:c + 3]
+                hit = True
+                i = c + 3
+            else:
+                c = raw.find(inside, i)
+                if c < 0:
+                    break
+                inside = None
+                i = c + 3
+        if hit:
+            out.add(ln.n)
+    return out
+
+
+def world_keys(cache):
+    """(place keys, area keys) read from game/sb_world.rpy's own text."""
+    src = os.path.join(GAME, "sb_world.rpy")
+    places, areas = set(), set()
+    if not os.path.isfile(src):
+        return places, areas
+    lines = read_lines(src, cache)
+    inside = table_lines(lines, {"LOCATIONS", "AREAS"})
+    for ln in lines:
+        if ln.n in inside.get("LOCATIONS", ()):
+            m = re.match(r"""\s*["'](\w+)["']\s*:\s*dict\(""", ln.code)
+            if m:
+                places.add(m.group(1))
+        if ln.n in inside.get("AREAS", ()):
+            m = re.search(r"""dict\(\s*key\s*=\s*["'](\w+)["']""", ln.code)
+            if m:
+                areas.add(m.group(1))
+    return places, areas
+
+
+def lf_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def lf_point(v):
+    return isinstance(v, list) and len(v) == 2 and all(lf_num(q) for q in v)
+
+
+def lf_poly(v):
+    return isinstance(v, list) and len(v) >= 3 and all(lf_point(q) for q in v)
+
+
+def lf_box(v):
+    return isinstance(v, list) and len(v) == 4 and all(lf_num(q) for q in v) and v[2] > 0 and v[3] > 0
+
+
+def lf_rev(v):
+    return isinstance(v, int) and not isinstance(v, bool) and v >= 1
+
+
+def lf_light_row(v):
+    return (isinstance(v, list) and len(v) in (4, 6) and isinstance(v[0], str)
+            and bool(re.match(r"^#[0-9a-fA-F]{6}$", v[0])) and all(lf_num(q) for q in v[1:]))
+
+
+LF_SIDES = ("top", "bottom", "left", "right")
+LF_FACES = ("neutral", "happy", "serious", "angry", "surprised", "sad")
+LF_HOURS = ("", "evening", "night")
+LF_PERIODS = ("Morning", "Noon", "Afternoon", "Evening", "Night")
+# The houses painted with spare doors (D50): their hot_ file may hold `spare`.
+LF_SPARE_HOUSES = ("boys_dorm", "girls_dorm", "teachers_dorm", "teachers_lounge")
+LF_PICTURE_KEYS = {"rev", "kind", "batch", "render", "record", "rev1_commit", "from_commit",
+                   "shift", "sharp", "of", "of_rev", "waiver"}
+LF_PICTURE_KINDS = ("composed", "inplace", "relight")
+LF_LIGHT_ROW = ("[\"#rrggbb\", brightness, saturation, shadow opacity], or the same with "
+                "[shadow lean, shadow stretch] after it")
+
+
+def lf_floor(v):
+    """A list of polygons, or {"on": [polygons], "off": [polygons]}."""
+    if isinstance(v, dict):
+        return (set(v) <= {"on", "off"} and "on" in v
+                and all(isinstance(v[k], list) and all(lf_poly(p) for p in v[k]) for k in v))
+    return isinstance(v, list) and bool(v) and all(lf_poly(p) for p in v)
+
+
+def lf_slots(v):
+    if not isinstance(v, dict):
+        return "slots must be {\"1\" to \"4\": [[x centre, y offset, zoom, far], ...]}"
+    for k, rows in v.items():
+        if k not in ("1", "2", "3", "4"):
+            return "slot key %r is not \"1\" to \"4\"" % k
+        if not isinstance(rows, list) or len(rows) != int(k):
+            return "slots[%r] must hold %s row%s" % (k, k, "" if k == "1" else "s")
+        for r in rows:
+            if not (isinstance(r, list) and len(r) in (3, 4) and all(lf_num(q) for q in r) and r[2] > 0):
+                return "slots[%r]: a row is three or four numbers with a zoom above 0" % k
+    return None
+
+
+def lf_hour_dict(v, test):
+    """{hour or period: value}, each value passing `test`."""
+    return isinstance(v, dict) and all(k in LF_HOURS + LF_PERIODS and test(x) for k, x in v.items())
+
+
+def layout_file_findings(folder, cache):
+    """--layout-files: [(path, text)] for every file under game/layout/."""
+    out = []
+    if not os.path.isdir(folder):
+        return out
+    places, areas = world_keys(cache)
+    data = {}
+    for f in sorted(os.listdir(folder)):
+        path = os.path.join(folder, f)
+        if f.startswith(".") or os.path.isdir(path):
+            continue
+        if not f.endswith(".json"):
+            out.append((path, "only .json files belong in game/layout/"))
+            continue
+        try:
+            with open(path, encoding="utf-8") as fh:
+                got = json.load(fh)
+        except Exception as e:
+            out.append((path, "it is not JSON (%s)" % " ".join(str(e).split())[:80]))
+            continue
+        if not isinstance(got, dict):
+            out.append((path, "it must hold one JSON object"))
+            continue
+        data[f[:-5]] = (path, got)
+
+    composed = set()
+    pics = data.get("pictures", (None, {}))[1].get("pictures")
+    if isinstance(pics, dict):
+        composed = set(k for k, r in pics.items() if isinstance(r, dict) and r.get("kind") == "composed")
+
+    def bad(path, text):
+        out.append((path, text))
+
+    def keys(path, got, allowed):
+        extra = sorted(set(got) - set(allowed))
+        if extra:
+            bad(path, "unknown key%s %s (allowed: %s)" % (
+                "" if len(extra) == 1 else "s", ", ".join(repr(k) for k in extra),
+                ", ".join(repr(k) for k in allowed)))
+
+    def place_of(path, stem, head):
+        key = stem[len(head):]
+        if places and key not in places:
+            bad(path, "%r is not a place (a key of LOCATIONS in game/sb_world.rpy)" % key)
+        return key
+
+    def for_rev(path, got, place, need_composed=True):
+        if "for_rev" not in got:
+            return
+        if not lf_rev(got["for_rev"]):
+            bad(path, "for_rev must be a whole number, 1 or more")
+        if need_composed and place not in composed:
+            bad(path, "for_rev is only for a composed picture or a new place: pictures.json does not "
+                      "call %r \"composed\" (a room redone in place carries none, 3.2)" % place)
+
+    for stem in sorted(data):
+        path, got = data[stem]
+        if stem.startswith("hot_"):
+            place = place_of(path, stem, "hot_")
+            keys(path, got, ("spots", "tips", "spare", "for_rev"))
+            v = got.get("spots", {})
+            if not (isinstance(v, dict) and all(isinstance(k, str) and lf_point(p) for k, p in v.items())):
+                bad(path, "spots must be {\"<hotspot or exit id>\": [x, y]}")
+            v = got.get("tips", {})
+            if not (isinstance(v, dict) and all(isinstance(k, str) and s in LF_SIDES for k, s in v.items())):
+                bad(path, "tips must be {\"<id>\": \"top\", \"bottom\", \"left\" or \"right\"}")
+            if "spare" in got:
+                if not (isinstance(got["spare"], list) and all(lf_point(p) for p in got["spare"])):
+                    bad(path, "spare must be a list of [x, y] points")
+                if place not in LF_SPARE_HOUSES:
+                    bad(path, "spare is for the houses with spare doors only (%s)" % ", ".join(LF_SPARE_HOUSES))
+            for_rev(path, got, place)
+        elif stem.startswith("view_"):
+            place = place_of(path, stem, "view_")
+            keys(path, got, ("slots", "poses", "floor", "scale", "slot_light", "cast", "talk", "for_rev"))
+            if "slots" in got:
+                why = lf_slots(got["slots"])
+                if why:
+                    bad(path, why)
+            v = got.get("poses", {})
+            if not (isinstance(v, dict) and all(isinstance(k, str) and lf_box(b) for k, b in v.items())):
+                bad(path, "poses must be {\"<who>\" or \"<who>__<variant>\": [x, y, w, h]}")
+            if "floor" in got and not lf_floor(got["floor"]):
+                bad(path, "floor must be a list of polygons, or {\"on\": [polygons], \"off\": [polygons]}; "
+                          "a polygon is three or more [x, y] points")
+            if "scale" in got and not (isinstance(got["scale"], list) and len(got["scale"]) == 3
+                                       and all(lf_num(q) for q in got["scale"]) and got["scale"][1] < got["scale"][2]):
+                bad(path, "scale must be [x, y top, y bottom] of one door or post")
+            if "slot_light" in got and not lf_hour_dict(got["slot_light"], lambda x: isinstance(x, (dict, list))):
+                bad(path, "slot_light must be keyed by hour (\"\", \"evening\", \"night\") or period")
+            if "cast" in got and not lf_hour_dict(got["cast"], lambda x: isinstance(x, list) and len(x) == 3
+                                                  and all(lf_num(q) for q in x)):
+                bad(path, "cast must be {hour or period: [direction, length, darkness]}")
+            if "talk" in got and not isinstance(got["talk"], bool):
+                bad(path, "talk must be true or false")
+            for_rev(path, got, place)
+        elif stem.startswith("pose_"):
+            place_of(path, stem, "pose_")
+            keys(path, got, ("poses",))
+            v = got.get("poses")
+            if not (isinstance(v, dict) and all(isinstance(k, str) and lf_box(b) for k, b in v.items())):
+                bad(path, "it must hold {\"poses\": {\"<who>\" or \"<who>__<variant>\": [x, y, w, h]}}")
+        elif stem.startswith("light_"):
+            place_of(path, stem, "light_")
+            keys(path, got, LF_HOURS)
+            for k in sorted(got):
+                if k in LF_HOURS and not lf_light_row(got[k]):
+                    bad(path, "the row %r must be %s" % (k, LF_LIGHT_ROW))
+        elif stem == "light":
+            for k in sorted(got):
+                if not lf_light_row(got[k]):
+                    bad(path, "the row %r must be %s" % (k, LF_LIGHT_ROW))
+        elif stem.startswith("area_"):
+            key = stem[len("area_"):]
+            if areas and key not in areas:
+                bad(path, "%r is not an area (a key of AREAS in game/sb_world.rpy)" % key)
+            keys(path, got, ("spots", "for_rev"))
+            v = got.get("spots", {})
+            if not (isinstance(v, dict) and all(isinstance(k, str) and lf_point(p) for k, p in v.items())):
+                bad(path, "spots must be {\"<place>\": [x, y]}")
+            elif places:
+                for k in sorted(v):
+                    if k not in places:
+                        bad(path, "spots: %r is not a place" % k)
+            for_rev(path, got, None, need_composed=False)
+        elif stem == "map_campus":
+            keys(path, got, ("anchors", "mountain_box"))
+            v = got.get("anchors", {})
+            if not (isinstance(v, dict) and all((not areas or k in areas) and lf_point(p) for k, p in v.items())):
+                bad(path, "anchors must be {\"<area key>\": [x, y]}")
+            if "mountain_box" in got:
+                b = got["mountain_box"]
+                if not (isinstance(b, list) and len(b) == 4 and all(lf_num(q) for q in b) and b[0] < b[2] and b[1] < b[3]):
+                    bad(path, "mountain_box must be [x0, y0, x1, y1]")
+        elif stem == "faces":
+            keys(path, got, ("blink_also",))
+            v = got.get("blink_also", {})
+            if not (isinstance(v, dict) and all(isinstance(k, str) and isinstance(fs, list)
+                                                and all(f in LF_FACES for f in fs) for k, fs in v.items())):
+                bad(path, "blink_also must be {\"<who>\": [faces]}, the faces among %s" % ", ".join(LF_FACES))
+        elif stem == "pictures":
+            keys(path, got, ("pictures",))
+            v = got.get("pictures")
+            if not isinstance(v, dict):
+                bad(path, "it must hold {\"pictures\": {\"<file stem>\": {...}}}")
+                continue
+            for k in sorted(v):
+                r = v[k]
+                if not isinstance(r, dict):
+                    bad(path, "pictures[%r] must be an object" % k)
+                    continue
+                extra = sorted(set(r) - LF_PICTURE_KEYS)
+                if extra:
+                    bad(path, "pictures[%r]: unknown key%s %s" % (k, "" if len(extra) == 1 else "s", ", ".join(extra)))
+                if "rev" in r and not lf_rev(r["rev"]):
+                    bad(path, "pictures[%r]: rev must be a whole number, 1 or more" % k)
+                if "kind" in r and r["kind"] not in LF_PICTURE_KINDS:
+                    bad(path, "pictures[%r]: kind must be one of %s" % (k, ", ".join(LF_PICTURE_KINDS)))
+                if ("of" in r) != ("of_rev" in r) or ("of" in r and not (isinstance(r["of"], str) and lf_rev(r["of_rev"]))):
+                    bad(path, "pictures[%r]: `of` (a file stem) and `of_rev` (its revision) go together" % k)
+                if "rev" not in r and "of" not in r:
+                    bad(path, "pictures[%r]: a row holds `rev`, or `of` and `of_rev`" % k)
+                for pair in ("shift", "sharp"):
+                    if pair in r and not lf_point(r[pair]):
+                        bad(path, "pictures[%r]: %s must be two numbers" % (k, pair))
+        else:
+            bad(path, "not a layout file name (hot_<place>, view_<place>, pose_<place>, light_<place>, "
+                      "area_<key>, light, map_campus, faces, pictures)")
+    return out
+
+
+DECENCY = re.compile(r"\b(towels?|naked|undress(?:ed|es|ing)?|strip(?:s|ped|ping)?|swimsuits?|bikinis?"
+                     r"|skin|bare|changing)\b", re.IGNORECASE)
+DECENCY_FILES = ("room_bath.rpy", "room_pool.rpy", "room_tokyo.rpy")
+DECENCY_PLACES = ("bathhouse", "sauna", "pool",
+                  "yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room")
+DECENCY_PAIR = re.compile(r"""\(\s*["'](\w+)["']\s*,\s*["'](\w+)["']""")
+DECENCY_KEY = re.compile(r"""^\s*["'](\w+)["']\s*:""")
+POSES_TOOL = os.path.join(ROOT, "tools", "make_pose_workflow.py")
+
+
+def decency_findings(files, cache):
+    """--decency: [(path, line number, text)]."""
+    out = []
+
+    def hits(path, ln, where):
+        for s in ln.strings:
+            m = DECENCY.search(s)
+            if m:
+                out.append((path, ln.n, "%r %s: %s" % (m.group(1).lower(), where, ln.raw.strip())))
+                return
+
+    game = [p for p in files if is_game(p)]
+    # hotspot id -> place, for the rows of SPOT_LINES: every ("id", "place"
+    # pair in a game file whose second name is one of the places.
+    spot_place = {}
+    for path in collect([GAME]):
+        for ln in read_lines(path, cache):
+            for m in DECENCY_PAIR.finditer(ln.code):
+                if m.group(2) in DECENCY_PLACES:
+                    spot_place[m.group(1)] = m.group(2)
+    for path in game:
+        lines = read_lines(path, cache)
+        docs = docstring_lines(lines)
+        if os.path.basename(path) in DECENCY_FILES:
+            for ln in lines:
+                if ln.n not in docs:
+                    hits(path, ln, "in %s" % os.path.basename(path))
+            continue
+        inside = table_lines(lines, {"AMBIENT", "SPOT_LINES"})
+        key = None
+        for ln in lines:
+            if ln.n in inside.get("AMBIENT", ()):
+                m = DECENCY_PAIR.search(ln.code)
+                if m and m.group(2) in DECENCY_PLACES:
+                    hits(path, ln, "in the AMBIENT row for %s" % m.group(2))
+            elif ln.n in inside.get("SPOT_LINES", ()):
+                m = DECENCY_KEY.match(ln.code)
+                if m:
+                    key = m.group(1)
+                if key in spot_place:
+                    hits(path, ln, "in the SPOT_LINES row %r (%s)" % (key, spot_place[key]))
+            else:
+                key = None
+    # The pose plan is a tool's table; it is read whenever the rule runs.
+    if os.path.isfile(POSES_TOOL):
+        lines = read_lines(POSES_TOOL, cache)
+        inside = table_lines(lines, {"POSES"}).get("POSES", set())
+        row, depth, place = [], 0, None
+        for ln in lines:
+            if ln.n not in inside:
+                continue
+            was = depth
+            for ch in ln.bare:
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+            if was == 0 and "{" not in ln.bare:
+                depth = 0
+                continue
+            row.append(ln)
+            m = re.search(r"""["']place["']\s*:\s*["'](\w+)["']""", ln.code)
+            if m:
+                place = m.group(1)
+            if depth <= 0:
+                if place in DECENCY_PLACES:
+                    for r in row:
+                        hits(POSES_TOOL, r, "in the POSES row for %s" % place)
+                row, depth, place = [], 0, None
+    return out
+
+
+BATHS = re.compile(r"bath_soak|bath_sauna|bath_ok|pool_swim")
+BATHS_OWN = ("room_bath.rpy", "room_pool.rpy")
+BATHS_TABLES = {"ui_icons.rpy": {"ICONS", "ICON_FOR"}, "sb_hotspots.rpy": {"SPOT_PLANNED"},
+                "sb_night.rpy": {"NIGHT_REST_BLOCKS"}}
+BATHS_ICON_FOR = re.compile(r"^\s*ICON_FOR\s*\[")
+
+
+def baths_findings(files, cache):
+    """--baths-optional: [(path, Line, what)]."""
+    out = []
+    for path in files:
+        base = os.path.basename(path)
+        if not is_game(path) or base in BATHS_OWN:
+            continue
+        lines = read_lines(path, cache)
+        ok = set(call_lines(lines, "register_hotspot"))
+        for nums in table_lines(lines, BATHS_TABLES.get(base, set())).values():
+            ok |= nums
+        for ln in lines:
+            what = None
+            if "bath" in ln.strings:
+                what = '"bath"'
+            else:
+                m = BATHS.search(ln.code)
+                if m:
+                    what = m.group(0)
+            if what is None or ln.n in ok:
+                continue
+            if base == "ui_icons.rpy" and BATHS_ICON_FOR.match(ln.code):
+                continue
+            out.append((path, ln, what))
+    return out
+
+
+LATER = re.compile(r"later build|combat update", re.IGNORECASE)
+
+
+def load_later_ok(path=LATER_OK):
+    """[(file, text fragment)]: the rows of tools/later_ok.txt, one line of
+    the game each."""
+    rows = []
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8") as f:
+            for raw in f:
+                if raw.strip() and not raw.startswith("#"):
+                    parts = raw.rstrip("\n").split("\t")
+                    if len(parts) >= 2:
+                        rows.append((parts[0].strip(), parts[1].strip()))
+    return rows
+
+
+def later_findings(files, cache):
+    """--later-notes: ([(path, Line)] not allowed, how many were allowed,
+    [rows of later_ok.txt that matched no line])."""
+    spare = load_later_ok()
+    out, allowed = [], 0
+    for path in files:
+        if not is_game(path):
+            continue
+        lines = read_lines(path, cache)
+        docs = docstring_lines(lines)
+        fk = file_key(path)
+        for ln in lines:
+            if ln.n in docs or not any(LATER.search(s) for s in ln.strings):
+                continue
+            for i, (f, frag) in enumerate(spare):
+                if f == fk and frag in ln.raw:
+                    del spare[i]
+                    allowed += 1
+                    break
+            else:
+                out.append((path, ln))
+    checked = set(file_key(p) for p in files)
+    return out, allowed, [r for r in spare if r[0] in checked]
+
+
 # --- driver --------------------------------------------------------------------
 
 def read_lines(path, cache):
@@ -1051,8 +1578,12 @@ def main(argv=None):
         description="Static content checks (PHASE1_DESIGN.md 8.4, PHASE2_DESIGN.md 2.2).",
         epilog="Prints file:line: rule: text; exits 1 on findings.")
     ap.add_argument("--all", action="store_true", help="every rule (the default)")
-    for r in RULES:
+    for r in RULES + REPORT_RULES:
         ap.add_argument("--" + r, dest=r.replace("-", "_"), action="store_true")
+    ap.add_argument("--strict", action="store_true",
+                    help="--later-notes: its lines are findings (integration)")
+    ap.add_argument("--layout-dir", default=LAYOUT,
+                    help="--layout-files: the folder to read (default game/layout)")
     ap.add_argument("--include-phase4", action="store_true",
                     help="also list the narration-person findings that section 5.4 "
                          "exempts (the PHASE4_YOU table)")
@@ -1068,7 +1599,8 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     chosen = [r for r in RULES if getattr(args, r.replace("-", "_"))]
-    if args.all or not chosen:
+    reports = [r for r in REPORT_RULES if getattr(args, r.replace("-", "_"))]
+    if args.all or not (chosen or reports):
         chosen = list(RULES)
 
     cache = {}
@@ -1132,8 +1664,31 @@ def main(argv=None):
 
     findings.extend(global_findings(files, chosen, cache))
 
+    if "layout-files" in chosen:
+        for path, text in layout_file_findings(args.layout_dir, cache):
+            findings.append((path, 1, "layout-files", text))
+    if "decency" in chosen:
+        for path, n, text in decency_findings(files, cache):
+            findings.append((path, n, "decency", text))
+    if "baths-optional" in chosen:
+        for path, ln, what in baths_findings(files, cache):
+            findings.append((path, ln.n, "baths-optional",
+                             "%s is read outside room_bath.rpy and room_pool.rpy (K17: nothing may need a "
+                             "bath): %s" % (what, ln.raw.strip())))
+    report_lines = []
+    if "later-notes" in reports:
+        later, later_ok_n, later_unused = later_findings(files, cache)
+        rows = [(path, ln.n, "later-notes", ln.raw.strip()) for path, ln in later]
+        rows += [(os.path.join(ROOT, f), 1, "later-notes",
+                  "tools/later_ok.txt allows a line holding %r, and no such line is left" % frag)
+                 for f, frag in later_unused]
+        (findings if args.strict else report_lines).extend(rows)
+        print("check_content: note: later-notes: %d line%s on tools/later_ok.txt; %d other%s%s" % (
+            later_ok_n, "" if later_ok_n == 1 else "s", len(rows), "" if len(rows) == 1 else "s",
+            "" if args.strict else " (a report: --strict makes them findings)"), file=sys.stderr)
+
     order = {os.path.realpath(p): i for i, p in enumerate(files)}
-    findings.sort(key=lambda f: (order.get(os.path.realpath(f[0]), len(order)), f[1], RULES.index(f[2])))
+    findings.sort(key=lambda f: (order.get(os.path.realpath(f[0]), len(order)), f[1], (RULES + REPORT_RULES).index(f[2])))
 
     def out_line(path, n, rule, text):
         if len(text) > 200:
@@ -1168,7 +1723,7 @@ def main(argv=None):
                 kept.append(f)
         findings = kept
 
-    for path, n, rule, text in findings:
+    for path, n, rule, text in report_lines + findings:
         print(out_line(path, n, rule, text))
 
     if exempt:
@@ -1186,13 +1741,13 @@ def main(argv=None):
     for f in findings:
         counts[f[2]] = counts.get(f[2], 0) + 1
     if findings:
-        summary = ", ".join("%s %d" % (r, counts[r]) for r in RULES if r in counts)
+        summary = ", ".join("%s %d" % (r, counts[r]) for r in RULES + REPORT_RULES if r in counts)
         print("check_content: %d finding%s in %d file%s (%s)" % (
             len(findings), "" if len(findings) == 1 else "s",
             len(files), "" if len(files) == 1 else "s", summary), file=sys.stderr)
         return 1
     print("check_content: clean (%s; %d file%s)" % (
-        ", ".join(chosen), len(files), "" if len(files) == 1 else "s"), file=sys.stderr)
+        ", ".join(chosen + reports), len(files), "" if len(files) == 1 else "s"), file=sys.stderr)
     return 0
 
 
