@@ -23,6 +23,9 @@
 ##   A  the manifest: art_rev, art_fresh, art_stem; the four gates (bg_variant,
 ##      view_fg_path, view_pose, light_for_place), each falling back as K7
 ##      says; WORLD_VARIANTS and its registration; rule_layout's for_rev
+##   B  the sidecar readers: the keys of view_<place>.json with today's
+##      behaviour as the default, faces.json before the tables, pose_ files,
+##      path_keep_clear and the validator's applied points, hover-label sides
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
@@ -364,5 +367,175 @@ label zz_smoke:
         zzc_back()
         check(rule_validate() == [] and zzc_owner(rule_validate, "sb_rules.rpy"),
               "A: the tree's own layout files carry no mismatched for_rev (lint's rule, rule_validate, is clean)", rule_validate())
+
+    ## --- B. the sidecar readers (6.1, 3.1, D57) ---------------------------------------
+    python:
+        zzc_hold()
+        ## -- the keys of view_<place>.json, each with today's behaviour as its default
+        for _zz_l in LOC_ORDER:
+            zzc_layout("view_" + _zz_l, None)
+        check(all(view_floor(l) is None and view_floor(l, off=True) is None for l in LOC_ORDER)
+              and all(view_talk(l) == (l in VIEW_FG_TALK) for l in LOC_ORDER) and view_talk("cafeteria") is True
+              and all(view_cast(l, p) is None for l in LOC_ORDER for p in PERIODS)
+              and all(view_slot_light(l, n, i, p) is None for l in LOC_ORDER for p in PERIODS for n in (1, 2, 3, 4) for i in range(n)),
+              "B: with no view_<place>.json no place has a floor, a cast shadow or a slot light, and the foreground stays up in dialogue only in VIEW_FG_TALK's rooms")
+        _zz_sq = [[100, 900], [1700, 900], [1700, 1060], [100, 1060]]
+        zzc_layout("view_classroom", dict(
+            floor=dict(on=[_zz_sq], off=[[[400, 950], [600, 950], [500, 1000]]]),
+            scale=[900, 300, 700],
+            slot_light={"": {"2": [None, ["#ffe8c0", 0.04]]}, "Evening": {"1": [["#ffd0a0", -0.02]]}, "night": {"1": [["#000000", 0.5]]}},
+            cast={"": [35, 1.4, 0.3], "Evening": [70, 2.2, 0.4]},
+            talk=True))
+        check(view_floor("classroom") == [[(100, 900), (1700, 900), (1700, 1060), (100, 1060)]]
+              and view_floor("classroom", off=True) == [[(400, 950), (600, 950), (500, 1000)]]
+              and zzc_sig(view_floor).startswith("(loc") and zzc_owner(view_floor, "view_stage.rpy"),
+              "B: view_floor(loc) is the sidecar's floor as a list of polygons; off=True the parts people may not stand on")
+        check(view_slot_light("classroom", 2, 1, "Noon") == ("#ffe8c0", 0.04) and view_slot_light("classroom", 2, 0, "Noon") is None
+              and view_slot_light("classroom", 1, 0, "Noon") is None and view_slot_light("classroom", 1, 0, "Evening") == ("#ffd0a0", -0.02)
+              and view_slot_light("classroom", 1, 0, "Night") is None and view_slot_light("classroom", 2, 5, "Noon") is None,
+              "B: view_slot_light reads the hour's row for that many people: the day row by day, a period's own row first, and no night row while the room has no night picture")
+        check(view_cast("classroom", "Noon") == (35, 1.4, 0.3) and view_cast("classroom", "Evening") == (70, 2.2, 0.4)
+              and view_cast("classroom", "Night") == (35, 1.4, 0.3) and view_talk("classroom") is True,
+              "B: view_cast and view_talk read their keys (an hour with no row of its own takes the row of the picture that shows)")
+        zzc_layout("view_cafeteria", dict(talk=False, floor=[_zz_sq], cast={"": [1, 2]}, slot_light={"": {"2": [["#fff", 0]]}}))
+        check(view_talk("cafeteria") is False and view_floor("cafeteria") is None and view_cast("cafeteria", "Noon") is None
+              and view_slot_light("cafeteria", 2, 0, "Noon") is None,
+              "B: talk=false takes the foreground down in dialogue in a room of VIEW_FG_TALK; a malformed floor, cast or slot light is not used")
+        zzc_layout("view_cafeteria", dict(talk="yes"))
+        check(view_talk("cafeteria") is True, "B: a talk that is not true or false leaves the table's answer")
+        zzc_back()
+
+        ## -- faces.json (D57): blink faces and boxes, the tables as the fallback
+        zzc_layout("faces", None)
+        check(all(view_face_box(w, k) == (builtins.tuple(VIEW_FACE[w][k]) if k in VIEW_FACE[w] else None)
+                  for w in VIEW_FACE for k in ("eyes", "mouth"))
+              and all(view_blink_also(w) == builtins.tuple(VIEW_BLINK_ALSO.get(w, ())) for w in CAST)
+              and view_blink_also("yuji") == ("happy", "sad", "serious", "surprised")
+              and view_face_box("gojo", "eyes") is None and view_face_box("zz", "eyes") is None,
+              "B: with no faces.json a person's boxes are VIEW_FACE's and their blink faces VIEW_BLINK_ALSO's")
+        zzc_layout("faces", dict(blink_also=dict(megumi=["happy", "angry"]),
+                                 eyes=dict(megumi=[300, 280, 120, 40], yuji=[330, 290, 92, 46]),
+                                 mouth=dict(yuji=[352, 348, 58, 32])))
+        check(view_blink_also("megumi") == ("happy", "angry") and view_blink_also("yuji") == ("happy", "sad", "serious", "surprised")
+              and view_face_box("megumi", "eyes") == (300, 280, 120, 40) and view_face_box("megumi", "mouth") == builtins.tuple(VIEW_FACE["megumi"]["mouth"])
+              and view_face_box("yuji", "eyes") == (330, 290, 92, 46) and view_face_box("yuji", "mouth") == (352, 348, 58, 32)
+              and view_face_box("maki", "eyes") == builtins.tuple(VIEW_FACE["maki"]["eyes"]),
+              "B: a test row in faces.json moves that person's boxes and names their blink faces; everyone without a row keeps the table's")
+        if renpy.loadable("images/char/fx/fx_megumi_blink.png"):
+            _zz_a = view_face_layers("images/char/megumi_angry.png")
+            _zz_n = view_face_layers("images/char/megumi_neutral.png")
+            check(len(_zz_a) == 1 and builtins.tuple(_zz_a[0].crop) == (300, 280, 120, 40) and (_zz_a[0].xpos, _zz_a[0].ypos) == (300, 280)
+                  and len(_zz_n) == 2 and builtins.tuple(_zz_n[1].crop) == builtins.tuple(VIEW_FACE["megumi"]["mouth"]),
+                  "B (overlay): the blink layer is cut at the test row's box, on a face the test row names; the mouth layer stays at the table's box",
+                  [(l.crop, l.xpos, l.ypos) for l in _zz_a + _zz_n])
+            zzc_layout("faces", None)
+            _zz_a = view_face_layers("images/char/megumi_angry.png")
+            _zz_n = view_face_layers("images/char/megumi_neutral.png")
+            check(_zz_a == [] and len(_zz_n) == 2 and builtins.tuple(_zz_n[0].crop) == builtins.tuple(VIEW_FACE["megumi"]["eyes"]),
+                  "B (overlay): with the row gone the blink is back on VIEW_BLINK_ALSO's faces and at VIEW_FACE's box")
+        else:
+            check(view_face_layers("images/char/megumi_angry.png") == [] or renpy.loadable("images/char/fx/fx_megumi_blink.png"),
+                  "B (bare): with no blink picture a sprite takes no layer, whatever faces.json says")
+        zzc_layout("faces", None)
+        check(view_validate() == [], "B: view_validate is clean on the tables", view_validate())
+        zzc_layout("faces", dict(blink_also=dict(megumi=["zz_face"], zz_who=["happy"], gojo=["happy"], maki="happy"),
+                                 eyes=dict(yuji=[330, 290, 92, 80], toge=[1, 2, 3]), mouth=dict(yuji=[352, 348, 58, 32])))
+        _zz_f = view_validate()
+        check(len(_zz_f) == 6 and any("zz_face" in f for f in _zz_f) and any("zz_who" in f for f in _zz_f)
+              and any("gojo" in f and "no eye box" in f for f in _zz_f) and any("maki" in f for f in _zz_f)
+              and any("toge" in f for f in _zz_f) and any("yuji" in f and "below" in f for f in _zz_f),
+              "B: lint refuses a faces.json row that names no sprite, nobody, a person with no eye box, a row of the wrong shape, and a mouth box that does not lie below the eyes", _zz_f)
+        zzc_back()
+        check(zzc_sig(view_face_layers) == "(path)" and zzc_owner(view_face_layers, "view_stage.rpy")
+              and zzc_sig(view_pose) == "(who, loc, per=None)" and zzc_sig(view_slots) == "(loc, n)",
+              "B: view_face_layers, view_pose and view_slots keep their signatures")
+
+        ## -- path_keep_clear and the validator's applied points (3.1)
+        def _zz_live(loc):
+            side = rule_layout("hot_" + loc).get("spots") or {}
+            out = builtins.set()
+            for h in HOT_SPOTS:
+                if h["place"] == loc and not h["id"].startswith("go_") and not h["id"].startswith("zz"):
+                    p = side.get(h["id"]) or (h["x"], h["y"])
+                    out.add((p[0], p[1]))
+            return out
+        check(zzc_sig(path_keep_clear) == "(loc)" and zzc_owner(path_keep_clear, "room_paths.rpy")
+              and all(isinstance(path_keep_clear(l), builtins.list) and all(isinstance(p, builtins.tuple) and len(p) == 2 for p in path_keep_clear(l))
+                      and builtins.set(path_keep_clear(l)) == _zz_live(l) and len(path_keep_clear(l)) == len(_zz_live(l)) for l in LOC_ORDER)
+              and path_keep_clear("zz") == [] and len(path_keep_clear("courtyard")) >= 1,
+              "B: path_keep_clear(loc) is a list of (x, y): the place's own hotspots where they sit now, each point once",
+              [(l, path_keep_clear(l)) for l in LOC_ORDER if path_keep_clear(l)])
+        check(path_validate() == [], "B: path_validate is clean", path_validate())
+        _zz_vend = path_keep_clear("courtyard")[0]
+        _zz_exit = [r for r in path_exits("courtyard") if r["to"] == "training_yard"][0]
+        _zz_side = rule_layout("hot_courtyard")
+        _zz_side.setdefault("spots", {})["go_courtyard__training_yard"] = [_zz_vend[0] + 60, _zz_vend[1] + 30]
+        zzc_layout("hot_courtyard", _zz_side)
+        _zz_f = path_validate()
+        check(len(_zz_f) == 1 and "go_courtyard__training_yard" in _zz_f[0] and "hotspot" in _zz_f[0],
+              "B: the spacing rule reads the exit's applied point: a sidecar that puts an exit 67 px from the vending machine fails, by name", _zz_f)
+        _zz_side["spots"]["go_courtyard__training_yard"] = [_zz_exit["x"], _zz_exit["y"]]
+        _zz_side["spots"]["spot_vend"] = [_zz_exit["x"] + 40, _zz_exit["y"] - 40]
+        zzc_layout("hot_courtyard", _zz_side)
+        _zz_f = path_validate()
+        check(path_keep_clear("courtyard") == [(_zz_exit["x"] + 40, _zz_exit["y"] - 40)]
+              and len(_zz_f) == 1 and "go_courtyard__training_yard" in _zz_f[0],
+              "B: and the hotspot's applied point: a sidecar that moves the machine onto an exit fails too", _zz_f)
+        ## the code's row may be wrong where the sidecar puts it right
+        zzc_back()
+        _zz_rows = builtins.list(PATH_EXITS["courtyard"])
+        _zz_side = rule_layout("hot_courtyard")
+        _zz_side.setdefault("spots", {})["go_courtyard__training_yard"] = [_zz_exit["x"], _zz_exit["y"]]
+        zzc_layout("hot_courtyard", _zz_side)
+        PATH_EXITS["courtyard"] = [(to, (_zz_vend[0] + 10 if to == "training_yard" else x), (_zz_vend[1] + 10 if to == "training_yard" else y))
+                                   for to, x, y in _zz_rows]
+        _zz_f = path_validate()
+        PATH_EXITS["courtyard"] = _zz_rows
+        check(_zz_f == [], "B: a code row that would break the rule is no finding while the sidecar's point is clear (a picture carries its numbers, K2)", _zz_f)
+        zzc_back()
+        check(path_validate() == [] and path_faces("boys_dorm") == [] and zzc_owner(path_faces, "room_paths.rpy") and zzc_sig(path_faces) == "(to)",
+              "B: (tables put back); path_faces(to) is a stub that returns nobody")
+
+        ## -- hover-label sides: the sidecar's tips, then the table, then where the tile is
+        fixture(here="courtyard", period="Noon")
+        zzc_layout("hot_courtyard", dict(spots=dict(rule_layout("hot_courtyard").get("spots") or {})))
+        check(icon_tip_side(("To the Main Gate", "hot_go_courtyard__gate")) == "top"
+              and icon_tip_side(("x", "hot_go_courtyard__training_yard")) == "left"
+              and icon_tip_side(("x", "hot_spot_vend")) == "left" and icon_tip_side(("x", "hud_map")) == "bottom"
+              and icon_tip_side(("x", "tag_yuji")) == "top" and icon_tip_side(("x", "zz_unknown")) == "left"
+              and icon_tip_side("plain") == "left" and icon_tip_hot("hot_go_courtyard__gate") is None,
+              "B: with no tips in the sidecar every label opens on the side it opened on before")
+        zzc_layout("hot_courtyard", dict(spots=dict(rule_layout("hot_courtyard").get("spots") or {}),
+                                         tips={"go_courtyard__gate": "right", "go_courtyard__training_yard": "bottom",
+                                               "spot_vend": "top", "go_courtyard__dorm_yard": "sideways"}))
+        check(icon_tip_side(("x", "hot_go_courtyard__gate")) == "right" and icon_tip_side(("x", "hot_go_courtyard__training_yard")) == "bottom"
+              and icon_tip_side(("x", "hot_spot_vend")) == "top" and icon_tip_side(("x", "hot_go_courtyard__dorm_yard")) == "top"
+              and icon_tip_side(("x", "hot_go_courtyard__school_yard")) == "top" and icon_tip_side(("x", "hud_map")) == "bottom",
+              "B: a hot_ sidecar's tips win over the table, for an exit and for a hotspot; a side that is no side is ignored")
+        fixture(here="school_yard")
+        check(icon_tip_side(("x", "hot_go_courtyard__gate")) == "top" and icon_tip_side(("x", "hot_go_courtyard__training_yard")) == "left",
+              "B: and they are the sides of the place I stand in: another place's sidecar says nothing here")
+        fixture(here="courtyard")
+        zzc_back()
+
+    scene expression graded_bg()
+    show screen sb_place
+    python:
+        zzc_hold()
+        zz_render(0.2)
+        _zz_tip = ("Vending machine\nA can of something cold.", "hot_spot_vend")
+        _zz_gate = ("To the Main Gate", "hot_go_courtyard__gate")
+        _zz_ids = [h["id"] for h in hot_spots_for("courtyard")]
+        check("spot_vend" in _zz_ids and "go_courtyard__gate" in _zz_ids
+              and icon_tip_where(_zz_tip, "left") == "left" and icon_tip_where(_zz_gate, "top") == "top"
+              and icon_tip_side(_zz_tip) == "left" and icon_tip_side(_zz_gate) == "top",
+              "B: on the place view, where the label fits, a tile with no side of its own opens where it did (left of a hotspot, above an exit)", _zz_ids)
+        _zz_side = rule_layout("hot_courtyard")
+        _zz_side.setdefault("spots", {}).update({"spot_vend": [200, 690], "go_courtyard__gate": [1300, 40]})
+        zzc_layout("hot_courtyard", _zz_side)
+        check(icon_tip_side(_zz_tip) == "right" and icon_tip_side(_zz_gate) == "bottom",
+              "B: and from where the tile is when it does not: right of a hotspot at the left edge, below an exit at the top")
+        zzc_back()
+    hide screen sb_place
 
     $ finish()

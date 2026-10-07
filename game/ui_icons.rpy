@@ -27,6 +27,7 @@
 ################################################################################
 
 init -3 python:
+    import builtins
 
     ICONS = {
         ## HUD (9)
@@ -293,6 +294,11 @@ init -3 python:
     ## are the pins with another pin above them, as the pins stand in
     ## game/layout/area_*.json today (tools/smoke/p2_map.rpy measures all six
     ## areas: re-check these rows if a pin moves).
+    ##
+    ## The second overhaul (U0c2; docs/UI2_DESIGN.md 3.1): this table is no
+    ## longer the only source for the place view's hotspots and exits. A
+    ## picture's sidecar may carry its own sides ("tips" in
+    ## game/layout/hot_<place>.json) and those win; see icon_tip_side.
     ICON_TIP_SIDES = (
         (("sample_auto_", "sample_always_", "sample_never_"), "top"),
         (("hud_map", "hud_journal", "hud_menu", "hud_chip_"), "bottom"),
@@ -316,6 +322,11 @@ init -3 python:
         (("jr_card_",), "top"),
     )
 
+    ## The table's general row for exits (and the computer): a key that only
+    ## this row fits has no side of its own, and is placed from where its
+    ## tile is (icon_tip_where).
+    ICON_TIP_GENERAL = ("hot_go_", "hot_computer")
+
     ## Keys whose label is centred on its button when it opens above or below.
     ICON_TIP_CENTRED = ("row_",)
 
@@ -326,17 +337,67 @@ init -3 python:
             return 0.5
         return 0.0
 
+    ICON_SIDES = ("top", "bottom", "left", "right")
+
+    def icon_tip_hot(key):
+        """U0c2 (ui_icons.rpy). The side the hover label of a hotspot or an
+        exit of the place I stand in opens on, from the picture's own
+        numbers, or None when they give none (docs/UI2_DESIGN.md 3.1, K2):
+        the key "tips" of game/layout/hot_<here>.json, {id: side}, the id
+        being the hotspot's or the exit's ("go_<from>__<to>"), without the
+        "hot_" its tooltip key starts with."""
+        if not key.startswith("hot_"):
+            return None
+        tips = rule_layout("hot_" + str(store.here)).get("tips")
+        side = tips.get(key[len("hot_"):]) if isinstance(tips, builtins.dict) else None
+        return side if side in ICON_SIDES else None
+
+    def icon_tip_where(tip, side):
+        """U0c2 (ui_icons.rpy). The side a hotspot's or an exit's label opens
+        on when neither its sidecar nor a row of its own in ICON_TIP_SIDES
+        says: `side` (the table's general answer: above an exit, left of
+        anything else), unless the label would leave the screen there, and
+        then the opposite side. Worked out from where the tile is: its
+        point as the place shows it now, and the label's own size."""
+        key = str(tip[1])
+        size = icon_tip_size(tip)
+        if size is None or renpy.get_screen("sb_place") is None:
+            return side
+        for h in hot_spots_for(store.here):
+            if "hot_" + str(h["id"]) == key:
+                x, y, w, hh = hot_rect(h["x"], h["y"])
+                if side == "top" and y - 12 - size[1] < 0:
+                    return "bottom"
+                if side == "left" and x - 12 - size[0] < 0:
+                    return "right"
+                break
+        return side
+
     def icon_tip_side(tip):
         """P8 (ui_icons.rpy). "left", "right", "top" or "bottom": the side of the
         hovered button hover_label opens on, from the tooltip's key (D11:
         the tooltip stays the tuple (text, key)). A tile of the icon column
         answers "left" here; icon_tip_place() then decides where its label
-        really goes."""
+        really goes.
+
+        The second overhaul (U0c2): for a hotspot or an exit of the place
+        view (a "hot_" key) the picture's sidecar is asked first (the key
+        "tips" of hot_<place>.json, icon_tip_hot); then this table, as
+        before; and a hotspot or exit with no row of its own here (only the
+        general "hot_go_" row, or none) is placed from where its tile is
+        (icon_tip_where)."""
         if isinstance(tip, tuple) and len(tip) > 1:
             key = str(tip[1])
+            side = icon_tip_hot(key)
+            if side:
+                return side
             for heads, side in ICON_TIP_SIDES:
                 if key.startswith(heads):
+                    if key.startswith("hot_") and heads == ICON_TIP_GENERAL:
+                        return icon_tip_where(tip, side)
                     return side
+            if key.startswith("hot_"):
+                return icon_tip_where(tip, "left")
         return "left"
 
     ## The hover label's own measures (screen hover_label draws with them and
