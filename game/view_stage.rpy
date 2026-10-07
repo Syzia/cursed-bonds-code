@@ -259,6 +259,16 @@ init -2 python:
 
     ## Poses (D36) -------------------------------------------------------------------
 
+    def view_pose_box(loc, key):
+        """U0c2. The box a pose's sidecar gives for `key` ("<who>" or
+        "<who>__<variant>"), whatever it holds, or None: pose_<loc>.json
+        first, then the key "poses" of view_<loc>.json."""
+        for name in ("pose_" + str(loc), "view_" + str(loc)):
+            boxes = rule_layout(name).get("poses")
+            if isinstance(boxes, builtins.dict) and key in boxes:
+                return boxes[key]
+        return None
+
     def view_pose(who, loc, per=None):
         """P5 (view_stage.rpy). dict(image, box) for a painted pose, or None
         for the standing sprite. `image` is the picture's path (a str, never
@@ -268,16 +278,21 @@ init -2 python:
         The picture is images/place/pose_<loc>__<who>__<variant>.png when
         the room has a painted picture for the hour (bg_variant), else
         pose_<loc>__<who>.png: a day pose is never laid on a night room. The
-        box comes from the sidecar game/layout/view_<loc>.json ("poses");
-        with no box the whole picture is used, and only when that person is
-        alone on the stage."""
+        box comes from game/layout/pose_<loc>.json ("poses"), the file the
+        pose installer writes (the second overhaul, K15), and then from the
+        older key "poses" of view_<loc>.json; with no box the whole picture
+        is used, and only when that person is alone on the stage. None as
+        well for a pose that is stale (art_fresh)."""
         v = bg_variant(loc, per or store.period)
         key = "%s__%s" % (who, v) if v else str(who)
         path = "images/place/pose_%s__%s.png" % (loc, key)
         if not renpy.loadable(path):
             return None
-        box = (rule_layout("view_" + str(loc)).get("poses") or {})
-        box = box.get(key) if isinstance(box, builtins.dict) else None
+        ## U0c2 (5.5, K7): a pose painted on a picture that has since been
+        ## replaced is not shown: the standing sprite.
+        if not art_fresh("pose_%s__%s" % (loc, key), art_stem(loc) + ("_" + v if v else "")):
+            return None
+        box = view_pose_box(loc, key)
         if (isinstance(box, (builtins.list, builtins.tuple)) and len(box) == 4
                 and all(isinstance(q, (int, float)) and not isinstance(q, bool) for q in box)
                 and box[2] > 0 and box[3] > 0):
@@ -527,10 +542,17 @@ init -2 python:
     def view_fg_path(loc, per=None):
         """P5. The foreground picture for a room at this hour, or None:
         images/fg/fg_<loc>_<variant>.png when the room has a painted picture
-        for the hour, else images/fg/fg_<loc>.png."""
+        for the hour, else images/fg/fg_<loc>.png. None as well for a cut
+        that is stale (art_fresh)."""
         v = bg_variant(loc, per or store.period)
         path = "images/fg/fg_%s_%s.png" % (loc, v) if v else "images/fg/fg_%s.png" % loc
-        return path if renpy.loadable(path) else None
+        if not renpy.loadable(path):
+            return None
+        ## U0c2 (5.5, K7): a cut made from a picture that has since been
+        ## replaced is not laid over the new one.
+        if not art_fresh("fg_%s%s" % (loc, "_" + v if v else ""), art_stem(loc) + ("_" + v if v else "")):
+            return None
+        return path
 
     def view_fg_image(path, loc, ink=0.0):
         """P5. The foreground picture, tinted like the room. A new

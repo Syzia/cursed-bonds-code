@@ -604,8 +604,93 @@ init -2 python:
         "girls_dorm":  {"Night": "night"},
     }
 
+    ## The second UI overhaul (U0c2; docs/UI2_DESIGN.md 3.2, 5.7): every NEW
+    ## hour picture this overhaul plans, as (place, period, attribute, file).
+    ## A row does nothing until its file exists: then, at init, its image is
+    ## defined ("bg <picture> <attribute>") and its TIME_VARIANT cell is set,
+    ## over a static cell too (My Room's Evening shows the night picture
+    ## today, and its own once that is painted). So nothing is defined for a
+    ## picture that does not exist, and a missing file can never break a
+    ## place at that hour. 56 rows: 37 on the 24 old places, 19 on the new
+    ## ones. Not here: the eight that exist today (TIME_VARIANT above; they
+    ## are remade under their own names), the three offices and the pool at
+    ## Night (locked), and the sauna (one picture at every hour).
+    def world_variant_rows():
+        """U0c2. The rows of WORLD_VARIANTS, built from the short table."""
+        both = ("Evening", "Night")
+        table = (
+            ("dorm", ("Evening",)),
+            ("cafeteria", both), ("girls_dorm", ("Evening",)),
+            ("classroom", both), ("infirmary", ("Evening",)),
+            ("courtyard", both), ("school_yard", both), ("library", both),
+            ("dorm_yard", both),
+            ("office", ("Evening",)), ("utahime_office", ("Evening",)), ("gojo_office", ("Evening",)),
+            ("training_yard", both), ("staff_yard", both), ("trailhead", both),
+            ("training", both), ("dojo", both),
+            ("storehouse", both),
+            ("forest", both), ("riverside", ("Night",)),
+            ("ridge", both), ("gate", both),
+            ("boys_dorm", both), ("yuji_room", both), ("megumi_room", both), ("senpai_room", both),
+            ("nobara_room", both), ("maki_room", both),
+            ("teachers_lounge", both), ("teachers_dorm", both),
+            ("pool", ("Evening",)),
+            ("bathhouse", both),
+        )
+        out = []
+        for loc, pers in table:
+            stem = LOCATIONS[loc]["bg"].split()[1]
+            for per in pers:
+                out.append((loc, per, per.lower(), "images/bg/%s_%s.png" % (stem, per.lower())))
+        return tuple(out)
+
+    WORLD_VARIANTS = world_variant_rows()
+
+    def world_variants_register():
+        """U0c2. For each row of WORLD_VARIANTS whose file is loadable and
+        fresh (art_fresh: made for the day picture that is installed), define
+        its image and set its TIME_VARIANT cell. Returns the rows it used.
+        Called once, at init."""
+        used = []
+        for loc, per, attr, path in WORLD_VARIANTS:
+            if loc not in LOCATIONS or not renpy.loadable(path):
+                continue
+            stem = LOCATIONS[loc]["bg"].split()[1]
+            if not art_fresh("%s_%s" % (stem, attr), stem):
+                continue
+            renpy.image("%s %s" % (LOCATIONS[loc]["bg"], attr), path)
+            TIME_VARIANT.setdefault(loc, {})[per] = attr
+            used.append((loc, per, attr, path))
+        return used
+
+    world_variants_register()
+
+    def world_fg_room(loc):
+        """U0c2. bool: the room has a foreground cut for its day picture
+        (images/fg/fg_<loc>.png), so an hour picture of it needs a cut of
+        its own before it can be shown (people stand behind the object)."""
+        return bool(renpy.loadable("images/fg/fg_%s.png" % loc))
+
     def bg_variant(loc, per):
-        return TIME_VARIANT.get(loc, {}).get(per)
+        """The attribute of the painted picture a place shows at this hour
+        ("evening", "night"), or None when the day picture is tinted.
+
+        The second overhaul (U0c2; 5.5, K7: nothing stale is shown): None as
+        well for an hour picture made for a day picture that has since been
+        replaced, and, in a room with a foreground, for an hour picture
+        whose own foreground cut does not exist yet or is stale. The game
+        then does what it does with no hour picture: the day picture,
+        tinted."""
+        v = TIME_VARIANT.get(loc, {}).get(per)
+        if not v or loc not in LOCATIONS:
+            return v
+        stem = LOCATIONS[loc]["bg"].split()[1]
+        hour = "%s_%s" % (stem, v)
+        if not art_fresh(hour, stem):
+            return None
+        if world_fg_room(loc):
+            if not renpy.loadable("images/fg/fg_%s_%s.png" % (loc, v)) or not art_fresh("fg_%s_%s" % (loc, v), hour):
+                return None
+        return v
 
     def bg_name(loc=None, per=None):
         loc = loc or store.here
@@ -1184,6 +1269,26 @@ init -2 python:
                     out.append("WORLD_AWAY[%s]: %r is not (weekday, period)" % (who, cell))
                 if district not in DISTRICTS:
                     out.append("WORLD_AWAY[%s]: unknown district %r" % (who, district))
+        ## U0c2: an hour's cell names a picture that exists (a cell is set
+        ## by hand above, or by a WORLD_VARIANTS row whose file has landed).
+        for loc, cells in sorted(TIME_VARIANT.items()):
+            if loc not in LOCATIONS:
+                out.append("TIME_VARIANT: %r is not a place" % (loc,))
+                continue
+            for per, attr in sorted(cells.items()):
+                name = tuple(LOCATIONS[loc]["bg"].split()) + (attr,)
+                if per not in PERIODS:
+                    out.append("TIME_VARIANT[%s]: %r is not a period" % (loc, per))
+                elif not renpy.has_image(name, exact=True):
+                    out.append("TIME_VARIANT[%s][%s]: no image %r" % (loc, per, " ".join(name)))
+        seen_rows = set()
+        for row in WORLD_VARIANTS:
+            loc, per, attr, path = row
+            if loc not in LOCATIONS or per not in PERIODS or attr not in ("evening", "night"):
+                out.append("WORLD_VARIANTS: %r must be (place, period, \"evening\" or \"night\", file)" % (row,))
+            if (loc, per) in seen_rows:
+                out.append("WORLD_VARIANTS: %s at %s is listed twice" % (loc, per))
+            seen_rows.add((loc, per))
         for k in DISTRICT_ORDER:
             if k not in DISTRICTS:
                 out.append("DISTRICT_ORDER lists unknown district %r" % k)
