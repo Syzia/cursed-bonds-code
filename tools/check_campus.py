@@ -269,6 +269,14 @@ def view_rows(rec, place):
     return rec.rows("exit", place=place) + rec.rows("seen", place=place)
 
 
+# D14 and 5.2: what the two pictures the record starts from fix, whatever else changes. The last is the one
+# fact a later picture is expected to meet first: the chosen Courtyard has the training hall on its right, so
+# the hall is on the Courtyard's side of the Training Yard. A waiver stands beside such a fact; nothing demotes it.
+START_FACTS = ("building.school_building", "building.gateway", "building.lodge_west", "building.lodge_east",
+               "building.pagoda", "building.training_hall", "building.archive_wing", "building.library",
+               "place.courtyard", "place.library", "exit.training_yard.training")
+
+
 def viewed_places(rec, dump=None):
     """The places that must have a view in the record: every yard of the game (a hub in the dump), every
     place the record composes from a camera on the ground plan, and every place that has an exit row."""
@@ -309,6 +317,35 @@ def check_record(rec, dump, out):
             out.add("FAIL", "the chosen picture %s names a place the record has no row for" % stem)
         elif rec.places[pic["place"]]["stem"] != stem:
             out.add("FAIL", "the chosen picture %s is not the picture of %s" % (stem, pic["place"]))
+
+    # what a chosen picture fixes stays fixed: a fact cannot slip back to a proposal, or out of the record
+    for fid in START_FACTS:
+        row = rec.by_id.get(fid)
+        if row is None:
+            out.add("FAIL", "the record has lost %s, a fact the first chosen pictures fix (D14)" % fid)
+        elif not rec.is_fixed(row):
+            out.add("FAIL", "%s is a fact the first chosen pictures fix (D14); the record has it as a proposal" % fid)
+    for stem, pic in sorted(pictures.items()):
+        p = rec.places.get(pic.get("place"))
+        if p is None:
+            continue
+        if not rec.is_fixed(p):
+            out.add("FAIL", "%s has a chosen picture, but its own row is a proposal" % p["name"])
+        if p.get("indoor"):
+            rows = rec.rows("interior", room=p["key"])
+            if str(pic.get("batch")) == "0" and not rows:
+                out.add("FAIL", "the chosen %s has no `interior` row saying what its picture shows" % p["name"])
+            for row in rows:
+                if not rec.is_fixed(row):
+                    out.add("FAIL", "%s says what the chosen %s shows, but is a proposal" % (row["id"], p["name"]))
+        elif p.get("how") == "composed" and str(pic.get("batch")) == "0":
+            # the pictures the record starts from: everything they show is fixed. A later yard fixes what its
+            # layout gives a point (fix_from_layout), so the rest of its view may still be a proposal.
+            view = rec.rows("exit", place=p["key"]) + rec.rows("seen", place=p["key"])
+            things = [rec.buildings.get(row.get("thing")) for row in view] + [rec.building_of(p["key"])]
+            for row in view + [b for b in things if b is not None]:
+                if not rec.is_fixed(row):
+                    out.add("FAIL", "%s is part of what the chosen %s shows, but is a proposal" % (row["id"], p["name"]))
 
     # every place a row, every building a look line
     for key, b in sorted(rec.buildings.items()):
@@ -989,6 +1026,7 @@ def selftest(dump_path=None, check_hash=True):
     record = load_record()
     dump = load_dump(dump_path, check_hash=check_hash)
     manifest = {"pictures": {}}
+    rec0 = Rec(record)
 
     out = run(record, dump, manifest)
     ok("the record passes in full, with nothing reported", out.count("FAIL") == 0 and out.count("REPORT") == 0,
@@ -1163,6 +1201,33 @@ def selftest(dump_path=None, check_hash=True):
         ok("with no layout dump, a fixed way left out fails outright",
            any("no point for the way to Training Hall" in t and "exit.training_yard.training" in t for t in o.texts("FAIL")),
            o.texts("FAIL"))
+
+    # a fact a chosen picture fixes cannot be moved to the proposals, or dropped
+    def demoted(rid):
+        r2 = copy.deepcopy(record)
+        row = [r for r in r2["fixed"] if r["id"] == rid][0]
+        r2["fixed"].remove(row)
+        row.pop("by", None)
+        r2["proposed"].append(row)
+        return run(r2, dump, manifest)
+
+    def dropped(rid):
+        r2 = copy.deepcopy(record)
+        r2["fixed"] = [r for r in r2["fixed"] if r["id"] != rid]
+        return run(r2, dump, manifest)
+
+    for rid in ("building.training_hall", "exit.training_yard.training", "exit.courtyard.dorm_yard",
+                "seen.courtyard.lodge_west", "building.archive_wing", "place.dorm_common", "interior.cafeteria"):
+        o = demoted(rid)
+        token = "%s has a chosen picture" % rec0.by_id[rid]["name"] if rid.startswith("place.") else rid
+        ok("%s moved to the proposals fails" % rid,
+           any(token in t and "proposal" in t for t in o.texts("FAIL")), o.texts("FAIL"))
+    o = dropped("interior.library")
+    ok("the chosen Library's interior row removed fails",
+       any("the chosen Library has no `interior` row" in t for t in o.texts("FAIL")), o.texts("FAIL"))
+    o = dropped("exit.training_yard.training")
+    ok("the Training Yard's fixed fact removed fails",
+       any("has lost exit.training_yard.training" in t for t in o.texts("FAIL")), o.texts("FAIL"))
 
     # a picture at revision 2 is held to the fixed facts; at revision 1 it waits
     d2 = copy.deepcopy(dump)

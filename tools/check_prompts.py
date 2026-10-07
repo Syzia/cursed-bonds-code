@@ -36,14 +36,18 @@ WHAT FAILS A PROMPT. In the lines it reads:
     the record's own line, word for word);
   - anything against the decency rule (K16: nobody is drawn or described in
     the bath, the sauna, the cold plunge, the pool water or a bed). Three
-    parts. Everywhere: naked, nude, undress, swimsuit, bikini, underwear,
-    towel, bather, bathing, swimmer, and "swimming" unless it is "swimming
-    pool". Everywhere: a person and water or a bed in one sentence ("a
-    student sleeps in the bed"). And where the tool knows the picture is of
-    the baths, the sauna, the pool or a bedroom (`--place`, or the place a
-    maker passes): any person at all, and strip, skin, bare, changing
-    ("changing hut" is the pool's own building and passes). A possessive is
-    not a person: "a student's bedroom" and "the boys' dormitory" pass.
+    parts. Everywhere: naked, nude, undress, topless, shirtless, swimsuit,
+    swimwear, bikini, underwear, towel, bather, bathing, soaking, wading,
+    splashing, swimmer, and "swimming" unless it is "swimming pool".
+    Everywhere: a person and water or a bed in one sentence ("a student
+    sleeps in the bed"). And where the tool knows the picture is of the
+    baths, the sauna, the pool or a bedroom (`--place`, or the place a maker
+    passes): any person at all, and strip, skin, bare, changing ("changing
+    hut" is the pool's own building and passes). A person is any of PEOPLE
+    below (student, teenager, kid, friend, guest, crowd and the like); the
+    list is by hand, so a new prompt about somebody is also read by a
+    person. A possessive is not a person: "a student's bedroom" and "the
+    boys' dormitory" pass; nor is "a couple of" or "the body of".
 
 Sprite base prompts (tools/chars/prompts/), which must name the house style,
 are outside it.
@@ -73,15 +77,23 @@ NAMES = ["jujutsu", "kaisen", "jjk", "cursed bonds", "gojo", "satoru", "yuji", "
 
 # The decency rule, K16. Whole words, any case; a trailing "s" is the same word.
 K16_ALWAYS = ["naked", "nude", "undress", "undressed", "undresses", "undressing", "swimsuit", "bikini", "underwear",
-              "towel", "bather", "bathing", "bathe", "bathes", "swimmer", "swim", "swam"]
+              "towel", "bather", "bathing", "bathe", "bathes", "swimmer", "swim", "swam",
+              "topless", "shirtless", "bare-chested", "bare chested", "unclothed", "half-dressed", "swimwear",
+              "lingerie", "soak", "soaking", "soaked", "wade", "wading", "splashing"]
 # Only in a picture of the baths, the sauna, the pool or a bedroom ("bare earth" is the Training Yard's own look).
 K16_THERE = ["strip", "stripped", "stripping", "skin", "bare", "changing", "sleeping", "asleep", "sleep", "slept"]
 K16_ALLOWED = ["changing hut"]           # the plan's own words for the pool's small building (5.2)
 PEOPLE = ["student", "pupil", "girl", "boy", "man", "woman", "men", "women", "child", "children", "teacher", "person",
-          "people", "figure", "someone", "somebody", "anyone", "anybody", "everyone", "bather", "swimmer"]
+          "people", "figure", "someone", "somebody", "anyone", "anybody", "everyone", "bather", "swimmer",
+          "teen", "teenager", "kid", "youth", "adult", "lady", "ladies", "guy", "classmate", "friend", "schoolgirl",
+          "schoolboy", "schoolchild", "schoolchildren", "resident", "guest", "visitor", "sorcerer", "crowd",
+          "occupant", "sleeper", "human"]
+# Words that are a person only in one sense: "a couple on the bench" and "two bodies", but not "a couple of
+# stones" or "the body of the hall".
+PEOPLE_UNLESS_OF = ["couple", "body", "bodies"]
 # With a person in the same sentence, these are K16 anywhere.
 K16_WHERE = ["bed", "futon", "sleep", "sleeping", "asleep", "slept", "bath", "bathtub", "tub", "water", "spring",
-             "pool", "plunge", "sauna", "onsen", "steam", "shower"]
+             "pool", "poolside", "plunge", "sauna", "onsen", "steam", "shower", "basin"]
 
 # Things that can be carried or pushed about: a count of these tells the
 # editor to add or take away until the number is right.
@@ -124,7 +136,8 @@ TOOL_SENTENCES = {
     "bottom_right": "At the bottom of the picture, on the right: {thing}.",
     "same_as": "the same building that stands {where} of picture {n}",
     "clear": "Put at least {count} of these doors or paths either high in the picture, above head height, or at "
-             "its far left or right end, clear of the open ground where people stand.",
+             "its far left end, or toward the right but not in the right ninth, clear of the open ground where "
+             "people stand.",
     "map_at": "On the map, {where}: {thing}.",
     "windows": "Through the windows: {thing}.",
     "add": "Do not remove or tidy away anything, and add nothing except this: {thing}.",
@@ -221,7 +234,9 @@ def k16_place(place):
 
 def _person_rx():
     # a possessive ("a student's bedroom", "the boys' dormitory") names a thing, not somebody in the picture
-    return re.compile(r"(?<![A-Za-z])(%s)(?:s)?(?![A-Za-z'\u2019])" % "|".join(sorted(PEOPLE, key=len, reverse=True)), re.I)
+    words = "|".join(sorted(PEOPLE, key=len, reverse=True))
+    return re.compile(r"(?<![A-Za-z])(?:(%s)(?:s)?|(%s)(?!\s+of(?![A-Za-z])))(?![A-Za-z'\u2019])"
+                      % (words, "|".join(PEOPLE_UNLESS_OF)), re.I)
 
 
 def k16_findings(text, place=None):
@@ -420,7 +435,24 @@ def selftest():
             ("a figure on the bench", "sauna"),
             ("bare shoulders above the cedar wall", "bathhouse"),
             ("a changing screen by the door", "pool"),
-            ("a futon with somebody asleep in it", None)):
+            ("a futon with somebody asleep in it", None),
+            ("a teenager soaking in the hot spring", None),
+            ("two friends soaking in the hot spring", None),
+            ("a schoolgirl in the pool", None),
+            ("kids playing in the pool", None),
+            ("a lady in the bath", None),
+            ("a teen on the bed", None),
+            ("a teenager relaxing on the bench", "bathhouse"),
+            ("a kid on the bench", "bathhouse"),
+            ("teenagers at the poolside", "pool"),
+            ("a youth resting", "sauna"),
+            ("a teen on the bed", "nobara_room"),
+            ("a topless statue", None),
+            ("a shirtless carving over the door", None),
+            ("a couple on the bench", "sauna"),
+            ("two bodies in the water", None),
+            ("a crowd by the pool", None),
+            ("guests wading at the edge", None)):
         ok('K16: "%s"%s fails' % (seed[-60:], " in %s" % place if place else ""), bool(k16(seed, place)))
     for fine, place in (("the way to the swimming pool", None),
                         ("bare earth, a row of striking posts", "training_yard"),
@@ -428,7 +460,10 @@ def selftest():
                         ("a student's bedroom in the boys' dormitory: a low bed along one wall", "yuji_room"),
                         ("a student's bedroom in the girls' dormitory, a bed, a tall dressing mirror", "nobara_room"),
                         ("the stone-edged hot spring outside, its water steaming and still", "bathhouse"),
-                        ("students' bags along the wall", "classroom")):
+                        ("students' bags along the wall", "classroom"),
+                        ("a couple of flat stones at the water's edge, the body of the hall behind", "bathhouse"),
+                        ("the friends' rooms open off the corridor", "boys_dorm"),
+                        ("the swimming pool, its water still", "pool")):
         ok('K16: "%s"%s passes' % (fine[:60], " in %s" % place if place else ""), not k16(fine, place))
     ok("K16: the bedrooms, the baths, the sauna and the pool are the places where nobody at all may be",
        all(k16_place(p) for p in ("bathhouse", "sauna", "pool", "yuji_room", "senpai_room"))
