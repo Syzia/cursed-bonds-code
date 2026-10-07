@@ -26,9 +26,15 @@
 ##   B  the sidecar readers: the keys of view_<place>.json with today's
 ##      behaviour as the default, faces.json before the tables, pose_ files,
 ##      path_keep_clear and the validator's applied points, hover-label sides
+##   C  "Show names" and the held N key; SPOT_PLANNED and the points lint
+##      accepts for it; the generic dim state; the faces at an exit's tile
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
+##
+## It sets the focus (renpy.set_focus) to read a hover label, so it takes the
+## pointer lock:
+## smoke-pointer
 
 init 999 python:
     import builtins
@@ -85,6 +91,82 @@ init 999 python:
     def zzc_layout(name, data):
         """Lay a sidecar over the real one (None: as if the file were absent)."""
         RULE_LAYOUT[name] = builtins.dict() if data is None else json.loads(json.dumps(data))
+
+    def zzc_tree(d):
+        """Every displayable under d, d included."""
+        out = builtins.list()
+        d.visit_all(out.append)
+        return out
+
+    def zzc_alpha(wid, screen="sb_place"):
+        """The product of the alpha of every Transform round a button of the
+        place view (1.0 for a plain one); None when it is not there."""
+        sc = renpy.get_screen(screen)
+        w = renpy.get_displayable(screen, wid) if sc is not None else None
+        if w is None:
+            return None
+        a = 1.0
+        for d in zzc_tree(sc):
+            if isinstance(d, renpy.display.transform.Transform) and d is not w and w in zzc_tree(d):
+                a *= float(d.alpha)
+        return round(a, 2)
+
+    def zzc_alone(loc, per="Noon"):
+        """Stand in a place with nobody in it (everyone pinned off campus
+        for the hour), the place view up."""
+        store.companion = None
+        store.here = loc
+        store.period = per
+        for w in ROSTER_ORDER:
+            pin(w, "-")
+        ARRIVAL[0] = None
+        renpy.scene()
+        renpy.show("bg", what=graded_bg())
+        renpy.hide_screen("sb_place")
+        renpy.show_screen("sb_place")
+        zz_render(0.3)
+
+    def zzc_key(down):
+        """Post the names key going down or coming up, as the keyboard would."""
+        import pygame_sdl2
+        k = getattr(pygame_sdl2, ICON_NAMES_KEY)
+        pygame_sdl2.event.post(pygame_sdl2.event.Event(pygame_sdl2.KEYDOWN if down else pygame_sdl2.KEYUP,
+                                                       key=k, mod=0, unicode=("n" if down else ""), scancode=0, repeat=False))
+        zz_render(0.3)
+
+    def zzc_keymap_uses(key):
+        """The config.keymap rows that bind a key ("K_n"), under any modifier."""
+        out = builtins.list()
+        letter = key[2:].lower()
+        for name, rows in config.keymap.items():
+            for b in (rows or ()):
+                last = builtins.str(b).split("_")
+                tail = "_".join(last[-2:]) if len(last) >= 2 and last[-2] == "K" else last[-1]
+                if tail.lower() in (key.lower(), letter):
+                    out.append((name, b))
+        return out
+
+    def zzc_face_count(who, screen="sb_place"):
+        """How many face chips of this person a shown screen draws (a screen
+        copies a Transform it is given, so they are told by what they crop)."""
+        chip = face_chip(who, HOT_FACE_SIZE)
+        sc = renpy.get_screen(screen)
+        n = 0
+        for d in (zzc_tree(sc) if sc is not None else ()):
+            if (isinstance(d, renpy.display.transform.Transform) and d.crop is not None and d.crop == chip.crop
+                    and builtins.str(getattr(d.child, "filename", "")).endswith("side/%s_neutral.png" % who)):
+                n += 1
+        return n
+
+    def zz_dim_test():
+        """A test dim function: the reason, or "" (ZZC_DIM[0])."""
+        return ZZC_DIM[0]
+
+    def zz_two_faces(to):
+        """A test path_faces: two people inside the Boys' Dormitory."""
+        return ["megumi", "yuji", "zz_nobody"] if to == "boys_dorm" else []
+
+    ZZC_DIM = builtins.list([""])
 
     def zzc_owner(fn, file):
         return callable(fn) and fn.__code__.co_filename.replace("\\", "/").endswith("game/" + file)
@@ -535,6 +617,172 @@ label zz_smoke:
         zzc_layout("hot_courtyard", _zz_side)
         check(icon_tip_side(_zz_tip) == "right" and icon_tip_side(_zz_gate) == "bottom",
               "B: and from where the tile is when it does not: right of a hotspot at the left edge, below an exit at the top")
+        zzc_back()
+    hide screen sb_place
+
+    ## --- C. names shown, the planned hotspots, the dim state, faces at an exit (7.3, D36) ---
+    python:
+        zzc_hold()
+        ## -- SPOT_PLANNED and the validator
+        _zz_reg = builtins.dict((h["id"], h) for h in HOT_SPOTS)
+        check(isinstance(SPOT_PLANNED, builtins.tuple) and len(SPOT_PLANNED) == len(builtins.set(r[0] for r in SPOT_PLANNED))
+              and all(isinstance(r, builtins.tuple) and len(r) == 3 and r[1] in LOCATIONS and r[2] in ("look", "act") for r in SPOT_PLANNED)
+              and all(builtins.sum(1 for r in SPOT_PLANNED if r[0] == "bed_" + w) == 1 for w in ("yuji", "megumi", "panda", "toge", "nobara", "maki"))
+              and all(("bed_" + w, world_home(w), "look") in SPOT_PLANNED for w in ("yuji", "megumi", "panda", "toge", "nobara", "maki"))
+              and all((i, l, "act") in SPOT_PLANNED for i, l in (("bath_soak", "bathhouse"), ("bath_sauna", "sauna"), ("pool_swim", "pool"))),
+              "C: SPOT_PLANNED is (id, place, kind) rows, each id once: %d rows (%d looks, %d actions), the six bed tags and the three bath and pool actions among them"
+              % (len(SPOT_PLANNED), len([r for r in SPOT_PLANNED if r[2] == "look"]), len([r for r in SPOT_PLANNED if r[2] == "act"])))
+        _zz_things = builtins.dict((l, [r[0] for r in SPOT_PLANNED if r[1] == l] + [h["id"] for h in HOT_SPOTS if h["place"] == l and not h["id"].startswith(("go_", "zz"))])
+                                   for l in LOC_ORDER)
+        check(all(_zz_things[l] for l in LOC_ORDER) and len(LOC_ORDER) == 35,
+              "C: with the planned ids every one of the 35 places has a thing in the picture besides its exits",
+              [l for l in LOC_ORDER if not _zz_things[l]])
+        check(all(r[0] not in _zz_reg or (_zz_reg[r[0]]["place"], _zz_reg[r[0]]["kind"]) == (r[1], r[2]) for r in SPOT_PLANNED)
+              and hot_planned("sauna") == {"bucket": ("bucket", "sauna", "look"), "bath_sauna": ("bath_sauna", "sauna", "act")}
+              and len(hot_planned()) == len(SPOT_PLANNED) and zzc_owner(hot_planned, "sb_hotspots.rpy"),
+              "C: a planned id that is registered already is registered in its planned place as its planned kind")
+        check(hot_validate() == [], "C: hot_validate is clean", hot_validate())
+        _zz_side = rule_layout("hot_courtyard")
+        _zz_side.setdefault("spots", {}).update({"gateway": [900, 520], "straw_posts": [420, 760]})
+        zzc_layout("hot_courtyard", _zz_side)
+        check(hot_validate() == [] and path_validate() == [],
+              "C: lint accepts a sidecar point for a hotspot that is planned for the place and not registered yet", hot_validate() + path_validate())
+        _zz_side["spots"].update({"zz_gone": [900, 700], "torii": [700, 700], "gateway": [1500, 200], "straw_posts": "here"})
+        zzc_layout("hot_courtyard", _zz_side)
+        _zz_f = hot_validate()
+        check(len(_zz_f) == 4 and any("zz_gone" in f and "planned" in f for f in _zz_f) and any("torii" in f and "planned" in f for f in _zz_f)
+              and any("gateway" in f and "lane" in f for f in _zz_f) and any("straw_posts" in f and "two numbers" in f for f in _zz_f),
+              "C: and refuses a stale point (an id that is neither registered nor planned for that place; one planned for another place), a planned point in a lane, and a point that is not two numbers", _zz_f)
+        zzc_back()
+
+        ## -- names shown: the setting, the held key, and what reads them
+        _zz_pers = persistent.show_names
+        check(persistent.show_names is False and ICON_NAMES_KEY == "K_n" and zzc_keymap_uses(ICON_NAMES_KEY) == []
+              and zzc_keymap_uses("K_TAB") != [] and ICON_NAMES_HELD[0] is False and icon_names_shown() is False,
+              "C: persistent.show_names defaults to False; the names key is N and is in no config.keymap list (Tab is: the skip toggle)",
+              zzc_keymap_uses(ICON_NAMES_KEY))
+        _zz_w0 = [icon_words_shown(n) for n in builtins.sorted(ICONS)]
+        persistent.show_names = True
+        check(icon_names_shown() is True and all(icon_words_shown(n) for n in ICONS) and icon_words_shown("map", "never") is False,
+              "C: with the setting on, names are shown and an icon button wears its word (not where a screen says never)")
+        persistent.show_names = False
+        _zz_kd = store.icon_names_key_down
+        store.icon_names_key_down = lambda: True
+        ICON_NAMES_HELD[0] = True
+        _zz_a = icon_names_shown()
+        store.icon_names_key_down = lambda: False
+        _zz_b = icon_names_shown()
+        check(_zz_a is True and _zz_b is False and ICON_NAMES_HELD[0] is False,
+              "C: while the key is held names are shown; a key that is found up again (a key-up the window never saw) stops it")
+        store.icon_names_key_down = _zz_kd
+        check([icon_words_shown(n) for n in builtins.sorted(ICONS)] == _zz_w0 and zzc_owner(icon_names_shown, "ui_icons.rpy")
+              and zzc_owner(icon_words_shown, "ui_icons.rpy") and zzc_sig(icon_words_shown) == "(name, words=None)",
+              "C: and with neither, every icon's word shows exactly when it did before")
+
+        ## -- on the place view
+        fixture(day=2)
+        zzc_alone("courtyard")
+        _zz_rows = hot_spots_for("courtyard")
+        _zz_names = [hot_name(h) for h in _zz_rows]
+        _zz_t0 = zz_texts("sb_place")
+        check(len(_zz_rows) >= 5 and "Vending machine" in _zz_names and "To the Main Gate" in _zz_names and "To the Training Yard" in _zz_names
+              and not any(n in _zz_t0 for n in _zz_names),
+              "C: with names not shown no exit or hotspot of the Courtyard wears its name", [n for n in _zz_names if n in _zz_t0])
+        _zz_btn0 = zz_buttons("sb_place")
+        _zz_r0 = [zz_rect("sb_place", "hot_" + h["id"]) for h in _zz_rows]
+        shot("names_off")
+        persistent.show_names = True
+        renpy.restart_interaction()
+        _zz_t1 = zz_texts("sb_place")
+        check(all(n in _zz_t1 for n in _zz_names) and zz_buttons("sb_place") == _zz_btn0
+              and [zz_rect("sb_place", "hot_" + h["id"]) for h in _zz_rows] == _zz_r0,
+              "C: with the setting on every exit wears where it leads and every hotspot its name; no button is added and none moves",
+              [n for n in _zz_names if n not in _zz_t1])
+        shot("names_on")
+        persistent.show_names = False
+        renpy.restart_interaction()
+        zz_render(0.2)
+        ## the key itself, through the screen's own key statements
+        store.icon_names_key_down = lambda: True
+        zzc_key(True)
+        _zz_held = ICON_NAMES_HELD[0]
+        _zz_t2 = zz_texts("sb_place")
+        zzc_key(False)
+        _zz_t3 = zz_texts("sb_place")
+        store.icon_names_key_down = _zz_kd
+        check(_zz_held is True and all(n in _zz_t2 for n in _zz_names) and ICON_NAMES_HELD[0] is False and not any(n in _zz_t3 for n in _zz_names),
+              "C: N going down on the place view shows the names, and coming up takes them away (the key statements in hot_layer)",
+              (_zz_held, ICON_NAMES_HELD[0]))
+        ## a locked exit wears where it leads, not its lock's sentence
+        fixture(period="Night")
+        _zz_lock = [h for h in hot_spots_for("staff_yard") if h["id"] == "go_staff_yard__office"]
+        check(len(_zz_lock) == 1 and path_locked("office") != "" and hot_name(_zz_lock[0]) == "To the Principal's Office"
+              and _zz_lock[0]["icon"] == "lock",
+              "C: a locked exit wears where it leads (its hover label still says why it is shut)")
+        fixture(period="Noon")
+
+        ## -- the dim state
+        check(HOT_DIM == {} and hot_dim_reason(_zz_rows[0]) == "" and HOT_DIM_ALPHA == 0.45 and zzc_owner(hot_set_dim, "sb_hotspots.rpy")
+              and zzc_sig(hot_set_dim) == "(hot_id, fn)",
+              "C: no hotspot names a dim function today; hot_set_dim(hot_id, fn) is how one does")
+        zzc_alone("courtyard")
+        _zz_w = renpy.get_displayable("sb_place", "hot_spot_vend")
+        _zz_act0 = _zz_w.action
+        _zz_tip0 = _zz_w.style.tooltip if hasattr(_zz_w.style, "tooltip") else None
+        check(zzc_alpha("hot_spot_vend") == 1.0 and isinstance(_zz_act0, Return) and _zz_act0.value == ("act", "spot_vend"),
+              "C: the vending machine, not dim: drawn at full strength, and pressing it returns its action", (zzc_alpha("hot_spot_vend"), _zz_act0))
+        _zz_rv = hot_set_dim("spot_vend", "zz_dim_test")
+        check(_zz_rv is None and hot_validate() == [], "C: hot_set_dim returns None, and lint accepts a dim function that exists", hot_validate())
+        renpy.restart_interaction()
+        zz_render(0.2)
+        check(zzc_alpha("hot_spot_vend") == 1.0 and renpy.get_displayable("sb_place", "hot_spot_vend").action.value == ("act", "spot_vend"),
+              "C: a dim function that returns \"\" changes nothing")
+        ZZC_DIM[0] = "Sold out till morning."
+        renpy.restart_interaction()
+        zz_render(0.2)
+        _zz_w = renpy.get_displayable("sb_place", "hot_spot_vend")
+        check(zzc_alpha("hot_spot_vend") == HOT_DIM_ALPHA and isinstance(_zz_w.action, NullAction)
+              and hot_dim_reason([h for h in hot_spots_for("courtyard") if h["id"] == "spot_vend"][0]) == "Sold out till morning."
+              and zz_rect("sb_place", "hot_spot_vend") is not None,
+              "C: while it returns a reason the hotspot is drawn at the dimmed strength and pressing it does nothing; it stays where it was",
+              (zzc_alpha("hot_spot_vend"), _zz_w.action))
+        renpy.set_focus("sb_place", "hot_spot_vend")
+        zz_render(0.3)
+        _zz_tip = GetTooltip()
+        check(_zz_tip == ("Sold out till morning.", "hot_spot_vend") and "Sold out till morning." in zz_texts("hover_label"),
+              "C: and its hover label says the reason, under the hotspot's own key", _zz_tip)
+        shot("dim")
+        renpy.set_focus(None, None)
+        ZZC_DIM[0] = ""
+        HOT_DIM["zz_nothing"] = "zz_no_fn"
+        _zz_f = hot_validate()
+        check(len(_zz_f) == 2 and all("zz_nothing" in f for f in _zz_f),
+              "C: lint refuses a dim function that does not exist, and one named for an unknown hotspot", _zz_f)
+        HOT_DIM.clear()
+        check(hot_validate() == [], "C: (the dim table put back)")
+
+        ## -- an exit's tile shows the faces path_faces returns
+        zzc_alone("dorm_yard")
+        _zz_exit = [h for h in hot_spots_for("dorm_yard") if h["id"] == "go_dorm_yard__boys_dorm"][0]
+        _zz_sc = renpy.get_screen("sb_place")
+        check(hot_faces(_zz_exit) == [] and path_faces("boys_dorm") == []
+              and zzc_face_count("megumi") == 0 and zzc_face_count("yuji") == 0,
+              "C: with the stub, no exit's tile shows a face")
+        _zz_pf = store.path_faces
+        store.path_faces = zz_two_faces
+        renpy.restart_interaction()
+        zz_render(0.3)
+        _zz_sc = renpy.get_screen("sb_place")
+        _zz_all = zzc_tree(_zz_sc)
+        check(hot_faces(_zz_exit) == ["megumi", "yuji"]
+              and zzc_face_count("megumi") == 1 and zzc_face_count("yuji") == 1 and zzc_face_count("panda") == 0
+              and hot_faces([h for h in hot_spots_for("dorm_yard") if h["id"] == "go_dorm_yard__dorm_common"][0]) == []
+              and zz_rect("sb_place", "hot_go_dorm_yard__boys_dorm") is not None,
+              "C: with path_faces patched to return two people, their two faces are drawn on that exit's tile and on no other (someone who is not in the cast is left out)")
+        shot("exit_faces")
+        store.path_faces = _zz_pf
+        persistent.show_names = _zz_pers
+        store.schedule_overrides = {}
         zzc_back()
     hide screen sb_place
 

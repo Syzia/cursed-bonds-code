@@ -47,6 +47,102 @@ init -5 python:
     HOT_LANES = ((1330, 92, 460, 330), (400, 96, 900, 74))
     HOT_KEYS = ("id", "x", "y", "icon", "label", "hint", "cost", "act", "lines", "standalone", "front")
 
+    ## The second UI overhaul (U0c2; docs/UI2_DESIGN.md 3.2, 7.3, 9.1). Every
+    ## hotspot this overhaul will register, as (id, place, kind), frozen here
+    ## so that a picture's layout can be made before the package that
+    ## registers its hotspots has run: hot_validate accepts a sidecar point
+    ## for a planned id. Wave 1 (U4; U5 for the baths and the pool) registers
+    ## exactly these ids, in these places, as these kinds. The fifteen that
+    ## exist today are not repeated (room_spots.rpy registers them); the card
+    ## table keeps its id and only its point moves.
+    ##   look   a thing to look at, with its own lines (the six bed tags
+    ##          among them: each shows only while its owner is asleep there)
+    ##   act    a place action that moves onto the object it belongs to, or a
+    ##          new place's own action; the id after the comment is the
+    ##          action it stands for
+    SPOT_PLANNED = (
+        ## Courtyard & Gate
+        ("torii",          "gate",            "look"),
+        ("gateway",        "courtyard",       "look"),
+        ("straw_posts",    "courtyard",       "act"),     # train ("Practice")
+        ## School Building
+        ("pine_bench",     "school_yard",     "look"),
+        ("notices",        "classroom",       "look"),
+        ("front_desk",     "classroom",       "act"),     # study
+        ("water_cooler",   "cafeteria",       "look"),
+        ("shoko_desk",     "infirmary",       "look"),
+        ("reading_table",  "library",         "look"),
+        ## Dormitories
+        ("pond",           "dorm_yard",       "look"),
+        ("lit_windows",    "dorm_yard",       "look"),    # at Night
+        ("wardrobe",       "dorm",            "look"),
+        ("window",         "dorm",            "look"),
+        ("desk",           "dorm",            "act"),     # study
+        ("fridge",         "dorm_common",     "look"),
+        ("game_boxes",     "dorm_common",     "look"),
+        ("manga_shelf",    "dorm_common",     "look"),
+        ("plant",          "girls_dorm",      "look"),
+        ("rooftop_view",   "rooftop",         "look"),
+        ("railing",        "rooftop",         "act"),     # think ("Sit a while")
+        ("shoe_rack",      "boys_dorm",       "look"),
+        ("notice_board",   "boys_dorm",       "look"),
+        ("film_shelf",     "yuji_room",       "look"),
+        ("bed_yuji",       "yuji_room",       "look"),
+        ("bookshelf",      "megumi_room",     "look"),
+        ("bed_megumi",     "megumi_room",     "look"),
+        ("shogi_board",    "senpai_room",     "look"),
+        ("bed_panda",      "senpai_room",     "look"),
+        ("bed_toge",       "senpai_room",     "look"),
+        ("mirror",         "nobara_room",     "look"),
+        ("bed_nobara",     "nobara_room",     "look"),
+        ("weapon_case",    "maki_room",       "look"),
+        ("bed_maki",       "maki_room",       "look"),
+        ## Staff Building
+        ("stone_lanterns", "staff_yard",      "look"),
+        ("dolls",          "office",          "look"),
+        ("photograph",     "office",          "look"),
+        ("binders",        "utahime_office",  "look"),
+        ("gojo_tv",        "gojo_office",     "look"),
+        ("sweets",         "gojo_office",     "look"),
+        ("rota",           "teachers_lounge", "look"),
+        ("kettle",         "teachers_lounge", "look"),
+        ("workbench",      "teachers_dorm",   "look"),
+        ("name_plates",    "teachers_dorm",   "look"),
+        ## Training Grounds
+        ("striking_posts", "training_yard",   "act"),     # train
+        ("mats",           "training",        "look"),
+        ("straw_bundles",  "training",        "act"),     # train
+        ("wall_shrine",    "dojo",            "look"),
+        ("weapon_rack",    "dojo",            "act"),     # train
+        ("big_chest",      "storehouse",      "look"),
+        ("lane_board",     "pool",            "look"),
+        ("pool_swim",      "pool",            "act"),     # pool_swim
+        ## The Mountain
+        ("standing_stone", "trailhead",       "look"),
+        ("stone_markers",  "forest",          "look"),
+        ("waterfall",      "riverside",       "look"),
+        ("deep_pool",      "riverside",       "act"),     # swim
+        ("milk_fridge",    "bathhouse",       "look"),
+        ("bath_soak",      "bathhouse",       "act"),     # bath_soak
+        ("bucket",         "sauna",           "look"),
+        ("bath_sauna",     "sauna",           "act"),     # bath_sauna
+    )
+
+    ## hotspot id -> the NAME of a store function that says why the hotspot
+    ## is spent for now (hot_set_dim). See hot_dim_reason.
+    HOT_DIM = builtins.dict()
+
+    ## How strongly a hotspot is drawn while it cannot be used: locked, shut
+    ## by the night, or spent (hot_dim_reason).
+    HOT_DIM_ALPHA = 0.45
+
+    ## The faces on an exit's tile (hot_faces), and the plate a hotspot wears
+    ## while names are shown: a plate is centred under its tile, and near the
+    ## left or the right edge of the screen it lines up with the tile's own
+    ## edge so that it stays on screen.
+    HOT_FACE_SIZE = 30
+    HOT_NAME_EDGE = 150
+
     def register_hotspot(id, place, x, y, icon, act=None, lines=None, label="", hint="", cost=0, when=None, standalone=False, front=False):
         """P0 (sb_hotspots.rpy), final. Returns None. Registers a hotspot
         at (x, y) in a room, drawn as `icon`.
@@ -72,6 +168,63 @@ init -5 python:
         if row["kind"] != "look" and act is None:
             row["act"] = id
         HOT_SPOTS.append(row)
+
+    def hot_set_dim(hot_id, fn):
+        """U0c2 (sb_hotspots.rpy), final. Returns None. Names the dim
+        function of a registered hotspot: `fn` is the NAME of a store
+        function that takes nothing and returns a string, the reason the
+        thing cannot be used for now ("The table's closed for today."), or
+        "" when it can. While it returns a reason, screen hot_layer draws
+        the hotspot at the dimmed strength, its hover label says the
+        reason, and pressing it does nothing (7.3: the generic "spent"
+        state; the card table's is U5's). It is separate from
+        register_hotspot because that function's signature is frozen."""
+        HOT_DIM[hot_id] = fn
+        return None
+
+    def hot_dim_reason(h):
+        """U0c2. Why a hotspot is spent for now, a str; "" when it is not
+        (it names no dim function, the function is missing, or it says
+        "")."""
+        name = HOT_DIM.get(h["id"])
+        if not name:
+            return ""
+        fn = getattr(store, name, None)
+        if not callable(fn):
+            return ""
+        why = fn()
+        return why if isinstance(why, str) else ""
+
+    def hot_planned(place=None):
+        """U0c2. {id: (id, place, kind)} for the rows of SPOT_PLANNED, all
+        of them or one place's."""
+        return builtins.dict((r[0], r) for r in SPOT_PLANNED if place is None or r[1] == place)
+
+    def hot_name(h):
+        """U0c2. What a hotspot wears while names are shown: where an exit
+        leads ("To the Dojo", locked or not), else the hotspot's own name."""
+        act = str(h["act"] or "")
+        if act.startswith("path_") and act[5:] in LOCATIONS:
+            return path_words(act[5:])
+        return h["label"] or icon_label(h["icon"])
+
+    def hot_name_align(x):
+        """U0c2. Where a name plate sits under a tile at x: 0.5 (centred),
+        or 0.0 / 1.0 near the left / right edge of the screen."""
+        if x < HOT_NAME_EDGE:
+            return 0.0
+        if x > config.screen_width - HOT_NAME_EDGE:
+            return 1.0
+        return 0.5
+
+    def hot_faces(h):
+        """U0c2. The people whose faces an exit's tile shows: path_faces(to)
+        for an exit, three at most; [] for anything else. (path_faces is a
+        stub in room_paths.rpy until U2 fills it: nobody.)"""
+        act = str(h["act"] or "")
+        if not act.startswith("path_"):
+            return []
+        return [w for w in path_faces(act[5:]) if w in CAST][:3]
 
     def register_minigame(id, name, icon, min_people=1):
         """P0 (sb_hotspots.rpy), final. Returns None. Registers a game for
@@ -277,15 +430,41 @@ init -5 python:
             for h in HOT_SPOTS:
                 if h["place"] == place:
                     rows.setdefault(h["id"], h)
+            ## U0c2: a point for a hotspot that is planned for this place
+            ## (SPOT_PLANNED) and not registered yet is accepted, and passes
+            ## the same tests; a point for an id that is neither is refused.
+            for hid, row in hot_planned(place).items():
+                rows.setdefault(hid, builtins.dict(id=hid, place=place, kind=row[2]))
             for hid in builtins.sorted(spots):
                 pt = spots[hid]
                 if hid not in rows:
-                    out.append("hotspot %r: no hotspot of that id is registered in %s%s" % (hid, place, where))
+                    out.append("hotspot %r: no hotspot of that id is registered in %s, or planned for it%s" % (hid, place, where))
                 elif not (isinstance(pt, (builtins.list, builtins.tuple)) and len(pt) == 2
                           and hot_number(pt[0]) and hot_number(pt[1])):
                     out.append("hotspot %r: its point is not two numbers%s" % (hid, where))
                 else:
                     out.extend(hot_point_findings(rows[hid], int(pt[0]), int(pt[1]), where))
+        ## U0c2: the planned ids, and the dim functions.
+        seen = builtins.set()
+        for row in SPOT_PLANNED:
+            if not (isinstance(row, builtins.tuple) and len(row) == 3 and row[2] in ("look", "act", "standalone")):
+                out.append("SPOT_PLANNED: %r must be (id, place, \"look\", \"act\" or \"standalone\")" % (row,))
+                continue
+            if row[0] in seen:
+                out.append("SPOT_PLANNED: %r is planned twice" % (row[0],))
+            seen.add(row[0])
+            if row[1] not in LOCATIONS:
+                out.append("SPOT_PLANNED %r: %r is not a place" % (row[0], row[1]))
+            for h in HOT_SPOTS:
+                if h["id"] == row[0] and (h["place"] != row[1] or h["kind"] != row[2]):
+                    out.append("hotspot %r is registered in %s as %s, and planned for %s as %s"
+                               % (row[0], h["place"], h["kind"], row[1], row[2]))
+        known = builtins.set(h["id"] for h in HOT_SPOTS) | seen
+        for hid, name in builtins.sorted(HOT_DIM.items()):
+            if hid not in known:
+                out.append("hot_set_dim: %r is not a registered or planned hotspot" % (hid,))
+            if not callable(getattr(store, str(name), None)):
+                out.append("hot_set_dim %r: %r is not a store function" % (hid, name))
         seen = builtins.set()
         for g in MG_GAMES:
             if g["id"] in seen:
@@ -303,21 +482,65 @@ init -5 python:
 ## The hotspots of a room (4.10). `front=False` is the layer behind the people,
 ## `front=True` the one in front. Each is a 72 px icon button on a pulsing
 ## ring; its returns go through the screen that uses it (sb_place).
+##
+## The second overhaul (U0c2; 7.3, D36):
+##   - a hotspot may be spent for now (hot_set_dim): it is drawn at the dimmed
+##     strength, as a locked exit and an action the night has closed are, its
+##     hover label says why, and pressing it does nothing;
+##   - while names are shown (icon_names_shown: the setting, or N held) an
+##     exit wears where it leads and a hotspot its name, on a small plate
+##     under its tile;
+##   - an exit's tile shows the faces of the people inside the house it leads
+##     to (hot_faces; nobody until U2 fills path_faces).
+## The names key is listened for here, once (the back layer), so it is live
+## exactly where there are names to show.
+style hot_name_frame:
+    background Frame("gui/panel_dark.png", 4, 4)
+    padding (8, 2, 8, 3)
+
+style hot_name_text is text:
+    font gui.body_medium_font
+    color gui.paper
+    size 16
+    text_align 0.5
+
 screen hot_layer(loc, front=False):
+    $ _hot_names = icon_names_shown()
+    if not front:
+        key ("keydown_" + ICON_NAMES_KEY) action Function(ui_do, icon_names_hold, True)
+        key ("keyup_" + ICON_NAMES_KEY) action Function(ui_do, icon_names_hold, False)
     for _hot_h in hot_spots_for(loc):
         if bool(_hot_h["front"]) == bool(front):
             $ _hot_ok = hot_open(_hot_h)
             $ _hot_lock = path_locked(_hot_h["act"][5:]) if str(_hot_h["act"]).startswith("path_") else ""
+            $ _hot_dim = hot_dim_reason(_hot_h)
+            $ _hot_faces = hot_faces(_hot_h)
             fixed:
                 pos (int(_hot_h["x"]) - 48, int(_hot_h["y"]) - 48)
                 xysize (96, 96)
                 add Transform(hot_ring(), xysize=(96, 96), function=hot_pulse_fn)
-                fixed at Transform(alpha=(1.0 if (_hot_ok and not _hot_lock) else 0.45)):
+                fixed at Transform(alpha=(1.0 if (_hot_ok and not _hot_lock and not _hot_dim) else HOT_DIM_ALPHA)):
                     pos (12, 12)
                     xysize (72, 72)
-                    use icon_btn(_hot_h["icon"], (NullAction() if _hot_lock else hot_action(_hot_h)),
-                                 tip=(hot_tip(_hot_h) if _hot_ok else "Too late. Bed."),
+                    use icon_btn(_hot_h["icon"], (NullAction() if (_hot_lock or _hot_dim) else hot_action(_hot_h)),
+                                 tip=(_hot_dim or (hot_tip(_hot_h) if _hot_ok else "Too late. Bed.")),
                                  size=60, w=72, wid="hot_" + _hot_h["id"], words="never")
+                if _hot_faces:
+                    hbox:
+                        xalign 1.0
+                        ypos -6
+                        spacing 2
+                        for _hot_w in _hot_faces:
+                            add face_chip(_hot_w, HOT_FACE_SIZE)
+                if _hot_names:
+                    frame:
+                        style "hot_name_frame"
+                        xalign hot_name_align(_hot_h["x"])
+                        ypos 90
+                        text hot_name(_hot_h):
+                            style "hot_name_text"
+                            substitute False
+                            xmaximum 220
 
 
 ## A look hotspot (4.10): says today's line and notes that it was used today.

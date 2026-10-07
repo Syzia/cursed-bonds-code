@@ -261,13 +261,57 @@ init -3 python:
                  color=(gui.gold if gold else gui.paper), xalign=0.5, yalign=0.5),
             xysize=(size, size))
 
+    ## "Show names" (the second overhaul, U0c2; docs/UI2_DESIGN.md D36, 9.1).
+    ## Names are shown while the setting is on (persistent.show_names; its
+    ## Preferences row is U6's) or while the names key is held on the place
+    ## view. The key is N, and it is in no config.keymap list: Tab, the
+    ## obvious choice, is Ren'Py's skip toggle. The key statements are in
+    ## screen hot_layer (sb_hotspots.rpy), so it is only listened for where
+    ## there are names to show. Whether it is down is init data in a
+    ## builtins list: never saved, and a rollback or a load leaves it alone.
+    ICON_NAMES_KEY = "K_n"
+    ICON_NAMES_HELD = builtins.list([False])
+
+    def icon_names_hold(on):
+        """U0c2 (ui_icons.rpy). Returns None. The names key went down (True)
+        or came up (False); the screens are drawn again."""
+        ICON_NAMES_HELD[0] = bool(on)
+        renpy.restart_interaction()
+        return None
+
+    def icon_names_key_down():
+        """U0c2. bool: the names key is down right now, asked of the
+        keyboard itself. (A key let go while the window was not listening
+        sends no key-up.) True when the keyboard cannot be asked."""
+        try:
+            import pygame_sdl2
+            return bool(pygame_sdl2.key.get_pressed()[getattr(pygame_sdl2, ICON_NAMES_KEY)])
+        except Exception:
+            return True
+
+    def icon_names_shown():
+        """U0c2 (ui_icons.rpy), final. bool: names are shown: the "Show
+        names" setting is on, or the names key (N) is being held. While it
+        is True an icon button wears its word, an exit where it leads and a
+        hotspot its name (screen hot_layer)."""
+        if persistent.show_names:
+            return True
+        if ICON_NAMES_HELD[0]:
+            if icon_names_key_down():
+                return True
+            ICON_NAMES_HELD[0] = False
+        return False
+
     def icon_words_shown(name, words=None):
         """P0 (ui_icons.rpy). bool: an icon button shows its word under the
         icon. words="always" forces it and any other value hides it; None
         follows gui.icon_words ("always", "never", or "auto": only while
-        the icon has no picture)."""
+        the icon has no picture), and, since the second overhaul, is True
+        while names are shown (icon_names_shown: the setting, or N held)."""
         if words is not None:
             return words == "always"
+        if icon_names_shown():
+            return True
         if gui.icon_words == "always":
             return True
         return gui.icon_words == "auto" and not icon_has_art(name)
@@ -511,6 +555,10 @@ init -3 python:
         if gui.icon_words not in ("auto", "always", "never"):
             out.append("gui.icon_words is %r (auto, always or never)" % (gui.icon_words,))
         return out
+
+## The "Show names" setting (3.3): persistent, never in a save. Its row in
+## Preferences arrives with the screens package (U6).
+default persistent.show_names = False
 
 init python:
 
