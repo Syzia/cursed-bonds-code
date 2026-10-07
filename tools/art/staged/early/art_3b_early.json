@@ -52,5 +52,16 @@
    "seed": 4821,
    "prompt_sha256": "6f74213f2b6ceeaa318144d250871582d4a2586a4cf89c945bc25bca087f4f1d"
   }
- ]
+ ],
+ "read_7_oct": {
+  "install_redo_dry": "all eight pass (the Common Room's four PASS; My Room's four LOOK, for the laptop).",
+  "by_eye": {
+   "dorm_common_evening": "both faithful; A is the calmer (B has a light shaft and an orange reflection on the television)",
+   "dorm_common_night": "B is faithful; A ADDS a blanket over the sofa's arm, which the check did not catch",
+   "your_room_evening": "B is the better: in A the right-hand window still shows daylight-green trees beside a sunset in the other window",
+   "your_room_night": "A is faithful; B ADDS a lit desk lamp and turns the walls blue, which the check did not catch"
+  },
+  "my_picks": "Common Room: evening A, night B. My Room: evening B, night A. The owner had not chosen yet when this was written.",
+  "for_the_installer": "two more blind spots, the other way round from art_3a_early.json: an addition on the sofa's arm and one on the desk beside the laptop's allow box both passed. The relight wording itself works: nothing moved in any of the eight, and no window shows daylight except My Room evening A's right-hand one."
+ }
 }
