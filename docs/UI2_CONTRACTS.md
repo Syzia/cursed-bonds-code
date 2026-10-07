@@ -1,19 +1,25 @@
 # The second UI overhaul: contracts
 
-**First draft, by U0a (wave 0, the safety net).** U0c2 makes it final and writes
-`tools/smoke/u2_contracts.rpy`, which asserts all of it. The plan is
-`docs/UI2_DESIGN.md`; its section 9 says what is frozen and in what order of
-cost. This file is where the exact shapes live.
+**Final for wave 0.** Started by U0a (the safety net); made final by U0c2, the
+scaffold's first sitting, for everything that sitting built.
+`tools/smoke/u2_contracts.rpy` asserts it and is in every package's standard
+set; it is not edited after wave 0. The plan is `docs/UI2_DESIGN.md`; its
+section 9 says what is frozen and in what order of cost. This file is where
+the exact shapes live.
 
-- Part A is frozen **now**: U0a built it, the tools enforce it, and the six
-  parallel packages of wave 1 rely on it.
-- Part B is the list U0c2 fills in (symbols, stubs, hooks). It is copied from the
-  plan so that nothing is forgotten; the plan's wording wins until U0c2 has
-  replaced each row with its example call and return shape.
+- Part A: what U0a built (the saves, the baselines, the dump, the sidecars'
+  shapes, the checks), with A3 and A4 brought up to date by U0c2.
+- Part B: the symbols, stubs, hooks and names the scaffold froze, each with
+  its example call and return shape.
+- **Not in this file yet:** clicking the picture itself (D60: `hot_shapes_for`,
+  `hot_tip_rect`, `HOT_SHAPE`, the `shapes` and `keep_tile` keys of a `hot_`
+  file, `hot_look.json`, the `hotshape_<id>` widgets). That is U0c2's second
+  sitting, which adds its own section here and its own checks to
+  `u2_contracts.rpy`. Nothing below changes when it lands.
 
 ---
 
-## Part A. Frozen by U0a
+## Part A. Frozen by U0a (A3 and A4 as U0c2 left them)
 
 ### A1. The save set
 
@@ -119,8 +125,21 @@ tools with `--layout-dump`. Two runs on one tree give the same bytes.
 
 A tool that finds the hash out of date refuses with exactly: `the game's
 layout has changed since the dump was written: run tools/smoke.sh u2_dump`.
-New keys may be added by U0c (the door, asleep and away tables are not in it
-yet); none of the keys above changes shape.
+**Added by U0c2** (new keys; none of the keys above changed shape):
+
+| key | shape |
+|---|---|
+| `spot_planned` | now filled: the 59 rows of `SPOT_PLANNED`, `[[id, place, kind]]` |
+| `variants_planned` | `WORLD_VARIANTS`: `[[place, period, attribute, file]]`, 56 rows |
+| `keep_clear` | `{place: [[x, y]]}`, what `path_keep_clear(place)` answers (`frames.keep_clear` is the old table, kept) |
+| `tips` | `{place: {id: side}}`, the hover-label sides a `hot_` sidecar gives |
+| `faces` | `{who: {eyes, mouth, blink_also}}` as the game reads them (`faces.json` first, then the tables) |
+| `world` | `inside`, `pinless`, `homes`, `asleep`, `away` (`{who: {"<weekday> <period>": district}}`), `door_bond` and `door_owners` by place |
+| `standins` | `copies {lender: file}`, `names {image key: lender}`, `if_file {image name: file}`, `people` |
+| `names_key` | `"K_n"` |
+
+**The committed file is regenerated in the owner's folder after U0c2 merges**
+(`tools/smoke.sh u2_dump`), never from a worktree.
 
 ### A4. Sidecars (`game/layout/`), as `check_content.py --layout-files` enforces them
 
@@ -129,33 +148,40 @@ lists, not tuples. An unknown file name or an unknown key is a finding.
 
 | file | keys |
 |---|---|
-| `hot_<place>.json` | `spots {id: [x, y]}` (a hotspot's id, or an exit's `go_<from>__<to>`); `tips {id: "top" / "bottom" / "left" / "right"}`; `spare [[x, y], ...]` (the houses with spare doors only: `boys_dorm`, `girls_dorm`, `teachers_dorm`, `teachers_lounge`); `for_rev` |
-| `view_<place>.json` | `slots {"1".."4": [[x centre, y offset, zoom(, far)], ...]}` (key `n` holds `n` rows); `poses {key: [x, y, w, h]}`; `floor` (a list of polygons, or `{"on": [polygons], "off": [polygons]}`; a polygon is three or more `[x, y]`); `scale [x, y top, y bottom]`; `slot_light {hour: ...}`; `cast {hour: [direction, length, darkness]}`; `talk` (true or false); `for_rev` |
-| `pose_<place>.json` | `poses {key: [x, y, w, h]}` (required) |
-| `light_<place>.json` | `""`, `"evening"`, `"night"`: each a row `["#rrggbb", brightness, saturation, shadow opacity]`, or the same with `[shadow lean, shadow stretch]` after it |
-| `light.json` | `{image name: row}` |
+| `hot_<place>.json` | `spots {id: [x, y]}` (a hotspot's id, registered or planned in `SPOT_PLANNED`, or an exit's `go_<from>__<to>`); `tips {id: "top" / "bottom" / "left" / "right"}` (the same ids; read by `icon_tip_side`); `spare [[x, y], ...]` (the three houses painted with spare doors only: `boys_dorm`, `girls_dorm`, `teachers_dorm`; read by the tools, never by the game); `for_rev` |
+| `view_<place>.json` | `slots {"1".."4": [[x centre, y offset, zoom(, far)], ...]}` (key `n` holds `n` rows); `poses {key: [x, y, w, h]}` (the older home of pose boxes: still read, after `pose_<place>.json`); `floor {"on": [polygons], "off": [polygons]}` (`on`: one or more polygons people may stand on, required when the key is there; `off`: optional; a polygon is three or more `[x, y]`); `scale [x, y top, y bottom]`; `slot_light {hour: {"1".."4": [one entry a slot: null or ["#rrggbb", brightness]]}}` (key `n` holds `n` entries, in the slots' order); `cast {hour: [direction, length, darkness]}`; `talk` (true or false); `for_rev` |
+| `pose_<place>.json` | `poses {key: [x, y, w, h]}` (required). `<place>` is a place key or a Tokyo district of `WORLD_AWAY` (`harajuku`, `shibuya`). A key is `<who>`, `<who>__<variant>` or `<who>__<variant>__asleep` |
+| `light_<place>.json` | `""`, `"evening"`, `"night"`: each a row `["#rrggbb", brightness, saturation, shadow opacity]`, or the same with `[shadow lean in px, shadow stretch]` after it (the installer writes six); `note` (a string, the installer's own words; not read by the game) |
+| `light.json` | `{image name: row}` (`"bg alley"`); read by `light_for_bg` before `BG_LIGHT` |
 | `area_<key>.json` | `spots {place: [x, y]}`; `for_rev` |
 | `map_campus.json` | `anchors {area key: [x, y]}`; `mountain_box [x0, y0, x1, y1]` |
-| `faces.json` | `blink_also {who: [faces]}` |
-| `pictures.json` | `pictures {file stem: {rev, kind ("composed" / "inplace" / "relight"), batch, render, record, rev1_commit, from_commit, shift [dx, dy], sharp [a, b], of, of_rev, waiver}}`; a row holds `rev`, or `of` with `of_rev` |
+| `faces.json` | `blink_also {who: [faces]}`; `eyes {who: [x, y, w, h]}`; `mouth {who: [x, y, w, h]}` (D57). Boxes are on the sprite canvas (inside 880 x 1400); for one person the mouth box starts at or below the foot of the eye box. Read by `view_blink_also` and `view_face_box` before `VIEW_BLINK_ALSO` and `VIEW_FACE` |
+| `pictures.json` | `pictures {key: {rev, kind ("composed" / "inplace" / "relight"), batch, render, record, rev1_commit, from_commit, shift [dx, dy], sharp [a, b], of, of_rev, waiver}}`; a row holds `rev`, or `of` with `of_rev`. `batch` is a number for a whole batch (`0`, `3`) and a string for one file of a batch (`"3a"`) |
 
 An hour is `""` (the day picture), `"evening"` or `"night"`; a period name is
-accepted as well. `for_rev` is a whole number from 1; in a `hot_` or `view_`
-file it is a finding unless `pictures.json` calls that place's picture
-`composed` (a room redone in place carries none, plan 3.2).
+accepted as well, and where both fit the period's own row is read first.
+`for_rev` is a whole number from 1; in a `hot_` or `view_` file it is a
+finding unless `pictures.json` calls that place's picture `composed` (a room
+redone in place carries none, plan 3.2). The game ignores a file whose
+`for_rev` is not its picture's revision and lint says so (`rule_validate`).
 
-**For U0c2 to settle and then tighten here and in the rule:** the exact inner
-shape of `floor` (both forms are accepted today), of `slot_light`, and which
-of the two teachers' keys carries `spare`; and **the key or keys of
-`faces.json` that hold a person's eye and mouth boxes** (D57; the plan's 10.2,
-U0c2 and U0d2). Today the rule allows only `blink_also` in `faces.json`, as
-the plan's table in 3.2 does, so a file with the boxes in it is a finding
-(`unknown key`). U0c2 names the keys, adds them with their shape to the
-`faces` branch of `layout_file_findings` in `tools/check_content.py` in the
-same commit as the reader, and adds them to the table above. This must be in
-before `install_face.py` / `install_set.py` (U0d2) write the boxes and before
-L installs Yuji's set, or `check_content.py --all` fails in the owner's folder
-and in every worktree that merges it; the art role may not edit a tool.
+**The manifest's keys** (plan 5.5). A picture's key is its file stem
+(`courtyard`, `your_room` for My Room, `dorm_common_evening`). What is made
+from a picture is keyed by the PLACE key and names its parent picture:
+
+| key | row | made from |
+|---|---|---|
+| `<stem>_evening`, `<stem>_night` | `{rev, kind: "relight", of, of_rev}` | the day picture `<stem>` |
+| `fg_<place>[_<hour>]` | `{of, of_rev}` | the place's picture for that hour |
+| `light_<place>[_<hour>]` | `{of, of_rev}` | the same |
+| `pose_<place>__<who>[__<variant>][__asleep]` | `{of, of_rev}` | the place's picture for the variant |
+
+Something with a row is fresh while its parent is at the row's `of_rev`;
+something with no row is fresh while its parent is at revision 1; and what was
+made from a stale picture is stale too (`art_fresh`).
+
+**The keep list** (`tools/bgs/keep/<stem>.json`, U0d2's): `keep`, `empty`,
+`allow`, `change`, `doors`.
 
 ### A5. Names (`tools/prefixes.json`)
 
@@ -238,33 +264,342 @@ the icon column: at most 8, not loosened.
 
 ---
 
-## Part B. For U0c2 to make final (from the plan's section 9)
+## Part B. Frozen by the scaffold (U0b, U0c1, U0c2)
 
-1. **Home** (K1): the key `dorm`, `bg your_room`, `default here = "dorm"`,
-   `sb_do_path_dorm`.
-2. **The eleven place keys** and their image and file names: `boys_dorm`,
-   `yuji_room`, `megumi_room`, `senpai_room`, `nobara_room`, `maki_room`,
-   `teachers_lounge`, `teachers_dorm`, `bathhouse`, `sauna`, `pool`.
-3. **Action ids and labels**: `path_<key>` for the eleven, `bath_soak`,
-   `bath_sauna`, `pool_swim`, `cards_invite`; the activity `swim_pool` and
-   `act_swim_pool`; the ids of `SPOT_PLANNED`; `district_harajuku`,
-   `district_shibuya`, `tky_people`; the screen `tky_meet` and its three
-   return tuples.
-4. **The saved sprite** (K9): A2's `baseline_sprite_tree.txt`.
-5. **The light row**: four values, or six.
-6. **Sidecar shapes**: A4 (tightened), the manifest's fields, the keep list's
-   keys, and A3.
-7. **The 26 icon names** and their cells on sheet 4; the new image names of
-   the plan's 5.8.
-8. **The frozen texts** under `tools/bgs/` and the shape of `campus.json`.
-9. **`hint_seen`**, the six hint ids, `persistent.show_names`, the key held to
-   show names.
-10. **The budgets** (A9) and **the ledger** (A8).
-11. **The door, asleep and away tables** and the three hooks;
-    `--baths-optional` (A6).
-12. **The tools' command lines.**
+`tools/smoke/u2_contracts.rpy` asserts this part: each function's owning file
+(`fn.__code__.co_filename`), its signature and its return shape. A wave
+package that fills a stub keeps all three. The harness runs in two states,
+with its overlay and without (`SMOKE_ASSETS=/var/empty`); both pass.
 
-The symbols of the plan's 9.2 and the hooks of 9.3 are asserted by
-`u2_contracts.rpy`, each with an example call and its return shape and each
-function's owning file; every one exists, at least as a stub, when wave 0
-ends.
+### B1. Home (K1)
+
+The place key `dorm`; its image `bg your_room` and files `your_room*.png`;
+`default here = "dorm"`; `label sb_do_path_dorm`. None of them ever changes
+and there is no HOME constant. `art_stem("dorm") == "your_room"`.
+
+### B2. The eleven place keys
+
+`boys_dorm`, `yuji_room`, `megumi_room`, `senpai_room`, `nobara_room`,
+`maki_room`, `teachers_lounge`, `teachers_dorm`, `bathhouse`, `sauna`, `pool`.
+Each has the image `bg <key>`, the file `images/bg/<key>.png` (a stand-in
+until it is painted: `standin_bg(key, src, matrix, **kw)` in
+`bg_placeholders.rpy`), the label `sb_do_path_<key>` and the action
+`path_<key>`. An hour picture is `bg <key> evening` / `night`, from
+`images/bg/<key>_evening.png` / `_night.png` (B6). A key that reaches a save is
+never removed.
+
+### B3. The world's tables (`sb_world.rpy`; U0b, U0c1; final)
+
+| name | shape |
+|---|---|
+| `WORLD_INSIDE` | `{room: house}`, one level deep. `world_inside(loc)` → the house's key or None |
+| `WORLD_PINLESS` | a tuple of place keys with no map pin. `world_pinned(loc)` → bool |
+| `WORLD_HOMES` | `{who: place}`. `world_home(who)` → a place key or None |
+| `WORLD_DOOR_OWNERS` | `{place: (who, ...)}`. `world_door_owners(loc)` → a list of person keys |
+| `WORLD_DOOR_BOND` | `{None: 15}`; a row `{"maki_room": 25}` would set one door apart. `world_door_bond(loc)` → an int, or None for a place with no Bond door |
+| `WORLD_ASLEEP` | `{"weekday": (who, ...), "weekend": (who, ...)}`. `world_asleep(who, per=None)` → bool, the only reader |
+| `WORLD_AWAY` | `{who: {(weekday, period): district}}`. `world_away(who, per=None)` → a district key or None |
+| `world_home_state(who, per=None)` | `"awake"`, `"asleep"` or `"out"` |
+| `world_room_state(loc)` | `{owner: one of those}`; `{}` for a place that is nobody's home |
+| `WORLD_VARIANTS` | a tuple of `(place, period, attribute, file)`: the 56 planned new hour pictures (B6) |
+
+`place_access(loc)` keeps its signature and returns `(bool, reason, short
+tag)`. The flag `door_<place>` opens any place; a house is always open from
+one of its own rooms; a room inside a house asks its house first; **the Bond
+clause applies only to a place that has a house** (`world_inside`): the girls'
+corridor has owners too, and its own rule (after dark). The flags
+`welcome_<room>` and `invited_girls_dorm` are U1's to set. `person_now(who)`
+keeps exactly its six keys. A hotspot's `when` is how a later quest shows one
+(D49); no new contract.
+
+Also laid in wave 0 and final: `PATH_HOUSE_EXITS = 7`, `PATH_YARD_ICONS`
+(`room_paths.rpy`); `map_pins(key)`, `map_marks()`, `map_mission_asleep`
+(`ui_map.rpy`); `rail_asleep_line(loc)` and its line in `screen sb_place`
+(`sb_screens.rpy`; U4 keeps it or replaces it with the bed tags). The
+`ICON_TIP_SIDES` row for `hot_go_dorm_yard__boys_dorm` goes when the garden's
+sidecar brings `tips`.
+
+### B4. Action ids, labels and hotspot ids
+
+- Actions (the loop calls `"sb_do_" + id`): `path_<key>` for the eleven keys;
+  `bath_soak`, `bath_sauna`, `pool_swim` (registered, closed, by the stubs);
+  `cards_invite` (registered by U5).
+- The activity `swim_pool` and its label `act_swim_pool(who)` (the loop calls
+  `"act_" + id`). Its row is last in `ACTIVITIES`: `swim`'s kind, Bond 35,
+  cost and hours, `loc=("pool",)`, `when="pool_ok"`.
+- Labels: `district_harajuku`, `district_shibuya` (the frozen `sb_trip` calls
+  `"district_" + key`), `tky_people(key)`.
+- **`SPOT_PLANNED`** (`sb_hotspots.rpy`): 59 rows of `(id, place, kind)`, kind
+  `"look"` or `"act"`. Wave 1 registers exactly these ids in these places as
+  these kinds, and nothing else. A hotspot's widget id and tooltip key are
+  `hot_<id>`.
+
+| place | looks | actions (the action each stands for) |
+|---|---|---|
+| `gate` | `torii` | |
+| `courtyard` | `gateway` | `straw_posts` (`train`, "Practice") |
+| `school_yard` | `pine_bench` | |
+| `classroom` | `notices` | `front_desk` (`study`) |
+| `cafeteria` | `water_cooler` | |
+| `infirmary` | `shoko_desk` | |
+| `library` | `reading_table` | |
+| `dorm_yard` | `pond`, `lit_windows` | |
+| `dorm` | `wardrobe`, `window` | `desk` (`study`) |
+| `dorm_common` | `fridge`, `game_boxes`, `manga_shelf` | (`card_table` keeps its id) |
+| `girls_dorm` | `plant` | |
+| `rooftop` | `rooftop_view` | `railing` (`think`, "Sit a while") |
+| `boys_dorm` | `shoe_rack`, `notice_board` | |
+| `yuji_room` | `film_shelf`, `bed_yuji` | |
+| `megumi_room` | `bookshelf`, `bed_megumi` | |
+| `senpai_room` | `shogi_board`, `bed_panda`, `bed_toge` | |
+| `nobara_room` | `mirror`, `bed_nobara` | |
+| `maki_room` | `weapon_case`, `bed_maki` | |
+| `staff_yard` | `stone_lanterns` | |
+| `office` | `dolls`, `photograph` | |
+| `utahime_office` | `binders` | |
+| `gojo_office` | `gojo_tv`, `sweets` | |
+| `teachers_lounge` | `rota`, `kettle` | |
+| `teachers_dorm` | `workbench`, `name_plates` | |
+| `training_yard` | | `striking_posts` (`train`) |
+| `training` | `mats` | `straw_bundles` (`train`) |
+| `dojo` | `wall_shrine` | `weapon_rack` (`train`) |
+| `storehouse` | `big_chest` | |
+| `pool` | `lane_board` | `pool_swim` |
+| `trailhead` | `standing_stone` | |
+| `forest` | `stone_markers` | |
+| `riverside` | `waterfall` | `deep_pool` (`swim`) |
+| `bathhouse` | `milk_fridge` | `bath_soak` |
+| `sauna` | `bucket` | `bath_sauna` |
+
+(`ridge` keeps `veil`, which exists.) The six bed tags are looks registered
+with a `when` that is true only while that person is asleep in the room.
+`cards_invite` is a tile of the icon column, not a hotspot.
+
+### B5. The saved sprite (K9)
+
+`tools/smoke/baseline_sprite_tree.txt` (A2). `lit_sprite`, `_sprite_light`,
+`_shadow_light`, `view_blink_fn`, `view_talk_fn`, `view_breathe_fn`,
+`hot_pulse_fn`, `view_enter_ease`, `char_focus` and every `pos_*` transform
+keep their names, signatures and shapes. `view_face_layers(path)` builds the
+same two layers; only which faces and which boxes come from data.
+
+**D31 is settled** (`u2_contracts`, section G): a painted pose kept in place
+by the person view's screen is screen-only. What a save made on that screen
+pickles holds no displayable of the pose picture (the same picture *shown* as
+an image is held). U3 may build 6.2 row 8, as long as the patch is added by
+the screen and never by a `show`.
+
+### B6. Pictures, revisions and the gates (`art_manifest.rpy`, new)
+
+| symbol | example | returns |
+|---|---|---|
+| `art_rev(stem)` | `art_rev("courtyard")` | int; 1 when the manifest has no row |
+| `art_fresh(stem, of=None, depth=0)` | `art_fresh("dorm_common_evening")`, `art_fresh("fg_dorm")`, `art_fresh("pose_dorm_common__nobara__evening")` | bool (A4, "The manifest's keys"). `of` names the parent of a thing with no row; without it the parent is read from the name |
+| `art_stem(loc)` | `art_stem("dorm")` → `"your_room"` | a place's picture stem |
+| `art_validate()` | | lint findings for the rows' shapes. A stale row is not a finding (`tools/art_status.py` lists those) |
+
+With no `pictures.json` every picture is revision 1 and the game is as it was.
+`ART_PICTURES` is init data, never saved.
+
+The four gates (K7), each falling back to what the game does when the file is
+missing:
+
+| gate | file | a stale thing is not used, and then |
+|---|---|---|
+| `bg_variant(loc, per)` (unchanged signature) | `sb_world.rpy` | the attribute or None. None for an hour picture made for a day picture that has been replaced, and, in a room with a foreground (`images/fg/fg_<loc>.png` exists), for an hour picture whose own cut is missing or stale: the day picture, tinted |
+| `view_fg_path(loc, per=None)` | `view_stage.rpy` | None: no cut is laid, and a room of `VIEW_FG_ROOMS` stands people on the plain slots |
+| `view_pose(who, loc, per=None)` | `view_stage.rpy` | None: the standing sprite |
+| `light_for_place(loc, per)` (unchanged signature) | `lighting.rpy` | the general row (`PLACE_LIGHT`, then the indoor or outdoor row) |
+
+`WORLD_VARIANTS`: a row whose file is loadable and fresh defines
+`bg <picture> <attribute>` and sets `TIME_VARIANT[place][period]` at init,
+over a static cell too (My Room's Evening is `night` today and becomes
+`evening` when `your_room_evening.png` lands). A row whose file is missing
+does nothing. Lint reports a `TIME_VARIANT` cell with no image.
+
+`rule_layout(name)` (`sb_rules.rpy`, unchanged signature): the sidecar as a
+dict, a fresh copy each call; `{}` for a file that does not exist and for one
+whose `for_rev` is not its picture's revision (`hot_`/`view_` + place: the
+place's picture; `area_<key>`: the area's map). A file with no `for_rev` is
+always read. The mismatch is reported by `rule_validate` (lint) and by no
+other validator.
+
+### B7. The light row
+
+Four values `(tint "#rrggbb", brightness, saturation, shadow opacity)`, or six
+with `(shadow lean in px, shadow stretch)` last; four means `(0, 1.0)`.
+`scene_light` (saved) may hold either. `light_matrix` reads the first three,
+`_shadow_light` the fourth. **Drawing the lean and the stretch is U3's**
+(6.2 row 3): today the two values are carried and not drawn.
+
+| symbol | returns |
+|---|---|
+| `light_row(loc, variant=None)` | the measured row of `light_<loc>.json` as a tuple of four or six, when well formed and fresh; else None |
+| `light_for_place(loc, per)` | the measured row for the picture showing (its hour picture's row; the day row in the Morning, at Noon and in the Afternoon), else the tables as before. **In an Evening or a Night that is only a tint the general row stays** until U3's `light_follow` |
+| `light_for_bg(name)` | `light.json`'s row, then `BG_LIGHT`, then a campus picture's measured row or `PLACE_LIGHT`; a story picture's variant with no row keeps its base's |
+
+### B8. The room's data (`view_stage.rpy`)
+
+Every key of `view_<place>.json` is optional and without it the room is as it
+was.
+
+| symbol | returns |
+|---|---|
+| `view_floor(loc, off=False)` | a list of polygons (lists of `(x, y)`) or None; for the review tools |
+| `view_slot_light(loc, n, i, per=None)` | `(tint, brightness)` or None. **Applying it is U3's** (6.2 row 5) |
+| `view_cast(loc, per=None)` | `(direction, length, darkness)` or None. **Drawing it is U3's** (row 9) |
+| `view_talk(loc)` | bool: the sidecar's `talk`, else `loc in VIEW_FG_TALK`; `view_enter` reads it |
+| `view_pose_box(loc, key)` | the box from `pose_<loc>.json`, then from `view_<loc>.json`'s `poses` |
+| `view_blink_also(who)` | a tuple of faces: `faces.json`, then `VIEW_BLINK_ALSO` |
+| `view_face_box(who, key)` | `(x, y, w, h)` or None, key `"eyes"` or `"mouth"`: `faces.json`, then `VIEW_FACE` |
+| `view_slots`, `view_slot_rects`, `view_person_rects`, `view_motion`, `stage_person`, `char_focus` | unchanged |
+
+### B9. Exits and hotspots
+
+| symbol | file | returns |
+|---|---|---|
+| `path_keep_clear(loc)` | `room_paths.rpy` | a list of `(x, y)`: the place's own registered hotspots where they sit now (the sidecar applied), each point once; ids that begin `zz` (a harness's) are left out |
+| `path_faces(to)` | `room_paths.rpy` (a stub: `[]`; U2) | a list of person keys, three at most |
+| `path_hub`, `path_exits`, `path_neighbours` | | unchanged. `path_validate`'s spacing rules read each exit's applied point |
+| `register_hotspot`, `hot_spots_for` (the same eleven keys), `hot_covers`, `screen hot_layer(loc, front=False)` | `sb_hotspots.rpy` | unchanged |
+| `hot_set_dim(hot_id, fn)` | | None. `fn` is the NAME of a store function that returns a reason (a str) or `""`. While it gives a reason `hot_layer` draws the hotspot at `HOT_DIM_ALPHA` (0.45), its hover label says the reason and pressing it does nothing. (Separate from `register_hotspot`, whose signature is frozen.) U5 names the card table's |
+| `hot_dim_reason(h)`, `hot_planned(place=None)`, `hot_name(h)`, `hot_faces(h)` | | a str; `{id: row}`; a str; a list of person keys |
+| `hot_validate()` | | accepts a sidecar point for an id planned for that place; refuses one that is neither registered nor planned |
+
+**Names.** `persistent.show_names` (default False; its Preferences row is
+U6's). The key held to show names is **N** (`ICON_NAMES_KEY = "K_n"`), in no
+`config.keymap` list; `hot_layer` listens for it, so it is live on the place
+view. `icon_names_shown()` → bool is the one reader, and
+`icon_words_shown(name, words=None)` follows it. While names are shown an exit
+wears where it leads (`path_words`, locked or not) and a hotspot its name, on a
+plate under its tile; an exit's tile draws the faces `hot_faces` returns.
+
+**Hover-label sides** (`icon_tip_side(tip)`, `ui_icons.rpy`): the `tips` of
+`hot_<here>.json`; then `ICON_TIP_SIDES`; and a hotspot or exit with no row of
+its own there is placed from where its tile is (above an exit, left of anything
+else, the opposite side when the label would leave the screen).
+
+### B10. The stubs (9.3). Each is behaviour-neutral until its package fills it
+
+| symbol | file | the stub returns | filled by |
+|---|---|---|---|
+| `bath_ok()` | `room_bath.rpy` | `False` | U5 |
+| `pool_ok()` | `room_pool.rpy` | `False` | U5 |
+| labels `sb_do_bath_soak`, `sb_do_bath_sauna`, `sb_do_pool_swim`, `act_swim_pool(who)` | the two files above | `return` | U5 |
+| `tky_here(key)` | `room_tokyo.rpy` | `[]` (a list of person keys) | U5 |
+| `tky_caption(who, key)` | | `""` (a str) | U5 |
+| `TKY_LINES`, `TKY_BOND` | | `{}`, `4` | U5 |
+| labels `district_harajuku`, `district_shibuya`, `tky_people(key)` | | `return` | U5 |
+| `screen tky_meet(key)` | | `("back",)` at once; when filled: `("talk", who)`, `("with", who)` or `("back",)` | U5 |
+| `cards_invitable()` | `room_cards.rpy` (appended) | `[]` | U5 |
+| `screen cards_invite_pick()` | | `("close",)` at once; when filled: `("ask", who)` or `("close",)` | U5 |
+| `screen hud_day_card(n=None, weekday=None)` | `ui_hud.rpy` (appended) | empty | U4 |
+| `hint_show(id)` | `ui_hints.rpy` | None, always (it is on `tools/none_ok.txt`) | U4 |
+| `HINT_IDS` | | `("place", "names", "map", "person", "hour", "night")`, frozen | |
+| `hint_seen` | | `default hint_seen = set()`: the one new saved variable. Changed only by a function that then calls `renpy.retain_after_load()` | U4 |
+| `screen hint_layer()` | | empty | U4 |
+| `map_district_people(key)` | `ui_map.rpy` | `[]` (three at most) | U2 |
+| `view_asleep(loc)` | `view_stage.rpy` | `[]`; when filled: a list of `(who, patch)`, `patch` a pose dict `dict(image, box)`. `screen view_stage` lays each on the room before the people | U3 |
+| `screen view_others(loc, who)` | `view_stage.rpy` | empty | U3 |
+| `night_club_bg(key)` | `sb_night.rpy` (final) | an image name: `"bg club"` when that image exists, else `night_bg(key)` | U9 adds the one line that calls it |
+
+Hook lines placed in screens other packages own: `use hint_layer` in
+`sb_place` and in `sb_map`; `use view_others(here, who)` in `sb_char`.
+
+Two tests in `activity_state` (`sb_activities.rpy`), final: the kinds
+`romance`, `confession` and `intimate` are hidden while I stand in
+`bathhouse`, `sauna` or `pool` (K16; `ACT_NO_ROMANCE`), and `invite` is hidden
+with a friend in their `WORLD_AWAY` hour or the hour before it (7.6).
+`NIGHT_REST_BLOCKS` holds `pool_swim` and `swim_pool`; `NIGHT_CARRY_LINES` has
+rows for `nobara_room` and `maki_room`.
+
+Screens that keep name and parameters: `main_menu`, `choice`, `say`,
+`file_slots`, `preferences`, `quick_menu`, `journal`, `sb_map`, `sb_place`,
+`sb_char`, `hot_layer`, `hover_label`.
+
+### B11. Pictures and names
+
+- **The menus.** `gui.main_menu_background = bg_placeholder("gui/title.png",
+  "images/bg/gate.png")`; `gui.game_menu_background =
+  bg_placeholder("gui/menu_ground.png", "images/bg/veil.png")`. The two files
+  are copies of today's `gate.png` and `veil.png`.
+- **The five lenders' copies:** `images/bg/standin/standin_<name>.png` for
+  `city_night`, `street_morning`, `town_street`, `ruin_hall`, `veil`
+  (`STANDIN_COPIES`, `standin_copy(name)`). Every stand-in is made from a
+  copy. (The plan wrote `standin/<name>.png`; a second file with the same
+  base name under `images/` would give Ren'Py one image name twice, which
+  `check_content.py --art-names` refuses.)
+- **Ten names that always exist** (`STANDIN_NAMES`), each `bg <key>` with
+  `images/bg/<key>.png` when painted, else its lender's copy as it is:
+  `mall_front` (city_night), `mall_hall` (ruin_hall), `mall_atrium` (veil),
+  `warehouse` (city_night), `annexe` (ruin_hall), `site_tunnel` (ruin_hall),
+  `site_ward` (ruin_hall), `site_platform` (city_night), `site_pool` (veil),
+  `site_karaoke` (city_night).
+- **Three that exist only when their file is loadable** (`STANDIN_IF_FILE`):
+  `bg club` (`club.png`), `bg shibuya night` (`shibuya_night.png`),
+  `bg shinjuku night` (`shinjuku_night.png`).
+- **The market** is a file name, `images/bg/market.png`, not an image name.
+- **The board:** `BOARD_PLACES[*]["bg"]` is one of the five `bg site_*` names
+  (tunnel: Nerima, Edogawa; ward: Adachi, Kita; platform: Ikebukuro,
+  Shinagawa; pool: Setagaya; karaoke: Koenji).
+- **The stand-in people** (`jjk_defs.rpy`): `mother`, `father`, `oda`,
+  `kurose`, `nade` are defined by one guarded block, `init 501 python`, each
+  only when `not renpy.has_image(key, exact=True)`. (An `image` statement runs
+  at init 500, so the plan's "init 1" would run before the generated lines.)
+  `STANDIN_DEFINED` is the keys it defined.
+- **The 26 icon names**, in the order of `tools/icons/sheet_4.txt` (6 x 5
+  cells, left to right, top row first): `place_boys_dorm`, `place_yuji_room`,
+  `place_megumi_room`, `place_senpai_room`, `place_nobara_room`,
+  `place_maki_room`, `place_teachers_lounge`, `place_teachers_dorm`,
+  `place_bathhouse`, `place_sauna`, `place_pool`, `place_school_yard`,
+  `place_dorm_yard`, `place_staff_yard`, `place_training_yard`,
+  `place_trailhead`, `bath_soak`, `bath_sauna`, `pool_swim`, `cards_invite`,
+  `history`, `auto`, `save`, `help`, `continue`, `at_home`. 114 icons in all.
+  `ICON_FOR[("do", "swim_pool")] = "swim"`; the four action rows
+  (`("act", "bath_soak")` and the rest) are set by the stubs.
+
+### B12. The frozen texts and the record (U0d1)
+
+`tools/bgs/look.txt`, `keep.txt`, `keep_light.txt` (frozen after batch 3);
+`stage.txt` (after batch 1); `map.txt` (after batch 21a); `keep_outdoor.txt`
+(after batch 8); the pose prompt's two frozen sentences (a person's clothes as
+their sprite's; the asleep shape, K16).
+
+**The shape of `tools/bgs/campus.json`** (`tools/bgs/CAMPUS2.md` has it key by
+key): `format` (1), `about`, `sheet`, `rules`, `areas`, `campus_map`,
+`pictures` (`{stem: {place, rev, kind, batch, chosen, render, source,
+source_2k}}`), `fixed` and `proposed` (lists of rows, each with a unique `id`
+and a `kind`: `building`, `place`, `path`, `exit`, `seen`, `window`, `line`,
+`interior`; a fixed row also has `by: {picture, rev}`), `waived`, `waits`. Its
+rows are never frozen as a whole (O20).
+
+### B13. The tools' command lines (as each tool's own header gives them)
+
+```
+python3 tools/make_redo_workflow.py <place> [--add] [--from-rev1] [--print] [--again <n>]
+python3 tools/make_redo_workflow.py --relight <place> evening|night
+python3 tools/make_scene_workflow.py <place | area_<key> | map_campus> [--print] [--again <n>] | --list
+tools/py_art.sh tools/install_redo.py <place> <render a> <render b> [--dry | --choose a|b]
+tools/py_art.sh tools/install_redo.py --relight <place> evening|night <a> <b> [--choose a|b]
+tools/py_art.sh tools/install_redo.py --compose <place> <render> [--dry] [--layout hot_<place>.json view_<place>.json]
+        options: --root <dir> --layout-dump <file> --keep <folder> --record <campus.json> --batch <n> --date <yyyy-mm-dd>
+tools/py_art.sh tools/sample_light.py <place> [evening|night] [--bg <render>] [--write] | --check
+python3 tools/check_campus.py [--layout-dump <file>] [--layout <files>] [--sidecars <folder>] [--selftest]
+python3 tools/check_prompts.py <file> ... | --text "..." [--place <place>] | --selftest
+python3 tools/art_status.py [--check]
+python3 tools/art_batch.py --list | <batch> [--preview --out <folder>] [--again <n>] | --done <batch> | --selftest
+python3 tools/campus_plan.py [--md | --pins | --ref | --check]
+python3 tools/install_set.py <who> <staged folder> [--dry] [--root <dir>] | --stage <who> <render folder>
+python3 tools/install_face.py --prepare <who> | <render> <who> blink|talk | --sheet
+python3 tools/install_pose.py <render> [--box x,y,w,h] [--name pose_<place>__<who>] [--dry]
+python3 tools/check_content.py --all game/*.rpy tools/smoke/*.rpy      (also: --layout-files [--layout-dir <dir>])
+tools/smoke.sh u2_dump [--out shots/art/game_layout.json]
+```
+
+`check_layout.py`, `stage_preview.py` and the new `layout_sheet.py` are U0d3's
+and join this list with that package.
+
+### B14. Budgets and the ledger
+
+A9 (K11) and `docs/UI2_PINS.md`. The motion budget is unchanged: no function
+transform was added to the place view.

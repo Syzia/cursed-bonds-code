@@ -301,9 +301,10 @@ The second UI overhaul's harnesses (wave 0; each later package adds its own):
 
 | harness | what it checks |
 |---|---|
-| `u2_dump.rpy` (9) | Writes `tools/art/game_layout.json`, the one file the art tools read the game's numbers from: exits and hotspots with their default and applied points, slots, frames and lanes, areas and pins, each person's canvas, the light and grade tables, the schedule, and a hash of the `.rpy` files and `game/layout/*.json` it was read from. Not pointer-dependent. `--out <file>` writes a local copy. Its header lists every key. |
+| `u2_dump.rpy` (10) | Writes `tools/art/game_layout.json`, the one file the art tools read the game's numbers from: exits and hotspots with their default and applied points, slots, frames and lanes, areas and pins, each person's canvas, the light and grade tables, the schedule, and a hash of the `.rpy` files and `game/layout/*.json` it was read from. Not pointer-dependent. `--out <file>` writes a local copy. Its header lists every key. |
 | `u2_baseline.rpy` (52 on the untouched tree) | Compares a tree with the overhaul's baselines (`baseline_u2.json`, `baseline_story_names.json`, `baseline_night_names_u0a.json`, `baseline_sprite_tree.txt`, `baseline_shots/ui2/`), one check for each part. A tool, not a member of the standing set: from U0b on, parts differ on purpose. `U2_BASELINE_WRITE=1` writes them afresh into the results folder (U0a did, once). It parks the pointer, so it takes the pointer lock. **The five pictures do not depend on the display:** before they are taken the window is set to 1280x720 pixels (half as many points on a display that draws two pixels to the point), whatever size it opened at. Should a display be unable to hold that window, ONE check fails ("pictures: the window could be made the baseline's size") and the five are not compared; that failure is about the screen, not the game. |
 | `u2_home.rpy` (220) | U0b, my room in the Boys' Dormitory: bed from every place at Night, the walk garden to corridor to my room and back with no time spent, the garden's seven exits, the door and Bond rules of the three friends' rooms, who is asleep and what that hides, three saves made and loaded across the walk; and U0c1's seven places: a save in each (M), Nobara's room as her companion and out after dark (N), the Teachers' Dormitory at Night (O). Not a pointer harness. It copies three made saves from `tools/smoke/assets/ui2_saves`. Until the baselines are retaken, `u2_baseline` shows five lines that differ by U0b's planned changes (`docs/UI2_PINS.md`). |
+| `u2_contracts.rpy` (164 with its overlay, 161 bare) | U0c2, the scaffold's contracts (`docs/UI2_CONTRACTS.md`): the manifest and the four gates that keep a stale picture, cut, pose or light row off the screen; `WORLD_VARIANTS`; `rule_layout`'s `for_rev`; the sidecar readers (the room's data, `faces.json`, pose files, hover-label sides); `path_keep_clear`; "Show names" and the held N key; `SPOT_PLANNED`; the dim state; the night, activity and Tokyo hooks with K16's test; every stub and hook of the plan's 9.3; the off-campus picture names, the board's job sites and the stand-in people; the test that settles D31. **In every package's standard set, and not edited after wave 0.** It runs in two states and the acceptance is both: `tools/smoke.sh u2_contracts` (its overlay under `assets/u2_contracts/` lays test pictures and a test manifest) and `SMOKE_ASSETS=/var/empty tools/smoke.sh u2_contracts` (the tree as it ships). It sets the focus, so it takes the pointer lock. |
 | `u2_mksaves.rpy` | How the nineteen made saves in `assets/ui2_saves/` were made (`U2_SAVES=campus`, `sunmall`, `warehouse`, `roster`, `prologue`). Kept as the record; the saves are not made again. |
 
 **Hover checks need the pointer.** `p2_contracts`, `p2_hud`, `p2_map`,
@@ -419,7 +420,12 @@ A4 and A6). The first three are part of `--all`:
 
 - `--layout-files` — every `game/layout/*.json`: a known file name, only that
   kind's keys, each key's shape; `for_rev` only where `pictures.json` calls
-  the place's picture composed. `--layout-dir <dir>` reads another folder;
+  the place's picture composed. `--layout-dir <dir>` reads another folder.
+  Since U0c2: `faces.json` may hold `eyes` and `mouth` (a person's boxes, the
+  mouth below the eyes); `pose_<district>.json` is accepted for a district of
+  `WORLD_AWAY`; `light_<place>.json` may hold a `note`; `floor` is
+  `{"on": [...], "off": [...]}`, `slot_light` is by hour and by slot, and
+  `spare` is for the three houses with spare doors;
 - `--decency` (K16) — a word list over the text of `room_bath.rpy`,
   `room_pool.rpy` and `room_tokyo.rpy`, and over every `AMBIENT`,
   `AMBIENT_STORY`, `SPOT_LINES` and `POSES` row for the Bathhouse, the Sauna,

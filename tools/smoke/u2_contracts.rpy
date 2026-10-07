@@ -39,6 +39,8 @@
 ##      the board's job sites, the guarded stand-in people in three states
 ##   G  the test that settles D31: a pose kept on the person view by its
 ##      screen reaches no save
+##   H  what wave 0 froze earlier and still holds: home, the eleven keys, the
+##      door, asleep and away tables with their functions, the 114 icons
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
@@ -894,6 +896,11 @@ label zz_smoke:
               and zz_rect("sb_place", "hot_go_dorm_yard__boys_dorm") is not None,
               "C: with path_faces patched to return two people, their two faces are drawn on that exit's tile and on no other (someone who is not in the cast is left out)")
         shot("exit_faces")
+        ## R6's worst case for the place view with everything this sitting
+        ## draws on it: names shown, faces on an exit, four toasts, the banner.
+        persistent.show_names = True
+        zz_worst("sb_place", name="worst_place_names")
+        toast_clear()
         store.path_faces = _zz_pf
         persistent.show_names = _zz_pers
         store.schedule_overrides = {}
@@ -1342,5 +1349,80 @@ label zz_smoke:
         zzc_back()
         settle(day=2, period="Noon", here="courtyard")
         store.schedule_overrides = {}
+
+    ## --- H. what wave 0 froze before this sitting, and still holds (9.1) --------------------
+    python:
+        settle(day=2, period="Noon", here="courtyard")
+        ## -- home (K1)
+        check("dorm" in LOCATIONS and LOCATIONS["dorm"]["bg"] == "bg your_room" and renpy.has_label("sb_do_path_dorm")
+              and renpy.has_image(("bg", "your_room"), exact=True) and renpy.loadable("images/bg/your_room.png")
+              and not any(hasattr(store, n) for n in ("HOME", "WORLD_HOME", "HOME_KEY")),
+              "H: home is the key dorm, the image bg your_room, the label sb_do_path_dorm (K1); there is no HOME constant")
+        ## -- the eleven keys
+        _zz_bad = [k for k in ZZ_NEW_PLACES
+                   if not (k in LOCATIONS and LOCATIONS[k]["bg"] == "bg " + k and renpy.has_image(("bg", k), exact=True)
+                           and renpy.has_label("sb_do_path_" + k) and any(a["id"] == "path_" + k for a in PLACE_ACTIONS)
+                           and builtins.sum(1 for a in AREAS if k in a["places"]) == 1)]
+        check(not _zz_bad and len(LOC_ORDER) == len(LOCATIONS) == 35 and len(ZZ_OLD_PLACES) == 24,
+              "H: the eleven new places each have their key, image, label and action, in one area; 35 places in all", _zz_bad)
+        ## -- the world's tables and their functions
+        _zz_people = builtins.set(CAST)
+        check(isinstance(WORLD_INSIDE, (builtins.dict, dict)) and all(k in LOCATIONS and v in LOCATIONS for k, v in WORLD_INSIDE.items())
+              and all(isinstance(t, builtins.tuple) for t in (WORLD_PINLESS, WORLD_ASLEEP["weekday"], WORLD_ASLEEP["weekend"]))
+              and builtins.sorted(WORLD_ASLEEP) == ["weekday", "weekend"]
+              and all(w in _zz_people and l in LOCATIONS for w, l in WORLD_HOMES.items())
+              and all(l in LOCATIONS and isinstance(ws, builtins.tuple) and builtins.set(ws) <= _zz_people for l, ws in WORLD_DOOR_OWNERS.items())
+              and WORLD_DOOR_BOND[None] == 15
+              and all(w in _zz_people and all(isinstance(c, builtins.tuple) and len(c) == 2 and c[0] in WEEKDAYS and c[1] in PERIODS and d in DISTRICTS
+                                              for c, d in cells.items()) for w, cells in WORLD_AWAY.items()),
+              "H: the door, asleep and away tables have their frozen shapes (WORLD_INSIDE, WORLD_PINLESS, WORLD_HOMES, WORLD_DOOR_OWNERS, WORLD_DOOR_BOND, WORLD_ASLEEP, WORLD_AWAY)")
+        _zz_sigs = [("world_inside", "(loc)"), ("world_pinned", "(loc)"), ("world_home", "(who)"), ("world_door_owners", "(loc)"),
+                    ("world_door_bond", "(loc)"), ("world_asleep", "(who, per=None)"), ("world_home_state", "(who, per=None)"),
+                    ("world_room_state", "(loc)"), ("world_away", "(who, per=None)"), ("place_access", "(loc)"), ("person_now", "(who)"),
+                    ("bg_variant", "(loc, per)")]
+        _zz_bad = [(n, zzc_sig(getattr(store, n))) for n, sg in _zz_sigs
+                   if not (zzc_owner(getattr(store, n, None), "sb_world.rpy") and zzc_sig(getattr(store, n)) == sg)]
+        check(not _zz_bad, "H: their functions live in sb_world.rpy with their signatures (%d)" % len(_zz_sigs), _zz_bad)
+        check(world_inside("dorm") == "boys_dorm" and world_inside("courtyard") is None and world_pinned("dorm") and not world_pinned("yuji_room")
+              and world_home("yuji") == "yuji_room" and world_home("gojo") is None
+              and world_door_bond("yuji_room") == 15 and world_door_bond("courtyard") is None
+              and isinstance(world_door_owners("senpai_room"), builtins.list) and builtins.sorted(world_door_owners("senpai_room")) == ["panda", "toge"]
+              and world_asleep("megumi") is False and world_home_state("megumi") in ("awake", "asleep", "out")
+              and isinstance(world_room_state("senpai_room"), (builtins.dict, dict)) and builtins.sorted(world_room_state("senpai_room")) == ["panda", "toge"]
+              and world_room_state("courtyard") == {} and world_away("nobara") is None,
+              "H: and answer in their frozen shapes (a house's key or None; a bool; a place or None; an int or None; a list; awake, asleep or out; a dict by owner; a district or None)")
+        _zz_pn = person_now("yuji")
+        _zz_pa = [place_access(l) for l in LOC_ORDER]
+        check(builtins.sorted(_zz_pn) == ["doing", "hidden", "name", "place", "reachable", "with_me"]
+              and all(isinstance(r, builtins.tuple) and len(r) == 3 and isinstance(r[0], bool) and isinstance(r[1], str) and isinstance(r[2], str) for r in _zz_pa),
+              "H: person_now has exactly its six keys, and place_access answers (bool, reason, short tag) for every place")
+        flag("door_megumi_room")
+        store.bonds["megumi"] = 0
+        fixture(here="boys_dorm")
+        _zz_open = place_access("megumi_room")[0]
+        store.flags.discard("door_megumi_room")
+        check(_zz_open and not place_access("megumi_room")[0] and place_access("megumi_room")[2] == "Bond 15",
+              "H: the flag door_<place> opens a door at Bond 0, and without it the door asks Bond 15 (the hook for later quests, D49)")
+        fixture(here="courtyard")
+        ## -- the icons
+        _zz_sheet = [l.strip() for l in open(os.path.join(smoke_env("SMOKE_ROOT", "."), "tools", "icons", "sheet_4.txt"), encoding="utf-8")
+                     if l.strip() and not l.startswith("#") and l.strip() != "-"]
+        check(len(ICONS) == 114 and len(_zz_sheet) == 26 and all(n in ICONS for n in _zz_sheet)
+              and _zz_sheet[:11] == ["place_" + k for k in ZZ_NEW_PLACES]
+              and _zz_sheet[11:16] == ["place_" + y for y in PATH_YARD_ICONS]
+              and _zz_sheet[16:] == ["bath_soak", "bath_sauna", "pool_swim", "cards_invite", "history", "auto", "save", "help", "continue", "at_home"]
+              and all(icon_for("act", i) == i for i in ("bath_soak", "bath_sauna", "pool_swim", "cards_invite")),
+              "H: 114 icons; sheet 4 holds the 26 new names in their frozen order; the four new actions have their icon rows", _zz_sheet)
+        ## -- with no icon art for a yard, an exit to it draws its area's icon
+        _zz_bad = [(y, path_icon(y)) for y in PATH_YARD_ICONS
+                   if path_icon(y) != ("place_" + y if icon_has_art("place_" + y) else "area_" + area_of(y))]
+        check(not _zz_bad and path_icon("courtyard") == "area_heart" and PATH_HOUSE_EXITS == 7
+              and all(len(path_exits(l)) <= 7 for l in LOC_ORDER) and RAIL_MAX <= 8,
+              "H: an exit to a yard draws place_<yard> only once that picture is cut, else its area's icon as before (%d of 5 cut today); no place has more than seven exits"
+              % len([y for y in PATH_YARD_ICONS if icon_has_art("place_" + y)]), _zz_bad)
+        ## -- every validator, together
+        _zz_all = [f for fn in (_validate_world, path_validate, hot_validate, view_validate, night_validate, icon_validate, art_validate,
+                                rule_validate, _validate_board) for f in fn()]
+        check(_zz_all == [], "H: the validators of every file this sitting touched are clean together", _zz_all)
 
     $ finish()

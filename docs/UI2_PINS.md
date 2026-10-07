@@ -111,6 +111,17 @@ with the same number of checks before U0a's edits and after: 3,299 in all.
 | `p2_contracts.rpy:1118, 1131, 1239, 1324`, `p2_paths.rpy:412`, `p2_rooms.rpy:477, 499`, `u2_home.rpy:1048` | `hot_validate() == []` while the harnesses' own hotspots are registered in real places | D60's "a place is shaped all at once" would report them in a shaped place; the rule leaves out ids that begin `zz`, and a hotspot with no shape is drawn as its button | – (they pass unedited; U0c2's overlay over all 35 places proves it) |
 | any other harness line that looks at what a hotspot draws and not at its id, rectangle, action or label | a shaped place draws no ring and no icon (D60) | every shaped place, from batch 0 | found by U0c2's run of the standing set over the overlay that shapes all 35 places, and turned into its rule there |
 
+**Turned by U0c2's first sitting (7 Oct):**
+
+| harness line | was | is now | why |
+|---|---|---|---|
+| `p2_view`, "with no box and others on stage there is no pose" and the line after it | `RULE_LAYOUT["view_dorm_common"] = {}` stood for "no box in the sidecar" | it empties `RULE_LAYOUT["pose_dorm_common"]` as well (and puts both back) | `view_pose` reads `pose_<place>.json` before the `view_` file's `poses` key (3.2, K15), and the overlay U0a gave this harness holds its two test boxes in both files. Proven: `p2_view` 130 of 130 with the edit, 128 without. Nothing else in a harness older than this sitting was edited |
+
+The four D60 rows above (the lock icon's line in `p2_paths`, the unique keys of
+`p2_hud`, the `zz` hotspots, "any other line that looks at what a hotspot
+draws") are **the second sitting's**: the first built no shapes, and with no
+shaped place every one of those lines passes as it is.
+
 Also handed on: the Library's description is rewritten for a bright room by U1 ("the Library's and the Dormitories' words", plan 10.2); the Teachers' Dormitory stand-in was brightened in 56f0ea0 (it was nearly black at Night) and is still a borrowed picture.
 
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
