@@ -1,0 +1,2211 @@
+{
+ "format": 1,
+ "about": [
+  "tools/art/batches.json -- the batch table of docs/UI2_DESIGN.md 5.13, as data. tools/art_batch.py <n> reads it and writes that sitting's workflows and its page of numbered steps.",
+  "Every picture is made in two versions unless its row says `versions`. No batch is over twelve renders and no file over ten.",
+  "`needs` are markers that must be in `done` before a batch (or a file of it) is written: \"1\" is all of batch 1, \"7a\" its first file. `needs_words` is the plan's own wording, for a person.",
+  "`done` is the art-install role's: `tools/art_batch.py --done 3a` adds a marker when that file's pictures are installed (or, for a test of a wording, judged).",
+  "Picture kinds art_batch.py writes itself: composed (a yard, the gate, a new place), inplace, relight, map. The others name the tool or the sitting that makes them.",
+  "`hour_words` is a relight's own hour sentence, for a room the general one would not fit (a windowless room by lamplight; a friend's room at Night with one small lamp on).",
+  "`canary` and install figures are added beside a batch by the installer (5.2); nothing here is read by the game."
+ ],
+ "cost_per_render": 0.16,
+ "limits": {
+  "batch": 12,
+  "file": 10
+ },
+ "done": [],
+ "batches": [
+  {
+   "id": "0",
+   "title": "nothing to run: the four pictures already made are installed",
+   "needs": [],
+   "needs_words": "checkpoint A; U0d",
+   "renders": 0,
+   "unlocks": "the look, in the game, on four places; the Courtyard's exits on its three buildings. Until batch 3 the Common Room's evening and night are its new day picture tinted",
+   "note": "In the same sitting art_batch.py writes batch 1's files.",
+   "files": [
+    {
+     "name": null,
+     "pictures": [
+      {
+       "place": "courtyard",
+       "kind": "installed",
+       "with_layout": true
+      },
+      {
+       "place": "library",
+       "kind": "installed",
+       "with_layout": true
+      },
+      {
+       "place": "dorm_common",
+       "kind": "installed"
+      },
+      {
+       "place": "cafeteria",
+       "kind": "installed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "0b",
+   "title": "Yuji's five other faces",
+   "needs": [],
+   "needs_words": "nothing: the picture exists; it can be pressed before wave 0",
+   "unlocks": "nothing yet: the five wait, with the calm one, for one install",
+   "note": "Outside the counts (D57). The file is ~/Desktop/JJK Game images/yuji_edit.json.",
+   "files": [
+    {
+     "name": "yuji_edit",
+     "pictures": [
+      {
+       "kind": "face",
+       "stem": "yuji_happy",
+       "versions": 1
+      },
+      {
+       "kind": "face",
+       "stem": "yuji_serious",
+       "versions": 1
+      },
+      {
+       "kind": "face",
+       "stem": "yuji_sad",
+       "versions": 1
+      },
+      {
+       "kind": "face",
+       "stem": "yuji_angry",
+       "versions": 1
+      },
+      {
+       "kind": "face",
+       "stem": "yuji_surprised",
+       "versions": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "0c",
+   "title": "Yuji's blink and talking mouth again",
+   "needs": [],
+   "needs_words": "U0k (his sprite keyed and staged) and U0d2 (the close-up cut from a staged sprite)",
+   "unlocks": "Yuji in his school uniform, everywhere he appears, with all six faces, his blink and his mouth",
+   "note": "Outside the counts (D57).",
+   "files": [
+    {
+     "name": "yuji_fx",
+     "pictures": [
+      {
+       "kind": "face",
+       "stem": "yuji_blink",
+       "versions": 1
+      },
+      {
+       "kind": "face",
+       "stem": "yuji_talk",
+       "versions": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "title": "the first ring: the School Courtyard, the Dormitory Garden, the Training Yard",
+   "heading": "The main locations, working outwards",
+   "needs": [
+    "0"
+   ],
+   "unlocks": "the three yards beside the Courtyard, each a choice as the Courtyard was; each choice fixes facts",
+   "note": "The first test: does a yard composed from words and the chosen Courtyard agree with it (5.2 has the pass rule and what follows a failure).",
+   "files": [
+    {
+     "name": "art_1",
+     "pictures": [
+      {
+       "place": "school_yard",
+       "kind": "composed"
+      },
+      {
+       "place": "dorm_yard",
+       "kind": "composed"
+      },
+      {
+       "place": "training_yard",
+       "kind": "composed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "the second ring: the Staff Building Steps, the Mountain Path, the Main Gate",
+   "needs": [
+    "1"
+   ],
+   "needs_words": "1 chosen (the gate needs only 0); U0c (the main menu no longer borrows the gate)",
+   "unlocks": "every main location chosen: the whole campus walked by exits on final pictures",
+   "files": [
+    {
+     "name": "art_2",
+     "pictures": [
+      {
+       "place": "staff_yard",
+       "kind": "composed"
+      },
+      {
+       "place": "trailhead",
+       "kind": "composed"
+      },
+      {
+       "place": "gate",
+       "kind": "composed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "the Common Room and my room",
+   "heading": "The rooms where every evening is spent",
+   "needs": [
+    "1"
+   ],
+   "needs_words": "1 (the garden chosen: the Common Room's windows show the Boys' Dormitory and the tower as the garden has them)",
+   "unlocks": "two rooms whole, by day, in the evening and at night, foregrounds recut",
+   "note": "The first test of three wordings: the look on a room redone in place, a named addition (the laptop, in a) and an indoor relight (b). a's Common Room render is the canary's baseline, measured against revision 1 (5.2).",
+   "files": [
+    {
+     "name": "art_3a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "dorm_common",
+       "kind": "inplace",
+       "from_rev1": true
+      },
+      {
+       "place": "dorm",
+       "kind": "inplace",
+       "add": true
+      }
+     ]
+    },
+    {
+     "name": "art_3b",
+     "part": "b",
+     "needs": [
+      "3a"
+     ],
+     "pictures": [
+      {
+       "place": "dorm_common",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "dorm_common",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "dorm",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "dorm",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "the Cafeteria and the girls' corridor",
+   "needs": [
+    "1",
+    "3"
+   ],
+   "needs_words": "1 (the School Courtyard chosen); 3 judged (its wordings)",
+   "unlocks": "the other two; the corridor I cross to the girls' rooms, with its spare doors measured",
+   "files": [
+    {
+     "name": "art_4a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "cafeteria",
+       "kind": "inplace",
+       "from_rev1": true
+      },
+      {
+       "place": "girls_dorm",
+       "kind": "inplace"
+      }
+     ]
+    },
+    {
+     "name": "art_4b",
+     "part": "b",
+     "needs": [
+      "4a"
+     ],
+     "pictures": [
+      {
+       "place": "cafeteria",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "cafeteria",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "girls_dorm",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "girls_dorm",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "the first pose back, and the icons",
+   "needs": [
+    "3"
+   ],
+   "needs_words": "3; U0c",
+   "unlocks": "a painted person in the new look; icons for everything new. Then checkpoint B",
+   "files": [
+    {
+     "name": "art_5",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 1,
+       "what": "Nobara on the sofa, on the new evening Common Room"
+      },
+      {
+       "kind": "icons",
+       "stem": "sheet_4",
+       "what": "the icon sheet: the 26 new icons"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "the school's rooms",
+   "heading": "The rooms off each main location, and the new places",
+   "needs": [
+    "1"
+   ],
+   "unlocks": "the school in the look at every hour",
+   "files": [
+    {
+     "name": "art_6a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "classroom",
+       "kind": "inplace"
+      },
+      {
+       "place": "infirmary",
+       "kind": "inplace"
+      }
+     ]
+    },
+    {
+     "name": "art_6b",
+     "part": "b",
+     "needs": [
+      "6a"
+     ],
+     "pictures": [
+      {
+       "place": "classroom",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "classroom",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "infirmary",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "infirmary",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "the heart of the campus after dark",
+   "needs": [
+    "0",
+    "1"
+   ],
+   "unlocks": "lit windows and a real sky where I walk every evening",
+   "note": "a is the first outdoor relight; b is written only when a is judged to hold.",
+   "files": [
+    {
+     "name": "art_7a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "courtyard",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "courtyard",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    },
+    {
+     "name": "art_7b",
+     "part": "b",
+     "needs": [
+      "7a"
+     ],
+     "pictures": [
+      {
+       "place": "school_yard",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "school_yard",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "library",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "library",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "the garden after dark, and the rooftop",
+   "needs": [
+    "1",
+    "7a"
+   ],
+   "needs_words": "1; 7a judged",
+   "unlocks": "the garden at dusk and at Night",
+   "note": "a's rooftop is the first test of the outdoor keep wording on a day picture.",
+   "files": [
+    {
+     "name": "art_8a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "dorm_yard",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "dorm_yard",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "rooftop",
+       "kind": "inplace"
+      }
+     ]
+    },
+    {
+     "name": "art_8b",
+     "part": "b",
+     "needs": [
+      "8a"
+     ],
+     "pictures": [
+      {
+       "place": "rooftop",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "rooftop",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "title": "the Boys' Dormitory",
+   "needs": [
+    "1",
+    "3"
+   ],
+   "needs_words": "1 (the garden: the house from outside); 3 (My Room, as the building's reference)",
+   "unlocks": "the dormitory as itself",
+   "files": [
+    {
+     "name": "art_9a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "boys_dorm",
+       "kind": "composed"
+      },
+      {
+       "place": "yuji_room",
+       "kind": "composed"
+      }
+     ]
+    },
+    {
+     "name": "art_9b",
+     "part": "b",
+     "needs": [
+      "9a"
+     ],
+     "pictures": [
+      {
+       "place": "boys_dorm",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "boys_dorm",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "yuji_room",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "yuji_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "title": "Megumi's room, and Panda and Toge's",
+   "needs": [
+    "9a"
+   ],
+   "needs_words": "9a (the corridor)",
+   "unlocks": "the boys' rooms whole, by day and at Night",
+   "files": [
+    {
+     "name": "art_10a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "megumi_room",
+       "kind": "composed"
+      },
+      {
+       "place": "senpai_room",
+       "kind": "composed"
+      }
+     ]
+    },
+    {
+     "name": "art_10b",
+     "part": "b",
+     "needs": [
+      "10a"
+     ],
+     "pictures": [
+      {
+       "place": "megumi_room",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "megumi_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+      },
+      {
+       "place": "senpai_room",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "senpai_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "title": "Nobara's room and Maki's",
+   "needs": [
+    "4"
+   ],
+   "needs_words": "4 (the corridor)",
+   "unlocks": "the girls' rooms",
+   "files": [
+    {
+     "name": "art_11a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "nobara_room",
+       "kind": "composed"
+      },
+      {
+       "place": "maki_room",
+       "kind": "composed"
+      }
+     ]
+    },
+    {
+     "name": "art_11b",
+     "part": "b",
+     "needs": [
+      "11a"
+     ],
+     "pictures": [
+      {
+       "place": "nobara_room",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "nobara_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+      },
+      {
+       "place": "maki_room",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "maki_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "title": "the three offices",
+   "needs": [
+    "2"
+   ],
+   "needs_words": "2 (the staff steps)",
+   "unlocks": "the staff building in the look; a desk by lamplight in the principal's office",
+   "note": "All three offices are shut at Night, so they have no night picture.",
+   "files": [
+    {
+     "name": "art_12a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "office",
+       "kind": "inplace",
+       "add": true
+      },
+      {
+       "place": "utahime_office",
+       "kind": "inplace"
+      },
+      {
+       "place": "gojo_office",
+       "kind": "inplace"
+      }
+     ]
+    },
+    {
+     "name": "art_12b",
+     "part": "b",
+     "needs": [
+      "12a"
+     ],
+     "pictures": [
+      {
+       "place": "office",
+       "kind": "relight",
+       "hour": "evening",
+       "hour_words": "Change the time of day to evening: the room is lit only by its own lamps and candles, which make warm pools of light and deep soft shadows; add no new light."
+      },
+      {
+       "place": "utahime_office",
+       "kind": "relight",
+       "hour": "evening",
+       "hour_words": "Change the time of day to evening: outside the windows the sky is dusk blue with a last band of orange, and the room's own lamps are switched on and fill it with warm lamplight and soft shadows."
+      },
+      {
+       "place": "gojo_office",
+       "kind": "relight",
+       "hour": "evening",
+       "hour_words": "Change the time of day to evening: outside the windows the sky is dusk blue with a last band of orange, and the room's own lamps are switched on and fill it with warm lamplight and soft shadows."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "13",
+   "title": "the teachers' house",
+   "needs": [
+    "2"
+   ],
+   "unlocks": "where the teachers stay",
+   "files": [
+    {
+     "name": "art_13a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "teachers_lounge",
+       "kind": "composed"
+      },
+      {
+       "place": "teachers_dorm",
+       "kind": "composed"
+      }
+     ]
+    },
+    {
+     "name": "art_13b",
+     "part": "b",
+     "needs": [
+      "13a"
+     ],
+     "pictures": [
+      {
+       "place": "teachers_lounge",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "teachers_lounge",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "teachers_dorm",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "teachers_dorm",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "title": "the outer yards after dark",
+   "needs": [
+    "1",
+    "2",
+    "7a"
+   ],
+   "needs_words": "1, 2; 7a judged",
+   "unlocks": "the whole campus walked at Night under a real sky",
+   "files": [
+    {
+     "name": "art_14_1",
+     "pictures": [
+      {
+       "place": "training_yard",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "training_yard",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "staff_yard",
+       "kind": "relight",
+       "hour": "evening"
+      }
+     ]
+    },
+    {
+     "name": "art_14_2",
+     "pictures": [
+      {
+       "place": "staff_yard",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "trailhead",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "trailhead",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "15",
+   "title": "the training hall and the dojo",
+   "needs": [
+    "1"
+   ],
+   "files": [
+    {
+     "name": "art_15a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "training",
+       "kind": "inplace"
+      },
+      {
+       "place": "dojo",
+       "kind": "inplace"
+      }
+     ]
+    },
+    {
+     "name": "art_15b",
+     "part": "b",
+     "needs": [
+      "15a"
+     ],
+     "pictures": [
+      {
+       "place": "training",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "training",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "dojo",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "dojo",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "16",
+   "title": "the storehouse and the pool",
+   "needs": [
+    "1"
+   ],
+   "needs_words": "1 (the Training Yard: the pool's gate, and the dojo as a reference); for the pool's evening in b, 7a judged",
+   "unlocks": "the pool, judged as belonging",
+   "note": "No people in the pool's pictures (K16). May be run before checkpoint B.",
+   "files": [
+    {
+     "name": "art_16a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "storehouse",
+       "kind": "inplace"
+      },
+      {
+       "place": "pool",
+       "kind": "composed"
+      }
+     ]
+    },
+    {
+     "name": "art_16b",
+     "part": "b",
+     "needs": [
+      "16a",
+      "7a"
+     ],
+     "pictures": [
+      {
+       "place": "storehouse",
+       "kind": "relight",
+       "hour": "evening",
+       "hour_words": "Change the time of day to evening: the room is lit only by its own lamps and candles, which make warm pools of light and deep soft shadows; add no new light."
+      },
+      {
+       "place": "storehouse",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night: the room is lit only by its own lamps, turned low, with deep soft shadows; add no new light."
+      },
+      {
+       "place": "pool",
+       "kind": "relight",
+       "hour": "evening"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "17",
+   "title": "the Forest Trail and the Riverside",
+   "needs": [
+    "2",
+    "8a"
+   ],
+   "needs_words": "2; 8a judged (the outdoor wording)",
+   "files": [
+    {
+     "name": "art_17a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "forest",
+       "kind": "inplace"
+      },
+      {
+       "place": "riverside",
+       "kind": "inplace"
+      }
+     ]
+    },
+    {
+     "name": "art_17b",
+     "part": "b",
+     "needs": [
+      "17a"
+     ],
+     "pictures": [
+      {
+       "place": "forest",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "forest",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "place": "riverside",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "riverside",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "18",
+   "title": "the ridge, and the gate after dark",
+   "needs": [
+    "2",
+    "8a"
+   ],
+   "needs_words": "2; 8a judged",
+   "unlocks": "every old place in the new look at every hour",
+   "note": "a is the test of the veil as an addition.",
+   "files": [
+    {
+     "name": "art_18a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "ridge",
+       "kind": "inplace",
+       "add": true
+      },
+      {
+       "place": "gate",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "gate",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    },
+    {
+     "name": "art_18b",
+     "part": "b",
+     "needs": [
+      "18a"
+     ],
+     "pictures": [
+      {
+       "place": "ridge",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "ridge",
+       "kind": "relight",
+       "hour": "night"
+      },
+      {
+       "kind": "veil",
+       "stem": "ridge_veil",
+       "what": "the strong veil picture, made from the new ridge"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "19",
+   "title": "the Onsen and the Sauna",
+   "needs": [
+    "2"
+   ],
+   "needs_words": "2 (the Mountain Path)",
+   "unlocks": "the recovery rooms, with their own standing spots",
+   "note": "No people in any of them (K16). The sauna is one picture, the same at every hour. May be run before checkpoint B.",
+   "files": [
+    {
+     "name": "art_19a",
+     "part": "a",
+     "pictures": [
+      {
+       "place": "bathhouse",
+       "kind": "composed"
+      },
+      {
+       "place": "sauna",
+       "kind": "composed"
+      }
+     ]
+    },
+    {
+     "name": "art_19b",
+     "part": "b",
+     "needs": [
+      "19a"
+     ],
+     "pictures": [
+      {
+       "place": "bathhouse",
+       "kind": "relight",
+       "hour": "evening"
+      },
+      {
+       "place": "bathhouse",
+       "kind": "relight",
+       "hour": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "20",
+   "title": "the pose test",
+   "needs": [
+    "12",
+    "0"
+   ],
+   "unlocks": "the owner's ruling on painted people in the new look, before sixty-four more are bought",
+   "files": [
+    {
+     "name": "art_20",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 2,
+       "what": "Utahime at her desk"
+      },
+      {
+       "kind": "pose",
+       "row": 3,
+       "what": "Megumi at the Library's reading table"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "21",
+   "title": "the area maps",
+   "heading": "The maps, last",
+   "needs": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19"
+   ],
+   "needs_words": "every place on a map has its chosen picture (1 to 19)",
+   "unlocks": "pins on the right roofs",
+   "note": "a, the Courtyard & Gate map alone, is the test of whether the editor paints a map that agrees with finished places.",
+   "files": [
+    {
+     "name": "art_21a",
+     "part": "a",
+     "pictures": [
+      {
+       "stem": "area_heart",
+       "kind": "map"
+      }
+     ]
+    },
+    {
+     "name": "art_21b",
+     "part": "b",
+     "needs": [
+      "21a"
+     ],
+     "pictures": [
+      {
+       "stem": "area_school",
+       "kind": "map"
+      },
+      {
+       "stem": "area_dorms",
+       "kind": "map"
+      },
+      {
+       "stem": "area_staff",
+       "kind": "map"
+      },
+      {
+       "stem": "area_grounds",
+       "kind": "map"
+      },
+      {
+       "stem": "area_mountain",
+       "kind": "map"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "22",
+   "title": "the campus map",
+   "needs": [
+    "21"
+   ],
+   "unlocks": "the painted campus, built round the finished places. Then checkpoint C, where the owner approves the maps",
+   "files": [
+    {
+     "name": "art_22",
+     "pictures": [
+      {
+       "stem": "map_campus",
+       "kind": "map"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "23",
+   "title": "poses, main places, first six (rows 4 to 9)",
+   "heading": "People, and everything off campus",
+   "needs": [
+    "4",
+    "6",
+    "12",
+    "15"
+   ],
+   "needs_words": "the owner's yes at checkpoint C; 4, 6, 12, 15",
+   "unlocks": "people doing things",
+   "files": [
+    {
+     "name": "art_23_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 4
+      },
+      {
+       "kind": "pose",
+       "row": 5
+      },
+      {
+       "kind": "pose",
+       "row": 6
+      }
+     ]
+    },
+    {
+     "name": "art_23_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 7
+      },
+      {
+       "kind": "pose",
+       "row": 8
+      },
+      {
+       "kind": "pose",
+       "row": 9
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "24",
+   "title": "poses, main places, the rest",
+   "needs": [
+    "2",
+    "7",
+    "8",
+    "12"
+   ],
+   "note": "b is row 13, made after the other pose at the same table is installed.",
+   "files": [
+    {
+     "name": "art_24a",
+     "part": "a",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 10
+      },
+      {
+       "kind": "pose",
+       "row": 11
+      },
+      {
+       "kind": "pose",
+       "row": 12
+      },
+      {
+       "kind": "pose",
+       "row": 14
+      },
+      {
+       "kind": "pose",
+       "row": 15
+      }
+     ]
+    },
+    {
+     "name": "art_24b",
+     "part": "b",
+     "needs": [
+      "24a"
+     ],
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 13
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "25",
+   "title": "poses, at home and awake at Night (rows 16 to 21)",
+   "needs": [
+    "9",
+    "10",
+    "11"
+   ],
+   "unlocks": "friends at home at Night",
+   "files": [
+    {
+     "name": "art_25_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 16
+      },
+      {
+       "kind": "pose",
+       "row": 17
+      },
+      {
+       "kind": "pose",
+       "row": 18
+      }
+     ]
+    },
+    {
+     "name": "art_25_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 19
+      },
+      {
+       "kind": "pose",
+       "row": 20
+      },
+      {
+       "kind": "pose",
+       "row": 21
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "26",
+   "title": "poses: at Night, and the teachers at home (rows 22 to 26)",
+   "needs": [
+    "6",
+    "13",
+    "18"
+   ],
+   "files": [
+    {
+     "name": "art_26",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 22
+      },
+      {
+       "kind": "pose",
+       "row": 23
+      },
+      {
+       "kind": "pose",
+       "row": 24
+      },
+      {
+       "kind": "pose",
+       "row": 25
+      },
+      {
+       "kind": "pose",
+       "row": 26
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "27",
+   "title": "poses: asleep (rows 27 to 32)",
+   "needs": [
+    "25"
+   ],
+   "needs_words": "25 installed (each shape is kept clear of the pose that shows beside it)",
+   "note": "A shape under a blanket in each friend's bed, turned to the wall (K16).",
+   "files": [
+    {
+     "name": "art_27_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 27
+      },
+      {
+       "kind": "pose",
+       "row": 28
+      },
+      {
+       "kind": "pose",
+       "row": 29
+      }
+     ]
+    },
+    {
+     "name": "art_27_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 30
+      },
+      {
+       "kind": "pose",
+       "row": 31
+      },
+      {
+       "kind": "pose",
+       "row": 32
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "28",
+   "title": "the prologue, first half",
+   "needs": [],
+   "unlocks": "the first twenty minutes of the game on real pictures",
+   "files": [
+    {
+     "name": "art_28a",
+     "part": "a",
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "alley",
+       "what": "lit; one lit street lamp high in the top right corner"
+      },
+      {
+       "kind": "scene",
+       "stem": "diner"
+      },
+      {
+       "kind": "scene",
+       "stem": "home_living"
+      },
+      {
+       "kind": "scene",
+       "stem": "city_night"
+      }
+     ]
+    },
+    {
+     "name": "art_28b",
+     "part": "b",
+     "needs": [
+      "28a"
+     ],
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "alley_dark",
+       "what": "relit from the installed alley"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "29",
+   "title": "the prologue, second half",
+   "needs": [],
+   "files": [
+    {
+     "name": "art_29",
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "home_bedroom_night"
+      },
+      {
+       "kind": "scene",
+       "stem": "car",
+       "what": "seen from the back seat, the gap between the front seats in the middle, the driver's seat empty"
+      },
+      {
+       "kind": "scene",
+       "stem": "street_morning"
+      },
+      {
+       "kind": "scene",
+       "stem": "town_street"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "30",
+   "title": "the Sun Mall and the Nade sites",
+   "needs": [],
+   "needs_words": "U9's first commit, to be seen (if U9's swaps are skipped, this batch is not made)",
+   "files": [
+    {
+     "name": "art_30",
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "mall_front"
+      },
+      {
+       "kind": "scene",
+       "stem": "mall_hall"
+      },
+      {
+       "kind": "scene",
+       "stem": "mall_atrium"
+      },
+      {
+       "kind": "scene",
+       "stem": "warehouse"
+      },
+      {
+       "kind": "scene",
+       "stem": "annexe"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "31",
+   "title": "the board's job sites",
+   "needs": [],
+   "files": [
+    {
+     "name": "art_31",
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "site_tunnel"
+      },
+      {
+       "kind": "scene",
+       "stem": "site_ward"
+      },
+      {
+       "kind": "scene",
+       "stem": "site_platform"
+      },
+      {
+       "kind": "scene",
+       "stem": "site_pool"
+      },
+      {
+       "kind": "scene",
+       "stem": "site_karaoke"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "32",
+   "title": "Tokyo by day, and the Tokyo map",
+   "needs": [],
+   "files": [
+    {
+     "name": "art_32_1",
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "shibuya",
+       "what": "open pavement across the lower middle; an arcade front with a crane machine at the pavement's edge"
+      },
+      {
+       "kind": "scene",
+       "stem": "harajuku",
+       "what": "open pavement across the lower middle; a shop window at pavement level left of the middle"
+      },
+      {
+       "kind": "scene",
+       "stem": "shinjuku"
+      },
+      {
+       "kind": "scene",
+       "stem": "kawasaki"
+      },
+      {
+       "kind": "scene",
+       "stem": "yotsuka"
+      }
+     ]
+    },
+    {
+     "name": "art_32_2",
+     "pictures": [
+      {
+       "kind": "tokyo_map",
+       "stem": "map_tokyo",
+       "what": "redone in place, with the outdoor keep text; its markers stay where they are"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "33",
+   "title": "Tokyo by night, and the two general curse sites",
+   "needs": [
+    "32"
+   ],
+   "files": [
+    {
+     "name": "art_33_1",
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "shibuya_night",
+       "what": "relit from batch 32's"
+      },
+      {
+       "kind": "scene",
+       "stem": "shinjuku_night",
+       "what": "relit from batch 32's"
+      },
+      {
+       "kind": "scene",
+       "stem": "club"
+      },
+      {
+       "kind": "scene",
+       "stem": "market"
+      }
+     ]
+    },
+    {
+     "name": "art_33_2",
+     "pictures": [
+      {
+       "kind": "scene",
+       "stem": "ruin_hall"
+      },
+      {
+       "kind": "scene",
+       "stem": "veil",
+       "what": "the inside of a veil"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "34",
+   "title": "the main menu's picture, and the curses",
+   "needs": [],
+   "needs_words": "the owner's choice at checkpoint C; U6; U7",
+   "files": [
+    {
+     "name": "art_34",
+     "pictures": [
+      {
+       "kind": "menu",
+       "stem": "title",
+       "what": "for the mock-up the owner chose"
+      },
+      {
+       "kind": "curse",
+       "stem": "curse_big"
+      },
+      {
+       "kind": "curse",
+       "stem": "curse_mall"
+      },
+      {
+       "kind": "curse",
+       "stem": "curse_small"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "35",
+   "title": "blink and talk, nine pictures (one version each)",
+   "needs": [],
+   "needs_words": "the owner's yes on Yuji's mouth (checkpoint B)",
+   "note": "Five short files a sitting, one per person; they are measured against the sprite, so there is nothing to choose.",
+   "files": [
+    {
+     "name": "art_35_1",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 1 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 1 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_35_2",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 2 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 2 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_35_3",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 3 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 3 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_35_4",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 4 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 4 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_35_5",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 5 of the sitting",
+       "versions": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "36",
+   "title": "blink and talk, nine pictures (one version each)",
+   "needs": [],
+   "needs_words": "the owner's yes on Yuji's mouth (checkpoint B)",
+   "note": "Five short files a sitting, one per person; they are measured against the sprite, so there is nothing to choose.",
+   "files": [
+    {
+     "name": "art_36_1",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 1 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 1 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_36_2",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 2 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 2 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_36_3",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 3 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 3 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_36_4",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 4 of the sitting",
+       "versions": 1
+      },
+      {
+       "kind": "blink",
+       "stem": "person 4 of the sitting",
+       "versions": 1
+      }
+     ]
+    },
+    {
+     "name": "art_36_5",
+     "pictures": [
+      {
+       "kind": "blink",
+       "stem": "person 5 of the sitting",
+       "versions": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "37",
+   "title": "Dad (the test of the route for a new person)",
+   "needs": [],
+   "needs_words": "the cloud plan active that day; U7",
+   "cost": "about $1.25",
+   "note": "One base run on Comfy Cloud, then repair runs in the local ComfyUI: about 4 to 9 paid boxes.",
+   "files": [
+    {
+     "name": null,
+     "pictures": [
+      {
+       "kind": "person",
+       "stem": "father",
+       "versions": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "38",
+   "title": "Mom",
+   "needs": [
+    "37"
+   ],
+   "needs_words": "37 judged",
+   "cost": "about $1.25",
+   "note": "About 4 to 9 paid boxes.",
+   "files": [
+    {
+     "name": null,
+     "pictures": [
+      {
+       "kind": "person",
+       "stem": "mother",
+       "versions": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "39",
+   "title": "Kurose",
+   "needs": [
+    "37"
+   ],
+   "needs_words": "37 judged",
+   "cost": "about $1.25",
+   "note": "About 4 to 9 paid boxes.",
+   "files": [
+    {
+     "name": null,
+     "pictures": [
+      {
+       "kind": "person",
+       "stem": "kurose",
+       "versions": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40",
+   "title": "Nade",
+   "needs": [
+    "37"
+   ],
+   "needs_words": "37 judged",
+   "cost": "about $1.25",
+   "note": "About 4 to 9 paid boxes.",
+   "files": [
+    {
+     "name": null,
+     "pictures": [
+      {
+       "kind": "person",
+       "stem": "nade",
+       "versions": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "41",
+   "title": "poses: rows 33 to 38",
+   "heading": "A painted pose everywhere else",
+   "needs": [
+    "2",
+    "3",
+    "8",
+    "9",
+    "15",
+    "5"
+   ],
+   "needs_words": "the owner's yes at checkpoint C; 2, 3, 8, 9, 15; 5 installed",
+   "files": [
+    {
+     "name": "art_41_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 33
+      },
+      {
+       "kind": "pose",
+       "row": 34
+      },
+      {
+       "kind": "pose",
+       "row": 35
+      }
+     ]
+    },
+    {
+     "name": "art_41_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 36
+      },
+      {
+       "kind": "pose",
+       "row": 37
+      },
+      {
+       "kind": "pose",
+       "row": 38
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "42",
+   "title": "poses: rows 39 to 44",
+   "needs": [
+    "3",
+    "4",
+    "10",
+    "16",
+    "17",
+    "5",
+    "23",
+    "41"
+   ],
+   "needs_words": "the owner's yes at checkpoint C; 3, 4, 10, 16, 17; 5, 23 and 41 installed",
+   "files": [
+    {
+     "name": "art_42_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 39
+      },
+      {
+       "kind": "pose",
+       "row": 40
+      },
+      {
+       "kind": "pose",
+       "row": 41
+      }
+     ]
+    },
+    {
+     "name": "art_42_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 42
+      },
+      {
+       "kind": "pose",
+       "row": 43
+      },
+      {
+       "kind": "pose",
+       "row": 44
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "43",
+   "title": "poses: rows 45 to 50",
+   "needs": [
+    "0",
+    "1",
+    "4",
+    "11",
+    "13",
+    "24",
+    "42"
+   ],
+   "needs_words": "the owner's yes at checkpoint C; 0, 1, 4, 11, 13; 24 and 42 installed",
+   "files": [
+    {
+     "name": "art_43_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 45
+      },
+      {
+       "kind": "pose",
+       "row": 46
+      },
+      {
+       "kind": "pose",
+       "row": 47
+      }
+     ]
+    },
+    {
+     "name": "art_43_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 48
+      },
+      {
+       "kind": "pose",
+       "row": 49
+      },
+      {
+       "kind": "pose",
+       "row": 50
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "44",
+   "title": "poses: rows 51 to 55",
+   "needs": [
+    "11",
+    "13",
+    "15",
+    "17",
+    "26"
+   ],
+   "needs_words": "the owner's yes at checkpoint C; 11, 13, 15, 17; 26 installed",
+   "files": [
+    {
+     "name": "art_44",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 51
+      },
+      {
+       "kind": "pose",
+       "row": 52
+      },
+      {
+       "kind": "pose",
+       "row": 53
+      },
+      {
+       "kind": "pose",
+       "row": 54
+      },
+      {
+       "kind": "pose",
+       "row": 55
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "45",
+   "title": "poses: rows 56 to 61",
+   "needs": [
+    "0",
+    "4",
+    "10",
+    "15",
+    "32",
+    "43",
+    "44"
+   ],
+   "needs_words": "the owner's yes at checkpoint C; 0, 4, 10, 15, 32; 43 and 44 installed",
+   "files": [
+    {
+     "name": "art_45_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 56
+      },
+      {
+       "kind": "pose",
+       "row": 57
+      },
+      {
+       "kind": "pose",
+       "row": 58
+      }
+     ]
+    },
+    {
+     "name": "art_45_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 59
+      },
+      {
+       "kind": "pose",
+       "row": 60
+      },
+      {
+       "kind": "pose",
+       "row": 61
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "46",
+   "title": "poses: rows 62 to 67",
+   "needs": [
+    "1",
+    "4",
+    "10",
+    "17",
+    "18",
+    "32",
+    "44",
+    "45"
+   ],
+   "needs_words": "the owner's yes at checkpoint C; 1, 4, 10, 17, 18, 32; 44 and 45 installed",
+   "unlocks": "every person painted in every place their week takes them. Then checkpoint D",
+   "files": [
+    {
+     "name": "art_46_1",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 62
+      },
+      {
+       "kind": "pose",
+       "row": 63
+      },
+      {
+       "kind": "pose",
+       "row": 64
+      }
+     ]
+    },
+    {
+     "name": "art_46_2",
+     "pictures": [
+      {
+       "kind": "pose",
+       "row": 65
+      },
+      {
+       "kind": "pose",
+       "row": 66
+      },
+      {
+       "kind": "pose",
+       "row": 67
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

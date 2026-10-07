@@ -1,0 +1,24 @@
+{
+ "spots": {
+  "staff_yard": [
+   900,
+   760
+  ],
+  "office": [
+   900,
+   380
+  ],
+  "gojo_office": [
+   420,
+   600
+  ],
+  "utahime_office": [
+   1300,
+   620
+  ],
+  "teachers_lounge": [
+   1560,
+   340
+  ]
+ }
+}

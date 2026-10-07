@@ -1,4 +1,7 @@
 """
+REPLACED for the second UI overhaul by tools/make_redo_workflow.py --relight (docs/UI2_DESIGN.md 5.1, 5.7).
+This tool asks for the old look and reads the stale backgrounds_chosen folder; the overhaul does not use it.
+
 Build a ComfyUI workflow that relights chosen backgrounds for another time of day.
 
     python3 tools/make_relight_workflow.py your_room night

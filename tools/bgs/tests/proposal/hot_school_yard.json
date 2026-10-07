@@ -1,0 +1,24 @@
+{
+ "spots": {
+  "go_school_yard__classroom": [
+   405,
+   630
+  ],
+  "go_school_yard__cafeteria": [
+   300,
+   950
+  ],
+  "go_school_yard__infirmary": [
+   1500,
+   700
+  ],
+  "go_school_yard__library": [
+   950,
+   600
+  ],
+  "go_school_yard__courtyard": [
+   1440,
+   950
+  ]
+ }
+}
