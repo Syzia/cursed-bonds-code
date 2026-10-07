@@ -20,7 +20,9 @@
 ##   D  the Night: the four boys in their rooms on all seven days, the garden
 ##      and the Common Room empty; who is asleep; a sleeper is counted where
 ##      they are, is not on the stage, is captioned "asleep", and offers
-##      nothing, a mission of theirs included; world_home_state
+##      nothing, a mission of theirs included; world_home_state; a companion,
+##      a story pin and a flag schedule each keep someone awake; "asleep"
+##      comes ahead of a story caption; screen map_area reads map_marks()
 ##   E  doors: shut at Bond 14 with their line, open at 15, at Noon with the
 ##      owner out and at Night with the owner asleep; the shared room on
 ##      either owner's Bond; the flag door_<place>
@@ -1035,6 +1037,41 @@ label zz_smoke:
         store.schedule_overrides = {}
         check(_zz_c == (False, ["megumi"], False, "out", []),
               "D: someone a story pin has placed is never asleep, in their own room or anywhere else", _zz_c)
+
+        ## never asleep: a flag schedule, even one that puts them in their own room
+        _zz_c = (world_asleep("megumi"), stage_people("megumi_room")[0])
+        FLAG_SCHEDULES.append(("zz_flag", "megumi", {"Night": "megumi_room"}))
+        store.flags.add("zz_flag")
+        try:
+            _zz_c += (char_location("megumi"), world_asleep("megumi"), world_home_state("megumi"),
+                      stage_people("megumi_room")[0], ambient_of("megumi", "megumi_room")[0] != "asleep")
+        finally:
+            store.flags.discard("zz_flag")
+            FLAG_SCHEDULES.pop()
+        _zz_c += (world_asleep("megumi"), builtins.len([r for r in FLAG_SCHEDULES if r[0] == "zz_flag"]))
+        check(_zz_c == (True, [], "megumi_room", False, "awake", ["megumi"], True, True, 0),
+              "D: someone a flag schedule has placed is never asleep, although it puts him in his own room at Night: "
+              "he is awake and on its stage (and asleep again once the flag is gone)", _zz_c)
+
+        ## the asleep test comes ahead of the story caption (3.1: the function's first statement)
+        _zz_real = store.rail_story_caption
+        store.rail_story_caption = lambda who, loc: ("zz story", None)
+        try:
+            _zz_c = (world_asleep("panda"), ambient_of("panda", "senpai_room"), ambient_of("toge", "senpai_room"))
+        finally:
+            store.rail_story_caption = _zz_real
+        check(_zz_c == (True, ("asleep", None), ("zz story", None)),
+              "D: a sleeper is captioned asleep even when the story has a caption for them; "
+              "someone awake takes the story's caption", _zz_c)
+
+        ## the map's second level reads its marks through map_marks(), so a sleeper's job stays off the pins
+        _zz_ms = renpy.file("ui_map.rpy").read().decode("utf-8").replace("\r\n", "\n")
+        _zz_a = _zz_ms.find("\nscreen map_area(key):")
+        _zz_b = _zz_ms.find("\nscreen ", _zz_a + 1)
+        _zz_scr = _zz_ms[_zz_a:_zz_b] if _zz_a >= 0 and _zz_b > _zz_a else ""
+        check(_zz_scr and "map_marks()" in _zz_scr and "mission_markers(" not in _zz_scr,
+              "D: screen map_area takes its job marks from map_marks() and never from mission_markers() itself",
+              (_zz_a, _zz_b, _zz_scr.count("map_marks()"), _zz_scr.count("mission_markers(")))
         zzh_at(zzh_day("Fri"), "Noon")
         check([world_home_state(w) for w in ("yuji", "megumi", "panda", "toge", "shoko", "gojo", "maki")]
               == ["out", "out", "out", "out", "awake", "out", "out"],
