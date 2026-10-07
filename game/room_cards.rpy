@@ -1664,3 +1664,26 @@ default cards_state = {}         # the sitting in progress (deck as a list of in
 default cards_won_day = 0        # the day cards_won counts for
 default cards_won = 0            # yen won at cards that day
 default cards_sit = {}           # the sitting's tally (hands, net, opponents) over both games; {} otherwise
+
+
+## The card-table invite (the second UI overhaul: docs/UI2_DESIGN.md 7.4, 9.3).
+## The scaffold's STUBS (U0c2), appended here so that U5 fills them without a
+## hook in any other file: who can be asked to the table, and the picker.
+## Frozen from this commit: the two names, that cards_invitable() returns a
+## list of person keys, and the picker's two return tuples, ("ask", who) and
+## ("close",). The action id cards_invite (its icon is in ui_icons.rpy) is
+## registered by U5 with its own condition.
+init python:
+
+    def cards_invitable():
+        """U0c2 (room_cards.rpy): a stub, filled by U5. A list of person
+        keys: who can be asked to the card table this hour. The stub:
+        nobody."""
+        return []
+
+    ICON_FOR[("act", "cards_invite")] = "cards_invite"
+
+
+## Who to ask (7.4). The stub answers ("close",) at once.
+screen cards_invite_pick():
+    timer 0.01 action Return(("close",))

@@ -520,6 +520,14 @@ init -2 python:
             edge = out[i] - half
         return out
 
+    def view_asleep(loc):
+        """U0c2 (view_stage.rpy): a stub, filled by U3. A list of (who,
+        patch) for the room's sleepers whose asleep picture is installed
+        and fresh (docs/UI2_DESIGN.md 6.2 row 12): `patch` is a pose dict
+        as view_pose gives one, dict(image, box). The stage lays each on
+        the room before the people; it takes no focus. The stub: none."""
+        return []
+
     def view_draw_key(row):
         return (0 if row["pose"] else 1, -row["far"])
 
@@ -957,6 +965,13 @@ screen view_stage(loc):
 
     $ _view_rows = view_draw_order(view_stage_rows(loc))
 
+    ## Someone asleep is painted as part of the room, under everyone and
+    ## everything that can be clicked (the second overhaul, 6.2 row 12).
+    ## view_asleep answers nobody until U3 fills it.
+    for _view_sw, _view_sp in view_asleep(loc):
+        add view_pose_patch(_view_sp, loc):
+            pos (_view_sp["box"][0], _view_sp["box"][1])
+
     for _view_r in _view_rows:
         $ _view_who = _view_r["who"]
         if _view_r["pose"]:
@@ -1034,6 +1049,13 @@ screen view_focus(who):
         add person_image(who) at view_focus_in(_view_row["x"])
     else:
         add person_image(who) at char_focus(_view_row["x"], _view_row["yoff"], _view_row["zoom"])
+
+
+## The others in the room while I look at one person (the second overhaul:
+## docs/UI2_DESIGN.md 6.2 row 7, D30). sb_char uses it under view_focus. The
+## scaffold's STUB (U0c2): empty until U3 draws them, dimmed and a step back.
+screen view_others(loc, who):
+    pass
 
 
 ## The foreground (4.5): the table edge people stand behind, cut from the

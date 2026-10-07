@@ -31,6 +31,9 @@
 ##   D  the night's tables and night_club_bg; the three new actions and the
 ##      activity swim_pool, registered and closed; K16's test (no romance in
 ##      the baths or at the pool); "Ask them along" and a friend bound for Tokyo
+##   E  the stubs and hooks of 9.3: every stub function, screen and label, the
+##      `use` lines placed in screens other packages own, hint_seen, and a
+##      Sunday ride that plays as it did
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
@@ -160,6 +163,45 @@ init 999 python:
                     and builtins.str(getattr(d.child, "filename", "")).endswith("side/%s_neutral.png" % who)):
                 n += 1
         return n
+
+    def zzc_screen_params(name):
+        """A screen's parameter names; None when there is no such screen."""
+        sc = renpy.display.screen.get_screen_variant(name)
+        if sc is None:
+            return None
+        p = sc.parameters
+        return [] if p is None else [q.name for q in p.parameters.values()]
+
+    def zzc_uses(screen, target):
+        """How many `use <target>` statements a screen's own source holds."""
+        sc = renpy.display.screen.get_screen_variant(screen)
+        n = 0
+        todo = [sc.ast] if sc is not None else []
+        while todo:
+            node = todo.pop()
+            if type(node).__name__ == "SLUse" and getattr(node, "target", None) == target:
+                n += 1
+            for attr in ("children", "entries"):
+                for c in (getattr(node, attr, None) or ()):
+                    todo.append(c[1] if isinstance(c, builtins.tuple) else c)
+            for attr in ("block",):
+                c = getattr(node, attr, None)
+                if c is not None:
+                    todo.append(c)
+        return n
+
+    def zzc_label_only_returns(name):
+        """bool: a label's body is one statement, `return`."""
+        if not renpy.has_label(name):
+            return False
+        node = renpy.game.script.lookup(name)
+        body = getattr(node, "block", None) or []
+        return len(body) == 1 and type(body[0]).__name__ == "Return"
+
+    def zzc_label_params(name):
+        node = renpy.game.script.lookup(name) if renpy.has_label(name) else None
+        p = getattr(node, "parameters", None)
+        return None if node is None else ([] if p is None else [q for q in p.parameters])
 
     def zz_dim_test():
         """A test dim function: the reason, or "" (ZZC_DIM[0])."""
@@ -948,5 +990,106 @@ label zz_smoke:
               "D (7.6): someone a story pin keeps on campus that afternoon can be asked along (the same test as the clock's)", _zz_a)
         settle(day=2, period="Noon", here="courtyard")
         store.bonds = builtins.dict((w, 0) for w in CAST)
+
+    ## --- E. the stubs and hooks of 9.3 --------------------------------------------------
+    python:
+        settle(day=2, period="Noon", here="courtyard")
+        ## -- the stub functions: where they live, how they are called, what shape they return
+        _zz_stubs = [
+            ("tky_here", "room_tokyo.rpy", "(key)", lambda: tky_here("harajuku"), lambda v: isinstance(v, builtins.list) and all(w in CAST for w in v)),
+            ("tky_caption", "room_tokyo.rpy", "(who, key)", lambda: tky_caption("nobara", "harajuku"), lambda v: isinstance(v, str)),
+            ("map_district_people", "ui_map.rpy", "(key)", lambda: map_district_people("harajuku"),
+             lambda v: isinstance(v, builtins.list) and len(v) <= 3 and all(w in CAST for w in v)),
+            ("view_asleep", "view_stage.rpy", "(loc)", lambda: view_asleep("senpai_room"),
+             lambda v: isinstance(v, builtins.list) and all(isinstance(r, builtins.tuple) and len(r) == 2 for r in v)),
+            ("cards_invitable", "room_cards.rpy", "()", lambda: cards_invitable(), lambda v: isinstance(v, builtins.list) and all(w in CAST for w in v)),
+            ("hint_show", "ui_hints.rpy", "(id)", lambda: hint_show("place"), lambda v: v is None),
+            ("bath_ok", "room_bath.rpy", "()", lambda: bath_ok(), lambda v: isinstance(v, bool)),
+            ("pool_ok", "room_pool.rpy", "()", lambda: pool_ok(), lambda v: isinstance(v, bool)),
+            ("path_faces", "room_paths.rpy", "(to)", lambda: path_faces("boys_dorm"),
+             lambda v: isinstance(v, builtins.list) and len(v) <= 3 and all(w in CAST for w in v)),
+            ("night_club_bg", "sb_night.rpy", "(key)", lambda: night_club_bg("shibuya"), lambda v: isinstance(v, str)),
+        ]
+        _zz_bad = []
+        for _zz_n, _zz_file, _zz_s, _zz_call, _zz_ok in _zz_stubs:
+            _zz_fn = getattr(store, _zz_n, None)
+            if not callable(_zz_fn):
+                _zz_bad.append((_zz_n, "not defined"))
+            elif not zzc_owner(_zz_fn, _zz_file):
+                _zz_bad.append((_zz_n, "lives in", _zz_fn.__code__.co_filename))
+            elif zzc_sig(_zz_fn) != _zz_s:
+                _zz_bad.append((_zz_n, zzc_sig(_zz_fn)))
+            elif not (_zz_fn.__doc__ or "").strip():
+                _zz_bad.append((_zz_n, "no docstring"))
+            elif not _zz_ok(_zz_call()):
+                _zz_bad.append((_zz_n, "returned", _zz_call()))
+        check(not _zz_bad, "E: every stub function of 9.2 exists in its own file with its signature, a docstring and its return shape (%d)" % len(_zz_stubs), _zz_bad)
+        check(tky_here("harajuku") == [] and tky_caption("nobara", "harajuku") == "" and map_district_people("harajuku") == []
+              and view_asleep("senpai_room") == [] and cards_invitable() == [] and hint_show("zz") is None
+              or (bath_ok() or pool_ok()),
+              "E (the stubs): each returns nothing: an empty list, an empty string or None")
+        check(isinstance(TKY_LINES, builtins.dict) and TKY_BOND == NIGHT_OUT["bond"] == 4,
+              "E: TKY_LINES is a dict and TKY_BOND is the Bond a night out gives a companion")
+
+        ## -- hint_seen, the six ids
+        check(isinstance(store.hint_seen, (set, builtins.set)) and HINT_IDS == ("place", "names", "map", "person", "hour", "night")
+              and len(builtins.set(HINT_IDS)) == 6,
+              "E: hint_seen is a set (the one new saved variable), and there are six hint ids", (store.hint_seen, HINT_IDS))
+        _zz_txt = open(os.path.join(smoke_env("SMOKE_ROOT", "."), "tools", "none_ok.txt"), encoding="utf-8").read()
+        check("\nhint_show\thint_show(" in _zz_txt, "E: hint_show has its row in tools/none_ok.txt")
+
+        ## -- the screens: names and parameters
+        _zz_want = [("hint_layer", []), ("view_others", ["loc", "who"]), ("cards_invite_pick", []), ("hud_day_card", ["n", "weekday"]),
+                    ("tky_meet", ["key"]), ("hot_layer", ["loc", "front"]), ("view_stage", ["loc"]), ("view_fg", ["loc"]),
+                    ("sb_place", []), ("sb_char", ["who"]), ("sb_map", ["layer", "area"]), ("hover_label", []),
+                    ("main_menu", []), ("journal", None), ("preferences", []), ("quick_menu", []), ("file_slots", ["title"]),
+                    ("choice", ["items"]), ("say", ["who", "what"])]
+        _zz_bad = [(n, zzc_screen_params(n), p) for n, p in _zz_want
+                   if zzc_screen_params(n) is None or (p is not None and zzc_screen_params(n) != p)]
+        check(not _zz_bad, "E: the new screens exist with their parameters, and the old ones keep their names and parameters", _zz_bad)
+        check(zzc_uses("sb_place", "hint_layer") == 1 and zzc_uses("sb_map", "hint_layer") == 1 and zzc_uses("sb_char", "view_others") == 1
+              and zzc_uses("sb_place", "hot_layer") == 2 and zzc_uses("sb_place", "view_stage") == 1,
+              "E: the hooks are in place: `use hint_layer` in sb_place and in sb_map, `use view_others` in sb_char",
+              (zzc_uses("sb_place", "hint_layer"), zzc_uses("sb_map", "hint_layer"), zzc_uses("sb_char", "view_others")))
+
+        ## -- the labels
+        check(all(renpy.has_label(l) for l in ("district_harajuku", "district_shibuya", "tky_people", "sb_do_bath_soak", "sb_do_bath_sauna",
+                                                "sb_do_pool_swim", "act_swim_pool"))
+              and zzc_label_params("tky_people") == ["key"] and zzc_label_params("act_swim_pool") == ["who"]
+              and zzc_label_params("district_harajuku") == [] and zzc_label_params("district_shibuya") == []
+              and not renpy.has_label("district_shinjuku"),
+              "E: the labels the loop and the frozen sb_trip call by name exist, with their parameters")
+        if not (bath_ok() or pool_ok() or tky_here("harajuku")):
+            check(all(zzc_label_only_returns(l) for l in ("district_harajuku", "district_shibuya", "tky_people", "sb_do_bath_soak",
+                                                          "sb_do_bath_sauna", "sb_do_pool_swim", "act_swim_pool")),
+                  "E (the stubs): each of the seven labels is one statement, `return`")
+    if not tky_here("harajuku"):
+        call screen tky_meet("harajuku")
+        $ _zz_m = _return
+        call screen cards_invite_pick
+        $ check(_zz_m == ("back",) and _return == ("close",),
+                "E (the stubs): tky_meet answers ('back',) and cards_invite_pick ('close',) at once: nothing can wait on a stub", (_zz_m, _return))
+
+    ## -- a Sunday ride to Harajuku, with the stubs, plays exactly as today
+    python:
+        settle(day=7, period="Noon", here="gate")
+        flag("ijichi_rides")
+        store.companion = None
+        store.schedule_overrides = {}
+        _zz_h0 = len(_history_list)
+        _zz_open = district_state("harajuku")[0] and trip_ok_now()
+        autoplay()
+    call sb_trip("harajuku")
+    python:
+        autoplay(False)
+        _zz_said = [h.what for h in _history_list[_zz_h0:]]
+        _zz_people = [t for t in zz_layer_tags("master") if t in CAST]
+        check(_zz_open and weekday() == "Sun" and store.here == "gate" and store.period == "Evening" and "harajuku" in store.districts_visited
+              and _zz_people == [] and renpy.get_screen("tky_meet") is None
+              and (tky_here("harajuku") != [] or len(_zz_said) == 1 + len(DISTRICTS["harajuku"]["lines"]) + 1)
+              and (tky_here("harajuku") != [] or _zz_said[1:-1] == builtins.list(DISTRICTS["harajuku"]["lines"])),
+              "E: a Sunday ride to Harajuku begun at Noon ends at the gate in the Evening with nobody left on screen; with the stubs it says exactly today's lines (Ijichi's, the district's, the drive back)",
+              (_zz_open, store.here, store.period, len(_zz_said), _zz_people))
+        settle(day=2, period="Noon", here="courtyard")
 
     $ finish()
