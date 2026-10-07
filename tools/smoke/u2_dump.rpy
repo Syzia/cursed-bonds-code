@@ -60,6 +60,19 @@
 ##                 or "<place> <variant>": row}), bg ({image name: row})
 ##   schedule      SCHEDULE; weekend: WEEKEND; periods; weekdays
 ##   fg_rooms      VIEW_FG_ROOMS; fg_talk: VIEW_FG_TALK
+## Added by the scaffold (U0c2); none of the keys above changed shape:
+##   variants_planned  WORLD_VARIANTS as [[place, period, attribute, file]]:
+##                 every planned new hour picture
+##   keep_clear    {place: [[x, y]]}: path_keep_clear(place), the live points
+##                 an exit keeps clear of (frames.keep_clear is the old table)
+##   tips          {place: {id: side}}: the hover-label sides a hot_ sidecar gives
+##   faces         {who: {eyes, mouth, blink_also}} as the game reads them
+##                 (faces.json first, then the tables in view_stage.rpy)
+##   world         inside, pinless, homes, asleep, away ({who: {"<weekday>
+##                 <period>": district}}), door_bond and door_owners by place
+##   standins      copies ({lender: file}), names ({image key: lender}),
+##                 if_file ({image name: file}), people (the five stand-in names)
+##   names_key     the key held to show names ("K_n")
 ##
 ## Keys the tree does not have yet are written empty and filled when U0c
 ## regenerates the file. Nothing in it depends on the day, the hour, a flag or
@@ -222,6 +235,30 @@ init 999 python:
         d["weekdays"] = builtins.list(WEEKDAYS)
         d["fg_rooms"] = builtins.list(VIEW_FG_ROOMS)
         d["fg_talk"] = builtins.list(VIEW_FG_TALK)
+
+        ## What the scaffold (U0c2) added. New keys only: none above changed shape.
+        d["variants_planned"] = zz_dump_plain(WORLD_VARIANTS)
+        d["keep_clear"] = builtins.dict((loc, zz_dump_plain(path_keep_clear(loc))) for loc in LOC_ORDER if path_keep_clear(loc))
+        tips = builtins.dict()
+        for loc in LOC_ORDER:
+            got = rule_layout("hot_" + loc).get("tips")
+            if isinstance(got, builtins.dict) and got:
+                tips[loc] = zz_dump_plain(got)
+        d["tips"] = tips
+        d["faces"] = builtins.dict(
+            (who, builtins.dict(eyes=zz_dump_plain(view_face_box(who, "eyes")), mouth=zz_dump_plain(view_face_box(who, "mouth")),
+                                blink_also=builtins.list(view_blink_also(who))))
+            for who in builtins.sorted(CAST) if view_face_box(who, "eyes") or view_face_box(who, "mouth"))
+        d["world"] = zz_dump_plain(builtins.dict(
+            inside=WORLD_INSIDE, pinless=WORLD_PINLESS, homes=WORLD_HOMES, asleep=WORLD_ASLEEP,
+            away=builtins.dict((who, builtins.dict(("%s %s" % k, v) for k, v in cells.items())) for who, cells in WORLD_AWAY.items()),
+            door_bond=builtins.dict((loc, world_door_bond(loc)) for loc in LOC_ORDER if world_door_bond(loc) is not None),
+            door_owners=builtins.dict((loc, world_door_owners(loc)) for loc in LOC_ORDER if world_door_owners(loc))))
+        d["standins"] = zz_dump_plain(builtins.dict(
+            copies=builtins.dict((n, "images/bg/" + standin_copy(n)) for n in STANDIN_COPIES),
+            names=builtins.dict(STANDIN_NAMES), if_file=builtins.dict(STANDIN_IF_FILE),
+            people=[k for k, path, tint in STANDIN_PEOPLE]))
+        d["names_key"] = ICON_NAMES_KEY
         return d
 
 
@@ -252,8 +289,15 @@ label zz_smoke:
               "one to four slots for every place")
         check(len(_zz_d["people"]) >= len(ROSTER_ORDER) and all(w in _zz_d["people"] for w in ROSTER_ORDER),
               "every person's sprite canvas and feet (%d images)" % len(_zz_d["people"]))
-        check(isinstance(_zz_d["spot_planned"], builtins.list), "spot_planned is a list (%d rows; empty until the scaffold defines SPOT_PLANNED)"
-              % len(_zz_d["spot_planned"]))
+        check(isinstance(_zz_d["spot_planned"], builtins.list) and len(_zz_d["spot_planned"]) == len(SPOT_PLANNED) >= 1
+              and all(isinstance(r, builtins.list) and len(r) == 3 for r in _zz_d["spot_planned"]),
+              "spot_planned holds SPOT_PLANNED as [id, place, kind] rows (%d)" % len(_zz_d["spot_planned"]))
+        check(len(_zz_d["variants_planned"]) == len(WORLD_VARIANTS) and builtins.sorted(_zz_d["world"]) ==
+              ["asleep", "away", "door_bond", "door_owners", "homes", "inside", "pinless"]
+              and builtins.sorted(_zz_d["standins"]) == ["copies", "if_file", "names", "people"]
+              and all(k in _zz_d for k in ("keep_clear", "tips", "faces", "names_key")),
+              "the scaffold's keys are in it: variants_planned (%d), keep_clear, tips, faces (%d people), world, standins, names_key"
+              % (len(_zz_d["variants_planned"]), len(_zz_d["faces"])))
         _zz_path = os.path.join(zz_smoke_state.shots, "game_layout.json")
         with open(_zz_path, "w", encoding="utf-8") as _zz_f:
             _zz_f.write(_zz_text)
