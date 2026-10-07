@@ -1,3 +1,4 @@
+# REPLACED for the second UI overhaul by tools/bgs/look.txt (docs/UI2_DESIGN.md 5.1). This file asks for the old look; no maker of the overhaul reads it.
 soft painted anime background art like a high-budget modern TV anime, clear
 summer daylight softened by a thin atmospheric haze, lush vivid emerald greens
 and cool grey stone under a bright blue sky, gentle bloom on the brightest

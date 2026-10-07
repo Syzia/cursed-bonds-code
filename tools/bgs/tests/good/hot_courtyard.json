@@ -1,0 +1,24 @@
+{
+ "spots": {
+  "go_courtyard__school_yard": [
+   450,
+   720
+  ],
+  "go_courtyard__dorm_yard": [
+   975,
+   720
+  ],
+  "go_courtyard__training_yard": [
+   1515,
+   860
+  ],
+  "go_courtyard__gate": [
+   1300,
+   985
+  ],
+  "vending": [
+   1365,
+   750
+  ]
+ }
+}

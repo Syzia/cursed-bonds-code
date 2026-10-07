@@ -1,3 +1,5 @@
+**Replaced for the second UI overhaul by `tools/bgs/look.txt` (the look) and `tools/bgs/CAMPUS2.md` (the campus): `docs/UI2_DESIGN.md` 5.1. This page describes the old look; no maker of the overhaul reads it or the four `style*.txt` files.**
+
 # Background style: Tokyo Jujutsu High
 
 Written from 16 anime reference screenshots in

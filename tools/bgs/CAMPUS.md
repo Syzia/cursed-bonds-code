@@ -1,3 +1,5 @@
+**Replaced for the second UI overhaul by `tools/bgs/CAMPUS2.md`, which is written from the campus record (`tools/bgs/campus.json`) by `tools/campus_plan.py`: `docs/UI2_DESIGN.md` 5.2. This page is the old campus (a main hall north of the Courtyard); nothing of the overhaul reads it.**
+
 # The campus: where everything is
 
 The backgrounds are painted one at a time, so this page keeps them agreeing

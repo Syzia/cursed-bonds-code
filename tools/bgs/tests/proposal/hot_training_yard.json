@@ -1,0 +1,28 @@
+{
+ "spots": {
+  "go_training_yard__training": [
+   300,
+   620
+  ],
+  "go_training_yard__courtyard": [
+   150,
+   860
+  ],
+  "go_training_yard__storehouse": [
+   1420,
+   620
+  ],
+  "go_training_yard__staff_yard": [
+   1180,
+   600
+  ],
+  "go_training_yard__dojo": [
+   900,
+   560
+  ],
+  "go_training_yard__pool": [
+   1650,
+   700
+  ]
+ }
+}
