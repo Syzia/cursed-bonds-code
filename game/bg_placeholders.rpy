@@ -160,9 +160,11 @@ init -1 python:
     ## The Teachers' Lounge: the Common Room, in violet-grey.
     renpy.image("bg teachers_lounge", standin_bg("teachers_lounge", "dorm_common.png",
         TintMatrix("#cfc6e2") * SaturationMatrix(0.45) * BrightnessMatrix(-0.02)))
-    ## The Teachers' Dormitory: the Principal's Office, cropped, warm.
+    ## The Teachers' Dormitory: the Principal's Office, cropped, warm, and
+    ## lifted: the office is painted by candlelight, and under the Night's
+    ## grade it went almost black (Yaga is met here at Night).
     renpy.image("bg teachers_dorm", standin_bg("teachers_dorm", "office.png",
-        TintMatrix("#ffd9a8") * BrightnessMatrix(0.06), crop=(320, 180, 1280, 720), xysize=(1920, 1080)))
+        TintMatrix("#ffd9a8") * BrightnessMatrix(0.18), crop=(320, 180, 1280, 720), xysize=(1920, 1080)))
     ## The Onsen's rest hall: the infirmary, in pale teal.
     renpy.image("bg bathhouse", standin_bg("bathhouse", "infirmary.png",
         TintMatrix("#c4f0ea") * SaturationMatrix(0.60) * BrightnessMatrix(0.04)))
