@@ -1,0 +1,130 @@
+{
+ "about": [
+  "Batch 2 (the Staff Building Steps, the Mountain Path, the Main Gate) was written early, on 7 Oct 2026, at the owner's word,",
+  "with: python3 tools/art_batch.py 2 --preview --record tools/art/staged/early/campus_after_batch1_first_guess.json --out '~/Desktop/JJK Game images/ui2/early'",
+  "The record it was composed from is that copy: tools/bgs/campus.json of 7 Oct with the three yards the owner chose (B, A, B) fixed from a first-guess",
+  "layout read off the pictures by eye, the four reference pictures refitted by the installer's own function (no black rows at the top or bottom),",
+  "and one sentence about the tower and the pagodas in the facts of each of the three places.",
+  "A sum is the sha256 of a prompt's UTF-8 text (the first widget value of its GeminiImage2Node) or of a reference file's bytes.",
+  "Whether a picture is accepted is plan 5.2's pass rule at its layout sitting, as for any render."
+ ],
+ "written": "2026-10-07",
+ "head": "d15d83a",
+ "record_sha256": "184ee4e64579311fabeafd1da6802b79653564804469d2c4e2f47abb4c1b6a05",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: Staff Building Steps, version A",
+   "save": "ui2_staff_yard_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 6550,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "a83c8e63aa26dd5e1b414aa665fb492ead4c076f9c10c7607cc0cfeb6c246721",
+   "references": [
+    {
+     "file": "ui2_in_staff_yard_1.png",
+     "sha256": "0f65262e426abe9be805f35c55f0b9c4068f5e8816ff05d3c702a863f0ec536a"
+    },
+    {
+     "file": "ui2_in_staff_yard_2.png",
+     "sha256": "88ae42dcdc8af1cd711f161a4802226c8b2403bf4e92085af9053c404103965d"
+    },
+    {
+     "file": "ui2_in_staff_yard_3.png",
+     "sha256": "890465f34202caa50d3eaf7a24641a510184facb97beee37e11248f2785f35a6"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Staff Building Steps, version B",
+   "save": "ui2_staff_yard_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 6551,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "a83c8e63aa26dd5e1b414aa665fb492ead4c076f9c10c7607cc0cfeb6c246721",
+   "references": [
+    {
+     "file": "ui2_in_staff_yard_1.png",
+     "sha256": "0f65262e426abe9be805f35c55f0b9c4068f5e8816ff05d3c702a863f0ec536a"
+    },
+    {
+     "file": "ui2_in_staff_yard_2.png",
+     "sha256": "88ae42dcdc8af1cd711f161a4802226c8b2403bf4e92085af9053c404103965d"
+    },
+    {
+     "file": "ui2_in_staff_yard_3.png",
+     "sha256": "890465f34202caa50d3eaf7a24641a510184facb97beee37e11248f2785f35a6"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path, version A",
+   "save": "ui2_trailhead_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 4204,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "6679dbe93c27094c3a8b5ed357ef8d6661b6609f750fbeec9fc57bb230c054e4",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_1.png",
+     "sha256": "0f65262e426abe9be805f35c55f0b9c4068f5e8816ff05d3c702a863f0ec536a"
+    },
+    {
+     "file": "ui2_in_trailhead_2.png",
+     "sha256": "4c0cc3cd891417d913b1026018e575b2bffd35c984ce5d694b5a1eec66244675"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path, version B",
+   "save": "ui2_trailhead_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 4205,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "6679dbe93c27094c3a8b5ed357ef8d6661b6609f750fbeec9fc57bb230c054e4",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_1.png",
+     "sha256": "0f65262e426abe9be805f35c55f0b9c4068f5e8816ff05d3c702a863f0ec536a"
+    },
+    {
+     "file": "ui2_in_trailhead_2.png",
+     "sha256": "4c0cc3cd891417d913b1026018e575b2bffd35c984ce5d694b5a1eec66244675"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Main Gate, version A",
+   "save": "ui2_gate_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 5098,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "eadc744d92a2c9d49f278efae37e972fc89aa1899279ae2c08de73e50c31dc7c",
+   "references": [
+    {
+     "file": "ui2_in_gate_1.png",
+     "sha256": "72ff262ebcac799090bd74956b6e767b3bb23c7b55352d9e37d1fe54ecadc81f"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Main Gate, version B",
+   "save": "ui2_gate_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 5099,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "eadc744d92a2c9d49f278efae37e972fc89aa1899279ae2c08de73e50c31dc7c",
+   "references": [
+    {
+     "file": "ui2_in_gate_1.png",
+     "sha256": "72ff262ebcac799090bd74956b6e767b3bb23c7b55352d9e37d1fe54ecadc81f"
+    }
+   ]
+  }
+ ]
+}
