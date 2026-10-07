@@ -22,6 +22,27 @@ and prices, is in [docs/ART_PHASE2.md](../docs/ART_PHASE2.md).
    moved Utahime's scar between two head redraws.
 3. `keysprite.py` — keys the green or magenta screen, crops, and places the
    figure on the 760x1400 canvas at its `HEIGHT_CM`.
+   A sprite that is not yet in the game is keyed with `--edge new`
+   (`keyedge.py`, below); the sprites already in the game are never keyed again.
+
+- `keyedge.py <render.png> <cutout.png>` — the cut-out's edge for a NEW sprite on
+  a flat saturated backdrop (docs/UI2_DESIGN.md D58): how much of each edge
+  pixel is figure is read off the backdrop's own colour. Needs numpy and scipy,
+  so it starts itself again with ComfyUI's Python. `--check` reports what a
+  cut-out still carries of the backdrop.
+- `make_key_tests.py <folder>` and `test_keying.sh` — the sixteen exact test
+  pictures (the game's sprites on flat pink and green, the true cut-out known)
+  and the tests of the edge. No Ren'Py; about two minutes. Run after any
+  change to `keyedge.py` or `keysprite.py`.
+- `cutcheck.py <render.png> [<cutout.png>]` — a second look at a cut-out by the
+  anime-trained model, run directly. It reports a gap left filled, a piece cut
+  off or a stray mark and never changes a pixel; it says so and exits 0 where
+  the model file is absent.
+- `cloth_match.py --check | --apply <who,...|all>` — one cloth for the school
+  uniform (D59): moves each pixel of uniform cloth onto one colour ramp and
+  remakes the side portraits. It redraws nothing and refuses to write if a
+  pixel outside the cloth, or the alpha channel, would change. Yuji's
+  redrawn set is matched with `--apply yuji --redrawn` at its install.
 4. `facemask.py` — the face mask the new faces are pasted through.
 5. `composite_face.py --prepare`, then `make_edit_workflow.py <name>` (Nano
    Banana Pro; the wording is in `EXPRESSIONS` and `CHAR_EXPRESSIONS`), then
