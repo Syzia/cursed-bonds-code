@@ -168,8 +168,11 @@ def status(root, record_path=None):
             for hour in HOURS:
                 if parent.endswith("_" + hour):
                     day = parent[:-len(hour) - 1]
-            if rev(parent) > 1 or rev(day) > 1:
-                stale.append((stem, parent, 1, max(rev(parent), rev(day))))
+            # name the picture whose revision moved: the hour picture itself, or the day picture it belongs to
+            if rev(parent) > 1:
+                stale.append((stem, parent, 1, rev(parent)))
+            elif rev(day) > 1:
+                stale.append((stem, day, 1, rev(day)))
     lines.append("")
     lines.append("STALE (%d): made for an older picture, so the game does not use it" % len(stale))
     for stem, parent, was, now in stale:

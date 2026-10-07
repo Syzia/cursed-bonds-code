@@ -30,8 +30,10 @@ may not edit a `.rpy` file.
 own, game/images/char/<who>_neutral.png, or the one --sprite names), puts it
 on flat green, enlarges it to 1024 and writes `<who>_fx_in.png` into
 ~/Desktop/JJK Game images (and ComfyUI's input folder), with the square
-recorded in masks/<who>_fx_crop.txt. Because the close-up comes from the
-sprite itself, the answer maps straight back onto it. With --sprite the
+recorded in masks/<who>_fx_crop.txt with the sprite it was cut from. Because
+the close-up comes from the sprite itself, the answer maps straight back onto
+it, and onto no other: installing an edit on a different sprite than its
+close-up was cut from is refused in one line. With --sprite the
 square is found from the sprite's own outline (the top of the figure, a
 little over a quarter of its height), not from the old boxes.
 
@@ -244,6 +246,24 @@ def crop_record(images, who):
     return os.path.join(images, "masks", "%s_fx_crop.txt" % who)
 
 
+def square_hash(sprite, X, Y, side):
+    """What a close-up was cut from: a hash of the sprite's own pixels inside the square."""
+    import hashlib
+    cut = crop(sprite, X, Y, X + side, Y + side)
+    return hashlib.sha256(("%d %d %d|" % (cut.w, cut.h, cut.ch)).encode() + bytes(cut.buf)).hexdigest()
+
+
+def read_crop_record(rec):
+    """(X, Y, side, the hash of the square it was cut from or None, the sprite's path as --prepare had it).
+    A record of three numbers was written before 7 Oct 2026, always from the game's own sprite."""
+    parts = open(rec).read().split(None, 4)
+    try:
+        X, Y, side = [int(v) for v in parts[:3]]
+    except ValueError:
+        raise SystemExit("%s is not a close-up's record: run --prepare again" % rec)
+    return X, Y, side, (parts[3] if len(parts) > 3 else None), (parts[4].strip() if len(parts) > 4 else None)
+
+
 def prepare(who, images=None, sprite_file=None, root=None):
     images = images or IMAGES
     face = faces(root).get(who)
@@ -266,7 +286,9 @@ def prepare(who, images=None, sprite_file=None, root=None):
     path = os.path.join(images, "%s_fx_in.png" % who)
     big.save(path)
     with open(crop_record(images, who), "w") as f:
-        f.write("%d %d %d\n" % (X, Y, side))
+        # the square, then which sprite it was cut from: an edit of this close-up fits that sprite only
+        f.write("%d %d %d %s %s\n" % (X, Y, side, square_hash(sprite, X, Y, side),
+                                      os.path.realpath(sprite_file or sprite_path(who, root))))
     if images == IMAGES and os.path.isdir(COMFY_INPUT):
         import shutil
         shutil.copy(path, os.path.join(COMFY_INPUT, os.path.basename(path)))
@@ -523,7 +545,7 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
     if not os.path.exists(rec):
         raise SystemExit("no %s: run `python3 tools/install_face.py --prepare %s` first, and edit the "
                          "close-up it writes" % (rec, who))
-    X, Y, side = [int(v) for v in open(rec).read().split()]
+    X, Y, side, cut_hash, cut_from = read_crop_record(rec)
     src = os.path.expanduser(src)
     if not os.path.exists(src):
         raise SystemExit("no picture at %s" % src)
@@ -540,6 +562,16 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
     if X + side > sprite.w or Y + side > sprite.h:
         raise SystemExit("the close-up's square (%d, %d, %d) does not fit this sprite: run --prepare again with "
                          "the same --sprite" % (X, Y, side))
+    # The close-up must have been cut from the sprite it is now laid on (D57): after `--prepare --sprite
+    # <staged>` the plain command without --sprite would put the new drawing's eyes on the old sprite.
+    if cut_hash is None:
+        other = os.path.realpath(neutral_file) != os.path.realpath(sprite_path(who, root))
+        cut_from = cut_from or "the game's own %s_neutral.png, before this record named its sprite" % who
+    else:
+        other = square_hash(sprite, X, Y, side) != cut_hash
+    if other:
+        raise SystemExit("this close-up was cut from another sprite (%s): pass the same --sprite and --stage, or run "
+                         "--prepare again" % cut_from)
     ref = on_green(crop(sprite, X, Y, X + side, Y + side))
     c = side / 2.0
 

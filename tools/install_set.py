@@ -418,13 +418,16 @@ def stage(who, folder, out=None):
         sprite.save(os.path.join(out, "char", "%s_%s.png" % (who, e)))
         side_portrait(sprite).save(os.path.join(out, "side", "%s_%s.png" % (who, e)))
         print("   %-10s %dx%d -> %s" % (e, im.w, im.h, os.path.join(out, "char", "%s_%s.png" % (who, e))))
+    import shlex
+    q = shlex.quote                     # the folders have spaces in their names: the lines below are pasted
+    calm = q(os.path.join(out, "char", "%s_neutral.png" % who))
     print("staged 6 sprites and 6 side portraits in %s" % out)
-    print("still to come before tools/install_set.py %s %s can run: the two overlay pictures and the face rows" % (who, out))
-    print("   python3 tools/install_face.py --prepare %s --sprite %s --images %s"
-          % (who, os.path.join(out, "char", "%s_neutral.png" % who), folder))
+    print("still to come before the set can go in: the two overlay pictures and the face rows")
+    print("   python3 tools/install_face.py --prepare %s --sprite %s --images %s" % (who, calm, q(folder)))
     print("   (the owner runs the blink and talk edit), then for each:")
     print("   python3 tools/install_face.py <render> %s blink|talk --sprite %s --images %s --stage %s"
-          % (who, os.path.join(out, "char", "%s_neutral.png" % who), folder, out))
+          % (who, calm, q(folder), q(out)))
+    print("   python3 tools/install_set.py %s %s --dry" % (who, q(out)))
     return out
 
 

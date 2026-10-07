@@ -179,6 +179,14 @@ elif cmd == "patch":   # a pose render: a flat person-sized patch on the room
     out = a.copy(); x, y, w, h = box
     col = tuple(int(v) for v in args[1].split(",")) if len(args) > 1 else (230, 40, 60)
     ImageDraw.Draw(out).rectangle([x, y, x + w - 1, y + h - 1], fill=col)
+elif cmd in ("paste", "pasteplain"):   # a thing of the picture's own, set down somewhere else (1920-wide numbers)
+    out = look(a) if cmd == "paste" else a.copy(); k = W / 1920.0
+    x, y, w, h = [int(v * k) for v in box]; px, py = [int(int(v) * k) for v in args[1].split(",")]
+    out.paste(out.crop((x, y, x + w, y + h)), (px, py))
+elif cmd == "sign":    # a thing drawn on a wall or a window: a yellow board with a black rim
+    out = look(a); x, y, w, h = box; d = ImageDraw.Draw(out)
+    d.rectangle([x, y, x + w, y + h], fill=(240, 205, 40), outline=(10, 10, 10), width=5)
+    d.line([x + 12, y + h // 2, x + w - 12, y + h // 2], fill=(10, 10, 10), width=5)
 elif cmd == "copy":
     out = a
 out.save(dst)
@@ -302,6 +310,22 @@ def group_redo(lab):
     ok("a thing drawn in is REFUSED and its place named: \"something new is on the sofa seat\"",
        v[0] == "REFUSED" and "something new is on the sofa seat" in v[1], out)
 
+    # one thing set down on the wide floor (5.4 step 4: "across the whole floor polygon ... a cup, a jacket").
+    # The floor is 1590 px wide: judged whole, one cushion is lost in its mean, so it is judged in parts too.
+    for what, cmd, a1, a2 in (("the sofa's cushion", "paste", "497,618,145,104", "700,966"),
+                              ("the kettle", "paste", "1285,483,65,72", "1010,998"),
+                              ("the green bag", "paste", "1125,640,100,165", "1380,960"),
+                              ("a striped bag drawn in", "add", "1300,975,120,80", None)):
+        path = lab.syn(cmd, room, "syn_floor_%s_a_00001_.png" % re.sub(r"\W+", "_", what), a1, *([a2] if a2 else []))
+        rc, out, v = one(path)
+        ok("%s set down on the bare floor is REFUSED: \"something new is on the floor\", and the part of the floor is named" % what,
+           v[0] == "REFUSED" and rc == 1 and re.search(r"something new is on the floor \((at its left end|in its middle|at its right end), from x \d+ to \d+\)", v[1]) is not None
+           and "gone" not in v[1], out)
+    # step 6: what else changed is shown, not refused
+    rc, out, v = one(lab.syn("sign", room, "syn_sign_a_00001_.png", "900,330,140,140"))
+    ok("a board painted over the window (outside every keep box and empty place) is a LOOK, and its place is told",
+       v[0] == "LOOK" and rc == 0 and re.search(r"the part of the picture at \(\d+, \d+\) is drawn differently", v[1]) is not None, out)
+
     # the door an exit sits on (5.4 step 2: "the door my room's exit sits on moved"). The Common Room's way to
     # the garden is at (84, 540), on the sliding door at the left.
     spot = "the spot the way to Dormitory Garden sits on"
@@ -361,11 +385,15 @@ def group_redo(lab):
     rc, out = run(redo + [good, made["erased"], "--choose", "b"] + tail, py=True)
     ok("the refused version cannot be chosen, and nothing is written", rc != 0 and "cannot be chosen" in out
        and tree_hash(root) == before, out)
+    rc, out = run(redo + [good, "--choose", "a", "--batch", "three"] + tail, py=True)
+    ok("--batch three is refused in one line and nothing is written", rc != 0 and out.strip().startswith("--batch three: a batch is")
+       and len(out.strip().splitlines()) == 1 and tree_hash(root) == before, out)
     rc, out = run(redo + [good, made["erased"], "--choose", "a", "--batch", "3", "--date", "2026-10-07"] + tail, py=True)
     man = check_campus.load_manifest(root)["pictures"]
     row = man.get("dorm_common", {})
-    ok("the version the owner names is installed: the picture, and a manifest row at revision 2",
-       rc == 0 and row.get("rev") == 2 and row.get("kind") == "inplace" and row.get("render") == os.path.basename(good)
+    ok("the version the owner names is installed: the picture, and a manifest row at revision 2 whose batch is the "
+       "number 3, as the plan's manifest has it (not the text \"3\")",
+       rc == 0 and row.get("rev") == 2 and row.get("batch") == 3 and isinstance(row.get("batch"), int) and row.get("kind") == "inplace" and row.get("render") == os.path.basename(good)
        and tree_hash(root) != before, out + json.dumps(row))
     ok("the row records rev1_commit and from_commit (the commit that holds the picture it replaced), the shift and "
        "the sharpness against revision 1",
@@ -800,7 +828,7 @@ def group_face(lab):
     crop = os.path.join(images, "masks", "megumi_fx_crop.txt")
     ok("install_face.py --prepare <who> --sprite <file> cuts the close-up from the staged sprite, not the game's",
        rc == 0 and "the staged sprite" in out and os.path.exists(os.path.join(images, "megumi_fx_in.png")) and os.path.exists(crop), out)
-    X, Y, side = [int(v) for v in open(crop).read().split()] if os.path.exists(crop) else (0, 0, 1)
+    X, Y, side = [int(v) for v in open(crop).read().split()[:3]] if os.path.exists(crop) else (0, 0, 1)
     ok("the square is found from the sprite's own outline and holds the head (it covers today's eye and mouth boxes)",
        X <= 308 and Y <= 283 and X + side >= 308 + 114 and Y + side >= 338 + 28, (X, Y, side))
     # an "edit": the close-up with a flat patch where the eyes are (then one where the mouth is)
@@ -886,6 +914,33 @@ def group_face(lab):
        rc != 0 and out.strip() == "a staged sprite's blink and mouth go in only with the whole set: add --stage <staged "
        "folder>, then tools/install_set.py" and tree_hash(root_game) == tb
        and not os.path.exists(os.path.join(root_game, "game", "layout", "faces.json")), out)
+    # ... and not after --prepare --sprite either: the close-up's record says which sprite it was cut from
+    other = os.path.join(work, "stage_other", "char")
+    os.makedirs(other)
+    shutil.copyfile(os.path.join(REPO, "game", "images", "char", "megumi_serious.png"), os.path.join(other, "megumi_neutral.png"))
+    images_o = os.path.join(work, "images_other")
+    run([tool("install_face.py"), "--prepare", "megumi", "--sprite", os.path.join(other, "megumi_neutral.png"), "--images", images_o])
+    rc, out = run([tool("install_face.py"), edits["blink"], "megumi", "blink", "--images", images_o, "--root", root_game])
+    ok("after --prepare --sprite <another drawing>, the plain command (no --sprite, no --stage) stops in one line: the "
+       "close-up was cut from another sprite; the tree is unchanged (D57)",
+       rc != 0 and len(out.strip().splitlines()) == 1 and out.startswith("this close-up was cut from another sprite (")
+       and os.path.join("stage_other", "char", "megumi_neutral.png") in out and "run --prepare again" in out
+       and tree_hash(root_game) == tb and not os.path.exists(os.path.join(root_game, "game", "layout", "faces.json")), out)
+    rc, out = run([tool("install_face.py"), edits["blink"], "megumi", "blink", "--sprite", sprite, "--images", images_o,
+                   "--stage", os.path.join(work, "stage_o2"), "--root", os.path.join(work, "root")])
+    ok("and so does the same close-up laid on a different staged sprite, with nothing staged",
+       rc != 0 and out.startswith("this close-up was cut from another sprite (") and not os.path.exists(os.path.join(work, "stage_o2", "faces.json")), out)
+    images_3 = os.path.join(work, "images_three")
+    os.makedirs(os.path.join(images_3, "masks"))
+    open(os.path.join(images_3, "masks", "megumi_fx_crop.txt"), "w").write("%d %d %d\n" % (X, Y, side))
+    rc, out = run([tool("install_face.py"), edits["blink"], "megumi", "blink", "--sprite", os.path.join(other, "megumi_neutral.png"),
+                   "--images", images_3, "--stage", os.path.join(work, "stage_o3"), "--root", os.path.join(work, "root")])
+    ok("a record of three numbers (written before 7 Oct) is the game's own sprite: refused on a staged one",
+       rc != 0 and out.startswith("this close-up was cut from another sprite (the game's own megumi_neutral.png"), out)
+    root_old = os.path.join(work, "root_old")
+    rc, out = run([tool("install_face.py"), edits["blink"], "megumi", "blink", "--images", images_3, "--root", root_old])
+    ok("and accepted on the game's own, the old way (into a scratch folder)",
+       rc == 0 and os.path.exists(os.path.join(root_old, "game", "images", "char", "fx", "fx_megumi_blink.png")), out)
     # the game's own sprites, the old way: the box from VIEW_FACE, and the measured blink row
     root = os.path.join(work, "root2")
     blink = os.path.join(OUTPUT, "yuji_blink_nanobanana_00001_.png")
@@ -1056,22 +1111,28 @@ def group_status(lab):
     ok("the table lists a half-made room set (the Common Room's old evening and night, and the memory that still "
        "shows the old night picture) and a stale foreground",
        "dorm_common_evening" in out and "Eleven Tuesdays" in out and re.search(r"fg_dorm_common\s+made for revision 1", out) is not None, out)
+    ok("a stale foreground of an hour picture names the picture whose revision moved (the day picture, not the hour's)",
+       re.search(r"fg_dorm_common_evening\s+made for revision 1 of dorm_common, which is now at revision 2", out) is not None
+       and "dorm_common_evening, which is now at revision" not in out, out)
 
 
-# the sixteen look-test renders: (picture, render, verdict, what its words must hold)
+# the sixteen look-test renders: (picture, render, verdict, what its words must hold). Five that nothing moved,
+# vanished or appeared in are a LOOK and not a PASS: each has a new view through a window (the Common Room's two
+# panes show a roof where the trees were; the Library's windows; a doorway opened in the Courtyard's hall), which
+# 5.4 step 6 shows the owner and does not refuse. A LOOK can be chosen like a PASS.
 SIXTEEN = [
-    ("dorm_common", "look3_dorm_common_keep", "PASS", []),
+    ("dorm_common", "look3_dorm_common_keep", "LOOK", ["drawn differently"]),
     ("cafeteria", "look3_cafeteria_keep", "PASS", []),
-    ("dorm_common", "look_dorm_common_A", "PASS", []),
-    ("courtyard", "look_courtyard_A", "PASS", []),
-    ("library", "look_library_A", "PASS", []),
+    ("dorm_common", "look_dorm_common_A", "LOOK", ["drawn differently"]),
+    ("courtyard", "look_courtyard_A", "LOOK", ["drawn differently"]),
+    ("library", "look_library_A", "LOOK", ["drawn differently"]),
     ("dorm_common", "look_dorm_common_B", "REFUSED", ["something new is on the sofa's near arm", "something new is on the low table's top"]),
     ("dorm_common", "look2_dorm_common_clean", "REFUSED", ["the floor cushions by the low table are gone", "the manga on the bookshelf is gone",
                                                          "the kettle on the counter is gone", "the bag by the sofa is gone"]),
     ("dorm_common", "look_dorm_common_C", "PASS", []),
     ("courtyard", "look_courtyard_B", "PASS", []),
     ("courtyard", "look_courtyard_C", "PASS", []),
-    ("library", "look_library_B", "PASS", []),
+    ("library", "look_library_B", "LOOK", ["drawn differently"]),
     ("library", "look_library_C", "PASS", []),
     ("courtyard", "look2_courtyard_gateway", "REFUSED", ["this is not the same picture"]),
     ("courtyard", "look2_courtyard_mainhall", "REFUSED", ["this is not the same picture"]),
@@ -1103,14 +1164,24 @@ def group_real(lab, write=False):
         for picture, render, want, words in SIXTEEN:
             rc, out = run([tool("install_redo.py"), picture, os.path.join(OUTPUT, render + "_00001_.png")] + tail, py=True)
             v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
-            what = {"look3_dorm_common_keep": "the third test's Common Room passes",
+            what = {"look3_dorm_common_keep": "the third test's Common Room can go in: nothing moved, vanished or appeared; "
+                                              "it is a LOOK for the new view through its two window panes",
                     "look3_cafeteria_keep": "the third test's Cafeteria passes",
                     "look_dorm_common_B": "the first test's Common Room B is flagged for the jacket and the cup",
                     "look2_dorm_common_clean": "the second test's emptied Common Room: the cushions, the manga shelf, the "
                                                "kettle and the bag are named as gone"}.get(render, "%s on %s: %s" % (render, picture, want))
-            ok("REAL: %s" % what, v[0] == want and all(w in v[1] for w in words), out)
+            ok("REAL: %s" % what, v[0] == want and all(w in v[1] for w in words) and rc == (1 if want == "REFUSED" else 0)
+               and (want == "REFUSED" or not re.search(r"moved|gone|something new", v[1])), out)
             fig = (figures(out) or [{}])[0]
             record["renders"].append({"picture": picture, "render": render + "_00001_.png", "verdict": v[0], "figures": fig})
+        # one thing on the wide floor of the approved render itself
+        for what, a1, a2 in (("its own sofa cushion", "497,618,145,104", "700,966"), ("its own two cups", "1232,503,55,52", "1010,1018")):
+            pasted = lab.syn("pasteplain", os.path.join(OUTPUT, "look3_dorm_common_keep_00001_.png"),
+                             "real_floor_%s_a_00001_.png" % re.sub(r"\W+", "_", what), a1, a2)
+            rc, out = run([tool("install_redo.py"), "dorm_common", pasted] + tail, py=True)
+            v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+            ok("REAL: the third test's Common Room with %s set down on the bare floor is REFUSED: something new is on the floor" % what,
+               v[0] == "REFUSED" and "something new is on the floor (" in v[1], out)
         # the proof that sharpness is against revision 1, on the real render
         root3 = mkroot(os.path.join(lab.work, "r_real_rev1"))
         keep_r = os.path.join(OUTPUT, "look3_dorm_common_keep_00001_.png")
@@ -1148,6 +1219,8 @@ def group_real(lab, write=False):
             "(docs/UI2_DESIGN.md 5.4, 5.7), written by tools/test_art_tools.sh --write-measures on 7 Oct 2026.",
             "`thresholds` are the constants of tools/redo_measure.py as they stood (the file is a record: the tool reads its own constants).",
             "`renders` are the sixteen look-test renders, each judged in place against the game's picture of that place.",
+            "Five of them are a LOOK, not a PASS, since review round 2 (7 Oct): nothing in them moved, vanished or appeared, "
+            "and each has a new view through a window or a doorway, which step 6 shows in 120 px cells and does not refuse.",
             "`relight_pairs` are the eight day and hour pairs the game has; all eight line up with their day picture to 0 px, "
             "so all eight were made as relights and none is left out. The relight's own \"vanished\" rule (gone only when a "
             "thing agrees under RELIGHT_GONE_REL of what the picture does AND keeps under RELIGHT_GONE_EDGE of its edge) was "
@@ -1155,7 +1228,8 @@ def group_real(lab, write=False):
             "its agreement and 43% of its edge, and is the weakest kept thing of the eight.",
             "In `figures`: shift is the whole picture's, in px; keep_weakest is [agreement against the picture's own, share "
             "of its edge] of the weakest kept thing; empty_most is [rise, levels] of the empty place that gained most; sharp "
-            "is [revision 1, this render]."]
+            "is [revision 1, this render]; empty_cell_most is the same as empty_most for the 160 px part of a wide empty place "
+            "(a floor) that gained most; cells_different is how many 120 px cells step 6 shows."]
         with open(MEASURES, "w", encoding="utf-8") as f:
             json.dump(record, f, indent=1, sort_keys=True)
             f.write("\n")
@@ -1190,6 +1264,9 @@ def group_yuji(lab):
             sizes.add((im.w, im.h, im.ch))
     ok("REAL: Yuji's six renders are keyed with the new edge and fitted to the 760x1400 canvas, with six side portraits",
        rc == 0 and sizes == {(760, 1400, 4)} and len(os.listdir(os.path.join(stage, "side"))) == 6 and out.count("keyedge") >= 6, out)
+    import shlex
+    ok("REAL: the commands --stage prints can be pasted: the folder with spaces in its name is quoted",
+       "--images %s" % shlex.quote(YUJI) in out and " " in YUJI and "--images %s " % YUJI not in out, out)
     root = mkroot(os.path.join(lab.work, "r_yuji"))
     tb = tree_hash(root)
     rc, out = run([tool("install_set.py"), "yuji", stage, "--root", root])

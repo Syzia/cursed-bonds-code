@@ -14,7 +14,7 @@ Put a background into the game, and prove first that it may go in.
     tools/py_art.sh tools/install_redo.py --compose courtyard <render> --layout hot_courtyard.json view_courtyard.json
             [--refs refs.json] [--waive <fact id> --owner-said "<what the owner said>"] [--dry]
   options: --root <a copy of the project>  --layout-dump <file>  --keep <folder>  --record <campus.json>
-           --batch <n>  --date <yyyy-mm-dd>
+           --batch <n>  --date <yyyy-mm-dd>      (a batch is 0, 3, ... or a file of one: 3a, 21b)
 
 docs/UI2_DESIGN.md 5.4, 5.5, 5.6, 5.7, K6, K7, D18, D19. A picture is
 installed only by the tool that proves it. Every render gets one of three
@@ -42,12 +42,17 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
      that sits a little way off is named as moved, not as gone.
   4. NOTHING WAS ADDED. Every `empty` row, the floor among them, has not
      gained fine edge (a jacket, a cup, leaves), unless it is in `allow`.
+     A wide zone (a floor) is judged whole and again in overlapping 160 px
+     parts, so one bag set on a wide floor is found and its part named.
   5. SHARPER, against the picture the place had BEFORE the overhaul
      (revision 1, from git by the manifest's `rev1_commit`), never against
      the installed one: twice as sharp passes, 1.3 to 2 is a LOOK, under 1.3
      is refused. Steps 2 to 4 are measured against the installed picture,
      which is what must not move.
-  6. Anything else that changed is shown, not refused: LOOK.
+  6. Anything else that changed is shown, not refused: LOOK. The picture is
+     read in 320 px tiles and again in 120 px cells; one that no longer
+     agrees with the game's picture (a new view through a window, a thing
+     drawn on a wall) is named by its corner and tinted on the preview.
   7. A PREVIEW, shots/art/redo_<picture>_<version>.jpg: old beside new with
      every point and zone drawn on both.
   A `change` row is left out of steps 3 and 4; its outline must not move.
@@ -158,6 +163,18 @@ def keep_list(stem, place, keep_dir=None):
                         raise SystemExit("the keep list of %s: every `%s` row needs a name and a box or a poly" % (stem, key))
             return got
     return {}
+
+
+def batch_id(text):
+    """--batch as the manifest holds it (5.5): the number 3 for a whole batch, the text "3a" for one file of a
+    batch (the ids of tools/art/batches.json). Anything else is refused."""
+    if text is None:
+        return None
+    if re.match(r"^(0|[1-9]\d?)$", text):
+        return int(text)
+    if re.match(r"^(0|[1-9]\d?)[a-z]$", text):
+        return text
+    raise SystemExit("--batch %s: a batch is a whole number (0, 3, 21) or one file of a batch (3a, 21b)" % text)
 
 
 def fg_polygons(root, place):
@@ -727,6 +744,7 @@ def main(argv):
     if [a for a in argv if a.startswith("--")] or len(argv) < 2:
         print(__doc__); raise SystemExit(1)
     o["picture"], o["renders"] = argv[0], argv[1:]
+    o["batch"] = batch_id(o["batch"])
     if o["choose"] is not None and o["choose"] not in ("a", "b"):
         raise SystemExit("--choose is a or b")
     if compose:

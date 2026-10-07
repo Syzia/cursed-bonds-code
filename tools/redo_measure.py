@@ -33,6 +33,13 @@ enlarged 2% by hand read as moved everywhere):
   ADDED       inside an empty zone: the amount of fine edge (1 px blur),
               against how much the picture as a whole gained. A jacket, a
               cup or a scatter of leaves is fine edge where there was none.
+              A zone wider or taller than 250 px (a floor) is judged whole
+              AND in overlapping 160 px cells: one bag on a wide floor is
+              lost in the floor's mean and plain in its own cell.
+  LOOK        whatever else changed is shown, not refused: a 320 px tile,
+              or a 120 px cell, whose edge map no longer agrees with the
+              game's picture (a new view through a window, a thing drawn
+              on a wall). Not for a relight, whose windows change by design.
   SHARPER     the variance of the Laplacian over the picture.
 
 Every number that decides a verdict is a constant below, set against renders
@@ -71,6 +78,17 @@ GONE_EDGE = 0.40            # ... or keeps less than this share of its edge, is 
 REL_FLOOR = 0.50            # (the tiles' middle agreement is never taken as less than this)
 ADDED_RISE = 1.16           # an empty zone whose fine edge rose this many times more than the picture's did ...
 ADDED_MIN = 1.2             # ... and by at least this much, in levels a pixel
+CELL_FROM = 250             # an empty zone wider or taller than this is judged in cells as well as whole:
+CELL = 160                  # ... cells this wide and at most this tall ...
+CELL_STEP = 80              # ... every this many px (so they overlap by half) ...
+CELL_MIN = 3000             # ... leaving out a cell that holds fewer px of the zone than this
+CELL_RISE = 1.22            # a cell is "something new" from this rise and this many levels. A cell is noisier than a
+CELL_ADD = 1.5              # whole zone: on the Common Room's floor the good renders read at most 1.06 and the emptied
+                            # second-test room 1.14 / 1.0; two cups set on the bare boards read 1.26 / 1.7, a cushion
+                            # 1.42 / 3.4, a kettle 1.48 / 3.1, a bag 1.31 / 2.5 (each at its weakest of five places)
+LOOK_CELL = 120             # step 6: a cell this size ...
+LOOK_DIFF = 0.30            # ... whose best agreement within 3 px is under this is drawn differently (LOOK)
+LOOK_MANY = 6               # more cells than this are told in one line
 SHARP_PASS = 2.0            # times the revision-1 picture's figure
 SHARP_LOOK = 1.3
 # A relight (5.7): a night picture loses edge in its dark corners, so "vanished" has thresholds of its own
@@ -277,6 +295,38 @@ def rise(fo, fn, mask, gain):
     return round((b + 1.0) / (a * gain + 1.0), 3), round(b - a * gain, 2)
 
 
+def _starts(lo, hi, size, step):
+    """Where windows of `size` start so that they cover lo..hi in steps of `step` (one window when it fits)."""
+    if hi - lo <= size:
+        return [lo]
+    out = list(range(lo, hi - size, step))
+    return out + [hi - size]
+
+
+def cells(mask, box):
+    """The overlapping cells a large empty zone is judged in: [(mask of the zone inside the cell, the cell's box)].
+    None for a zone that is small enough to be judged whole only."""
+    x0, y0, x1, y1 = box
+    if x1 - x0 <= CELL_FROM and y1 - y0 <= CELL_FROM:
+        return []
+    out = []
+    for cy in _starts(y0, y1, CELL, CELL_STEP):
+        for cx in _starts(x0, x1, CELL, CELL_STEP):
+            m = np.zeros_like(mask)
+            m[cy:min(cy + CELL, y1), cx:min(cx + CELL, x1)] = mask[cy:min(cy + CELL, y1), cx:min(cx + CELL, x1)]
+            if int(m.sum()) >= CELL_MIN:
+                out.append((m, (cx, cy, min(cx + CELL, x1), min(cy + CELL, y1))))
+    return out
+
+
+def look_cells():
+    """The 120 px cells step 6 looks at: 16 across, 9 down (the last row laid over the one above it)."""
+    ys = list(range(EDGE_ROWS, H - EDGE_ROWS - LOOK_CELL + 1, LOOK_CELL))
+    if ys[-1] + LOOK_CELL < H - EDGE_ROWS:
+        ys.append(H - EDGE_ROWS - LOOK_CELL)
+    return [(x, y, x + LOOK_CELL, y + LOOK_CELL) for y in ys for x in range(0, W, LOOK_CELL)]
+
+
 def lapvar(a):
     g = grey(a)[EDGE_ROWS:H - EDGE_ROWS]
     lap = 4 * g[1:-1, 1:-1] - g[:-2, 1:-1] - g[2:, 1:-1] - g[1:-1, :-2] - g[1:-1, 2:]
@@ -427,21 +477,37 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
         # step 4: nothing was added
         fo, fn = edges(old, 1.0), edges(new, 1.0)
         fgain = gain_of(fo, fn)
-        most = None
+        most, cell_most, n_empty = None, None, 0
         for z in empty:
             mask, box = zone_mask(z)
             if box is None or any(overlaps(box, a) for a in allow_boxes) or any(overlaps(box, c) for c in change_boxes):
                 continue
             r, by = rise(fo, fn, mask, fgain)
-            if r >= ADDED_RISE and by >= ADDED_MIN:
+            # one thing on a wide floor is lost in the floor's mean: a wide zone is judged cell by cell as well
+            hit = []
+            for cmask, cbox in cells(mask, box):
+                cr, cby = rise(fo, fn, cmask, fgain)
+                if cr >= CELL_RISE and cby >= CELL_ADD:
+                    hit.append(cbox)
+                if cell_most is None or cr > cell_most[0]:
+                    cell_most = (cr, cby, z["name"])
+            if hit:
+                refused.append("something new is on %s (%s)" % (z["name"], _where(min(b[0] for b in hit), max(b[2] for b in hit), box)))
+                marks["added"] += hit
+            elif r >= ADDED_RISE and by >= ADDED_MIN:
                 refused.append("something new is on %s" % z["name"])
                 marks["added"].append(box)
+            n_empty += 1
             if most is None or r > most[0]:
                 most = (r, by, z["name"])
         fig["empty_most"] = list(most[:2]) if most else None
-        lines.append(("added", "%d place%s checked%s" % (len(empty), "" if len(empty) == 1 else "s",
+        fig["empty_cell_most"] = list(cell_most[:2]) if cell_most else None
+        lines.append(("added", "%d place%s checked%s%s" % (n_empty, "" if n_empty == 1 else "s",
                       "; the largest rise is %.2f times, on %s (new from %.2f times)" % (most[0], most[2], ADDED_RISE)
-                      if most else "")))
+                      if most else "",
+                      "; the largest in any %d px part of a wide one is %.2f times, on %s (new from %.2f)"
+                      % (CELL, cell_most[0], cell_most[2], CELL_RISE)
+                      if cell_most else "")))
         # step 5: sharper than revision 1
         if rev1 is not None:
             base, now = lapvar(rev1), lapvar(new)
@@ -454,6 +520,32 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                                % (ratio, SHARP_LOOK))
             elif ratio < SHARP_PASS:
                 look.append("it is only %.1f times as sharp as the old picture (%.1f is a clear pass)" % (ratio, SHARP_PASS))
+        # step 6: everything else that changed is shown. The 320 px tiles miss a thing the size of a window
+        # pane or a poster, so the picture is read again in 120 px cells (for LOOK only, never a refusal).
+        whole = ("different picture", "not the same picture", "whole picture moved", "moved or enlarged everywhere")
+        if not any(w in r for r in refused for w in whole):
+            told = [b for b in marks["different"]]
+            named = marks["added"] + marks["gone"] + marks["moved"]     # what a refusal has already named
+            fine = []
+            for box in look_cells():
+                cpt = ((box[0] + box[2]) // 2, (box[1] + box[3]) // 2)
+                if (any(b[0] <= cpt[0] < b[2] and b[1] <= cpt[1] < b[3] for b in told)
+                        or any(overlaps(box, c) for c in change_boxes) or any(a and overlaps(box, a) for a in allow_boxes)
+                        or any(overlaps(box, n) for n in named)):
+                    continue
+                a, b = eo[box[1]:box[3], box[0]:box[2]], en[box[1]:box[3], box[0]:box[2]]
+                if a.std() < FLAT:
+                    continue
+                if shift(a, b, search=SHIFT_POINT)[2] < LOOK_DIFF:
+                    fine.append(box)
+            fig["cells_different"] = len(fine)
+            marks["different"] += fine
+            if len(fine) > LOOK_MANY:
+                look.append("%d parts of the picture are drawn differently (tinted on the preview), among them at %s"
+                            % (len(fine), ", ".join("(%d, %d)" % (b[0], b[1]) for b in fine[:3])))
+            else:
+                look += ["the part of the picture at (%d, %d) is drawn differently (a window's view, or a thing on a wall: "
+                         "tinted on the preview)" % (b[0], b[1]) for b in fine]
     if allow:
         look.append("it has what was asked for: %s" % "; ".join(z["name"] for z in allow))
     verdict = "REFUSED" if refused else ("LOOK" if look else "PASS")
@@ -467,6 +559,16 @@ def _way(dx, dy):
     if dy:
         parts.append("%d px %s" % (abs(dy), "down" if dy > 0 else "up"))
     return " and ".join(parts) or "0 px"
+
+
+def _where(x0, x1, box):
+    """Where along a wide zone a thing was found, in a person's words."""
+    w = float(box[2] - box[0])
+    if x1 - x0 > 0.6 * w:
+        return "all along it"
+    mid = (x0 + x1) / 2.0 - box[0]
+    side = "at its left end" if mid < w / 3 else ("at its right end" if mid > 2 * w / 3 else "in its middle")
+    return "%s, from x %d to %d" % (side, x0, x1)
 
 
 def _plural(name):
