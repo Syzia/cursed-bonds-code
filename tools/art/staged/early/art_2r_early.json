@@ -1,0 +1,118 @@
+{
+ "about": [
+  "Sitting 2, again, written by hand on 7 Oct 2026 at the owner's word (docs/UI_OVERHAUL_2.md): the Main Gate composed again as a great gatehouse,",
+  "from tools/art/staged/early/campus_for_batch2_again.json (the copy of the record with the gate's words and the veil's look reworded);",
+  "and the Mountain Path's versions A and B, each with ONE named change: the veil painted again as a smooth dome of black glass over the ridge's top,",
+  "with the right half of the owner's reference collage (~/Desktop/JJK Game images/ui2/refs/) as picture 2. The two edit prompts are hand-written",
+  "edits of renders, not composed prompts; they name no series and no character. A sum is the sha256 of a prompt's UTF-8 text or of a file's bytes."
+ ],
+ "written": "2026-10-07",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: Main Gate, as a great gatehouse, version A",
+   "save": "ui2_gate2_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 5118,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "d61c26f1ecc1d15a47f3b634c056e3b6954b52bf3d178d76e6d950432489073a",
+   "references": [
+    {
+     "file": "ui2_in_gate_1.png",
+     "sha256": "72ff262ebcac799090bd74956b6e767b3bb23c7b55352d9e37d1fe54ecadc81f"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Main Gate, as a great gatehouse, version B",
+   "save": "ui2_gate2_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 5119,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "d61c26f1ecc1d15a47f3b634c056e3b6954b52bf3d178d76e6d950432489073a",
+   "references": [
+    {
+     "file": "ui2_in_gate_1.png",
+     "sha256": "72ff262ebcac799090bd74956b6e767b3bb23c7b55352d9e37d1fe54ecadc81f"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path, version A with the veil painted again, version A",
+   "save": "ui2_trailhead_va_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 3028,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "5e8881d7cd9f1828a33d3de8316352dc99f2edd7547dbe2c09f29466fd56a5a3",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_va_1.png",
+     "sha256": "32e4f31d5a75ccf50b4e6f3f362723bd9007e03ecb226a89c66e55a4a642c37b"
+    },
+    {
+     "file": "ui2_in_trailhead_va_2.png",
+     "sha256": "1187d3d14ba51f6f8bf24f8104d96598913d687202aec8924d588e9b936477f8"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path, version A with the veil painted again, version B",
+   "save": "ui2_trailhead_va_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 3029,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "5e8881d7cd9f1828a33d3de8316352dc99f2edd7547dbe2c09f29466fd56a5a3",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_va_1.png",
+     "sha256": "32e4f31d5a75ccf50b4e6f3f362723bd9007e03ecb226a89c66e55a4a642c37b"
+    },
+    {
+     "file": "ui2_in_trailhead_va_2.png",
+     "sha256": "1187d3d14ba51f6f8bf24f8104d96598913d687202aec8924d588e9b936477f8"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path, version B with the veil painted again, version A",
+   "save": "ui2_trailhead_vb_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 3052,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "bd3d5a98d93c617b6c6f81226aa80cde7e3a753847f827bed64aa25a1cafdee9",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_vb_1.png",
+     "sha256": "f779d37c4ef56aa5dd50f45ba8893c544058ea5e9521e1076eb2c7455c1f5325"
+    },
+    {
+     "file": "ui2_in_trailhead_vb_2.png",
+     "sha256": "1187d3d14ba51f6f8bf24f8104d96598913d687202aec8924d588e9b936477f8"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path, version B with the veil painted again, version B",
+   "save": "ui2_trailhead_vb_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 3053,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "bd3d5a98d93c617b6c6f81226aa80cde7e3a753847f827bed64aa25a1cafdee9",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_vb_1.png",
+     "sha256": "f779d37c4ef56aa5dd50f45ba8893c544058ea5e9521e1076eb2c7455c1f5325"
+    },
+    {
+     "file": "ui2_in_trailhead_vb_2.png",
+     "sha256": "1187d3d14ba51f6f8bf24f8104d96598913d687202aec8924d588e9b936477f8"
+    }
+   ]
+  }
+ ]
+}
