@@ -123,7 +123,9 @@
     "boys_dorm",
     "yuji_room",
     "megumi_room",
-    "senpai_room"
+    "senpai_room",
+    "nobara_room",
+    "maki_room"
    ],
    "spots": {
     "boys_dorm": {
@@ -201,7 +203,9 @@
     "staff_yard",
     "office",
     "utahime_office",
-    "gojo_office"
+    "gojo_office",
+    "teachers_lounge",
+    "teachers_dorm"
    ],
    "spots": {
     "gojo_office": {
@@ -234,6 +238,16 @@
       480
      ]
     },
+    "teachers_lounge": {
+     "applied": [
+      1560,
+      340
+     ],
+     "default": [
+      1560,
+      340
+     ]
+    },
     "utahime_office": {
      "applied": [
       565,
@@ -259,7 +273,8 @@
     "training_yard",
     "training",
     "dojo",
-    "storehouse"
+    "storehouse",
+    "pool"
    ],
    "spots": {
     "dojo": {
@@ -270,6 +285,16 @@
      "default": [
       1320,
       420
+     ]
+    },
+    "pool": {
+     "applied": [
+      1480,
+      850
+     ],
+     "default": [
+      1480,
+      850
      ]
     },
     "storehouse": {
@@ -317,9 +342,21 @@
     "trailhead",
     "forest",
     "riverside",
-    "ridge"
+    "ridge",
+    "bathhouse",
+    "sauna"
    ],
    "spots": {
+    "bathhouse": {
+     "applied": [
+      980,
+      620
+     ],
+     "default": [
+      980,
+      620
+     ]
+    },
     "forest": {
      "applied": [
       430,
@@ -364,6 +401,32 @@
   }
  ],
  "exits": {
+  "bathhouse": [
+   {
+    "applied": [
+     84,
+     500
+    ],
+    "default": [
+     84,
+     500
+    ],
+    "id": "go_bathhouse__trailhead",
+    "to": "trailhead"
+   },
+   {
+    "applied": [
+     1640,
+     560
+    ],
+    "default": [
+     1640,
+     560
+    ],
+    "id": "go_bathhouse__sauna",
+    "to": "sauna"
+   }
+  ],
   "boys_dorm": [
    {
     "applied": [
@@ -672,6 +735,30 @@
     ],
     "id": "go_girls_dorm__dorm_yard",
     "to": "dorm_yard"
+   },
+   {
+    "applied": [
+     470,
+     600
+    ],
+    "default": [
+     470,
+     600
+    ],
+    "id": "go_girls_dorm__nobara_room",
+    "to": "nobara_room"
+   },
+   {
+    "applied": [
+     1475,
+     600
+    ],
+    "default": [
+     1475,
+     600
+    ],
+    "id": "go_girls_dorm__maki_room",
+    "to": "maki_room"
    }
   ],
   "gojo_office": [
@@ -716,6 +803,20 @@
     "to": "school_yard"
    }
   ],
+  "maki_room": [
+   {
+    "applied": [
+     150,
+     760
+    ],
+    "default": [
+     150,
+     760
+    ],
+    "id": "go_maki_room__girls_dorm",
+    "to": "girls_dorm"
+   }
+  ],
   "megumi_room": [
    {
     "applied": [
@@ -730,6 +831,20 @@
     "to": "boys_dorm"
    }
   ],
+  "nobara_room": [
+   {
+    "applied": [
+     150,
+     760
+    ],
+    "default": [
+     150,
+     760
+    ],
+    "id": "go_nobara_room__girls_dorm",
+    "to": "girls_dorm"
+   }
+  ],
   "office": [
    {
     "applied": [
@@ -742,6 +857,20 @@
     ],
     "id": "go_office__staff_yard",
     "to": "staff_yard"
+   }
+  ],
+  "pool": [
+   {
+    "applied": [
+     160,
+     820
+    ],
+    "default": [
+     160,
+     820
+    ],
+    "id": "go_pool__training_yard",
+    "to": "training_yard"
    }
   ],
   "ridge": [
@@ -784,6 +913,20 @@
     ],
     "id": "go_rooftop__dorm_yard",
     "to": "dorm_yard"
+   }
+  ],
+  "sauna": [
+   {
+    "applied": [
+     84,
+     520
+    ],
+    "default": [
+     84,
+     520
+    ],
+    "id": "go_sauna__bathhouse",
+    "to": "bathhouse"
    }
   ],
   "school_yard": [
@@ -901,6 +1044,18 @@
    },
    {
     "applied": [
+     1690,
+     500
+    ],
+    "default": [
+     1690,
+     500
+    ],
+    "id": "go_staff_yard__teachers_lounge",
+    "to": "teachers_lounge"
+   },
+   {
+    "applied": [
      225,
      930
     ],
@@ -936,6 +1091,46 @@
     ],
     "id": "go_storehouse__training_yard",
     "to": "training_yard"
+   }
+  ],
+  "teachers_dorm": [
+   {
+    "applied": [
+     120,
+     620
+    ],
+    "default": [
+     120,
+     620
+    ],
+    "id": "go_teachers_dorm__teachers_lounge",
+    "to": "teachers_lounge"
+   }
+  ],
+  "teachers_lounge": [
+   {
+    "applied": [
+     84,
+     540
+    ],
+    "default": [
+     84,
+     540
+    ],
+    "id": "go_teachers_lounge__staff_yard",
+    "to": "staff_yard"
+   },
+   {
+    "applied": [
+     1690,
+     500
+    ],
+    "default": [
+     1690,
+     500
+    ],
+    "id": "go_teachers_lounge__teachers_dorm",
+    "to": "teachers_dorm"
    }
   ],
   "trailhead": [
@@ -974,6 +1169,18 @@
     ],
     "id": "go_trailhead__riverside",
     "to": "riverside"
+   },
+   {
+    "applied": [
+     1480,
+     560
+    ],
+    "default": [
+     1480,
+     560
+    ],
+    "id": "go_trailhead__bathhouse",
+    "to": "bathhouse"
    },
    {
     "applied": [
@@ -1038,6 +1245,18 @@
     ],
     "id": "go_training_yard__storehouse",
     "to": "storehouse"
+   },
+   {
+    "applied": [
+     1600,
+     880
+    ],
+    "default": [
+     1600,
+     880
+    ],
+    "id": "go_training_yard__pool",
+    "to": "pool"
    },
    {
     "applied": [
@@ -1371,7 +1590,7 @@
    ]
   }
  },
- "hash": "bd9364683e84efe726f55a6c8c0549b8cdc2f8c39e5192507c6292fce9c2b98c",
+ "hash": "63d11459f79d5f8cff0bfe9c6d5910accd6b5e3b6d015123b2b33e0a7ae9eaa6",
  "hotspots": {
   "cafeteria": [
    {
@@ -2399,6 +2618,90 @@
    "variants": {},
    "y": 0,
    "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg nobara_room",
+   "file": "images/bg/nobara_room.png",
+   "hub": false,
+   "indoor": true,
+   "key": "nobara_room",
+   "name": "Nobara's Room",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg maki_room",
+   "file": "images/bg/maki_room.png",
+   "hub": false,
+   "indoor": true,
+   "key": "maki_room",
+   "name": "Maki's Room",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "staff",
+   "bg": "bg teachers_lounge",
+   "file": "images/bg/teachers_lounge.png",
+   "hub": false,
+   "indoor": true,
+   "key": "teachers_lounge",
+   "name": "Teachers' Lounge",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "staff",
+   "bg": "bg teachers_dorm",
+   "file": "images/bg/teachers_dorm.png",
+   "hub": false,
+   "indoor": true,
+   "key": "teachers_dorm",
+   "name": "Teachers' Dormitory",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "mountain",
+   "bg": "bg bathhouse",
+   "file": "images/bg/bathhouse.png",
+   "hub": false,
+   "indoor": true,
+   "key": "bathhouse",
+   "name": "Onsen",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "mountain",
+   "bg": "bg sauna",
+   "file": "images/bg/sauna.png",
+   "hub": false,
+   "indoor": true,
+   "key": "sauna",
+   "name": "Sauna",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "grounds",
+   "bg": "bg pool",
+   "file": "images/bg/pool.png",
+   "hub": false,
+   "indoor": false,
+   "key": "pool",
+   "name": "Swimming Pool",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
   }
  ],
  "poses": {
@@ -2429,16 +2732,16 @@
   },
   "ijichi": {
    "Afternoon": "gate",
-   "Evening": "-",
+   "Evening": "teachers_lounge",
    "Morning": "gate",
-   "Night": "-",
+   "Night": "teachers_dorm",
    "Noon": "gate"
   },
   "maki": {
    "Afternoon": "training",
    "Evening": "riverside",
    "Morning": "dojo",
-   "Night": "girls_dorm",
+   "Night": "maki_room",
    "Noon": "dojo"
   },
   "megumi": {
@@ -2452,7 +2755,7 @@
    "Afternoon": "courtyard",
    "Evening": "dorm_common",
    "Morning": "training_yard",
-   "Night": "girls_dorm",
+   "Night": "nobara_room",
    "Noon": "cafeteria"
   },
   "panda": {
@@ -2480,14 +2783,14 @@
    "Afternoon": "utahime_office",
    "Evening": "cafeteria",
    "Morning": "utahime_office",
-   "Night": "-",
+   "Night": "teachers_dorm",
    "Noon": "utahime_office"
   },
   "yaga": {
    "Afternoon": "storehouse",
    "Evening": "office",
    "Morning": "office",
-   "Night": "-",
+   "Night": "teachers_dorm",
    "Noon": "office"
   },
   "yuji": {
@@ -2503,6 +2806,76 @@
   1080
  ],
  "slots": {
+  "bathhouse": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
   "boys_dorm": {
    "1": [
     [
@@ -3483,6 +3856,76 @@
     ]
    ]
   },
+  "maki_room": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
   "megumi_room": {
    "1": [
     [
@@ -3553,7 +3996,147 @@
     ]
    ]
   },
+  "nobara_room": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
   "office": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "pool": {
    "1": [
     [
      700,
@@ -3833,6 +4416,76 @@
     ]
    ]
   },
+  "sauna": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
   "school_yard": {
    "1": [
     [
@@ -4044,6 +4697,146 @@
    ]
   },
   "storehouse": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "teachers_dorm": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "teachers_lounge": {
    "1": [
     [
      700,
@@ -5039,20 +5832,20 @@
  "weekend": {
   "maki": {
    "Afternoon": "riverside",
-   "Evening": "dojo",
-   "Morning": "dojo"
+   "Evening": "bathhouse",
+   "Morning": "maki_room"
   },
   "megumi": {
    "Afternoon": "library",
    "Morning": "megumi_room"
   },
   "nobara": {
-   "Afternoon": "riverside",
-   "Evening": "courtyard",
-   "Morning": "girls_dorm"
+   "Afternoon": "pool",
+   "Evening": "bathhouse",
+   "Morning": "nobara_room"
   },
   "panda": {
-   "Afternoon": "riverside",
+   "Afternoon": "pool",
    "Morning": "senpai_room"
   },
   "shoko": {
@@ -5063,17 +5856,17 @@
    "Morning": "senpai_room"
   },
   "utahime": {
-   "Afternoon": "-",
-   "Evening": "courtyard"
+   "Afternoon": "teachers_lounge",
+   "Evening": "bathhouse"
   },
   "yaga": {
    "Afternoon": "-",
-   "Evening": "-",
-   "Morning": "-",
-   "Noon": "-"
+   "Evening": "teachers_lounge",
+   "Morning": "teachers_dorm",
+   "Noon": "teachers_lounge"
   },
   "yuji": {
-   "Afternoon": "riverside",
+   "Afternoon": "pool",
    "Evening": "dorm_yard",
    "Morning": "dorm_common",
    "Noon": "yuji_room"

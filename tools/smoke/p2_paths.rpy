@@ -731,7 +731,7 @@ label zz_smoke:
             shot("arrival_" + _zz_h, wait=0)
             _zz_hubrects[_zz_h] = dict((t, zz_rect("sb_place", "hot_" + path_spot_id(_zz_h, t))) for t in path_neighbours(_zz_h))
             _zz_bad += [(_zz_h, t, r) for t, r in sorted(_zz_hubrects[_zz_h].items()) if r is None or hot_overlap(r, zz_caption_box(_zz_h))]
-        check(not _zz_bad and len(_zz_hubrects["trailhead"]) == 4,
+        check(not _zz_bad and len(_zz_hubrects["trailhead"]) == len(PATH_EXITS["trailhead"]) >= 4,
               "on arrival (the caption up) every exit button of each of the five hubs, as drawn, is clear of it", (_zz_bad, _zz_hubrects["trailhead"]))
         ARRIVAL[1] -= 10
         renpy.hide_screen("sb_place")
@@ -1077,6 +1077,14 @@ label zz_smoke:
         _zz_moved = [("yuji", "dorm_common"), ("nobara", "classroom"), ("toge", "rooftop"), ("megumi", "forest"), ("shoko", "rooftop"),
                      ("panda", "dorm_common"), ("toge", "dorm_common"),
                      ("yuji", "dorm_yard"), ("panda", "dorm_yard"), ("yuji", "cafeteria"), ("megumi", "trailhead"), ("panda", "courtyard")]
+        ## U0c1 (the rest of 4.3): the two girls went home at Night and for a
+        ## weekend Morning (Nobara left the corridor, Maki the corridor and the
+        ## dojo), and their weekend Evenings are the Onsen (Nobara left the
+        ## Courtyard, Maki the dojo). The three who left the weekend river for
+        ## the pool (Yuji, Nobara, Panda) are not in this list yet: "Swim
+        ## together" comes to the pool in wave 1, as swim_pool, and they are
+        ## added then, in the commit that brings it (the ledger, 10.3).
+        _zz_moved += [("nobara", "girls_dorm"), ("maki", "girls_dorm"), ("maki", "dojo"), ("nobara", "courtyard")]
         _zz_lost = []
         for _zz_w, _zz_l in sorted(_zz_moved):
             _zz_at = set(routine_location(_zz_w, p, we) for p in PERIODS for we in (False, True))
@@ -1084,6 +1092,14 @@ label zz_smoke:
                 if _zz_a.get("loc") and _zz_l in _zz_a["loc"] and not (_zz_at & set(_zz_a["loc"])):
                     _zz_lost.append((_zz_w, _zz_l, _zz_a["id"]))
         check(not _zz_lost, "nobody who moved lost an activity that needs a place: each is still offered somewhere in their week", _zz_lost)
+        ## U0c1, reported and not hidden: Utahime's weekend Evening left the
+        ## Courtyard for the Onsen (the plan's cell, 4.3), and the Courtyard
+        ## was the one walk place in her week. By her routine "Walk with
+        ## them" is offered with her nowhere now; walking with me ("Ask them
+        ## along") she can still be taken to one. The owner's to rule on.
+        _zz_uta = set(routine_location("utahime", p, we) for p in PERIODS for we in (False, True))
+        note("Utahime left the Courtyard (weekend Evenings); activities with a place that her routine no longer reaches",
+             [a["id"] for a in ACTIVITIES if a.get("loc") and "courtyard" in a["loc"] and not (_zz_uta & set(a["loc"]))])
         ## Panda's Night, the room he shares against the common room, with
         ## every bond full: under the night rule the same things can be
         ## started with him. The second UI overhaul (4.3, D48; U0b): his Night

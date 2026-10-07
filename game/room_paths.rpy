@@ -16,7 +16,10 @@
 ## with rooms inside. A room that opens off a house (WORLD_INSIDE in
 ## sb_world.rpy: my room, off the Boys' Dormitory) has its house as its first
 ## exit and no exit to the yard; the house's first exit is the yard, and its
-## others are the rooms inside it, seven exits at most (K11).
+## others are the rooms inside it, seven exits at most (K11). U0c1 adds the
+## other houses: the girls' corridor (two rooms), the Teachers' Lounge (the
+## Teachers' Dormitory upstairs) and the Onsen (its sauna); and the pool, a
+## plain room of the Training Grounds.
 ##
 ## Walking is free and instant, at any hour, and works in explore mode. The
 ## map still goes anywhere in two clicks.
@@ -117,7 +120,9 @@ init python:
                            ("trailhead", 465, 615)],        # the dirt path behind the left house
         "dorm":           [("boys_dorm", 150, 760)],        # my door (below the laptop's row)
         "dorm_common":    [("dorm_yard", 84, 540)],         # the sliding door
-        "girls_dorm":     [("dorm_yard", 1090, 560)],       # the far end of the corridor
+        "girls_dorm":     [("dorm_yard", 1090, 560),        # the far end of the corridor
+                           ("nobara_room", 470, 600),       # the near door on the left (U0c1: measured on today's picture)
+                           ("maki_room", 1475, 600)],       # the near door on the right
         "rooftop":        [("dorm_yard", 1680, 640)],       # the stairs behind the pillar
         ## The Boys' Dormitory (U0b). Schematic points on the stand-in (the
         ## girls' corridor, mirrored); the corridor's own picture brings its
@@ -131,32 +136,57 @@ init python:
         "yuji_room":      [("boys_dorm", 1660, 760)],       # his door
         "megumi_room":    [("boys_dorm", 1660, 760)],       # his door
         "senpai_room":    [("boys_dorm", 1660, 760)],       # their door
+        ## The girls' rooms (U0c1): my room in another tint, not mirrored,
+        ## so the door is where mine is.
+        "nobara_room":    [("girls_dorm", 150, 760)],       # her door
+        "maki_room":      [("girls_dorm", 150, 760)],       # her door
         ## Staff Building ---------------------------------------------------------
         "staff_yard":     [("office", 878, 495),            # the main hall's doors
                            ("utahime_office", 1485, 660),   # the small house on the right
                            ("gojo_office", 180, 660),       # the house on the left
+                           ## U0c1 (K12): the teachers' house is not on today's picture. Its
+                           ## exit stands on the side the record proposes (the right), at a
+                           ## clear point beyond the small house; the old exits stay put.
+                           ("teachers_lounge", 1690, 500),  # past the small house on the right, at the edge
                            ("dorm_yard", 225, 930),         # the gravel, bottom left
                            ("training_yard", 1640, 850)],   # the dirt path leaving right
         "office":         [("staff_yard", 84, 560)],        # the open side of the hall
         "utahime_office": [("staff_yard", 84, 520)],        # the sliding door
         "gojo_office":    [("staff_yard", 1680, 640)],      # the sliding door
+        ## The teachers' house (U0c1). Schematic points on the stand-ins (the
+        ## Common Room; the Principal's Office, cropped).
+        "teachers_lounge": [("staff_yard", 84, 540),        # the sliding door
+                            ("teachers_dorm", 1690, 500)],  # the stairs up
+        "teachers_dorm":  [("teachers_lounge", 120, 620)],  # the stairs down
         ## Training Grounds -------------------------------------------------------
         "training_yard":  [("training", 1650, 600),         # the long hall on the right
                            ("dojo", 165, 600),              # the doors on the left
                            ("storehouse", 952, 645),        # the white kura
+                           ## U0c1 (K12): the pool's gate is not on today's picture. On the
+                           ## proposed side (the right), at a clear point below the long hall.
+                           ("pool", 1600, 880),             # the grass below the long hall, bottom right
                            ("courtyard", 150, 840),         # the stone path on the left
                            ("staff_yard", 620, 560)],       # over the wall left of the kura
         "training":       [("training_yard", 230, 600)],    # the bright doorway, far left
         "dojo":           [("training_yard", 84, 620)],     # the open panel on the left
         "storehouse":     [("training_yard", 84, 520)],     # daylight at the door
+        "pool":           [("training_yard", 160, 820)],    # the gate (U0c1: schematic, on the stand-in)
         ## The Mountain -----------------------------------------------------------
         "trailhead":      [("forest", 180, 660),            # the dirt path going left
                            ("ridge", 862, 360),             # the stone stairs
                            ("riverside", 1640, 830),        # the river on the right
+                           ## U0c1 (K12): the Onsen is not on today's picture. On the proposed
+                           ## side (the right), in the middle distance among the trees.
+                           ("bathhouse", 1480, 560),        # between the trees on the right
                            ("dorm_yard", 1080, 990)],       # the slabs in the foreground
         "forest":         [("trailhead", 84, 600)],         # back down, where the trees open
         "riverside":      [("trailhead", 84, 760)],         # the sandy path on the bank
         "ridge":          [("trailhead", 84, 720)],         # down the slope
+        ## The Onsen and its sauna (U0c1). Schematic points on the stand-ins
+        ## (the infirmary; the storehouse).
+        "bathhouse":      [("trailhead", 84, 500),          # out past the benches
+                           ("sauna", 1640, 560)],           # the cedar door
+        "sauna":          [("bathhouse", 84, 520)],         # the door
     }
 
     ## Where each room's own hotspots sit (P6's final points, the sidecars
@@ -190,6 +220,8 @@ init python:
         "yuji_room":      "To Yuji's Room",
         "megumi_room":    "To Megumi's Room",
         "senpai_room":    "To Panda and Toge's Room",
+        "nobara_room":    "To Nobara's Room",
+        "maki_room":      "To Maki's Room",
         "utahime_office": "To Utahime's Office",
         "gojo_office":    "To Gojo's Office",
     }
@@ -592,4 +624,36 @@ label sb_do_path_megumi_room:
 
 label sb_do_path_senpai_room:
     call path_walk("senpai_room")
+    return
+
+
+## U0c1: the other seven places (4.1, 4.5). Appended after U0b's four;
+## protected from the commit they land in, each with its line (2.3).
+
+label sb_do_path_nobara_room:
+    call path_walk("nobara_room")
+    return
+
+label sb_do_path_maki_room:
+    call path_walk("maki_room")
+    return
+
+label sb_do_path_teachers_lounge:
+    call path_walk("teachers_lounge")
+    return
+
+label sb_do_path_teachers_dorm:
+    call path_walk("teachers_dorm")
+    return
+
+label sb_do_path_bathhouse:
+    call path_walk("bathhouse")
+    return
+
+label sb_do_path_sauna:
+    call path_walk("sauna")
+    return
+
+label sb_do_path_pool:
+    call path_walk("pool")
     return

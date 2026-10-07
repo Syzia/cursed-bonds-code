@@ -51,9 +51,20 @@
 ## None for the kind "story"). It presses buttons through their actions: it
 ## neither hovers nor moves the pointer.
 ##
-## Screenshots (shots/u2_home/): worst_<place>.png for three of the new
-## places (R6's worst case), park_<name>.png as each save is made, and
-## place_<room>.png, map_dorms.png.
+## U0c1 (docs/UI2_DESIGN.md 10.2 "U0c1", 4.1 to 4.5) added the other seven
+## places and the rest of the Night, and this harness follows them: the
+## sections above also cover the two girls' rooms, the teachers' house, the
+## Onsen with its sauna and the pool; and
+##   M  a save made in each of the seven new places reloads there
+##   N  Nobara's room in the Afternoon as her companion, with no Bond; Wait to
+##      Evening; the way out works (a house is always open from its own rooms)
+##   O  the Teachers' Dormitory at Night: Yaga up, Utahime and Ijichi asleep
+##
+## Screenshots (shots/u2_home/): worst_<place>.png for ten of the new
+## places and the three yards that gained an exit (R6's worst case),
+## park_<name>.png as each save is made,
+## place_<room>.png, map_dorms.png and map_<area>.png for the three other
+## areas that gained a pin.
 
 init 999 python:
     import builtins
@@ -93,6 +104,16 @@ init 999 python:
                  "intensive_done", "ijichi_rides", "met_second_years")
     ZZH_SCREENS = ("journal", "sb_map", "sb_char", "sb_place")
     ZZH_ROOMS = ("yuji_room", "megumi_room", "senpai_room")
+    ## U0c1's seven, in the order they were appended.
+    ZZH_SEVEN = ("nobara_room", "maki_room", "teachers_lounge", "teachers_dorm", "bathhouse", "sauna", "pool")
+    ZZH_GIRLS = ("nobara_room", "maki_room")
+    ## Everyone who lives on campus, and where (WORLD_HOMES, 3.2).
+    ZZH_HOMES = builtins.dict(yuji="yuji_room", megumi="megumi_room", panda="senpai_room", toge="senpai_room",
+                              nobara="nobara_room", maki="maki_room", shoko="infirmary",
+                              yaga="teachers_dorm", utahime="teachers_dorm", ijichi="teachers_dorm")
+    ZZH_CORRIDOR = ("I am not walking into the girls' dormitory after dark uninvited. "
+                    "That is how people get nailed to things.")
+    ZZH_KNOCK = "I don't know her well enough to knock."
     ZZH_OLD_LABELS = ("gate", "courtyard", "classroom", "cafeteria", "training", "dojo", "dorm_common", "dorm",
                       "girls_dorm", "rooftop", "infirmary", "office", "utahime_office", "gojo_office",
                       "storehouse", "forest", "riverside", "ridge", "library", "school_yard", "dorm_yard",
@@ -354,7 +375,8 @@ init 999 python:
     def zzh_park(name):
         """True once the save `name` has been made, loaded and compared. The
         first call makes the save and loads it (and does not return); the
-        tick after the load compares."""
+        tick after the load compares. (Its lines read "H:", whichever
+        section parks: M's saves are named new_<place>.)"""
         if name in zzh.parked:
             return True
         want = zzh_sig()
@@ -471,6 +493,21 @@ init 999 python:
             zzh_stop()
             return None
         return ret
+
+    def zzh_prep(bond):
+        """Inside the loop: everyone met, this Bond with everyone, nobody
+        walking with me, no pin, no door flag."""
+        for w in ROSTER_ORDER:
+            if w not in store.roster:
+                store.roster.append(w)
+            store.bonds[w] = bond
+        for f in ZZH_FLAGS:
+            flag(f)
+        for f in [f for f in store.flags if f.startswith("door_") or f == "invited_girls_dorm"]:
+            store.flags.discard(f)
+        store.companion = None
+        store.schedule_overrides = {}
+        toast_clear()
 
     def zzh_set(loc, per, day=None):
         """Put me somewhere at an hour and let the loop come round again:
@@ -739,6 +776,114 @@ init 999 python:
         elif s == 22:
             if ui == "sb_place":
                 check(here == "boys_dorm", "L: and from there the old save walks on, into the corridor", here)
+                zzh_prep(60)
+                k["new"] = 0
+                zzh_next()
+                return zzh_set(ZZH_SEVEN[0], "Noon", zzh_day("Fri"))
+        ## --- M. a save made in each of the seven new places reloads there ---------------
+        elif s == 23:
+            place = ZZH_SEVEN[k["new"]]
+            if ui == "sb_place" and here == place:
+                if ("new_" + place) not in zzh.parked:
+                    shot("place_" + place, wait=0)
+                if zzh_park("new_" + place):
+                    check(zzh.parked.get("new_" + place) is True and store.here == place and renpy.get_screen("sb_place") is not None
+                          and zzh_exits(place)[0] in [v[1][5:] for v in zzh_offered() if v[0] == "act" and v[1].startswith("path_")],
+                          "M: a save made in %s reloads there, on the place view, its way out offered" % LOCATIONS[place]["name"],
+                          (store.here, zzh.parked.get("new_" + place), zzh_offered()))
+                    k["new"] += 1
+                    if k["new"] < len(ZZH_SEVEN):
+                        zzh.t_stage = time.time()
+                        return zzh_set(ZZH_SEVEN[k["new"]], "Noon")
+                    zzh_prep(0)
+                    zzh_next()
+                    return zzh_set("dorm_yard", "Afternoon", zzh_day("Fri"))
+        ## --- N. into Nobara's room as her companion, and out after dark -----------------
+        elif s == 24:
+            if ui == "sb_place" and here == "dorm_yard":
+                ## (set here, not before the loop came round: zzh_set comes
+                ## round by "Let them go", which would let her go)
+                store.companion = "nobara"
+                check(store.period == "Afternoon" and store.companion == "nobara" and store.bonds["nobara"] == 0 and store.bonds["maki"] == 0
+                      and not has_flag("invited_girls_dorm") and place_access("girls_dorm")[0] and place_access("nobara_room")[0]
+                      and place_access("maki_room") == (False, ZZH_KNOCK, "Bond 15"),
+                      "N: a weekday Afternoon in the garden, Nobara walking with me, Bond 0 with everyone: the corridor is open by day "
+                      "and her door opens for her; Maki's does not", (store.period, store.companion, place_access("nobara_room"), place_access("maki_room")))
+                zzh_next()
+                return zzh_walk("girls_dorm")
+        elif s == 25:
+            if ui == "sb_place":
+                check(here == "girls_dorm", "N: into the girls' corridor", here)
+                shot("place_girls_dorm", wait=0)
+                k["marks"] = zzh_marks()
+                k["said"] = zzh_heard()
+                del zzh.labels[:]
+                zzh_next()
+                return zzh_walk("nobara_room")
+        elif s == 26:
+            if ui == "sb_place":
+                want = [l.replace("boys_dorm", "nobara_room") for l in k["walk_labels"]]
+                check(here == "nobara_room" and zzh.labels == want and zzh_marks() == k["marks"] and zzh_heard() == k["said"],
+                      "N: and into Nobara's room: the walk and nothing else, nothing said, no time spent (K16)", (here, zzh.labels))
+                zzh_next()
+                return ("act", "wait")
+        elif s == 27:
+            if ui == "sb_place" and store.period == "Evening":
+                row = path_exits(here)[0]
+                store.here = "dorm_yard"
+                outside = (place_access("girls_dorm"), place_access("nobara_room"))
+                store.here = "nobara_room"
+                check(here == "nobara_room" and store.companion == "nobara" and not has_flag("invited_girls_dorm")
+                      and outside == ((False, ZZH_CORRIDOR, "After dark"), (False, ZZH_CORRIDOR, "After dark"))
+                      and place_access("girls_dorm") == (True, "", "") and row["to"] == "girls_dorm" and row["locked_reason"] == ""
+                      and row["label"] == "To the Girls' Dormitory",
+                      "N: Wait, and it is Evening in her room: from the garden the corridor would refuse me (and her room with it: the "
+                      "house first), but from inside it the way out is open", (store.period, outside, place_access("girls_dorm"), row))
+                zzh_next()
+                return zzh_walk("girls_dorm")
+        elif s == 28:
+            if ui == "sb_place":
+                check(here == "girls_dorm" and store.period == "Evening",
+                      "N: the exit works: I walk out of her room into the corridor, after dark, with no Bond and no flag", (here, store.period))
+                check(place_access("nobara_room")[0] and place_access("maki_room") == (False, ZZH_KNOCK, "Bond 15")
+                      and place_access("dorm_yard")[0],
+                      "N: standing in the corridor, her door is still open to her companion and Maki's says its own line "
+                      "(not the corridor's)", (place_access("nobara_room"), place_access("maki_room")))
+                zzh_next()
+                return zzh_walk("dorm_yard")
+        elif s == 29:
+            if ui == "sb_place":
+                row = [r for r in path_exits(here) if r["to"] == "girls_dorm"]
+                check(here == "dorm_yard" and row and row[0]["locked_reason"] == ZZH_CORRIDOR and row[0]["label"] == ZZH_CORRIDOR
+                      and ("act", "path_girls_dorm") not in zzh_offered(),
+                      "N: and out to the garden; behind me the corridor is locked again, with its own sentence", (here, row))
+                zzh_prep(60)
+                zzh_next()
+                return zzh_set("teachers_lounge", "Night", zzh_day("Fri"))
+        ## --- O. the teachers' house at Night ---------------------------------------------
+        elif s == 30:
+            if ui == "sb_place" and here == "teachers_lounge":
+                check(store.period == "Night" and who_is_here(here) == [] and zzh_exits(here) == ["staff_yard", "teachers_dorm"],
+                      "O: a weekday Night in the Teachers' Lounge: open, and empty", (store.period, who_is_here(here)))
+                k["marks"] = zzh_marks()
+                zzh_next()
+                return zzh_walk("teachers_dorm")
+        elif s == 31:
+            if ui == "sb_place":
+                on = builtins.list(stage_people(here)[0])
+                folk = builtins.list(who_is_here(here))
+                chars = builtins.sorted(builtins.set(v[1] for v in zzh_offered() if v[0] == "char"))
+                jobs = [v for v in zzh_offered() if v[0] == "mission"]
+                check(here == "teachers_dorm" and zzh_marks() == k["marks"] and folk == ["yaga", "utahime", "ijichi"]
+                      and on == ["yaga"] and chars == ["yaga"] and jobs == [],
+                      "O: upstairs, Yaga is up at his workbench; Utahime and Ijichi are in the Teachers' Dormitory, asleep: "
+                      "counted there, not on its stage, nothing to click with them, no mission tile", (here, folk, on, chars, jobs))
+                shot("place_teachers_dorm_night", wait=0)
+                zzh_next()
+                return zzh_walk("teachers_lounge")
+        elif s == 32:
+            if ui == "sb_place":
+                check(here == "teachers_lounge", "O: and down the stairs again", here)
                 zzh_next()
                 zzh_stop()
         return None
@@ -811,7 +956,27 @@ label zz_smoke:
               and len(LOC_ORDER) == len(LOCATIONS) == len(builtins.set(LOC_ORDER)),
               "A: the four new places are rows appended after the old 24, indoors, each with its picture bg <key>, in the Dormitories",
               LOC_ORDER[24:])
-        note("stand-ins in use", [k for k in ("boys_dorm",) + ZZH_ROOMS if not renpy.loadable("images/bg/%s.png" % k)])
+        ## U0c1: the other seven.
+        check(LOC_ORDER[24:] == builtins.list(_zz_new + ZZH_SEVEN) and len(LOCATIONS) == 35
+              and all(k in LOCATIONS and LOCATIONS[k]["bg"] == "bg " + k and renpy.has_image(("bg", k), exact=True) for k in ZZH_SEVEN)
+              and [k for k in ZZH_SEVEN if not LOCATIONS[k]["indoor"]] == ["pool"]
+              and [area_of(k) for k in ZZH_SEVEN] == ["dorms", "dorms", "staff", "staff", "mountain", "mountain", "grounds"]
+              and all(places_in(area_of(k))[-1] in ZZH_SEVEN for k in ZZH_SEVEN),
+              "A: 35 places: U0c1's seven are appended after U0b's four, each with its picture bg <key>; all indoors but the pool; "
+              "the girls' rooms in the Dormitories, the teachers' house in the Staff Building, the Onsen and its sauna on the "
+              "Mountain, the pool in the Training Grounds", LOC_ORDER[24:])
+        check([LOCATIONS[k]["name"] for k in ZZH_SEVEN] == ["Nobara's Room", "Maki's Room", "Teachers' Lounge", "Teachers' Dormitory",
+                                                            "Onsen", "Sauna", "Swimming Pool"],
+              "A: their names; the place with the key bathhouse is shown as Onsen (O16)", [LOCATIONS[k]["name"] for k in ZZH_SEVEN])
+        check(builtins.dict(WORLD_INSIDE) == builtins.dict(dorm="boys_dorm", yuji_room="boys_dorm", megumi_room="boys_dorm",
+                                                            senpai_room="boys_dorm", nobara_room="girls_dorm", maki_room="girls_dorm",
+                                                            teachers_dorm="teachers_lounge", sauna="bathhouse")
+              and builtins.tuple(WORLD_PINLESS) == ("yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room", "teachers_dorm", "sauna")
+              and all(world_pinned(k) for k in ("teachers_lounge", "bathhouse", "pool", "girls_dorm")),
+              "A: WORLD_INSIDE is whole (3.2): the girls' rooms off their corridor, the Teachers' Dormitory off the lounge, the Sauna "
+              "off the Onsen; those four have no pin, and the lounge, the Onsen and the pool have one",
+              (builtins.dict(WORLD_INSIDE), WORLD_PINLESS))
+        note("stand-ins in use", [k for k in ("boys_dorm",) + ZZH_ROOMS + ZZH_SEVEN if not renpy.loadable("images/bg/%s.png" % k)])
 
         ########################################################################
         ## B. Exits and the validators
@@ -832,11 +997,44 @@ label zz_smoke:
         _zz_houses = builtins.sorted(builtins.set(WORLD_INSIDE.values()))
         check("boys_dorm" in _zz_houses and all(1 < len(zzh_exits(h)) <= PATH_HOUSE_EXITS == 7 for h in _zz_houses),
               "B: a house holds at most seven exits (K11); the Boys' Dormitory has five", [(h, len(zzh_exits(h))) for h in _zz_houses])
-        check(path_reach("dorm") == builtins.set(LOCATIONS) and len(LOCATIONS) >= 28,
+        check(path_reach("dorm") == builtins.set(LOCATIONS) and len(LOCATIONS) == 35,
               "B: from my room every one of the %d places is reached by exits alone" % len(LOCATIONS),
               builtins.sorted(builtins.set(LOCATIONS) - path_reach("dorm")))
-        check(all(l in path_reach(r) for r in ZZH_ROOMS + ("boys_dorm",) for l in ("dorm", "courtyard", "ridge")),
+        check(all(l in path_reach(r) for r in ZZH_ROOMS + ("boys_dorm",) + ZZH_SEVEN for l in ("dorm", "courtyard", "ridge")),
               "B: and from each new place my room, the Courtyard and the ridge are reached")
+        ## U0c1: the exits of 4.5.
+        _zz_want = builtins.dict(
+            girls_dorm=["dorm_yard", "nobara_room", "maki_room"], nobara_room=["girls_dorm"], maki_room=["girls_dorm"],
+            staff_yard=["office", "utahime_office", "gojo_office", "teachers_lounge", "dorm_yard", "training_yard"],
+            teachers_lounge=["staff_yard", "teachers_dorm"], teachers_dorm=["teachers_lounge"],
+            training_yard=["training", "dojo", "storehouse", "pool", "courtyard", "staff_yard"], pool=["training_yard"],
+            trailhead=["forest", "ridge", "riverside", "bathhouse", "dorm_yard"],
+            bathhouse=["trailhead", "sauna"], sauna=["bathhouse"])
+        _zz_got = builtins.dict((l, zzh_exits(l)) for l in _zz_want)
+        check(_zz_got == _zz_want, "B: the exits of 4.5: the girls' corridor to its two rooms, the staff steps to the lounge and the "
+              "lounge upstairs, the Training Yard to the pool, the Mountain Path to the Onsen and the Onsen to its sauna, each with its way back",
+              [(l, _zz_got[l]) for l in _zz_want if _zz_got[l] != _zz_want[l]])
+        _zz_yards = [path_hub(a["key"]) for a in AREAS]
+        check(sum(len(zzh_exits(l)) for l in LOC_ORDER) == 70 and sum(len(zzh_exits(y)) for y in _zz_yards) == 33
+              and [len(zzh_exits(y)) for y in _zz_yards] == [4, 5, 7, 6, 6, 5],
+              "B: 70 exits in all, 33 of them from the six yards: the garden still has seven, the staff steps and the Training Yard six, "
+              "the Mountain Path five (D6)", [(y, len(zzh_exits(y))) for y in _zz_yards])
+        ## K12: on the old pictures the old exits stay where they were; only
+        ## the three new ones (and the two doors in the girls' corridor) are added.
+        _zz_moved = [(l, r) for l in ("staff_yard", "training_yard", "trailhead", "girls_dorm") for r in _zz_old[l]
+                     if builtins.tuple(r) not in [(x["to"], x["x"], x["y"]) for x in path_exits(l)]]
+        _zz_order = [l for l in ("staff_yard", "training_yard", "trailhead", "girls_dorm")
+                     if [x["to"] for x in path_exits(l) if x["to"] not in ZZH_SEVEN] != [r[0] for r in _zz_old[l]]]
+        check(not _zz_moved and not _zz_order,
+              "B: in the three yards that gained an exit, and in the girls' corridor, every old exit keeps its point and its order (K12)",
+              (_zz_moved, _zz_order))
+        check(_zz_houses == ["bathhouse", "boys_dorm", "girls_dorm", "teachers_lounge"]
+              and [len(zzh_exits(h)) for h in _zz_houses] == [2, 5, 3, 2],
+              "B: four houses: the Onsen (2 exits), the Boys' Dormitory (5), the girls' corridor (3), the Teachers' Lounge (2)",
+              [(h, len(zzh_exits(h))) for h in _zz_houses])
+        check([path_words(k) for k in ZZH_SEVEN] == ["To Nobara's Room", "To Maki's Room", "To the Teachers' Lounge",
+                                                     "To the Teachers' Dormitory", "To the Onsen", "To the Sauna", "To the Swimming Pool"],
+              "B: the new exits' words", [path_words(k) for k in ZZH_SEVEN])
         check(path_words("boys_dorm") == "To the Boys' Dormitory" and path_words("dorm") == "To My Room"
               and path_words("yuji_room") == "To Yuji's Room" and path_words("megumi_room") == "To Megumi's Room"
               and path_words("senpai_room") == "To Panda and Toge's Room",
@@ -871,7 +1069,8 @@ label zz_smoke:
                              lambda: WORLD_ASLEEP.__setitem__("weekday", _zz_wk))
         check(any("'zz_nobody' has no WORLD_HOMES row" in x for x in _zz_f),
               "B (broken on purpose): a name on an asleep list with no home row fails lint", _zz_f)
-        _zz_f = zzh_findings(_validate_world, lambda: WORLD_HOMES.__setitem__("yaga", "office"), lambda: WORLD_HOMES.pop("yaga"))
+        _zz_f = zzh_findings(_validate_world, lambda: WORLD_HOMES.__setitem__("yaga", "office"),
+                             lambda: WORLD_HOMES.__setitem__("yaga", "teachers_dorm"))
         check(any("WORLD_HOMES[yaga]" in x and "Night cell" in x for x in _zz_f),
               "B (broken on purpose): a home that is not the person's Night cell fails lint", _zz_f)
         _zz_f = zzh_findings(_validate_world, lambda: WEEKEND["yuji"].__setitem__("Night", "dorm_yard"), lambda: WEEKEND["yuji"].pop("Night"))
@@ -892,7 +1091,21 @@ label zz_smoke:
                              lambda: _zz_spots.__setitem__("boys_dorm", _zz_mine))
         check(any("'boys_dorm' is in 0 areas' spots" in x for x in _zz_g),
               "B (broken on purpose): a pinned place with no spot fails lint", _zz_g)
-        check(_validate_world() == [] and map_validate() == [], "B: the tables are whole again", (_validate_world(), map_validate()))
+        ## U0c1's rules: the away table, and a house in another area.
+        _zz_away = WORLD_AWAY["yuji"]
+        _zz_f = zzh_findings(_validate_world, lambda: WORLD_AWAY.__setitem__("yuji", {("Sun", "Afternoon"): "zz_town"}),
+                             lambda: WORLD_AWAY.__setitem__("yuji", _zz_away))
+        _zz_g = zzh_findings(_validate_world, lambda: WORLD_AWAY.__setitem__("yuji", {("Sunday", "Afternoon"): "shibuya"}),
+                             lambda: WORLD_AWAY.__setitem__("yuji", _zz_away))
+        check(any("WORLD_AWAY[yuji]: unknown district 'zz_town'" in x for x in _zz_f) and any("is not (weekday, period)" in x for x in _zz_g),
+              "B (broken on purpose): a WORLD_AWAY district that is not in DISTRICTS, or a cell that is not (weekday, period), fails lint",
+              (_zz_f, _zz_g))
+        _zz_f = zzh_findings(path_validate, lambda: PATH_EXITS.__setitem__("sauna", [("trailhead", 84, 520)]), zzh_restore_exits)
+        check(any("first exit of 'sauna' must lead to its house 'bathhouse'" in x for x in _zz_f),
+              "B (broken on purpose): the sauna opening onto the Mountain Path fails lint (the house rule holds for the new houses)", _zz_f)
+        check(_validate_world() == [] and map_validate() == [] and path_validate() == [] and WORLD_HOMES["yaga"] == "teachers_dorm"
+              and zzh_exit_table() == zzh.keep["exits"],
+              "B: the tables are whole again", (_validate_world(), map_validate(), path_validate()))
 
         ########################################################################
         ## C. The protected walk
@@ -931,36 +1144,161 @@ label zz_smoke:
                   and ('label sb_do_path_%s:\n    call path_walk("%s")\n    return\n' % (l, l)) in _zz_src
                   for l in ("boys_dorm",) + ZZH_ROOMS),
               "C: the four new labels are appended after them, each with its line call path_walk(\"<to>\")")
+        ## U0b's four are protected from the commit they landed in (2.3):
+        ## their block is textually what it was, and U0c1's seven come after it.
+        _zz_four = "".join('label sb_do_path_%s:\n    call path_walk("%s")\n    return\n\n' % (l, l) for l in ("boys_dorm",) + ZZH_ROOMS)
+        _zz_c = _zz_src.find(_zz_four[:-1])
+        _zz_at = [_zz_src.find('label sb_do_path_%s:\n    call path_walk("%s")\n    return\n' % (l, l)) for l in ZZH_SEVEN]
+        check(_zz_c > _zz_b and all(a > _zz_c + len(_zz_four) - 1 for a in _zz_at) and _zz_at == builtins.sorted(_zz_at)
+              and all(renpy.has_label("sb_do_path_" + l) for l in ZZH_SEVEN)
+              and _zz_src.count("\nlabel sb_do_path_") == 35 and _zz_src.rstrip("\n").endswith('call path_walk("pool")\n    return'),
+              "C: U0b's four labels are textually what they were, in one block; U0c1's seven are appended after them, in order, "
+              "each with its line; 35 walk labels in all, and nothing after the last", (_zz_c, _zz_at, _zz_src.count("\nlabel sb_do_path_")))
 
         ########################################################################
         ## D. The Night
         ########################################################################
-        _zz_want = builtins.dict(yuji="yuji_room", megumi="megumi_room", panda="senpai_room", toge="senpai_room")
+        _zz_want = ZZH_HOMES
         _zz_bad, _zz_sleep, _zz_never = [], builtins.dict(), []
         for _zz_d in range(8, 15):
             zzh_at(_zz_d, "Night")
             for _zz_w, _zz_l in _zz_want.items():
                 if char_location(_zz_w) != _zz_l or world_home(_zz_w) != _zz_l:
                     _zz_bad.append((weekday(), _zz_w, char_location(_zz_w)))
-            if who_is_here("dorm_yard") or who_is_here("dorm_common"):
+            if who_is_here("dorm_yard") or who_is_here("dorm_common") or who_is_here("girls_dorm") or who_is_here("teachers_lounge"):
                 _zz_bad.append((weekday(), "garden or common room", who_is_here("dorm_yard"), who_is_here("dorm_common")))
+            _zz_out = [(weekday(), w, char_location(w)) for w in ROSTER_ORDER if w not in _zz_want and w != "gojo" and char_location(w)]
+            _zz_bad += _zz_out
             _zz_sleep[weekday()] = builtins.sorted(w for w in ROSTER_ORDER if world_asleep(w))
             for _zz_p in PERIODS:
                 store.period = _zz_p
-                _zz_never += [(weekday(), _zz_p, w) for w in ("maki", "utahime", "ijichi", "nobara", "yaga", "gojo", "shoko") if world_asleep(w)]
+                _zz_never += [(weekday(), _zz_p, w) for w in ("yaga", "gojo", "shoko") if world_asleep(w)]
                 if _zz_p != "Night":
                     _zz_never += [(weekday(), _zz_p, w) for w in ROSTER_ORDER if world_asleep(w) or world_asleep(w, _zz_p)]
-        check(not _zz_bad, "D: on each of the seven Nights the four boys are in their own rooms, and the garden and the Common Room are empty", _zz_bad[:6])
-        check(all(_zz_sleep[d] == ["megumi", "panda"] for d in ("Mon", "Tue", "Wed", "Thu", "Fri"))
-              and all(_zz_sleep[d] == ["toge", "yuji"] for d in ("Sat", "Sun")) and len(_zz_sleep) == 7,
-              "D: on weekday Nights Megumi and Panda are asleep, at weekends Yuji and Toge: each can be found both ways", _zz_sleep)
+        check(not _zz_bad and len(_zz_want) == 10,
+              "D: on each of the seven Nights everyone who lives on campus is in their own home (the four boys, the two girls, Shoko, "
+              "the three teachers), and the garden, the Common Room, the girls' corridor and the lounge are empty", _zz_bad[:6])
+        check(all(_zz_sleep[d] == ["ijichi", "maki", "megumi", "panda", "utahime"] for d in ("Mon", "Tue", "Wed", "Thu", "Fri"))
+              and all(_zz_sleep[d] == ["ijichi", "nobara", "toge", "utahime", "yuji"] for d in ("Sat", "Sun")) and len(_zz_sleep) == 7,
+              "D: on weekday Nights Megumi, Maki and Panda are asleep, at weekends Yuji, Nobara and Toge: each can be found both ways; "
+              "Utahime and Ijichi on all seven", _zz_sleep)
         check(not _zz_never,
-              "D: nobody is asleep at any hour but Night; Maki, Utahime and Ijichi (no home row until U0c1), Nobara, Yaga, Shoko and Gojo never",
+              "D: nobody is asleep at any hour but Night; Yaga, Shoko and Gojo never",
               _zz_never[:6])
-        check(WORLD_HOMES.get("shoko") == "infirmary" and "gojo" not in WORLD_HOMES and builtins.sorted(WORLD_HOMES) == ["megumi", "panda", "shoko", "toge", "yuji"]
-              and world_home("gojo") is None and world_home("maki") is None
-              and builtins.sorted(WORLD_ASLEEP["weekday"] + WORLD_ASLEEP["weekend"]) == ["megumi", "panda", "toge", "yuji"],
-              "D: WORLD_HOMES holds the four boys and Shoko (the infirmary); Gojo has no home", builtins.dict(WORLD_HOMES))
+        check(builtins.dict(WORLD_HOMES) == ZZH_HOMES and "gojo" not in WORLD_HOMES and world_home("gojo") is None
+              and world_home("maki") == "maki_room" and world_home("ijichi") == "teachers_dorm"
+              and builtins.dict(WORLD_ASLEEP) == builtins.dict(weekday=("megumi", "maki", "panda", "utahime", "ijichi"),
+                                                               weekend=("yuji", "nobara", "toge", "utahime", "ijichi")),
+              "D: WORLD_HOMES holds the ten who live on campus (Shoko in the infirmary, the three teachers in the Teachers' Dormitory); "
+              "Gojo has no home; WORLD_ASLEEP is the plan's two lists (3.2)", (builtins.dict(WORLD_HOMES), builtins.dict(WORLD_ASLEEP)))
+
+        ## U0c1: the two girls and the teachers at Night
+        zzh_at(zzh_day("Fri"), "Night")
+        _zz_c = [who_is_here("maki_room"), stage_people("maki_room"), rail_asleep_line("maki_room"),
+                 who_is_here("nobara_room"), stage_people("nobara_room"), rail_asleep_line("nobara_room"),
+                 who_is_here("teachers_dorm"), stage_people("teachers_dorm"), rail_asleep_line("teachers_dorm"),
+                 ambient_of("utahime", "teachers_dorm"), ambient_of("ijichi", "teachers_dorm"), ambient_of("yaga", "teachers_dorm")[0] != "asleep"]
+        check(_zz_c == [["maki"], ([], []), "Maki is asleep.", ["nobara"], (["nobara"], []), "",
+                        ["yaga", "utahime", "ijichi"], (["yaga"], []), "", ("asleep", None), ("asleep", None), True],
+              "D: a weekday Night: Maki is in her room asleep and Nobara in hers, up; in the Teachers' Dormitory Yaga is up and on its "
+              "stage, Utahime and Ijichi are counted there, asleep, and not on it", _zz_c)
+        check(world_room_state("teachers_dorm") == builtins.dict(yaga="awake", utahime="asleep", ijichi="asleep")
+              and world_room_state("senpai_room") == builtins.dict(panda="asleep", toge="awake")
+              and world_room_state("maki_room") == builtins.dict(maki="asleep") and world_room_state("infirmary") == builtins.dict(shoko="awake")
+              and world_room_state("dorm") == {} and world_room_state("girls_dorm") == {} and world_room_state("zz") == {},
+              "D: world_room_state: {owner: awake, asleep or out} for a room, {} for a place that is nobody's home (D49)",
+              (world_room_state("teachers_dorm"), world_room_state("senpai_room")))
+        zzh_at(zzh_day("Sat"), "Night")
+        _zz_c = [stage_people("maki_room"), stage_people("nobara_room"), rail_asleep_line("nobara_room"), stage_people("teachers_dorm"),
+                 world_room_state("nobara_room"), world_room_state("teachers_dorm")]
+        check(_zz_c == [(["maki"], []), ([], []), "Nobara is asleep.", (["yaga"], []), builtins.dict(nobara="asleep"),
+                        builtins.dict(yaga="awake", utahime="asleep", ijichi="asleep")],
+              "D: a weekend Night: Maki is up and Nobara asleep; the teachers are as on a weekday", _zz_c)
+        zzh_at(zzh_day("Fri"), "Noon")
+        check(world_room_state("teachers_dorm") == builtins.dict(yaga="out", utahime="out", ijichi="out")
+              and world_room_state("nobara_room") == builtins.dict(nobara="out"),
+              "D: and at a weekday Noon they are all out", world_room_state("teachers_dorm"))
+
+        ## U0c1: the rest of 4.3's cells
+        zzh_at(zzh_day("Sat"), "Noon")
+        _zz_c = builtins.dict(
+            morning=[char_location(w, "Morning") for w in ("nobara", "maki", "yaga")],
+            afternoon=[who_is_here("pool", "Afternoon"), who_is_here("riverside", "Afternoon"), char_location("utahime", "Afternoon"),
+                       char_location("yaga", "Afternoon")],
+            evening=[who_is_here("bathhouse", "Evening"), who_is_here("dorm_yard", "Evening"), who_is_here("teachers_lounge", "Evening"),
+                     who_is_here("dojo", "Evening")],
+            noon=[char_location("yaga", "Noon"), char_location("maki", "Noon")])
+        check(_zz_c == builtins.dict(morning=["nobara_room", "maki_room", "teachers_dorm"],
+                                     afternoon=[["yuji", "nobara", "panda"], ["maki", "toge"], "teachers_lounge", None],
+                                     evening=[["nobara", "maki", "utahime"], ["yuji"], ["yaga", "ijichi"], []],
+                                     noon=["teachers_lounge", "dojo"]),
+              "D: a Saturday: Nobara and Maki at home in the Morning, Yaga at his workbench; the pool holds three in the Afternoon and "
+              "the river two; in the Evening Nobara, Maki and Utahime are at the Onsen, Yuji by the pond, Yaga and Ijichi in the lounge", _zz_c)
+        zzh_at(zzh_day("Fri"), "Noon")
+        _zz_c = [char_location("ijichi", p) for p in PERIODS] + [char_location("yaga", "Night"), char_location("utahime", "Night"),
+                                                                  char_location("maki", "Evening"), char_location("nobara", "Morning")]
+        check(_zz_c == ["gate", "gate", "gate", "teachers_lounge", "teachers_dorm", "teachers_dorm", "teachers_dorm", "riverside", "training_yard"],
+              "D: a weekday: Ijichi keeps the gate from Morning to Afternoon, then the lounge, then the Teachers' Dormitory; "
+              "the daytime cells nobody moved are as they were", _zz_c)
+
+        ## U0c1: in Tokyo on Sunday afternoons (WORLD_AWAY, 7.6)
+        zzh_at(zzh_day("Sun"), "Afternoon")
+        _zz_c = [[(w, char_location(w), world_away(w)) for w in ("nobara", "maki", "yuji")],
+                 who_is_here("pool"), who_is_here("riverside"), builtins.sorted(w for w in ROSTER_ORDER if world_away(w)),
+                 [world_away(w, "Noon") or char_location(w, "Noon") for w in ("nobara", "maki", "yuji")],
+                 [world_away(w, "Evening") or char_location(w, "Evening") for w in ("nobara", "maki", "yuji")],
+                 person_now("nobara")["place"], person_now("nobara")["hidden"]]
+        check(_zz_c == [[("nobara", None, "harajuku"), ("maki", None, "harajuku"), ("yuji", None, "shibuya")],
+                        ["panda"], ["toge"], ["maki", "nobara", "yuji"], ["cafeteria", "dojo", "yuji_room"],
+                        ["bathhouse", "bathhouse", "dorm_yard"], None, False],
+              "D: on a Sunday Afternoon Nobara and Maki are in Harajuku and Yuji in Shibuya: off campus (the pool holds Panda, the river "
+              "Toge); at Noon each is still where the weekend puts them, and they are back for the Evening", _zz_c)
+        zzh_at(zzh_day("Sat"), "Afternoon")
+        _zz_c = [[world_away(w) for w in ROSTER_ORDER if world_away(w)], char_location("nobara")]
+        zzh_at(zzh_day("Sun"), "Afternoon")
+        pin("nobara", "courtyard")
+        _zz_c += [char_location("nobara"), world_away("nobara"), world_away("maki")]
+        store.schedule_overrides = {}
+        FLAG_SCHEDULES.append(("zz_flag", "maki", {"Afternoon": "dojo"}))
+        store.flags.add("zz_flag")
+        try:
+            _zz_c += [char_location("maki"), world_away("maki")]
+        finally:
+            store.flags.discard("zz_flag")
+            FLAG_SCHEDULES.pop()
+        store.roster.remove("yuji")
+        _zz_c += [world_away("yuji"), char_location("yuji")]
+        store.roster.append("yuji")
+        _zz_c += [world_away("megumi"), world_away("zz"), world_away("yuji", "Night")]
+        check(_zz_c == [[], "pool", "courtyard", None, "harajuku", "dojo", None, None, None, None, None, None],
+              "D: nobody is away on a Saturday; a story pin and a flag schedule each win over the away table; someone I have not met, "
+              "someone the table does not send, and any other hour: world_away is None", _zz_c)
+
+        ## U0c1: a companion bound for Tokyo goes when their hour, or the one before it, begins (7.6)
+        _zz_c = []
+        for _zz_d, _zz_p, _zz_w in (("Sun", "Morning", "nobara"), ("Sun", "Noon", "yuji"), ("Sun", "Morning", "megumi"),
+                                    ("Sat", "Morning", "nobara"), ("Sun", "Afternoon", "maki"), ("Sun", "Evening", "nobara")):
+            zzh_at(zzh_day(_zz_d), _zz_p)
+            store.here = "courtyard"
+            store.companion = _zz_w
+            toast_clear()
+            advance_period()
+            _zz_c.append((_zz_d, store.period, store.companion, [t["text"] for t in TOASTQ.items]))
+            store.companion = None
+        zzh_at(zzh_day("Sun"), "Morning")
+        store.companion = "maki"
+        toast_clear()
+        advance_period_soft(1)
+        _zz_c.append(("soft", store.period, store.companion, [t["text"] for t in TOASTQ.items]))
+        store.companion = None
+        toast_clear()
+        check(_zz_c == [("Sun", "Noon", None, ["Nobara heads off to catch the train into town."]),
+                        ("Sun", "Afternoon", None, ["Yuji heads off to catch the train into town."]),
+                        ("Sun", "Noon", "megumi", []), ("Sat", "Noon", "nobara", []),
+                        ("Sun", "Evening", "maki", []), ("Sun", "Night", "nobara", []),
+                        ("soft", "Noon", None, ["Maki heads off to catch the train into town."])],
+              "D: on a Sunday, when Noon or the Afternoon begins, a companion the away table sends to Tokyo goes, with one toast; "
+              "Megumi stays, and so does anyone on a Saturday or once they are back (advance_period and advance_period_soft alike)", _zz_c)
 
         ## the starred weekend cells and Yuji's weekend Evening
         zzh_at(zzh_day("Sat"), "Noon")
@@ -1075,7 +1413,7 @@ label zz_smoke:
         zzh_at(zzh_day("Fri"), "Noon")
         check([world_home_state(w) for w in ("yuji", "megumi", "panda", "toge", "shoko", "gojo", "maki")]
               == ["out", "out", "out", "out", "awake", "out", "out"],
-              "D: world_home_state at a weekday Noon: the boys are out, Shoko is in and awake, Gojo and Maki have no home here",
+              "D: world_home_state at a weekday Noon: the boys and Maki are out, Shoko is in and awake, Gojo has no home",
               [world_home_state(w) for w in ("yuji", "megumi", "panda", "toge", "shoko", "gojo", "maki")])
         store.here = "dorm"
 
@@ -1113,10 +1451,13 @@ label zz_smoke:
               "E: those hours cover an owner out (Noon), asleep (Night), up (Night) and at home by day (a weekend Morning): "
               "the door follows the Bond, never its owner", zzh.rows[:6])
         check(world_door_bond("yuji_room") == 15 and world_door_bond("senpai_room") == 15 and world_door_bond("dorm") is None
-              and world_door_bond("boys_dorm") is None and world_door_bond("girls_dorm") is None
+              and world_door_bond("boys_dorm") is None and world_door_bond("girls_dorm") == 15 and world_door_bond("nobara_room") == 15
+              and world_door_owners("girls_dorm") == ["nobara", "maki"] and world_door_owners("maki_room") == ["maki"]
+              and world_door_bond("teachers_dorm") is None and world_door_bond("pool") is None
               and world_door_owners("senpai_room") == ["panda", "toge"] and world_door_owners("megumi_room") == ["megumi"]
               and world_door_owners("dorm") == [] and builtins.dict(WORLD_DOOR_BOND) == {None: 15},
-              "E: the level is one table entry, 15; world_door_bond is None for a place with no Bond door (my room, the corridor)",
+              "E: the level is one table entry, 15, for the five rooms and for the girls' corridor after dark; world_door_bond is None "
+              "for a place with no Bond door (my room, the boys' corridor, the teachers' house, the pool)",
               builtins.dict(WORLD_DOOR_BOND))
         for _zz_w in ROSTER_ORDER:
             store.bonds[_zz_w] = 0
@@ -1144,9 +1485,10 @@ label zz_smoke:
             zzh_at(*_zz_was)
         check(_zz_c == (["yuji"], 15, [(True, "", ""), (True, "", "")], False)
               and world_door_owners("boys_dorm") == [] and world_door_bond("boys_dorm") is None
-              and all(world_inside(l) for l in WORLD_DOOR_OWNERS),
+              and [l for l in WORLD_DOOR_OWNERS if not world_inside(l)] == ["girls_dorm"],
               "E: owners named for a corridor lock nothing by themselves (a test row for the Boys' Dormitory, Bond 0: "
-              "open by day and at Night); the Bond clause closes only a room inside a house, and every door with owners today is one",
+              "open by day and at Night); the Bond clause closes only a room inside a house, and the one corridor with owners, "
+              "the girls', has its own rule (below)",
               _zz_c)
         _zz_c = [place_access("megumi_room")[0]]
         flag("door_megumi_room")
@@ -1175,15 +1517,138 @@ label zz_smoke:
         check(person_now("megumi")["hidden"] and person_now("megumi")["place"] is None,
               "E: behind a door I can't open, someone is hidden from the journal's Go there (the name is U1's)", person_now("megumi"))
 
+        ## --- U0c1: the girls' rooms, the corridor after dark, the house first, the pool ---
+        zzh_fix(bond=0)
+        _zz_bad = []
+        del zzh.rows[:]
+        for _zz_d, _zz_p in ((zzh_day("Fri"), "Noon"), (zzh_day("Fri"), "Night"), (zzh_day("Sat"), "Night"), (zzh_day("Sat"), "Morning")):
+            zzh_at(_zz_d, _zz_p)
+            store.here = "girls_dorm"       ## standing in the corridor, so each door answers for itself
+            for _zz_room, _zz_w, _zz_o in (("nobara_room", "nobara", "maki"), ("maki_room", "maki", "nobara")):
+                store.bonds[_zz_o] = 100
+                store.bonds[_zz_w] = 14
+                if place_access(_zz_room) != (False, ZZH_KNOCK, "Bond 15") or path_locked(_zz_room) != ZZH_KNOCK:
+                    _zz_bad.append((weekday(), _zz_p, _zz_room, 14, place_access(_zz_room)))
+                store.bonds[_zz_w] = 15
+                if place_access(_zz_room) != (True, "", "") or path_locked(_zz_room) != "":
+                    _zz_bad.append((weekday(), _zz_p, _zz_room, 15, place_access(_zz_room)))
+                zzh.rows.append((weekday(), _zz_p, _zz_room, world_home_state(_zz_w)))
+                store.bonds[_zz_o] = store.bonds[_zz_w] = 0
+        check(not _zz_bad and len(zzh.rows) == 8
+              and builtins.sorted(builtins.set(r[3] for r in zzh.rows)) == ["asleep", "awake", "out"],
+              "E: each girl's door is shut at Bond 14 with her line (\"I don't know her well enough to knock.\", Bond 15) and open at 15, "
+              "whether she is out, in or asleep; the other girl's Bond (100) does not open it", (_zz_bad[:4], zzh.rows))
+        del zzh.rows[:]
+        store.here = "dorm_yard"
+        _zz_c = []
+        for _zz_p in PERIODS:
+            zzh_at(zzh_day("Fri"), _zz_p)
+            store.bonds["nobara"] = store.bonds["maki"] = 14
+            _zz_r = [place_access("girls_dorm")]
+            store.bonds["nobara"] = 15
+            _zz_r.append(place_access("girls_dorm")[0])
+            store.bonds["nobara"], store.bonds["maki"] = 0, 15
+            _zz_r.append(place_access("girls_dorm")[0])
+            store.bonds["maki"] = 0
+            flag("invited_girls_dorm")
+            _zz_r.append(place_access("girls_dorm")[0])
+            store.flags.discard("invited_girls_dorm")
+            store.companion = "nobara"
+            _zz_r.append(place_access("girls_dorm")[0])
+            store.companion = None
+            _zz_c.append(_zz_r)
+        _zz_shut = (False, ZZH_CORRIDOR, "After dark")
+        check(_zz_c == [[(True, "", ""), True, True, True, True]] * 3 + [[_zz_shut, True, True, True, False]] * 2,
+              "E: the girls' corridor is open by day; in the Evening and at Night it is shut at Bond 14 with both, with its old sentence, "
+              "and open at Bond 15 with Nobara alone, with Maki alone, or with the flag invited_girls_dorm (D10); "
+              "walking with one of them does not open it", _zz_c)
+        ## the house first, and its two exceptions (4.2)
+        zzh_at(zzh_day("Fri"), "Night")
+        store.bonds["nobara"] = store.bonds["maki"] = 0
+        _zz_c = [place_access("nobara_room"), can_enter("maki_room")]
+        store.here = "girls_dorm"
+        _zz_c += [place_access("nobara_room")]
+        store.here = "maki_room"
+        _zz_c += [place_access("nobara_room"), place_access("girls_dorm")]
+        store.here = "dorm_yard"
+        flag("door_nobara_room")
+        _zz_c += [place_access("nobara_room"), place_access("maki_room")[0], place_access("girls_dorm")[0]]
+        store.flags.discard("door_nobara_room")
+        store.bonds["maki"] = 15
+        _zz_c += [place_access("maki_room"), place_access("nobara_room")]
+        store.bonds["maki"] = 0
+        zzh_at(zzh_day("Fri"), "Noon")
+        _zz_c += [place_access("nobara_room")]
+        check(_zz_c == [_zz_shut, _zz_shut[:2], (False, ZZH_KNOCK, "Bond 15"), (False, ZZH_KNOCK, "Bond 15"), (True, "", ""),
+                        (True, "", ""), False, False, (True, "", ""), (False, ZZH_KNOCK, "Bond 15"), (False, ZZH_KNOCK, "Bond 15")],
+              "E: a room inside a house asks its house first: at Night from the garden, Nobara's room answers with the corridor's "
+              "sentence; standing in the corridor or in Maki's room it answers with its own line (and the corridor is open from a room "
+              "inside it); its flag door_nobara_room opens it past the corridor, and only it; Bond 15 with Maki opens the corridor and "
+              "her door but not Nobara's; by day the corridor is open and the room says its own line", _zz_c)
+        _zz_c = []
+        for _zz_room, _zz_house in (("dorm", "boys_dorm"), ("yuji_room", "boys_dorm"), ("nobara_room", "girls_dorm"),
+                                    ("teachers_dorm", "teachers_lounge"), ("sauna", "bathhouse")):
+            for _zz_p in ("Evening", "Night"):
+                zzh_at(zzh_day("Fri"), _zz_p)
+                store.here = _zz_room
+                _zz_c.append(place_access(_zz_house) == (True, "", "") and path_locked(_zz_house) == ""
+                             and path_exits(_zz_room)[0]["to"] == _zz_house and path_exits(_zz_room)[0]["locked_reason"] == "")
+        store.here = "dorm_yard"
+        check(all(_zz_c) and len(_zz_c) == 10,
+              "E: once inside I am never locked in: from a room inside it each house is open, after dark, at Bond 0 (my room, a boy's "
+              "room, Nobara's, the Teachers' Dormitory, the Sauna)", _zz_c)
+        _zz_c = []
+        for _zz_p in PERIODS:
+            zzh_at(zzh_day("Fri"), _zz_p)
+            _zz_c.append((place_access("pool"), [place_access(l)[0] for l in ("teachers_lounge", "teachers_dorm", "bathhouse", "sauna")]))
+        store.here = "pool"
+        _zz_c.append((place_access("training_yard"), path_exits("pool")[0]["locked_reason"]))
+        store.here = "dorm_yard"
+        flag("door_pool")
+        _zz_c.append(place_access("pool")[0])
+        store.flags.discard("door_pool")
+        check(_zz_c == [((True, "", ""), [True] * 4)] * 4 + [((False, "The gate's chained after dark.", "Night"), [True] * 4),
+                                                              ((True, "", ""), ""), True],
+              "E: the pool is closed at Night (\"The gate's chained after dark.\", Night) and open at every other hour; the teachers' "
+              "house, the Onsen and its sauna are always open; standing at the pool at Night I can still walk out; the flag opens it", _zz_c)
+        zzh_at(zzh_day("Fri"), "Night")
+        store.explore_mode = True
+        _zz_c = [place_access(r)[0] for r in ZZH_SEVEN + ("girls_dorm",)]
+        store.explore_mode = False
+        check(all(_zz_c), "E: explore mode opens the seven new places and the corridor, at Night", _zz_c)
+        _zz_c = [person_now(w) for w in ("nobara", "maki", "utahime", "yaga")]
+        check(_zz_c[0]["hidden"] and _zz_c[0]["place"] is None and _zz_c[1]["hidden"]
+              and _zz_c[2]["place"] == "teachers_dorm" and _zz_c[2]["doing"] == "asleep" and not _zz_c[2]["hidden"]
+              and _zz_c[3]["place"] == "teachers_dorm" and _zz_c[3]["doing"] != "asleep"
+              and all(builtins.sorted(v) == ["doing", "hidden", "name", "place", "reachable", "with_me"] for v in _zz_c),
+              "E: at Night, Bond 0: the two girls are hidden behind their doors (the name is U1's); Utahime reads in the Teachers' "
+              "Dormitory, asleep, and Yaga there, up (person_now keeps its six keys)", _zz_c)
+
         ########################################################################
         ## F. The map's pins
         ########################################################################
         zzh_fix()
         check(map_pins("dorms") == ["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop", "boys_dorm"]
               and builtins.sorted(map_spots("dorms")) == builtins.sorted(map_pins("dorms"))
-              and all(map_pins(a["key"]) == [l for l in a["places"]] for a in AREAS if a["key"] != "dorms"),
-              "F: the Dormitories have six pins, my room's and the Boys' Dormitory's among them; the other areas are as they were",
-              map_pins("dorms"))
+              and all(map_pins(a["key"]) == [l for l in a["places"] if l not in WORLD_PINLESS] for a in AREAS)
+              and map_pins("staff") == ["staff_yard", "office", "utahime_office", "gojo_office", "teachers_lounge"]
+              and map_pins("grounds") == ["training_yard", "training", "dojo", "storehouse", "pool"]
+              and map_pins("mountain") == ["trailhead", "forest", "riverside", "ridge", "bathhouse"]
+              and builtins.max(len(map_pins(a["key"])) for a in AREAS) == 6 and sum(len(map_pins(a["key"])) for a in AREAS) == 28,
+              "F: the Dormitories have six pins, my room's and the Boys' Dormitory's among them, and none for the girls' rooms; "
+              "the Staff Building gains the lounge's, the Training Grounds the pool's, the Mountain the Onsen's (five each; 28 pins "
+              "for 35 places); the Teachers' Dormitory and the Sauna have none",
+              [(a["key"], map_pins(a["key"])) for a in AREAS])
+        _zz_near = []
+        for _zz_a in AREAS:
+            _zz_sp = map_spots(_zz_a["key"])
+            _zz_near += [(a, b) for a in _zz_sp for b in _zz_sp
+                         if a < b and abs(_zz_sp[a][0] - _zz_sp[b][0]) < 240 and abs(_zz_sp[a][1] - _zz_sp[b][1]) < 120]
+            _zz_near += [(a,) for a, (x, y) in _zz_sp.items()
+                         if not (MAP_PIN_FRAME[0] <= x <= MAP_PIN_FRAME[2] and MAP_PIN_FRAME[1] <= y <= MAP_PIN_FRAME[3])]
+        check(not _zz_near and all(builtins.sorted(map_spots(a["key"])) == builtins.sorted(map_pins(a["key"])) for a in AREAS),
+              "F: in every area each pin, the three new ones among them, stands clear of every other (240 px across or 120 px down), "
+              "inside the pin frame, on today's area pictures", _zz_near)
         _zz_sp = map_spots("dorms")
         _zz_near = [(a, b) for a in _zz_sp for b in _zz_sp
                     if a < b and abs(_zz_sp[a][0] - _zz_sp[b][0]) < 240 and abs(_zz_sp[a][1] - _zz_sp[b][1]) < 120]
@@ -1220,6 +1685,12 @@ label zz_smoke:
         check(map_area_tip("dorms")[0].split("\n")[0]
               == "Dormitory Garden · My Room · Dorm Common Room · Girls' Dormitory · Rooftop · Boys' Dormitory",
               "F: the Dormitories marker's hover line names its six pinned places", map_area_tip("dorms")[0])
+        check(map_area_tip("staff")[0].split("\n")[0].endswith("Gojo's Office · Teachers' Lounge")
+              and map_area_tip("grounds")[0].split("\n")[0].endswith("Storehouse · Swimming Pool")
+              and map_area_tip("mountain")[0].split("\n")[0].endswith("Mountain Ridge · Onsen")
+              and [map_pin_icon(l) for l in ("teachers_lounge", "pool", "bathhouse")] == ["place_teachers_lounge", "place_pool", "place_bathhouse"],
+              "F: the other three markers' hover lines name their new pinned place, last; each new pin wears its own icon name",
+              [map_area_tip(k)[0].split("\n")[0] for k in ("staff", "grounds", "mountain")])
 
     ############################################################################
     ## G. Every way home still ends in my room
@@ -1270,6 +1741,8 @@ label zz_smoke:
         check(all(NIGHT_CARRY_LINES.get(r) is None for r in ("boys_dorm",) + ZZH_ROOMS)
               and "one that isn't. Mine." in NIGHT_CARRY_LINES["dorms"],
               "G: the corridor and the boys' rooms take the Dormitories' line (\"a row of closed doors and one that isn't. Mine.\")")
+        note("G: the girls' rooms' own walk-home line (the corridor's) is U0c2's, in sb_night.rpy; until then they take",
+             [NIGHT_CARRY_LINES.get(r) or NIGHT_CARRY_LINES[area_of(r)] for r in ZZH_GIRLS])
 
         ## a Gojo night
         zzh_fix(day=zzh_day("Fri"), period="Night", here=NIGHT_GOJO["place"], control=30)
@@ -1310,10 +1783,22 @@ label zz_smoke:
     ## banner, skipping. worst_boys_dorm.png, worst_megumi_room.png (a weekday
     ## Night, Megumi asleep), worst_senpai_room.png (a weekend Morning, both in).
     ############################################################################
+    ## U0c1: and of the seven: worst_nobara_room.png (a weekend Morning, her at
+    ## home), worst_maki_room.png (a weekday Night, Maki asleep),
+    ## worst_teachers_lounge.png (a weekend Evening, Yaga and Ijichi),
+    ## worst_teachers_dorm.png (a weekday Night), worst_bathhouse.png (a weekend
+    ## Evening: three people), worst_sauna.png, worst_pool.png (a Saturday
+    ## Afternoon: three people). And the three yards that gained an exit, on
+    ## today's pictures (K12): worst_staff_yard.png, worst_training_yard.png,
+    ## worst_trailhead.png.
     $ zzh.i = 0
-    while zzh.i < 3:
+    while zzh.i < 13:
         python:
-            _zz_l, _zz_d, _zz_p = (("boys_dorm", "Fri", "Noon"), ("megumi_room", "Fri", "Night"), ("senpai_room", "Sat", "Morning"))[zzh.i]
+            _zz_l, _zz_d, _zz_p = (("boys_dorm", "Fri", "Noon"), ("megumi_room", "Fri", "Night"), ("senpai_room", "Sat", "Morning"),
+                                   ("nobara_room", "Sat", "Morning"), ("maki_room", "Fri", "Night"), ("teachers_lounge", "Sat", "Evening"),
+                                   ("teachers_dorm", "Fri", "Night"), ("bathhouse", "Sat", "Evening"), ("sauna", "Fri", "Noon"),
+                                   ("pool", "Sat", "Afternoon"), ("staff_yard", "Fri", "Noon"), ("training_yard", "Fri", "Noon"),
+                                   ("trailhead", "Fri", "Noon"))[zzh.i]
             zzh_fix(day=zzh_day(_zz_d), period=_zz_p, here=_zz_l)
             renpy.scene()
             renpy.show("bg", what=graded_bg())
@@ -1322,16 +1807,44 @@ label zz_smoke:
             check(_zz_ok and here == _zz_l
                   and (("Megumi is asleep." in _zz_t and "Nobody here right now." not in _zz_t) if _zz_l == "megumi_room" else True)
                   and (("Nobody here right now." in _zz_t) if _zz_l == "boys_dorm" else True)
-                  and ((stage_people(_zz_l)[0] == ["panda", "toge"]) if _zz_l == "senpai_room" else True),
+                  and ((stage_people(_zz_l)[0] == ["panda", "toge"]) if _zz_l == "senpai_room" else True)
+                  and (("Maki is asleep." in _zz_t and "Nobody here right now." not in _zz_t) if _zz_l == "maki_room" else True)
+                  and stage_people(_zz_l)[0] == {"nobara_room": ["nobara"], "teachers_lounge": ["yaga", "ijichi"], "teachers_dorm": ["yaga"],
+                                                 "bathhouse": ["nobara", "maki", "utahime"], "pool": ["yuji", "nobara", "panda"]}.get(
+                                                     _zz_l, stage_people(_zz_l)[0]),
                   "the place view of %s in the worst case is drawn (four toasts, the banner, skipping)%s" % (
                       _zz_l, {"megumi_room": ", and the line 'Megumi is asleep.'", "boys_dorm": ", nobody in the corridor",
-                              "senpai_room": ", Panda and Toge at home on a weekend Morning"}[_zz_l]),
-                  [t for t in _zz_t if "asleep" in t or "Nobody" in t])
+                              "senpai_room": ", Panda and Toge at home on a weekend Morning",
+                              "nobara_room": ", Nobara at home on a weekend Morning", "maki_room": ", and the line 'Maki is asleep.'",
+                              "teachers_lounge": ", Yaga and Ijichi on a weekend Evening", "teachers_dorm": ", Yaga up at Night",
+                              "bathhouse": ", Nobara, Maki and Utahime in the rest hall on a weekend Evening",
+                              "pool": ", Yuji, Nobara and Panda on the deck on a Saturday Afternoon"}.get(_zz_l, "")),
+                  [t for t in _zz_t if "asleep" in t or "Nobody" in t] + [stage_people(_zz_l)[0]])
             renpy.hide_screen("sb_place")
             zzh.i += 1
 
+    ## U0c1: the three other area views that gained a pin, as drawn.
+    $ zzh.i = 0
+    while zzh.i < 3:
+        python:
+            _zz_a, _zz_l, _zz_no = (("staff", "teachers_lounge", "teachers_dorm"), ("grounds", "pool", None),
+                                    ("mountain", "bathhouse", "sauna"))[zzh.i]
+            zzh_fix(day=zzh_day("Sat"), period="Evening", here="courtyard")
+            renpy.scene()
+            renpy.show_screen("sb_map", area=_zz_a)
+            zz_render(0.6)
+            _zz_rows = [l for l in LOC_ORDER if renpy.get_widget("sb_map", "row_" + l) is not None]
+            check(builtins.sorted(_zz_rows) == builtins.sorted(map_pins(_zz_a)) and _zz_l in _zz_rows and _zz_no not in _zz_rows
+                  and len(_zz_rows) == 5,
+                  "the %s view is drawn with five pins, the new one (%s) among them%s" % (
+                      AREA_BY_KEY[_zz_a]["name"], LOCATIONS[_zz_l]["name"],
+                      (", and none for the %s" % LOCATIONS[_zz_no]["name"]) if _zz_no else ""), _zz_rows)
+            shot("map_" + _zz_a, wait=0)
+            renpy.hide_screen("sb_map")
+            zzh.i += 1
+
     ############################################################################
-    ## H to L: the real loop
+    ## H to O: the real loop
     ############################################################################
     scene black
     python:

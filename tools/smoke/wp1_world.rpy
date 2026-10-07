@@ -38,17 +38,26 @@ init 999 python:
     ## weekend Morning -> megumi_room (it was the trailhead); Panda, weekend
     ## Morning -> senpai_room (it was the courtyard); Toge, weekend Morning ->
     ## senpai_room (it was the rooftop); and Yuji, weekend Evening ->
-    ## dorm_yard, by the pond (it was the cafeteria). U0c1 moves the girls,
-    ## the teachers and the rest of 4.3. Every other cell is as it was.
+    ## dorm_yard, by the pond (it was the cafeteria). U0c1 moved the rest of
+    ## 4.3, on purpose: at Night, on all seven days, Nobara -> nobara_room and
+    ## Maki -> maki_room (both were the girls' corridor), Yaga ->
+    ## teachers_dorm (he was off campus); at weekends Nobara, Morning ->
+    ## nobara_room (the corridor), Maki, Morning -> maki_room (the dojo);
+    ## Yuji, Nobara and Panda, Afternoon -> pool (the riverside); Nobara,
+    ## Evening -> bathhouse (the courtyard), Maki, Evening -> bathhouse (the
+    ## dojo); Yaga, who was off campus all weekend, Morning -> teachers_dorm,
+    ## Noon and Evening -> teachers_lounge. And on a Sunday Afternoon Nobara,
+    ## Maki and Yuji are in Tokyo (WORLD_AWAY): off campus, which
+    ## zz_old_location knows as ZZ_OLD_AWAY. Every other cell is as it was.
     ZZ_OLD_SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "yuji_room"},
         "megumi": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "forest",
                    "Evening": "dorm_common", "Night": "megumi_room"},
         "nobara": {"Morning": "training_yard", "Noon": "cafeteria", "Afternoon": "courtyard",
-                   "Evening": "dorm_common", "Night": "girls_dorm"},
+                   "Evening": "dorm_common", "Night": "nobara_room"},
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
-                   "Evening": "riverside", "Night": "girls_dorm"},
+                   "Evening": "riverside", "Night": "maki_room"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
                    "Evening": "library",   "Night": "senpai_room"},
         "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
@@ -56,20 +65,22 @@ init 999 python:
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
         "yaga":   {"Morning": "office",    "Noon": "office",    "Afternoon": "storehouse",
-                   "Evening": "office",    "Night": "-"},
+                   "Evening": "office",    "Night": "teachers_dorm"},
         "gojo":   {"Morning": "-",         "Noon": "-",         "Afternoon": "-",
                    "Evening": "-",         "Night": "-"},
     }
     ZZ_OLD_WEEKEND = {
-        "yuji":   {"Morning": "dorm_common", "Noon": "yuji_room", "Afternoon": "riverside", "Evening": "dorm_yard"},
+        "yuji":   {"Morning": "dorm_common", "Noon": "yuji_room", "Afternoon": "pool", "Evening": "dorm_yard"},
         "megumi": {"Morning": "megumi_room", "Afternoon": "library"},
-        "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
-        "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
-        "panda":  {"Morning": "senpai_room", "Afternoon": "riverside"},
+        "nobara": {"Morning": "nobara_room", "Afternoon": "pool",      "Evening": "bathhouse"},
+        "maki":   {"Morning": "maki_room",   "Afternoon": "riverside", "Evening": "bathhouse"},
+        "panda":  {"Morning": "senpai_room", "Afternoon": "pool"},
         "toge":   {"Morning": "senpai_room", "Afternoon": "riverside"},
         "shoko":  {"Afternoon": "staff_yard"},
-        "yaga":   {"Morning": "-", "Noon": "-", "Afternoon": "-", "Evening": "-"},
+        "yaga":   {"Morning": "teachers_dorm", "Noon": "teachers_lounge", "Afternoon": "-", "Evening": "teachers_lounge"},
     }
+    ## In Tokyo (U0c1, WORLD_AWAY): off campus on a Sunday Afternoon.
+    ZZ_OLD_AWAY = {("nobara", "Sun", "Afternoon"), ("maki", "Sun", "Afternoon"), ("yuji", "Sun", "Afternoon")}
     ZZ_OLD_GOJO_SPOTS = ["-", "-", "-", "rooftop", "courtyard", "office", "cafeteria", "training"]
     ZZ_OLD_PERIODS = ["Morning", "Noon", "Afternoon", "Evening", "Night"]
 
@@ -82,8 +93,11 @@ init 999 python:
             loc = today.get(per, "-")
         else:
             loc = ZZ_OLD_SCHEDULE.get(who, {}).get(per, "-")
-            if ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][(d - 1) % 7] in ("Sat", "Sun"):
+            wd = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][(d - 1) % 7]
+            if wd in ("Sat", "Sun"):
                 loc = ZZ_OLD_WEEKEND.get(who, {}).get(per, loc)
+            if (who, wd, per) in ZZ_OLD_AWAY:
+                loc = "-"
         if loc == "-" or who not in roster:
             return None
         return loc
@@ -252,11 +266,13 @@ label zz_smoke:
         check([a["seal"] for a in AREAS] == ["門", "校", "寮", "職", "練", "山"], "AREAS seals")
         check([a["anchor"] for a in AREAS] == [(960, 900), (420, 740), (900, 560), (1560, 440), (1560, 760), (1290, 215)],
               "AREAS anchors (P9, D59: the Mountain's sits on the mountain, it was (740, 290) over the lake)")
-        check(places_in("staff") == ["staff_yard", "office", "utahime_office", "gojo_office"]
+        check(places_in("staff") == ["staff_yard", "office", "utahime_office", "gojo_office", "teachers_lounge", "teachers_dorm"]
               and places_in("dorms") == ["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop",
-                                         "boys_dorm", "yuji_room", "megumi_room", "senpai_room"],
-              "places_in (P9, D53: each area's hub is first; U0b: the Boys' Dormitory and its three rooms are appended)",
-              (places_in("staff"), places_in("dorms")))
+                                         "boys_dorm", "yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room"]
+              and places_in("grounds") == ["training_yard", "training", "dojo", "storehouse", "pool"]
+              and places_in("mountain") == ["trailhead", "forest", "riverside", "ridge", "bathhouse", "sauna"],
+              "places_in (P9, D53: each area's hub is first; U0b and U0c1: the eleven new places are appended to their areas)",
+              (places_in("staff"), places_in("dorms"), places_in("grounds"), places_in("mountain")))
         check(area_of("gate") == "heart" and area_of("ridge") == "mountain" and area_of("gojo_office") == "staff" and area_of("zz") is None, "area_of")
         _counts = {l: sum(1 for a in AREAS if l in a["places"]) for l in LOCATIONS}
         check(all(n == 1 for n in _counts.values()), "every place is in exactly one area", _counts)
@@ -346,10 +362,20 @@ label zz_smoke:
               "the common room is empty at Night by routine on all seven days (days 1-14, everyone met, Gojo in and roaming; "
               "no table has a Night cell there)", (_zz_night[:4], _zz_cells))
         ## U0b: Yuji's weekend Noon is his own room, so the weekend cafeteria
-        ## drops to four. (U0c1 sends three of the river's five to the pool.)
-        check(sorted(_zz_five) == [("weekday", "Noon", "cafeteria"), ("weekend", "Afternoon", "riverside")],
-              "by the routine, five stand together only in the cafeteria at a weekday Noon and at the riverside on a weekend Afternoon",
-              _zz_five)
+        ## drops to four. U0c1: three of the river's five go to the pool, so
+        ## on a Saturday Afternoon the river holds two (Maki, Toge) and the
+        ## pool three; on a Sunday three of those five are in Tokyo.
+        day = 6     # a Saturday
+        _zz_sat = (who_is_here("riverside", "Afternoon"), who_is_here("pool", "Afternoon"))
+        day = 7     # a Sunday
+        _zz_sun = (who_is_here("riverside", "Afternoon"), who_is_here("pool", "Afternoon"),
+                   sorted(w for w in ROSTER_ORDER if world_away(w, "Afternoon")))
+        check(sorted(_zz_five) == [("weekday", "Noon", "cafeteria")]
+              and _zz_sat == (["maki", "toge"], ["yuji", "nobara", "panda"])
+              and _zz_sun == (["toge"], ["panda"], ["maki", "nobara", "yuji"]),
+              "by the routine, five stand together only in the cafeteria at a weekday Noon; on a Saturday Afternoon the river holds "
+              "two and the pool three, and on a Sunday three of those five are in Tokyo",
+              (_zz_five, _zz_sat, _zz_sun))
         note("places that hold five or more by the routine (Gojo not counted: he may roam into the cafeteria)", _zz_five)
         roster, companion, gojo_in, day = _zz_r0, _zz_c0, _zz_g0, _zz_d0
         roll_gojo()
@@ -402,22 +428,28 @@ label zz_smoke:
         day = 1   # a Monday
         check(char_location("utahime", "Morning") == "utahime_office", "recruited Utahime is in her office on a weekday morning",
               char_location("utahime", "Morning"))
-        check([char_location("utahime", p) for p in PERIODS] == ["utahime_office"] * 3 + ["cafeteria", None],
+        ## U0c1 (4.3): her Night is the Teachers' Dormitory; at weekends the
+        ## lounge in the Afternoon and the Onsen in the Evening. Ijichi's
+        ## Evening is the lounge and his Night the Teachers' Dormitory.
+        check([char_location("utahime", p) for p in PERIODS] == ["utahime_office"] * 3 + ["cafeteria", "teachers_dorm"],
               "Utahime's weekday", [char_location("utahime", p) for p in PERIODS])
         day = 6   # a Saturday
-        check([char_location("utahime", p) for p in PERIODS] == ["utahime_office", "utahime_office", None, "courtyard", None],
+        check([char_location("utahime", p) for p in PERIODS] == ["utahime_office", "utahime_office", "teachers_lounge", "bathhouse", "teachers_dorm"],
               "Utahime's weekend", [char_location("utahime", p) for p in PERIODS])
         day = 1
-        check([char_location("ijichi", p) for p in PERIODS] == ["gate"] * 3 + [None, None], "Ijichi at the gate, mornings to afternoons")
+        check([char_location("ijichi", p) for p in PERIODS] == ["gate"] * 3 + ["teachers_lounge", "teachers_dorm"],
+              "Ijichi at the gate, mornings to afternoons; the lounge in the Evening, the Teachers' Dormitory at Night",
+              [char_location("ijichi", p) for p in PERIODS])
         day = 7
-        check([char_location("ijichi", p) for p in PERIODS] == ["gate"] * 3 + [None, None], "Ijichi keeps his hours on weekends")
+        check([char_location("ijichi", p) for p in PERIODS] == ["gate"] * 3 + ["teachers_lounge", "teachers_dorm"],
+              "Ijichi keeps his hours on weekends", [char_location("ijichi", p) for p in PERIODS])
         day = 1
 
     ## --- 5. the helpers ------------------------------------------------------------------------
     python:
         check(when_at("yaga", "office") == "weekday mornings, noon and evenings", "when_at yaga office", when_at("yaga", "office"))
         check(when_at("ijichi", "gate") == "mornings to afternoons", "when_at ijichi gate", when_at("ijichi", "gate"))
-        check(when_at("maki", "dojo") == "weekday mornings and noon; weekend mornings, noon and evenings", "when_at maki dojo", when_at("maki", "dojo"))
+        check(when_at("maki", "dojo") == "weekday mornings and noon; weekend noon", "when_at maki dojo", when_at("maki", "dojo"))
         check(when_at("yuji", "ridge") == "", "when_at: never there is empty")
         check(when_at("gojo", "gojo_office") == "on the days he's in, mornings to afternoons", "when_at gojo office", when_at("gojo", "gojo_office"))
         _had = has_flag("intensive_done")
@@ -427,7 +459,7 @@ label zz_smoke:
         check(usual_places("gojo") == "Nowhere I can predict. His office on the days he's in.", "usual_places gojo after it", usual_places("gojo"))
         if not _had:
             flags.discard("intensive_done")
-        check(usual_places("maki") == "Dojo (mornings and noon) · Training Hall (afternoons) · Riverside (evenings) · Girls' Dormitory (nights)",
+        check(usual_places("maki") == "Dojo (mornings and noon) · Training Hall (afternoons) · Riverside (evenings) · Maki's Room (nights)",
               "usual_places maki", usual_places("maki"))
         check(usual_places("utahime").startswith("Utahime's Office (mornings to afternoons)"), "usual_places utahime", usual_places("utahime"))
         check(usual_places("shoko") == "Infirmary (mornings to afternoons and nights) · Rooftop (evenings)", "usual_places shoko", usual_places("shoko"))

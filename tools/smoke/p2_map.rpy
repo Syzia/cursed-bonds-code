@@ -551,12 +551,19 @@ label zz_smoke:
         period = "Night"
         here = "dorm"
         flags.discard("invited_girls_dorm")
-        _zz_in = who_is_here("girls_dorm")
+        ## The second UI overhaul (4.3; U0c1): at Night the two girls are in
+        ## their own rooms, behind the corridor (it held them itself before).
+        ## A room inside a house asks its house first, so they are behind the
+        ## locked corridor as before. (Showing them on its pin "as at home"
+        ## is the map's, in wave 1: 4.2.)
+        _zz_in = who_is_here("nobara_room") + who_is_here("maki_room")
         zz_map()
         _zz_m = zz_faces(renpy.get_screen("sb_map"))
         zz_map(area="dorms")
         _zz_p = zz_faces(renpy.get_screen("sb_map"))
-        check(len(_zz_in) >= 2 and not place_access("girls_dorm")[0], "at Night the girls' dormitory is locked with people in it", _zz_in)
+        check(_zz_in == ["nobara", "maki"] and who_is_here("girls_dorm") == [] and not place_access("girls_dorm")[0]
+              and not place_access("nobara_room")[0] and not place_access("maki_room")[0],
+              "at Night the girls' dormitory is locked with people in it: the two girls, in their rooms behind the corridor", _zz_in)
         check(not [w for w in _zz_in if w in _zz_m] and not [w for w in _zz_in if w in _zz_p]
               and not [w for w in _zz_in if w in map_area_people("dorms")] and map_pin_people("girls_dorm") == [],
               "a person in a locked room is on no marker and no pin", (_zz_in, _zz_m, _zz_p))
@@ -814,7 +821,7 @@ label zz_smoke:
         here = "courtyard"
         period = "Night"
         _zz_v = person_now("nobara")
-        check(char_location("nobara") == "girls_dorm" and _zz_v == dict(place=None, name="Somewhere I can't go right now", doing="",
+        check(char_location("nobara") == "nobara_room" and _zz_v == dict(place=None, name="Somewhere I can't go right now", doing="",
                                                                        reachable=False, hidden=True, with_me=False),
               "person_now: hidden=True for someone in a locked room, and the room isn't given away", _zz_v)
         ## The second UI overhaul (4.3; U0b): Megumi's Night is his own room,
@@ -969,7 +976,8 @@ label zz_smoke:
             zz_map(area="grounds")
             zz_settle()
             shot("standin_area", wait=0)
-            check(zz_ids("row_") == ["row_dojo", "row_storehouse", "row_training", "row_training_yard"], "stand-in: the area view works on the stand-in picture", zz_ids("row_"))
+            check(zz_ids("row_") == sorted("row_" + l for l in places_in("grounds") if zz_pinned(l)) and "row_pool" in zz_ids("row_"),
+                  "stand-in: the area view works on the stand-in picture (a pin for each pinned place of the Training Grounds, the pool's among them)", zz_ids("row_"))
             zz_map(layer="tokyo", area="harajuku")
             zz_settle()
             shot("standin_district", wait=0)

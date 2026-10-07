@@ -9,7 +9,8 @@
 ## area_<key> pictures of the map's second level, the five hubs:
 ## school_yard, dorm_yard, staff_yard, training_yard, trailhead, and the new
 ## places of the second UI overhaul: boys_dorm, yuji_room, megumi_room,
-## senpai_room). Their light
+## senpai_room, nobara_room, maki_room, teachers_lounge, teachers_dorm,
+## bathhouse, sauna, pool). Their light
 ## rows are in BG_LIGHT in lighting.rpy (the hubs have none: they are outdoor
 ## places and take the outdoor light).
 ################################################################################
@@ -148,3 +149,26 @@ init -1 python:
         TintMatrix("#b9cdf2") * SaturationMatrix(0.70) * BrightnessMatrix(-0.02), xzoom=-1.0))
     renpy.image("bg senpai_room", standin_bg("senpai_room", "your_room.png",
         TintMatrix("#c4e6c0") * SaturationMatrix(0.80), xzoom=-1.0))
+
+    ## U0c1: the other seven places (4.1's table of stand-ins). Nobody is in
+    ## any of these pictures (K16).
+    ## The two girls' rooms: my room, not mirrored, in rose and in slate.
+    renpy.image("bg nobara_room", standin_bg("nobara_room", "your_room.png",
+        TintMatrix("#ffc4d6") * SaturationMatrix(0.80)))
+    renpy.image("bg maki_room", standin_bg("maki_room", "your_room.png",
+        TintMatrix("#b4bcc8") * SaturationMatrix(0.40) * BrightnessMatrix(-0.03)))
+    ## The Teachers' Lounge: the Common Room, in violet-grey.
+    renpy.image("bg teachers_lounge", standin_bg("teachers_lounge", "dorm_common.png",
+        TintMatrix("#cfc6e2") * SaturationMatrix(0.45) * BrightnessMatrix(-0.02)))
+    ## The Teachers' Dormitory: the Principal's Office, cropped, warm.
+    renpy.image("bg teachers_dorm", standin_bg("teachers_dorm", "office.png",
+        TintMatrix("#ffd9a8") * BrightnessMatrix(0.06), crop=(320, 180, 1280, 720), xysize=(1920, 1080)))
+    ## The Onsen's rest hall: the infirmary, in pale teal.
+    renpy.image("bg bathhouse", standin_bg("bathhouse", "infirmary.png",
+        TintMatrix("#c4f0ea") * SaturationMatrix(0.60) * BrightnessMatrix(0.04)))
+    ## The Sauna: the storehouse, in amber.
+    renpy.image("bg sauna", standin_bg("sauna", "storehouse.png",
+        TintMatrix("#ffc070") * SaturationMatrix(0.70) * BrightnessMatrix(0.04)))
+    ## The Swimming Pool: the riverside, cropped to the water, in cyan.
+    renpy.image("bg pool", standin_bg("pool", "riverside.png",
+        TintMatrix("#a8ecff") * SaturationMatrix(0.85), crop=(640, 500, 960, 540), xysize=(1920, 1080)))
