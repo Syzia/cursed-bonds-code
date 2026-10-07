@@ -949,12 +949,18 @@ label zz_smoke:
             _zz_lab = zz_hud_tile_hover(_zz_w, _zz_p[4]) if _zz_p else None
             _zz_old = (_zz_p[1][0] - _zz_p[2][0], _zz_p[1][1], _zz_p[2][0], _zz_p[2][1]) if _zz_p else None
             _zz_was = [k for k, r in sorted(_zz_hots.items()) if _zz_old and zz_hud_meets(_zz_old, r)]
+            ## K3 (docs/UI2_DESIGN.md): the rule, on whatever picture is
+            ## installed: the label hides nothing and reads its title. What
+            ## it used to cover on the phase-2 pictures, and the side it
+            ## opened on there, are a note (they move with the picture).
             check(_zz_p is not None and _zz_lab is not None and not zz_hud_label_hits(_zz_lab, _zz_p[1], _zz_hots, _zz_corner)
-                  and _zz_p[3][0] == _zz_side and _zz_was and (zz_texts("hover_label") or [""])[0] == _zz_title,
-                  "%s, %s: the label of '%s' used to open over %s; now it hides nothing (%s; hover check: needs the pointer)"
-                  % (LOCATIONS[_zz_loc]["name"], _zz_per, _zz_title, ", ".join(_zz_was) or "nothing",
-                     "above its tile" if _zz_side == "top" else "beside the column, %d px %s" % (abs(_zz_p[3][2]) if _zz_p else 0, "up" if (_zz_p and _zz_p[3][2] < 0) else "down")),
+                  and (zz_texts("hover_label") or [""])[0] == _zz_title,
+                  "%s, %s: the label of '%s' hides nothing where it opens (hover check: needs the pointer)"
+                  % (LOCATIONS[_zz_loc]["name"], _zz_per, _zz_title),
                   (_zz_lab, _zz_p, _zz_was, sorted(_zz_hots.items())))
+            note("%s, %s: the label of '%s'" % (LOCATIONS[_zz_loc]["name"], _zz_per, _zz_title),
+                 "opens %s (%s on the phase-2 picture); opened beside the column it would cover %s"
+                 % (_zz_p[3][0] if _zz_p else "?", _zz_side, ", ".join(_zz_was) or "nothing"))
             shot("column_label_" + _zz_name, wait=0)
         renpy.set_focus("sb_place", "hud_menu")
         renpy.hide_screen("sb_place")

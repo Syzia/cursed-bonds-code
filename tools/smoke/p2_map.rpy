@@ -29,6 +29,12 @@ init 999 python:
     ## one file while bg area_grounds's displayable is built again.
     zz_loadable0 = renpy.loadable
 
+    def zz_pinned(loc):
+        """K3. bool: the place has a pin on its area's map (world_pinned,
+        once the scaffold defines it; every place until then)."""
+        fn = getattr(store, "world_pinned", None)
+        return bool(fn(loc)) if callable(fn) else True
+
     def zz_no_grounds(path, *args, **kwargs):
         if path == "images/bg/area_grounds.png":
             return False
@@ -330,8 +336,14 @@ label zz_smoke:
         _zz_words = {}
         _zz_btns = {}
         _zz_rects = {}
+        ## K3 (docs/UI2_DESIGN.md): every PINNED place has a pin. Today that is
+        ## every place; world_pinned (the scaffold's) will leave a few rooms
+        ## to be reached on foot.
+        _zz_pinned = [l for l in LOC_ORDER if zz_pinned(l)]
         for _zz_a in AREAS:
             for _zz_l in _zz_a["places"]:
+                if _zz_l not in _zz_pinned:
+                    continue
                 here = "courtyard" if _zz_l != "courtyard" else "gate"
                 period = "Noon"
                 zz_map(area=_zz_a["key"])
@@ -343,13 +355,17 @@ label zz_smoke:
             _zz_words[_zz_a["key"]] = len(zz_words("sb_map"))
             _zz_btns[_zz_a["key"]] = zz_buttons("sb_map")
             for _zz_l in _zz_a["places"]:
-                _zz_rects[_zz_l] = zz_rect("sb_map", "row_" + _zz_l)
+                if _zz_l in _zz_pinned:
+                    _zz_rects[_zz_l] = zz_rect("sb_map", "row_" + _zz_l)
             _zz_rects["back:" + _zz_a["key"]] = zz_rect("sb_map", "map_back")
             zz_settle()
             shot("area_" + _zz_a["key"], wait=0)
-        check(not _zz_bad and len(LOCATIONS) == 24, "pressing an open pin returns ('go', loc), for every one of the 24 places (19 rooms, 5 new hubs)", _zz_bad)
-        check(max(_zz_words.values()) <= 16, "level 2: zz_words <= 16 in every area", _zz_words)
-        check(max(_zz_btns.values()) <= 10, "level 2: at most 5 pins (the hub's included) + 5 buttons in every area", _zz_btns)
+        check(not _zz_bad and len(LOCATIONS) == len(LOC_ORDER) and len(_zz_pinned) >= 24,
+              "pressing an open pin returns ('go', loc), for every pinned place (%d of the %d places)" % (len(_zz_pinned), len(LOC_ORDER)), _zz_bad)
+        ## K11: the budgets as the second UI overhaul raises them, once: 18
+        ## words and six pins (the Dormitories) on an area view.
+        check(max(_zz_words.values()) <= 18, "level 2: zz_words <= 18 in every area (K11)", _zz_words)
+        check(max(_zz_btns.values()) <= 11, "level 2: at most 6 pins (the hub's included) + 5 buttons in every area (K11)", _zz_btns)
         _zz_hits = [(a, b) for a in _zz_rects for b in _zz_rects if a < b and _zz_rects[a] and _zz_rects[b]
                     and (area_of(a) or a[5:]) == (area_of(b) or b[5:]) and zz_overlap(_zz_rects[a], _zz_rects[b])]
         check(all(_zz_rects.values()) and not _zz_hits, "no pin overlaps another pin of its area, or Back", (_zz_hits, [k for k, v in _zz_rects.items() if not v]))
@@ -872,7 +888,8 @@ label zz_smoke:
                 _zz_pn += _zz_one[0]
                 _zz_pl += [(_zz_per, _zz_a["key"]) + row for row in _zz_one[1]]
         store.period = _zz_period0
-        check(_zz_pn == 2 * (len(LOCATIONS) - 5) and not _zz_pl and icon_tip_side(("x", "row_dorm")) == "top" and icon_tip_centred(("x", "row_dorm")) == 0.5,
+        ## K3: counted from the pinned places outside the School Building.
+        check(_zz_pn == 2 * len([l for l in LOC_ORDER if zz_pinned(l) and area_of(l) != "school"]) > 0 and not _zz_pl and icon_tip_side(("x", "row_dorm")) == "top" and icon_tip_centred(("x", "row_dorm")) == 0.5,
               "five areas as shipped: no hovered pin's label meets another pin, the Dormitories among them (hover check: needs the pointer)", (_zz_pn, _zz_pl))
         zz_worst("sb_map", area="dorms", hover="row_dorm_common", name="worst_map_area")
         renpy.hide_screen("sb_map")

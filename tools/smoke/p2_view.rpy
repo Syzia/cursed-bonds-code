@@ -116,6 +116,21 @@ init 999 python:
             for k, v in old.items():
                 setattr(store, k, v)
 
+    def zzv_plain_slots(loc, n):
+        """K3. What view_slots(loc, n) answers when the room's sidecar has
+        no slots of its own: the code's row, or the default."""
+        key = "view_" + loc
+        had = key in RULE_LAYOUT
+        old = RULE_LAYOUT.get(key)
+        RULE_LAYOUT[key] = builtins.dict()
+        try:
+            return view_slots(loc, n)
+        finally:
+            if had:
+                RULE_LAYOUT[key] = old
+            else:
+                del RULE_LAYOUT[key]
+
     def zzv_no(prefix):
         """A renpy.loadable that says no for paths starting with `prefix`."""
         def zzv_loadable(path, *args, **kwargs):
@@ -507,7 +522,9 @@ label zz_smoke:
               "with four the two in the middle step back; with two nobody does")
         RULE_LAYOUT["view_library"] = {"slots": {"1": [[900, -44, 0.5, 2]], "2": [[1, 2, 3]], "3": "nonsense"}}
         check(view_slots("library", 1) == [(900, -44, 0.5, 2)], "a sidecar's slots win over VIEW_SLOTS", view_slots("library", 1))
-        check(view_slots("library", 2) == VIEW_SLOTS["library"][2] and view_slots("library", 3) == VIEW_SLOTS["library"][3],
+        ## K3 (docs/UI2_DESIGN.md): compared with what view_slots reads when
+        ## the sidecar has nothing to say, not with the code table by name.
+        check(view_slots("library", 2) == zzv_plain_slots("library", 2) and view_slots("library", 3) == zzv_plain_slots("library", 3),
               "a sidecar row of the wrong length or shape is ignored", (view_slots("library", 2), view_slots("library", 3)))
         del RULE_LAYOUT["view_library"]
         check(view_slot_rects("dorm_common", 2) == [view_slot_rect(s) for s in view_slots("dorm_common", 2)]
@@ -584,7 +601,7 @@ label zz_smoke:
         check(len(_zz_cost) == 3 and not any(c for _w, c in _zz_cost) and all(b - a >= 170 for a, b in zip(_zz_xs, _zz_xs[1:])),
               "with four people the three who stand are still clear of the pose's box (slots drawn from all the "
               "room's layouts, 170 px apart)", (_zz_cost, _zz_xs))
-        check(view_pick_slots("dorm_common", 2, [(270, 410, 400, 460)]) == [VIEW_SLOTS["dorm_common"][3][1], VIEW_SLOTS["dorm_common"][3][2]],
+        check(view_pick_slots("dorm_common", 2, [(270, 410, 400, 460)]) == [view_slots("dorm_common", 3)[1], view_slots("dorm_common", 3)[2]],
               "while a layout with a clear set is used as it is (three people: the layout for three, less its left slot)",
               view_pick_slots("dorm_common", 2, [(270, 410, 400, 460)]))
     scene expression graded_bg()
@@ -707,10 +724,13 @@ label zz_smoke:
             _zz_pers = [p for p in PERIODS if _zz_l in (routine_location(_zz_w, p), routine_location(_zz_w, p, weekend=True))]
             if _zz_w == "gojo" and _zz_l == "gojo_office":
                 _zz_pers = builtins.list(GOJO_IN_PERIODS) if when_at(_zz_w, _zz_l) else []
-            if not when_at(_zz_w, _zz_l) or not any((bg_variant(_zz_l, p) or "") == _zz_v for p in _zz_pers):
+            ## K3 (docs/UI2_DESIGN.md): the hour's picture is read from
+            ## TIME_VARIANT, not through bg_variant, which the scaffold gates
+            ## (None for a stale hour picture: a room between two batches).
+            if not when_at(_zz_w, _zz_l) or not any((TIME_VARIANT.get(_zz_l, {}).get(p) or "") == _zz_v for p in _zz_pers):
                 _zz_bad.append((_zz_w, _zz_l, _zz_v, when_at(_zz_w, _zz_l), _zz_pers))
-        check(len(_zz_plan) == 14 and not _zz_bad,
-              "the pose plan (tools/make_pose_workflow.py, 14 rows): the schedule puts every person at their place "
+        check(len(_zz_plan) >= 1 and not _zz_bad,
+              "the pose plan (tools/make_pose_workflow.py, every row): the schedule puts every person at their place "
               "(when_at), at an hour with the picture the pose is painted on", _zz_bad)
         check([r.get("via") for r in _zz_plan if r.get("via")] == ["night_gojo"] and NIGHT_GOJO["place"] == "ridge",
               "the one row the routine never produces is the Gojo night's (he is pinned on the ridge)")
@@ -723,11 +743,14 @@ label zz_smoke:
             if _zz_fn.endswith(".json"):
                 for _zz_v in zzv_json.load(open(os.path.join(_zz_fgdir, _zz_fn))):
                     _zz_want.append("images/fg/fg_%s%s.png" % (_zz_fn[:-5], "_" + _zz_v if _zz_v else ""))
-        check(sorted(_zz_want) == ["images/fg/fg_cafeteria.png", "images/fg/fg_dorm_common.png",
-                                   "images/fg/fg_dorm_common_evening.png", "images/fg/fg_dorm_common_night.png",
-                                   "images/fg/fg_utahime_office.png"]
-              and all(renpy.loadable(p) for p in _zz_want),
-              "the five foreground files load, one for every polygon in tools/fg/ (the classroom has none: round 1)", _zz_want)
+        ## K3 (docs/UI2_DESIGN.md): no list of names. Every polygon in
+        ## tools/fg/ has its cut, for every hour picture of its room that is
+        ## fresh (art_fresh, once the scaffold has the manifest).
+        _zz_fresh = getattr(store, "art_fresh", None)
+        _zz_want = [p for p in _zz_want if not callable(_zz_fresh) or _zz_fresh(os.path.splitext(os.path.basename(p))[0][len("fg_"):])]
+        check(len(_zz_want) >= 1 and len(_zz_want) == len(builtins.set(_zz_want)) and all(renpy.loadable(p) for p in _zz_want),
+              "every polygon in tools/fg/ has its foreground file (%d), for every fresh picture of its room" % len(_zz_want),
+              [p for p in _zz_want if not renpy.loadable(p)])
         check(sorted(VIEW_FG_ROOMS) == sorted(builtins.set(os.path.splitext(f)[0] for f in os.listdir(_zz_fgdir) if f.endswith(".json"))),
               "VIEW_FG_ROOMS names the rooms that have a polygon file", VIEW_FG_ROOMS)
 
@@ -755,6 +778,7 @@ label zz_smoke:
         check(len(_zz_far) == 1 and _zz_st[[r["who"] for r in view_stage_rows(here)].index(_zz_far[0]["who"])] == min(_zz_st),
               "the person a step back is drawn first, behind the others",
               (_zz_far, _zz_st, [r["who"] for r in view_draw_order(view_stage_rows(here))], stage_people(here)[0]))
+        _zz_own3 = view_slots("dorm_common", 3)
         renpy.loadable = zzv_no("images/fg/")
     hide screen sb_place
     show screen sb_place
@@ -766,13 +790,14 @@ label zz_smoke:
               "the stand-in path: with no foreground file the screen draws none, and the tags are still there")
         check(all(view_slots(l, n) == view_default_slots(l, n) and not any(s[1] < -60 for s in view_slots(l, n))
                   for l in VIEW_FG_ROOMS for n in (1, 2, 3, 4))
-              and view_slots("library", 3) == VIEW_SLOTS["library"][3]
+              and view_slots("library", 3) == zzv_plain_slots("library", 3)
               and view_person_rects(here) == [view_slot_rect(s) for s in view_default_slots(here, 3)],
               "and nobody stands up on the table: a foreground room uses the plain default slots while its picture is "
               "missing (other rooms keep their rows)", [view_slots(l, 3) for l in VIEW_FG_ROOMS])
         shot("standin_no_foreground", wait=0.2)
         renpy.loadable = ZZV_LOADABLE[0]
-        check(view_slots("dorm_common", 3) == VIEW_SLOTS["dorm_common"][3], "with the file back the room's own slots return")
+        check(view_slots("dorm_common", 3) == _zz_own3 and _zz_own3 != view_default_slots("dorm_common", 3),
+              "with the file back the room's own slots return")
     hide screen sb_place
 
     ## Integration: the classroom. Nobody's legs among the near desks (they

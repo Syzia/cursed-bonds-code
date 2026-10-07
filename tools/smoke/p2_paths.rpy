@@ -209,6 +209,22 @@ init 999 python:
                 a *= float(d.alpha)
         return round(a, 2)
 
+    def zz_keep_clear(loc):
+        """K3. The points an exit of `loc` keeps PATH_CLEAR px from:
+        path_keep_clear(loc) once the scaffold defines it (the live hotspot
+        points), and until then the live points themselves, which is what
+        that function will answer."""
+        fn = getattr(store, "path_keep_clear", None)
+        if callable(fn):
+            return [(p[0], p[1]) for p in fn(loc)]
+        return [(x, y) for i, x, y in zz_room_spots(loc)]
+
+    def zz_dist(a, b):
+        return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
+
+    def zz_in_frame(x, y):
+        return HOT_BOUNDS[0] <= x <= HOT_BOUNDS[2] and HOT_BOUNDS[1] <= y <= HOT_BOUNDS[3]
+
     def zz_room_spots(loc):
         """[(id, x, y)]: a place's own hotspots (every one that is not an
         exit), where they sit: the sidecar hot_<loc>.json applied."""
@@ -313,8 +329,10 @@ init 999 python:
         if L[0] == 3:
             room = [x["id"] for x in hot_spots_for(h)]
             col = [a[0] for a in rail_actions(h) if a[0].startswith("path_")]
-            check(L[1] == 1 and h == "dorm_yard" and tm == L[3] and len(room) + len(col) == 7,
-                  "that save loads onto the same place view: the Dormitory Garden, its seven exits offered", (L[1], h, tm, room, col))
+            ## K3 (docs/UI2_DESIGN.md): the count is the table's, and a yard has at most seven.
+            check(L[1] == 1 and h == "dorm_yard" and tm == L[3] and len(room) + len(col) == len(path_exits("dorm_yard")) <= 7,
+                  "that save loads onto the same place view: the Dormitory Garden, every one of its exits offered (%d; at most seven)"
+                  % len(path_exits("dorm_yard")), (L[1], h, tm, room, col))
             shot("after_load_dorm_yard", wait=0)
             L[0], L[2] = 4, 0
             return zz_loop_press("hot_go_dorm_yard__courtyard")
@@ -390,8 +408,10 @@ label zz_smoke:
 
     ## --- 1. the graph ----------------------------------------------------------------------------
     python:
-        check(all(path_neighbours(l) for l in LOCATIONS) and len(LOCATIONS) == 24,
-              "every place has at least one exit (24 places)", [l for l in LOCATIONS if not path_neighbours(l)])
+        ## K3: the number of places is LOC_ORDER's (K11 raises it once, in the table).
+        check(all(path_neighbours(l) for l in LOCATIONS) and len(LOCATIONS) == len(LOC_ORDER) == len(set(LOC_ORDER)),
+              "every place has at least one exit (%d places, the ones in LOC_ORDER)" % len(LOC_ORDER),
+              [l for l in LOCATIONS if not path_neighbours(l)])
         _zz_bad = [(l, path_neighbours(l)) for l in LOCATIONS
                    if path_hub(area_of(l)) != l and path_neighbours(l)[:1] != [path_hub(area_of(l))]]
         check(not _zz_bad, "every room's first exit leads to its area's hub", _zz_bad)
@@ -480,7 +500,8 @@ label zz_smoke:
         ## Yuji and Panda stand there at Night: the exits they cover (my
         ## room's is one) are in the icon column, as the rule has it.
         _zz_room, _zz_col = zz_exits_offered("dorm_yard")
-        check("path_dorm" in _zz_room + _zz_col and len(_zz_room) + len(_zz_col) == 7 and "night_bed" in [a[0] for a in rail_actions("dorm_yard")],
+        check("path_dorm" in _zz_room + _zz_col and len(_zz_room) + len(_zz_col) == len(path_exits("dorm_yard")) <= 7
+              and "night_bed" in [a[0] for a in rail_actions("dorm_yard")],
               "a hub at Night offers its exits beside Go to bed", (_zz_room, _zz_col))
         ## Explore mode.
         zz_open_campus()
@@ -616,8 +637,8 @@ label zz_smoke:
                     _zz_out.append((_zz_id, _zz_x, _zz_y))
                 if any(hot_overlap(hot_rect(_zz_x, _zz_y), ln) for ln in HOT_LANES):
                     _zz_lane.append((_zz_id, _zz_x, _zz_y))
-                for _zz_p in PATH_KEEP_CLEAR.get(_zz_f, ()):
-                    if (_zz_x - _zz_p[0]) ** 2 + (_zz_y - _zz_p[1]) ** 2 < 120 ** 2:
+                for _zz_p in zz_keep_clear(_zz_f):
+                    if (_zz_x - _zz_p[0]) ** 2 + (_zz_y - _zz_p[1]) ** 2 < PATH_CLEAR ** 2:
                         _zz_near.append((_zz_id, _zz_p))
                 for _zz_r2 in _zz_rows:
                     if _zz_r2["to"] > _zz_r["to"] and abs(_zz_r2["x"] - _zz_x) < 96 and abs(_zz_r2["y"] - _zz_y) < 96:
@@ -628,21 +649,29 @@ label zz_smoke:
                         _zz_live.append((_zz_id, _zz_hid, int(_zz_d)))
         check(not _zz_out, "every exit point is inside x 40 to 1700, y 180 to 1000", _zz_out)
         check(not _zz_lane and len(HOT_LANES) == 2, "no exit point lies in the toast lane or the banner lane", _zz_lane)
-        _zz_table = {"courtyard": [(1600, 690)], "dorm": [(440, 590), (1330, 720)], "dorm_common": [(1400, 876), (1590, 560)],
-                     "riverside": [(1580, 905)], "library": [(300, 520), (1630, 480)], "classroom": [(1450, 500)],
-                     "cafeteria": [(1500, 600)], "infirmary": [(1420, 700)], "storehouse": [(1600, 600)],
-                     "utahime_office": [(1500, 470)], "ridge": [(960, 250)]}
-        check(not _zz_near and PATH_KEEP_CLEAR == _zz_table and PATH_CLEAR == 120,
-              "no exit is within 120 px of a point of PATH_KEEP_CLEAR in the same place (P6's final points, copied here)", _zz_near)
-        _zz_stale = [(l, sorted(set((x, y) for i, x, y in zz_room_spots(l))), sorted(PATH_KEEP_CLEAR.get(l, ())))
-                     for l in LOCATIONS if sorted(set((x, y) for i, x, y in zz_room_spots(l))) != sorted(PATH_KEEP_CLEAR.get(l, ()))]
-        check(not _zz_stale, "PATH_KEEP_CLEAR holds exactly where each room's own hotspots sit now (the sidecars applied)", _zz_stale)
+        ## K3: no hand copy of the points. What an exit keeps clear of is where
+        ## the room's own hotspots sit now (path_keep_clear once the scaffold
+        ## has it; zz_keep_clear above), and that list is checked against the
+        ## live points, not against numbers written here.
+        check(not _zz_near and PATH_CLEAR == 120,
+              "no exit is within PATH_CLEAR (120 px) of a point its place keeps clear", _zz_near)
+        _zz_stale = [(l, sorted(set((x, y) for i, x, y in zz_room_spots(l))), sorted(zz_keep_clear(l)))
+                     for l in LOCATIONS if sorted(set((x, y) for i, x, y in zz_room_spots(l))) != sorted(set(zz_keep_clear(l)))]
+        check(not _zz_stale, "what each place keeps clear is exactly where its own hotspots sit now (the sidecars applied)", _zz_stale)
+        if not callable(getattr(store, "path_keep_clear", None)):
+            _zz_old = [l for l in LOCATIONS if sorted(set((x, y) for i, x, y in zz_room_spots(l))) != sorted(PATH_KEEP_CLEAR.get(l, ()))]
+            note("PATH_KEEP_CLEAR (the code's fallback table, until path_keep_clear reads the live points)",
+                 "agrees with the live points" if not _zz_old else "is out of date for %s" % ", ".join(_zz_old))
         check(not _zz_close, "no two exits of one place overlap (their 96 px rings are clear of each other)", _zz_close)
         check(not _zz_live, "no exit is within 120 px of a hotspot of its room, as registered and placed now", _zz_live)
-        check(dict((r["to"], (r["x"], r["y"])) for r in path_exits("courtyard"))["training_yard"] == (1640, 850)
-              and path_exits("dorm")[0]["y"] - dict((i, y) for i, x, y in zz_room_spots("dorm"))["computer"] >= 120,
-              "the courtyard's Training Yard exit is below the vending machine; my door is a row below the laptop",
-              (path_exits("courtyard"), path_exits("dorm"), zz_room_spots("dorm")))
+        ## K3: the rule, not the point: clear of the machine, inside the frame.
+        _zz_vend = [(x, y) for i, x, y in zz_room_spots("courtyard") if i == "spot_vend"]
+        _zz_pc = [(x, y) for i, x, y in zz_room_spots("dorm") if i == "computer"]
+        check(len(_zz_vend) == 1 and len(_zz_pc) == 1
+              and all(zz_dist((r["x"], r["y"]), _zz_vend[0]) >= PATH_CLEAR and zz_in_frame(r["x"], r["y"]) for r in path_exits("courtyard"))
+              and all(zz_dist((r["x"], r["y"]), _zz_pc[0]) >= PATH_CLEAR and zz_in_frame(r["x"], r["y"]) for r in path_exits("dorm")),
+              "the courtyard's exits are clear of the vending machine and inside the frame; my door is clear of the laptop",
+              (path_exits("courtyard"), _zz_vend, path_exits("dorm"), _zz_pc))
         ## The hubs' exits sit on their pictures, not in a row along the top.
         _zz_rows = dict((h, sorted(r["y"] for r in path_exits(h))) for h in ZZ_HUBS)
         check(all(len([y for y in ys if y < 300]) <= 1 and len(set(ys)) >= 3 for ys in _zz_rows.values()),
@@ -714,7 +743,8 @@ label zz_smoke:
         finally:
             store.who_is_here = zz_who_is_here0
         renpy.hide_screen("sb_place")
-        check(not _zz_bad and _zz_n == 30, "in the six hubs every exit's hover label (%d of them) is on screen and covers no other exit of its hub "
+        ## K3: counted from the table.
+        check(not _zz_bad and _zz_n == sum(len(path_neighbours(path_hub(a["key"]))) for a in AREAS) > 0, "in the six hubs every exit's hover label (%d of them) is on screen and covers no other exit of its hub "
               "(hover check: needs the pointer)" % _zz_n, _zz_bad)
         ## Four people on stage: every exit is still offered, once.
         store.who_is_here = zz_crowd
@@ -885,9 +915,16 @@ label zz_smoke:
         _zz_mx, _zz_my = AREA_BY_KEY["mountain"]["anchor"]
         _zz_box = MAP_MOUNTAIN_BOX
         _zz_c = _zz_rects["mountain"]
-        check(_zz_box == (1160, 119, 1420, 285) and _zz_box[0] <= _zz_mx <= _zz_box[2] and _zz_box[1] <= _zz_my <= _zz_box[3]
+        ## K3: the box is the picture's own number: game/layout/map_campus.json
+        ## ("mountain_box") when the map has one, else the code's.
+        _zz_side = rule_layout("map_campus").get("mountain_box")
+        if isinstance(_zz_side, (zz_builtins.list, zz_builtins.tuple)) and len(_zz_side) == 4:
+            _zz_box = zz_builtins.tuple(_zz_side)
+        check(len(_zz_box) == 4 and _zz_box[0] < _zz_box[2] and _zz_box[1] < _zz_box[3]
+              and 0 <= _zz_box[0] and _zz_box[2] <= 1920 and 0 <= _zz_box[1] and _zz_box[3] <= 1080
+              and _zz_box[0] <= _zz_mx <= _zz_box[2] and _zz_box[1] <= _zz_my <= _zz_box[3]
               and (_zz_c[0] + _zz_c[2] // 2, _zz_c[1] + _zz_c[3] // 2) == (_zz_mx, _zz_my),
-              "the Mountain marker's centre lies on the mountain: inside the box measured from map_campus.png (the peak genworld.py paints around (1290, 215))",
+              "the Mountain marker's centre lies on the mountain: inside the box measured on the campus map's picture",
               (_zz_mx, _zz_my, _zz_c))
         ## The lake stays unmarked.
         check(not [a["key"] for a in AREAS if abs(a["anchor"][0] - 640) < 128 + 120 and abs(a["anchor"][1] - 225) < 56 + 48],
@@ -1086,8 +1123,8 @@ label zz_smoke:
         arrival_caption()
         ARRIVAL[1] -= 10
         zz_worst("sb_place", hover="hot_go_dorm_yard__staff_yard")
-        check(who_is_here("dorm_yard") == ["yuji", "panda"] and len(hot_spots_for("dorm_yard")) + len([a for a in rail_actions("dorm_yard") if a[0].startswith("path_")]) == 7,
-              "the Dormitory Garden on a weekday night: Yuji and Panda outside, seven exits", (who_is_here("dorm_yard"), [h["id"] for h in hot_spots_for("dorm_yard")]))
+        check(who_is_here("dorm_yard") == ["yuji", "panda"] and len(hot_spots_for("dorm_yard")) + len([a for a in rail_actions("dorm_yard") if a[0].startswith("path_")]) == len(path_exits("dorm_yard")) <= 7,
+              "the Dormitory Garden on a weekday night: Yuji and Panda outside, every exit offered (at most seven)", (who_is_here("dorm_yard"), [h["id"] for h in hot_spots_for("dorm_yard")]))
         ## Nothing un-picklable reaches a save (R10): the registry rows are
         ## init data; the screen's scope holds plain copies.
         _zz_rows = hot_spots_for("dorm_yard")

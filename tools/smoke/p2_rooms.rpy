@@ -492,8 +492,10 @@ label zz_smoke:
         zz_r_fix("rich")
         _zz_real = zz_r_spots()
         _zz_got = builtins.dict((_zz_h["id"], (_zz_h["place"], _zz_h["kind"], _zz_h["act"])) for _zz_h in _zz_real)
-        check(_zz_got == ZZ_R_TABLE, "A: the first set of 4.10 is registered: fifteen hotspots in eleven rooms",
-              builtins.sorted(set(_zz_got.items()) ^ set(ZZ_R_TABLE.items())))
+        ## K3 (docs/UI2_DESIGN.md): the fifteen are present; more are allowed.
+        check(all(_zz_got.get(_zz_k) == _zz_v for _zz_k, _zz_v in ZZ_R_TABLE.items()),
+              "A: the first set of 4.10 is registered: its fifteen hotspots in eleven rooms (%d registered in all)" % len(_zz_got),
+              builtins.sorted((_zz_k, _zz_got.get(_zz_k)) for _zz_k, _zz_v in ZZ_R_TABLE.items() if _zz_got.get(_zz_k) != _zz_v))
         check(hot_validate() == [] and pc_validate() == [] and fish_validate() == [] and lib_validate() == [],
               "A: the hotspot validator passes (and the computer's, fishing's and the Library's)",
               hot_validate() + pc_validate() + fish_validate() + lib_validate())
@@ -510,22 +512,42 @@ label zz_smoke:
                    if hot_overlap(hot_rect(_zz_h["x"], _zz_h["y"]), (1330, 92, 460, 330))]
         check(not _zz_bad, "A: no hotspot of any room (sidecar points and exits too) sits under four two-line toasts", _zz_bad)
         check(all(set(SPOT_LINES[_zz_h["id"]]) == set(_zz_h["lines"]) and len(_zz_h["lines"]) >= 2
-                  for _zz_h in _zz_real if _zz_h["kind"] == "look") and len(SPOT_LINES) == 3,
+                  for _zz_h in _zz_real if _zz_h["kind"] == "look" and _zz_h["id"] in SPOT_LINES)
+              and builtins.sorted(SPOT_LINES) == builtins.sorted(_zz_h["id"] for _zz_h in _zz_real
+                                                                 if _zz_h["kind"] == "look" and _zz_h["id"] in SPOT_LINES)
+              and len(SPOT_LINES) >= 3,
               "A: SPOT_LINES holds the look hotspots' lines, at least two each")
 
-        ## The shipped sidecars: every id registered for its room, the point the code's own.
+        ## The shipped sidecars. K3 (docs/UI2_DESIGN.md): a rule, not a copy
+        ## and not a count. Every id a sidecar names is registered for its
+        ## place, or planned for it (SPOT_PLANNED, the scaffold's), and its
+        ## point passes the validator's own test (inside the frame, clear of
+        ## the lanes; a standalone clear of where people stand). The picture's
+        ## point no longer has to equal the code's default: a layout sitting
+        ## moves it.
         _zz_bad = []
         _zz_n = 0
-        for _zz_p in builtins.sorted(set(_zz_h["place"] for _zz_h in _zz_real)):
+        _zz_planned = builtins.set((_zz_r[0], _zz_r[1]) for _zz_r in getattr(store, "SPOT_PLANNED", ()))
+        for _zz_p in LOC_ORDER:
             _zz_side = rule_layout("hot_" + _zz_p).get("spots") or {}
-            for _zz_h in _zz_real:
-                if _zz_h["place"] != _zz_p:
-                    continue
+            _zz_rows = builtins.dict((_zz_h["id"], _zz_h) for _zz_h in HOT_SPOTS if _zz_h["place"] == _zz_p)
+            for _zz_id, _zz_pt in builtins.sorted(_zz_side.items()):
                 _zz_n += 1
-                if _zz_side.get(_zz_h["id"]) != [_zz_h["x"], _zz_h["y"]]:
-                    _zz_bad.append((_zz_p, _zz_h["id"], _zz_side.get(_zz_h["id"]), (_zz_h["x"], _zz_h["y"])))
-        check(not _zz_bad and _zz_n == 15,
-              "A: game/layout/hot_<place>.json holds the final point of every hotspot, and the code's default agrees", _zz_bad)
+                if not (isinstance(_zz_pt, builtins.list) and len(_zz_pt) == 2 and hot_number(_zz_pt[0]) and hot_number(_zz_pt[1])):
+                    _zz_bad.append((_zz_p, _zz_id, "not a point", _zz_pt))
+                elif _zz_id in _zz_rows:
+                    _zz_why = hot_point_findings(_zz_rows[_zz_id], int(_zz_pt[0]), int(_zz_pt[1]))
+                    if _zz_why:
+                        _zz_bad.append((_zz_p, _zz_id, _zz_why[0]))
+                elif (_zz_id, _zz_p) in _zz_planned:
+                    _zz_why = hot_point_findings(builtins.dict(id=_zz_id, place=_zz_p, kind="act"), int(_zz_pt[0]), int(_zz_pt[1]))
+                    if _zz_why:
+                        _zz_bad.append((_zz_p, _zz_id, _zz_why[0]))
+                else:
+                    _zz_bad.append((_zz_p, _zz_id, "neither registered nor planned for this place"))
+        check(not _zz_bad and _zz_n > 0,
+              "A: every point in game/layout/hot_<place>.json belongs to a hotspot or exit registered (or planned) for "
+              "that place, and passes the validator's test for a point (%d points)" % _zz_n, _zz_bad)
 
         ## Every room x period, as the schedule fills it: a visible action
         ## hotspot's action is out of the column and is what its button returns.
@@ -776,7 +798,12 @@ label zz_smoke:
 
         zz_r_fix("rich", here="courtyard", period="Afternoon")
         zz_r_stage("courtyard", 1)
-        _zz_pt = [_zz_h for _zz_h in HOT_SPOTS if _zz_h["id"] == "spot_vend"][0]
+        ## K3 (docs/UI2_DESIGN.md): the machine's applied point (the sidecar's
+        ## when the picture has one), not the code row in HOT_SPOTS.
+        _zz_pt = builtins.dict([_zz_h for _zz_h in HOT_SPOTS if _zz_h["id"] == "spot_vend"][0])
+        _zz_side = (rule_layout("hot_courtyard").get("spots") or {}).get("spot_vend")
+        if isinstance(_zz_side, builtins.list) and len(_zz_side) == 2 and hot_number(_zz_side[0]) and hot_number(_zz_side[1]):
+            _zz_pt["x"], _zz_pt["y"] = int(_zz_side[0]), int(_zz_side[1])
         _zz_box = (_zz_pt["x"] - 200, _zz_pt["y"] - 400, 400, 800)
         _zz_rows = zz_with(dict(view_person_rects=lambda loc: [_zz_box]),
                            lambda: [_zz_h for _zz_h in hot_spots_for("courtyard") if _zz_h["id"] == "spot_vend"])

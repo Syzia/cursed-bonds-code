@@ -89,6 +89,19 @@ init 999 python:
     import struct
     import zlib
 
+    def zz_sheet_names():
+        """K3. Every icon name on the sheets, tools/icons/sheet_<n>.txt of the
+        repository this run started from (a line "-" leaves a cell out)."""
+        root = os.environ.get("SMOKE_ROOT") or ""
+        folder = os.path.join(root, "tools", "icons")
+        out = builtins.list()
+        if os.path.isdir(folder):
+            for fn in builtins.sorted(os.listdir(folder)):
+                if re.match(r"^sheet_\d+\.txt$", fn):
+                    with open(os.path.join(folder, fn), encoding="utf-8") as f:
+                        out += [l.strip() for l in f if l.strip() and not l.startswith("#") and l.strip() != "-"]
+        return out
+
     ZZ_P0_SEED = 20261001
     ZZ_P0_FIELDS = ("kind", "id", "label", "hint", "cost", "gold", "romance")
     ZZ_P0_FLAGS = dict(
@@ -1049,8 +1062,13 @@ label zz_smoke:
               and gui.grade_sp_base == "#16121f", "the grade tokens (D15), gui.dim when ungraded")
         check(all(zz_is_disp(grade_fill(k)) for k in list(GRADE_ORDER) + [None, 0]), "grade_fill is a displayable for every grade")
 
-        check(len(ICONS) == 88 and all(isinstance(r, builtins.tuple) and len(r) == 2 and r[0] and r[1] for r in ICONS.values()),
-              "ICONS holds the 88 names, each (kanji, word)", len(ICONS))
+        ## K3 (docs/UI2_DESIGN.md): the count is the one the sheets hold
+        ## (tools/icons/sheet_<n>.txt), not a number written here.
+        _zz_sheet = zz_sheet_names()
+        check(len(ICONS) == len(_zz_sheet) == len(builtins.set(_zz_sheet)) >= 88 and builtins.set(_zz_sheet) == builtins.set(ICONS)
+              and all(isinstance(r, builtins.tuple) and len(r) == 2 and r[0] and r[1] for r in ICONS.values()),
+              "ICONS holds exactly the names the icon sheets hold (%d), each (kanji, word)" % len(_zz_sheet),
+              (len(ICONS), len(_zz_sheet), builtins.sorted(builtins.set(_zz_sheet) ^ builtins.set(ICONS))[:8]))
         check(ICON_GOLD == {"mission", "night_gojo"} and gui.icon_words in ("auto", "always", "never")
               and icon_validate() == [], "ICON_GOLD, gui.icon_words, and the icon validator is clean", icon_validate())
         _zz_miss = []

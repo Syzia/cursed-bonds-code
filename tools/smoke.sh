@@ -1,13 +1,22 @@
 #!/bin/bash
-# tools/smoke.sh v3 -- run one Ren'Py test harness in a throwaway copy of the
-# project (docs/PHASE1_DESIGN.md, section 8.1; docs/PHASE2_DESIGN.md, D49).
+# tools/smoke.sh v4 -- run one Ren'Py test harness in a throwaway copy of the
+# project (docs/PHASE1_DESIGN.md, section 8.1; docs/PHASE2_DESIGN.md, D49;
+# docs/UI2_DESIGN.md, K13 and 5.4).
 #
 #   tools/smoke.sh <harness.rpy>
+#   tools/smoke.sh <name>                the same as tools/smoke/<name>.rpy
+#   tools/smoke.sh <name> --out <file>   a harness that writes a file for the
+#                                        repository (see 5) writes it to <file>
+#                                        instead: tools/smoke.sh u2_dump --out
+#                                        shots/art/game_layout.json
 #
 # Environment:
 #   SMOKE_TIMEOUT=180  seconds before the watchdog kills the run
 #   SMOKE_SAVES=1      copy the owner's saves (game/saves and the user save
 #                      folder) into the scratch copy, as read-only copies
+#   SMOKE_SAVES_FROM=<dir>[:<dir>...]  with SMOKE_SAVES=1: copy the *.save
+#                      files of these folders instead of the owner's (a
+#                      snapshot, or tools/smoke/assets/ui2_saves)
 #   SMOKE_SLOT=<slot>  the slot tools/smoke/load_slot.rpy loads
 #   SMOKE_SHOTS=<dir>  where result.txt, screenshots and logs go
 #                      (default: shots/<harness name>/ in the repo)
@@ -16,6 +25,11 @@
 #   HEADLESS=1         use SDL's dummy video driver. Off by default: on
 #                      macOS 27 it stalls at "Initializing sw renderer".
 #   RENPY_SDK=<dir>    the SDK (default ~/Desktop/renpy-8.5.3-sdk)
+#   SMOKE_POINTER=1|0  treat this harness as one that needs the pointer, or as
+#                      one that does not, whatever the list says (see 6)
+#   SMOKE_LOCK_WAIT=3600  seconds to wait for the pointer before giving up
+#   SMOKE_LOCK_DIR=<dir>  the lock folder (default ~/Library/Caches/jjk_smoke;
+#                      another folder only to test the lock itself)
 #
 # How it works:
 #   1. A scratch project is made under $TMPDIR/jjk_smoke.XXXX/. game/*.rpy and
@@ -50,9 +64,31 @@
 #      status is 0 only when its last line is "RESULT PASS". The scratch copy
 #      is deleted either way. Ren'Py's console output, log.txt and any
 #      traceback.txt / errors.txt are kept next to the result.
+#   5. A file for the repository. A harness line
+#        ## smoke-out: <file> -> <path in the repository>
+#      says the harness writes <file> into $SMOKE_SHOTS and where it belongs
+#      (tools/smoke/u2_dump.rpy: game_layout.json -> tools/art/game_layout.json).
+#      After a RESULT PASS this script copies it there, or to the file --out
+#      names. Nothing is copied after a failure, and never into game/.
+#   6. The pointer lock (docs/UI2_DESIGN.md, K13). Some harnesses rest the
+#      pointer on a button (or use renpy.set_focus) and fail, for no real
+#      reason, while any other Ren'Py window is open. They are the names in
+#      SMOKE_POINTER_LIST below and any harness with a line `## smoke-pointer`.
+#      Such a run
+#        - refuses, with one line and exit status 3, while a Ren'Py game that
+#          is not a smoke run is open (the owner playing, a second copy of the
+#          game; the launcher's own window does not count);
+#        - takes the machine-wide lock, the folder
+#          ~/Library/Caches/jjk_smoke/pointer.lock, waiting for whoever holds
+#          it (another pointer harness, from this checkout or any worktree);
+#        - then waits for every other smoke run on this machine to finish.
+#      A harness that does not need the pointer waits while the lock is held,
+#      so it never opens a window under a pointer harness. A lock whose holder
+#      has died is taken over. Nobody has to arrange any of this by hand.
 #
 # Nothing is ever written into the real game/ folder, so several harnesses can
-# run at once, even from one checkout. That holds when game/cache (or a folder
+# run at once, even from one checkout (the pointer harnesses take their turn,
+# 6). That holds when game/cache (or a folder
 # of scripts) is a symbolic link as well: such a link is followed and its
 # contents are copied. Still, never set up a worktree or a scratch root with
 # game/cache linked to another tree's.
@@ -64,9 +100,26 @@ LIB="$ROOT/tools/smoke/_lib.rpy"
 
 die() { echo "smoke.sh: $*" >&2; exit 2; }
 
+USAGE="usage: tools/smoke.sh <harness.rpy | name> [--out <file>]"
 HARNESS="${1:-}"
-[ -n "$HARNESS" ] && [ -f "$HARNESS" ] || die "no harness at ${HARNESS:-<none>} (usage: tools/smoke.sh <harness.rpy>)"
+[ "$#" -gt 0 ] && shift
+# A bare name is tools/smoke/<name>.rpy.
+if [ -n "$HARNESS" ] && [ ! -f "$HARNESS" ]; then
+    case "$HARNESS" in
+        */*|*.rpy) ;;
+        *) [ -f "$ROOT/tools/smoke/$HARNESS.rpy" ] && HARNESS="$ROOT/tools/smoke/$HARNESS.rpy" ;;
+    esac
+fi
+[ -n "$HARNESS" ] && [ -f "$HARNESS" ] || die "no harness at ${HARNESS:-<none>} ($USAGE)"
 case "$HARNESS" in *.rpy) ;; *) die "the harness must be a .rpy file: $HARNESS" ;; esac
+OUT_FILE=""
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --out) [ "$#" -ge 2 ] || die "--out needs a file name"; OUT_FILE="$2"; shift 2 ;;
+        --out=*) OUT_FILE="${1#--out=}"; shift ;;
+        *) die "unknown argument: $1 ($USAGE)" ;;
+    esac
+done
 HARNESS="$(cd "$(dirname "$HARNESS")" && pwd)/$(basename "$HARNESS")"
 NAME="$(basename "$HARNESS" .rpy)"
 [ -x "$SDK/renpy.sh" ] || die "no Ren'Py SDK at $SDK (set RENPY_SDK)"
@@ -86,10 +139,170 @@ RESULT="$SHOTS/result.txt"
 rm -f "$RESULT" "$RESULT.tmp" "$SHOTS/console.txt" "$SHOTS/log.txt" \
       "$SHOTS/traceback.txt" "$SHOTS/errors.txt"
 
+# A file the harness writes for the repository (5): `## smoke-out: a -> b`.
+OUT_RX='^## smoke-out: *\([A-Za-z0-9_.-][A-Za-z0-9_.-]*\) *-> *\([A-Za-z0-9_./-][A-Za-z0-9_./-]*\) *$'
+OUT_NAME="$(sed -n "s|$OUT_RX|\\1|p" "$HARNESS" | head -n 1)"
+OUT_DEFAULT="$(sed -n "s|$OUT_RX|\\2|p" "$HARNESS" | head -n 1)"
+OUT_DEST=""
+if [ -n "$OUT_FILE" ]; then
+    [ -n "$OUT_NAME" ] || die "--out: $NAME writes no file for the repository (it has no '## smoke-out:' line)"
+    case "$OUT_FILE" in /*) OUT_DEST="$OUT_FILE" ;; *) OUT_DEST="$PWD/$OUT_FILE" ;; esac
+elif [ -n "$OUT_NAME" ]; then
+    case "/$OUT_DEFAULT/" in */../*) die "smoke-out: bad path $OUT_DEFAULT" ;; esac
+    OUT_DEST="$ROOT/$OUT_DEFAULT"
+fi
+if [ -n "$OUT_DEST" ]; then
+    mkdir -p "$(dirname "$OUT_DEST")" || die "cannot create the folder of $OUT_DEST"
+    OUT_DEST="$(cd "$(dirname "$OUT_DEST")" && pwd -P)/$(basename "$OUT_DEST")"
+    case "$OUT_DEST" in "$REALGAME"/*) die "a harness's file may not be written inside the real game/ folder: $OUT_DEST" ;; esac
+    rm -f "${SHOTS:?}/${OUT_NAME:?}"
+fi
+
+# --- the pointer lock (6) ------------------------------------------------------
+# The harnesses that rest the pointer on a button or use renpy.set_focus. A
+# new one names itself with a line `## smoke-pointer`.
+SMOKE_POINTER_LIST="p2_contracts p2_hud p2_map p2_journal p2_view p2_rooms p2_paths p2_cards p2_saves phase2_all u2_map"
+LOCK_BASE="${SMOKE_LOCK_DIR:-$HOME/Library/Caches/jjk_smoke}"
+LOCK="$LOCK_BASE/pointer.lock"
+RUNNING="$LOCK_BASE/running"
+LOCK_WAIT="${SMOKE_LOCK_WAIT:-3600}"
+case "$LOCK_WAIT" in ''|*[!0-9]*) die "SMOKE_LOCK_WAIT must be a whole number of seconds" ;; esac
+HAVE_LOCK=0
+MARKER=""
+SCRATCH_MARK="jjk_smoke.none"
+
+POINTER=0
+case " $SMOKE_POINTER_LIST " in *" $NAME "*) POINTER=1 ;; esac
+grep -q '^## smoke-pointer *$' "$HARNESS" && POINTER=1
+case "${SMOKE_POINTER:-}" in 1) POINTER=1 ;; 0) POINTER=0 ;; esac
+
+# "<pid> <project>" for every Ren'Py game open on this machine that is neither
+# the launcher, nor a smoke run, nor a lint or compile (which open no window).
+open_games() {
+    ps -axo pid=,command= 2>/dev/null | awk '
+        {
+            pid = $1; exe = $2
+            if (exe !~ /(^|\/)renpy(\.sh|\.py|\.exe)?$/ && exe !~ /\/lib\/py[^\/]*\/(renpy|python[0-9.]*)$/) next
+            if ($0 !~ /[Rr]en.?[Pp]y/) next
+            if ($0 ~ /jjk_smoke\./) next
+            proj = ""; quiet = 0
+            for (i = 3; i <= NF; i++) {
+                if ($i ~ /^-/) continue
+                if ($i ~ /renpy\.py$/) continue
+                if (proj == "") { proj = $i; continue }
+                if ($i == "lint" || $i == "compile" || $i == "translate" || $i == "dialogue" || $i == "distribute") quiet = 1
+            }
+            if (proj == "" || proj ~ /\/launcher\/?$/ || quiet) next
+            print pid " " proj
+        }'
+}
+games_line() { open_games | tr '\n' ';' | sed 's/;$//'; }
+
+lock_holder() { cat "$LOCK/pid" 2>/dev/null; }
+lock_what() { cat "$LOCK/what" 2>/dev/null; }
+
+# How many other smoke runs are alive: their markers, and any Ren'Py started
+# from a scratch copy by a smoke.sh older than the lock.
+others_running() {
+    local f p n=0
+    for f in "$RUNNING"/*; do
+        [ -f "$f" ] || continue
+        p="$(basename "$f")"
+        [ "$p" = "$$" ] && continue
+        if kill -0 "$p" 2>/dev/null; then n=$((n + 1)); else rm -f "${f:?}"; fi
+    done
+    p="$(ps -axo pid=,command= 2>/dev/null | grep 'jjk_smoke\.' | grep -v grep | grep -v "$SCRATCH_MARK" | grep -c .)"
+    echo $((n + ${p:-0}))
+}
+
+lock_release() {
+    [ -n "$MARKER" ] && rm -f "${MARKER:?}"
+    if [ "$HAVE_LOCK" = "1" ] && [ "$(lock_holder)" = "$$" ]; then
+        rm -f "${LOCK:?}/pid" "${LOCK:?}/what"
+        rmdir "${LOCK:?}" 2>/dev/null
+    fi
+    HAVE_LOCK=0
+}
+
+lock_refuse() {
+    # One line, a result file that says so, and exit status 3.
+    echo "smoke.sh: REFUSED: $*" >&2
+    { echo "FAIL smoke: REFUSED: $*"; echo "RESULT FAIL"; } > "$RESULT"
+    lock_release
+    exit 3
+}
+
+# Take over a lock whose holder has died. Only one waiter wins the rename.
+lock_clear_stale() {
+    local dead stale="$LOCK.stale.$$"
+    [ -d "$LOCK" ] || return 0
+    dead="$(lock_holder)"
+    if [ -n "$dead" ] && kill -0 "$dead" 2>/dev/null; then return 0; fi
+    # A lock just made has no pid file for a moment: leave it be.
+    if [ -z "$dead" ] && [ -n "$(find "$LOCK" -maxdepth 0 -mtime -5s 2>/dev/null)" ]; then return 0; fi
+    mv "$LOCK" "$stale" 2>/dev/null || return 0
+    if [ "$(cat "$stale/pid" 2>/dev/null)" != "$dead" ]; then
+        mv "$stale" "$LOCK" 2>/dev/null     # someone's new lock: put it back
+    else
+        rm -f "${stale:?}/pid" "${stale:?}/what"
+        rmdir "${stale:?}" 2>/dev/null
+    fi
+}
+
+lock_wait_start=$SECONDS
+lock_timed_out() { [ $((SECONDS - lock_wait_start)) -ge "$LOCK_WAIT" ]; }
+
+mkdir -p "$RUNNING" || die "cannot create $RUNNING"
+trap lock_release EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM HUP
+if [ "$POINTER" = "1" ]; then
+    [ -n "$(open_games)" ] && lock_refuse "$NAME needs the pointer and a Ren'Py game is open ($(games_line)). Close it and run this again."
+    said=0
+    while ! mkdir "$LOCK" 2>/dev/null; do
+        lock_clear_stale
+        if [ "$said" = "0" ] && [ -d "$LOCK" ]; then
+            echo "smoke.sh: $NAME waits for the pointer (held by pid $(lock_holder): $(lock_what))" >&2
+            said=1
+        fi
+        lock_timed_out && lock_refuse "$NAME waited ${LOCK_WAIT}s for the pointer lock $LOCK (held by pid $(lock_holder): $(lock_what))"
+        sleep 2
+    done
+    echo "$$" > "$LOCK/pid"
+    echo "$NAME from $ROOT" > "$LOCK/what"
+    HAVE_LOCK=1
+    said=0
+    while [ "$(others_running)" != "0" ]; do
+        if [ "$said" = "0" ]; then
+            echo "smoke.sh: $NAME has the pointer and waits for the other smoke runs to finish" >&2
+            said=1
+        fi
+        lock_timed_out && lock_refuse "$NAME waited ${LOCK_WAIT}s for the other smoke runs to finish"
+        sleep 2
+    done
+    [ -n "$(open_games)" ] && lock_refuse "$NAME needs the pointer and a Ren'Py game is open ($(games_line)). Close it and run this again."
+else
+    MARKER="$RUNNING/$$"
+    said=0
+    while :; do
+        echo "$NAME from $ROOT" > "$MARKER"
+        lock_clear_stale
+        [ -d "$LOCK" ] || break
+        rm -f "${MARKER:?}"
+        if [ "$said" = "0" ]; then
+            echo "smoke.sh: $NAME waits: a pointer harness is running (pid $(lock_holder): $(lock_what))" >&2
+            said=1
+        fi
+        lock_timed_out && lock_refuse "$NAME waited ${LOCK_WAIT}s for the pointer harness to finish (pid $(lock_holder): $(lock_what))"
+        sleep 2
+    done
+fi
+
 # --- the scratch copy ----------------------------------------------------------
 TMPBASE="${TMPDIR:-/tmp}"
 TMPBASE="${TMPBASE%/}"
 SCRATCH="$(mktemp -d "$TMPBASE/jjk_smoke.XXXX")" || die "mktemp failed in $TMPBASE"
+SCRATCH_MARK="$(basename "$SCRATCH")"
 PID=""
 
 cleanup() {
@@ -101,6 +314,7 @@ cleanup() {
     case "$SCRATCH" in
         "$TMPBASE"/jjk_smoke.*) [ -d "$SCRATCH" ] && rm -rf "$SCRATCH" ;;
     esac
+    lock_release
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -206,12 +420,24 @@ fi
 if [ "${SMOKE_SAVES:-0}" = "1" ]; then
     SAVE_DIRNAME="$(sed -n 's/^define config.save_directory *= *"\(.*\)".*/\1/p' "$ROOT/game/options.rpy" | head -n 1)"
     USER_SAVES="$HOME/Library/RenPy/${SAVE_DIRNAME:-JJKgamemd-1788928056}"
-    for f in "$ROOT"/game/saves/*.save; do
-        [ -f "$f" ] && cp -p "$f" "$G/saves/"
-    done
-    for f in "$USER_SAVES"/*.save; do
-        [ -f "$f" ] && cp -p "$f" "$SCRATCH/savedir/"
-    done
+    if [ -n "${SMOKE_SAVES_FROM:-}" ]; then
+        # A snapshot instead of the owner's folders (docs/UI2_DESIGN.md, D42).
+        OLDIFS="$IFS"; IFS=":"
+        for d in $SMOKE_SAVES_FROM; do
+            [ -d "$d" ] || die "SMOKE_SAVES_FROM: no folder $d"
+            for f in "$d"/*.save; do
+                [ -f "$f" ] && cp -p "$f" "$SCRATCH/savedir/"
+            done
+        done
+        IFS="$OLDIFS"
+    else
+        for f in "$ROOT"/game/saves/*.save; do
+            [ -f "$f" ] && cp -p "$f" "$G/saves/"
+        done
+        for f in "$USER_SAVES"/*.save; do
+            [ -f "$f" ] && cp -p "$f" "$SCRATCH/savedir/"
+        done
+    fi
     chmod a-w "$G"/saves/*.save "$SCRATCH"/savedir/*.save 2>/dev/null
 fi
 
@@ -308,4 +534,13 @@ case "$(last_line)" in
 esac
 
 cat "$RESULT"
-if [ "$(last_line)" = "RESULT PASS" ]; then exit 0; else exit 1; fi
+if [ "$(last_line)" != "RESULT PASS" ]; then exit 1; fi
+if [ -n "$OUT_DEST" ]; then
+    if [ ! -f "$SHOTS/$OUT_NAME" ]; then
+        echo "smoke.sh: $NAME passed but wrote no $OUT_NAME" >&2
+        exit 1
+    fi
+    cp "$SHOTS/$OUT_NAME" "$OUT_DEST.tmp" && mv "$OUT_DEST.tmp" "$OUT_DEST" || die "cannot write $OUT_DEST"
+    echo "smoke.sh: wrote $OUT_DEST"
+fi
+exit 0
