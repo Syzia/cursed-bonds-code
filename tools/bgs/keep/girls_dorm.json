@@ -1,0 +1,25 @@
+{
+ "keep": [
+  {"name": "the shoe rack and the shoes on it", "box": [738, 703, 134, 190]},
+  {"name": "the potted plant at the end of the corridor", "box": [923, 563, 90, 208]},
+  {"name": "the ceiling light, nearest", "box": [973, 3, 128, 62]},
+  {"name": "the ceiling lights further down", "box": [1043, 193, 90, 100]},
+  {"name": "the card reader by the first door", "box": [320, 498, 28, 88]},
+  {"name": "the window at the end of the corridor", "box": [963, 363, 274, 280]}
+ ],
+ "empty": [
+  {"name": "the floor", "poly": [[885, 792], [1250, 762], [1430, 1075], [520, 1075], [700, 922], [885, 892]]}
+ ],
+ "allow": [],
+ "change": [],
+ "doors": [
+  {"name": "the first door on the left", "box": [388, 88, 118, 955]},
+  {"name": "the second door on the left", "box": [673, 298, 58, 605]},
+  {"name": "the third door on the left", "box": [735, 318, 62, 365]},
+  {"name": "the fourth door on the left", "box": [848, 393, 34, 392]},
+  {"name": "the far door on the left", "box": [903, 423, 26, 352]},
+  {"name": "the first door on the right", "box": [1428, 58, 90, 1015]},
+  {"name": "the second door on the right", "box": [1308, 298, 40, 585]},
+  {"name": "the far door on the right", "box": [1263, 398, 28, 405]}
+ ]
+}

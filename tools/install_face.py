@@ -8,18 +8,32 @@ into the game.
     python3 tools/install_face.py "~/ComfyUI-Shared/output/yuji_talk_nanobanana_00001_.png" yuji talk
     python3 tools/install_face.py --sheet        # every eye and mouth box, to look at
 
+  A REDRAWN PERSON, whose set is staged and not in the game yet (docs/UI2_DESIGN.md D57):
+    python3 tools/install_face.py --prepare yuji --sprite <staged>/char/yuji_neutral.png --images <folder>
+    python3 tools/install_face.py <blink render> yuji blink --sprite <staged>/char/yuji_neutral.png \
+            --images <folder> --stage <staged>
+
 The game makes someone blink and talk by laying two small boxes over their
 sprite: the eyes from `images/char/fx/fx_<who>_blink.png` and the mouth from
 `fx_<who>_talk.png` (PHASE2_DESIGN.md D39, 4.5). Both are the neutral sprite
-with only that box changed, on the same canvas. The boxes are VIEW_FACE in
-game/view_stage.rpy; this tool reads them from there.
+with only that box changed, on the same canvas.
 
---prepare cuts a square around the head from the GAME's own neutral sprite
-(game/images/char/<who>_neutral.png), puts it on flat green, enlarges it to
-1024 and writes `<who>_fx_in.png` into ~/Desktop/JJK Game images (and
-ComfyUI's input folder), with the square recorded in
-masks/<who>_fx_crop.txt. Because the close-up comes from the sprite itself,
-the answer maps straight back onto it.
+WHERE THE BOXES COME FROM. For the sprites in the game: a person's row in
+game/layout/faces.json when there is one, else VIEW_FACE in
+game/view_stage.rpy (today's numbers). For a sprite given with --sprite the
+boxes are MEASURED on that sprite: the edit is lined up with it, and the box
+is where the two differ (the eyes for a blink, the mouth for a talk). A new
+drawing puts the eyes and the mouth somewhere else, and the art-install role
+may not edit a `.rpy` file.
+
+--prepare cuts a square around the head from the neutral sprite (the game's
+own, game/images/char/<who>_neutral.png, or the one --sprite names), puts it
+on flat green, enlarges it to 1024 and writes `<who>_fx_in.png` into
+~/Desktop/JJK Game images (and ComfyUI's input folder), with the square
+recorded in masks/<who>_fx_crop.txt. Because the close-up comes from the
+sprite itself, the answer maps straight back onto it. With --sprite the
+square is found from the sprite's own outline (the top of the figure, a
+little over a quarter of its height), not from the old boxes.
 
 Installing takes the editor's picture, shrinks it back to the square, lines it
 up with the sprite (editors nudge and zoom a picture by a pixel or two: scale
@@ -29,13 +43,26 @@ or the mouth box (talk) onto a copy of the neutral sprite. It prints how well
 the box's rim meets the sprite, and writes a preview, shots/art/fx_<who>_<kind>.png
 (the neutral head, the new one, and the two alternating boxes marked).
 
+WHAT IT WRITES INTO game/layout/faces.json (the only tool that writes it;
+3.2, D57), keeping every other person's rows:
+  "blink_also": {who: [faces]}   on installing a blink: which of the person's
+        other faces the blink also sits on, measured: the rim of the eye box
+        on that face's sprite matches the neutral sprite's (a mean difference
+        under 5 of 255, with no stroke crossing it). Without the row a blink
+        shows on the calm face only.
+  "eyes": {who: [x, y, w, h]}, "mouth": {who: [x, y, w, h]}   only when the
+        box was measured (--sprite): on the 760x1400 canvas, like VIEW_FACE.
+With --stage <folder> the picture goes to <folder>/fx/ and the rows to
+<folder>/faces.json: tools/install_set.py puts a person's whole set in at once.
+
 Gojo's eyes are under his blindfold and Yaga's behind his glasses: they have
 no eye box, so no blink.
 
---root <dir> writes under another folder than the project. --images <dir>
-uses another folder than ~/Desktop/JJK Game images. Pure Python.
+--root <dir> writes under another folder than the project (and reads the
+sprites and faces.json there when it has them: a copy of the project).
+--images <dir> uses another folder than ~/Desktop/JJK Game images. Pure Python.
 """
-import sys, os, re
+import sys, os, re, json
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pngread import load
@@ -50,9 +77,65 @@ KINDS = {"blink": "eyes", "talk": "mouth"}
 SCALES = [0.97 + 0.01 * i for i in range(7)]
 SHIFT = 8
 SEAM_WARN = 14.0
+EXPRESSIONS = ("neutral", "happy", "serious", "angry", "surprised", "sad")
+BLOCK = 4                   # the measured box: the edit and the sprite are compared in blocks this size
+CHANGED = 22                # a block changed when it differs by more than this on average
+BOX_PAD = 6                 # the measured box is the changed region grown by this
+# blink_also: the eye box's rim on another face differs by less than RIM_MEAN on average, and no more than
+# RIM_STROKE of it differs strongly (an eyebrow crossing it). Set on Yuji's first set, whose answer was known
+# by eye (VIEW_BLINK_ALSO): happy, serious, sad and surprised read 3.9 to 4.3 with 0.5 to 1.3% crossed and
+# take the blink; angry reads 5.7 with 3.2% crossed and keeps its own eyes.
+RIM_MEAN = 5.0
+RIM_STROKE = 0.025
 
 
-def faces():
+def faces_path(root=None, stage=None):
+    return os.path.join(stage, "faces.json") if stage else os.path.join(root or ROOT, "game", "layout", "faces.json")
+
+
+def read_faces_file(path):
+    if not os.path.exists(path):
+        return {}
+    try:
+        data = json.load(open(path, encoding="utf-8"))
+    except ValueError as e:
+        raise SystemExit("%s is not JSON: %s" % (path, e))
+    if not isinstance(data, dict):
+        raise SystemExit("%s must be a JSON object" % path)
+    return data
+
+
+def write_faces(path, who, blink_also=None, eyes=None, mouth=None):
+    """Set one person's rows in faces.json, keeping everybody else's."""
+    data = read_faces_file(path)
+    for key, val in (("blink_also", blink_also), ("eyes", eyes), ("mouth", mouth)):
+        if val is None:
+            continue
+        table = data.get(key)
+        if not isinstance(table, dict):
+            table = {}
+        table[who] = [int(v) for v in val] if key != "blink_also" else list(val)
+        data[key] = table
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path + ".tmp", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, sort_keys=True)
+        f.write("\n")
+    os.replace(path + ".tmp", path)
+
+
+def faces(root=None):
+    """{who: {"eyes": box, "mouth": box}}: a person's row in game/layout/faces.json where there is one,
+    else VIEW_FACE."""
+    out = view_face()
+    data = read_faces_file(faces_path(root))
+    for key in ("eyes", "mouth"):
+        for who, box in (data.get(key) or {}).items():
+            if isinstance(box, list) and len(box) == 4:
+                out.setdefault(who, {})[key] = tuple(int(v) for v in box)
+    return out
+
+
+def view_face():
     """VIEW_FACE, read from game/view_stage.rpy: {who: {"eyes": box, "mouth": box}}."""
     src = open(os.path.join(ROOT, "game", "view_stage.rpy"), encoding="utf-8").read()
     m = re.search(r"VIEW_FACE = \{(.*?)\n    \}", src, re.S)
@@ -69,11 +152,33 @@ def faces():
     return out
 
 
-def sprite_path(who):
-    p = os.path.join(ROOT, "game", "images", "char", who + "_neutral.png")
-    if not os.path.exists(p):
-        raise SystemExit("no sprite at %s" % p)
-    return p
+def sprite_path(who, root=None):
+    """The neutral sprite: the one under --root when that folder has it (a copy of the project), else the game's."""
+    for base in dict.fromkeys([root or ROOT, ROOT]):
+        p = os.path.join(base, "game", "images", "char", who + "_neutral.png")
+        if os.path.exists(p):
+            return p
+    raise SystemExit("no sprite at %s" % p)
+
+
+def head_square_alpha(sprite):
+    """(X, Y, side) for a sprite whose boxes are not known yet: from the figure's own outline. The square
+    starts just above the top of the hair and is a little over a quarter of the figure tall, centred on the
+    head."""
+    if sprite.ch != 4:
+        raise SystemExit("the sprite has no alpha channel")
+    w, h, b = sprite.w, sprite.h, sprite.buf
+    rows = [y for y in range(h) if sum(1 for x in range(0, w, 2) if b[(y * w + x) * 4 + 3] > 24) >= 3]
+    if not rows:
+        raise SystemExit("the sprite is empty")
+    y0, y1 = rows[0], rows[-1] + 1
+    fh = y1 - y0
+    side = min(max(260, int(fh * 0.27)), w, h)
+    xs = [x for y in range(y0, min(h, y0 + int(fh * 0.12)), 2) for x in range(0, w, 2) if b[(y * w + x) * 4 + 3] > 128]
+    cx = sorted(xs)[len(xs) // 2] if xs else w // 2
+    X = max(0, min(w - side, cx - side // 2))
+    Y = max(0, min(h - side, y0 - int(side * 0.04)))
+    return X, Y, side
 
 
 def head_square(who, face, sprite):
@@ -117,13 +222,22 @@ def crop_record(images, who):
     return os.path.join(images, "masks", "%s_fx_crop.txt" % who)
 
 
-def prepare(who, images=None):
+def prepare(who, images=None, sprite_file=None, root=None):
     images = images or IMAGES
-    face = faces().get(who)
-    if not face:
-        raise SystemExit("%s has no row in VIEW_FACE (game/view_stage.rpy)" % who)
-    sprite = load(sprite_path(who))
-    X, Y, side = head_square(who, face, sprite)
+    face = faces(root).get(who)
+    if sprite_file:
+        # a staged sprite: a new drawing, so the old boxes say nothing about where its head is
+        sprite_file = os.path.expanduser(sprite_file)
+        if not os.path.exists(sprite_file):
+            raise SystemExit("no sprite at %s" % sprite_file)
+        sprite = load(sprite_file)
+        X, Y, side = head_square_alpha(sprite)
+        face = face or {"eyes": None, "mouth": None}
+    else:
+        if not face:
+            raise SystemExit("%s has no row in VIEW_FACE (game/view_stage.rpy) or in faces.json" % who)
+        sprite = load(sprite_path(who, root))
+        X, Y, side = head_square(who, face, sprite)
     cut = on_green(crop(sprite, X, Y, X + side, Y + side))
     big = resample(cut, EDIT_SIZE, EDIT_SIZE)
     os.makedirs(os.path.join(images, "masks"), exist_ok=True)
@@ -134,7 +248,8 @@ def prepare(who, images=None):
     if images == IMAGES and os.path.isdir(COMFY_INPUT):
         import shutil
         shutil.copy(path, os.path.join(COMFY_INPUT, os.path.basename(path)))
-    print("close-up  %dx%d of the sprite at (%d, %d) -> %dx%d" % (side, side, X, Y, EDIT_SIZE, EDIT_SIZE))
+    print("close-up  %dx%d of %s at (%d, %d) -> %dx%d" % (side, side, "the staged sprite" if sprite_file else "the sprite",
+                                                        X, Y, EDIT_SIZE, EDIT_SIZE))
     print("edit in -> %s" % path)
     kinds = [k for k, key in sorted(KINDS.items()) if key in face]
     print("next: python3 tools/make_edit_workflow.py %s --only %s" % (who, ",".join(kinds)))
@@ -162,16 +277,129 @@ def sample(ed, fx, fy):
     return out
 
 
-def install(src, who, kind, images=None, root=None):
+def _regions(grid, gw, gh):
+    """[(blocks, x0, y0, x1, y1)] of the connected changed blocks (8-connected), the largest first."""
+    seen = [bytearray(gw) for _y in range(gh)]
+    out = []
+    for sy in range(gh):
+        for sx in range(gw):
+            if not grid[sy][sx] or seen[sy][sx]:
+                continue
+            stack, n = [(sx, sy)], 0
+            seen[sy][sx] = 1
+            x0, y0, x1, y1 = sx, sy, sx, sy
+            while stack:
+                x, y = stack.pop()
+                n += 1
+                x0, y0, x1, y1 = min(x0, x), min(y0, y), max(x1, x), max(y1, y)
+                for nx in (x - 1, x, x + 1):
+                    for ny in (y - 1, y, y + 1):
+                        if 0 <= nx < gw and 0 <= ny < gh and grid[ny][nx] and not seen[ny][nx]:
+                            seen[ny][nx] = 1
+                            stack.append((nx, ny))
+            out.append((n, x0, y0, x1, y1))
+    out.sort(key=lambda r: -r[0])
+    return out
+
+
+def measure_box(sprite, ed, X, Y, side, s, dx, dy, cast, kind):
+    """Where the lined-up edit differs from the sprite: the eye box (blink) or the mouth box (talk), on the
+    sprite's canvas. None when nothing changed."""
+    c = side / 2.0
+    gw = gh = side // BLOCK
+    grid = [bytearray(gw) for _y in range(gh)]
+    for gy in range(gh):
+        for gx in range(gw):
+            tot, n = 0.0, 0
+            for yy in (gy * BLOCK + 1, gy * BLOCK + 3):
+                for xx in (gx * BLOCK + 1, gx * BLOCK + 3):
+                    j = ((Y + yy) * sprite.w + X + xx) * 4
+                    if sprite.buf[j + 3] < 255:
+                        continue
+                    v = sample(ed, c + (xx - c) / s - dx, c + (yy - c) / s - dy)
+                    tot += max(abs(v[k] + cast[k] - sprite.buf[j + k]) for k in range(3))
+                    n += 1
+            if n >= 3 and tot / n > CHANGED:
+                grid[gy][gx] = 1
+    found = [r for r in _regions(grid, gw, gh) if r[0] >= 3]
+    if not found:
+        return None
+    n, x0, y0, x1, y1 = found[0]
+    grew = True
+    rest = found[1:]
+    while grew:
+        grew = False
+        for r in list(rest):
+            _n, a0, b0, a1, b1 = r
+            gap_x = max(0, a0 - x1 - 1, x0 - a1 - 1)
+            gap_y = max(0, b0 - y1 - 1, y0 - b1 - 1)
+            # the other eye is on the same row, some way across; a piece of the mouth is right beside it
+            near = (gap_y <= 2 and gap_x <= gw // 3) if kind == "blink" else (gap_x <= 3 and gap_y <= 3)
+            if near:
+                rest.remove(r)
+                x0, y0, x1, y1 = min(x0, a0), min(y0, b0), max(x1, a1), max(y1, b1)
+                grew = True
+    bx0 = max(0, X + x0 * BLOCK - BOX_PAD)
+    by0 = max(0, Y + y0 * BLOCK - BOX_PAD)
+    bx1 = min(sprite.w, X + (x1 + 1) * BLOCK + BOX_PAD)
+    by1 = min(sprite.h, Y + (y1 + 1) * BLOCK + BOX_PAD)
+    return (bx0, by0, bx1 - bx0, by1 - by0)
+
+
+def rim_matches(neutral, other, box):
+    """Does the rim of the eye box look the same on another face's sprite? (mean difference, share crossed)."""
+    x, y, w, h = box
+    tot, n, strong = 0.0, 0, 0
+    for yy in range(y, y + h):
+        for xx in range(x, x + w):
+            if not (xx - x < 3 or x + w - xx <= 3 or yy - y < 3 or y + h - yy <= 3):
+                continue
+            j = (yy * neutral.w + xx) * 4
+            if neutral.buf[j + 3] < 255 or other.buf[j + 3] < 255:
+                continue
+            d = sum(abs(neutral.buf[j + k] - other.buf[j + k]) for k in range(3)) / 3.0
+            tot += d; n += 1
+            if d > 48:
+                strong += 1
+    if not n:
+        return 999.0, 1.0
+    return tot / n, strong / float(n)
+
+
+def blink_also(who, neutral_file, box):
+    """The other faces a person's blink also sits on, measured on the sprites beside the neutral one."""
+    neutral = load(neutral_file)
+    folder = os.path.dirname(neutral_file)
+    out = []
+    for expr in EXPRESSIONS:
+        if expr == "neutral":
+            continue
+        p = os.path.join(folder, "%s_%s.png" % (who, expr))
+        if not os.path.exists(p):
+            continue
+        other = load(p)
+        if (other.w, other.h, other.ch) != (neutral.w, neutral.h, 4):
+            continue
+        mean, crossed = rim_matches(neutral, other, box)
+        ok = mean < RIM_MEAN and crossed <= RIM_STROKE
+        print("   %-10s the eye box's rim differs by %.1f on average, %.1f%% of it strongly: %s"
+              % (expr, mean, 100 * crossed, "the blink sits on it" if ok else "it keeps its own eyes"))
+        if ok:
+            out.append(expr)
+    return out
+
+
+def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None):
     images = images or IMAGES
     root = root or ROOT
     if kind not in KINDS:
         raise SystemExit("the kind is blink or talk, not %r" % kind)
-    face = faces().get(who)
-    if not face or KINDS[kind] not in face:
-        raise SystemExit("%s has no %s box in VIEW_FACE (game/view_stage.rpy): no %s for them"
+    measured = bool(sprite_file)
+    face = faces(root).get(who) or {}
+    if not measured and KINDS[kind] not in face:
+        raise SystemExit("%s has no %s box in VIEW_FACE (game/view_stage.rpy) or in faces.json: no %s for them"
                          % (who, KINDS[kind], kind))
-    box = face[KINDS[kind]]
+    box = None if measured else face[KINDS[kind]]
     rec = crop_record(images, who)
     if not os.path.exists(rec):
         raise SystemExit("no %s: run `python3 tools/install_face.py --prepare %s` first, and edit the "
@@ -184,60 +412,95 @@ def install(src, who, kind, images=None, root=None):
     if abs(raw.w - raw.h) > max(raw.w, raw.h) * 0.05:
         raise SystemExit("%s is %dx%d: the edit of a %s_fx_in.png close-up is square" % (src, raw.w, raw.h, who))
     ed = resample(raw, side, side)
-    sprite = load(sprite_path(who))
+    neutral_file = os.path.expanduser(sprite_file) if sprite_file else sprite_path(who, root)
+    if not os.path.exists(neutral_file):
+        raise SystemExit("no sprite at %s" % neutral_file)
+    sprite = load(neutral_file)
     if sprite.ch != 4:
-        raise SystemExit("%s has no alpha channel" % sprite_path(who))
+        raise SystemExit("%s has no alpha channel" % neutral_file)
+    if X + side > sprite.w or Y + side > sprite.h:
+        raise SystemExit("the close-up's square (%d, %d, %d) does not fit this sprite: run --prepare again with "
+                         "the same --sprite" % (X, Y, side))
     ref = on_green(crop(sprite, X, Y, X + side, Y + side))
-
-    # Points to line the two up on: around the box (not in it: that is what
-    # changed), where the sprite is solid, every third pixel.
-    bx, by, bw, bh = box[0] - X, box[1] - Y, box[2], box[3]
-    other = [b for k, b in face.items() if k != KINDS[kind]]
-    pad = max(30, bw // 2)
-    pts = []
-    for y in range(max(SHIFT + 2, by - pad), min(side - SHIFT - 2, by + bh + pad), 3):
-        for x in range(max(SHIFT + 2, bx - pad), min(side - SHIFT - 2, bx + bw + pad), 3):
-            if bx - 2 <= x < bx + bw + 2 and by - 2 <= y < by + bh + 2:
-                continue
-            if sprite.buf[((Y + y) * sprite.w + X + x) * 4 + 3] < 255:
-                continue
-            pts.append((x, y))
-    if len(pts) < 40:
-        raise SystemExit("too little of the sprite around the %s box to line the edit up on" % KINDS[kind])
     c = side / 2.0
 
-    def score(s, dx, dy):
-        tot = 0.0
-        for x, y in pts:
-            v = sample(ed, c + (x - c) / s - dx, c + (y - c) / s - dy)
-            i = (y * side + x) * 3
-            tot += abs(v[0] - ref.buf[i]) + abs(v[1] - ref.buf[i + 1]) + abs(v[2] - ref.buf[i + 2])
-        return tot / (3.0 * len(pts))
+    def points_round(b):
+        """Points to line the two up on: around the box (not in it: that is what changed), where the
+        sprite is solid, every third pixel. With no box yet, the whole head."""
+        pts = []
+        if b is None:
+            for y in range(SHIFT + 2, side - SHIFT - 2, 4):
+                for x in range(SHIFT + 2, side - SHIFT - 2, 4):
+                    if sprite.buf[((Y + y) * sprite.w + X + x) * 4 + 3] == 255:
+                        pts.append((x, y))
+            return pts
+        bx, by, bw, bh = b[0] - X, b[1] - Y, b[2], b[3]
+        pad = max(30, bw // 2)
+        for y in range(max(SHIFT + 2, by - pad), min(side - SHIFT - 2, by + bh + pad), 3):
+            for x in range(max(SHIFT + 2, bx - pad), min(side - SHIFT - 2, bx + bw + pad), 3):
+                if bx - 2 <= x < bx + bw + 2 and by - 2 <= y < by + bh + 2:
+                    continue
+                if sprite.buf[((Y + y) * sprite.w + X + x) * 4 + 3] < 255:
+                    continue
+                pts.append((x, y))
+        return pts
 
-    before = score(1.0, 0, 0)
-    best = (before, 1.0, 0, 0)
-    for s in SCALES:
-        for dy in range(-SHIFT, SHIFT + 1, 2):
-            for dx in range(-SHIFT, SHIFT + 1, 2):
+    def line_up(pts):
+        def score(s, dx, dy):
+            tot = 0.0
+            for x, y in pts:
+                v = sample(ed, c + (x - c) / s - dx, c + (y - c) / s - dy)
+                i = (y * side + x) * 3
+                tot += abs(v[0] - ref.buf[i]) + abs(v[1] - ref.buf[i + 1]) + abs(v[2] - ref.buf[i + 2])
+            return tot / (3.0 * len(pts))
+
+        before = score(1.0, 0, 0)
+        best = (before, 1.0, 0, 0)
+        for s in SCALES:
+            for dy in range(-SHIFT, SHIFT + 1, 2):
+                for dx in range(-SHIFT, SHIFT + 1, 2):
+                    e = score(s, dx, dy)
+                    if e < best[0]:
+                        best = (e, s, dx, dy)
+        _e, s, dx0, dy0 = best
+        for dy in (dy0 - 1, dy0, dy0 + 1):
+            for dx in (dx0 - 1, dx0, dx0 + 1):
                 e = score(s, dx, dy)
                 if e < best[0]:
                     best = (e, s, dx, dy)
-    _e, s, dx0, dy0 = best
-    for dy in (dy0 - 1, dy0, dy0 + 1):
-        for dx in (dx0 - 1, dx0, dx0 + 1):
-            e = score(s, dx, dy)
-            if e < best[0]:
-                best = (e, s, dx, dy)
-    err, s, dx, dy = best
+        return before, best
+
+    def cast_of(pts, s, dx, dy):
+        cast = [0.0, 0.0, 0.0]
+        for x, y in pts:
+            v = sample(ed, c + (x - c) / s - dx, c + (y - c) / s - dy)
+            i = (y * side + x) * 3
+            for k in range(3):
+                cast[k] += ref.buf[i + k] - v[k]
+        return [v / len(pts) for v in cast]
+
+    if measured:
+        pts = points_round(None)
+        if len(pts) < 40:
+            raise SystemExit("too little of the sprite in the close-up to line the edit up on")
+        _b, (_e, s, dx, dy) = line_up(pts)
+        box = measure_box(sprite, ed, X, Y, side, s, dx, dy, cast_of(pts, s, dx, dy), kind)
+        if box is None:
+            raise SystemExit("REFUSED: the edit does not differ from the sprite anywhere: there is no %s to measure "
+                             "(was the close-up edited?)" % KINDS[kind])
+        if box[2] * box[3] > side * side * 0.25:
+            raise SystemExit("REFUSED: the edit differs from the sprite over a quarter of the head (%dx%d px): it "
+                             "changed more than the %s, so its box cannot be measured. Run the edit again."
+                             % (box[2], box[3], KINDS[kind]))
+        print("measured  the %s box on this sprite: (%d, %d) %dx%d" % ((KINDS[kind],) + tuple(box)))
+    bx, by, bw, bh = box[0] - X, box[1] - Y, box[2], box[3]
+    pts = points_round(box)
+    if len(pts) < 40:
+        raise SystemExit("too little of the sprite around the %s box to line the edit up on" % KINDS[kind])
+    before, (err, s, dx, dy) = line_up(pts)
 
     # The colour cast, measured on the same points.
-    cast = [0.0, 0.0, 0.0]
-    for x, y in pts:
-        v = sample(ed, c + (x - c) / s - dx, c + (y - c) / s - dy)
-        i = (y * side + x) * 3
-        for k in range(3):
-            cast[k] += ref.buf[i + k] - v[k]
-    cast = [v / len(pts) for v in cast]
+    cast = cast_of(pts, s, dx, dy)
 
     out = Img(sprite.w, sprite.h, alpha=True)
     out.buf[:] = sprite.buf
@@ -255,7 +518,10 @@ def install(src, who, kind, images=None, root=None):
             out.buf[j:j + 3] = bytes(new)
     seam = seam / max(1, n_seam)
 
-    dest = os.path.join(root, "game", "images", "char", "fx", "fx_%s_%s.png" % (who, kind))
+    if stage:
+        dest = os.path.join(os.path.expanduser(stage), "fx", "fx_%s_%s.png" % (who, kind))
+    else:
+        dest = os.path.join(root, "game", "images", "char", "fx", "fx_%s_%s.png" % (who, kind))
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     out.save(dest)
     print("lined up  scale %.2f, shift (%+d, %+d); mismatch around the box %.1f -> %.1f" % (s, dx, dy, before, err))
@@ -270,7 +536,23 @@ def install(src, who, kind, images=None, root=None):
     prev = os.path.join(root, "shots", "art", "fx_%s_%s.png" % (who, kind))
     preview(sprite, out, X, Y, side, box, prev)
     print("preview -> %s" % prev)
-    print("installed -> %s" % dest)
+    print("%s -> %s" % ("staged" if stage else "installed", dest))
+    # faces.json: what the game reads in place of the tables in view_stage.rpy
+    fpath = faces_path(root, os.path.expanduser(stage) if stage else None)
+    also = None
+    if kind == "blink":
+        print("which other faces the blink sits on:")
+        also = blink_also(who, neutral_file, box)
+    write_faces(fpath, who, blink_also=also,
+                eyes=box if measured and kind == "blink" else None,
+                mouth=box if measured and kind == "talk" else None)
+    said = []
+    if also is not None:
+        said.append("blink_also %s" % json.dumps(also))
+    if measured:
+        said.append("%s %s" % (KINDS[kind], json.dumps([int(v) for v in box])))
+    if said:
+        print("faces.json -> %s (%s: %s)" % (fpath, who, "; ".join(said)))
     return dest
 
 
@@ -314,7 +596,7 @@ def preview(sprite, fx, X, Y, side, box, path, s=2):
 def sheet(root=None, s=3):
     """Every person's eye and mouth box on their neutral sprite."""
     root = root or ROOT
-    table = faces()
+    table = dict((who, f) for who, f in faces(root).items() if f)
     names = sorted(table)
     cw, chh = 240, 220
     cols = 4
@@ -322,7 +604,7 @@ def sheet(root=None, s=3):
     out = Img(cw * s * cols, chh * s * rows, fill=(40, 38, 50))
     for k, who in enumerate(names):
         face = table[who]
-        sprite = load(sprite_path(who))
+        sprite = load(sprite_path(who, root))
         boxes = list(face.values())
         cx = (min(b[0] for b in boxes) + max(b[0] + b[2] for b in boxes)) // 2
         cy = (min(b[1] for b in boxes) + max(b[1] + b[3] for b in boxes)) // 2
@@ -358,15 +640,15 @@ def main(argv):
             return v
         return None
 
-    root, images = opt("--root"), opt("--images")
+    root, images, sprite_file, stage = opt("--root"), opt("--images"), opt("--sprite"), opt("--stage")
     flags = [a for a in argv if a.startswith("--")]
     args = [a for a in argv if not a.startswith("--")]
     if flags == ["--sheet"] and not args:
         sheet(root)
     elif flags == ["--prepare"] and len(args) == 1:
-        prepare(args[0], images)
+        prepare(args[0], images, sprite_file, root)
     elif not flags and len(args) == 3:
-        install(args[0], args[1], args[2], images, root)
+        install(args[0], args[1], args[2], images, root, sprite_file, stage)
     else:
         print(__doc__); raise SystemExit(1)
 

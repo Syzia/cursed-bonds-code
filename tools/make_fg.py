@@ -24,28 +24,25 @@ Writes game/images/fg/fg_<place>.png or fg_<place>_<variant>.png (1920x1080,
 see-through outside the polygon, the edge softened over about a pixel) and a
 preview, shots/art/fg_<place>[_<variant>].png: the cut on a flat colour beside
 the picture with the cut tinted. Pure Python: raster.py and pngread.py.
+
+Which picture a place has is read from the game's layout dump
+(tools/game_layout.py), which refuses in one line when it is out of date; in
+a worktree pass --layout-dump <file> (docs/UI2_DESIGN.md 5.4). A foreground
+file is never deleted (K9): a save made in dialogue in that room holds its
+path. tools/install_redo.py recuts a room's foregrounds itself after every
+install of the room or of one of its hours.
 """
 import sys, os, json
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pngread import load
 from raster import Img
+import game_layout
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BG = os.path.join(ROOT, "game", "images", "bg")
 FG = os.path.join(ROOT, "tools", "fg")
 W, H = 1920, 1080
 SUB = 4                                   # sub-rows a pixel row, for a soft edge
-
-
-def place_bg(place):
-    """The background's file stem for a place, read from game/sb_world.rpy."""
-    import re
-    src = open(os.path.join(ROOT, "game", "sb_world.rpy"), encoding="utf-8").read()
-    m = re.search(r'"%s":\s*dict\(\s*indoor=\w+,\s*name="[^"]*",\s*bg="bg (\w+)"' % re.escape(place), src)
-    if not m:
-        raise SystemExit("no place %r in game/sb_world.rpy (LOCATIONS)" % place)
-    return m.group(1)
 
 
 def read_polygons(place, path=None):
@@ -108,9 +105,15 @@ def coverage(pts, w=W, h=H):
     return rows
 
 
-def cut(place, variant, pts, dry=False):
-    stem = place_bg(place) + ("_" + variant if variant else "")
-    src = os.path.join(BG, stem + ".png")
+def cut(place, variant, pts, dry=False, bg_stem=None, root=None, lay=None):
+    """Cut one foreground. bg_stem: the place's picture name, when the caller
+    already knows it (the installer does; otherwise it is read from the
+    dump). root: another tree to read the picture from and write under."""
+    root = root or ROOT
+    if bg_stem is None:
+        bg_stem = (lay or game_layout.load()).bg_stem(place)
+    stem = bg_stem + ("_" + variant if variant else "")
+    src = os.path.join(root, "game", "images", "bg", stem + ".png")
     if not os.path.exists(src):
         raise SystemExit("no picture at %s for the %s variant of %s" % (src, variant or "day", place))
     bg = load(src)
@@ -149,13 +152,13 @@ def cut(place, variant, pts, dry=False):
     if not kept:
         raise SystemExit("the %s polygon of %s covers nothing inside the frame" % (variant or "day", place))
     name = "fg_%s%s.png" % (place, "_" + variant if variant else "")
-    shots = os.path.join(ROOT, "shots", "art")
+    shots = os.path.join(root, "shots", "art")
     os.makedirs(shots, exist_ok=True)
     prev.save(os.path.join(shots, name))
     print("%-28s %5.1f%% of the frame, from %s.png" % (name, 100.0 * kept / (W * H), stem))
     print("   preview -> %s" % os.path.join(shots, name))
     if not dry:
-        dest = os.path.join(ROOT, "game", "images", "fg")
+        dest = os.path.join(root, "game", "images", "fg")
         os.makedirs(dest, exist_ok=True)
         out.save(os.path.join(dest, name))
         print("   installed -> game/images/fg/%s" % name)
@@ -163,6 +166,7 @@ def cut(place, variant, pts, dry=False):
 
 
 def main(argv):
+    lay = game_layout.load(game_layout.pop_dump_arg(argv))
     dry = "--dry" in argv
     everything = "--all" in argv
     args = [a for a in argv if not a.startswith("--")]
@@ -180,7 +184,7 @@ def main(argv):
                              % (place, want, ", ".join(repr(k) for k in sorted(polys))))
         for variant in sorted(polys):
             if want is None or variant == want:
-                cut(place, variant, polys[variant], dry=dry)
+                cut(place, variant, polys[variant], dry=dry, lay=lay)
 
 
 if __name__ == "__main__":
