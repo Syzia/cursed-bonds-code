@@ -392,7 +392,8 @@ def run_inplace(o):
             raise SystemExit("no render at %s" % path)
         letter = version_of(path, k)
         if letter in results:
-            letter = "ab"[k]
+            # two renders whose names carry the same letter: the second takes the letter still free
+            letter = next((l for l in "abcdefgh" if l not in results), "r%d" % (k + 1))
         try:
             new, note = rm.load(path)
             got = rm.judge(old, new, points, keep, kl.get("empty", []), kl.get("allow", []), kl.get("change", []),

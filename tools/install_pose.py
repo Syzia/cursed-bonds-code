@@ -475,7 +475,7 @@ def install(src, name=None, box=None, bg_path=None, root=None, dry=False, dump_p
         raise SystemExit("REFUSED: no pose is ever installed at the Bathhouse, the Sauna or the Pool (K16)")
     lay = manifest = rows = None
     if no_game:
-        if root == ROOT or bg_path is None:
+        if os.path.realpath(root) == os.path.realpath(ROOT) or bg_path is None:
             raise SystemExit("--no-game is for a test room: it needs --root <another folder> and --bg <its picture>")
     else:
         import check_campus

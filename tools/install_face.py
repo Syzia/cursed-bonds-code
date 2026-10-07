@@ -51,6 +51,10 @@ blink and mouth go in only with the whole set: --sprite naming any sprite but
 the game's own needs --stage (D57). It prints how well
 the box's rim meets the sprite, and writes a preview, shots/art/fx_<who>_<kind>.png
 (the neutral head, the new one, and the two alternating boxes marked).
+A blink also writes shots/art/fx_<who>_blink_faces.png: every other face of
+the person with the blink laid on it, framed blue when the face takes the
+blink (it is in blink_also) and red when it keeps its own eyes. The row turns
+on a few pixels of the eye box, so look at that picture before install_set.py.
 
 WHAT IT WRITES INTO game/layout/faces.json (the only tool that writes it;
 3.2, D57), keeping every other person's rows:
@@ -498,8 +502,9 @@ def rim_matches(neutral, other, box):
     return tot / n, strong / float(n)
 
 
-def blink_also(who, neutral_file, box):
-    """The other faces a person's blink also sits on, measured on the sprites beside the neutral one."""
+def blink_also(who, neutral_file, box, seen=None):
+    """The other faces a person's blink also sits on, measured on the sprites beside the neutral one.
+    seen: a list that is given (the face, its sprite, whether it takes the blink) for every face measured."""
     neutral = load(neutral_file)
     folder = os.path.dirname(neutral_file)
     out = []
@@ -516,6 +521,8 @@ def blink_also(who, neutral_file, box):
         ok = mean < RIM_MEAN and crossed <= RIM_STROKE
         print("   %-10s the eye box's rim differs by %.1f on average, %.1f%% of it strongly: %s"
               % (expr, mean, 100 * crossed, "the blink sits on it" if ok else "it keeps its own eyes"))
+        if seen is not None:
+            seen.append((expr, other, ok))
         if ok:
             out.append(expr)
     return out
@@ -743,7 +750,19 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
     also = None
     if kind == "blink":
         print("which other faces the blink sits on:")
-        also = blink_also(who, neutral_file, box)
+        seen = []
+        also = blink_also(who, neutral_file, box, seen)
+        if seen:
+            # The row turns on a few pixels of the measured box, so every face is shown with the blink laid on
+            # it: the owner looks at the row before install_set.py takes it.
+            faces_prev = os.path.join(root, "shots", "art", "fx_%s_blink_faces.png" % who)
+            preview_faces(seen, out, X, Y, side, box, faces_prev)
+            print("faces preview -> %s" % faces_prev)
+            print("   left to right, the blink laid on: %s" % ", ".join(
+                "%s (%s)" % (e, "takes the blink" if ok else "keeps its own eyes") for e, _o, ok in seen))
+            print("   blue frame: takes the blink   red frame: keeps its own eyes (shown as it would look if it "
+                  "took it). Look at it before tools/install_set.py: a face whose blink looks wrong should not be "
+                  "in the row.")
     write_faces(fpath, who, blink_also=also,
                 eyes=box if measured and kind == "blink" else None,
                 mouth=box if measured and kind == "talk" else None)
@@ -792,6 +811,29 @@ def preview(sprite, fx, X, Y, side, box, path, s=2):
         frame(sheet, ox + (box[0] - X) * s - 2, (box[1] - Y) * s - 2, box[2] * s + 4, box[3] * s + 4, (255, 209, 102))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     sheet.save(path)
+
+
+def preview_faces(seen, fx, X, Y, side, box, path, s=2):
+    """One cell for each other face: the close-up square of that face's sprite with the eye box of the blink
+    picture laid on it. A blue frame takes the blink (blink_also), a red one keeps its own eyes."""
+    cw = side * s
+    out = Img((cw + 8) * len(seen) - 8, cw, fill=(20, 18, 28))
+    x, y, w, h = box
+    for k, (_expr, other, takes) in enumerate(seen):
+        laid = Img(other.w, other.h, alpha=True)
+        laid.buf[:] = other.buf
+        for yy in range(y, y + h):
+            j = (yy * other.w + x) * 4
+            laid.buf[j:j + w * 4] = fx.buf[j:j + w * 4]
+        cell = big(on_green(crop(laid, X, Y, X + side, Y + side)), s)
+        ox = k * (cw + 8)
+        for yy in range(cell.h):
+            o = (yy * out.w + ox) * 3
+            out.buf[o:o + cell.w * 3] = cell.buf[yy * cell.w * 3:(yy + 1) * cell.w * 3]
+        frame(out, ox, 0, cw, cw, (90, 220, 230) if takes else (220, 70, 70), 6)
+        frame(out, ox + (x - X) * s - 2, (y - Y) * s - 2, w * s + 4, h * s + 4, (255, 209, 102))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    out.save(path)
 
 
 def sheet(root=None, s=3):

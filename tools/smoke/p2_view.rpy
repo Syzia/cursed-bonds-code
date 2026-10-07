@@ -664,8 +664,8 @@ label zz_smoke:
             _zz_hot_before = open(_zz_hot, "rb").read()
             _zz_rc, _zz_log = zzv_run(["-c", ZZV_POSE_PY, os.path.join(_zz_root, "tools"), _zz_dir])
             check(_zz_rc == 0 and os.path.isfile(os.path.join(_zz_dir, "room.png")), "fixture: the test pictures are drawn", _zz_log)
-            _zz_side = os.path.join(_zz_out, "game", "layout", "view_zzroom.json")
-            _zz_base = [_zz_tool, "--bg", os.path.join(_zz_dir, "room.png"), "--root", _zz_out]
+            _zz_side = os.path.join(_zz_out, "game", "layout", "pose_zzroom.json")
+            _zz_base = [_zz_tool, "--no-game", "--bg", os.path.join(_zz_dir, "room.png"), "--root", _zz_out]
 
             _zz_rc, _zz_log = zzv_run(_zz_base + [os.path.join(_zz_dir, "pose_zzroom__nobara_a_00001_.png")])
             check(_zz_rc != 0 and "REFUSED" in _zz_log and "40.0%" in _zz_log and not os.path.exists(_zz_side)
@@ -677,7 +677,7 @@ label zz_smoke:
             check(_zz_rc == 0 and _zz_sc.get("poses", {}).get("yuji") == [576, 276, 528, 480]
                   and os.path.isfile(os.path.join(_zz_out, "game", "images", "place", "pose_zzroom__yuji.png"))
                   and os.path.isfile(os.path.join(_zz_out, "shots", "art", "pose_zzroom__yuji.png")),
-                  "and accepts one with 10%, writing the box (the patch grown by 24 px) to view_<place>.json, the preview "
+                  "and accepts one with 10%, writing the box (the patch grown by 24 px) to pose_<place>.json, the preview "
                   "and the picture", (_zz_log, _zz_sc))
 
             _zz_rc, _zz_log = zzv_run(_zz_base + [os.path.join(_zz_dir, "pose_zzroom__megumi__evening_a_00001_.png")])
@@ -691,7 +691,7 @@ label zz_smoke:
             _zz_sc = zzv_json.load(open(_zz_side)) if os.path.exists(_zz_side) else {}
             check(_zz_rc == 0 and _zz_sc.get("poses", {}).get("yuji") == [400, 300, 500, 700],
                   "--box 400,300,500,700 writes that box", (_zz_log, _zz_sc))
-            _zz_rc, _zz_log = zzv_run([_zz_tool, "--bg", os.path.join(_zz_dir, "room2.png"), "--root", _zz_out,
+            _zz_rc, _zz_log = zzv_run([_zz_tool, "--no-game", "--bg", os.path.join(_zz_dir, "room2.png"), "--root", _zz_out,
                                        os.path.join(_zz_dir, "pose_zzroom__maki_a_00001_.png")])
             _zz_sc = zzv_json.load(open(_zz_side)) if os.path.exists(_zz_side) else {}
             check(_zz_rc == 0 and "10.1%" in _zz_log and _zz_sc.get("poses", {}).get("maki") == [576, 280, 528, 484],
@@ -702,7 +702,7 @@ label zz_smoke:
             check(_zz_rc == 0 and _zz_sc.get("poses", {}).get("panda") == [576, 276, 528, 528],
                   "P8: feet 8 px below the body are in the box; a far speck is not", (_zz_log, _zz_sc))
             check(open(_zz_hot, "rb").read() == _zz_hot_before and sorted(os.listdir(os.path.join(_zz_out, "game", "layout")))
-                  == ["hot_zzroom.json", "view_zzroom.json"],
+                  == ["hot_zzroom.json", "pose_zzroom.json"],
                   "an existing hot_<place>.json beside it is byte-identical afterwards")
             check(builtins.set(_zz_sc) == {"poses"}, "the sidecar holds only what layout_sheet.py allows (slots, poses)", sorted(_zz_sc))
 

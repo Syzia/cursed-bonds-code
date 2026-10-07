@@ -9,7 +9,7 @@ not `dorm`). `docs/UI2_DESIGN.md` 5.4 has the rules. They are data for
 | key | what it is | what the installer does with it |
 |---|---|---|
 | `keep` | things that must still be there: `{"name", "box": [x, y, w, h]}` | "nothing vanished": below the threshold the picture is REFUSED and the thing is named |
-| `empty` | places that must not gain anything: a `box`, or a `poly` of `[x, y]` points | "nothing was added": above the threshold the picture is REFUSED and the place is named; a place wider or taller than 250 px (a floor) is also judged in overlapping 160 px parts, so one thing set down on it is found |
+| `empty` | places that must not gain anything: a `box`, or a `poly` of `[x, y]` points | "nothing was added": above the threshold the picture is REFUSED and the place is named; a place wider or taller than 250 px (a floor) is also judged in overlapping 160 px parts, so one thing set down on it is found. A floor polygon does not cover a rug, a table top or a bed cover: each open surface a thing could be set down on needs a row of its own (the Common Room's rug has one) |
 | `allow` | the room's one named addition, or a window that is meant to change | an `empty` zone or tile inside it is not judged |
 | `change` | a box meant to change inside a fixed outline (5.2's fallback only) | left out of "vanished" and "added"; its outline must still agree within 3 px |
 | `doors` | the room's painted doors: `{"name", "box"}` | kept like a `keep` row ("nothing vanished": a door painted out is REFUSED and named); also read by `tools/check_layout.py` (an indoor exit sits on a door or in the bottom band) |

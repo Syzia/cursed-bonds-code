@@ -105,7 +105,10 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   `make_edit_workflow.py <who> --only blink,talk` (Gojo and Yaga: `--only
   talk`) writes `<who>_fx.json` and prints the cost ($0.16 a picture);
   `install_face.py <render.png> <who> blink|talk` lines the answer up and
-  writes `game/images/char/fx/fx_<who>_<kind>.png`. `--sheet` draws every eye
+  writes `game/images/char/fx/fx_<who>_<kind>.png`; a blink also writes
+  `shots/art/fx_<who>_blink_faces.png`, every other face with the blink laid
+  on it (blue frame: takes the blink; red: keeps its own eyes), to be looked
+  at before `install_set.py`. `--sheet` draws every eye
   and mouth box (`VIEW_FACE` in `game/view_stage.rpy`) on its sprite.
 - **Foregrounds.** `make_fg.py <place> [variant]` (`--all`, `--dry`) cuts
   `game/images/fg/fg_<place>[_<variant>].png` out of the room's own picture,

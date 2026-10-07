@@ -187,6 +187,12 @@ elif cmd == "sign":    # a thing drawn on a wall or a window: a yellow board wit
     out = look(a); x, y, w, h = box; d = ImageDraw.Draw(out)
     d.rectangle([x, y, x + w, y + h], fill=(240, 205, 40), outline=(10, 10, 10), width=5)
     d.line([x + 12, y + h // 2, x + w - 12, y + h // 2], fill=(10, 10, 10), width=5)
+elif cmd in ("cup", "plaincup"):   # a red-and-white cup with a dark rim, set down (its box in 1920-wide numbers)
+    out = look(a) if cmd == "cup" else a.copy(); k = W / 1920.0
+    x, y, w, h = [int(v * k) for v in box]; d = ImageDraw.Draw(out); t = max(2, int(3 * k))
+    d.rectangle([x, y, x + w, y + h], fill=(236, 232, 226), outline=(30, 24, 24), width=t)
+    d.rectangle([x + t, y + h // 3, x + w - t, y + 2 * h // 3], fill=(200, 40, 44))
+    d.ellipse([x + t, y - 2 * t, x + w - t, y + 3 * t], fill=(60, 40, 36), outline=(30, 24, 24))
 elif cmd == "copy":
     out = a
 out.save(dst)
@@ -321,6 +327,16 @@ def group_redo(lab):
         ok("%s set down on the bare floor is REFUSED: \"something new is on the floor\", and the part of the floor is named" % what,
            v[0] == "REFUSED" and rc == 1 and re.search(r"something new is on the floor \((at its left end|in its middle|at its right end), from x \d+ to \d+\)", v[1]) is not None
            and "gone" not in v[1], out)
+    # the rug in front of the low table is no part of the floor polygon: it has an empty row of its own
+    rc, out, v = one(lab.syn("cup", room, "syn_rugcup_a_00001_.png", "932,865,56,70"))
+    ok("a cup set down on the rug in front of the low table is REFUSED: \"something new is on the rug in front of the low table\"",
+       v[0] == "REFUSED" and rc == 1 and "something new is on the rug in front of the low table" in v[1] and "gone" not in v[1], out)
+    # two renders whose names carry the same letter (the same seed file run twice) keep a verdict each
+    rc, out = run(redo + [good, lab.syn("slide", room, "syn_twice_a_00002_.png", "60,200,130,700", "30"), "--dry"] + tail, py=True)
+    v2 = verdicts(out)
+    ok("two renders named with the same letter are versions a and b, each with its own verdict; the good one can still be chosen",
+       rc == 0 and v2.get("a", ("",))[0] == "PASS" and v2.get("b", ("",))[0] == "REFUSED"
+       and len(re.findall(r"(?m)^version ", out)) == 2, out)
     # step 6: what else changed is shown, not refused
     rc, out, v = one(lab.syn("sign", room, "syn_sign_a_00001_.png", "900,330,140,140"))
     ok("a board painted over the window (outside every keep box and empty place) is a LOOK, and its place is told",
@@ -794,6 +810,10 @@ def group_pose(lab):
     rc, out = run([tool("install_pose.py"), "--no-game", "--bg", os.path.join(fix, "room.png"),
                    os.path.join(fix, "pose_zzroom__yuji_b_00002_.png")])
     ok("--no-game cannot write into the game itself: it needs --root", rc != 0 and "needs --root" in out, out)
+    rc, out = run([tool("install_pose.py"), "--no-game", "--root", REPO + os.sep, "--bg", os.path.join(fix, "room.png"),
+                   os.path.join(fix, "pose_zzroom__yuji_b_00002_.png")])
+    ok("nor when --root names the game's own folder another way (a trailing slash): the folders are compared, not their names",
+       rc != 0 and "needs --root" in out and not os.path.exists(os.path.join(REPO, "game", "layout", "pose_zzroom.json")), out)
 
 
 # an editor's nudge, by hand: the picture enlarged about its middle and slid (pure Python, as install_face.py is)
@@ -858,6 +878,11 @@ def group_face(lab):
        rc == 0 and near(eyes, [316 - 8, 290 - 8, 98 + 16, 30 + 16]) and isinstance(rows.get("blink_also", {}).get("megumi"), list), out)
     ok("and the mouth box (measured %s; the patch was 350,342 40x20)" % mouth,
        rc2 == 0 and near(mouth, [350 - 8, 342 - 8, 40 + 16, 20 + 16]), out2)
+    faces_prev = os.path.join(work, "root", "shots", "art", "fx_megumi_blink_faces.png")
+    ok("a blink also writes a preview of every other face with the blink laid on it, and says which take it and "
+       "which keep their own eyes, so the row is looked at before install_set.py",
+       rc == 0 and os.path.exists(faces_prev) and "faces preview -> " in out
+       and len(re.findall(r"\((?:takes the blink|keeps its own eyes)\)", out)) == 5, out)
     ok("the two overlay pictures are staged, not installed: nothing under game/ changed",
        os.path.exists(os.path.join(stage, "fx", "fx_megumi_blink.png")) and os.path.exists(os.path.join(stage, "fx", "fx_megumi_talk.png"))
        and game_status() == before)
@@ -1182,6 +1207,11 @@ def group_real(lab, write=False):
             v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
             ok("REAL: the third test's Common Room with %s set down on the bare floor is REFUSED: something new is on the floor" % what,
                v[0] == "REFUSED" and "something new is on the floor (" in v[1], out)
+        cup = lab.syn("plaincup", os.path.join(OUTPUT, "look3_dorm_common_keep_00001_.png"), "real_rugcup_a_00001_.png", "932,865,56,70")
+        rc, out = run([tool("install_redo.py"), "dorm_common", cup] + tail, py=True)
+        v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+        ok("REAL: the third test's Common Room with a cup set down on the rug in front of the low table is REFUSED: "
+           "something new is on the rug", v[0] == "REFUSED" and "something new is on the rug in front of the low table" in v[1], out)
         # the proof that sharpness is against revision 1, on the real render
         root3 = mkroot(os.path.join(lab.work, "r_real_rev1"))
         keep_r = os.path.join(OUTPUT, "look3_dorm_common_keep_00001_.png")

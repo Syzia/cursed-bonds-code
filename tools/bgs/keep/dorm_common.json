@@ -22,6 +22,7 @@
   {"name": "the sofa seat", "box": [570, 718, 160, 52]},
   {"name": "the low table's top, left of the bowl", "box": [772, 722, 128, 24]},
   {"name": "the floor under the low table", "box": [835, 792, 245, 36]},
+  {"name": "the rug in front of the low table", "box": [575, 835, 560, 112]},
   {"name": "the floor", "poly": [[200, 992], [540, 952], [1630, 952], [1790, 1000], [1790, 1075], [200, 1075]]}
  ],
  "allow": [],
