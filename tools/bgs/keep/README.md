@@ -12,7 +12,7 @@ not `dorm`). `docs/UI2_DESIGN.md` 5.4 has the rules. They are data for
 | `empty` | places that must not gain anything: a `box`, or a `poly` of `[x, y]` points | "nothing was added": above the threshold the picture is REFUSED and the place is named |
 | `allow` | the room's one named addition, or a window that is meant to change | an `empty` zone or tile inside it is not judged |
 | `change` | a box meant to change inside a fixed outline (5.2's fallback only) | left out of "vanished" and "added"; its outline must still agree within 3 px |
-| `doors` | the room's painted doors | read by `tools/check_layout.py` (an indoor exit sits on a door or in the bottom band) |
+| `doors` | the room's painted doors: `{"name", "box"}` | kept like a `keep` row ("nothing vanished": a door painted out is REFUSED and named); also read by `tools/check_layout.py` (an indoor exit sits on a door or in the bottom band) |
 | `scale` | `[x, y top, y bottom]` of one door or post, taken as 200 cm | the height in a pose's prompt, until the room's `view_` file has its own |
 
 All numbers are on the 1920x1080 picture. Besides these rows the installer

@@ -17,11 +17,19 @@ enlarged 2% by hand read as moved everywhere):
               24 px any way) and the offset where they agree best is the
               shift. "Agreement" is their correlation, 1.0 for the same
               drawing and about 0 for unrelated ones.
+  A POINT     a registered point (an exit, a hotspot, feet, a foreground's
+              outline) is held twice: its window may not have shifted, and
+              when no shift is found the window must still be the same
+              drawing: it agrees at some offset at all, and within 3 px of
+              where it was it agrees at least GONE_REL of what the
+              picture's 24 tiles do. A door slid further than the search,
+              or painted out, fails the second.
   VANISHED    inside a keep box: the agreement of the two edge maps (the
               best within 3 px) against the agreement of the picture's 24
               tiles (a heavy redraw lowers both; an object taken away lowers
               only its own box), and how much of the old edge is still
-              there. An object taken away leaves the wall behind it.
+              there. An object taken away leaves the wall behind it. One
+              that agrees well a little way off is named as moved instead.
   ADDED       inside an empty zone: the amount of fine edge (1 px blur),
               against how much the picture as a whole gained. A jacket, a
               cup or a scatter of leaves is fine edge where there was none.
@@ -297,8 +305,23 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
         refused.append("this is a different picture: nothing in it lines up with the one in the game")
     elif max(abs(dx), abs(dy)) > SHIFT_WHOLE and peak - zero >= 0.02:
         refused.append("the whole picture moved %s" % _way(dx, dy))
+    # the 24 tiles are measured first: their middle agreement is what a registered point is held against
+    tile_moved, tile_diff, tile_agree = [], [], []
+    for name, box in tiles():
+        if any(inside(box, c) for c in change_boxes):
+            continue
+        got = moved(eo, en, box)
+        if got["state"] != "flat":
+            tile_agree.append(got["agree"])
+        if got["state"] == "moved":
+            tile_moved.append((name, box, got))
+        elif got["state"] == "different":
+            tile_diff.append((name, box))
+    middle = max(float(np.median(tile_agree)) if tile_agree else 1.0, REL_FLOOR)
+    g_rel, g_edge = (RELIGHT_GONE_REL, RELIGHT_GONE_EDGE) if relight else (GONE_REL, GONE_EDGE)
     worst = (0, None)
     n_checked = 0
+    lost = []
     for p in points:
         box = window(p["at"])
         if any(c[0] <= p["at"][0] < c[2] and c[1] <= p["at"][1] < c[3] for c in change_boxes):
@@ -311,24 +334,29 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
         if got["state"] == "moved":
             refused.append("%s moved %s" % (p["name"], _way(got["dx"], got["dy"])))
             marks["moved"].append(box)
-        elif got["state"] == "same" and d > worst[0] and d <= SHIFT_POINT:
+            continue
+        # Not found moved within the search: is the drawing under the point still the one in the game? A door
+        # slid further than the search, or painted out, agrees with nothing ("different"), or agrees where it
+        # was far less than the picture's own tiles do (the measure "nothing vanished" uses).
+        here = shift(eo[box[1]:box[3], box[0]:box[2]], en[box[1]:box[3], box[0]:box[2]], search=SHIFT_POINT)[2]
+        allowed = any(a and a[0] <= p["at"][0] < a[2] and a[1] <= p["at"][1] < a[3] for a in allow_boxes)
+        if not allowed and (got["state"] == "different" or here / middle < g_rel):
+            lost.append(p["name"])
+            marks["gone"].append(box)
+        elif d > worst[0] and d <= SHIFT_POINT:
             worst = (d, p["name"])
+    lost = list(dict.fromkeys(lost))
+    if lost:
+        tail = "no longer lines up with the picture in the game (moved further than %d px, or gone)" % SEARCH
+        if len(lost) <= 3:
+            refused += ["%s %s" % (name, tail) for name in lost]
+        else:
+            refused.append("%d of the registered spots no longer line up with the picture in the game (moved further "
+                           "than %d px, or gone): %s, and %d more" % (len(lost), SEARCH, "; ".join(lost[:3]), len(lost) - 3))
     lines.append(("moved", "the whole picture %d, %d px; %d point%s checked%s"
                   % (dx, dy, n_checked, "" if n_checked == 1 else "s",
                      ", the furthest off %d px (%s)" % worst if worst[1] else ", none off by a pixel")))
-    tile_moved, tile_diff, tile_agree = [], [], []
-    for name, box in tiles():
-        if any(inside(box, c) for c in change_boxes):
-            continue
-        got = moved(eo, en, box)
-        if got["state"] != "flat":
-            tile_agree.append(got["agree"])
-        if got["state"] == "moved":
-            tile_moved.append((name, box, got))
-        elif got["state"] == "different":
-            tile_diff.append((name, box))
     fig["tiles_moved"] = len(tile_moved); fig["tiles_different"] = len(tile_diff)
-    middle = max(float(np.median(tile_agree)) if tile_agree else 1.0, REL_FLOOR)
     fig["tiles_agree"] = round(middle, 3)
     if len(tile_diff) >= MOVED_TILES * 24 and not any("different picture" in r for r in refused):
         refused.append("this is not the same picture: %d of its 24 parts are drawn differently" % len(tile_diff))
@@ -367,7 +395,6 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
     fig["gain"] = round(gain, 3)
     weakest = None
     n_keep = 0
-    g_rel, g_edge = (RELIGHT_GONE_REL, RELIGHT_GONE_EDGE) if relight else (GONE_REL, GONE_EDGE)
     for z in keep:
         box = box_of(z)
         if any(overlaps(box, c) for c in change_boxes) or box[2] - box[0] < 8 or box[3] - box[1] < 8:
@@ -379,8 +406,14 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
         a, s = got
         rel = a / middle
         if (rel < g_rel and s < g_edge) if relight else (rel < g_rel or s < g_edge):
-            refused.append("%s %s gone" % (z["name"], "are" if not z.get("auto") and _plural(z["name"]) else "is"))
-            marks["gone"].append(box)
+            # a thing slid inside its box agrees badly where it was and well a little way off: say "moved"
+            far = moved(eo, en, box_of(z, pad=SEARCH))
+            if far["state"] == "moved":
+                refused.append("%s moved %s" % (z["name"], _way(far["dx"], far["dy"])))
+                marks["moved"].append(box)
+            else:
+                refused.append("%s %s gone" % (z["name"], "are" if not z.get("auto") and _plural(z["name"]) else "is"))
+                marks["gone"].append(box)
         if weakest is None or rel < weakest[0]:
             weakest = (round(rel, 3), s, z["name"])
     fig["keep_weakest"] = list(weakest[:2]) if weakest else None

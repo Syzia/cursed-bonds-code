@@ -171,9 +171,10 @@ elif cmd == "nightshift":
     n = np.asarray(a).astype(float) * np.array([0.42, 0.50, 0.78]) + np.array([4, 8, 26])
     n = Image.fromarray(np.clip(n, 0, 255).astype("uint8"), "RGB")
     out = Image.new("RGB", (W, H)); out.paste(n, (9, 0)); out.paste(n.crop((0, 0, 9, H)), (0, 0))
-elif cmd == "slide":   # a box and what is round it, moved 10 px right
+elif cmd == "slide":   # a box and what is round it, moved 10 px right (or by the number given)
     out = look(a); x, y, w, h = box
-    out.paste(look(a).crop((x - 34, y - 24, x + w + 14, y + h + 24)), (x - 24, y - 24))
+    d = int(args[1]) if len(args) > 1 else 10
+    out.paste(look(a).crop((x - 24 - d, y - 24, x + w + 24 - d, y + h + 24)), (x - 24, y - 24))
 elif cmd == "patch":   # a pose render: a flat person-sized patch on the room
     out = a.copy(); x, y, w, h = box
     col = tuple(int(v) for v in args[1].split(",")) if len(args) > 1 else (230, 40, 60)
@@ -300,6 +301,32 @@ def group_redo(lab):
     rc, out, v = one(made["added"])
     ok("a thing drawn in is REFUSED and its place named: \"something new is on the sofa seat\"",
        v[0] == "REFUSED" and "something new is on the sofa seat" in v[1], out)
+
+    # the door an exit sits on (5.4 step 2: "the door my room's exit sits on moved"). The Common Room's way to
+    # the garden is at (84, 540), on the sliding door at the left.
+    spot = "the spot the way to Dormitory Garden sits on"
+    door = "the sliding glass door on the left"
+    rc, out, v = one(lab.syn("slide", room, "syn_door12_a_00001_.png", "60,200,130,700", "12"))
+    ok("the door an exit sits on, slid 12 px, is REFUSED and the tool says by how much",
+       v[0] == "REFUSED" and rc == 1 and re.search(r"%s moved 1[0-4] px right" % spot, v[1]) is not None, out)
+    rc, out, v = one(lab.syn("slide", room, "syn_door30_a_00001_.png", "60,200,130,700", "30"))
+    ok("slid 30 px, further than a shift is looked for, it is still REFUSED: the spot no longer lines up",
+       v[0] == "REFUSED" and rc == 1 and "%s no longer lines up with the picture in the game" % spot in v[1], out)
+    rc, out, v = one(lab.syn("erase", room, "syn_doorgone_a_00001_.png", "10,150,170,800"))
+    ok("and painted out, it is REFUSED: the spot no longer lines up, and the door is named as gone",
+       v[0] == "REFUSED" and rc == 1 and "%s no longer lines up" % spot in v[1] and re.search(r"%s[^|]* is gone" % door, v[1]) is not None, out)
+    nodoors = os.path.join(lab.work, "keep_nodoors")
+    os.makedirs(nodoors, exist_ok=True)
+    kl = json.load(open(os.path.join(TOOLS, "bgs", "keep", "dorm_common.json")))
+    kl.pop("doors")
+    json.dump(kl, open(os.path.join(nodoors, "dorm_common.json"), "w"))
+    rc, out, v = one(os.path.join(lab.work, "syn_doorgone_a_00001_.png"), ["--keep", nodoors])
+    ok("with no `doors` row in the keep list the painted-out door is still REFUSED, by the spot alone",
+       v[0] == "REFUSED" and "%s no longer lines up" % spot in v[1] and "is gone" not in v[1], out)
+    rc, out, v = one(lab.syn("slide", room, "syn_tv12_a_00001_.png", "1497,380,190,322", "12"))
+    ok("a kept thing slid 12 px inside its box is reported as moved, not as gone",
+       v[0] == "REFUSED" and re.search(r"the television moved 1[0-4] px right", v[1]) is not None
+       and "the television is gone" not in v[1], out)
 
     # a `change` box: left out of steps 3 and 4; its outline must not move
     keep = os.path.join(lab.work, "keep_change")
@@ -741,6 +768,26 @@ def group_pose(lab):
     ok("--no-game cannot write into the game itself: it needs --root", rc != 0 and "needs --root" in out, out)
 
 
+# an editor's nudge, by hand: the picture enlarged about its middle and slid (pure Python, as install_face.py is)
+NUDGE = r'''
+import sys
+sys.path.insert(0, sys.argv[1])
+from pngread import load
+from raster import Img
+from install_face import sample, rgb
+im = rgb(load(sys.argv[2])); zoom, dx, dy = [float(v) for v in sys.argv[4:7]]
+c = im.w / 2.0
+out = Img(im.w, im.h); o = out.buf
+for y in range(im.h):
+    fy = c + (y - c - dy) / zoom
+    for x in range(im.w):
+        v = sample(im, c + (x - c - dx) / zoom, fy)
+        i = (y * im.w + x) * 3
+        o[i] = int(v[0] + 0.5); o[i + 1] = int(v[1] + 0.5); o[i + 2] = int(v[2] + 0.5)
+out.save(sys.argv[3])
+'''
+
+
 def group_face(lab):
     """install_face.py: the close-up from a staged sprite, the measured boxes, faces.json."""
     work = os.path.join(lab.work, "face")
@@ -780,12 +827,65 @@ def group_face(lab):
 
     ok("install_face.py measures the eye box on the sprite it is given and writes it to faces.json beside the blink "
        "row (measured %s; the patch was 316,290 98x30)" % eyes,
-       rc == 0 and near(eyes, [316 - 6, 290 - 6, 98 + 12, 30 + 12]) and isinstance(rows.get("blink_also", {}).get("megumi"), list), out)
+       rc == 0 and near(eyes, [316 - 8, 290 - 8, 98 + 16, 30 + 16]) and isinstance(rows.get("blink_also", {}).get("megumi"), list), out)
     ok("and the mouth box (measured %s; the patch was 350,342 40x20)" % mouth,
-       rc2 == 0 and near(mouth, [350 - 6, 342 - 6, 40 + 12, 20 + 12]), out2)
+       rc2 == 0 and near(mouth, [350 - 8, 342 - 8, 40 + 16, 20 + 16]), out2)
     ok("the two overlay pictures are staged, not installed: nothing under game/ changed",
        os.path.exists(os.path.join(stage, "fx", "fx_megumi_blink.png")) and os.path.exists(os.path.join(stage, "fx", "fx_megumi_talk.png"))
        and game_status() == before)
+    # an editor's picture rarely comes back on the pixel: nudged inside the range the tool searches, the boxes
+    # must be the ones measured without the nudge
+    for label, zoom, dx, dy in (("enlarged 2%", 1.02, 0, 0), ("enlarged 1% and slid 3 px", 1.01, 3, -2),
+                                ("slid 4 px (of the 1024 the editor works at)", 1.0, 4, 0)):
+        got = {}
+        said = ""
+        for kind in ("blink", "talk"):
+            nudged = os.path.join(work, "megumi_%s_nudged.png" % kind)
+            st = os.path.join(work, "stage_n_%s" % re.sub(r"\W+", "_", label))
+            run(["-c", NUDGE, TOOLS, edits[kind], nudged, zoom, dx, dy])
+            rc, out = run([tool("install_face.py"), nudged, "megumi", kind, "--sprite", sprite, "--images", images,
+                           "--stage", st, "--root", os.path.join(work, "root")])
+            said += out
+            rows_n = json.load(open(os.path.join(st, "faces.json"))) if os.path.exists(os.path.join(st, "faces.json")) else {}
+            got[kind] = rows_n.get("eyes" if kind == "blink" else "mouth", {}).get("megumi")
+        ok("the same two edits %s give the same boxes within 10 px (eyes %s, mouth %s)" % (label, got["blink"], got["talk"]),
+           eyes is not None and mouth is not None and near(got["blink"], eyes) and near(got["talk"], mouth), said)
+    # a measured box that cannot be right is refused, and nothing is written
+    def staged_state():
+        h = hashlib.sha256()
+        for d, _dirs, names in sorted(os.walk(stage)):
+            for n in sorted(names):
+                h.update(n.encode() + open(os.path.join(d, n), "rb").read())
+        return h.hexdigest()
+
+    state = staged_state()
+    tall = os.path.join(work, "megumi_tall_edit.png")
+    run(["-c", code, os.path.join(images, "megumi_fx_in.png"), tall, "316,270,98,80"])
+    rc, out = run([tool("install_face.py"), tall, "megumi", "blink", "--sprite", sprite, "--images", images,
+                   "--stage", stage, "--root", os.path.join(work, "root")])
+    ok("an edit that changed far more than the eyes is REFUSED (the eye box would be taller than a fifth of the "
+       "close-up) and nothing is written", rc != 0 and "REFUSED" in out and "cannot be right" in out
+       and "Run the edit again" in out and staged_state() == state, out)
+    high = os.path.join(work, "megumi_high_edit.png")
+    run(["-c", code, os.path.join(images, "megumi_fx_in.png"), high, "350,296,40,20"])
+    rc, out = run([tool("install_face.py"), high, "megumi", "talk", "--sprite", sprite, "--images", images,
+                   "--stage", stage, "--root", os.path.join(work, "root")])
+    ok("a \"mouth\" measured on top of the eye box is REFUSED, and nothing is written",
+       rc != 0 and "REFUSED" in out and "overlaps the eyes box" in out and staged_state() == state, out)
+    wide = os.path.join(work, "megumi_wide_edit.png")
+    run(["-c", code, os.path.join(images, "megumi_fx_in.png"), wide, "330,336,60,70"])
+    rc, out = run([tool("install_face.py"), wide, "megumi", "talk", "--sprite", sprite, "--images", images,
+                   "--stage", stage, "--root", os.path.join(work, "root")])
+    ok("and a mouth box taller than a mouth (about 60 px)", rc != 0 and "a mouth is not" in out and staged_state() == state, out)
+    # D57: a staged sprite's blink never goes into the game by itself
+    root_game = mkroot(os.path.join(work, "root_game"))
+    tb = tree_hash(root_game)
+    rc, out = run([tool("install_face.py"), edits["blink"], "megumi", "blink", "--sprite", sprite, "--images", images,
+                   "--root", root_game])
+    ok("with --sprite naming a staged sprite and no --stage it stops in one line and the tree is unchanged (D57)",
+       rc != 0 and out.strip() == "a staged sprite's blink and mouth go in only with the whole set: add --stage <staged "
+       "folder>, then tools/install_set.py" and tree_hash(root_game) == tb
+       and not os.path.exists(os.path.join(root_game, "game", "layout", "faces.json")), out)
     # the game's own sprites, the old way: the box from VIEW_FACE, and the measured blink row
     root = os.path.join(work, "root2")
     blink = os.path.join(OUTPUT, "yuji_blink_nanobanana_00001_.png")
@@ -805,6 +905,15 @@ def group_face(lab):
         got = json.load(open(os.path.join(st2, "faces.json"))).get("eyes", {}).get("yuji") if rc == 0 else None
         ok("REAL: measured on his sprite, the eye box lands on the hand-set one (336,296 88x44) within 4 px: %s" % got,
            near(got, [336, 296, 88, 44], 4), out)
+        nudged = os.path.join(work, "yuji_blink_nudged.png")
+        run(["-c", NUDGE, TOOLS, blink, nudged, 1.01, 3, -2])
+        st3 = os.path.join(work, "stage3")
+        rc, out = run([tool("install_face.py"), nudged, "yuji", "blink", "--sprite",
+                       os.path.join(REPO, "game", "images", "char", "yuji_neutral.png"), "--images", im2, "--stage", st3, "--root", root])
+        rows3 = json.load(open(os.path.join(st3, "faces.json"))) if rc == 0 else {}
+        got3 = rows3.get("eyes", {}).get("yuji")
+        ok("REAL: the same render enlarged 1%% and slid 3 px gives the same eye box within 10 px (%s) and the same four faces" % got3,
+           near(got3, got or [0, 0, 0, 0]) and sorted(rows3.get("blink_also", {}).get("yuji", [])) == ["happy", "sad", "serious", "surprised"], out)
     else:
         skipped("REAL: Yuji's first blink render through install_face.py", "%s or its crop record is absent" % blink)
 
@@ -898,6 +1007,38 @@ def group_set(lab):
     ok("a set whose six sprites do not share one body is refused, and nothing is written",
        rc == 1 and "do not share one body" in out and "the sad sprite" in out and tree_hash(root) == before, out)
 
+    def bad_set(name, spoil):
+        st = staged_from_game(lab, "megumi", name)
+        run(["-c", STANDIN_FX, TOOLS, st, "megumi", "[308, 283, 114, 44]", "[345, 338, 48, 28]"])
+        spoil(st)
+        return run([tool("install_set.py"), "megumi", st, "--root", root] + cloth)
+
+    def beside_the_head(st):     # at the height of the face, but out beside the hair
+        run(["-c", "import sys; sys.path.insert(0, %r)\nfrom pngread import load\nim = load(sys.argv[1])\n"
+             "for xx in range(200, 230):\n    j = (320 * im.w + xx) * 4; im.buf[j:j + 4] = bytes((200, 30, 30, 255))\nim.save(sys.argv[1])\n" % TOOLS,
+             os.path.join(st, "char", "megumi_happy.png")])
+
+    rc, out = bad_set("set_megumi_beside", beside_the_head)
+    ok("\"one body\" is a box round the face: a sprite that differs at the height of the face but beside the head is refused",
+       rc == 1 and "the happy sprite differs from the calm one outside the face" in out and tree_hash(root) == before, out)
+    rc, out = bad_set("set_megumi_noblink", lambda st: shutil.copyfile(os.path.join(st, "char", "megumi_neutral.png"),
+                                                                       os.path.join(st, "fx", "fx_megumi_blink.png")))
+    ok("an overlay picture that is the calm sprite itself (a blink that never closes) is refused",
+       rc == 1 and "the blink picture is the calm sprite itself" in out and tree_hash(root) == before, out)
+    rc, out = bad_set("set_megumi_side", lambda st: shutil.copyfile(os.path.join(st, "side", "megumi_happy.png"),
+                                                                    os.path.join(st, "side", "megumi_sad.png")))
+    ok("a side portrait that was not made from the sprite staged beside it is refused, and named",
+       rc == 1 and "the sad side portrait was not made from the sad sprite" in out and "the happy side" not in out
+       and tree_hash(root) == before, out)
+
+    def overlapping(st):
+        f = os.path.join(st, "faces.json")
+        data = json.load(open(f)); data["mouth"]["megumi"] = [345, 300, 48, 28]; json.dump(data, open(f, "w"))
+
+    rc, out = bad_set("set_megumi_overlap", overlapping)
+    ok("a set whose eye and mouth boxes overlap is refused",
+       rc == 1 and "the eyes box (308, 283) 114x44 and the mouth box (345, 300) 48x28 overlap" in out and tree_hash(root) == before, out)
+
 
 def group_status(lab):
     root = mkroot(os.path.join(lab.work, "r_status"))
@@ -934,7 +1075,7 @@ SIXTEEN = [
     ("library", "look_library_C", "PASS", []),
     ("courtyard", "look2_courtyard_gateway", "REFUSED", ["this is not the same picture"]),
     ("courtyard", "look2_courtyard_mainhall", "REFUSED", ["this is not the same picture"]),
-    ("library", "look2_library_bright", "REFUSED", ["the thing at the hotspot locked_shelf is gone"]),
+    ("library", "look2_library_bright", "REFUSED", ["the thing at the hotspot locked_shelf moved 1", "no longer lines up with the picture in the game"]),
     ("library", "look2_library_gallery", "REFUSED", ["this is a different picture"]),
 ]
 PAIRS = [("dorm_common", "dorm_common", "evening"), ("dorm_common", "dorm_common", "night"), ("rooftop", "rooftop", "evening"),

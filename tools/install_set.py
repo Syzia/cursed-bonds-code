@@ -27,9 +27,13 @@ IT REFUSES, and writes nothing, when
   - any of the fourteen pictures is missing, or the person's eye or mouth box
     is not in the staged faces.json (every missing thing is listed);
   - a sprite is not on the person's canvas (760x1400; Panda's is 880 wide);
-  - the six sprites do not share one body: outside the head, every face's
-    sprite must be the calm sprite pixel for pixel;
-  - an overlay picture differs from the calm sprite outside its own box;
+  - the six sprites do not share one body: outside a box round the face
+    (the eye and mouth boxes together, with room for the brows and the
+    chin), every face's sprite must be the calm sprite pixel for pixel;
+  - an overlay picture differs from the calm sprite outside its own box, or
+    is the calm sprite itself (a blink that never closes);
+  - the eye box and the mouth box overlap, or the mouth is not below the eyes;
+  - a side portrait is not the one made from the sprite staged beside it;
   - afterwards one of the person's image names would no longer resolve.
 If a later step fails, everything it had written is put back as it was.
 
@@ -67,6 +71,10 @@ EXPRESSIONS = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 KINDS = (("blink", "eyes"), ("talk", "mouth"))
 CANVAS_H = 1400
 HEAD_SHARE = 0.30           # the faces differ only in the top of the figure, this share of its height
+# "One body" is judged on a box round the face: the eye and mouth boxes together, grown by these shares of
+# their joint height (above: the brows; below: the chin) and width. On the thirteen people in the game the
+# faces differ from the calm one by at most 0.45 above (Shoko), 0.45 below (Utahime) and 0.26 beside (Panda).
+FACE_UP, FACE_DOWN, FACE_SIDE = 0.6, 0.6, 0.35
 REDRAWN = ("yuji",)         # cloth_match.py matches these with --redrawn
 
 
@@ -118,6 +126,31 @@ def differing_rows(a, b, box=None):
     return (first, last, n) if n else None
 
 
+def differing_box(a, b):
+    """(x0, y0, x1, y1) round every pixel where two RGBA pictures of one size differ; None if none."""
+    if a.buf == b.buf:
+        return None
+    w, h = a.w, a.h
+    x0, y0, x1, y1 = w, h, 0, 0
+    for y in range(h):
+        ra, rb = a.buf[y * w * 4:(y + 1) * w * 4], b.buf[y * w * 4:(y + 1) * w * 4]
+        if ra == rb:
+            continue
+        first = next(i for i in range(w * 4) if ra[i] != rb[i]) // 4
+        last = next(i for i in range(w * 4 - 1, -1, -1) if ra[i] != rb[i]) // 4
+        x0, x1 = min(x0, first), max(x1, last + 1)
+        y0, y1 = min(y0, y), max(y1, y + 1)
+    return (x0, y0, x1, y1)
+
+
+def face_box(eyes, mouth):
+    """(x0, y0, x1, y1): where a person's faces may differ from the calm one."""
+    x0, y0 = min(eyes[0], mouth[0]), min(eyes[1], mouth[1])
+    x1, y1 = max(eyes[0] + eyes[2], mouth[0] + mouth[2]), max(eyes[1] + eyes[3], mouth[1] + mouth[3])
+    w, h = x1 - x0, y1 - y0
+    return (int(x0 - w * FACE_SIDE), int(y0 - h * FACE_UP), int(x1 + w * FACE_SIDE + 0.5), int(y1 + h * FACE_DOWN + 0.5))
+
+
 def figure_rows(im):
     rows = [y for y in range(im.h) if any(im.buf[(y * im.w + x) * 4 + 3] > 24 for x in range(0, im.w, 3))]
     return (rows[0], rows[-1] + 1) if rows else (0, im.h)
@@ -161,6 +194,15 @@ def check_set(who, folder, root):
         if not isinstance(also, list) or any(e not in EXPRESSIONS or e == "neutral" for e in also):
             faults.append("the staged faces.json: blink_also for %s must be a list of faces" % who)
         rows["blink_also"] = also
+        if "eyes" in rows and "mouth" in rows:
+            import install_face
+            e, m = rows["eyes"], rows["mouth"]
+            if install_face.boxes_overlap(e, m):
+                faults.append("the staged faces.json: the eyes box (%d, %d) %dx%d and the mouth box (%d, %d) %dx%d overlap: "
+                              "one of them was measured wrongly (run that edit again)" % (tuple(e) + tuple(m)))
+            elif m[1] < e[1] + e[3]:
+                faults.append("the staged faces.json: the mouth box (%d, %d) %dx%d is not below the eyes box (%d, %d) %dx%d"
+                              % (tuple(m) + tuple(e)))
     if missing:
         fail(who, faults, len(missing))
     cw, ch = canvas_of(who)
@@ -177,18 +219,39 @@ def check_set(who, folder, root):
     calm = loaded[os.path.join("game", "images", "char", "%s_neutral.png" % who)]
     top, bottom = figure_rows(calm)
     head_end = top + int((bottom - top) * HEAD_SHARE)
+    face = face_box(rows["eyes"], rows["mouth"]) if "eyes" in rows and "mouth" in rows else None
     for e in EXPRESSIONS[1:]:
-        diff = differing_rows(calm, loaded[os.path.join("game", "images", "char", "%s_%s.png" % (who, e))])
-        if diff and diff[1] >= head_end:
-            faults.append("the six do not share one body: the %s sprite differs from the calm one down to row %d (the "
-                          "head ends near row %d)" % (e, diff[1], head_end))
+        d = differing_box(calm, loaded[os.path.join("game", "images", "char", "%s_%s.png" % (who, e))])
+        if d is None:
+            continue
+        if face is None:
+            if d[3] > head_end:
+                faults.append("the six do not share one body: the %s sprite differs from the calm one down to row %d (the "
+                              "head ends near row %d)" % (e, d[3] - 1, head_end))
+        elif d[0] < face[0] or d[1] < face[1] or d[2] > face[2] or d[3] > face[3]:
+            faults.append("the six do not share one body: the %s sprite differs from the calm one outside the face (it "
+                          "differs in columns %d to %d, rows %d to %d; the face is columns %d to %d, rows %d to %d)"
+                          % (e, d[0], d[2] - 1, d[1], d[3] - 1, face[0], face[2] - 1, face[1], face[3] - 1))
     for kind, key in KINDS:
         if key not in rows:
             continue
-        diff = differing_rows(calm, loaded[os.path.join("game", "images", "char", "fx", "fx_%s_%s.png" % (who, kind))], rows[key])
+        fx = loaded[os.path.join("game", "images", "char", "fx", "fx_%s_%s.png" % (who, kind))]
+        if fx.buf == calm.buf:
+            faults.append("the %s picture is the calm sprite itself: nothing changes inside the %s box (%s)"
+                          % (kind, key, "a blink that never closes" if kind == "blink" else "a mouth that never moves"))
+            continue
+        diff = differing_rows(calm, fx, rows[key])
         if diff:
             faults.append("the %s picture differs from the calm sprite outside the %s box (%d rows, from row %d): the "
                           "box in faces.json is not the one this picture was made with" % (kind, key, diff[2], diff[0]))
+    # each side portrait is the one made from the sprite staged beside it
+    from keysprite import side_portrait
+    for e in EXPRESSIONS:
+        made = side_portrait(loaded[os.path.join("game", "images", "char", "%s_%s.png" % (who, e))])
+        got = loaded[os.path.join("game", "images", "side", "%s_%s.png" % (who, e))]
+        if (got.w, got.h) != (made.w, made.h) or got.buf != made.buf:
+            faults.append("the %s side portrait was not made from the %s sprite staged beside it (tools/install_set.py "
+                          "--stage makes the two together)" % (("calm" if e == "neutral" else e,) * 2))
     if faults:
         fail(who, faults, 0)
     return files, rows

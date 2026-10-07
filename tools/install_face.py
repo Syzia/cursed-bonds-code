@@ -39,7 +39,14 @@ Installing takes the editor's picture, shrinks it back to the square, lines it
 up with the sprite (editors nudge and zoom a picture by a pixel or two: scale
 0.97 to 1.03 and 8 px either way are searched, scored on the skin and hair
 around the box), matches any colour cast, and copies ONLY the eye box (blink)
-or the mouth box (talk) onto a copy of the neutral sprite. It prints how well
+or the mouth box (talk) onto a copy of the neutral sprite. For a MEASURED box
+the line-up is refined to a quarter pixel and a quarter of a percent, the two
+pictures are compared to within one pixel (a line half a pixel off is not a
+change), and a box that cannot be right is REFUSED with nothing written: eyes
+taller than a fifth of the close-up's square, a mouth taller than about 60 px,
+or a mouth box that overlaps the eye box or lies above it. A staged sprite's
+blink and mouth go in only with the whole set: --sprite naming any sprite but
+the game's own needs --stage (D57). It prints how well
 the box's rim meets the sprite, and writes a preview, shots/art/fx_<who>_<kind>.png
 (the neutral head, the new one, and the two alternating boxes marked).
 
@@ -80,7 +87,22 @@ SEAM_WARN = 14.0
 EXPRESSIONS = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 BLOCK = 4                   # the measured box: the edit and the sprite are compared in blocks this size
 CHANGED = 22                # a block changed when it differs by more than this on average
-BOX_PAD = 6                 # the measured box is the changed region grown by this
+BOX_PAD = 8                 # the measured box is the changed region grown by this
+BOX_GROW = 1                # ... after its sides have each moved out by at most this many blocks (see measure_box)
+# (Set on Yuji's first blink render, 7 Oct 2026: with these two the box is (332, 297) 92x44, the hand-set one
+# within 4 px, and the blink sits on the four faces the hand-set table lists; the same render enlarged or
+# shrunk 2% and slid 6 px gives the same box. A box 4 px lower already crosses the other faces' lashes.)
+# The measured path lines the edit up finely (an editor's nudge is rarely a whole pixel): after the coarse
+# search the shift is refined to a quarter pixel and the scale to a quarter of a percent.
+FINE = ((1.0, 0.01), (0.5, 0.005), (0.25, 0.0025))
+# A measured box that cannot be right is refused, not written. The limits are shares of the close-up's square
+# (309 px for Yuji), set against the hand-set boxes of VIEW_FACE measured the same way: the tallest eye box
+# is Nobara's (0.15 of her square), the widest Megumi's and Panda's (0.35); the tallest mouth box is Panda's
+# and Yaga's (0.16), the widest Panda's muzzle (0.45; everyone else's is under 0.20, about 60 px).
+EYES_MAX_H = 0.20           # the eye box is at most this tall (about 60 px on the 760 canvas) ...
+EYES_MAX_W = 0.48           # ... and this wide
+MOUTH_MAX_H = 0.195         # the mouth box: about 60 px tall ...
+MOUTH_MAX_W = 0.48          # ... and no wider than the eyes may be
 # blink_also: the eye box's rim on another face differs by less than RIM_MEAN on average, and no more than
 # RIM_STROKE of it differs strongly (an eyebrow crossing it). Set on Yuji's first set, whose answer was known
 # by eye (VIEW_BLINK_ALSO): happy, serious, sad and surprised read 3.9 to 4.3 with 0.5 to 1.3% crossed and
@@ -302,25 +324,75 @@ def _regions(grid, gw, gh):
     return out
 
 
-def measure_box(sprite, ed, X, Y, side, s, dx, dy, cast, kind):
+def measure_box(sprite, ref, ed, X, Y, side, s, dx, dy, cast, kind):
     """Where the lined-up edit differs from the sprite: the eye box (blink) or the mouth box (talk), on the
-    sprite's canvas. None when nothing changed."""
+    sprite's canvas. None when nothing changed.
+
+    The two are compared to within one pixel, both ways: a sample has changed by how far the edit there lies
+    outside the range of the sprite's nine pixels round that place, or by how far the sprite's pixel lies
+    outside the range of the edit one pixel round it, whichever is more. A picture that came back half a
+    pixel off puts every ink line half a pixel off; a value part way across a line lies between its
+    neighbours, so it is no change (counted as one, every line of the hair and the collar would join the
+    box). A line that was taken away or drawn in lies outside the range on one of the two sides.
+
+    That finds the heart of the change and misses its faint rim (a lid that only shifted a shade). So each
+    side of the box then moves out, by at most BOX_GROW blocks, while the blocks just outside it differ
+    plainly, pixel against pixel: enough to take the rim in, too little for a line that is merely half a
+    pixel off to carry the box away along the hair."""
     c = side / 2.0
     gw = gh = side // BLOCK
     grid = [bytearray(gw) for _y in range(gh)]
+    plain = [bytearray(gw) for _y in range(gh)]
+    rb, eb = ref.buf, ed.buf
     for gy in range(gh):
         for gx in range(gw):
-            tot, n = 0.0, 0
+            tot, n, ptot = 0.0, 0, 0.0
             for yy in (gy * BLOCK + 1, gy * BLOCK + 3):
                 for xx in (gx * BLOCK + 1, gx * BLOCK + 3):
                     j = ((Y + yy) * sprite.w + X + xx) * 4
-                    if sprite.buf[j + 3] < 255:
+                    if sprite.buf[j + 3] < 255 or not (0 < xx < side - 1 and 0 < yy < side - 1):
                         continue
-                    v = sample(ed, c + (xx - c) / s - dx, c + (yy - c) / s - dy)
-                    tot += max(abs(v[k] + cast[k] - sprite.buf[j + k]) for k in range(3))
+                    ex, ey = c + (xx - c) / s - dx, c + (yy - c) / s - dy
+                    v = sample(ed, ex, ey)
+                    i0 = (yy * side + xx) * 3
+                    ptot += max(abs(v[k] + cast[k] - rb[i0 + k]) for k in range(3))
+                    worst = 0.0
+                    for k in range(3):
+                        lo = hi = rb[i0 + k]
+                        for ny in (yy - 1, yy, yy + 1):
+                            i = (ny * side + xx - 1) * 3 + k
+                            a, b, d = rb[i], rb[i + 3], rb[i + 6]
+                            if a < lo: lo = a
+                            if b < lo: lo = b
+                            if d < lo: lo = d
+                            if a > hi: hi = a
+                            if b > hi: hi = b
+                            if d > hi: hi = d
+                        e = v[k] + cast[k]
+                        off = lo - e if e < lo else (e - hi if e > hi else 0.0)
+                        if off > worst:
+                            worst = off
+                    if worst <= CHANGED:
+                        # the other way: the sprite's pixel against the edit's own pixels one pixel round the
+                        # place (its pixels, not samples between them, which are all blurred alike)
+                        qx, qy = min(max(int(ex) - 1, 0), ed.w - 4), min(max(int(ey) - 1, 0), ed.h - 4)
+                        for k in range(3):
+                            lo, hi = 255, 0
+                            for ny in range(qy, qy + 4):
+                                i = (ny * ed.w + qx) * 3 + k
+                                for a in eb[i:i + 12:3]:
+                                    if a < lo: lo = a
+                                    if a > hi: hi = a
+                            e = rb[i0 + k] - cast[k]
+                            off = lo - e if e < lo else (e - hi if e > hi else 0.0)
+                            if off > worst:
+                                worst = off
+                    tot += worst
                     n += 1
             if n >= 3 and tot / n > CHANGED:
                 grid[gy][gx] = 1
+            if n >= 3 and ptot / n > CHANGED:
+                plain[gy][gx] = 1
     found = [r for r in _regions(grid, gw, gh) if r[0] >= 3]
     if not found:
         return None
@@ -339,11 +411,49 @@ def measure_box(sprite, ed, X, Y, side, s, dx, dy, cast, kind):
                 rest.remove(r)
                 x0, y0, x1, y1 = min(x0, a0), min(y0, b0), max(x1, a1), max(y1, b1)
                 grew = True
+    for _step in range(BOX_GROW):
+        cols, rows_ = range(max(0, x0), min(gw, x1 + 1)), range(max(0, y0), min(gh, y1 + 1))
+        up = y0 > 0 and any(plain[y0 - 1][x] for x in cols)
+        down = y1 < gh - 1 and any(plain[y1 + 1][x] for x in cols)
+        left = x0 > 0 and any(plain[y][x0 - 1] for y in rows_)
+        right = x1 < gw - 1 and any(plain[y][x1 + 1] for y in rows_)
+        x0, y0, x1, y1 = x0 - left, y0 - up, x1 + right, y1 + down
     bx0 = max(0, X + x0 * BLOCK - BOX_PAD)
     by0 = max(0, Y + y0 * BLOCK - BOX_PAD)
     bx1 = min(sprite.w, X + (x1 + 1) * BLOCK + BOX_PAD)
     by1 = min(sprite.h, Y + (y1 + 1) * BLOCK + BOX_PAD)
     return (bx0, by0, bx1 - bx0, by1 - by0)
+
+
+def boxes_overlap(a, b):
+    return min(a[0] + a[2], b[0] + b[2]) > max(a[0], b[0]) and min(a[1] + a[3], b[1] + b[3]) > max(a[1], b[1])
+
+
+def box_wrong(kind, box, side, rows, who):
+    """Why a measured box cannot be the eyes (blink) or the mouth (talk), or None. `rows` is the faces.json
+    the box would be written to: the person's other box, when it is there, must lie clear of this one, the
+    eyes above the mouth."""
+    x, y, w, h = box
+    if kind == "blink":
+        if h > side * EYES_MAX_H or w > side * EYES_MAX_W:
+            return ("eyes are not %dx%d px on a head this size (at most %dx%d): the edit changed more than the "
+                    "eyes, or came back moved further than it can be lined up"
+                    % (w, h, int(side * EYES_MAX_W), int(side * EYES_MAX_H)))
+    else:
+        if w > side * MOUTH_MAX_W or h > side * MOUTH_MAX_H:
+            return ("a mouth is not %dx%d px on a head this size (at most %dx%d): the edit changed more than the "
+                    "mouth, or came back moved further than it can be lined up"
+                    % (w, h, int(side * MOUTH_MAX_W), int(side * MOUTH_MAX_H)))
+    other_key = "mouth" if kind == "blink" else "eyes"
+    other = (rows.get(other_key) or {}).get(who)
+    if isinstance(other, list) and len(other) == 4:
+        eyes, mouth = (box, other) if kind == "blink" else (other, box)
+        if boxes_overlap(eyes, mouth):
+            return "it overlaps the %s box already measured, (%d, %d) %dx%d" % ((other_key,) + tuple(other))
+        if mouth[1] < eyes[1] + eyes[3]:
+            return "it puts the mouth beside or above the eyes (the %s box already measured is (%d, %d) %dx%d)" % (
+                (other_key,) + tuple(other))
+    return None
 
 
 def rim_matches(neutral, other, box):
@@ -395,6 +505,15 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
     if kind not in KINDS:
         raise SystemExit("the kind is blink or talk, not %r" % kind)
     measured = bool(sprite_file)
+    if measured and not stage:
+        # D57: a redrawn person's blink and mouth go in with the six sprites or not at all. Without --stage
+        # this would lay the new drawing's eyes over the old sprites in the game.
+        own = os.path.join(root, "game", "images", "char", who + "_neutral.png")
+        if not os.path.exists(own):
+            own = os.path.join(ROOT, "game", "images", "char", who + "_neutral.png")
+        if os.path.realpath(os.path.expanduser(sprite_file)) != os.path.realpath(own):
+            raise SystemExit("a staged sprite's blink and mouth go in only with the whole set: add --stage <staged "
+                             "folder>, then tools/install_set.py")
     face = faces(root).get(who) or {}
     if not measured and KINDS[kind] not in face:
         raise SystemExit("%s has no %s box in VIEW_FACE (game/view_stage.rpy) or in faces.json: no %s for them"
@@ -445,7 +564,10 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
                 pts.append((x, y))
         return pts
 
-    def line_up(pts):
+    def line_up(pts, fine=False, start=None):
+        """(the mismatch before, (the mismatch, scale, dx, dy) at the best fit). fine: after the coarse search
+        the best few are refined to a quarter pixel and a quarter of a percent (FINE). start: refine from
+        there, with no coarse search."""
         def score(s, dx, dy):
             tot = 0.0
             for x, y in pts:
@@ -456,18 +578,52 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
 
         before = score(1.0, 0, 0)
         best = (before, 1.0, 0, 0)
-        for s in SCALES:
+        per_scale = []
+        for s in ([] if start else SCALES):
+            here = None
             for dy in range(-SHIFT, SHIFT + 1, 2):
                 for dx in range(-SHIFT, SHIFT + 1, 2):
                     e = score(s, dx, dy)
                     if e < best[0]:
                         best = (e, s, dx, dy)
-        _e, s, dx0, dy0 = best
-        for dy in (dy0 - 1, dy0, dy0 + 1):
-            for dx in (dx0 - 1, dx0, dx0 + 1):
-                e = score(s, dx, dy)
-                if e < best[0]:
-                    best = (e, s, dx, dy)
+                    if here is None or e < here[0]:
+                        here = (e, s, dx, dy)
+            per_scale.append(here)
+        if not fine:
+            _e, s, dx0, dy0 = best
+            for dy in (dy0 - 1, dy0, dy0 + 1):
+                for dx in (dx0 - 1, dx0, dx0 + 1):
+                    e = score(s, dx, dy)
+                    if e < best[0]:
+                        best = (e, s, dx, dy)
+            return before, best
+        # A shift between two steps of the coarse search is answered there by a wrong scale, so the climb
+        # starts from the best fit at each of the three best scales (and from no change at all), not from one.
+        starts = [(score(*start),) + tuple(start)] if start else sorted(per_scale)[:3] + [(before, 1.0, 0, 0)]
+        seen = {}
+
+        def at(s, dx, dy):
+            key = (round(s, 4), round(dx, 2), round(dy, 2))
+            if key not in seen:
+                seen[key] = score(*key)
+            return seen[key]
+
+        best = None
+        for _e, s, dx, dy in starts:
+            cur = (at(s, dx, dy), s, float(dx), float(dy))
+            for step, sstep in FINE:
+                for _round in range(24):
+                    e, s0, x0, y0 = cur
+                    near = [(s0, x0 + step, y0), (s0, x0 - step, y0), (s0, x0, y0 + step), (s0, x0, y0 - step)]
+                    near += [(s0 + sstep, x0, y0), (s0 - sstep, x0, y0)]
+                    near = [n for n in near if SCALES[0] - 0.01 <= n[0] <= SCALES[-1] + 0.01
+                            and abs(n[1]) <= SHIFT + 1 and abs(n[2]) <= SHIFT + 1]
+                    got = min((at(*n),) + n for n in near)
+                    if got[0] >= e - 1e-9:
+                        break
+                    cur = got
+            if best is None or cur[0] < best[0]:
+                best = cur
         return before, best
 
     def cast_of(pts, s, dx, dy):
@@ -479,12 +635,15 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
                 cast[k] += ref.buf[i + k] - v[k]
         return [v / len(pts) for v in cast]
 
+    fpath = faces_path(root, os.path.expanduser(stage) if stage else None)
+    whole = None
     if measured:
         pts = points_round(None)
         if len(pts) < 40:
             raise SystemExit("too little of the sprite in the close-up to line the edit up on")
-        _b, (_e, s, dx, dy) = line_up(pts)
-        box = measure_box(sprite, ed, X, Y, side, s, dx, dy, cast_of(pts, s, dx, dy), kind)
+        _b, whole = line_up(pts, fine=True)
+        _e, s, dx, dy = whole
+        box = measure_box(sprite, ref, ed, X, Y, side, s, dx, dy, cast_of(pts, s, dx, dy), kind)
         if box is None:
             raise SystemExit("REFUSED: the edit does not differ from the sprite anywhere: there is no %s to measure "
                              "(was the close-up edited?)" % KINDS[kind])
@@ -492,12 +651,20 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
             raise SystemExit("REFUSED: the edit differs from the sprite over a quarter of the head (%dx%d px): it "
                              "changed more than the %s, so its box cannot be measured. Run the edit again."
                              % (box[2], box[3], KINDS[kind]))
+        why = box_wrong(kind, box, side, read_faces_file(fpath), who)
+        if why:
+            raise SystemExit("REFUSED: the %s box measured on this sprite, (%d, %d) %dx%d, cannot be right: %s. "
+                             "Nothing was written. Run the edit again."
+                             % ((KINDS[kind],) + tuple(box) + (why,)))
         print("measured  the %s box on this sprite: (%d, %d) %dx%d" % ((KINDS[kind],) + tuple(box)))
     bx, by, bw, bh = box[0] - X, box[1] - Y, box[2], box[3]
     pts = points_round(box)
     if len(pts) < 40:
         raise SystemExit("too little of the sprite around the %s box to line the edit up on" % KINDS[kind])
-    before, (err, s, dx, dy) = line_up(pts)
+    if measured:
+        before, (err, s, dx, dy) = line_up(pts, fine=True, start=whole[1:])
+    else:
+        before, (err, s, dx, dy) = line_up(pts)
 
     # The colour cast, measured on the same points.
     cast = cast_of(pts, s, dx, dy)
@@ -524,7 +691,10 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
         dest = os.path.join(root, "game", "images", "char", "fx", "fx_%s_%s.png" % (who, kind))
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     out.save(dest)
-    print("lined up  scale %.2f, shift (%+d, %+d); mismatch around the box %.1f -> %.1f" % (s, dx, dy, before, err))
+    if measured:
+        print("lined up  scale %.4f, shift (%+.2f, %+.2f); mismatch around the box %.1f -> %.1f" % (s, dx, dy, before, err))
+    else:
+        print("lined up  scale %.2f, shift (%+d, %+d); mismatch around the box %.1f -> %.1f" % (s, dx, dy, before, err))
     print("colour    shifted by (%+.1f, %+.1f, %+.1f) to meet the sprite" % tuple(cast))
     print("rim       the box's edge differs from the sprite by %.1f on average" % seam)
     if seam > SEAM_WARN:
@@ -538,7 +708,6 @@ def install(src, who, kind, images=None, root=None, sprite_file=None, stage=None
     print("preview -> %s" % prev)
     print("%s -> %s" % ("staged" if stage else "installed", dest))
     # faces.json: what the game reads in place of the tables in view_stage.rpy
-    fpath = faces_path(root, os.path.expanduser(stage) if stage else None)
     also = None
     if kind == "blink":
         print("which other faces the blink sits on:")

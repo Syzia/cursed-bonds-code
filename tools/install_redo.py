@@ -33,10 +33,13 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
      registered point of the place (each exit, each hotspot, the feet of
      every standing row, each pose box, the outline of each foreground) a
      192 px window must agree within 3 px. A window that moved refuses the
-     picture and is named.
-  3. NOTHING VANISHED. Every `keep` row of the room's keep list
+     picture and is named; so does one that no longer lines up at all (the
+     door an exit sits on moved further than the 24 px a shift is looked
+     for, or was painted out).
+  3. NOTHING VANISHED. Every `keep` and `doors` row of the room's keep list
      (tools/bgs/keep/<picture>.json), a 110 px box round every hotspot and
-     the box round every foreground object must still be there.
+     the box round every foreground object must still be there. A thing
+     that sits a little way off is named as moved, not as gone.
   4. NOTHING WAS ADDED. Every `empty` row, the floor among them, has not
      gained fine edge (a jacket, a cup, leaves), unless it is in `allow`.
   5. SHARPER, against the picture the place had BEFORE the overhaul
@@ -149,7 +152,7 @@ def keep_list(stem, place, keep_dir=None):
     for name in (stem, place):
         got = read_json(os.path.join(keep_dir or KEEP_DIR, name + ".json"))
         if got is not None:
-            for key in ("keep", "empty", "allow", "change"):
+            for key in ("keep", "empty", "allow", "change", "doors"):
                 for row in got.get(key, []):
                     if not row.get("name") or not (row.get("box") or row.get("poly")):
                         raise SystemExit("the keep list of %s: every `%s` row needs a name and a box or a poly" % (stem, key))
@@ -360,7 +363,8 @@ def run_inplace(o):
     kl = keep_list(stem, place, o["keep"])
     polys = fg_polygons(root, place)
     points = points_for(lay, place, root, polys, hour)
-    keep = list(kl.get("keep", [])) + auto_keep(lay, place, root, polys, hour)
+    # the room's painted doors are held by "nothing vanished" as well: an exit sits on one (5.4 step 2)
+    keep = list(kl.get("keep", [])) + list(kl.get("doors", [])) + auto_keep(lay, place, root, polys, hour)
     print("%s (%s.png), %s; measured against %s" % (lay.name(place), target, "a relight" if relight else "redone in place", base_words))
     if not kl:
         print("  note      no keep list at tools/bgs/keep/%s.json: only the registered points and hotspots are held" % stem)
