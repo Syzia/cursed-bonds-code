@@ -3,9 +3,11 @@
   "Batch 1 was written early, with art_batch.py 1 --preview, on 7 Oct 2026, at the owner's word,",
   "and run by the owner while the agent build waited (docs/UI2_DESIGN.md 10.2, the art sittings; risk 50).",
   "art_1.json beside this file is the workflow that was run (its note names the folder it was run from).",
-  "At batch 0's sitting art_batch.py 1 is written as planned and compared with these rows:",
-  "a picture whose prompt and references are byte for byte the same keeps its early renders;",
-  "any other is run again."
+  "A sum is the sha256 of a prompt's UTF-8 text (the first widget value of its GeminiImage2Node) or of a reference file's bytes.",
+  "The Courtyard reference it was given, look_test/chosen/courtyard_gateway_1920.png, carries four black rows top and bottom.",
+  "An early picture is judged as any render is, by plan 5.2's pass rule at its layout sitting. There the prompt the record then gives",
+  "is laid beside the early one and what differs is listed; it is run again only if a differing sentence states a fact the early",
+  "prompt lacked or said otherwise and the picture stands against it. A sentence that only names a reference picture does not count."
  ],
  "written": "2026-10-07",
  "head": "4587298",

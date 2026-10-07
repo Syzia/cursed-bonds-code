@@ -98,6 +98,21 @@ with the same number of checks before U0a's edits and after: 3,299 in all.
 
 ---
 
+## Part 2b. Found after the scratch run, while wave 0 was built (7 Oct)
+
+| harness line | pins | changed by | fixed by |
+|---|---|---|---|
+| `phase2_all`'s driver: on even days it goes by map to wherever a person stands and presses `row_<place>` | every place a person stands in has a map row | U0b's `WORLD_PINLESS` (a friend's room has no pin), first met when U0c1's cells shifted the thirty-day route | fixed in ae56832: the driver walks, or presses the house's pin (`zzq_pin`); 35 of 35 |
+| `p2_map`, "a person in a locked room is on no marker and no pin" (`map_pin_people("girls_dorm") == []`) | a house's pin shows nobody from its rooms | U2, when a house's pin carries the people in its rooms (4.2) | U2 |
+| `p2_paths.rpy:1087-1102`, "nobody who moved lost an activity" | everyone who moved can still be asked to walk somewhere | U0c1: Utahime's weekend Evening moved from the Courtyard to the Onsen (the plan's own cell), and the Courtyard was her only walk place, so by routine "Walk with them" is offered with her nowhere | **open: the owner's ruling.** Either accept it (the harness's NOTE stays) or give her one cell at a walk place |
+| `p2_view.rpy:647-710` (section 5, the pose installer) | `install_pose.py` writes `view_<place>.json` and needs no flag for a test room | U0d2: the installer writes `pose_<place>.json`, reads the layout dump, and takes `--no-game` for a test room | fixed in b2cf9d3 (U0d2's third review round), the hand-off that should have gone in with U0d2's merge |
+| `p2_paths.rpy:591-596` | a locked exit is drawn as the lock icon at alpha 0.45, an open one as its place's icon at 1.0 | D60: a shaped place draws no icon; there the lock is its `path_exits()` row's reason, its label and the square's alpha wrapper. It would first fail at batch 1, when the Training Yard is shaped | U0c2 turns the line into that rule, read from the icon only where the place draws buttons |
+| `p2_hud.rpy:611-624` | every hover label's key is unique on the place view | D60 would break it with one key on a hotspot's two focus areas; the shape's key is `hotshape_<id>`, so the line passes unedited | – (listed so that nobody gives the two one key) |
+| `p2_contracts.rpy:1118, 1131, 1239, 1324`, `p2_paths.rpy:412`, `p2_rooms.rpy:477, 499`, `u2_home.rpy:1048` | `hot_validate() == []` while the harnesses' own hotspots are registered in real places | D60's "a place is shaped all at once" would report them in a shaped place; the rule leaves out ids that begin `zz`, and a hotspot with no shape is drawn as its button | – (they pass unedited; U0c2's overlay over all 35 places proves it) |
+| any other harness line that looks at what a hotspot draws and not at its id, rectangle, action or label | a shaped place draws no ring and no icon (D60) | every shaped place, from batch 0 | found by U0c2's run of the standing set over the overlay that shapes all 35 places, and turned into its rule there |
+
+Also handed on: the Library's description is rewritten for a bright room by U1 ("the Library's and the Dormitories' words", plan 10.2); the Teachers' Dormitory stand-in was brightened in 56f0ea0 (it was nearly black at Night) and is still a borrowed picture.
+
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 
 A scratch copy of the tree was given a crude stub of what wave 0 changes in who
@@ -107,11 +122,13 @@ the five starred weekend cells, the two weekend Evening cells, the lounge and
 bath cells, the Sunday afternoons in Tokyo, and sleepers left off the stage**.
 It linted clean. Then every harness in `tools/README.md` was run against it.
 
-**Passed unchanged (22):** `core_flow`, `wp0_stubs`, `wp2_grades`,
+**Passed unchanged (21):** `core_flow`, `wp0_stubs`, `wp2_grades`,
 `wp3_missions`, `wp4_board`, `wp5_memories`, `wp6_items`, `wp7_ui`,
 `wp8_journal`, `wp9_prologue`, `wp10_chapters`, `wp11_dev`, `phase1_all`,
-`phase2_all`, `p2_hud`, `p2_journal`, `p2_view`, `p2_rooms`, `p2_cards`,
-`p2_gear`, `p2_night`, `p2_oldsave`. (`wp4_board` passes in the full stub
+`p2_hud`, `p2_journal`, `p2_view`, `p2_rooms`, `p2_cards`,
+`p2_gear`, `p2_night`, `p2_oldsave`. (`phase2_all` passed against the stub and
+was listed here; it did not pass against the real places, see "Found after this
+run" below.) (`wp4_board` passes in the full stub
 because three students are off campus on Sunday afternoons; with U0b alone its
 ledger row above applies.)
 
