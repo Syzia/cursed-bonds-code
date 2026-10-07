@@ -34,6 +34,9 @@
 ##   E  the stubs and hooks of 9.3: every stub function, screen and label, the
 ##      `use` lines placed in screens other packages own, hint_seen, and a
 ##      Sunday ride that plays as it did
+##   F  the pictures: the menus' own files, the five lenders' copies, the ten
+##      names that always exist and the three that exist only with their file,
+##      the board's job sites, the guarded stand-in people in three states
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
@@ -202,6 +205,19 @@ init 999 python:
         node = renpy.game.script.lookup(name) if renpy.has_label(name) else None
         p = getattr(node, "parameters", None)
         return None if node is None else ([] if p is None else [q for q in p.parameters])
+
+    def zzc_image(name):
+        """The displayable an image name is defined as (a tuple or a string
+        name); None when it is not defined."""
+        key = builtins.tuple(name.split()) if isinstance(name, str) else builtins.tuple(name)
+        return renpy.display.image.images.get(key)
+
+    def zzc_files(name):
+        """Every picture file the displayable behind an image name draws."""
+        d = zzc_image(name)
+        if d is None:
+            return None
+        return builtins.sorted(builtins.set(builtins.str(x.filename) for x in zzc_tree(d) if isinstance(x, renpy.display.im.Image)))
 
     def zz_dim_test():
         """A test dim function: the reason, or "" (ZZC_DIM[0])."""
@@ -1091,5 +1107,133 @@ label zz_smoke:
               "E: a Sunday ride to Harajuku begun at Noon ends at the gate in the Evening with nobody left on screen; with the stubs it says exactly today's lines (Ijichi's, the district's, the drive back)",
               (_zz_open, store.here, store.period, len(_zz_said), _zz_people))
         settle(day=2, period="Noon", here="courtyard")
+
+    ## --- F. the pictures (5.8, 5.10, 8.2) ------------------------------------------------
+    python:
+        ## -- the menus' own pictures
+        check(gui.main_menu_background == ("gui/title.png" if renpy.loadable("gui/title.png") else "images/bg/gate.png")
+              and gui.game_menu_background == ("gui/menu_ground.png" if renpy.loadable("gui/menu_ground.png") else "images/bg/veil.png")
+              and renpy.loadable("gui/title.png") and renpy.loadable("gui/menu_ground.png")
+              and bg_placeholder("gui/zz_none.png", "images/bg/gate.png") == "images/bg/gate.png",
+              "F: the main menu shows gui/title.png and the menus' ground gui/menu_ground.png, each with the old picture as its fallback",
+              (gui.main_menu_background, gui.game_menu_background))
+
+        ## -- nothing lends any more
+        check(STANDIN_COPIES == ("city_night", "street_morning", "town_street", "ruin_hall", "veil")
+              and all(renpy.loadable("images/bg/" + standin_copy(n)) and renpy.loadable("images/bg/%s.png" % n) for n in STANDIN_COPIES)
+              and standin_copy("veil") == "standin/standin_veil.png",
+              "F: the five lending pictures each have their copy under images/bg/standin/")
+        _zz_lenders = builtins.set("images/bg/%s.png" % n for n in STANDIN_COPIES)
+        _zz_borrow = ["bg alley", "bg alley dark", "bg ridge_veil", "bg map_tokyo", "bg shibuya", "bg shinjuku", "bg harajuku",
+                      "bg kawasaki", "bg yotsuka"] + ["bg " + k for k, src in STANDIN_NAMES]
+        _zz_bad = [(n, zzc_files(n)) for n in _zz_borrow if zzc_files(n) is None or builtins.set(zzc_files(n)) & _zz_lenders]
+        _zz_made = [n for n in _zz_borrow if zzc_files(n) and any(f.startswith("images/bg/standin/") for f in zzc_files(n))]
+        check(not _zz_bad and len(_zz_made) >= 1,
+              "F: no stand-in reads a lending picture's own file any more: each is made from the copy (%d of %d names are stand-ins today)"
+              % (len(_zz_made), len(_zz_borrow)), _zz_bad)
+        check(zzc_files("bg city") == ["images/bg/city_night.png"] and zzc_files("bg ruin") == ["images/bg/ruin_hall.png"]
+              and zzc_files("bg veil") == ["images/bg/veil.png"] and zzc_files("bg town_street") == ["images/bg/town_street.png"]
+              and zzc_files("bg street_morning") == ["images/bg/street_morning.png"],
+              "F: and the five lenders' own names still show their own files, so each can be painted again by itself")
+
+        ## -- the ten names that always exist
+        _zz_ten = builtins.dict(STANDIN_NAMES)
+        check(builtins.sorted(_zz_ten) == builtins.sorted(["mall_front", "mall_hall", "mall_atrium", "warehouse", "annexe", "site_tunnel",
+                                                           "site_ward", "site_platform", "site_pool", "site_karaoke"])
+              and all(renpy.has_image(("bg", k), exact=True) for k in _zz_ten) and all(v in STANDIN_COPIES for v in _zz_ten.values()),
+              "F: the ten off-campus names are always defined: the mall's three, the warehouse, the annexe and the five kinds of job site")
+        _zz_with = [k for k in _zz_ten if renpy.loadable("images/bg/%s.png" % k)]
+        _zz_bad = [(k, zzc_files("bg " + k)) for k in _zz_ten
+                   if zzc_files("bg " + k) != (["images/bg/%s.png" % k] if k in _zz_with else ["images/bg/" + standin_copy(_zz_ten[k])])]
+        if ZZC_OVERLAY:
+            check(not _zz_bad and len(_zz_with) == 10, "F (overlay): with its file laid by the overlay each of the ten resolves to its own file", _zz_bad)
+        else:
+            check(not _zz_bad, "F (bare): without its file each of the ten resolves to its stand-in, the copy of the picture its scene plays over today (%d have their own picture)"
+                  % len(_zz_with), _zz_bad)
+        check((_zz_ten["mall_front"], _zz_ten["mall_hall"], _zz_ten["mall_atrium"], _zz_ten["warehouse"], _zz_ten["annexe"])
+              == ("city_night", "ruin_hall", "veil", "city_night", "ruin_hall"),
+              "F: each stand-in is the picture that scene shows today (bg city, bg ruin, bg veil, bg city, bg ruin), so U9's swap changes nothing on screen")
+        check(light_for_bg("bg mall_front") == BG_LIGHT["bg city"] == light_for_bg("bg warehouse") == light_for_bg("bg site_platform")
+              and light_for_bg("bg mall_atrium") == BG_LIGHT["bg veil"] == light_for_bg("bg site_pool")
+              and light_for_bg("bg mall_hall") == light_for_bg("bg ruin") == light_for_bg("bg annexe") == light_for_bg("bg site_tunnel"),
+              "F: and people are lit on each as on the picture it stands in for")
+
+        ## -- the three that exist only with their file
+        _zz_three = builtins.dict(STANDIN_IF_FILE)
+        check(builtins.sorted(_zz_three) == ["bg club", "bg shibuya night", "bg shinjuku night"]
+              and all(renpy.has_image(n, exact=True) == bool(renpy.loadable(f)) for n, f in _zz_three.items()),
+              "F: bg club, bg shibuya night and bg shinjuku night are defined exactly when their file is loadable")
+        if ZZC_OVERLAY:
+            check(all(renpy.has_image(n, exact=True) and zzc_files(n) == [f] for n, f in _zz_three.items())
+                  and night_bg("shibuya") == "bg shibuya night" and night_bg("shinjuku") == "bg shinjuku night"
+                  and night_club_bg("shibuya") == "bg club" and night_club_bg("shinjuku") == "bg club",
+                  "F (overlay): with the three files laid, all three are defined; night_bg answers each district's night and night_club_bg the club")
+        else:
+            _zz_none = [n for n, f in _zz_three.items() if not renpy.loadable(f)]
+            check(all(not renpy.has_image(n, exact=True) for n in _zz_none)
+                  and ("bg shibuya night" not in _zz_none or night_bg("shibuya") == "bg shibuya")
+                  and ("bg shinjuku night" not in _zz_none or night_bg("shinjuku") == "bg shinjuku")
+                  and ("bg club" not in _zz_none or all(night_club_bg(k) == night_bg(k) for k in NIGHT_DISTRICTS)),
+                  "F (bare): without its file each of the three is undefined (%d of 3), and night_bg and night_club_bg return the district's own picture" % len(_zz_none),
+                  _zz_none)
+        check(light_for_bg("bg shibuya night") in (BG_LIGHT["bg shibuya"], builtins.tuple(rule_layout("light").get("bg shibuya night") or ()))
+              and light_for_bg("bg zz_none night") == NEUTRAL_LIGHT,
+              "F: a district's night with no measured row of its own keeps its district's light")
+        check(not renpy.has_image("bg market", exact=True),
+              "F: the Black Market's ground is a file name (images/bg/market.png), not an image name")
+
+        ## -- the board's job-to-picture column
+        _zz_kinds = builtins.dict(nerima="tunnel", edogawa="tunnel", adachi="ward", kita="ward", ikebukuro="platform", shinagawa="platform",
+                                  setagaya="pool", koenji="karaoke")
+        check(len(BOARD_PLACES) == 8 and all(p["bg"] == "bg site_" + _zz_kinds[p["key"]] for p in BOARD_PLACES)
+              and all(renpy.has_image(p["bg"], exact=True) for p in BOARD_PLACES)
+              and not [f for f in _validate_board() if "image" in f],
+              "F: every board job plays over its kind of site (five kinds for eight jobs), each an image that exists; the board's validator is clean",
+              [(p["key"], p["bg"]) for p in BOARD_PLACES])
+        check(_validate_board() == [], "F: (the board's whole validator)", _validate_board())
+    scene expression BOARD_PLACE_BY_KEY["nerima"]["bg"]
+    python:
+        zz_render(0.2)
+        check(renpy.showing("bg site_tunnel") and store.scene_light == light_for_bg("bg site_tunnel"),
+              "F: a board job's site shows by its name (the Nerima tunnel: bg site_tunnel), and sets the light")
+        shot("site_tunnel")
+
+        ## -- the stand-in people (8.2), in the three states
+        _zz_keys = [k for k, path, tint in STANDIN_PEOPLE]
+        check(_zz_keys == ["mother", "father", "oda", "kurose", "nade"] and all(renpy.has_image(k, exact=True) for k in _zz_keys)
+              and builtins.set(STANDIN_DEFINED) <= builtins.set(_zz_keys),
+              "F: mother, father, oda, kurose and nade are all defined", STANDIN_DEFINED)
+        _zz_bad = []
+        for _zz_k, _zz_path, _zz_tint in STANDIN_PEOPLE:
+            if _zz_k in STANDIN_DEFINED:
+                _zz_d = zzc_image(_zz_k)
+                _zz_in = getattr(_zz_d, "child", None)
+                if not (isinstance(_zz_d, Transform) and _zz_d.function is _sprite_light and isinstance(_zz_in, Transform)
+                        and zzc_files(_zz_k) == [_zz_path] and _zz_in.matrixcolor == TintMatrix(_zz_tint)):
+                    _zz_bad.append((_zz_k, zzc_files(_zz_k)))
+        check(not _zz_bad and len(STANDIN_DEFINED) >= 1,
+              "F: each name the guarded block defined (%d) is the figure it was before: a campus sprite under its tint, lit by the scene" % len(STANDIN_DEFINED), _zz_bad)
+        if ZZC_OVERLAY:
+            check("mother" in STANDIN_DEFINED and renpy.loadable("images/char/mother_neutral.png")
+                  and zzc_files("mother") == ["images/char/shoko.png"],
+                  "F (overlay): state 2, her picture has landed and the generator has not been run: `mother` is still today's figure, and nothing raised")
+            _zz_d = zzc_image("nade")
+            check("nade" not in STANDIN_DEFINED and "images/char/nade_neutral.png" in zzc_files("nade")
+                  and "images/fx/contact_shadow.png" in zzc_files("nade") and _zz_d.function is _sprite_light,
+                  "F (overlay): state 3, with the generator's line as well: `nade` is the lit_sprite, with its contact shadow, and the stand-in block left the name alone",
+                  zzc_files("nade"))
+            check(builtins.sorted(STANDIN_DEFINED) == ["father", "kurose", "mother", "oda"], "F (overlay): the other four are defined by the block", STANDIN_DEFINED)
+        else:
+            check(builtins.set(STANDIN_DEFINED) == builtins.set(k for k in _zz_keys if "images/fx/contact_shadow.png" not in zzc_files(k)),
+                  "F (bare): state 1, with no generated line every one of the five is the block's (%d of 5 today)" % len(STANDIN_DEFINED), STANDIN_DEFINED)
+    scene bg home_living
+    show mother at pos_cl
+    show nade at pos_cr
+    python:
+        zz_render(0.3)
+        check(renpy.showing("mother") and renpy.showing("nade"), "F: `show mother` and `show nade` show, whichever is installed")
+        shot("standin_people")
+    hide mother
+    hide nade
 
     $ finish()

@@ -31,16 +31,20 @@ init -1 python:
                    "A school after hours", "Unexplained injuries", "Livestock deaths"]
 
     ## phrase: how the narration says it; short: the card's title; bg: the
-    ## placeholder picture the job plays over (real art comes later).
+    ## picture the job plays over. The second overhaul (U0c2; docs/UI2_DESIGN.md
+    ## 5.8, 3.1): five kinds of job site, each an image name of its own that
+    ## always exists (bg_placeholders.rpy defines it with a stand-in until
+    ## images/bg/site_<kind>.png is painted), so a job no longer plays over
+    ## a picture that belongs to another scene.
     BOARD_PLACES = [
-        dict(key="nerima",    phrase="a drainage tunnel in Nerima",                  short="The Nerima Tunnel",      bg="bg ruin"),
-        dict(key="adachi",    phrase="a closed maternity ward in Adachi",            short="The Adachi Ward",        bg="bg ruin"),
-        dict(key="ikebukuro", phrase="a dead platform under Ikebukuro",              short="The Dead Platform",      bg="bg city"),
-        dict(key="setagaya",  phrase="an after-hours school pool in Setagaya",       short="The Setagaya Pool",      bg="bg veil"),
-        dict(key="kita",      phrase="an apartment stairwell in Kita",               short="The Kita Stairwell",     bg="bg alley dark"),
-        dict(key="shinagawa", phrase="a train depot in Shinagawa",                   short="The Shinagawa Depot",    bg="bg city"),
-        dict(key="edogawa",   phrase="a riverbank underpass in Edogawa",             short="The Edogawa Underpass",  bg="bg town_street"),
-        dict(key="koenji",    phrase="a karaoke box in Koenji that closed mid-song", short="The Koenji Karaoke Box", bg="bg city"),
+        dict(key="nerima",    phrase="a drainage tunnel in Nerima",                  short="The Nerima Tunnel",      bg="bg site_tunnel"),
+        dict(key="adachi",    phrase="a closed maternity ward in Adachi",            short="The Adachi Ward",        bg="bg site_ward"),
+        dict(key="ikebukuro", phrase="a dead platform under Ikebukuro",              short="The Dead Platform",      bg="bg site_platform"),
+        dict(key="setagaya",  phrase="an after-hours school pool in Setagaya",       short="The Setagaya Pool",      bg="bg site_pool"),
+        dict(key="kita",      phrase="an apartment stairwell in Kita",               short="The Kita Stairwell",     bg="bg site_ward"),
+        dict(key="shinagawa", phrase="a train depot in Shinagawa",                   short="The Shinagawa Depot",    bg="bg site_platform"),
+        dict(key="edogawa",   phrase="a riverbank underpass in Edogawa",             short="The Edogawa Underpass",  bg="bg site_tunnel"),
+        dict(key="koenji",    phrase="a karaoke box in Koenji that closed mid-song", short="The Koenji Karaoke Box", bg="bg site_karaoke"),
     ]
     BOARD_PLACE_BY_KEY = dict((p["key"], p) for p in BOARD_PLACES)
 

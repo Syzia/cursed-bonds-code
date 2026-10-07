@@ -70,6 +70,17 @@ init -10 python:
         "bg shinjuku":           ("#b8c8ea", -0.08, 0.85, 0.39),
         "bg kawasaki":           ("#f2eee6", 0.00, 0.88, 0.50),   # bleached daylight
         "bg yotsuka":            ("#fff0e0", 0.00, 1.00, 0.55),
+        ## The second overhaul (U0c2, 5.8): the off-campus names that stand
+        ## in for a scene's own picture take the light of the picture each
+        ## plays over until it is painted (bg city, bg veil; the ruined hall
+        ## has no row and neither do its three). A measured row in
+        ## game/layout/light.json replaces each with its picture.
+        "bg mall_front":         ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg warehouse":          ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg site_platform":      ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg site_karaoke":       ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg mall_atrium":        ("#c0b4dc", -0.08, 0.85, 0.39),
+        "bg site_pool":          ("#c0b4dc", -0.08, 0.85, 0.39),
     }
 
     ## The second UI overhaul (U0c2; docs/UI2_DESIGN.md 6.1, 6.2, K7).
@@ -160,6 +171,10 @@ init -10 python:
                 if (loc, None) in PLACE_LIGHT:
                     return PLACE_LIGHT[(loc, None)]
                 return NEUTRAL_LIGHT
+        ## A story picture's own variant with no row of its own (a district's
+        ## night, before its measured row is written) keeps its district's.
+        if variant and base in BG_LIGHT:
+            return BG_LIGHT[base]
         return NEUTRAL_LIGHT
 
     ## The scene and show statements go through config.show; watch for
