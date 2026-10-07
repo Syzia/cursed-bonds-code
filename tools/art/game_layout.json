@@ -1,0 +1,4634 @@
+{
+ "areas": [
+  {
+   "anchor": [
+    960,
+    900
+   ],
+   "bg": "bg area_heart",
+   "hub": "courtyard",
+   "key": "heart",
+   "name": "Courtyard & Gate",
+   "places": [
+    "gate",
+    "courtyard"
+   ],
+   "spots": {
+    "courtyard": {
+     "applied": [
+      960,
+      420
+     ],
+     "default": [
+      960,
+      460
+     ]
+    },
+    "gate": {
+     "applied": [
+      960,
+      800
+     ],
+     "default": [
+      960,
+      820
+     ]
+    }
+   }
+  },
+  {
+   "anchor": [
+    420,
+    740
+   ],
+   "bg": "bg area_school",
+   "hub": "school_yard",
+   "key": "school",
+   "name": "School Building",
+   "places": [
+    "school_yard",
+    "classroom",
+    "cafeteria",
+    "infirmary",
+    "library"
+   ],
+   "spots": {
+    "cafeteria": {
+     "applied": [
+      1270,
+      380
+     ],
+     "default": [
+      1300,
+      420
+     ]
+    },
+    "classroom": {
+     "applied": [
+      520,
+      400
+     ],
+     "default": [
+      520,
+      380
+     ]
+    },
+    "infirmary": {
+     "applied": [
+      560,
+      790
+     ],
+     "default": [
+      620,
+      760
+     ]
+    },
+    "library": {
+     "applied": [
+      1300,
+      720
+     ],
+     "default": [
+      1340,
+      780
+     ]
+    },
+    "school_yard": {
+     "applied": [
+      940,
+      560
+     ],
+     "default": [
+      940,
+      560
+     ]
+    }
+   }
+  },
+  {
+   "anchor": [
+    900,
+    560
+   ],
+   "bg": "bg area_dorms",
+   "hub": "dorm_yard",
+   "key": "dorms",
+   "name": "Dormitories",
+   "places": [
+    "dorm_yard",
+    "dorm",
+    "dorm_common",
+    "girls_dorm",
+    "rooftop"
+   ],
+   "spots": {
+    "dorm": {
+     "applied": [
+      560,
+      530
+     ],
+     "default": [
+      480,
+      440
+     ]
+    },
+    "dorm_common": {
+     "applied": [
+      960,
+      750
+     ],
+     "default": [
+      960,
+      640
+     ]
+    },
+    "dorm_yard": {
+     "applied": [
+      960,
+      520
+     ],
+     "default": [
+      960,
+      520
+     ]
+    },
+    "girls_dorm": {
+     "applied": [
+      1390,
+      530
+     ],
+     "default": [
+      1440,
+      440
+     ]
+    },
+    "rooftop": {
+     "applied": [
+      975,
+      215
+     ],
+     "default": [
+      960,
+      260
+     ]
+    }
+   }
+  },
+  {
+   "anchor": [
+    1560,
+    440
+   ],
+   "bg": "bg area_staff",
+   "hub": "staff_yard",
+   "key": "staff",
+   "name": "Staff Building",
+   "places": [
+    "staff_yard",
+    "office",
+    "utahime_office",
+    "gojo_office"
+   ],
+   "spots": {
+    "gojo_office": {
+     "applied": [
+      1330,
+      730
+     ],
+     "default": [
+      1400,
+      660
+     ]
+    },
+    "office": {
+     "applied": [
+      950,
+      260
+     ],
+     "default": [
+      960,
+      340
+     ]
+    },
+    "staff_yard": {
+     "applied": [
+      950,
+      480
+     ],
+     "default": [
+      950,
+      480
+     ]
+    },
+    "utahime_office": {
+     "applied": [
+      565,
+      690
+     ],
+     "default": [
+      520,
+      660
+     ]
+    }
+   }
+  },
+  {
+   "anchor": [
+    1560,
+    760
+   ],
+   "bg": "bg area_grounds",
+   "hub": "training_yard",
+   "key": "grounds",
+   "name": "Training Grounds",
+   "places": [
+    "training_yard",
+    "training",
+    "dojo",
+    "storehouse"
+   ],
+   "spots": {
+    "dojo": {
+     "applied": [
+      1390,
+      420
+     ],
+     "default": [
+      1320,
+      420
+     ]
+    },
+    "storehouse": {
+     "applied": [
+      890,
+      810
+     ],
+     "default": [
+      960,
+      780
+     ]
+    },
+    "training": {
+     "applied": [
+      520,
+      340
+     ],
+     "default": [
+      620,
+      420
+     ]
+    },
+    "training_yard": {
+     "applied": [
+      1180,
+      620
+     ],
+     "default": [
+      1180,
+      620
+     ]
+    }
+   }
+  },
+  {
+   "anchor": [
+    1290,
+    215
+   ],
+   "bg": "bg area_mountain",
+   "hub": "trailhead",
+   "key": "mountain",
+   "name": "The Mountain",
+   "places": [
+    "trailhead",
+    "forest",
+    "riverside",
+    "ridge"
+   ],
+   "spots": {
+    "forest": {
+     "applied": [
+      430,
+      640
+     ],
+     "default": [
+      480,
+      700
+     ]
+    },
+    "ridge": {
+     "applied": [
+      760,
+      230
+     ],
+     "default": [
+      960,
+      280
+     ]
+    },
+    "riverside": {
+     "applied": [
+      1360,
+      770
+     ],
+     "default": [
+      1380,
+      640
+     ]
+    },
+    "trailhead": {
+     "applied": [
+      520,
+      870
+     ],
+     "default": [
+      520,
+      870
+     ]
+    }
+   }
+  }
+ ],
+ "exits": {
+  "cafeteria": [
+   {
+    "applied": [
+     230,
+     520
+    ],
+    "default": [
+     230,
+     520
+    ],
+    "id": "go_cafeteria__school_yard",
+    "to": "school_yard"
+   }
+  ],
+  "classroom": [
+   {
+    "applied": [
+     1670,
+     620
+    ],
+    "default": [
+     1670,
+     620
+    ],
+    "id": "go_classroom__school_yard",
+    "to": "school_yard"
+   }
+  ],
+  "courtyard": [
+   {
+    "applied": [
+     1300,
+     985
+    ],
+    "default": [
+     1300,
+     985
+    ],
+    "id": "go_courtyard__gate",
+    "to": "gate"
+   },
+   {
+    "applied": [
+     84,
+     600
+    ],
+    "default": [
+     84,
+     600
+    ],
+    "id": "go_courtyard__school_yard",
+    "to": "school_yard"
+   },
+   {
+    "applied": [
+     960,
+     310
+    ],
+    "default": [
+     960,
+     310
+    ],
+    "id": "go_courtyard__dorm_yard",
+    "to": "dorm_yard"
+   },
+   {
+    "applied": [
+     1640,
+     850
+    ],
+    "default": [
+     1640,
+     850
+    ],
+    "id": "go_courtyard__training_yard",
+    "to": "training_yard"
+   }
+  ],
+  "dojo": [
+   {
+    "applied": [
+     84,
+     620
+    ],
+    "default": [
+     84,
+     620
+    ],
+    "id": "go_dojo__training_yard",
+    "to": "training_yard"
+   }
+  ],
+  "dorm": [
+   {
+    "applied": [
+     150,
+     760
+    ],
+    "default": [
+     150,
+     760
+    ],
+    "id": "go_dorm__dorm_yard",
+    "to": "dorm_yard"
+   }
+  ],
+  "dorm_common": [
+   {
+    "applied": [
+     84,
+     540
+    ],
+    "default": [
+     84,
+     540
+    ],
+    "id": "go_dorm_common__dorm_yard",
+    "to": "dorm_yard"
+   }
+  ],
+  "dorm_yard": [
+   {
+    "applied": [
+     248,
+     728
+    ],
+    "default": [
+     248,
+     728
+    ],
+    "id": "go_dorm_yard__dorm",
+    "to": "dorm"
+   },
+   {
+    "applied": [
+     930,
+     600
+    ],
+    "default": [
+     930,
+     600
+    ],
+    "id": "go_dorm_yard__dorm_common",
+    "to": "dorm_common"
+   },
+   {
+    "applied": [
+     1530,
+     600
+    ],
+    "default": [
+     1530,
+     600
+    ],
+    "id": "go_dorm_yard__girls_dorm",
+    "to": "girls_dorm"
+   },
+   {
+    "applied": [
+     1200,
+     285
+    ],
+    "default": [
+     1200,
+     285
+    ],
+    "id": "go_dorm_yard__rooftop",
+    "to": "rooftop"
+   },
+   {
+    "applied": [
+     450,
+     960
+    ],
+    "default": [
+     450,
+     960
+    ],
+    "id": "go_dorm_yard__courtyard",
+    "to": "courtyard"
+   },
+   {
+    "applied": [
+     1290,
+     960
+    ],
+    "default": [
+     1290,
+     960
+    ],
+    "id": "go_dorm_yard__staff_yard",
+    "to": "staff_yard"
+   },
+   {
+    "applied": [
+     465,
+     615
+    ],
+    "default": [
+     465,
+     615
+    ],
+    "id": "go_dorm_yard__trailhead",
+    "to": "trailhead"
+   }
+  ],
+  "forest": [
+   {
+    "applied": [
+     84,
+     600
+    ],
+    "default": [
+     84,
+     600
+    ],
+    "id": "go_forest__trailhead",
+    "to": "trailhead"
+   }
+  ],
+  "gate": [
+   {
+    "applied": [
+     960,
+     280
+    ],
+    "default": [
+     960,
+     280
+    ],
+    "id": "go_gate__courtyard",
+    "to": "courtyard"
+   }
+  ],
+  "girls_dorm": [
+   {
+    "applied": [
+     1090,
+     560
+    ],
+    "default": [
+     1090,
+     560
+    ],
+    "id": "go_girls_dorm__dorm_yard",
+    "to": "dorm_yard"
+   }
+  ],
+  "gojo_office": [
+   {
+    "applied": [
+     1680,
+     640
+    ],
+    "default": [
+     1680,
+     640
+    ],
+    "id": "go_gojo_office__staff_yard",
+    "to": "staff_yard"
+   }
+  ],
+  "infirmary": [
+   {
+    "applied": [
+     84,
+     500
+    ],
+    "default": [
+     84,
+     500
+    ],
+    "id": "go_infirmary__school_yard",
+    "to": "school_yard"
+   }
+  ],
+  "library": [
+   {
+    "applied": [
+     1660,
+     880
+    ],
+    "default": [
+     1660,
+     880
+    ],
+    "id": "go_library__school_yard",
+    "to": "school_yard"
+   }
+  ],
+  "office": [
+   {
+    "applied": [
+     84,
+     560
+    ],
+    "default": [
+     84,
+     560
+    ],
+    "id": "go_office__staff_yard",
+    "to": "staff_yard"
+   }
+  ],
+  "ridge": [
+   {
+    "applied": [
+     84,
+     720
+    ],
+    "default": [
+     84,
+     720
+    ],
+    "id": "go_ridge__trailhead",
+    "to": "trailhead"
+   }
+  ],
+  "riverside": [
+   {
+    "applied": [
+     84,
+     760
+    ],
+    "default": [
+     84,
+     760
+    ],
+    "id": "go_riverside__trailhead",
+    "to": "trailhead"
+   }
+  ],
+  "rooftop": [
+   {
+    "applied": [
+     1680,
+     640
+    ],
+    "default": [
+     1680,
+     640
+    ],
+    "id": "go_rooftop__dorm_yard",
+    "to": "dorm_yard"
+   }
+  ],
+  "school_yard": [
+   {
+    "applied": [
+     405,
+     630
+    ],
+    "default": [
+     405,
+     630
+    ],
+    "id": "go_school_yard__classroom",
+    "to": "classroom"
+   },
+   {
+    "applied": [
+     985,
+     680
+    ],
+    "default": [
+     985,
+     680
+    ],
+    "id": "go_school_yard__cafeteria",
+    "to": "cafeteria"
+   },
+   {
+    "applied": [
+     1610,
+     810
+    ],
+    "default": [
+     1610,
+     810
+    ],
+    "id": "go_school_yard__infirmary",
+    "to": "infirmary"
+   },
+   {
+    "applied": [
+     84,
+     690
+    ],
+    "default": [
+     84,
+     690
+    ],
+    "id": "go_school_yard__library",
+    "to": "library"
+   },
+   {
+    "applied": [
+     1440,
+     950
+    ],
+    "default": [
+     1440,
+     950
+    ],
+    "id": "go_school_yard__courtyard",
+    "to": "courtyard"
+   }
+  ],
+  "staff_yard": [
+   {
+    "applied": [
+     878,
+     495
+    ],
+    "default": [
+     878,
+     495
+    ],
+    "id": "go_staff_yard__office",
+    "to": "office"
+   },
+   {
+    "applied": [
+     1485,
+     660
+    ],
+    "default": [
+     1485,
+     660
+    ],
+    "id": "go_staff_yard__utahime_office",
+    "to": "utahime_office"
+   },
+   {
+    "applied": [
+     180,
+     660
+    ],
+    "default": [
+     180,
+     660
+    ],
+    "id": "go_staff_yard__gojo_office",
+    "to": "gojo_office"
+   },
+   {
+    "applied": [
+     225,
+     930
+    ],
+    "default": [
+     225,
+     930
+    ],
+    "id": "go_staff_yard__dorm_yard",
+    "to": "dorm_yard"
+   },
+   {
+    "applied": [
+     1640,
+     850
+    ],
+    "default": [
+     1640,
+     850
+    ],
+    "id": "go_staff_yard__training_yard",
+    "to": "training_yard"
+   }
+  ],
+  "storehouse": [
+   {
+    "applied": [
+     84,
+     520
+    ],
+    "default": [
+     84,
+     520
+    ],
+    "id": "go_storehouse__training_yard",
+    "to": "training_yard"
+   }
+  ],
+  "trailhead": [
+   {
+    "applied": [
+     180,
+     660
+    ],
+    "default": [
+     180,
+     660
+    ],
+    "id": "go_trailhead__forest",
+    "to": "forest"
+   },
+   {
+    "applied": [
+     862,
+     360
+    ],
+    "default": [
+     862,
+     360
+    ],
+    "id": "go_trailhead__ridge",
+    "to": "ridge"
+   },
+   {
+    "applied": [
+     1640,
+     830
+    ],
+    "default": [
+     1640,
+     830
+    ],
+    "id": "go_trailhead__riverside",
+    "to": "riverside"
+   },
+   {
+    "applied": [
+     1080,
+     990
+    ],
+    "default": [
+     1080,
+     990
+    ],
+    "id": "go_trailhead__dorm_yard",
+    "to": "dorm_yard"
+   }
+  ],
+  "training": [
+   {
+    "applied": [
+     230,
+     600
+    ],
+    "default": [
+     230,
+     600
+    ],
+    "id": "go_training__training_yard",
+    "to": "training_yard"
+   }
+  ],
+  "training_yard": [
+   {
+    "applied": [
+     1650,
+     600
+    ],
+    "default": [
+     1650,
+     600
+    ],
+    "id": "go_training_yard__training",
+    "to": "training"
+   },
+   {
+    "applied": [
+     165,
+     600
+    ],
+    "default": [
+     165,
+     600
+    ],
+    "id": "go_training_yard__dojo",
+    "to": "dojo"
+   },
+   {
+    "applied": [
+     952,
+     645
+    ],
+    "default": [
+     952,
+     645
+    ],
+    "id": "go_training_yard__storehouse",
+    "to": "storehouse"
+   },
+   {
+    "applied": [
+     150,
+     840
+    ],
+    "default": [
+     150,
+     840
+    ],
+    "id": "go_training_yard__courtyard",
+    "to": "courtyard"
+   },
+   {
+    "applied": [
+     620,
+     560
+    ],
+    "default": [
+     620,
+     560
+    ],
+    "id": "go_training_yard__staff_yard",
+    "to": "staff_yard"
+   }
+  ],
+  "utahime_office": [
+   {
+    "applied": [
+     84,
+     520
+    ],
+    "default": [
+     84,
+     520
+    ],
+    "id": "go_utahime_office__staff_yard",
+    "to": "staff_yard"
+   }
+  ]
+ },
+ "fg_rooms": [
+  "dorm_common",
+  "cafeteria",
+  "utahime_office"
+ ],
+ "fg_talk": [
+  "cafeteria"
+ ],
+ "files": [
+  "bg_placeholders.rpy",
+  "ch1_alley.rpy",
+  "ch1b_the_offer.rpy",
+  "ch2_tour.rpy",
+  "ch4_mission.rpy",
+  "ch5_debrief.rpy",
+  "events_activities.rpy",
+  "events_arc1.rpy",
+  "events_intimate.rpy",
+  "events_romance.rpy",
+  "events_stand.rpy",
+  "explore.rpy",
+  "gui.rpy",
+  "jjk_defs.rpy",
+  "jjk_screens.rpy",
+  "jjk_sprites.rpy",
+  "layout/area_dorms.json",
+  "layout/area_grounds.json",
+  "layout/area_heart.json",
+  "layout/area_mountain.json",
+  "layout/area_school.json",
+  "layout/area_staff.json",
+  "layout/hot_cafeteria.json",
+  "layout/hot_classroom.json",
+  "layout/hot_courtyard.json",
+  "layout/hot_dorm.json",
+  "layout/hot_dorm_common.json",
+  "layout/hot_infirmary.json",
+  "layout/hot_library.json",
+  "layout/hot_ridge.json",
+  "layout/hot_riverside.json",
+  "layout/hot_storehouse.json",
+  "layout/hot_utahime_office.json",
+  "layout/view_dorm_common.json",
+  "layout/view_utahime_office.json",
+  "lighting.rpy",
+  "missions_arc1.rpy",
+  "missions_stubs.rpy",
+  "options.rpy",
+  "room_cards.rpy",
+  "room_computer.rpy",
+  "room_fishing.rpy",
+  "room_library.rpy",
+  "room_paths.rpy",
+  "room_spots.rpy",
+  "sb_activities.rpy",
+  "sb_board.rpy",
+  "sb_combat.rpy",
+  "sb_energy.rpy",
+  "sb_events.rpy",
+  "sb_grades.rpy",
+  "sb_hooks.rpy",
+  "sb_hotspots.rpy",
+  "sb_items.rpy",
+  "sb_loop.rpy",
+  "sb_market.rpy",
+  "sb_memories.rpy",
+  "sb_missions.rpy",
+  "sb_night.rpy",
+  "sb_relations.rpy",
+  "sb_rules.rpy",
+  "sb_screens.rpy",
+  "sb_threads.rpy",
+  "sb_tokyo.rpy",
+  "sb_world.rpy",
+  "screens.rpy",
+  "script.rpy",
+  "story_arc1.rpy",
+  "story_kurose.rpy",
+  "story_oda.rpy",
+  "ui_hud.rpy",
+  "ui_icons.rpy",
+  "ui_journal.rpy",
+  "ui_map.rpy",
+  "view_stage.rpy"
+ ],
+ "format": 1,
+ "frames": {
+  "caption_box": [
+   40,
+   100,
+   744,
+   160
+  ],
+  "hot_bounds": [
+   40,
+   180,
+   1700,
+   1000
+  ],
+  "hot_lanes": [
+   [
+    1330,
+    92,
+    460,
+    330
+   ],
+   [
+    400,
+    96,
+    900,
+    74
+   ]
+  ],
+  "hot_size": 72,
+  "keep_clear": {
+   "cafeteria": [
+    [
+     1500,
+     600
+    ]
+   ],
+   "classroom": [
+    [
+     1450,
+     500
+    ]
+   ],
+   "courtyard": [
+    [
+     1600,
+     690
+    ]
+   ],
+   "dorm": [
+    [
+     440,
+     590
+    ],
+    [
+     1330,
+     720
+    ]
+   ],
+   "dorm_common": [
+    [
+     1400,
+     876
+    ],
+    [
+     1590,
+     560
+    ]
+   ],
+   "infirmary": [
+    [
+     1420,
+     700
+    ]
+   ],
+   "library": [
+    [
+     300,
+     520
+    ],
+    [
+     1630,
+     480
+    ]
+   ],
+   "ridge": [
+    [
+     960,
+     250
+    ]
+   ],
+   "riverside": [
+    [
+     1580,
+     905
+    ]
+   ],
+   "storehouse": [
+    [
+     1600,
+     600
+    ]
+   ],
+   "utahime_office": [
+    [
+     1500,
+     470
+    ]
+   ]
+  },
+  "map_area": [
+   240,
+   96
+  ],
+  "map_mountain_box": [
+   1160,
+   119,
+   1420,
+   285
+  ],
+  "map_pin": 240,
+  "map_pin_frame": [
+   200,
+   200,
+   1700,
+   940
+  ],
+  "path_apart": 110,
+  "path_clear": 120,
+  "rail": {
+   "bottom": 1040,
+   "columns": 2,
+   "gap": 10,
+   "max": 8,
+   "tile": 72,
+   "top": 360,
+   "top_inner": 430
+  },
+  "sprite": [
+   760,
+   1400
+  ],
+  "stage_x": [
+   40,
+   1700
+  ],
+  "tag_y": 1036
+ },
+ "grade": {
+  "indoor": {
+   "Afternoon": [
+    "#ffeeda",
+    0.0
+   ],
+   "Evening": [
+    "#ffd0a8",
+    -0.06
+   ],
+   "Morning": [
+    "#fff2e0",
+    0.0
+   ],
+   "Night": [
+    "#a8b4e0",
+    -0.2
+   ],
+   "Noon": [
+    "#ffffff",
+    0.03
+   ]
+  },
+  "outdoor": {
+   "Afternoon": [
+    "#ffdcb4",
+    0.0
+   ],
+   "Evening": [
+    "#ff9d6b",
+    -0.12
+   ],
+   "Morning": [
+    "#ffe9d0",
+    0.02
+   ],
+   "Night": [
+    "#6f86d8",
+    -0.34
+   ],
+   "Noon": [
+    "#ffffff",
+    0.05
+   ]
+  }
+ },
+ "hash": "c9c820d6b6cebec25e5661b21144d56f091505cba49d0d42df566bedd2928377",
+ "hotspots": {
+  "cafeteria": [
+   {
+    "act": "eat",
+    "applied": [
+     1500,
+     600
+    ],
+    "default": [
+     1500,
+     600
+    ],
+    "front": false,
+    "icon": "eat",
+    "id": "counter",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "classroom": [
+   {
+    "act": null,
+    "applied": [
+     1450,
+     500
+    ],
+    "default": [
+     1450,
+     500
+    ],
+    "front": false,
+    "icon": "look",
+    "id": "blackboard",
+    "kind": "look",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "courtyard": [
+   {
+    "act": "spot_vend",
+    "applied": [
+     1600,
+     690
+    ],
+    "default": [
+     1600,
+     690
+    ],
+    "front": true,
+    "icon": "spot_vend",
+    "id": "spot_vend",
+    "kind": "standalone",
+    "standalone": true,
+    "when": "spot_vend_ok"
+   }
+  ],
+  "dorm": [
+   {
+    "act": "pc_open",
+    "applied": [
+     440,
+     590
+    ],
+    "default": [
+     440,
+     590
+    ],
+    "front": false,
+    "icon": "pc_open",
+    "id": "computer",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   },
+   {
+    "act": "sleep",
+    "applied": [
+     1330,
+     720
+    ],
+    "default": [
+     1330,
+     720
+    ],
+    "front": false,
+    "icon": "sleep",
+    "id": "bed",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "dorm_common": [
+   {
+    "act": "cards_play",
+    "applied": [
+     1400,
+     876
+    ],
+    "default": [
+     1400,
+     876
+    ],
+    "front": false,
+    "icon": "cards_play",
+    "id": "card_table",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   },
+   {
+    "act": null,
+    "applied": [
+     1590,
+     560
+    ],
+    "default": [
+     1590,
+     560
+    ],
+    "front": false,
+    "icon": "look",
+    "id": "tv",
+    "kind": "look",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "infirmary": [
+   {
+    "act": "rest",
+    "applied": [
+     1420,
+     700
+    ],
+    "default": [
+     1420,
+     700
+    ],
+    "front": false,
+    "icon": "rest",
+    "id": "cot",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "library": [
+   {
+    "act": "lib_study",
+    "applied": [
+     300,
+     520
+    ],
+    "default": [
+     300,
+     520
+    ],
+    "front": false,
+    "icon": "lib_study",
+    "id": "stacks",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   },
+   {
+    "act": null,
+    "applied": [
+     1630,
+     480
+    ],
+    "default": [
+     1630,
+     480
+    ],
+    "front": false,
+    "icon": "look",
+    "id": "locked_shelf",
+    "kind": "look",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "ridge": [
+   {
+    "act": "veil",
+    "applied": [
+     960,
+     250
+    ],
+    "default": [
+     960,
+     250
+    ],
+    "front": false,
+    "icon": "veil",
+    "id": "veil",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "riverside": [
+   {
+    "act": "fish_cast",
+    "applied": [
+     1580,
+     905
+    ],
+    "default": [
+     1580,
+     905
+    ],
+    "front": false,
+    "icon": "fish_cast",
+    "id": "bank",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "storehouse": [
+   {
+    "act": "tools",
+    "applied": [
+     1600,
+     600
+    ],
+    "default": [
+     1600,
+     600
+    ],
+    "front": false,
+    "icon": "tools",
+    "id": "racks",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   },
+   {
+    "act": "armory",
+    "applied": [
+     1600,
+     600
+    ],
+    "default": [
+     1600,
+     600
+    ],
+    "front": false,
+    "icon": "armory",
+    "id": "armory",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   }
+  ],
+  "utahime_office": [
+   {
+    "act": "board",
+    "applied": [
+     1500,
+     470
+    ],
+    "default": [
+     1500,
+     470
+    ],
+    "front": false,
+    "icon": "board",
+    "id": "board",
+    "kind": "act",
+    "standalone": false,
+    "when": null
+   }
+  ]
+ },
+ "light": {
+  "bg": {
+   "bg alley": [
+    "#bcc2de",
+    -0.08,
+    0.8,
+    0.41
+   ],
+   "bg alley dark": [
+    "#ab9cd6",
+    -0.14,
+    0.7,
+    0.35
+   ],
+   "bg city": [
+    "#b0bbe6",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg gojo_office": [
+    "#ffe4ee",
+    0.0,
+    1.0,
+    0.47
+   ],
+   "bg harajuku": [
+    "#ffeef6",
+    0.02,
+    1.0,
+    0.55
+   ],
+   "bg home_bedroom_night": [
+    "#c6cdee",
+    -0.06,
+    0.88,
+    0.41
+   ],
+   "bg kawasaki": [
+    "#f2eee6",
+    0.0,
+    0.88,
+    0.5
+   ],
+   "bg map_tokyo": [
+    "#b0bbe6",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg ridge_veil": [
+    "#c4b6e6",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg shibuya": [
+    "#dcc4ea",
+    -0.06,
+    0.9,
+    0.41
+   ],
+   "bg shinjuku": [
+    "#b8c8ea",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg utahime_office": [
+    "#e8eefc",
+    -0.03,
+    0.95,
+    0.45
+   ],
+   "bg veil": [
+    "#c0b4dc",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg yotsuka": [
+    "#fff0e0",
+    0.0,
+    1.0,
+    0.55
+   ]
+  },
+  "indoor": {
+   "Afternoon": [
+    "#fff4e8",
+    0.0,
+    1.0,
+    0.49
+   ],
+   "Evening": [
+    "#ffe8d0",
+    -0.02,
+    0.98,
+    0.47
+   ],
+   "Morning": [
+    "#fff8f0",
+    0.0,
+    1.0,
+    0.49
+   ],
+   "Night": [
+    "#e2e4f4",
+    -0.06,
+    0.92,
+    0.43
+   ],
+   "Noon": [
+    "#ffffff",
+    0.0,
+    1.0,
+    0.49
+   ]
+  },
+  "neutral": [
+   "#ffffff",
+   0.0,
+   1.0,
+   0.55
+  ],
+  "outdoor": {
+   "Afternoon": [
+    "#fff1e2",
+    0.0,
+    1.0,
+    0.55
+   ],
+   "Evening": [
+    "#ffcfa8",
+    -0.03,
+    0.95,
+    0.49
+   ],
+   "Morning": [
+    "#fff6ec",
+    0.0,
+    1.0,
+    0.55
+   ],
+   "Night": [
+    "#a8b6e8",
+    -0.1,
+    0.8,
+    0.41
+   ],
+   "Noon": [
+    "#ffffff",
+    0.0,
+    1.0,
+    0.58
+   ]
+  },
+  "place": {
+   "dorm night": [
+    "#ffdcb0",
+    -0.03,
+    0.95,
+    0.45
+   ],
+   "dorm_common evening": [
+    "#ffcca6",
+    -0.02,
+    0.97,
+    0.47
+   ],
+   "dorm_common night": [
+    "#ffe2bc",
+    -0.02,
+    0.96,
+    0.45
+   ],
+   "girls_dorm night": [
+    "#ffe8c8",
+    -0.03,
+    0.96,
+    0.45
+   ],
+   "gojo_office": [
+    "#ffe4ee",
+    0.0,
+    1.0,
+    0.47
+   ],
+   "infirmary night": [
+    "#fff0e0",
+    -0.03,
+    0.96,
+    0.45
+   ],
+   "office": [
+    "#ffc996",
+    -0.08,
+    0.9,
+    0.43
+   ],
+   "riverside evening": [
+    "#ffcf9e",
+    -0.02,
+    0.97,
+    0.49
+   ],
+   "rooftop evening": [
+    "#ffc7a2",
+    -0.02,
+    0.97,
+    0.49
+   ],
+   "rooftop night": [
+    "#a3b3e8",
+    -0.09,
+    0.8,
+    0.39
+   ],
+   "storehouse": [
+    "#eedcc4",
+    -0.06,
+    0.92,
+    0.43
+   ],
+   "utahime_office": [
+    "#e8eefc",
+    -0.03,
+    0.95,
+    0.45
+   ]
+  }
+ },
+ "people": {
+  "gojo": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    393,
+    1365,
+    423
+   ],
+   "file": "images/char/gojo_neutral.png"
+  },
+  "ijichi": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    387,
+    1365,
+    357
+   ],
+   "file": "images/char/ijichi_neutral.png"
+  },
+  "maki": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    414,
+    1365,
+    320
+   ],
+   "file": "images/char/maki_neutral.png"
+  },
+  "mc": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    387,
+    1365,
+    321
+   ],
+   "file": "images/char/mc_neutral.png"
+  },
+  "megumi": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    379,
+    1365,
+    331
+   ],
+   "file": "images/char/megumi_neutral.png"
+  },
+  "nobara": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    431,
+    1365,
+    306
+   ],
+   "file": "images/char/nobara_neutral.png"
+  },
+  "panda": {
+   "canvas": [
+    880,
+    1400
+   ],
+   "feet": [
+    447,
+    1365,
+    571
+   ],
+   "file": "images/char/panda_neutral.png"
+  },
+  "sana": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    376,
+    1365,
+    215
+   ],
+   "file": "images/char/sana_neutral.png"
+  },
+  "shoko": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    423,
+    1365,
+    298
+   ],
+   "file": "images/char/shoko_neutral.png"
+  },
+  "toge": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    391,
+    1365,
+    321
+   ],
+   "file": "images/char/toge_neutral.png"
+  },
+  "utahime": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    377,
+    1365,
+    231
+   ],
+   "file": "images/char/utahime_neutral.png"
+  },
+  "yaga": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    379,
+    1365,
+    505
+   ],
+   "file": "images/char/yaga_neutral.png"
+  },
+  "yuji": {
+   "canvas": [
+    760,
+    1400
+   ],
+   "feet": [
+    389,
+    1365,
+    313
+   ],
+   "file": "images/char/yuji_neutral.png"
+  }
+ },
+ "periods": [
+  "Morning",
+  "Noon",
+  "Afternoon",
+  "Evening",
+  "Night"
+ ],
+ "places": [
+  {
+   "area": "heart",
+   "bg": "bg gate",
+   "file": "images/bg/gate.png",
+   "hub": false,
+   "indoor": false,
+   "key": "gate",
+   "name": "Main Gate",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.5
+  },
+  {
+   "area": "heart",
+   "bg": "bg courtyard",
+   "file": "images/bg/courtyard.png",
+   "hub": true,
+   "indoor": false,
+   "key": "courtyard",
+   "name": "Courtyard",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "school",
+   "bg": "bg classroom",
+   "file": "images/bg/classroom.png",
+   "hub": false,
+   "indoor": true,
+   "key": "classroom",
+   "name": "Classroom",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "school",
+   "bg": "bg cafeteria",
+   "file": "images/bg/cafeteria.png",
+   "hub": false,
+   "indoor": true,
+   "key": "cafeteria",
+   "name": "Cafeteria",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "grounds",
+   "bg": "bg training",
+   "file": "images/bg/training.png",
+   "hub": false,
+   "indoor": true,
+   "key": "training",
+   "name": "Training Hall",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "grounds",
+   "bg": "bg dojo",
+   "file": "images/bg/dojo.png",
+   "hub": false,
+   "indoor": true,
+   "key": "dojo",
+   "name": "Dojo",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg dorm_common",
+   "file": "images/bg/dorm_common.png",
+   "hub": false,
+   "indoor": true,
+   "key": "dorm_common",
+   "name": "Dorm Common Room",
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg your_room",
+   "file": "images/bg/your_room.png",
+   "hub": false,
+   "indoor": true,
+   "key": "dorm",
+   "name": "My Room",
+   "variants": {
+    "Evening": "night",
+    "Night": "night"
+   },
+   "y": 0,
+   "zoom": 0.56
+  },
+  {
+   "area": "dorms",
+   "bg": "bg girls_dorm",
+   "file": "images/bg/girls_dorm.png",
+   "hub": false,
+   "indoor": true,
+   "key": "girls_dorm",
+   "name": "Girls' Dormitory",
+   "variants": {
+    "Night": "night"
+   },
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg rooftop",
+   "file": "images/bg/rooftop.png",
+   "hub": false,
+   "indoor": false,
+   "key": "rooftop",
+   "name": "Rooftop",
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
+   "y": 0,
+   "zoom": 0.5
+  },
+  {
+   "area": "school",
+   "bg": "bg infirmary",
+   "file": "images/bg/infirmary.png",
+   "hub": false,
+   "indoor": true,
+   "key": "infirmary",
+   "name": "Infirmary",
+   "variants": {
+    "Night": "night"
+   },
+   "y": 0,
+   "zoom": 0.54
+  },
+  {
+   "area": "staff",
+   "bg": "bg office",
+   "file": "images/bg/office.png",
+   "hub": false,
+   "indoor": true,
+   "key": "office",
+   "name": "Principal's Office",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "staff",
+   "bg": "bg utahime_office",
+   "file": "images/bg/utahime_office.png",
+   "hub": false,
+   "indoor": true,
+   "key": "utahime_office",
+   "name": "Utahime's Office",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "staff",
+   "bg": "bg gojo_office",
+   "file": "images/bg/gojo_office.png",
+   "hub": false,
+   "indoor": true,
+   "key": "gojo_office",
+   "name": "Gojo's Office",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "grounds",
+   "bg": "bg storehouse",
+   "file": "images/bg/storehouse.png",
+   "hub": false,
+   "indoor": true,
+   "key": "storehouse",
+   "name": "Storehouse",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "mountain",
+   "bg": "bg forest",
+   "file": "images/bg/forest.png",
+   "hub": false,
+   "indoor": false,
+   "key": "forest",
+   "name": "Forest Trail",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.5
+  },
+  {
+   "area": "mountain",
+   "bg": "bg riverside",
+   "file": "images/bg/riverside.png",
+   "hub": false,
+   "indoor": false,
+   "key": "riverside",
+   "name": "Riverside",
+   "variants": {
+    "Evening": "evening"
+   },
+   "y": 0,
+   "zoom": 0.5
+  },
+  {
+   "area": "mountain",
+   "bg": "bg ridge",
+   "file": "images/bg/ridge.png",
+   "hub": false,
+   "indoor": false,
+   "key": "ridge",
+   "name": "Mountain Ridge",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.48
+  },
+  {
+   "area": "school",
+   "bg": "bg library",
+   "file": "images/bg/library.png",
+   "hub": false,
+   "indoor": true,
+   "key": "library",
+   "name": "Library",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "school",
+   "bg": "bg school_yard",
+   "file": "images/bg/school_yard.png",
+   "hub": true,
+   "indoor": false,
+   "key": "school_yard",
+   "name": "School Courtyard",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg dorm_yard",
+   "file": "images/bg/dorm_yard.png",
+   "hub": true,
+   "indoor": false,
+   "key": "dorm_yard",
+   "name": "Dormitory Garden",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "staff",
+   "bg": "bg staff_yard",
+   "file": "images/bg/staff_yard.png",
+   "hub": true,
+   "indoor": false,
+   "key": "staff_yard",
+   "name": "Staff Building Steps",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "grounds",
+   "bg": "bg training_yard",
+   "file": "images/bg/training_yard.png",
+   "hub": true,
+   "indoor": false,
+   "key": "training_yard",
+   "name": "Training Yard",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "mountain",
+   "bg": "bg trailhead",
+   "file": "images/bg/trailhead.png",
+   "hub": true,
+   "indoor": false,
+   "key": "trailhead",
+   "name": "Mountain Path",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  }
+ ],
+ "poses": {
+  "dorm_common": {
+   "nobara__evening": [
+    248,
+    408,
+    632,
+    536
+   ]
+  },
+  "utahime_office": {
+   "utahime": [
+    400,
+    376,
+    236,
+    300
+   ]
+  }
+ },
+ "schedule": {
+  "gojo": {
+   "Afternoon": "-",
+   "Evening": "-",
+   "Morning": "-",
+   "Night": "-",
+   "Noon": "-"
+  },
+  "ijichi": {
+   "Afternoon": "gate",
+   "Evening": "-",
+   "Morning": "gate",
+   "Night": "-",
+   "Noon": "gate"
+  },
+  "maki": {
+   "Afternoon": "training",
+   "Evening": "riverside",
+   "Morning": "dojo",
+   "Night": "girls_dorm",
+   "Noon": "dojo"
+  },
+  "megumi": {
+   "Afternoon": "forest",
+   "Evening": "dorm_common",
+   "Morning": "classroom",
+   "Night": "-",
+   "Noon": "cafeteria"
+  },
+  "nobara": {
+   "Afternoon": "courtyard",
+   "Evening": "dorm_common",
+   "Morning": "training_yard",
+   "Night": "girls_dorm",
+   "Noon": "cafeteria"
+  },
+  "panda": {
+   "Afternoon": "training",
+   "Evening": "library",
+   "Morning": "courtyard",
+   "Night": "dorm_yard",
+   "Noon": "cafeteria"
+  },
+  "shoko": {
+   "Afternoon": "infirmary",
+   "Evening": "rooftop",
+   "Morning": "infirmary",
+   "Night": "infirmary",
+   "Noon": "infirmary"
+  },
+  "toge": {
+   "Afternoon": "school_yard",
+   "Evening": "library",
+   "Morning": "ridge",
+   "Night": "-",
+   "Noon": "cafeteria"
+  },
+  "utahime": {
+   "Afternoon": "utahime_office",
+   "Evening": "cafeteria",
+   "Morning": "utahime_office",
+   "Night": "-",
+   "Noon": "utahime_office"
+  },
+  "yaga": {
+   "Afternoon": "storehouse",
+   "Evening": "office",
+   "Morning": "office",
+   "Night": "-",
+   "Noon": "office"
+  },
+  "yuji": {
+   "Afternoon": "courtyard",
+   "Evening": "dorm_common",
+   "Morning": "training",
+   "Night": "dorm_yard",
+   "Noon": "cafeteria"
+  }
+ },
+ "screen": [
+  1920,
+  1080
+ ],
+ "slots": {
+  "cafeteria": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     520,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1380,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     760,
+     -50,
+     0.5,
+     1
+    ],
+    [
+     1380,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     250,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     530,
+     -50,
+     0.5,
+     1
+    ],
+    [
+     800,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1075,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "classroom": {
+   "1": [
+    [
+     500,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     720,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     290,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     570,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     850,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     460,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     680,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     900,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "courtyard": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     480,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     960,
+     -70,
+     0.49,
+     1
+    ]
+   ],
+   "3": [
+    [
+     340,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     720,
+     -80,
+     0.48,
+     1
+    ],
+    [
+     1090,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     250,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     545,
+     -80,
+     0.48,
+     1
+    ],
+    [
+     850,
+     -80,
+     0.48,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "dojo": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "dorm": {
+   "1": [
+    [
+     700,
+     -40,
+     0.56,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.56,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.56,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.56,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.5376,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.56,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.56,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.5376,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.5376,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.56,
+     0
+    ]
+   ]
+  },
+  "dorm_common": {
+   "1": [
+    [
+     560,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     480,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     955,
+     -228,
+     0.43,
+     1
+    ]
+   ],
+   "3": [
+    [
+     400,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     955,
+     -228,
+     0.43,
+     1
+    ],
+    [
+     1400,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     280,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     590,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     870,
+     -228,
+     0.43,
+     1
+    ],
+    [
+     1045,
+     -228,
+     0.43,
+     1
+    ]
+   ]
+  },
+  "dorm_yard": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "forest": {
+   "1": [
+    [
+     700,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.5,
+     0
+    ]
+   ]
+  },
+  "gate": {
+   "1": [
+    [
+     700,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.5,
+     0
+    ]
+   ]
+  },
+  "girls_dorm": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "gojo_office": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "infirmary": {
+   "1": [
+    [
+     700,
+     -40,
+     0.54,
+     0
+    ]
+   ],
+   "2": [
+    [
+     560,
+     -40,
+     0.54,
+     0
+    ],
+    [
+     960,
+     -60,
+     0.51,
+     1
+    ]
+   ],
+   "3": [
+    [
+     400,
+     -40,
+     0.54,
+     0
+    ],
+    [
+     760,
+     -70,
+     0.5,
+     1
+    ],
+    [
+     1100,
+     -40,
+     0.54,
+     0
+    ]
+   ],
+   "4": [
+    [
+     260,
+     -40,
+     0.54,
+     0
+    ],
+    [
+     560,
+     -70,
+     0.5,
+     1
+    ],
+    [
+     860,
+     -70,
+     0.5,
+     1
+    ],
+    [
+     1150,
+     -40,
+     0.54,
+     0
+    ]
+   ]
+  },
+  "library": {
+   "1": [
+    [
+     760,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     620,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1080,
+     -90,
+     0.47,
+     1
+    ]
+   ],
+   "3": [
+    [
+     560,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -110,
+     0.45,
+     1
+    ],
+    [
+     1290,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     480,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     760,
+     -110,
+     0.45,
+     1
+    ],
+    [
+     1000,
+     -110,
+     0.45,
+     1
+    ],
+    [
+     1190,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "office": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "ridge": {
+   "1": [
+    [
+     700,
+     -40,
+     0.48,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.48,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.48,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.48,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4608,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.48,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.48,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4608,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4608,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.48,
+     0
+    ]
+   ]
+  },
+  "riverside": {
+   "1": [
+    [
+     700,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.5,
+     0
+    ]
+   ]
+  },
+  "rooftop": {
+   "1": [
+    [
+     700,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.5,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.5,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.48,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.5,
+     0
+    ]
+   ]
+  },
+  "school_yard": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "staff_yard": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "storehouse": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "trailhead": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "training": {
+   "1": [
+    [
+     760,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     520,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1020,
+     -90,
+     0.47,
+     1
+    ]
+   ],
+   "3": [
+    [
+     340,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     760,
+     -100,
+     0.46,
+     1
+    ],
+    [
+     1150,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     250,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     560,
+     -100,
+     0.46,
+     1
+    ],
+    [
+     860,
+     -100,
+     0.46,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "training_yard": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "utahime_office": {
+   "1": [
+    [
+     470,
+     -120,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     1080,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     470,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     960,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1330,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     350,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     600,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     960,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1190,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  }
+ },
+ "slots_code": {
+  "cafeteria": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     520,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1380,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     760,
+     -50,
+     0.5,
+     1
+    ],
+    [
+     1380,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     250,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     530,
+     -50,
+     0.5,
+     1
+    ],
+    [
+     800,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1075,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "classroom": {
+   "1": [
+    [
+     500,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     720,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     290,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     570,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     850,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     460,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     680,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     900,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "courtyard": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     480,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     960,
+     -70,
+     0.49,
+     1
+    ]
+   ],
+   "3": [
+    [
+     340,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     720,
+     -80,
+     0.48,
+     1
+    ],
+    [
+     1090,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     250,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     545,
+     -80,
+     0.48,
+     1
+    ],
+    [
+     850,
+     -80,
+     0.48,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "dorm_common": {
+   "1": [
+    [
+     560,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     480,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     955,
+     -228,
+     0.43,
+     1
+    ]
+   ],
+   "3": [
+    [
+     400,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     955,
+     -228,
+     0.43,
+     1
+    ],
+    [
+     1400,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     280,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     590,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     870,
+     -228,
+     0.43,
+     1
+    ],
+    [
+     1045,
+     -228,
+     0.43,
+     1
+    ]
+   ]
+  },
+  "infirmary": {
+   "1": [
+    [
+     700,
+     -40,
+     0.54,
+     0
+    ]
+   ],
+   "2": [
+    [
+     560,
+     -40,
+     0.54,
+     0
+    ],
+    [
+     960,
+     -60,
+     0.51,
+     1
+    ]
+   ],
+   "3": [
+    [
+     400,
+     -40,
+     0.54,
+     0
+    ],
+    [
+     760,
+     -70,
+     0.5,
+     1
+    ],
+    [
+     1100,
+     -40,
+     0.54,
+     0
+    ]
+   ],
+   "4": [
+    [
+     260,
+     -40,
+     0.54,
+     0
+    ],
+    [
+     560,
+     -70,
+     0.5,
+     1
+    ],
+    [
+     860,
+     -70,
+     0.5,
+     1
+    ],
+    [
+     1150,
+     -40,
+     0.54,
+     0
+    ]
+   ]
+  },
+  "library": {
+   "1": [
+    [
+     760,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     620,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1080,
+     -90,
+     0.47,
+     1
+    ]
+   ],
+   "3": [
+    [
+     560,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -110,
+     0.45,
+     1
+    ],
+    [
+     1290,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     480,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     760,
+     -110,
+     0.45,
+     1
+    ],
+    [
+     1000,
+     -110,
+     0.45,
+     1
+    ],
+    [
+     1190,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "training": {
+   "1": [
+    [
+     760,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     520,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1020,
+     -90,
+     0.47,
+     1
+    ]
+   ],
+   "3": [
+    [
+     340,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     760,
+     -100,
+     0.46,
+     1
+    ],
+    [
+     1150,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     250,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     560,
+     -100,
+     0.46,
+     1
+    ],
+    [
+     860,
+     -100,
+     0.46,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "utahime_office": {
+   "1": [
+    [
+     470,
+     -120,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     1080,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     470,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     960,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1330,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     350,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     600,
+     -120,
+     0.52,
+     0
+    ],
+    [
+     960,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     1190,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  }
+ },
+ "spot_planned": [],
+ "weekdays": [
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
+  "Sun"
+ ],
+ "weekend": {
+  "maki": {
+   "Afternoon": "riverside",
+   "Evening": "dojo",
+   "Morning": "dojo"
+  },
+  "megumi": {
+   "Afternoon": "library",
+   "Morning": "trailhead"
+  },
+  "nobara": {
+   "Afternoon": "riverside",
+   "Evening": "courtyard",
+   "Morning": "girls_dorm"
+  },
+  "panda": {
+   "Afternoon": "riverside"
+  },
+  "shoko": {
+   "Afternoon": "staff_yard"
+  },
+  "toge": {
+   "Afternoon": "riverside",
+   "Morning": "rooftop"
+  },
+  "utahime": {
+   "Afternoon": "-",
+   "Evening": "courtyard"
+  },
+  "yaga": {
+   "Afternoon": "-",
+   "Evening": "-",
+   "Morning": "-",
+   "Noon": "-"
+  },
+  "yuji": {
+   "Afternoon": "riverside",
+   "Evening": "cafeteria",
+   "Morning": "dorm_common"
+  }
+ }
+}

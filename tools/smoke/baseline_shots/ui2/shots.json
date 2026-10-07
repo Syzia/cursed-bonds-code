@@ -1,0 +1,14 @@
+{
+ "fixture": "day 9 (Tue), Morning, the classroom with megumi in it; the map opened from there, then its school area; persistent.motion off; the pointer parked at (960, 150)",
+ "sha256": {
+  "main_menu": "eac9bbee0af1c846dd0e59292ad1cde6123eb5de020aab261f80a80307bdbecd",
+  "map_area": "4eb04df199007301f672018c687ae189fa5e19939905aed3f7bbb4de1f8fa1ea",
+  "map_campus": "25cb73888c358b2b9c7ed41228f30ed0698fc2b20850ba9207a368a3dceba77b",
+  "person": "6b0308835f30a2f61d65b4d2e96b9a6319eff020e0214320bbeb2ea7e42e91a7",
+  "place": "adb205eeb4f411eba34c33aa50b8486dee6228a0883cc88c16f8f5545dafeca4"
+ },
+ "size": [
+  2666,
+  1499
+ ]
+}

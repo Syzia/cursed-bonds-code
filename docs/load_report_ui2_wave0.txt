@@ -1,0 +1,2928 @@
+The second UI overhaul · wave 0 · the save set, loaded on the untouched tree
+=============================================================================
+Written by U0a (docs/UI2_DESIGN.md 10.2, steps 1 to 3; D42) on 7 Oct 2026, on
+branch ui2 at commit d2eb9db, before the overhaul changed a game file.
+
+THE SAVE SET (thirty saves)
+  The owner's eleven, as they stood that day (the owner keeps playing and
+  autosaves rotate, so the live folders are not the reference; this copy is):
+      ~/Desktop/JJK_backup_ui2_20261007/snapshot/
+  The nineteen made on purpose (tools/smoke/u2_mksaves.rpy says how), committed:
+      tools/smoke/assets/ui2_saves/          (copies are in the snapshot too)
+
+HOW EVERY PACKAGE RERUNS IT (standard acceptance (e))
+      tools/load_all_saves.sh --from ~/Desktop/JJK_backup_ui2_20261007/snapshot
+  or, from the repository alone, the nineteen:
+      tools/load_all_saves.sh --from tools/smoke/assets/ui2_saves
+  Wanted: every row as in the table below, by STATUS, LANDED and DEAD RETURN
+  SITES (compare by those, not by line number). "The same" means:
+    27 rows SAME, dead return sites none.
+    3 rows MOVED, each for a reason that is the tool's or the engine's, not a
+    fault, and each expected to stay exactly so:
+      auto-10           saved at the label ch1b_goodbye, lands on that scene's
+                        first line of dialogue (so it was before phase 2 too)
+      u2-act-scene      the save's log ends on the label act_study (line 92);
+                        it lands on the scene's first line (line 95), which is
+                        the line it was made on
+      u2-carry-garden   the save's log ends on sb_do_release (sb_loop.rpy:315);
+                        it lands on night_carry_home's line (sb_night.rpy:458),
+                        which is the line it was made on
+    u2-ch4-card reads SAME here (the tool stops at the first interaction, the
+    card's own timed pause), and in play it goes on from the fade after the
+    card, since a load does not wait on a timed pause.
+    RAISED 0.
+
+CHECKSUMS (shasum -a 256), the snapshot folder
+  477a8a0f3300430791bd70aaf773ef025c249e95f56700c0520fa3adfc2384d8  1-1-LT1.save
+  468c776cbf2508ff0147a9d2bccbc6f28f8584e8ce8aa32d10c3365a24288f01  auto-1-LT1.save
+  d5b75f54a74e87d5d14bd8041b0d57ab38f7b6d78907d825c9281bd9b793a5ca  auto-10-LT1.save
+  c368473271fd07884c3df71ea4c6add86d0fae06387863a1ae598f4ba9953f50  auto-2-LT1.save
+  6ae85ed7c23deade93c08ac58d03324b48281adb597b1208ae4e18f6c49a2b45  auto-3-LT1.save
+  0dd3b0865c1e7a7a158492ae7a83d5f7ae8cff3b7a59a05d11bd4e51589c40a6  auto-4-LT1.save
+  a0e3763de1a3efc051c3422f4c4abda2e3179af760ad42089974c0cae1e0853f  auto-5-LT1.save
+  a3830cb4f0d59b6a83f03215f04ef02bc8db77c4a5d2171ee1bebb814fbd8fef  auto-6-LT1.save
+  0060596bea9716aec153660ea3b79cd3681c525f2c259bf40d4667d3fe2a0574  auto-7-LT1.save
+  cf4e5622b23a909c0536b2a6f135b766aa4f7a87ba6014f2cd655c7b978906df  auto-8-LT1.save
+  40144c285b9f9e622e13f5eb1d4c36856683c4f31d61520eb63ae35dc062a09a  auto-9-LT1.save
+  a4025503241e2da6be983d2c886785a56cbc071d76dacfe0ef0e65c6dca5c818  u2-act-scene-LT1.save
+  a8c83bd0febc5a79bb83cfb3c4a83c2bdf20b0be255c1683112d50669ca33acb  u2-after-club-LT1.save
+  5cd15e7504e3bed158c69e0f1772ba01b18300c34720133bda736fe94fa94af3  u2-carry-garden-LT1.save
+  6989b6e3776f4f1de58e55f7472b8295d78959a1e3cd739cbcb0dfad5837bd8b  u2-ch4-card-LT1.save
+  a6cc30b2a20916dbbee6745319b63192b192d21f58b9469e732d6cab0448fa54  u2-ch4-menu-LT1.save
+  168f58aa690fec59956154bd5146f5cf6fc6c4235a2f7068ea1388fc593fc42c  u2-common-dialogue-LT1.save
+  63c9393cd3cc148337b5c550f0372e05fb5cda85f004aa1d1dc6ad2c8aa0337e  u2-ev-scene-LT1.save
+  3918c07500eb4c17506cc9df56939ae4526a1dab5870120daf2b826ccd7609c6  u2-garden-LT1.save
+  25386bb7df5433fc32ccd2fd855aa64fae0c65121857443d65456144bf6fbdbe  u2-garden-night-LT1.save
+  863d08c8eff3e357df53035c93c0360fcd28b04ad5cc63d5b6605c79080f6d06  u2-garden-panda-LT1.save
+  0f172c173123c7e5c802d63e4c530552676bc5bbf963de2ca0962c0585e940d0  u2-girls-evening-LT1.save
+  792a7b0179d6084a5f347508be6438fdce71a027ebca733bc811b3aa156c1add  u2-map-dorms-LT1.save
+  8b3471a6852b47fd4f7c2ea5ad7731dde56f74adec9dc3f4179ef20085aae6bc  u2-map-from-room-LT1.save
+  df312b434152e18a7efa97d677e8494aa2e2c1f58a05b1ba4d8f1f7b00215aa9  u2-night-arrival-LT1.save
+  e322fd915001b7522e0b8ea4e70412fee0ab707a50850f2d4f31d88c61a1250d  u2-prologue-mother-LT1.save
+  423ae04d317c3c04deb0301cb2f68b0d113891ba788089283dc8e5a181fc0cab  u2-riverside-yuji-LT1.save
+  225418c7d36f25344968e672c81beb155a0152f122ecafb9c178c1aa826aa987  u2-room-LT1.save
+  344348b3e1a518a4a8f555f1bcb14538f579533d9a102bb69a634c242cb483d9  u2-roster-menu-LT1.save
+  72302b6f3c8c0d81496b8692db2a1877fc5af6f8bfc8c3d51a1f3408f7621fd8  u2-warehouse-fight-LT1.save
+
+WHAT EACH MADE SAVE HOLDS
+  u2-map-from-room     the map, opened from my room
+  u2-room              standing in my room (the place view)
+  u2-garden            the Dormitory Garden, one step after the exit in my room
+  u2-map-dorms         the map with the Dormitories area opened
+  u2-common-dialogue   the first line of dialogue in the Common Room (Evening), Yuji's sprite up
+  u2-ev-scene          a spoken line in ev_yuji_1 (events_arc1.rpy:63), the sprite up
+  u2-act-scene         a line in act_study (events_activities.rpy:95), reached through "Study together"
+  u2-girls-evening     the place view in the Girls' Dormitory in the Evening, walked into in the Afternoon
+  u2-garden-night      the place view in the garden on a weekday Night, Yuji and Panda on the stage
+  u2-garden-panda      the person view of Panda there
+  u2-night-arrival     the night out's arrival menu (Shibuya)
+  u2-after-club        the night out's after-club menu
+  u2-carry-garden      night_carry_home's line, the day having turned in the garden
+  u2-riverside-yuji    the person view of Yuji at the riverside on a weekend Afternoon
+  u2-ch4-card          chapter four's chapter card (ch4_mission.rpy:14)
+  u2-ch4-menu          the menu at ch4_mission.rpy:117 (its stack holds the Pass after events_arc1.rpy:1051)
+  u2-warehouse-fight   inside the fight at missions_arc1.rpy:67 (sb_combat.rpy:256)
+  u2-roster-menu       the menu at story_arc1.rpy:353
+  u2-prologue-mother   a line of ch1b_the_offer.rpy with `mother` (and `father`) on screen
+
+The owner's own folders, loaded as they were that morning with plain
+`tools/load_all_saves.sh`: 11 slots, SAME 10, MOVED 1 (auto-10), RAISED 0.
+
+-----------------------------------------------------------------------------
+Load report · 2026-10-07 10:24 · ui2 @ d2eb9db + uncommitted changes
+Saves from (--from): /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+Slots: 30 · SAME 27 · EARLIER 0 · MOVED 3 · RECOVER 0 · UNKNOWN 0 · RAISED 0
+
+SAME: landed where it was saved. EARLIER: its statement is gone, so it rolled back
+to an older one (rollback_target) and stopped at the next interaction (LANDED).
+MOVED: its statement exists but it landed elsewhere. RECOVER: load_recover /
+return_recover ran. UNKNOWN: the save's log couldn't be read before loading.
+RAISED: an exception, a timeout or no result (see the slot's section below).
+
+SLOT                     STATUS                 SAVED AT                           LANDED                             DEAD RETURN SITES
+1-1                      SAME                   game/sb_loop.rpy:37                game/sb_loop.rpy:37                none
+auto-1                   SAME                   game/sb_loop.rpy:72                game/sb_loop.rpy:72                none
+auto-10                  MOVED                  game/ch1b_the_offer.rpy:101        game/ch1b_the_offer.rpy:108        none
+auto-2                   SAME                   game/ch2_tour.rpy:335              game/ch2_tour.rpy:335              none
+auto-3                   SAME                   game/ch2_tour.rpy:231              game/ch2_tour.rpy:231              none
+auto-4                   SAME                   game/ch2_tour.rpy:172              game/ch2_tour.rpy:172              none
+auto-5                   SAME                   game/ch2_tour.rpy:82               game/ch2_tour.rpy:82               none
+auto-6                   SAME                   game/ch1b_the_offer.rpy:187        game/ch1b_the_offer.rpy:187        none
+auto-7                   SAME                   game/ch1b_the_offer.rpy:187        game/ch1b_the_offer.rpy:187        none
+auto-8                   SAME                   game/ch1b_the_offer.rpy:187        game/ch1b_the_offer.rpy:187        none
+auto-9                   SAME                   game/ch1b_the_offer.rpy:133        game/ch1b_the_offer.rpy:133        none
+u2-act-scene             MOVED                  game/events_activities.rpy:92      game/events_activities.rpy:95      none
+u2-after-club            SAME                   game/sb_night.rpy:582              game/sb_night.rpy:582              none
+u2-carry-garden          MOVED                  game/sb_loop.rpy:315               game/sb_night.rpy:458              none
+u2-ch4-card              SAME                   game/ch4_mission.rpy:14            game/ch4_mission.rpy:14            none
+u2-ch4-menu              SAME                   game/ch4_mission.rpy:117           game/ch4_mission.rpy:117           none
+u2-common-dialogue       SAME                   game/sb_events.rpy:126             game/sb_events.rpy:126             none
+u2-ev-scene              SAME                   game/events_arc1.rpy:63            game/events_arc1.rpy:63            none
+u2-garden                SAME                   game/sb_loop.rpy:37                game/sb_loop.rpy:37                none
+u2-garden-night          SAME                   game/sb_loop.rpy:37                game/sb_loop.rpy:37                none
+u2-garden-panda          SAME                   game/sb_loop.rpy:95                game/sb_loop.rpy:95                none
+u2-girls-evening         SAME                   game/sb_loop.rpy:37                game/sb_loop.rpy:37                none
+u2-map-dorms             SAME                   game/sb_loop.rpy:72                game/sb_loop.rpy:72                none
+u2-map-from-room         SAME                   game/sb_loop.rpy:72                game/sb_loop.rpy:72                none
+u2-night-arrival         SAME                   game/sb_night.rpy:540              game/sb_night.rpy:540              none
+u2-prologue-mother       SAME                   game/ch1b_the_offer.rpy:125        game/ch1b_the_offer.rpy:125        none
+u2-riverside-yuji        SAME                   game/sb_loop.rpy:95                game/sb_loop.rpy:95                none
+u2-room                  SAME                   game/sb_loop.rpy:37                game/sb_loop.rpy:37                none
+u2-roster-menu           SAME                   game/story_arc1.rpy:353            game/story_arc1.rpy:353            none
+u2-warehouse-fight       SAME                   game/sb_combat.rpy:256             game/sb_combat.rpy:256             none
+
+Per slot: version, technique, grade, arc, day, roster size, merit, story step
+(story_point, or legacy_story_point() for a save without one, then the story row
+the objective points at), the objective, keepsakes, and where it landed.
+
+1-1
+  version    save_version 1 · game 0.1 — Prologue
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step sandbox [legacy] · m_roll_call (waiting)
+  objective  Roll call with Principal Yaga — tomorrow morning, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:37
+auto-1
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step arc_one_open [story_point] · m_roll_call (waiting)
+  objective  Roll call with Principal Yaga — tomorrow morning, wherever I am
+  keepsakes  Sana's hachimaki
+  landed     statement game/sb_loop.rpy:72
+auto-10
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step chapter_one_b [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  none
+  landed     statement game/ch1b_the_offer.rpy:108
+auto-2
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step ch2_first_years [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  Sana's hachimaki
+  landed     statement game/ch2_tour.rpy:335
+auto-3
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step ch2_yaga [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  Sana's hachimaki
+  landed     statement game/ch2_tour.rpy:231
+auto-4
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step ch2_the_veil [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  Sana's hachimaki
+  landed     statement game/ch2_tour.rpy:172
+auto-5
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step ch2_arrival [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  Sana's hachimaki
+  landed     statement game/ch2_tour.rpy:82
+auto-6
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step chapter_one_b [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  none
+  landed     statement game/ch1b_the_offer.rpy:187
+auto-7
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step chapter_one_b [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  none
+  landed     statement game/ch1b_the_offer.rpy:187
+auto-8
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step chapter_one_b [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  none
+  landed     statement game/ch1b_the_offer.rpy:187
+auto-9
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step chapter_one_b [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  none
+  landed     statement game/ch1b_the_offer.rpy:133
+u2-act-scene
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 12 Morning
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/events_activities.rpy:95
+u2-after-club
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 12 Evening
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_night.rpy:582
+u2-carry-garden
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 14 Morning
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_night.rpy:458
+u2-ch4-card
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Noon
+  roster     11 · merit 5
+  story step sandbox [legacy] · m_sunmall (active)
+  objective  Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings
+  keepsakes  none
+  landed     statement game/ch4_mission.rpy:14
+u2-ch4-menu
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Noon
+  roster     11 · merit 5
+  story step sandbox [legacy] · m_sunmall (active)
+  objective  Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings
+  keepsakes  none
+  landed     statement game/ch4_mission.rpy:117
+u2-common-dialogue
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Evening
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_events.rpy:126
+u2-ev-scene
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Evening
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/events_arc1.rpy:63
+u2-garden
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Noon
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:37
+u2-garden-night
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 12 Night
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:37
+u2-garden-panda
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 12 Night
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:95
+u2-girls-evening
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 12 Evening
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:37
+u2-map-dorms
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Noon
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:72
+u2-map-from-room
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Noon
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:72
+u2-night-arrival
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 12 Evening
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_night.rpy:540
+u2-prologue-mother
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade unassessed · arc 1 · day 1 Morning
+  roster     7 · merit 0
+  story step chapter_one_b [story_point]
+  objective  (none: before the campus opens)
+  keepsakes  none
+  landed     statement game/ch1b_the_offer.rpy:125
+u2-riverside-yuji
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 20 Afternoon
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:95
+u2-room
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Noon
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/sb_loop.rpy:37
+u2-roster-menu
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 9 Noon
+  roster     11 · merit 55
+  story step sandbox [legacy] · m_aftermath (available)
+  objective  Shoko wants to look at all four of us — mornings, wherever I am
+  keepsakes  none
+  landed     statement game/story_arc1.rpy:353
+u2-warehouse-fight
+  version    save_version 1 · game 0.4 — Arc One, phase 2
+  technique  timestop (Last Light) · grade g3 · arc 1 · day 12 Noon
+  roster     11 · merit 255
+  story step sandbox [legacy] · m_nade_1 (active)
+  objective  Yaga has a name — Principal's Office, weekday mornings, noon and evenings
+  keepsakes  Oda-sensei's letter
+  landed     statement game/sb_combat.rpy:256
+
+=== 1-1 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 3.5 s · Ren'Py 8.5.3.26051504
+NOTE slot: 1-1
+NOTE saved: 2026-09-23 16:59, game version 0.1 — Prologue, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:37
+NOTE rollback_target: game/sb_loop.rpy:37
+NOTE saved_store: save_version='<unset>' story_point='<unset>' day=1 flags=1
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:37
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1968)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'classroom'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: True
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'ijichi': 0, 'megumi': 1, 'nobara': 1}
+NOTE state.affection: {}
+NOTE state.flags: {'settled_in', 'technique_was_filament'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_prologue': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.1 — Prologue
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: sandbox [legacy] · m_roll_call (waiting)
+NOTE report.objective: Roll call with Principal Yaga — tomorrow morning, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:37
+PASS loads without an exception
+RESULT PASS
+
+=== auto-1 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-1
+NOTE saved: 2026-10-06 16:35, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:72
+NOTE rollback_target: game/sb_loop.rpy:72
+NOTE saved_store: save_version=1 story_point='arc_one_open' day=1 flags=18
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:72
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1978)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_travel
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'arc_one_open'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'cafeteria'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 67
+NOTE state.hp_max: 67
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 13
+NOTE state.insight: 16
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6, 'megumi': 6, 'nobara': 4, 'yaga': 5, 'yuji': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'asked_dead', 'asked_numbers', 'chose_jujutsu', 'dinner_argued', 'enrolled', 'first_day_training', 'gojo_asked_why', 'ijichi_rides', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'saw_the_ridge_veil', 'settled_in', 'stood_in_front', 'told_parents_truth', 'took_hachimaki', 'yaga_duty'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {'hot:tv'}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_prologue': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Roll call with Principal Yaga — tomorrow morning, wherever I am'
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'ch2_arrival': 1, 'ch2_first_years': 1, 'ch2_the_veil': 1, 'ch2_yaga': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {'hachimaki': 1}
+NOTE state.items_granted: {'flag:took_hachimaki'}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: arc_one_open [story_point] · m_roll_call (waiting)
+NOTE report.objective: Roll call with Principal Yaga — tomorrow morning, wherever I am
+NOTE report.keepsakes: Sana's hachimaki
+NOTE report.where: statement game/sb_loop.rpy:72
+PASS loads without an exception
+RESULT PASS
+
+=== auto-10 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.4 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-10
+NOTE saved: 2026-10-06 12:11, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch1b_the_offer.rpy:101
+NOTE rollback_target: game/ch1b_the_offer.rpy:101
+NOTE saved_store: save_version=0 story_point='chapter_one_b' day=1 flags=8
+NOTE status: MOVED
+NOTE landed: game/ch1b_the_offer.rpy:108
+NOTE statement: ('game/ch1b_the_offer.rpy', 694623318, 42)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, ch1b_goodbye
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'chapter_one_b'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'stood_in_front'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: chapter_one_b [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch1b_the_offer.rpy:108
+PASS loads without an exception
+RESULT PASS
+
+=== auto-2 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.9 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-2
+NOTE saved: 2026-10-06 12:12, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch2_tour.rpy:335
+NOTE rollback_target: game/ch2_tour.rpy:335
+NOTE saved_store: save_version=0 story_point='ch2_first_years' day=1 flags=15
+NOTE status: SAME
+NOTE landed: game/ch2_tour.rpy:335
+NOTE statement: ('game/ch2_tour.rpy', 694631162, 156)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'ch2_first_years'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 16
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6, 'yaga': 5}
+NOTE state.affection: {}
+NOTE state.flags: {'asked_dead', 'asked_numbers', 'chose_jujutsu', 'dinner_argued', 'enrolled', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'saw_the_ridge_veil', 'stood_in_front', 'told_parents_truth', 'took_hachimaki', 'yaga_duty'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'ch2_arrival': 1, 'ch2_first_years': 1, 'ch2_the_veil': 1, 'ch2_yaga': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {'hachimaki': 1}
+NOTE state.items_granted: {'flag:took_hachimaki'}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: ch2_first_years [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: Sana's hachimaki
+NOTE report.where: statement game/ch2_tour.rpy:335
+PASS loads without an exception
+RESULT PASS
+
+=== auto-3 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-3
+NOTE saved: 2026-10-06 12:12, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch2_tour.rpy:231
+NOTE rollback_target: game/ch2_tour.rpy:231
+NOTE saved_store: save_version=0 story_point='ch2_yaga' day=1 flags=13
+NOTE status: SAME
+NOTE landed: game/ch2_tour.rpy:231
+NOTE statement: ('game/ch2_tour.rpy', 694631162, 100)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'ch2_yaga'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 16
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'asked_dead', 'asked_numbers', 'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'saw_the_ridge_veil', 'stood_in_front', 'told_parents_truth', 'took_hachimaki'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'ch2_arrival': 1, 'ch2_the_veil': 1, 'ch2_yaga': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {'hachimaki': 1}
+NOTE state.items_granted: {'flag:took_hachimaki'}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: ch2_yaga [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: Sana's hachimaki
+NOTE report.where: statement game/ch2_tour.rpy:231
+PASS loads without an exception
+RESULT PASS
+
+=== auto-4 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 3.2 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-4
+NOTE saved: 2026-10-06 12:12, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch2_tour.rpy:172
+NOTE rollback_target: game/ch2_tour.rpy:172
+NOTE saved_store: save_version=0 story_point='ch2_the_veil' day=1 flags=11
+NOTE status: SAME
+NOTE landed: game/ch2_tour.rpy:172
+NOTE statement: ('game/ch2_tour.rpy', 694631162, 73)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'ch2_the_veil'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'asked_numbers', 'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'stood_in_front', 'told_parents_truth', 'took_hachimaki'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'ch2_arrival': 1, 'ch2_the_veil': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {'hachimaki': 1}
+NOTE state.items_granted: {'flag:took_hachimaki'}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: ch2_the_veil [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: Sana's hachimaki
+NOTE report.where: statement game/ch2_tour.rpy:172
+PASS loads without an exception
+RESULT PASS
+
+=== auto-5 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-5
+NOTE saved: 2026-10-06 12:12, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch2_tour.rpy:82
+NOTE rollback_target: game/ch2_tour.rpy:82
+NOTE saved_store: save_version=0 story_point='ch2_arrival' day=1 flags=10
+NOTE status: SAME
+NOTE landed: game/ch2_tour.rpy:82
+NOTE statement: ('game/ch2_tour.rpy', 694631162, 31)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'ch2_arrival'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 12
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'stood_in_front', 'told_parents_truth', 'took_hachimaki'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'ch2_arrival': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {'hachimaki': 1}
+NOTE state.items_granted: {'flag:took_hachimaki'}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: ch2_arrival [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: Sana's hachimaki
+NOTE report.where: statement game/ch2_tour.rpy:82
+PASS loads without an exception
+RESULT PASS
+
+=== auto-6 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.6 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-6
+NOTE saved: 2026-10-06 12:11, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch1b_the_offer.rpy:187
+NOTE rollback_target: game/ch1b_the_offer.rpy:187
+NOTE saved_store: save_version=0 story_point='chapter_one_b' day=1 flags=9
+NOTE status: SAME
+NOTE landed: game/ch1b_the_offer.rpy:187
+NOTE statement: ('game/ch1b_the_offer.rpy', 694623318, 80)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'chapter_one_b'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 12
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'stood_in_front', 'told_parents_truth'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: chapter_one_b [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch1b_the_offer.rpy:187
+PASS loads without an exception
+RESULT PASS
+
+=== auto-7 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.6 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-7
+NOTE saved: 2026-10-06 12:11, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch1b_the_offer.rpy:187
+NOTE rollback_target: game/ch1b_the_offer.rpy:187
+NOTE saved_store: save_version=0 story_point='chapter_one_b' day=1 flags=9
+NOTE status: SAME
+NOTE landed: game/ch1b_the_offer.rpy:187
+NOTE statement: ('game/ch1b_the_offer.rpy', 694623318, 80)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'chapter_one_b'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 12
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'stood_in_front', 'told_parents_truth'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: chapter_one_b [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch1b_the_offer.rpy:187
+PASS loads without an exception
+RESULT PASS
+
+=== auto-8 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-8
+NOTE saved: 2026-10-06 12:11, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch1b_the_offer.rpy:187
+NOTE rollback_target: game/ch1b_the_offer.rpy:187
+NOTE saved_store: save_version=0 story_point='chapter_one_b' day=1 flags=9
+NOTE status: SAME
+NOTE landed: game/ch1b_the_offer.rpy:187
+NOTE statement: ('game/ch1b_the_offer.rpy', 694623318, 80)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'chapter_one_b'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 12
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'stood_in_front', 'told_parents_truth'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: chapter_one_b [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch1b_the_offer.rpy:187
+PASS loads without an exception
+RESULT PASS
+
+=== auto-9 · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot
+# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+NOTE slot: auto-9
+NOTE saved: 2026-10-06 12:11, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch1b_the_offer.rpy:133
+NOTE rollback_target: game/ch1b_the_offer.rpy:133
+NOTE saved_store: save_version=0 story_point='chapter_one_b' day=1 flags=8
+NOTE status: SAME
+NOTE landed: game/ch1b_the_offer.rpy:133
+NOTE statement: ('game/ch1b_the_offer.rpy', 694623318, 58)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'chapter_one_b'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Kaito'
+NOTE state.mc_surname: 'Amagiri'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'sana_sketchbook', 'sana_told_the_thing', 'stood_in_front'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: chapter_one_b [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch1b_the_offer.rpy:133
+PASS loads without an exception
+RESULT PASS
+
+=== u2-act-scene · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.4 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-act-scene
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/events_activities.rpy:92
+NOTE rollback_target: game/events_activities.rpy:92
+NOTE saved_store: save_version=1 story_point=None day=12 flags=15
+NOTE status: MOVED
+NOTE landed: game/events_activities.rpy:95
+NOTE statement: ('game/events_activities.rpy', 654544528, 16)
+NOTE call_stack_depth: 3
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_activity, stage_person, act_study
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 12
+NOTE state.period: 'Morning'
+NOTE state.here: 'classroom'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 63, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': 'cafeteria', 'Evening': '-', 'Morning': 'cafeteria', 'Night': 'courtyard', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 12 Morning
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/events_activities.rpy:95
+PASS loads without an exception
+RESULT PASS
+
+=== u2-after-club · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.0 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-after-club
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_night.rpy:582
+NOTE rollback_target: game/sb_night.rpy:582
+NOTE saved_store: save_version=1 story_point=None day=12 flags=16
+NOTE status: SAME
+NOTE landed: game/sb_night.rpy:582
+NOTE statement: ('game/sb_night.rpy', 863328660, 163)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 12
+NOTE state.period: 'Evening'
+NOTE state.here: 'dorm_yard'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 92
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 66, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'market_found', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': 'cafeteria', 'Evening': '-', 'Morning': 'cafeteria', 'Night': 'courtyard', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {'megumi': {'grade': 'g2', 'xp': 4, 'promoted_day': None}}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 38500
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 12 Evening
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_night.rpy:582
+PASS loads without an exception
+RESULT PASS
+
+=== u2-carry-garden · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-carry-garden
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:315
+NOTE rollback_target: game/sb_loop.rpy:315
+NOTE saved_store: save_version=1 story_point=None day=14 flags=16
+NOTE status: MOVED
+NOTE landed: game/sb_night.rpy:458
+NOTE statement: ('game/sb_night.rpy', 863328660, 92)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_do_release, night_carry_home
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 14
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm_yard'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 66, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'market_found', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': 'rooftop', 'Evening': '-', 'Morning': 'training', 'Night': 'office', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {'maki': {'grade': 'g4', 'xp': 6, 'promoted_day': None}, 'megumi': {'grade': 'g2', 'xp': 9, 'promoted_day': None}, 'nobara': {'grade': 'g3', 'xp': 5, 'promoted_day': None}, 'panda': {'grade': 'g2', 'xp': 3, 'promoted_day': None}, 'toge': {'grade': 's1', 'xp': 4, 'promoted_day': None}, 'yuji': {'grade': 'g4', 'xp': 7, 'promoted_day': None}}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 38500
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 14 Morning
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_night.rpy:458
+PASS loads without an exception
+RESULT PASS
+
+=== u2-ch4-card · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 1.2 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-ch4-card
+NOTE saved: 2026-10-07 10:18, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch4_mission.rpy:14
+NOTE rollback_target: game/ch4_mission.rpy:14
+NOTE saved_store: save_version=1 story_point=None day=9 flags=13
+NOTE status: SAME
+NOTE landed: game/ch4_mission.rpy:14
+NOTE statement: ('game/ch4_mission.rpy', 652177532, 382)
+NOTE call_stack_depth: 4
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, chapter_four
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Noon'
+NOTE state.here: 'office'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 5
+NOTE state.merit_granted: {'mission:m_roll_call'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'accepted_sunmall', 'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'ev_mission_sunmall', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {'m_sunmall': 'active'}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: "Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings"
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_four': 9, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Noon
+NOTE report.roster: 11
+NOTE report.merit: 5
+NOTE report.story_step: sandbox [legacy] · m_sunmall (active)
+NOTE report.objective: Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch4_mission.rpy:14
+PASS loads without an exception
+RESULT PASS
+
+=== u2-ch4-menu · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 2.9 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-ch4-menu
+NOTE saved: 2026-10-07 10:18, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch4_mission.rpy:117
+NOTE rollback_target: game/ch4_mission.rpy:117
+NOTE saved_store: save_version=1 story_point=None day=9 flags=13
+NOTE status: SAME
+NOTE landed: game/ch4_mission.rpy:117
+NOTE statement: ('game/ch4_mission.rpy', 652177532, 455)
+NOTE call_stack_depth: 4
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Noon'
+NOTE state.here: 'office'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 5
+NOTE state.merit_granted: {'mission:m_roll_call'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'accepted_sunmall', 'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'ev_mission_sunmall', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {'m_sunmall': 'active'}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: "Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings"
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_four': 9, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Noon
+NOTE report.roster: 11
+NOTE report.merit: 5
+NOTE report.story_step: sandbox [legacy] · m_sunmall (active)
+NOTE report.objective: Yaga has a mission for the first-years — Principal's Office, weekday mornings, noon and evenings
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch4_mission.rpy:117
+PASS loads without an exception
+RESULT PASS
+
+=== u2-common-dialogue · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.5 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-common-dialogue
+NOTE saved: 2026-10-07 10:21, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_events.rpy:126
+NOTE rollback_target: game/sb_events.rpy:126
+NOTE saved_store: save_version=1 story_point=None day=9 flags=14
+NOTE status: SAME
+NOTE landed: game/sb_events.rpy:126
+NOTE statement: ('game/sb_events.rpy', 652177547, 1957)
+NOTE call_stack_depth: 3
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_activity, stage_person, sb_smalltalk
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Evening'
+NOTE state.here: 'dorm_common'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 61}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Evening
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_events.rpy:126
+PASS loads without an exception
+RESULT PASS
+
+=== u2-ev-scene · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.4 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-ev-scene
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/events_arc1.rpy:63
+NOTE rollback_target: game/events_arc1.rpy:63
+NOTE saved_store: save_version=1 story_point=None day=9 flags=14
+NOTE status: SAME
+NOTE landed: game/events_arc1.rpy:63
+NOTE statement: ('game/events_arc1.rpy', 652177537, 758)
+NOTE call_stack_depth: 4
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Evening'
+NOTE state.here: 'dorm_common'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 61}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Evening
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/events_arc1.rpy:63
+PASS loads without an exception
+RESULT PASS
+
+=== u2-garden · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.5 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-garden
+NOTE saved: 2026-10-07 10:21, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:37
+NOTE rollback_target: game/sb_loop.rpy:37
+NOTE saved_store: save_version=1 story_point=None day=9 flags=14
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:37
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1968)
+NOTE call_stack_depth: 0
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_do_path_dorm_yard, path_walk, rule_walk_to
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Noon'
+NOTE state.here: 'dorm_yard'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Noon
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:37
+PASS loads without an exception
+RESULT PASS
+
+=== u2-garden-night · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 2.9 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-garden-night
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:37
+NOTE rollback_target: game/sb_loop.rpy:37
+NOTE saved_store: save_version=1 story_point=None day=12 flags=15
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:37
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1968)
+NOTE call_stack_depth: 0
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_do_release
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 12
+NOTE state.period: 'Night'
+NOTE state.here: 'dorm_yard'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 92
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 66, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': 'cafeteria', 'Evening': '-', 'Morning': 'cafeteria', 'Night': 'courtyard', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {'megumi': {'grade': 'g2', 'xp': 4, 'promoted_day': None}}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 12 Night
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:37
+PASS loads without an exception
+RESULT PASS
+
+=== u2-garden-panda · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-garden-panda
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:95
+NOTE rollback_target: game/sb_loop.rpy:95
+NOTE saved_store: save_version=1 story_point=None day=12 flags=15
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:95
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1988)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_person
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 12
+NOTE state.period: 'Night'
+NOTE state.here: 'dorm_yard'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 92
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 66, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': 'cafeteria', 'Evening': '-', 'Morning': 'cafeteria', 'Night': 'courtyard', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {'megumi': {'grade': 'g2', 'xp': 4, 'promoted_day': None}}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 12 Night
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:95
+PASS loads without an exception
+RESULT PASS
+
+=== u2-girls-evening · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-girls-evening
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:37
+NOTE rollback_target: game/sb_loop.rpy:37
+NOTE saved_store: save_version=1 story_point=None day=12 flags=15
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:37
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1968)
+NOTE call_stack_depth: 0
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_do_release
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 12
+NOTE state.period: 'Evening'
+NOTE state.here: 'girls_dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 92
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 66, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': 'cafeteria', 'Evening': '-', 'Morning': 'cafeteria', 'Night': 'courtyard', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {'megumi': {'grade': 'g2', 'xp': 4, 'promoted_day': None}}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 12 Evening
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:37
+PASS loads without an exception
+RESULT PASS
+
+=== u2-map-dorms · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-map-dorms
+NOTE saved: 2026-10-07 10:21, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:72
+NOTE rollback_target: game/sb_loop.rpy:72
+NOTE saved_store: save_version=1 story_point=None day=9 flags=14
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:72
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1978)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_travel
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Noon'
+NOTE state.here: 'dorm_yard'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Noon
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:72
+PASS loads without an exception
+RESULT PASS
+
+=== u2-map-from-room · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-map-from-room
+NOTE saved: 2026-10-07 10:21, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:72
+NOTE rollback_target: game/sb_loop.rpy:72
+NOTE saved_store: save_version=1 story_point=None day=9 flags=13
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:72
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1978)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_travel
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Noon'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Noon
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:72
+PASS loads without an exception
+RESULT PASS
+
+=== u2-night-arrival · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.0 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-night-arrival
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_night.rpy:540
+NOTE rollback_target: game/sb_night.rpy:540
+NOTE saved_store: save_version=1 story_point=None day=12 flags=15
+NOTE status: SAME
+NOTE landed: game/sb_night.rpy:540
+NOTE statement: ('game/sb_night.rpy', 863328660, 135)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 12
+NOTE state.period: 'Evening'
+NOTE state.here: 'dorm_yard'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 92
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 66, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': 'cafeteria', 'Evening': '-', 'Morning': 'cafeteria', 'Night': 'courtyard', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {'megumi': {'grade': 'g2', 'xp': 4, 'promoted_day': None}}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 12 Evening
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_night.rpy:540
+PASS loads without an exception
+RESULT PASS
+
+=== u2-prologue-mother · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 2.8 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-prologue-mother
+NOTE saved: 2026-10-07 10:17, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/ch1b_the_offer.rpy:125
+NOTE rollback_target: game/ch1b_the_offer.rpy:125
+NOTE saved_store: save_version=0 story_point='chapter_one_b' day=1 flags=8
+NOTE status: SAME
+NOTE landed: game/ch1b_the_offer.rpy:125
+NOTE statement: ('game/ch1b_the_offer.rpy', 835521326, 138)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: 'chapter_one_b'
+NOTE state.day: 1
+NOTE state.period: 'Morning'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: None
+NOTE state.merit: 0
+NOTE state.merit_granted: {}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi']
+NOTE state.bonds: {'gojo': 6}
+NOTE state.affection: {}
+NOTE state.flags: {'chose_jujutsu', 'dinner_argued', 'gojo_asked_why', 'last_light_woke', 'named_last_light', 'reached_for_her', 'sana_sketchbook', 'sana_told_the_thing'}
+NOTE state.threads: {}
+NOTE state.done_events: {}
+NOTE state.gojo_today: {'Afternoon': 'courtyard', 'Evening': 'courtyard', 'Morning': '-', 'Night': 'courtyard', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: []
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: None
+NOTE state.board_offers: []
+NOTE state.board_week: -1
+NOTE state.memories_seen: {'ch1_diner': 1, 'ch1_gojo': 1, 'ch1_the_thing': 1, 'ch1b_goodbye': 1, 'chapter_one_b': 1}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 0
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: unassessed
+NOTE report.arc: 1
+NOTE report.day: 1 Morning
+NOTE report.roster: 7
+NOTE report.merit: 0
+NOTE report.story_step: chapter_one_b [story_point]
+NOTE report.objective: (none: before the campus opens)
+NOTE report.keepsakes: none
+NOTE report.where: statement game/ch1b_the_offer.rpy:125
+PASS loads without an exception
+RESULT PASS
+
+=== u2-riverside-yuji · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.4 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-riverside-yuji
+NOTE saved: 2026-10-07 10:22, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:95
+NOTE rollback_target: game/sb_loop.rpy:95
+NOTE saved_store: save_version=1 story_point=None day=20 flags=16
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:95
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1988)
+NOTE call_stack_depth: 1
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, sb_person
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 20
+NOTE state.period: 'Afternoon'
+NOTE state.here: 'riverside'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 64
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 14
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 66, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 69}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'market_found', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived', 'yuji_kindness'}
+NOTE state.threads: {'yuji_countdown': 1}
+NOTE state.done_events: {'ev_yuji_1', 'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'cafeteria', 'Morning': 'rooftop', 'Night': '-', 'Noon': 'courtyard'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {'maki': {'grade': 'g4', 'xp': 6, 'promoted_day': None}, 'megumi': {'grade': 'g2', 'xp': 9, 'promoted_day': None}, 'nobara': {'grade': 'g3', 'xp': 5, 'promoted_day': None}, 'panda': {'grade': 'g2', 'xp': 3, 'promoted_day': None}, 'toge': {'grade': 's1', 'xp': 4, 'promoted_day': None}, 'yuji': {'grade': 'g4', 'xp': 7, 'promoted_day': None}}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ev_yuji_1': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 38500
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 20 Afternoon
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:95
+PASS loads without an exception
+RESULT PASS
+
+=== u2-room · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.5 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-room
+NOTE saved: 2026-10-07 10:21, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_loop.rpy:37
+NOTE rollback_target: game/sb_loop.rpy:37
+NOTE saved_store: save_version=1 story_point=None day=9 flags=14
+NOTE status: SAME
+NOTE landed: game/sb_loop.rpy:37
+NOTE statement: ('game/sb_loop.rpy', 652177548, 1968)
+NOTE call_stack_depth: 0
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Noon'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'st_roll_call'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Noon
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/sb_loop.rpy:37
+PASS loads without an exception
+RESULT PASS
+
+=== u2-roster-menu · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 3.3 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-roster-menu
+NOTE saved: 2026-10-07 10:16, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/story_arc1.rpy:353
+NOTE rollback_target: game/story_arc1.rpy:353
+NOTE saved_store: save_version=1 story_point=None day=9 flags=13
+NOTE status: SAME
+NOTE landed: game/story_arc1.rpy:353
+NOTE statement: ('game/story_arc1.rpy', 652341153, 215)
+NOTE call_stack_depth: 2
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 9
+NOTE state.period: 'Noon'
+NOTE state.here: 'dorm'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 55
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_roll_call', 'mission:m_sunmall'}
+NOTE state.quick_menu: True
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 12
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'ijichi_rides', 'intensive_done', 'mission_board_open', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'st_roll_call', 'st_roster'}
+NOTE state.gojo_today: {'Afternoon': '-', 'Evening': 'courtyard', 'Morning': 'office', 'Night': 'office', 'Noon': 'training'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {}
+NOTE state.missions_done: {}
+NOTE state.mission_done_day: {'m_intensive': 0, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_roster': 0, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: 'Shoko wants to look at all four of us — mornings, wherever I am'
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'st_roster': 9}
+NOTE state.inventory: {}
+NOTE state.items_granted: {}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 9 Noon
+NOTE report.roster: 11
+NOTE report.merit: 55
+NOTE report.story_step: sandbox [legacy] · m_aftermath (available)
+NOTE report.objective: Shoko wants to look at all four of us — mornings, wherever I am
+NOTE report.keepsakes: none
+NOTE report.where: statement game/story_arc1.rpy:353
+PASS loads without an exception
+RESULT PASS
+
+=== u2-warehouse-fight · /Users/hunterjolly/Desktop/JJK_backup_ui2_20261007/snapshot + /Users/hunterjolly/Desktop/JJKgame.md/tools/smoke/assets/ui2_saves
+# load_slot · 2.7 s · Ren'Py 8.5.3.26051504
+NOTE slot: u2-warehouse-fight
+NOTE saved: 2026-10-07 10:18, game version 0.4 — Arc One, phase 2, Ren'Py [8, 5, 3, 26051504]
+NOTE saved_at: game/sb_combat.rpy:256
+NOTE rollback_target: game/sb_combat.rpy:256
+NOTE saved_store: save_version=1 story_point=None day=12 flags=18
+NOTE status: SAME
+NOTE landed: game/sb_combat.rpy:256
+NOTE statement: ('game/sb_combat.rpy', 654697849, 11)
+NOTE call_stack_depth: 4
+NOTE dead_return_sites: none
+NOTE after_load_callbacks: ran
+NOTE recover_labels: none
+NOTE labels_after_load: _before_load, _after_load, combat
+NOTE showing mc before migrations: False
+NOTE showing mc: False
+NOTE state.save_version: 1
+NOTE state.story_point: None
+NOTE state.day: 12
+NOTE state.period: 'Noon'
+NOTE state.here: 'office'
+NOTE state.arc: 1
+NOTE state.arc_start_day: 1
+NOTE state.technique: 'timestop'
+NOTE state.tname: 'Last Light'
+NOTE state.grade: 'g3'
+NOTE state.merit: 255
+NOTE state.merit_granted: {'ch5_recommendation', 'mission:m_aftermath', 'mission:m_kurose', 'mission:m_noise', 'mission:m_oda_letter', 'mission:m_roll_call', 'mission:m_second_years', 'mission:m_sunmall'}
+NOTE state.quick_menu: False
+NOTE state.hp: 60
+NOTE state.hp_max: 64
+NOTE state.ce: 60
+NOTE state.ce_max: 60
+NOTE state.control: 14
+NOTE state.output: 10
+NOTE state.insight: 10
+NOTE state.stamina: 100
+NOTE state.stamina_max: 100
+NOTE state.companion: None
+NOTE state.explore_mode: False
+NOTE state.mc_name: 'Tester'
+NOTE state.mc_surname: 'Harness'
+NOTE state.roster: ['yuji', 'megumi', 'nobara', 'shoko', 'gojo', 'yaga', 'ijichi', 'maki', 'panda', 'toge', 'utahime']
+NOTE state.bonds: {'gojo': 60, 'ijichi': 60, 'maki': 60, 'megumi': 60, 'nobara': 60, 'panda': 60, 'shoko': 60, 'toge': 60, 'utahime': 60, 'yaga': 60, 'yuji': 60}
+NOTE state.affection: {}
+NOTE state.flags: {'aftermath_done', 'armory_open', 'chose_jujutsu', 'dinner_listened', 'enrolled', 'found_nade_marks', 'ijichi_rides', 'intensive_done', 'kurose_met', 'met_second_years', 'mission_board_open', 'oda_letter_read', 'recommended_g3', 'roll_call', 'saw_the_ridge_veil', 'settled_in', 'storehouse_access', 'sunmall_done', 'utahime_arrived'}
+NOTE state.threads: {}
+NOTE state.done_events: {'ms_nade_1', 'st_aftermath', 'st_kurose', 'st_noise', 'st_oda_letter', 'st_roll_call', 'st_second_years'}
+NOTE state.gojo_today: {'Afternoon': 'cafeteria', 'Evening': '-', 'Morning': 'cafeteria', 'Night': 'courtyard', 'Noon': '-'}
+NOTE state.gojo_in: False
+NOTE state.actions_today: {}
+NOTE state.hide_side_images: False
+NOTE state.npc_state: {}
+NOTE state.promotions_log: [{'day': 9, 'who': 'mc', 'grade': 'g3', 'why': ''}]
+NOTE state.pending_remarks: {}
+NOTE state.mission_state: {'m_nade_1': 'active'}
+NOTE state.missions_done: {'m_aftermath', 'm_kurose', 'm_noise', 'm_oda_letter', 'm_second_years'}
+NOTE state.mission_done_day: {'m_aftermath': 9, 'm_intensive': 0, 'm_kurose': 9, 'm_noise': 9, 'm_oda_letter': 9, 'm_prologue': 0, 'm_promo_g3': 0, 'm_roll_call': 0, 'm_second_years': 9, 'm_sunmall': 0, 'm_utahime': 0}
+NOTE state.mission_retry_day: {}
+NOTE state.last_objective: "Yaga has a name — Principal's Office, weekday mornings, noon and evenings"
+NOTE state.board_offers: [{'id': 'b1.0', 'grade': 'g3', 'true_grade': 'g3', 'case': 'Residual clean-up', 'place': 'koenji', 'curse': 'a nest of finger-length curses', 'twist': 'decoy', 'title': 'The Koenji Karaoke Box', 'blurb': 'Residual clean-up. A karaoke box in Koenji that closed mid-song. The report says a nest of finger-length curses.', 'merit': 18, 'yen': (6000, 10000), 'drop': ['sealing_talisman', 'deep_well', 'iron_seal', 'nunchaku'], 'senior_only': False}, {'id': 'b1.1', 'grade': 'g4', 'true_grade': 'g3', 'case': 'Missing persons', 'place': 'ikebukuro', 'curse': 'a grudge the size of a dog', 'twist': 'none', ... (1271 chars)
+NOTE state.board_week: 1
+NOTE state.memories_seen: {'ch1_diner': 0, 'ch1_gojo': 0, 'ch1_the_thing': 0, 'ch1b_goodbye': 0, 'ch2_arrival': 0, 'ch2_first_years': 0, 'ch2_the_veil': 0, 'ch2_yaga': 0, 'chapter_one_b': 0, 'ms_nade_1': 12}
+NOTE state.inventory: {'oda_letter': 1}
+NOTE state.items_granted: {'flag:oda_letter_read'}
+NOTE state.yen: 40000
+NOTE state.equipped_tool: None
+NOTE state.equipped_talismans: []
+NOTE state.districts_visited: {}
+NOTE state._in_replay: None
+NOTE report.version: save_version 1 · game 0.4 — Arc One, phase 2
+NOTE report.technique: timestop (Last Light)
+NOTE report.grade: g3
+NOTE report.arc: 1
+NOTE report.day: 12 Noon
+NOTE report.roster: 11
+NOTE report.merit: 255
+NOTE report.story_step: sandbox [legacy] · m_nade_1 (active)
+NOTE report.objective: Yaga has a name — Principal's Office, weekday mornings, noon and evenings
+NOTE report.keepsakes: Oda-sensei's letter
+NOTE report.where: statement game/sb_combat.rpy:256
+PASS loads without an exception
+RESULT PASS
+

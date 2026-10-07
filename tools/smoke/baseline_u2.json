@@ -1,0 +1,10839 @@
+{
+ "actions": {
+  "Sat": {
+   "Afternoon": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "To the Girls' Dormitory",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "car",
+      "Ask Ijichi for a ride",
+      "Into the city. Half a day.",
+      2
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "cards_play",
+      "Play cards",
+      "Blackjack or poker, for yen. Five hands a sitting.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "I am not walking into the girls' dormitory after dark uninvited. That is how people get nailed to things.",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Morning": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "cards_play",
+      "Play cards",
+      "Blackjack or poker, for yen. Five hands a sitting.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "To the Girls' Dormitory",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "car",
+      "Ask Ijichi for a ride",
+      "Into the city. Half a day.",
+      2
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "board",
+      "Mission board",
+      "Graded jobs. Bring someone.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Night": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "I am not walking into the girls' dormitory after dark uninvited. That is how people get nailed to things.",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "Yaga's office is dark and locked.",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "Her door is shut. There's light under it.",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "Gojo's office is locked. The television is on in there anyway.",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Noon": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "To the Girls' Dormitory",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "car",
+      "Ask Ijichi for a ride",
+      "Into the city. Half a day.",
+      2
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "board",
+      "Mission board",
+      "Graded jobs. Bring someone.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   }
+  },
+  "Tue": {
+   "Afternoon": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "To the Girls' Dormitory",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "car",
+      "Ask Ijichi for a ride",
+      "Into the city. Half a day.",
+      2
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "board",
+      "Mission board",
+      "Graded jobs. Bring someone.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "cards_play",
+      "Play cards",
+      "Blackjack or poker, for yen. Five hands a sitting.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "I am not walking into the girls' dormitory after dark uninvited. That is how people get nailed to things.",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Morning": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "To the Girls' Dormitory",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "car",
+      "Ask Ijichi for a ride",
+      "Into the city. Half a day.",
+      2
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "board",
+      "Mission board",
+      "Graded jobs. Bring someone.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Night": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "I am not walking into the girls' dormitory after dark uninvited. That is how people get nailed to things.",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "Yaga's office is dark and locked.",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "Her door is shut. There's light under it.",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "Gojo's office is locked. The television is on in there anyway.",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   },
+   "Noon": {
+    "cafeteria": [
+     [
+      "eat",
+      "Eat",
+      "Stamina. Everyone's here at noon.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "classroom": [
+     [
+      "study",
+      "Study",
+      "Insight. The textbook is four hundred pages.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "courtyard": [
+     [
+      "train",
+      "Practice",
+      "Forms, in the open, where people can see.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_gate",
+      "To the Main Gate",
+      "",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dojo": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm": [
+     [
+      "sleep",
+      "Sleep",
+      "End the day. Everything comes back.",
+      0
+     ],
+     [
+      "study",
+      "Study",
+      "Insight. Quiet. Nobody bothers me.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "pc_open",
+      "My computer",
+      "Look something up. Reading is free.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_common": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "dorm_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_dorm_common",
+      "To the Dorm Common Room",
+      "",
+      0
+     ],
+     [
+      "path_dorm",
+      "To My Room",
+      "",
+      0
+     ],
+     [
+      "path_girls_dorm",
+      "To the Girls' Dormitory",
+      "",
+      0
+     ],
+     [
+      "path_rooftop",
+      "To the Rooftop",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "forest": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gate": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "car",
+      "Ask Ijichi for a ride",
+      "Into the city. Half a day.",
+      2
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "girls_dorm": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "gojo_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "infirmary": [
+     [
+      "rest",
+      "Get patched up",
+      "Rest, and Shoko if she's in. Once a day.",
+      0
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "library": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_school_yard",
+      "To the School Courtyard",
+      "",
+      0
+     ],
+     [
+      "lib_study",
+      "Study in the stacks",
+      "One shelf an hour. More than a desk gives.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "ridge": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "veil",
+      "Look up at the veil",
+      "Free. Once a day.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "riverside": [
+     [
+      "swim",
+      "Swim",
+      "Cold. Clears my head.",
+      1
+     ],
+     [
+      "train",
+      "Train",
+      "Rough ground. Good footwork.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_trailhead",
+      "To the Mountain Path",
+      "",
+      0
+     ],
+     [
+      "fish_cast",
+      "Fish",
+      "Three casts. The river decides the rest.",
+      1
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "rooftop": [
+     [
+      "think",
+      "Sit a while",
+      "Nothing happens. That's the point.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "school_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_classroom",
+      "To the Classroom",
+      "",
+      0
+     ],
+     [
+      "path_cafeteria",
+      "To the Cafeteria",
+      "",
+      0
+     ],
+     [
+      "path_infirmary",
+      "To the Infirmary",
+      "",
+      0
+     ],
+     [
+      "path_library",
+      "To the Library",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "staff_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_office",
+      "To the Principal's Office",
+      "",
+      0
+     ],
+     [
+      "path_utahime_office",
+      "To Utahime's Office",
+      "",
+      0
+     ],
+     [
+      "path_gojo_office",
+      "To Gojo's Office",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "storehouse": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "armory",
+      "Armory",
+      "Cursed tools, released up to my grade.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "trailhead": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_forest",
+      "To the Forest Trail",
+      "",
+      0
+     ],
+     [
+      "path_riverside",
+      "To the Riverside",
+      "",
+      0
+     ],
+     [
+      "path_ridge",
+      "To the Mountain Ridge",
+      "",
+      0
+     ],
+     [
+      "path_dorm_yard",
+      "To the Dormitory Garden",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training": [
+     [
+      "train",
+      "Train",
+      "Push my cursed energy. Costs stamina.",
+      1
+     ],
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_training_yard",
+      "To the Training Yard",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "training_yard": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_courtyard",
+      "To the Courtyard",
+      "",
+      0
+     ],
+     [
+      "path_training",
+      "To the Training Hall",
+      "",
+      0
+     ],
+     [
+      "path_dojo",
+      "To the Dojo",
+      "",
+      0
+     ],
+     [
+      "path_storehouse",
+      "To the Storehouse",
+      "",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ],
+    "utahime_office": [
+     [
+      "hold",
+      "Hold the hour",
+      "Last Light. Once a day; costs reserve.",
+      0
+     ],
+     [
+      "path_staff_yard",
+      "To the Staff Building Steps",
+      "",
+      0
+     ],
+     [
+      "board",
+      "Mission board",
+      "Graded jobs. Bring someone.",
+      0
+     ],
+     [
+      "wait",
+      "Wait",
+      "Let the period pass.",
+      1
+     ]
+    ]
+   }
+  }
+ },
+ "exits": {
+  "cafeteria": [
+   [
+    "school_yard",
+    230,
+    520
+   ]
+  ],
+  "classroom": [
+   [
+    "school_yard",
+    1670,
+    620
+   ]
+  ],
+  "courtyard": [
+   [
+    "gate",
+    1300,
+    985
+   ],
+   [
+    "school_yard",
+    84,
+    600
+   ],
+   [
+    "dorm_yard",
+    960,
+    310
+   ],
+   [
+    "training_yard",
+    1640,
+    850
+   ]
+  ],
+  "dojo": [
+   [
+    "training_yard",
+    84,
+    620
+   ]
+  ],
+  "dorm": [
+   [
+    "dorm_yard",
+    150,
+    760
+   ]
+  ],
+  "dorm_common": [
+   [
+    "dorm_yard",
+    84,
+    540
+   ]
+  ],
+  "dorm_yard": [
+   [
+    "dorm",
+    248,
+    728
+   ],
+   [
+    "dorm_common",
+    930,
+    600
+   ],
+   [
+    "girls_dorm",
+    1530,
+    600
+   ],
+   [
+    "rooftop",
+    1200,
+    285
+   ],
+   [
+    "courtyard",
+    450,
+    960
+   ],
+   [
+    "staff_yard",
+    1290,
+    960
+   ],
+   [
+    "trailhead",
+    465,
+    615
+   ]
+  ],
+  "forest": [
+   [
+    "trailhead",
+    84,
+    600
+   ]
+  ],
+  "gate": [
+   [
+    "courtyard",
+    960,
+    280
+   ]
+  ],
+  "girls_dorm": [
+   [
+    "dorm_yard",
+    1090,
+    560
+   ]
+  ],
+  "gojo_office": [
+   [
+    "staff_yard",
+    1680,
+    640
+   ]
+  ],
+  "infirmary": [
+   [
+    "school_yard",
+    84,
+    500
+   ]
+  ],
+  "library": [
+   [
+    "school_yard",
+    1660,
+    880
+   ]
+  ],
+  "office": [
+   [
+    "staff_yard",
+    84,
+    560
+   ]
+  ],
+  "ridge": [
+   [
+    "trailhead",
+    84,
+    720
+   ]
+  ],
+  "riverside": [
+   [
+    "trailhead",
+    84,
+    760
+   ]
+  ],
+  "rooftop": [
+   [
+    "dorm_yard",
+    1680,
+    640
+   ]
+  ],
+  "school_yard": [
+   [
+    "classroom",
+    405,
+    630
+   ],
+   [
+    "cafeteria",
+    985,
+    680
+   ],
+   [
+    "infirmary",
+    1610,
+    810
+   ],
+   [
+    "library",
+    84,
+    690
+   ],
+   [
+    "courtyard",
+    1440,
+    950
+   ]
+  ],
+  "staff_yard": [
+   [
+    "office",
+    878,
+    495
+   ],
+   [
+    "utahime_office",
+    1485,
+    660
+   ],
+   [
+    "gojo_office",
+    180,
+    660
+   ],
+   [
+    "dorm_yard",
+    225,
+    930
+   ],
+   [
+    "training_yard",
+    1640,
+    850
+   ]
+  ],
+  "storehouse": [
+   [
+    "training_yard",
+    84,
+    520
+   ]
+  ],
+  "trailhead": [
+   [
+    "forest",
+    180,
+    660
+   ],
+   [
+    "ridge",
+    862,
+    360
+   ],
+   [
+    "riverside",
+    1640,
+    830
+   ],
+   [
+    "dorm_yard",
+    1080,
+    990
+   ]
+  ],
+  "training": [
+   [
+    "training_yard",
+    230,
+    600
+   ]
+  ],
+  "training_yard": [
+   [
+    "training",
+    1650,
+    600
+   ],
+   [
+    "dojo",
+    165,
+    600
+   ],
+   [
+    "storehouse",
+    952,
+    645
+   ],
+   [
+    "courtyard",
+    150,
+    840
+   ],
+   [
+    "staff_yard",
+    620,
+    560
+   ]
+  ],
+  "utahime_office": [
+   [
+    "staff_yard",
+    84,
+    520
+   ]
+  ]
+ },
+ "fixture": {
+  "bond": 60,
+  "days": "8 to 14 (Mon to Sun); actions on day 9 (Tue) and day 13 (Sat)",
+  "flags": [
+   "dinner_listened",
+   "chose_jujutsu",
+   "enrolled",
+   "roll_call",
+   "storehouse_access",
+   "sunmall_done",
+   "armory_open",
+   "mission_board_open",
+   "utahime_arrived",
+   "intensive_done",
+   "ijichi_rides"
+  ],
+  "grade": "g3",
+  "roster": [
+   "yuji",
+   "megumi",
+   "nobara",
+   "maki",
+   "panda",
+   "toge",
+   "shoko",
+   "gojo",
+   "yaga",
+   "utahime",
+   "ijichi"
+  ]
+ },
+ "here": {
+  "Fri": {
+   "Afternoon": {
+    "cafeteria": [
+     "gojo"
+    ],
+    "classroom": [],
+    "courtyard": [
+     "yuji",
+     "nobara"
+    ],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [
+     "megumi"
+    ],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [
+     "toge"
+    ],
+    "staff_yard": [],
+    "storehouse": [
+     "yaga"
+    ],
+    "trailhead": [],
+    "training": [
+     "maki",
+     "panda"
+    ],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     "utahime"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [
+     "yuji",
+     "megumi",
+     "nobara"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "panda",
+     "toge"
+    ],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [
+     "maki"
+    ],
+    "rooftop": [
+     "shoko"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Morning": {
+    "cafeteria": [
+     "gojo"
+    ],
+    "classroom": [
+     "megumi"
+    ],
+    "courtyard": [
+     "panda"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [
+     "toge"
+    ],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "yuji"
+    ],
+    "training_yard": [
+     "nobara"
+    ],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Night": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [
+     "gojo"
+    ],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [
+     "yuji",
+     "panda"
+    ],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [
+     "nobara",
+     "maki"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Noon": {
+    "cafeteria": [
+     "yuji",
+     "megumi",
+     "nobara",
+     "panda",
+     "toge"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   }
+  },
+  "Mon": {
+   "Afternoon": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [
+     "yuji",
+     "nobara"
+    ],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [
+     "megumi"
+    ],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [
+     "gojo"
+    ],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [
+     "toge"
+    ],
+    "staff_yard": [],
+    "storehouse": [
+     "yaga"
+    ],
+    "trailhead": [],
+    "training": [
+     "maki",
+     "panda"
+    ],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     "utahime"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [
+     "yuji",
+     "megumi",
+     "nobara"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "panda",
+     "toge"
+    ],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [
+     "maki"
+    ],
+    "rooftop": [
+     "shoko",
+     "gojo"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Morning": {
+    "cafeteria": [],
+    "classroom": [
+     "megumi"
+    ],
+    "courtyard": [
+     "panda"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [
+     "gojo"
+    ],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [
+     "toge"
+    ],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "yuji"
+    ],
+    "training_yard": [
+     "nobara"
+    ],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Night": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [
+     "yuji",
+     "panda"
+    ],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [
+     "nobara",
+     "maki"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "gojo"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Noon": {
+    "cafeteria": [
+     "yuji",
+     "megumi",
+     "nobara",
+     "panda",
+     "toge"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [
+     "gojo"
+    ],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   }
+  },
+  "Sat": {
+   "Afternoon": {
+    "cafeteria": [
+     "gojo"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "megumi"
+    ],
+    "office": [],
+    "ridge": [],
+    "riverside": [
+     "yuji",
+     "nobara",
+     "maki",
+     "panda",
+     "toge"
+    ],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [
+     "shoko"
+    ],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Evening": {
+    "cafeteria": [
+     "yuji"
+    ],
+    "classroom": [],
+    "courtyard": [
+     "nobara",
+     "utahime"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [
+     "megumi"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "panda",
+     "toge"
+    ],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [
+     "shoko"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "gojo"
+    ],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Morning": {
+    "cafeteria": [
+     "gojo"
+    ],
+    "classroom": [],
+    "courtyard": [
+     "panda"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [
+     "yuji"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [
+     "nobara"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [
+     "toge"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [
+     "megumi"
+    ],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Night": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [
+     "yuji",
+     "panda"
+    ],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [
+     "nobara",
+     "maki"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "gojo"
+    ],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Noon": {
+    "cafeteria": [
+     "yuji",
+     "megumi",
+     "nobara",
+     "panda",
+     "toge"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [
+     "gojo"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   }
+  },
+  "Sun": {
+   "Afternoon": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "megumi"
+    ],
+    "office": [],
+    "ridge": [],
+    "riverside": [
+     "yuji",
+     "nobara",
+     "maki",
+     "panda",
+     "toge"
+    ],
+    "rooftop": [
+     "gojo"
+    ],
+    "school_yard": [],
+    "staff_yard": [
+     "shoko"
+    ],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Evening": {
+    "cafeteria": [
+     "yuji"
+    ],
+    "classroom": [],
+    "courtyard": [
+     "nobara",
+     "utahime"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [
+     "megumi"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "panda",
+     "toge"
+    ],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [
+     "shoko"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Morning": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [
+     "panda"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [
+     "yuji"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [
+     "nobara"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [
+     "toge"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [
+     "megumi"
+    ],
+    "training": [
+     "gojo"
+    ],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Night": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [
+     "yuji",
+     "panda"
+    ],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [
+     "nobara",
+     "maki"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "gojo"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Noon": {
+    "cafeteria": [
+     "yuji",
+     "megumi",
+     "nobara",
+     "panda",
+     "toge"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   }
+  },
+  "Thu": {
+   "Afternoon": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [
+     "yuji",
+     "nobara",
+     "gojo"
+    ],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [
+     "megumi"
+    ],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [
+     "toge"
+    ],
+    "staff_yard": [],
+    "storehouse": [
+     "yaga"
+    ],
+    "trailhead": [],
+    "training": [
+     "maki",
+     "panda"
+    ],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     "utahime"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [
+     "yuji",
+     "megumi",
+     "nobara"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "panda",
+     "toge"
+    ],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [
+     "maki"
+    ],
+    "rooftop": [
+     "shoko",
+     "gojo"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Morning": {
+    "cafeteria": [],
+    "classroom": [
+     "megumi"
+    ],
+    "courtyard": [
+     "panda"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [
+     "toge"
+    ],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "yuji"
+    ],
+    "training_yard": [
+     "nobara"
+    ],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Night": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [
+     "yuji",
+     "panda"
+    ],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [
+     "nobara",
+     "maki"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Noon": {
+    "cafeteria": [
+     "yuji",
+     "megumi",
+     "nobara",
+     "panda",
+     "toge"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [
+     "gojo"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   }
+  },
+  "Tue": {
+   "Afternoon": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [
+     "yuji",
+     "nobara"
+    ],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [
+     "megumi"
+    ],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [
+     "toge"
+    ],
+    "staff_yard": [],
+    "storehouse": [
+     "yaga"
+    ],
+    "trailhead": [],
+    "training": [
+     "maki",
+     "panda"
+    ],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     "utahime"
+    ],
+    "classroom": [],
+    "courtyard": [
+     "gojo"
+    ],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [
+     "yuji",
+     "megumi",
+     "nobara"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "panda",
+     "toge"
+    ],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [
+     "maki"
+    ],
+    "rooftop": [
+     "shoko"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Morning": {
+    "cafeteria": [],
+    "classroom": [
+     "megumi"
+    ],
+    "courtyard": [
+     "panda"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "gojo",
+     "yaga"
+    ],
+    "ridge": [
+     "toge"
+    ],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "yuji"
+    ],
+    "training_yard": [
+     "nobara"
+    ],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Night": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [
+     "yuji",
+     "panda"
+    ],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [
+     "nobara",
+     "maki"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "gojo"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Noon": {
+    "cafeteria": [
+     "yuji",
+     "megumi",
+     "nobara",
+     "panda",
+     "toge"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "gojo"
+    ],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   }
+  },
+  "Wed": {
+   "Afternoon": {
+    "cafeteria": [
+     "gojo"
+    ],
+    "classroom": [],
+    "courtyard": [
+     "yuji",
+     "nobara"
+    ],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [
+     "megumi"
+    ],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [
+     "toge"
+    ],
+    "staff_yard": [],
+    "storehouse": [
+     "yaga"
+    ],
+    "trailhead": [],
+    "training": [
+     "maki",
+     "panda"
+    ],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     "gojo",
+     "utahime"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [
+     "yuji",
+     "megumi",
+     "nobara"
+    ],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [],
+    "library": [
+     "panda",
+     "toge"
+    ],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [
+     "maki"
+    ],
+    "rooftop": [
+     "shoko"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Morning": {
+    "cafeteria": [
+     "gojo"
+    ],
+    "classroom": [
+     "megumi"
+    ],
+    "courtyard": [
+     "panda"
+    ],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [
+     "toge"
+    ],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [
+     "yuji"
+    ],
+    "training_yard": [
+     "nobara"
+    ],
+    "utahime_office": [
+     "utahime"
+    ]
+   },
+   "Night": {
+    "cafeteria": [],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [
+     "yuji",
+     "panda"
+    ],
+    "forest": [],
+    "gate": [],
+    "girls_dorm": [
+     "nobara",
+     "maki"
+    ],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": []
+   },
+   "Noon": {
+    "cafeteria": [
+     "yuji",
+     "megumi",
+     "nobara",
+     "panda",
+     "toge"
+    ],
+    "classroom": [],
+    "courtyard": [],
+    "dojo": [
+     "maki"
+    ],
+    "dorm": [],
+    "dorm_common": [],
+    "dorm_yard": [],
+    "forest": [],
+    "gate": [
+     "ijichi"
+    ],
+    "girls_dorm": [],
+    "gojo_office": [],
+    "infirmary": [
+     "shoko"
+    ],
+    "library": [],
+    "office": [
+     "yaga"
+    ],
+    "ridge": [],
+    "riverside": [],
+    "rooftop": [
+     "gojo"
+    ],
+    "school_yard": [],
+    "staff_yard": [],
+    "storehouse": [],
+    "trailhead": [],
+    "training": [],
+    "training_yard": [],
+    "utahime_office": [
+     "utahime"
+    ]
+   }
+  }
+ },
+ "hubs": {
+  "dorms": "dorm_yard",
+  "grounds": "training_yard",
+  "heart": "courtyard",
+  "mountain": "trailhead",
+  "school": "school_yard",
+  "staff": "staff_yard"
+ },
+ "links": [
+  [
+   "courtyard",
+   "school_yard"
+  ],
+  [
+   "courtyard",
+   "dorm_yard"
+  ],
+  [
+   "courtyard",
+   "training_yard"
+  ],
+  [
+   "dorm_yard",
+   "staff_yard"
+  ],
+  [
+   "dorm_yard",
+   "trailhead"
+  ],
+  [
+   "staff_yard",
+   "training_yard"
+  ]
+ ],
+ "rail": {
+  "Sat": {
+   "Afternoon": {
+    "cafeteria": [
+     "hold",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "car",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "path_trailhead",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "path_office",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     "hold",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "path_dorm_yard",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   },
+   "Morning": {
+    "cafeteria": [
+     "hold",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "car",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "path_ridge",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   },
+   "Night": {
+    "cafeteria": [
+     "hold",
+     "night_bed"
+    ],
+    "classroom": [
+     "hold",
+     "night_bed"
+    ],
+    "courtyard": [
+     "hold",
+     "night_bed"
+    ],
+    "dojo": [
+     "hold",
+     "night_bed"
+    ],
+    "dorm": [
+     "hold"
+    ],
+    "dorm_common": [
+     "hold",
+     "night_bed"
+    ],
+    "dorm_yard": [
+     "hold",
+     "path_courtyard",
+     "path_dorm_common",
+     "path_dorm",
+     "path_trailhead",
+     "night_bed"
+    ],
+    "forest": [
+     "hold",
+     "night_bed"
+    ],
+    "gate": [
+     "hold",
+     "night_bed"
+    ],
+    "girls_dorm": [
+     "hold",
+     "path_dorm_yard",
+     "night_bed"
+    ],
+    "gojo_office": [
+     "hold",
+     "night_bed"
+    ],
+    "infirmary": [
+     "hold",
+     "night_bed"
+    ],
+    "library": [
+     "hold",
+     "night_bed"
+    ],
+    "office": [
+     "hold",
+     "night_bed"
+    ],
+    "ridge": [
+     "hold",
+     "night_bed"
+    ],
+    "riverside": [
+     "hold",
+     "night_bed"
+    ],
+    "rooftop": [
+     "hold",
+     "night_bed"
+    ],
+    "school_yard": [
+     "hold",
+     "night_bed"
+    ],
+    "staff_yard": [
+     "hold",
+     "night_bed"
+    ],
+    "storehouse": [
+     "hold",
+     "night_bed"
+    ],
+    "trailhead": [
+     "hold",
+     "night_bed"
+    ],
+    "training": [
+     "hold",
+     "night_bed"
+    ],
+    "training_yard": [
+     "hold",
+     "night_bed"
+    ],
+    "utahime_office": [
+     "hold",
+     "night_bed"
+    ]
+   },
+   "Noon": {
+    "cafeteria": [
+     "hold",
+     "path_school_yard",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "car",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   }
+  },
+  "Tue": {
+   "Afternoon": {
+    "cafeteria": [
+     "hold",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "path_dorm_yard",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "car",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   },
+   "Evening": {
+    "cafeteria": [
+     "hold",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "cards_play",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   },
+   "Morning": {
+    "cafeteria": [
+     "hold",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "car",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "path_staff_yard",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   },
+   "Night": {
+    "cafeteria": [
+     "hold",
+     "night_bed"
+    ],
+    "classroom": [
+     "hold",
+     "night_bed"
+    ],
+    "courtyard": [
+     "hold",
+     "night_bed"
+    ],
+    "dojo": [
+     "hold",
+     "night_bed"
+    ],
+    "dorm": [
+     "hold"
+    ],
+    "dorm_common": [
+     "hold",
+     "night_bed"
+    ],
+    "dorm_yard": [
+     "hold",
+     "path_courtyard",
+     "path_dorm_common",
+     "path_dorm",
+     "path_trailhead",
+     "night_bed"
+    ],
+    "forest": [
+     "hold",
+     "night_bed"
+    ],
+    "gate": [
+     "hold",
+     "night_bed"
+    ],
+    "girls_dorm": [
+     "hold",
+     "path_dorm_yard",
+     "night_bed"
+    ],
+    "gojo_office": [
+     "hold",
+     "night_bed"
+    ],
+    "infirmary": [
+     "hold",
+     "night_bed"
+    ],
+    "library": [
+     "hold",
+     "night_bed"
+    ],
+    "office": [
+     "hold",
+     "night_bed"
+    ],
+    "ridge": [
+     "hold",
+     "night_bed"
+    ],
+    "riverside": [
+     "hold",
+     "night_bed"
+    ],
+    "rooftop": [
+     "hold",
+     "night_bed"
+    ],
+    "school_yard": [
+     "hold",
+     "night_bed"
+    ],
+    "staff_yard": [
+     "hold",
+     "night_bed"
+    ],
+    "storehouse": [
+     "hold",
+     "night_bed"
+    ],
+    "trailhead": [
+     "hold",
+     "night_bed"
+    ],
+    "training": [
+     "hold",
+     "night_bed"
+    ],
+    "training_yard": [
+     "hold",
+     "night_bed"
+    ],
+    "utahime_office": [
+     "hold",
+     "night_bed"
+    ]
+   },
+   "Noon": {
+    "cafeteria": [
+     "hold",
+     "path_school_yard",
+     "wait"
+    ],
+    "classroom": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "courtyard": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dojo": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "dorm": [
+     "study",
+     "hold",
+     "wait"
+    ],
+    "dorm_common": [
+     "hold",
+     "wait"
+    ],
+    "dorm_yard": [
+     "hold",
+     "wait"
+    ],
+    "forest": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "gate": [
+     "hold",
+     "car",
+     "wait"
+    ],
+    "girls_dorm": [
+     "hold",
+     "wait"
+    ],
+    "gojo_office": [
+     "hold",
+     "wait"
+    ],
+    "infirmary": [
+     "hold",
+     "wait"
+    ],
+    "library": [
+     "hold",
+     "wait"
+    ],
+    "office": [
+     "hold",
+     "wait"
+    ],
+    "ridge": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "riverside": [
+     "swim",
+     "train",
+     "hold",
+     "wait"
+    ],
+    "rooftop": [
+     "think",
+     "hold",
+     "wait"
+    ],
+    "school_yard": [
+     "hold",
+     "wait"
+    ],
+    "staff_yard": [
+     "hold",
+     "wait"
+    ],
+    "storehouse": [
+     "hold",
+     "wait"
+    ],
+    "trailhead": [
+     "hold",
+     "wait"
+    ],
+    "training": [
+     "train",
+     "hold",
+     "wait"
+    ],
+    "training_yard": [
+     "hold",
+     "wait"
+    ],
+    "utahime_office": [
+     "hold",
+     "wait"
+    ]
+   }
+  }
+ },
+ "where": {
+  "Fri": {
+   "Afternoon": {
+    "gojo": "cafeteria",
+    "ijichi": "gate",
+    "maki": "training",
+    "megumi": "forest",
+    "nobara": "courtyard",
+    "panda": "training",
+    "shoko": "infirmary",
+    "toge": "school_yard",
+    "utahime": "utahime_office",
+    "yaga": "storehouse",
+    "yuji": "courtyard"
+   },
+   "Evening": {
+    "gojo": null,
+    "ijichi": null,
+    "maki": "riverside",
+    "megumi": "dorm_common",
+    "nobara": "dorm_common",
+    "panda": "library",
+    "shoko": "rooftop",
+    "toge": "library",
+    "utahime": "cafeteria",
+    "yaga": "office",
+    "yuji": "dorm_common"
+   },
+   "Morning": {
+    "gojo": "cafeteria",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "classroom",
+    "nobara": "training_yard",
+    "panda": "courtyard",
+    "shoko": "infirmary",
+    "toge": "ridge",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "training"
+   },
+   "Night": {
+    "gojo": "courtyard",
+    "ijichi": null,
+    "maki": "girls_dorm",
+    "megumi": null,
+    "nobara": "girls_dorm",
+    "panda": "dorm_yard",
+    "shoko": "infirmary",
+    "toge": null,
+    "utahime": null,
+    "yaga": null,
+    "yuji": "dorm_yard"
+   },
+   "Noon": {
+    "gojo": null,
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "cafeteria",
+    "nobara": "cafeteria",
+    "panda": "cafeteria",
+    "shoko": "infirmary",
+    "toge": "cafeteria",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "cafeteria"
+   }
+  },
+  "Mon": {
+   "Afternoon": {
+    "gojo": "gojo_office",
+    "ijichi": "gate",
+    "maki": "training",
+    "megumi": "forest",
+    "nobara": "courtyard",
+    "panda": "training",
+    "shoko": "infirmary",
+    "toge": "school_yard",
+    "utahime": "utahime_office",
+    "yaga": "storehouse",
+    "yuji": "courtyard"
+   },
+   "Evening": {
+    "gojo": "rooftop",
+    "ijichi": null,
+    "maki": "riverside",
+    "megumi": "dorm_common",
+    "nobara": "dorm_common",
+    "panda": "library",
+    "shoko": "rooftop",
+    "toge": "library",
+    "utahime": "cafeteria",
+    "yaga": "office",
+    "yuji": "dorm_common"
+   },
+   "Morning": {
+    "gojo": "gojo_office",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "classroom",
+    "nobara": "training_yard",
+    "panda": "courtyard",
+    "shoko": "infirmary",
+    "toge": "ridge",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "training"
+   },
+   "Night": {
+    "gojo": "office",
+    "ijichi": null,
+    "maki": "girls_dorm",
+    "megumi": null,
+    "nobara": "girls_dorm",
+    "panda": "dorm_yard",
+    "shoko": "infirmary",
+    "toge": null,
+    "utahime": null,
+    "yaga": null,
+    "yuji": "dorm_yard"
+   },
+   "Noon": {
+    "gojo": "gojo_office",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "cafeteria",
+    "nobara": "cafeteria",
+    "panda": "cafeteria",
+    "shoko": "infirmary",
+    "toge": "cafeteria",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "cafeteria"
+   }
+  },
+  "Sat": {
+   "Afternoon": {
+    "gojo": "cafeteria",
+    "ijichi": "gate",
+    "maki": "riverside",
+    "megumi": "library",
+    "nobara": "riverside",
+    "panda": "riverside",
+    "shoko": "staff_yard",
+    "toge": "riverside",
+    "utahime": null,
+    "yaga": null,
+    "yuji": "riverside"
+   },
+   "Evening": {
+    "gojo": "training",
+    "ijichi": null,
+    "maki": "dojo",
+    "megumi": "dorm_common",
+    "nobara": "courtyard",
+    "panda": "library",
+    "shoko": "rooftop",
+    "toge": "library",
+    "utahime": "courtyard",
+    "yaga": null,
+    "yuji": "cafeteria"
+   },
+   "Morning": {
+    "gojo": "cafeteria",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "trailhead",
+    "nobara": "girls_dorm",
+    "panda": "courtyard",
+    "shoko": "infirmary",
+    "toge": "rooftop",
+    "utahime": "utahime_office",
+    "yaga": null,
+    "yuji": "dorm_common"
+   },
+   "Night": {
+    "gojo": "training",
+    "ijichi": null,
+    "maki": "girls_dorm",
+    "megumi": null,
+    "nobara": "girls_dorm",
+    "panda": "dorm_yard",
+    "shoko": "infirmary",
+    "toge": null,
+    "utahime": null,
+    "yaga": null,
+    "yuji": "dorm_yard"
+   },
+   "Noon": {
+    "gojo": "rooftop",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "cafeteria",
+    "nobara": "cafeteria",
+    "panda": "cafeteria",
+    "shoko": "infirmary",
+    "toge": "cafeteria",
+    "utahime": "utahime_office",
+    "yaga": null,
+    "yuji": "cafeteria"
+   }
+  },
+  "Sun": {
+   "Afternoon": {
+    "gojo": "rooftop",
+    "ijichi": "gate",
+    "maki": "riverside",
+    "megumi": "library",
+    "nobara": "riverside",
+    "panda": "riverside",
+    "shoko": "staff_yard",
+    "toge": "riverside",
+    "utahime": null,
+    "yaga": null,
+    "yuji": "riverside"
+   },
+   "Evening": {
+    "gojo": null,
+    "ijichi": null,
+    "maki": "dojo",
+    "megumi": "dorm_common",
+    "nobara": "courtyard",
+    "panda": "library",
+    "shoko": "rooftop",
+    "toge": "library",
+    "utahime": "courtyard",
+    "yaga": null,
+    "yuji": "cafeteria"
+   },
+   "Morning": {
+    "gojo": "training",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "trailhead",
+    "nobara": "girls_dorm",
+    "panda": "courtyard",
+    "shoko": "infirmary",
+    "toge": "rooftop",
+    "utahime": "utahime_office",
+    "yaga": null,
+    "yuji": "dorm_common"
+   },
+   "Night": {
+    "gojo": "office",
+    "ijichi": null,
+    "maki": "girls_dorm",
+    "megumi": null,
+    "nobara": "girls_dorm",
+    "panda": "dorm_yard",
+    "shoko": "infirmary",
+    "toge": null,
+    "utahime": null,
+    "yaga": null,
+    "yuji": "dorm_yard"
+   },
+   "Noon": {
+    "gojo": null,
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "cafeteria",
+    "nobara": "cafeteria",
+    "panda": "cafeteria",
+    "shoko": "infirmary",
+    "toge": "cafeteria",
+    "utahime": "utahime_office",
+    "yaga": null,
+    "yuji": "cafeteria"
+   }
+  },
+  "Thu": {
+   "Afternoon": {
+    "gojo": "courtyard",
+    "ijichi": "gate",
+    "maki": "training",
+    "megumi": "forest",
+    "nobara": "courtyard",
+    "panda": "training",
+    "shoko": "infirmary",
+    "toge": "school_yard",
+    "utahime": "utahime_office",
+    "yaga": "storehouse",
+    "yuji": "courtyard"
+   },
+   "Evening": {
+    "gojo": "rooftop",
+    "ijichi": null,
+    "maki": "riverside",
+    "megumi": "dorm_common",
+    "nobara": "dorm_common",
+    "panda": "library",
+    "shoko": "rooftop",
+    "toge": "library",
+    "utahime": "cafeteria",
+    "yaga": "office",
+    "yuji": "dorm_common"
+   },
+   "Morning": {
+    "gojo": null,
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "classroom",
+    "nobara": "training_yard",
+    "panda": "courtyard",
+    "shoko": "infirmary",
+    "toge": "ridge",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "training"
+   },
+   "Night": {
+    "gojo": null,
+    "ijichi": null,
+    "maki": "girls_dorm",
+    "megumi": null,
+    "nobara": "girls_dorm",
+    "panda": "dorm_yard",
+    "shoko": "infirmary",
+    "toge": null,
+    "utahime": null,
+    "yaga": null,
+    "yuji": "dorm_yard"
+   },
+   "Noon": {
+    "gojo": "rooftop",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "cafeteria",
+    "nobara": "cafeteria",
+    "panda": "cafeteria",
+    "shoko": "infirmary",
+    "toge": "cafeteria",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "cafeteria"
+   }
+  },
+  "Tue": {
+   "Afternoon": {
+    "gojo": null,
+    "ijichi": "gate",
+    "maki": "training",
+    "megumi": "forest",
+    "nobara": "courtyard",
+    "panda": "training",
+    "shoko": "infirmary",
+    "toge": "school_yard",
+    "utahime": "utahime_office",
+    "yaga": "storehouse",
+    "yuji": "courtyard"
+   },
+   "Evening": {
+    "gojo": "courtyard",
+    "ijichi": null,
+    "maki": "riverside",
+    "megumi": "dorm_common",
+    "nobara": "dorm_common",
+    "panda": "library",
+    "shoko": "rooftop",
+    "toge": "library",
+    "utahime": "cafeteria",
+    "yaga": "office",
+    "yuji": "dorm_common"
+   },
+   "Morning": {
+    "gojo": "office",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "classroom",
+    "nobara": "training_yard",
+    "panda": "courtyard",
+    "shoko": "infirmary",
+    "toge": "ridge",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "training"
+   },
+   "Night": {
+    "gojo": "office",
+    "ijichi": null,
+    "maki": "girls_dorm",
+    "megumi": null,
+    "nobara": "girls_dorm",
+    "panda": "dorm_yard",
+    "shoko": "infirmary",
+    "toge": null,
+    "utahime": null,
+    "yaga": null,
+    "yuji": "dorm_yard"
+   },
+   "Noon": {
+    "gojo": "training",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "cafeteria",
+    "nobara": "cafeteria",
+    "panda": "cafeteria",
+    "shoko": "infirmary",
+    "toge": "cafeteria",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "cafeteria"
+   }
+  },
+  "Wed": {
+   "Afternoon": {
+    "gojo": "cafeteria",
+    "ijichi": "gate",
+    "maki": "training",
+    "megumi": "forest",
+    "nobara": "courtyard",
+    "panda": "training",
+    "shoko": "infirmary",
+    "toge": "school_yard",
+    "utahime": "utahime_office",
+    "yaga": "storehouse",
+    "yuji": "courtyard"
+   },
+   "Evening": {
+    "gojo": "cafeteria",
+    "ijichi": null,
+    "maki": "riverside",
+    "megumi": "dorm_common",
+    "nobara": "dorm_common",
+    "panda": "library",
+    "shoko": "rooftop",
+    "toge": "library",
+    "utahime": "cafeteria",
+    "yaga": "office",
+    "yuji": "dorm_common"
+   },
+   "Morning": {
+    "gojo": "cafeteria",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "classroom",
+    "nobara": "training_yard",
+    "panda": "courtyard",
+    "shoko": "infirmary",
+    "toge": "ridge",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "training"
+   },
+   "Night": {
+    "gojo": null,
+    "ijichi": null,
+    "maki": "girls_dorm",
+    "megumi": null,
+    "nobara": "girls_dorm",
+    "panda": "dorm_yard",
+    "shoko": "infirmary",
+    "toge": null,
+    "utahime": null,
+    "yaga": null,
+    "yuji": "dorm_yard"
+   },
+   "Noon": {
+    "gojo": "rooftop",
+    "ijichi": "gate",
+    "maki": "dojo",
+    "megumi": "cafeteria",
+    "nobara": "cafeteria",
+    "panda": "cafeteria",
+    "shoko": "infirmary",
+    "toge": "cafeteria",
+    "utahime": "utahime_office",
+    "yaga": "office",
+    "yuji": "cafeteria"
+   }
+  }
+ }
+}
