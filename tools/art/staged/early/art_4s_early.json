@@ -1,0 +1,15 @@
+{
+ "about": [
+  "Sitting 4, third go, written by hand on 7 Oct 2026 at the owner's word: 'the door on the right. doesn't have a room behind as you can see through the window. An easy fix would just be remove the window. we also need to add more doors for the new characters that will get introduced. Make sure there are 6 doors.' The girls' corridor redone in place from the game's own picture with two named changes: no window in the right-hand wall (so a door there can have a room behind it), and exactly six doors, three a side. The spare doors of D50 stand: two rooms today, four for characters to come. The second go (art_4r.json, two doors only) came from a wrong reading of 'doors that lead to nothing' and is not used."
+ ],
+ "written": "2026-10-07",
+ "prompt_sha256": "bc53aab8256bd2681d9c3bb20ebf9eb48f8e3a5fc8b90cf77b9b5ddc2b9347eb",
+ "seeds": [
+  7994,
+  7995
+ ],
+ "saves": [
+  "ui2_girls_dorm3_a",
+  "ui2_girls_dorm3_b"
+ ]
+}
