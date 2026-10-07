@@ -363,15 +363,24 @@ init 999 python:
         zzq.map_step = 0
         return ("map",)
 
+    def zzq_pin(loc):
+        """The place whose pin the map has for `loc`: a room inside a house
+        has no pin of its own (WORLD_PINLESS, the second UI overhaul), and
+        the map leads to its house."""
+        if world_pinned(loc):
+            return loc
+        return world_inside(loc) or loc
+
     def zzq_go(loc):
         """Start a journey: by the exits on odd days, by the map on even
-        days (and whenever the exits don't lead there)."""
+        days (and whenever the exits don't lead there). A room with no pin
+        is walked to on any day: the map cannot go there."""
         zzq.went.add((store.day, store.period, loc))
-        if store.day % 2 == 1 and zzq_route(store.here, loc):
+        if (store.day % 2 == 1 or not world_pinned(loc)) and zzq_route(store.here, loc):
             zzq.dest = loc
             zzq.dest_when = (store.day, store.period)
             return zzq_walk()
-        return zzq_map_open(("go", loc))
+        return zzq_map_open(("go", zzq_pin(loc)))
 
     def zzq_walk():
         """The next exit of the walk in hand, or the map when the exit isn't
@@ -389,7 +398,7 @@ init 999 python:
             zzq.dest = None
             if want is not None:
                 zzq.walk_bad.append("d%s %s: no exit to %s offered" % (store.day, store.here, route[0]))
-            return zzq_map_open(("go", loc))
+            return zzq_map_open(("go", zzq_pin(loc)))
         a, b = path_is_hub(store.here), path_is_hub(route[0])
         zzq.walk_kinds.add("%s>%s" % ("hub" if a else "room", "hub" if b else "room"))
         zzq.hop = (store.here, route[0])
