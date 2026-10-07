@@ -1,0 +1,129 @@
+{
+ "about": [
+  "Batch 1 was written early, with art_batch.py 1 --preview, on 7 Oct 2026, at the owner's word,",
+  "and run by the owner while the agent build waited (docs/UI2_DESIGN.md 10.2, the art sittings; risk 50).",
+  "art_1.json beside this file is the workflow that was run (its note names the folder it was run from).",
+  "At batch 0's sitting art_batch.py 1 is written as planned and compared with these rows:",
+  "a picture whose prompt and references are byte for byte the same keeps its early renders;",
+  "any other is run again."
+ ],
+ "written": "2026-10-07",
+ "head": "4587298",
+ "record_sha256": "96787df560197857873545f3ece9cb28ec46723c388416108d0effe13ca1325d",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: School Courtyard, version A",
+   "save": "ui2_school_yard_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 9036,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "2c2ba595bfc61443613174ac66a2c2570bb39ed84c7d6b8f85805c210147d359",
+   "references": [
+    {
+     "file": "ui2_in_school_yard_1.png",
+     "sha256": "f2ee53cabb736c5d4df8af04c63815fe5ee41f6de044fb272b9b40446e7e7de1"
+    },
+    {
+     "file": "ui2_in_school_yard_2.png",
+     "sha256": "d469ec685b05e26384d91aae96f4e7769d5b092b75638688ca96db45ceca737a"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: School Courtyard, version B",
+   "save": "ui2_school_yard_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 9037,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "2c2ba595bfc61443613174ac66a2c2570bb39ed84c7d6b8f85805c210147d359",
+   "references": [
+    {
+     "file": "ui2_in_school_yard_1.png",
+     "sha256": "f2ee53cabb736c5d4df8af04c63815fe5ee41f6de044fb272b9b40446e7e7de1"
+    },
+    {
+     "file": "ui2_in_school_yard_2.png",
+     "sha256": "d469ec685b05e26384d91aae96f4e7769d5b092b75638688ca96db45ceca737a"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Dormitory Garden, version A",
+   "save": "ui2_dorm_yard_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 4584,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "aab65ac3f546c317464a7c6c77c0c68e3b236f6b4dfde38db908addeff3b6d82",
+   "references": [
+    {
+     "file": "ui2_in_dorm_yard_1.png",
+     "sha256": "f2ee53cabb736c5d4df8af04c63815fe5ee41f6de044fb272b9b40446e7e7de1"
+    },
+    {
+     "file": "ui2_in_dorm_yard_2.png",
+     "sha256": "0125b68dccc436e1385c617c5e1e75f1b712a27ad7a163e55b10cf9881874249"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Dormitory Garden, version B",
+   "save": "ui2_dorm_yard_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 4585,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "aab65ac3f546c317464a7c6c77c0c68e3b236f6b4dfde38db908addeff3b6d82",
+   "references": [
+    {
+     "file": "ui2_in_dorm_yard_1.png",
+     "sha256": "f2ee53cabb736c5d4df8af04c63815fe5ee41f6de044fb272b9b40446e7e7de1"
+    },
+    {
+     "file": "ui2_in_dorm_yard_2.png",
+     "sha256": "0125b68dccc436e1385c617c5e1e75f1b712a27ad7a163e55b10cf9881874249"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Training Yard, version A",
+   "save": "ui2_training_yard_a",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 6258,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "7356ff6121e570d0bcef9b4df664db24dcf4af1192f1b3ec36ac7e5e2db693d6",
+   "references": [
+    {
+     "file": "ui2_in_training_yard_1.png",
+     "sha256": "f2ee53cabb736c5d4df8af04c63815fe5ee41f6de044fb272b9b40446e7e7de1"
+    },
+    {
+     "file": "ui2_in_training_yard_2.png",
+     "sha256": "9906c9561706a0256d00d0d5f70f92420d91061a07bf4f8982a4aa64e7643f3e"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Training Yard, version B",
+   "save": "ui2_training_yard_b",
+   "model": "gemini-3-pro-image-preview",
+   "seed": 6259,
+   "aspect": "16:9",
+   "size": "2K",
+   "prompt_sha256": "7356ff6121e570d0bcef9b4df664db24dcf4af1192f1b3ec36ac7e5e2db693d6",
+   "references": [
+    {
+     "file": "ui2_in_training_yard_1.png",
+     "sha256": "f2ee53cabb736c5d4df8af04c63815fe5ee41f6de044fb272b9b40446e7e7de1"
+    },
+    {
+     "file": "ui2_in_training_yard_2.png",
+     "sha256": "9906c9561706a0256d00d0d5f70f92420d91061a07bf4f8982a4aa64e7643f3e"
+    }
+   ]
+  }
+ ]
+}
