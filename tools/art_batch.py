@@ -171,7 +171,7 @@ def file_jobs(f, record, manifest, again=0, root=None, work_dir=None, keep_dir=N
     for pic in f["pictures"]:
         try:
             j = picture_job(pic, record, manifest, again, root, work_dir, keep_dir, dump)
-            bad = check_prompts.check(j["prompt"], record)
+            bad = check_prompts.check(j["prompt"], record, place=j.get("place"))
             if bad:
                 raise Refused("its prompt fails tools/check_prompts.py: " + "; ".join(bad))
             jobs.append(j)
@@ -507,6 +507,7 @@ def selftest():
         for key, p in rec.places.items():
             everything["pictures"].setdefault(p["stem"], {"place": key, "rev": 2, "kind": p["how"]})
         bad, relit, redone, composed = [], 0, 0, 0
+        k16_places = set()
         for b, f, p in pics:
             try:
                 if p["kind"] == "relight":
@@ -535,21 +536,35 @@ def selftest():
                     continue
             except (Refused, SystemExit) as e:
                 bad.append("%s: %s" % (p.get("place") or p.get("stem"), e)); continue
-            for x in check_prompts.check(text, everything):
+            for x in check_prompts.check(text, everything, place=p.get("place")):
                 bad.append("%s: %s" % (p.get("place") or p.get("stem"), x))
             if not text.endswith(check_prompts.text_of("look.txt")):
                 bad.append("%s does not end with the look" % (p.get("place") or p.get("stem")))
-            if p.get("place") in ("bathhouse", "sauna", "pool") or p.get("place", "").endswith("_room"):
-                low = check_prompts.strip_frozen(text).lower().replace("changing hut", "")
-                for word in ("towel", "naked", "undress", "strip", "swimsuit", "bikini", "skin", "bare", "changing",
-                             "bather", "swimmer", "bathing", "sleeping", "asleep"):
-                    if re.search(r"(?<![a-z])%s(?![a-z])" % word, low):
-                        bad.append("%s: the prompt says %r (K16)" % (p["place"], word))
+            if check_prompts.k16_place(p.get("place")):       # the words are check_prompts' K16 rule, above
+                k16_places.add(p["place"])
                 if "No people" not in text:
                     bad.append("%s: the prompt does not say 'No people'" % p["place"])
         ok("all %d relight, %d in-place, %d composed and 7 map prompts pass the prompt check; no relight says 'Keep "
            "the time of day'; no map carries the stage text; nobody is in the baths, the pool or a bedroom"
-           % (relit, redone, composed), not bad and (relit, redone, composed) == (64, 16, 17), bad)
+           % (relit, redone, composed), not bad and (relit, redone, composed) == (64, 16, 17)
+           and k16_places == set(["bathhouse", "sauna", "pool", "yuji_room", "megumi_room", "senpai_room",
+                                  "nobara_room", "maki_room"]), bad + sorted(k16_places))
+
+        # a yard with no view in the record is refused, not written with no building, door or path in it
+        blind = copy.deepcopy(record)
+        for st in ("fixed", "proposed"):
+            blind[st] = [row for row in blind[st] if not (row.get("kind") == "exit" and row.get("place") == "school_yard")]
+        ok("a yard whose view has gone from the record is refused",
+           "has no view in the record" in refused(lambda: scene.prompt_for(blind, "school_yard", [])))
+        # K16 reaches a maker's prompt through the place it is a picture of
+        peopled = copy.deepcopy(record)
+        check_campus.Rec(peopled).by_id["place.sauna"]["words"] += ", and a figure on the bench"
+        try:
+            check_prompts.refuse_if_bad(scene.prompt_for(peopled, "sauna", []), "the Sauna", peopled, "sauna")
+            said = ""
+        except SystemExit as e:
+            said = str(e)
+        ok("a prompt that puts somebody in the sauna is refused before a workflow is written", "K16" in said, [said])
 
         # the marks
         d2 = copy.deepcopy(data)

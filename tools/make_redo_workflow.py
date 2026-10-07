@@ -193,7 +193,7 @@ def redo_job(record, manifest, name, hour=None, from_rev1=False, add=False, chan
                      "the walls are clean and the floor is free of leaves and dust: yes / no"]
         if "Through the windows:" in prompt:
             checklist.append("the windows show what the record says: yes / no")
-        return kit.job(stem, label, prompt, [(title, src)], again, checklist, kind="inplace")
+        return kit.job(stem, label, prompt, [(title, src)], again, checklist, kind="inplace", place=place)
     if check_campus.rev_of(manifest, stem) < 2:
         raise Refused("%s's %s cannot be made yet: its day picture is not installed in the new look (batch %s). An "
                       "hour picture is relit from the day picture the owner chose." % (p["name"], hour, p.get("batch", "?")))
@@ -203,7 +203,7 @@ def redo_job(record, manifest, name, hour=None, from_rev1=False, add=False, chan
     checklist = ["nothing has moved: yes / no", "everything that was in the day picture is still there: yes / no",
                  "it is plainly %s, in the windows and the sky too: yes / no" % hour]
     return kit.job("%s_%s" % (stem, hour), "%s, %s" % (p["name"], hour), prompt,
-                   [("%s by day, as installed" % p["name"], game)], again, checklist, kind="relight")
+                   [("%s by day, as installed" % p["name"], game)], again, checklist, kind="relight", place=place)
 
 
 def main(argv):
@@ -244,7 +244,7 @@ def main(argv):
                      keep_dir=keep_dir)
     except Refused as e:
         raise SystemExit(str(e))
-    check_prompts.refuse_if_bad(j["prompt"], j["label"], record)
+    check_prompts.refuse_if_bad(j["prompt"], j["label"], record, j.get("place"))
     if show:
         print(j["prompt"])
         for n, (title, f) in enumerate(j["inputs"], 1):

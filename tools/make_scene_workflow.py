@@ -200,6 +200,10 @@ def prompt_for(record, place, refs=(), window=True):
     p = rec.places[place]
     if not (p.get("words") or "").strip():
         raise Refused("%s has no words in the record to compose it from" % p["name"])
+    rows = check_campus.view_rows(rec, place)
+    if not p["indoor"] and p.get("camera") and not rec.rows("exit", place=place):
+        raise Refused("%s has no view in the record: no row says which building, door or path is on which side of "
+                      "it (tools/bgs/campus.json)" % p["name"])
     out = [S("open_room" if p["indoor"] else "open_yard")]
     ref_places = []
     for n, ref in enumerate(refs, 1):
@@ -222,7 +226,6 @@ def prompt_for(record, place, refs=(), window=True):
     if ground is not None and ground.get("ground"):
         out.append(S("the_ground", thing=ground["look"]))
     out += list(p.get("facts", []))
-    rows = check_campus.view_rows(rec, place)
     for side in ("left", "ahead", "right"):
         here = sorted((r for r in rows if r["side"] == side), key=lambda r: (r.get("order") or 0))
         if here:
@@ -335,9 +338,10 @@ def seeds_for(stem, again=0):
     return [base + k for k in range(len(VERSIONS))]
 
 
-def job(stem, label, prompt, inputs, again=0, checklist=(), kind="composed", note=None):
-    """One picture of a workflow: its prompt, its input pictures [(title, file)], two fixed seeds."""
-    return {"stem": stem, "label": label, "prompt": prompt, "inputs": list(inputs), "seeds": seeds_for(stem, again),
+def job(stem, label, prompt, inputs, again=0, checklist=(), kind="composed", note=None, place=None):
+    """One picture of a workflow: its prompt, its input pictures [(title, file)], two fixed seeds.
+    place: the place it is a picture of, which the prompt check reads (K16 is stricter in some)."""
+    return {"stem": stem, "place": place, "label": label, "prompt": prompt, "inputs": list(inputs), "seeds": seeds_for(stem, again),
             "save": ["ui2_%s_%s" % (stem, v) for v in VERSIONS], "checklist": list(checklist), "kind": kind,
             "note": note}
 
@@ -456,7 +460,7 @@ def write_workflow(path, title, intro, jobs, out_dir=None, record=None):
     os.makedirs(out_dir, exist_ok=True)
     staged = []
     for j in jobs:
-        check_prompts.refuse_if_bad(j["prompt"], j["label"], record or check_prompts.load_record())
+        check_prompts.refuse_if_bad(j["prompt"], j["label"], record or check_prompts.load_record(), j.get("place"))
         named = []
         for n, (ititle, src) in enumerate(j["inputs"], 1):
             name = input_name(j["stem"], n, src)
@@ -528,7 +532,7 @@ def scene_job(record, manifest, stem, again=0, root=None, dump=None):
     refs = refs_for(rec, manifest, place, root)
     prompt = prompt_for(record, place, refs)
     inputs = [(REF_TITLES[k] % rec.name(key), f) for k, key, f in refs]
-    return job(p["stem"], p["name"], prompt, inputs, again, checklist_for(rec, place))
+    return job(p["stem"], p["name"], prompt, inputs, again, checklist_for(rec, place), place=place)
 
 
 def main(argv):
@@ -569,7 +573,7 @@ def main(argv):
         j = scene_job(record, manifest, stem, again, dump=dump)
     except Refused as e:
         raise SystemExit(str(e))
-    check_prompts.refuse_if_bad(j["prompt"], j["label"], record)
+    check_prompts.refuse_if_bad(j["prompt"], j["label"], record, j.get("place"))
     if show:
         print(j["prompt"])
         for n, (title, f) in enumerate(j["inputs"], 1):

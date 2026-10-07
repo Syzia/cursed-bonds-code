@@ -324,8 +324,7 @@
    "after": [
     "school_yard"
    ],
-   "facing": "east",
-   "note": "already made (the third look test); run once more in batch 4, from its revision-1 picture, for its window line",
+   "note": "already made (the third look test); run once more in batch 4, from its revision-1 picture, for its window line; the picture shows its windows along the left wall and no compass, so which way it faces is not a fixed fact (see window.cafeteria.left)",
    "by": {
     "picture": "cafeteria",
     "rev": 2
@@ -586,17 +585,6 @@
    "faces": "west",
    "by": {
     "picture": "dorm_common",
-    "rev": 2
-   }
-  },
-  {
-   "id": "window.cafeteria.left",
-   "kind": "window",
-   "room": "cafeteria",
-   "wall": "left",
-   "faces": "north",
-   "by": {
-    "picture": "cafeteria",
     "rev": 2
    }
   },
@@ -1199,7 +1187,7 @@
    "after": [
     "dorm_yard"
    ],
-   "words": "the big corner bedroom of the boys' dormitory, a house of dark timber, shared by two students: a very large futon and a neat small one laid on the floor, and a shogi board on the floor between them",
+   "words": "the big corner bedroom of the boys' dormitory, a house of dark timber, a room for two: a very large futon and a neat small one laid on the floor, and a shogi board on the floor between them",
    "refs_also": [
     "dorm"
    ],
@@ -1958,6 +1946,14 @@
    "needs": [
     "dorm_yard"
    ]
+  },
+  {
+   "id": "window.cafeteria.left",
+   "kind": "window",
+   "room": "cafeteria",
+   "wall": "left",
+   "faces": "north",
+   "note": "that the windows are along the left wall is fixed by the Cafeteria's picture (interior.cafeteria); that this wall faces north, so the camera faces east, comes from the ground plan, where the School Courtyard lies north of the cafeteria, and stays a proposal until the School Courtyard is chosen"
   },
   {
    "id": "line.cafeteria.left",

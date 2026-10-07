@@ -24,9 +24,18 @@ The record itself, always and in full:
   - the fixed facts fit one ground plan: from each camera, every building an
     exit sits on lies on the side its row says, and things keep the order
     from left to right their rows give;
+  - every yard of the game, and every place composed from a camera on the
+    ground plan, has a view (its exit rows), and every exit the game has
+    from it has its row;
   - a building named in a window line lies in the half of the ground plan
-    that wall faces, and in a room entered with the camera in the doorway the
-    far wall faces away from the yard it is entered from.
+    that wall faces; in a room entered with the camera in the doorway the
+    far wall faces away from the yard it is entered from; and a room's far,
+    left and right walls face as its camera does (ahead, to its left, to
+    its right);
+  - a fixed landmark (a building that holds no place) is still named by a
+    view or a window line;
+  - no line a prompt may carry breaks the decency rule (K16), read as a
+    line of the place it belongs to.
 
 Each layout (an installed one from the dump, a candidate's first guess, a
 test sidecar):
@@ -34,6 +43,9 @@ test sidecar):
     640, 640 to 1280, right of 1280); a place behind the camera has its exit
     in the bottom band (y 900 or lower down); exits to two things keep their
     order from left to right (two within 60 px across are not ordered);
+  - a way a candidate file leaves out is checked by the point the game would
+    keep for it (the dump's `default`); with no such point to read, a fixed
+    way left out fails and a proposed one is reported;
   - on an area picture the pins keep the ground plan's relations (west is
     left, north is higher; 60 px of tolerance), and so do the six markers on
     the campus map (the Mountain's only as north of the other five).
@@ -257,6 +269,16 @@ def view_rows(rec, place):
     return rec.rows("exit", place=place) + rec.rows("seen", place=place)
 
 
+def viewed_places(rec, dump=None):
+    """The places that must have a view in the record: every yard of the game (a hub in the dump), every
+    place the record composes from a camera on the ground plan, and every place that has an exit row."""
+    out = set(row["place"] for row in rec.rows("exit"))
+    out.update(k for k, p in rec.places.items() if p.get("how") == "composed" and p.get("camera"))
+    if dump is not None:
+        out.update(p["key"] for p in dump["places"] if p["hub"])
+    return sorted(out)
+
+
 def check_record(rec, dump, out):
     r = rec.r
     rules = rec.rules
@@ -319,6 +341,12 @@ def check_record(rec, dump, out):
         if a.get("hub") not in rec.places:
             out.add("FAIL", "the area %s has no hub among the places" % key)
 
+    # a yard with no exit row at all has no view: its prompt would name no building, door or path
+    for place in viewed_places(rec, dump):
+        if place in rec.places and not rec.rows("exit", place=place):
+            out.add("FAIL", "%s has no view in the record: no row says which building, door or path is on which "
+                    "side of it" % rec.name(place))
+
     if dump is not None:
         game = dict((p["key"], p) for p in dump["places"])
         for key, p in game.items():
@@ -349,7 +377,7 @@ def check_record(rec, dump, out):
         for a, b in sorted(paths - links):
             out.add("FAIL", "the record has a path from %s to %s that the game does not" % (rec.name(a), rec.name(b)))
         # every exit the game has from a viewed place has its row
-        for place in sorted(set(row["place"] for row in rec.rows("exit"))):
+        for place in viewed_places(rec, dump):
             rows = rec.rows("exit", place=place)
             known = set()
             for row in rows:
@@ -448,6 +476,15 @@ def check_record(rec, dump, out):
                         % ("" if firm else "a proposal does not fit the ground plan as it stands now, and is "
                            "rewritten before its room is made: ", rec.name(ln["room"]), ln["wall"], w["faces"],
                            rec.name(name)))
+    turn = {"far": 0, "right": 1, "left": 3}
+    compass = ("north", "east", "south", "west")
+    for (room, wall), w in sorted(walls.items()):
+        p = rec.places.get(room) or {}
+        if wall in turn and p.get("facing") in FACING and w.get("faces") in FACING:
+            want = compass[(compass.index(p["facing"]) + turn[wall]) % 4]
+            if w["faces"] != want:
+                out.add("FAIL", "%s: the camera faces %s, so the %s wall faces %s; the record has it facing %s (%s)"
+                        % (p["name"], p["facing"], wall, want, w["faces"], w["id"]))
     for key, p in sorted(rec.places.items()):
         if p.get("camera_in") != "doorway":
             continue
@@ -460,8 +497,16 @@ def check_record(rec, dump, out):
             out.add("FAIL", "%s is entered from %s with the camera in the doorway, so its far wall must face away "
                     "from that yard; the record has it facing %s, toward it"
                     % (p["name"], rec.name(p["entered_from"]), far["faces"]))
-        if p.get("facing") and p["facing"] != far["faces"]:
-            out.add("FAIL", "%s: the camera faces %s and the far wall %s" % (p["name"], p["facing"], far["faces"]))
+
+    # a fixed landmark (a building that holds no place) is named by a view or a window line: a chosen picture
+    # shows it, and the record must go on saying where
+    named = set(row.get("thing") for row in rec.rows("exit") + rec.rows("seen"))
+    for ln in rec.rows("line"):
+        named.update(ln.get("names", []))
+    for key, b in sorted(rec.buildings.items()):
+        if rec.is_fixed(b) and not b.get("holds") and not b.get("ground") and key not in named:
+            out.add("FAIL", "%s is fixed by the chosen %s and no view or window line of the record names it any "
+                    "more: the row that said where it is seen from has gone" % (b["name"], b["by"]["picture"]))
 
     # nothing a prompt may carry would fail the prompt check
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -471,7 +516,7 @@ def check_record(rec, dump, out):
             if row.get("kind") == "interior":
                 continue
             for key, text in check_prompts.prompt_lines(row):
-                for f in check_prompts.findings(text, r):
+                for f in check_prompts.findings(text, r, check_prompts.row_place(r, row)):
                     out.add("FAIL", "%s.%s would fail the prompt check: %s" % (row["id"], key, f))
 
     # waivers
@@ -527,16 +572,25 @@ def _judge(rec, out, row_ids, what, picture, strict, batch, against=None):
                                                         ", ".join(row["id"] for row in loose)))
 
 
-def check_exits(rec, place, spots, out, strict, batch="?", picture=None):
-    """spots: {to: (x, y)}. The exits of one place against the record's rows for it."""
+def _against(row, old):
+    words = row.get("against")
+    return words + old[row["id"]] if words and row["id"] in old else words
+
+
+def check_exits(rec, place, spots, out, strict, batch="?", picture=None, kept=()):
+    """spots: {to: (x, y)}. The exits of one place against the record's rows for it.
+    kept: the keys in `spots` that a candidate file left out, so the point is the one the game would keep."""
     rules = rec.rules
     picture = picture or (rec.places[place]["stem"] if place in rec.places else place)
     rows = rec.rows("exit", place=place)
-    pts = {}
+    pts, old = {}, {}
     for row in rows:
         for key in [row["to"]] + list(row.get("alias", [])):
             if key in spots:
-                pts[row["id"]] = tuple(spots[key]); break
+                pts[row["id"]] = tuple(spots[key])
+                if key in kept:
+                    old[row["id"]] = (" (the file has no point for this way, so the game would keep its old one)")
+                break
     pname = rec.name(place)
     for row in rows:
         pt = pts.get(row["id"])
@@ -546,12 +600,12 @@ def check_exits(rec, place, spots, out, strict, batch="?", picture=None):
         if row["side"] == "bottom":
             if seen_side(rules, pt) != "bottom":
                 _judge(rec, out, [row["id"]], "%s: the way to %s is behind the camera, so it belongs at the bottom "
-                       "of the picture; here it is at (%d, %d)" % (pname, to, pt[0], pt[1]), picture, strict, batch,
-                       row.get("against"))
+                       "of the picture; here it is at (%d, %d)%s" % (pname, to, pt[0], pt[1], old.get(row["id"], "")),
+                       picture, strict, batch, _against(row, old))
             elif row.get("half") and ("left" if pt[0] < rec.r.get("sheet", [1920])[0] / 2 else "right") != row["half"]:
                 _judge(rec, out, [row["id"]], "%s: the way to %s is at the bottom %s in the record; here it is at "
-                       "the bottom %s" % (pname, to, row["half"], "left" if row["half"] == "right" else "right"),
-                       picture, strict, batch, row.get("against"))
+                       "the bottom %s%s" % (pname, to, row["half"], "left" if row["half"] == "right" else "right",
+                                            old.get(row["id"], "")), picture, strict, batch, _against(row, old))
         elif third(rules, pt[0]) != row["side"]:
             now = third(rules, pt[0])
             b = rec.buildings.get(row.get("thing"))
@@ -561,9 +615,9 @@ def check_exits(rec, place, spots, out, strict, batch="?", picture=None):
                 extra = (" (%s is fixed by the chosen %s, and the ground plan cannot place it %s from %s)"
                          % (b["name"], rec.name(rec.r["pictures"][by]["place"]) if by in rec.r.get("pictures", {})
                             else by, SIDE_WORDS[now], pname))
-            _judge(rec, out, [row["id"]], "%s: the way to %s is %s in the record; here it is %s, at (%d, %d)%s"
-                   % (pname, to, SIDE_WORDS[row["side"]], SIDE_WORDS[now], pt[0], pt[1], extra),
-                   picture, strict, batch, row.get("against"))
+            _judge(rec, out, [row["id"]], "%s: the way to %s is %s in the record; here it is %s, at (%d, %d)%s%s"
+                   % (pname, to, SIDE_WORDS[row["side"]], SIDE_WORDS[now], pt[0], pt[1], extra, old.get(row["id"], "")),
+                   picture, strict, batch, _against(row, old))
     apart = rules.get("apart", 60)
     ordered = [row for row in rows if row["id"] in pts and row["side"] != "bottom" and row.get("order") is not None]
     for i, a in enumerate(ordered):
@@ -673,7 +727,29 @@ def check_layout_files(rec, paths, out, dump=None):
         if kind == "exits":
             if key not in rec.places:
                 out.add("FAIL", "%s is a layout for %r, which is not a place of the record" % (path, key)); continue
-            check_exits(rec, key, spots, out, True, rec.places[key].get("batch", "?"))
+            # A way the file leaves out is not passed over: the game falls back to the point in its code
+            # (the dump's `default`), so that point is checked like any other; with no such point to read,
+            # the file cannot be said to agree with the record.
+            spots, kept = dict(spots), set()
+            defaults = dict((e["to"], e["default"]) for e in (dump or {}).get("exits", {}).get(key, [])
+                            if e.get("default"))
+            for row in rec.rows("exit", place=key):
+                keys = [row["to"]] + list(row.get("alias", []))
+                if any(k in spots for k in keys):
+                    continue
+                have = [k for k in keys if k in defaults]
+                if have:
+                    spots[have[0]] = defaults[have[0]]
+                    kept.add(have[0])
+                else:
+                    out.add("FAIL" if rec.is_fixed(row) else "REPORT",
+                            "%s: no point for the way to %s; %s%s"
+                            % (os.path.basename(path), rec.name(row["to"]),
+                               "the game would use its old point" if dump is not None else
+                               "with no layout dump, the point the game would use instead cannot be checked",
+                               " [against the fixed fact %s]" % row["id"] if rec.is_fixed(row) else
+                               " (a proposal: %s)" % row["id"]))
+            check_exits(rec, key, spots, out, True, rec.places[key].get("batch", "?"), kept=kept)
         elif kind == "pins":
             a = rec.r.get("areas", {}).get(key)
             if a is None:
@@ -909,6 +985,7 @@ def selftest(dump_path=None, check_hash=True):
             for d in (detail or [])[:6]:
                 print("          %s" % d)
 
+    import tempfile, subprocess
     record = load_record()
     dump = load_dump(dump_path, check_hash=check_hash)
     manifest = {"pictures": {}}
@@ -1031,6 +1108,62 @@ def selftest(dump_path=None, check_hash=True):
     broken("a record line with a banned word fails",
            lambda rc, b: rc.by_id["building.storehouse"].__setitem__("look", "an old mossy kura"), "would fail the prompt check")
 
+    broken("a room whose camera and whose left wall cannot both face as the record says fails",
+           lambda rc, b: rc.by_id["place.cafeteria"].__setitem__("facing", "west"), "so the left wall faces south")
+    broken("so does one whose far wall does not face the way the camera does",
+           lambda rc, b: (rc.by_id["place.dorm_common"].pop("camera_in"),
+                          rc.by_id["place.dorm_common"].__setitem__("facing", "east")), "so the far wall faces east")
+    broken("a fixed landmark that no view names any more fails",
+           lambda rc, b: b["fixed"].remove(rc.by_id["seen.courtyard.pagoda"]), "no view or window line of the record names it")
+    broken("so does a lodge",
+           lambda rc, b: b["fixed"].remove(rc.by_id["seen.courtyard.lodge_east"]), "no view or window line of the record names it")
+    broken("one exit of the game with no row in the record's view fails",
+           lambda rc, b: b["fixed"].remove(rc.by_id["exit.courtyard.gate"]), "the record's view of Courtyard has no row for it")
+
+    def no_view(rc, b):
+        for row in rc.rows("exit", place="school_yard"):
+            b["fixed" if rc.is_fixed(row) else "proposed"].remove(row)
+
+    broken("a yard whose whole view has gone from the record fails", no_view, "School Courtyard has no view in the record")
+    gone = copy.deepcopy(record)
+    no_view(Rec(gone), gone)
+    o = run(gone, None, manifest)
+    ok("and fails with no layout dump too", any("School Courtyard has no view" in t for t in o.texts("FAIL")), o.texts("FAIL"))
+    broken("a record line against the decency rule fails",
+           lambda rc, b: rc.by_id["building.pool"].__setitem__("look", "an open-air pool with students swimming in the water"),
+           "K16")
+    broken("so does somebody in a bedroom's words",
+           lambda rc, b: rc.by_id["place.maki_room"].__setitem__("words", "a bedroom, and a girl at the desk"), "K16")
+
+    # a candidate that leaves a way out is not passed: the point the game would keep is checked
+    with tempfile.TemporaryDirectory() as tmp:
+        def less(name, *drop, **kw):
+            data = json.load(open(os.path.join(TESTS, "good", name), encoding="utf-8"))
+            for key in drop:
+                del data["spots"][key]
+            if kw.get("empty"):
+                data["spots"] = {}
+            path = os.path.join(tmp, name)
+            json.dump(data, open(path, "w"))
+            return path
+
+        o = run(record, dump, manifest, layouts=[less("hot_training_yard.json", "go_training_yard__training")])
+        f = o.texts("FAIL")
+        ok("a layout that leaves out the way to the Training Hall fails against the fixed fact, by the point the "
+           "game would keep", len(f) == 1 and "exit.training_yard.training" in f[0]
+           and "the file has no point for this way" in f[0], f + o.texts("REPORT"))
+        o = run(record, dump, manifest, layouts=[less("hot_training_yard.json", empty=True)])
+        ok("a layout with no points at all fails the same way",
+           any("exit.training_yard.training" in t for t in o.texts("FAIL")), o.texts("FAIL"))
+        o = run(record, dump, manifest, layouts=[less("hot_training_yard.json", "go_training_yard__pool")])
+        ok("a way the game does not have yet, left out, is reported when its row is a proposal",
+           o.count("FAIL") == 0 and any("no point for the way to Swimming Pool" in t for t in o.texts("REPORT")),
+           o.texts("FAIL") + o.texts("REPORT"))
+        o = run(record, None, manifest, layouts=[less("hot_training_yard.json", "go_training_yard__training")])
+        ok("with no layout dump, a fixed way left out fails outright",
+           any("no point for the way to Training Hall" in t and "exit.training_yard.training" in t for t in o.texts("FAIL")),
+           o.texts("FAIL"))
+
     # a picture at revision 2 is held to the fixed facts; at revision 1 it waits
     d2 = copy.deepcopy(dump)
     for e in d2["exits"]["courtyard"]:
@@ -1043,7 +1176,6 @@ def selftest(dump_path=None, check_hash=True):
        and any("not on the right of the Courtyard" in t for t in o2.texts("FAIL")), o1.texts("FAIL") + o2.texts("FAIL"))
 
     # an out-of-date dump is refused in one line
-    import tempfile, subprocess
     with tempfile.TemporaryDirectory() as tmp:
         stale = copy.deepcopy(dump)
         stale["hash"] = "0" * 64

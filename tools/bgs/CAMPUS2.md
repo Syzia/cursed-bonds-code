@@ -10,7 +10,7 @@ There is no drawing of the campus to approve. The campus is kept one place a dif
 
 `tools/check_campus.py` checks all of it; `tools/campus_plan.png` is the same ground plan as a sketch (for reviewers, never for approval).
 
-Today: **33 fixed rows, 123 proposed, 0 waived.**
+Today: **32 fixed rows, 124 proposed, 0 waived.**
 
 ## The pictures the owner has chosen
 
@@ -188,7 +188,7 @@ A line names a neighbour only once that neighbour's picture is chosen; until the
 | Library | far | north | **fixed** by `library` (revision 2) | the low grey tiled roof of the wing behind the building, among treetops |  | **fixed** by `library` (revision 2) |
 | Common Room | far | north | **fixed** by `dorm_common` (revision 2) | at the back, the foot of a tall wooden tower and cedars | Dormitory Garden | proposed |
 | Common Room | left | west | **fixed** by `dorm_common` (revision 2) | on the left, the dark timber and upstairs gallery of the boys' dormitory | Dormitory Garden | proposed |
-| Cafeteria | left | north | **fixed** by `cafeteria` (revision 2) | the school courtyard and its pine | School Courtyard | proposed |
+| Cafeteria | left | north | proposed | the school courtyard and its pine | School Courtyard | proposed |
 | Classroom | side | west | proposed | the school courtyard below, the library's roof beyond it, and cedars | School Courtyard | proposed |
 | Infirmary | side | west | proposed | cedar trunks at the forest edge |  | proposed |
 | My Room | side | north | proposed | the forested mountain slope and the ridge above it, with nothing built in view |  | proposed |
