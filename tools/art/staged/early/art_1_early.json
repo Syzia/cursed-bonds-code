@@ -125,5 +125,30 @@
     }
    ]
   }
- ]
+ ],
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (copies of the six results from ComfyUI's output folder)",
+ "chosen": {
+  "said": "the owner, in chat, 7 Oct 2026: \"B, A, B\" (after \"I think B is better\" and \"I lied, A is better\"), in the order the sitting lists its pictures",
+  "school_yard": {
+   "version": "b",
+   "render": "ui2_school_yard_b_00001_.png",
+   "sha256": "a36cca0582c8e3b68b5209822126701f3d1d6ca169c918d03b3750e63d7649b9",
+   "note": "the render came back with a black strip 131 px wide on its right edge; ui2_school_yard_b_fit.png is the same render with 136 px cut from the right and 64 px of sky from the top (2616x1472, still 16:9 and still larger than the game's 1920x1080). The fitted file is the one to install.",
+   "fit": "ui2_school_yard_b_fit.png",
+   "fit_sha256": "ed5d22e3f3798cf2e14a7355fa070debec7f9d84ba8a6dbcd2e0487fe221a759"
+  },
+  "dorm_yard": {
+   "version": "a",
+   "render": "ui2_dorm_yard_a_00001_.png",
+   "sha256": "cb46dfee6ae3829d4b8bd6b3871aa8f1d4ed2d6fd93ae37f10e628d4730d477d",
+   "note": "OPEN, the owner's to decide: this version shows a five-storey pagoda beyond the girls' dormitory (north-east of the garden). The chosen Courtyard fixed the pagoda behind the schoolhouse's north end, which from this camera is behind me. Either the campus has a second pagoda (the record gains a landmark fixed by this picture; nothing is run), or the pagoda is taken out of this picture by one named change (two renders). Not installable until that is settled."
+  },
+  "training_yard": {
+   "version": "b",
+   "render": "ui2_training_yard_b_00001_.png",
+   "sha256": "929ea82f739b1c495d996552685e9da8e23af2b62b8dc02e034f3482f1a054a4",
+   "note": "read by eye against its five-line checklist: all yes (no vending machine, no shoe lockers; the training hall on the left; the paved passage at the bottom left; the storehouse ahead beyond the posts; the walled steps right of it; the dojo and the roofed gate to the pool on the right)."
+  }
+ },
+ "not_yet": "Nothing is installed. check_layout.py does not exist yet (U0d3); the pass rule of plan 5.2 is applied at the layout sitting, after checkpoint A."
 }
