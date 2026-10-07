@@ -194,6 +194,11 @@ init python:
         "gojo_office":    "To Gojo's Office",
     }
 
+    ## The five yards that have an icon name of their own from the second
+    ## overhaul (3.1, 4.8). The Courtyard is the heart's hub but not one of
+    ## them: an exit to it keeps its area's icon, as before.
+    PATH_YARD_ICONS = ("school_yard", "dorm_yard", "staff_yard", "training_yard", "trailhead")
+
     ## Where a hidden exit's tile stands in the icon column.
     PATH_ACTION_ORDER = 5       # first among the registered place actions (the default is 50)
 
@@ -214,11 +219,12 @@ init python:
     def path_icon(to):
         """P9. The icon an exit to `to` is drawn as: area_<key> for a hub,
         place_<room> for a room (existing icon names only, D55). The second
-        overhaul (3.1): a yard has an icon of its own, place_<yard>, and is
-        drawn as it once that picture is cut (icon_has_art); until then it
-        keeps its area's, so no exit changes before the sheet is made."""
+        overhaul (3.1): each of the five yards (PATH_YARD_ICONS) has an icon
+        of its own, place_<yard>, and is drawn as it once that picture is cut
+        (icon_has_art); until then it keeps its area's, so no exit changes
+        before the sheet is made. An exit to the Courtyard stays area_heart."""
         if path_is_hub(to):
-            if icon_has_art("place_" + to):
+            if to in PATH_YARD_ICONS and icon_has_art("place_" + to):
                 return "place_" + to
             return "area_" + area_of(to)
         return "place_" + to

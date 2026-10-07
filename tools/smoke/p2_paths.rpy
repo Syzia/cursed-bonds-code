@@ -464,10 +464,12 @@ label zz_smoke:
                       and not h["standalone"] and not h["front"] and h["icon"] in ICONS and h["icon"] != "back" for h in _zz_spots),
               "one action hotspot per exit, go_<from>__<to>, on the frozen framework; no exit uses the back icon", len(_zz_spots))
         _zz_ic = dict((l, path_icon(l)) for l in LOCATIONS)
-        ## The second UI overhaul (3.1): a yard has an icon name of its own,
-        ## place_<yard>, and wears it once that picture is cut; until then its
-        ## area's, as before.
-        check(all(_zz_ic[l] == (("place_" + l if icon_has_art("place_" + l) else "area_" + area_of(l)) if l == path_hub(area_of(l)) else "place_" + l)
+        ## The second UI overhaul (3.1): each of the five yards has an icon name
+        ## of its own, place_<yard>, and wears it once that picture is cut;
+        ## until then its area's, as before. The Courtyard, the heart's hub,
+        ## is not one of the five: an exit to it stays area_heart.
+        check(all(_zz_ic[l] == (("place_" + l if (l in PATH_YARD_ICONS and icon_has_art("place_" + l)) else "area_" + area_of(l))
+                                if l == path_hub(area_of(l)) else "place_" + l)
                   for l in LOCATIONS)
               and all(icon_for("act", "path_" + l) == _zz_ic[l] and _zz_ic[l] in ICONS for l in LOCATIONS),
               "icons are existing names: place_<room> for a room, and for a hub area_<key> until its own picture is cut "

@@ -387,7 +387,12 @@ init -2 python:
 
     def world_door_owners(loc):
         """U0b. A list of person keys: whose Bond the door of this place
-        asks; [] for a place with no Bond door."""
+        asks; [] for a place with no Bond door. place_access applies its
+        Bond clause (any hour, "Bond 15") only to a place that also has a
+        house (world_inside): a row for a corridor, such as
+        "girls_dorm": ("nobara", "maki"), names its owners and locks
+        nothing by itself; the rule for that door is written in
+        place_access beside the corridor's own test."""
         return list(WORLD_DOOR_OWNERS.get(loc, ()))
 
     def world_door_bond(loc):
@@ -765,8 +770,11 @@ init -2 python:
         ## then open at any hour, whether they are in, out or asleep (4.2,
         ## D10). An owner walking with me opens it too. It reads Bond, flags
         ## and the companion only, never char_location.
+        ## The clause is for a room inside a house only (world_inside): a
+        ## corridor that gets owners later (the plan's 3.2 gives girls_dorm
+        ## Nobara and Maki) is not closed by it and writes its own rule below.
         need = world_door_bond(loc)
-        if need is not None:
+        if need is not None and world_inside(loc):
             owners = world_door_owners(loc)
             if not (store.companion in owners
                     or any(store.bonds.get(w, 0) >= need for w in owners)):

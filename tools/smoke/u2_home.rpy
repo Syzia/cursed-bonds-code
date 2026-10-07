@@ -16,6 +16,7 @@
 ##      and each new rule fails when its table is broken on purpose
 ##   C  label path_walk and the 24 old sb_do_path_ labels are textually what
 ##      they were before the overhaul (their block of room_paths.rpy, hashed)
+##      and keep their statement names, as label sb_do_veil does
 ##   D  the Night: the four boys in their rooms on all seven days, the garden
 ##      and the Common Room empty; who is asleep; a sleeper is counted where
 ##      they are, is not on the stage, is captioned "asleep", and offers
@@ -98,6 +99,16 @@ init 999 python:
     ## 42cfd6d (the tree before the overhaul touched a game file): the sha256
     ## of that block of game/room_paths.rpy, and its length.
     ZZH_WALK_BLOCK = ("f8b818a8cf1e6852115065cd10f37370db5272baeee7a331610af76f516c6001", 1845)
+    ## The statement names of that block and of label sb_do_veil, as the
+    ## owner's .rpyc held them before the overhaul: (how many, a hash of the
+    ## sorted names and kinds; a line of dialogue's kind reads TranslateSay
+    ## in a running game). Both were read back from the owner's own
+    ## room_paths.rpyc and sb_world.rpyc of before U0b and are the same 102
+    ## and 30 names. A tree with no .rpyc copied in from the
+    ## owner's folder gets new names and fails these two lines (as
+    ## u2_baseline's names do, for the same reason).
+    ZZH_WALK_NAMES = (102, "5ef4c1b6e6c3953fc4a8f537")
+    ZZH_VEIL_NAMES = (30, "694e4af07c07143b8fcdafea")
     ZZH_SAVES = ("u2-garden-night", "u2-garden-panda", "u2-garden")
 
     def zzh_loaded():
@@ -255,6 +266,25 @@ init 999 python:
     def zzh_carry_said(n):
         lines = builtins.set(NIGHT_CARRY_LINES.values())
         return [t for t in zzh.said[n:] if t in lines]
+
+    def zzh_names(fn, first, last):
+        """The statement names of file `fn` on lines first..last, sorted, as
+        [json name, kind]. Ren'Py gives a node of an edited file its old name
+        when the old .rpyc is beside it (renpy/script.py, merge_names), and
+        tools/smoke.sh copies the owner's .rpyc into the scratch copy."""
+        out, seen = [], builtins.set()
+        for node in renpy.game.script.namemap.values():
+            key = getattr(node, "name", None)
+            if (getattr(node, "filename", None) != fn or id(node) in seen
+                    or not isinstance(key, (builtins.str, builtins.tuple))
+                    or not (first <= node.linenumber <= last)):
+                continue
+            seen.add(id(node))
+            out.append([json.dumps(key), type(node).__name__])
+        return builtins.sorted(out)
+
+    def zzh_names_hash(rows):
+        return hashlib.sha256(json.dumps(rows).encode("utf-8")).hexdigest()[:24]
 
     def zzh_old_exits():
         """The exits as they were before the overhaul: {place: [[to, x, y]]}
@@ -874,6 +904,23 @@ label zz_smoke:
               "C: label path_walk and the 24 old sb_do_path_ labels are textually what they were before the overhaul "
               "(their block of room_paths.rpy, %d characters, by sha256)" % ZZH_WALK_BLOCK[1],
               (len(_zz_block), hashlib.sha256(_zz_block.encode("utf-8")).hexdigest()))
+        ## The same, by statement name (what a save's return sites and its
+        ## rollback entries hold): every statement of that block, and of label
+        ## sb_do_veil in sb_world.rpy, has the name it had before the overhaul.
+        _zz_l0 = _zz_src[:_zz_a].count("\n") + 1
+        _zz_l1 = _zz_src[:_zz_b + len(_zz_end)].count("\n")
+        _zz_n = zzh_names("game/room_paths.rpy", _zz_l0, _zz_l1)
+        check((len(_zz_n), zzh_names_hash(_zz_n)) == ZZH_WALK_NAMES,
+              "C: the %d statements of path_walk and the 24 old labels keep their names (the scratch copy compiles over the "
+              "owner's .rpyc, so these are the names the owner's saves hold)" % ZZH_WALK_NAMES[0],
+              (len(_zz_n), zzh_names_hash(_zz_n), _zz_n[:3]))
+        _zz_ws = renpy.file("sb_world.rpy").read().decode("utf-8").replace("\r\n", "\n").split("\n")
+        _zz_v0 = _zz_ws.index("label sb_do_veil:") + 1
+        _zz_v1 = next((i for i in range(_zz_v0, len(_zz_ws)) if _zz_ws[i][:1] not in ("", " ", "#")), len(_zz_ws))
+        _zz_n = zzh_names("game/sb_world.rpy", _zz_v0, _zz_v1)
+        check((len(_zz_n), zzh_names_hash(_zz_n)) == ZZH_VEIL_NAMES,
+              "C: the %d statements of label sb_do_veil (sb_world.rpy) keep their names" % ZZH_VEIL_NAMES[0],
+              (len(_zz_n), zzh_names_hash(_zz_n), _zz_v0, _zz_v1, _zz_n[:3]))
         check(len(ZZH_OLD_LABELS) == 24 and all(renpy.has_label("sb_do_path_" + l) for l in ZZH_OLD_LABELS)
               and all(('label sb_do_path_%s:\n    call path_walk("%s")\n    return\n' % (l, l)) in _zz_block for l in ZZH_OLD_LABELS)
               and renpy.has_label("path_walk"),
@@ -1044,6 +1091,26 @@ label zz_smoke:
         WORLD_DOOR_BOND[None] = 15
         check(_zz_c == (True, False, 0, True, True) and not place_access("yuji_room")[0],
               "E: a row for one door moves that door alone, and changing the one entry moves them all", _zz_c)
+        ## The Bond clause is for a room inside a house. A corridor that is
+        ## given owners later (3.2: girls_dorm, Nobara and Maki) is not closed
+        ## by it: its door's rule is written beside the corridor's own test.
+        _zz_was = (store.day, store.period)
+        WORLD_DOOR_OWNERS["boys_dorm"] = ("yuji",)
+        try:
+            _zz_c = [world_door_owners("boys_dorm"), world_door_bond("boys_dorm"), []]
+            for _zz_p in ("Morning", "Night"):
+                zzh_at(zzh_day("Fri"), _zz_p)
+                _zz_c[2].append(place_access("boys_dorm"))
+            _zz_c = builtins.tuple(_zz_c) + (place_access("yuji_room")[0],)
+        finally:
+            del WORLD_DOOR_OWNERS["boys_dorm"]
+            zzh_at(*_zz_was)
+        check(_zz_c == (["yuji"], 15, [(True, "", ""), (True, "", "")], False)
+              and world_door_owners("boys_dorm") == [] and world_door_bond("boys_dorm") is None
+              and all(world_inside(l) for l in WORLD_DOOR_OWNERS),
+              "E: owners named for a corridor lock nothing by themselves (a test row for the Boys' Dormitory, Bond 0: "
+              "open by day and at Night); the Bond clause closes only a room inside a house, and every door with owners today is one",
+              _zz_c)
         _zz_c = [place_access("megumi_room")[0]]
         flag("door_megumi_room")
         _zz_c += [place_access("megumi_room"), place_access("yuji_room")[0]]
@@ -1090,6 +1157,21 @@ label zz_smoke:
               and path_icon("dorm_yard") == map_pin_icon("dorm_yard") and "place_dorm_yard" in ICONS,
               "F: a yard keeps its area's icon, on its pin and on an exit to it, until its own picture is cut",
               (map_pin_icon("dorm_yard"), path_icon("dorm_yard")))
+        ## The Courtyard is the heart's hub and has had a picture of its own
+        ## since phase 2 (ic_place_courtyard.png), but it is not one of the
+        ## five yards (3.1, 4.8): an exit to it stays area_heart and its pin
+        ## stays place_courtyard, as before the overhaul.
+        _zz_yards = ("school_yard", "dorm_yard", "staff_yard", "training_yard", "trailhead")
+        _zz_to_ct = [(f, r["icon"]) for f in LOC_ORDER for r in path_exits(f) if r["to"] == "courtyard"]
+        check(builtins.tuple(PATH_YARD_ICONS) == _zz_yards and icon_has_art("place_courtyard")
+              and path_icon("courtyard") == "area_heart" and map_pin_icon("courtyard") == "place_courtyard"
+              and icon_for("act", "path_courtyard") == "area_heart"
+              and len(_zz_to_ct) == 4 and all(i == "area_heart" for f, i in _zz_to_ct)
+              and all(path_icon(y) == "area_" + area_of(y) and map_pin_icon(y) == "area_" + area_of(y)
+                      for y in _zz_yards if not icon_has_art("place_" + y)),
+              "F: no exit changed its icon: the four exits to the Courtyard are still area_heart though its own picture exists, "
+              "its pin is still place_courtyard, and each of the five yards wears its area's until its picture is cut",
+              (_zz_to_ct, path_icon("courtyard"), map_pin_icon("courtyard")))
         check(len(ICONS) == 114 and icon_for("do", "swim_pool") == "swim"
               and all(("place_" + k) in ICONS and icon_for("place", k) == "place_" + k
                       for k in ("boys_dorm", "yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room",

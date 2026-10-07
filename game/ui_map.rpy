@@ -349,9 +349,16 @@ init -1 python:
     def map_pin_icon(loc):
         """P9. The icon on a place's pin: place_<loc>, or for a hub that has
         no picture of its own, its area's (D55: existing names only). The
-        second overhaul gives each yard an icon name of its own; its pin
-        wears it once that picture is cut, as its exits do (path_icon)."""
-        return path_icon(loc)
+        second overhaul gives each of the five yards (PATH_YARD_ICONS) an
+        icon name of its own; its pin wears it once that picture is cut, as
+        its exits do (path_icon). The Courtyard's pin is place_courtyard, as
+        it always was."""
+        if loc in PATH_YARD_ICONS:
+            return path_icon(loc)
+        name = "place_" + str(loc)
+        if name in ICONS:
+            return name
+        return "area_" + str(area_of(loc))
 
     def map_area_rect(key):
         """P9. (x, y, w, h): where an area's marker is drawn on level 1."""
