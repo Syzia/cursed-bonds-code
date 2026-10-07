@@ -141,7 +141,7 @@
    "version": "a",
    "render": "ui2_dorm_yard_a_00001_.png",
    "sha256": "cb46dfee6ae3829d4b8bd6b3871aa8f1d4ed2d6fd93ae37f10e628d4730d477d",
-   "note": "OPEN, the owner's to decide: this version shows a five-storey pagoda beyond the girls' dormitory (north-east of the garden). The chosen Courtyard fixed the pagoda behind the schoolhouse's north end, which from this camera is behind me. Either the campus has a second pagoda (the record gains a landmark fixed by this picture; nothing is run), or the pagoda is taken out of this picture by one named change (two renders). Not installable until that is settled."
+   "note": "DECIDED by the owner, in chat, 7 Oct 2026: \"Lets keep the pagodas, we can maybe use it down the line.\" This version shows a five-storey pagoda beyond the girls' dormitory (north-east of the garden); the chosen Courtyard fixed its pagoda behind the schoolhouse's north end, which from this camera is behind me. So the campus has two. At the garden's layout sitting the second is written into tools/bgs/campus.json as a landmark of its own (pagoda_east, about (1110, 350) on the ground plan, fixed by this picture) and is not reported as standing against the first. Do NOT add that row before batch 0's sitting has compared batch 1's prompts with this file: it would change the garden's prompt (docs/UI2_DESIGN.md 5.2, 'Two pagodas')."
   },
   "training_yard": {
    "version": "b",
