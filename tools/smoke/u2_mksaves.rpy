@@ -50,8 +50,10 @@
 ##   sunmall
 ##     u2-ch4-card          on chapter four's chapter card (ch4_mission.rpy:14, its
 ##                          timed pause; a load does not stop on a timed pause,
-##                          so today this save lands two statements on, on the
-##                          fade after the card: MOVED in the load report)
+##                          so in play this save goes on from the fade after
+##                          the card. The load report says SAME: the tool
+##                          stops at the first interaction, which is the
+##                          card's own timed pause)
 ##     u2-ch4-menu          the menu at ch4_mission.rpy:117, reached from the
 ##                          office through start_mission and ev_mission_sunmall
 ##                          (its return stack holds the Pass after

@@ -5,6 +5,10 @@
 #
 #   tools/smoke.sh <harness.rpy>
 #   tools/smoke.sh <name>                the same as tools/smoke/<name>.rpy
+#   tools/smoke.sh --open-games          the games a pointer harness would refuse
+#                                        for, one "<pid> <project>" a line
+#   tools/smoke.sh --lock-selftest       checks that list against made-up
+#                                        process lines (see open_games below)
 #   tools/smoke.sh <name> --out <file>   a harness that writes a file for the
 #                                        repository (see 5) writes it to <file>
 #                                        instead: tools/smoke.sh u2_dump --out
@@ -27,7 +31,12 @@
 #   RENPY_SDK=<dir>    the SDK (default ~/Desktop/renpy-8.5.3-sdk)
 #   SMOKE_POINTER=1|0  treat this harness as one that needs the pointer, or as
 #                      one that does not, whatever the list says (see 6)
-#   SMOKE_LOCK_WAIT=3600  seconds to wait for the pointer before giving up
+#   SMOKE_LOCK_WAIT=14400 seconds to wait for the pointer before giving up
+#                      (four hours: six worktrees' pointer harnesses, one after
+#                      another, are about ninety minutes). A run that gives up
+#                      says REFUSED and exits with status 3: run it again; it
+#                      is not a failed harness.
+#   SMOKE_PS_FIXTURE=<file>  read in place of the process list (--lock-selftest)
 #   SMOKE_LOCK_DIR=<dir>  the lock folder (default ~/Library/Caches/jjk_smoke;
 #                      another folder only to test the lock itself)
 #
@@ -76,8 +85,9 @@
 #      SMOKE_POINTER_LIST below and any harness with a line `## smoke-pointer`.
 #      Such a run
 #        - refuses, with one line and exit status 3, while a Ren'Py game that
-#          is not a smoke run is open (the owner playing, a second copy of the
-#          game; the launcher's own window does not count);
+#          is not a smoke run is open (the owner playing, started from the
+#          launcher or any other way; a second copy of the game; the
+#          launcher's own window does not count);
 #        - takes the machine-wide lock, the folder
 #          ~/Library/Caches/jjk_smoke/pointer.lock, waiting for whoever holds
 #          it (another pointer harness, from this checkout or any worktree);
@@ -99,6 +109,75 @@ SDK="${RENPY_SDK:-$HOME/Desktop/renpy-8.5.3-sdk}"
 LIB="$ROOT/tools/smoke/_lib.rpy"
 
 die() { echo "smoke.sh: $*" >&2; exit 2; }
+
+# "<pid> <project>" for every Ren'Py game open on this machine that is neither
+# the launcher, nor a smoke run, nor a lint or compile (which open no window).
+# A game is started in three shapes, and all three count:
+#   <sdk>/renpy.sh <project>            seen as <sdk>/lib/py3-.../renpy <project>
+#   <sdk>/renpy.app/Contents/MacOS/pythonw <sdk>/renpy.py <project> --json-dump ...
+#                                       the launcher's "Launch Project" (python
+#                                       in place of pythonw with the console on)
+#   python renpy.py <project>           by hand
+# The launcher's own window is renpy.app/Contents/MacOS/renpy with no project.
+# SMOKE_PS_FIXTURE=<file> is read in place of the process list (the self-test).
+open_games() {
+    if [ -n "${SMOKE_PS_FIXTURE:-}" ]; then cat "$SMOKE_PS_FIXTURE"; else ps -axo pid=,command= 2>/dev/null; fi | awk '
+        {
+            pid = $1; exe = $2
+            ok = 0
+            if (exe ~ /(^|\/)renpy(\.sh|\.py|\.exe)?$/) ok = 1
+            else if (exe ~ /(^|\/)pythonw?[0-9.]*(\.exe)?$/) {
+                if (exe ~ /\/(lib\/py[^\/]*|renpy\.app\/Contents\/MacOS)\/[^\/]*$/) ok = 1
+                else if ($0 ~ /(^|[ \/])renpy\.py( |$)/) ok = 1
+            }
+            if (!ok) next
+            if ($0 !~ /[Rr]en.?[Pp]y/) next
+            if ($0 ~ /jjk_smoke\./) next
+            proj = ""; quiet = 0
+            for (i = 3; i <= NF; i++) {
+                if ($i ~ /^-/) continue
+                if ($i ~ /renpy\.py$/) continue
+                if (proj == "") { proj = $i; continue }
+                if ($i == "lint" || $i == "compile" || $i == "translate" || $i == "dialogue" || $i == "distribute") quiet = 1
+            }
+            if (proj == "" || proj ~ /\/launcher\/?$/ || quiet) next
+            print pid " " proj
+        }'
+}
+
+# tools/smoke.sh --open-games     prints what a pointer harness would refuse for
+# tools/smoke.sh --lock-selftest  feeds open_games the shapes above and says
+#                                 whether each is seen (exit status 0 when all are)
+case "${1:-}" in
+    --open-games) open_games; exit 0 ;;
+    --lock-selftest)
+        T="$(mktemp "${TMPDIR:-/tmp}/jjk_lock_selftest.XXXX")" || die "mktemp failed"
+        cat > "$T" <<'EOF_PS'
+101 /S/renpy-8.5.3-sdk/renpy.app/Contents/MacOS/pythonw /S/renpy-8.5.3-sdk/renpy.py /Users/x/Desktop/JJKgame.md --json-dump /tmp/a/dump.json
+102 /S/renpy-8.5.3-sdk/renpy.app/Contents/MacOS/python /S/renpy-8.5.3-sdk/renpy.py /Users/x/Desktop/JJKgame.md
+103 /S/renpy-8.5.3-sdk/lib/py3-mac-universal/pythonw /S/renpy-8.5.3-sdk/renpy.py /Users/x/wt/U1
+104 /S/renpy-8.5.3-sdk/lib/py3-mac-universal/renpy /Users/x/wt/U2
+105 /usr/bin/python3 /S/renpy-8.5.3-sdk/renpy.py /Users/x/wt/U3 run
+106 /S/renpy-8.5.3-sdk/renpy.app/Contents/MacOS/renpy /Users/x/wt/U4
+201 /S/renpy-8.5.3-sdk/renpy.app/Contents/MacOS/renpy
+202 /S/renpy-8.5.3-sdk/renpy.app/Contents/MacOS/pythonw /S/renpy-8.5.3-sdk/renpy.py /S/renpy-8.5.3-sdk/launcher
+203 /S/renpy-8.5.3-sdk/lib/py3-mac-universal/renpy /private/tmp/jjk_smoke.Ab12 run --savedir /private/tmp/jjk_smoke.Ab12/savedir
+204 /S/renpy-8.5.3-sdk/lib/py3-mac-universal/renpy /Users/x/scratch/lintcopy lint
+205 /S/renpy-8.5.3-sdk/renpy.app/Contents/MacOS/pythonw /S/renpy-8.5.3-sdk/renpy.py /Users/x/scratch/lintcopy compile
+206 /usr/bin/python3 /Users/x/Desktop/JJKgame.md/tools/check_content.py --all
+207 /bin/bash /Users/x/Desktop/JJKgame.md/tools/smoke.sh p2_cards
+208 /usr/bin/python3 -m http.server
+EOF_PS
+        GOT="$(SMOKE_PS_FIXTURE="$T" open_games | awk '{print $1}' | tr '\n' ' ')"
+        rm -f "${T:?}"
+        WANT="101 102 103 104 105 106 "
+        if [ "$GOT" = "$WANT" ]; then
+            echo "smoke.sh: lock self-test PASS (the six ways a game is started are seen; the launcher, a smoke run, a lint, a compile and the tools are not)"
+            exit 0
+        fi
+        echo "smoke.sh: lock self-test FAIL: saw [$GOT] and wanted [$WANT]" >&2
+        exit 1 ;;
+esac
 
 USAGE="usage: tools/smoke.sh <harness.rpy | name> [--out <file>]"
 HARNESS="${1:-}"
@@ -165,7 +244,7 @@ SMOKE_POINTER_LIST="p2_contracts p2_hud p2_map p2_journal p2_view p2_rooms p2_pa
 LOCK_BASE="${SMOKE_LOCK_DIR:-$HOME/Library/Caches/jjk_smoke}"
 LOCK="$LOCK_BASE/pointer.lock"
 RUNNING="$LOCK_BASE/running"
-LOCK_WAIT="${SMOKE_LOCK_WAIT:-3600}"
+LOCK_WAIT="${SMOKE_LOCK_WAIT:-14400}"
 case "$LOCK_WAIT" in ''|*[!0-9]*) die "SMOKE_LOCK_WAIT must be a whole number of seconds" ;; esac
 HAVE_LOCK=0
 MARKER=""
@@ -176,26 +255,6 @@ case " $SMOKE_POINTER_LIST " in *" $NAME "*) POINTER=1 ;; esac
 grep -q '^## smoke-pointer *$' "$HARNESS" && POINTER=1
 case "${SMOKE_POINTER:-}" in 1) POINTER=1 ;; 0) POINTER=0 ;; esac
 
-# "<pid> <project>" for every Ren'Py game open on this machine that is neither
-# the launcher, nor a smoke run, nor a lint or compile (which open no window).
-open_games() {
-    ps -axo pid=,command= 2>/dev/null | awk '
-        {
-            pid = $1; exe = $2
-            if (exe !~ /(^|\/)renpy(\.sh|\.py|\.exe)?$/ && exe !~ /\/lib\/py[^\/]*\/(renpy|python[0-9.]*)$/) next
-            if ($0 !~ /[Rr]en.?[Pp]y/) next
-            if ($0 ~ /jjk_smoke\./) next
-            proj = ""; quiet = 0
-            for (i = 3; i <= NF; i++) {
-                if ($i ~ /^-/) continue
-                if ($i ~ /renpy\.py$/) continue
-                if (proj == "") { proj = $i; continue }
-                if ($i == "lint" || $i == "compile" || $i == "translate" || $i == "dialogue" || $i == "distribute") quiet = 1
-            }
-            if (proj == "" || proj ~ /\/launcher\/?$/ || quiet) next
-            print pid " " proj
-        }'
-}
 games_line() { open_games | tr '\n' ';' | sed 's/;$//'; }
 
 lock_holder() { cat "$LOCK/pid" 2>/dev/null; }

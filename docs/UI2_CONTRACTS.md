@@ -56,9 +56,18 @@ A statement's name is `json.dumps(node.name)`: a label's name, or
 of `sha1(repr((class name,) + diff_info()[1:]))`. Two nodes with one name and
 one hash are the same statement to a save.
 
-The pictures were taken at 2666 x 1499 (this Mac's window). They compare byte
-for byte on this Mac; on a screen of another size `u2_baseline` says so in a
-note and the pictures are looked at instead.
+The pictures are 1280 x 720. `u2_baseline` sets the window to that many pixels
+before it takes them (half as many points on a display that draws two pixels
+to the point), so they do not depend on the size the window opens at, which
+follows the display in use. They compare byte for byte. When a display cannot
+hold that window, one check fails, "pictures: the window could be made the
+baseline's size", and the five are not compared: that is about the screen and
+is not a change in the game. The baseline was taken on a display of scale 1.0
+(`shots.json`, `scale`); on a display of another scale a run that fails all
+five pictures and nothing else is first suspected of the display, and the
+check says so. **For U0c2** ("pixel-identical to U0a's"): the evidence is the
+five `picture:` lines of `tools/smoke.sh u2_baseline` reading PASS, with the
+`pictures:` line above them.
 
 ### A3. `tools/art/game_layout.json` (the one file the art tools read the game through)
 
@@ -140,13 +149,17 @@ for the package that wrote the line.
 
 - `--decency`: the words towel, naked, undress, strip, swimsuit, bikini, skin,
   bare, changing (and their plain endings), in the strings of `room_bath.rpy`,
-  `room_pool.rpy`, `room_tokyo.rpy`, and in any `AMBIENT`, `SPOT_LINES` or
-  `POSES` row whose place is `bathhouse`, `sauna`, `pool`, `yuji_room`,
-  `megumi_room`, `senpai_room`, `nobara_room` or `maki_room`.
+  `room_pool.rpy`, `room_tokyo.rpy`, and in any `AMBIENT`, `AMBIENT_STORY`,
+  `SPOT_LINES` or `POSES` row whose place is `bathhouse`, `sauna`, `pool`,
+  `yuji_room`, `megumi_room`, `senpai_room`, `nobara_room` or `maki_room`. A
+  row may be wrapped onto several lines: every line of it is read. An
+  `AMBIENT_STORY` row whose place is `None` shows everywhere, so it is read
+  too. (A new caption table would not be read: captions go in these two.)
 - `--baths-optional`: `"bath"`, `bath_soak`, `bath_sauna`, `bath_ok`,
   `pool_swim` anywhere under `game/` outside `room_bath.rpy` and
   `room_pool.rpy`, except in `ICONS` / `ICON_FOR` (`ui_icons.rpy`),
-  `SPOT_PLANNED` (`sb_hotspots.rpy`), a `register_hotspot(...)` call, and
+  `SPOT_PLANNED` (`sb_hotspots.rpy`), the ids (never `"bath"`) in a
+  `register_hotspot(...)` call, and
   `NIGHT_REST_BLOCKS` (`sb_night.rpy`).
 - `--later-notes` (asked for by name; not in `--all`): "later build" and
   "combat update" in player-visible strings, less the rows of
@@ -162,8 +175,11 @@ for the package that wrote the line.
   `## smoke-pointer`, takes the machine-wide lock
   `~/Library/Caches/jjk_smoke/pointer.lock`, waits for the other smoke runs to
   finish, and refuses (one line, exit status 3, `RESULT FAIL` with the word
-  REFUSED) while a Ren'Py game that is not a smoke run is open. Every other
-  harness waits while the lock is held. **A new harness that hovers or calls
+  REFUSED) while a Ren'Py game that is not a smoke run is open, whether it was
+  started from the launcher, with `renpy.sh` or by hand. Every other
+  harness waits while the lock is held. A run waits up to four hours
+  (`SMOKE_LOCK_WAIT`). **Exit status 3 is "run it again" (close the game, or
+  wait), never a failed harness.** **A new harness that hovers or calls
   `renpy.set_focus` or `renpy.set_mouse_pos` carries `## smoke-pointer`.**
 - `## smoke-out: <file> -> <path>`: the harness writes `<file>` into
   `$SMOKE_SHOTS`; after a pass the script copies it to `<path>` in the

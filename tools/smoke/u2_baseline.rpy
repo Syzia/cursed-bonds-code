@@ -45,10 +45,27 @@
 ##       itself against (every node outside the init blocks keeps its name).
 ##   baseline_sprite_tree.txt
 ##       the text of what lit_sprite builds for Yuji (K9), with and without
-##       the blink and talk pictures, and the hash of its pickle
+##       the blink and talk pictures, and the hash of its pickle. The path,
+##       canvas and feet are read from the `image yuji = lit_sprite(...)` line
+##       of game/jjk_sprites.rpy, so it is the sprite a save holds. The
+##       pickle is taken before the run's first interaction, as here; taken
+##       after one it is a few bytes longer, so a harness that compares with
+##       this file builds its sprite first thing too.
 ##   baseline_shots/ui2/
 ##       place.png, person.png, map_campus.png, map_area.png, main_menu.png
-##       and shots.json (the window's size and each file's sha256)
+##       and shots.json (the pictures' size and each file's sha256)
+##
+## The pictures and the screen. A screenshot is as large as the window, and
+## the window Ren'Py opens follows the display in use (2666x1499 on the
+## built-in panel, 1818x1022 with a 1920x1200 monitor as the main display).
+## So before the five are taken the window is set to ZZ_B_SIZE, 1280x720
+## pixels, which fits either; a display that draws two pixels to the point
+## gets a window of half as many points. The pictures are compared only when
+## they came out at the baseline's size; otherwise ONE check fails and says
+## so ("the window could not be made ..."), which is about the screen and not
+## about the game. The baseline's five were taken on a display of scale 1.0
+## (shots.json says which); a run on a display of another scale that fails
+## all five and nothing else is first suspected of the display.
 ##
 ## A statement's name is what a save rests on. Ren'Py gives a node of a
 ## changed file its old name when its diff_info() is unchanged
@@ -78,6 +95,8 @@ init 999 python:
     ## Where the pointer waits while a picture is taken: the top of the
     ## screen's middle, where no screen of the five has a button.
     ZZ_B_PARK = (960, 150)
+    ## The size, in pixels, the five pictures are taken at (see the header).
+    ZZ_B_SIZE = (1280, 720)
 
     def zz_b_fixture(day=9, period="Morning", here="dorm"):
         """A settled game with the whole campus open and everyone met: the
@@ -205,12 +224,24 @@ init 999 python:
             out.append("%s%s" % (pad, cls))
         return out
 
+    def zz_b_sprite_args(who="yuji"):
+        """(path, canvas, feet) of `image <who> = lit_sprite(...)` in
+        game/jjk_sprites.rpy: the arguments the game itself builds with."""
+        import ast
+        import re
+        with open(os.path.join(config.gamedir, "jjk_sprites.rpy"), encoding="utf-8") as f:
+            m = re.search(r"^image %s = lit_sprite(\(.*\))\s*$" % re.escape(who), f.read(), re.M)
+        if m is None:
+            raise Exception("u2_baseline: no `image %s = lit_sprite(...)` line in game/jjk_sprites.rpy" % who)
+        path, size, feet = ast.literal_eval(m.group(1))
+        return path, builtins.tuple(size), builtins.tuple(feet)
+
     def zz_b_sprite():
         """baseline_sprite_tree.txt: the tree for Yuji's neutral sprite and
         the hash of its pickle, with the blink and talk pictures taken away
         and with them said to be there (whatever is installed today)."""
         real = renpy.loadable
-        path, size, feet = "images/char/yuji_neutral.png", (760, 1400), (383, 1365, 330)
+        path, size, feet = zz_b_sprite_args()
         lines = ["# lit_sprite(%r, %r, %r)" % (path, size, feet),
                  "# each node: its class, its function's name, its curried argument names, its file",
                  "# (docs/UI2_DESIGN.md K9; written by tools/smoke/u2_baseline.rpy)"]
@@ -265,6 +296,29 @@ init 999 python:
             head = f.read(24)
         return builtins.list(struct.unpack(">II", head[16:24]))
 
+    def zz_b_window():
+        """Make the window ZZ_B_SIZE pixels. Returns (the size a screenshot
+        has now, pixels per point of this display, the size it was)."""
+        probe = os.path.join(zz_smoke_state.shots, "_probe.png")
+        def zz_size():
+            renpy.screenshot(probe)
+            return zz_b_png_size(probe)
+        zz_render(0.3)
+        was = zz_size()
+        scale = float(was[0]) / max(1, renpy.get_physical_size()[0])
+        scale = round(scale * 4) / 4.0 or 1.0
+        for i in range(3):
+            if zz_size() == builtins.list(ZZ_B_SIZE):
+                break
+            renpy.set_physical_size((int(round(ZZ_B_SIZE[0] / scale)), int(round(ZZ_B_SIZE[1] / scale))))
+            zz_render(0.8)
+        got = zz_size()
+        try:
+            os.remove(probe)
+        except Exception:
+            pass
+        return got, scale, was
+
     def zz_b_sha(path):
         with open(path, "rb") as f:
             return hashlib.sha256(f.read()).hexdigest()
@@ -307,6 +361,8 @@ label zz_smoke:
             os.makedirs(_zz_shots)
         _zz_keep = zz_smoke_state.shots
         zz_smoke_state.shots = _zz_shots
+        _zz_win, _zz_scale, _zz_was = zz_b_window()
+        note("window", "it opened at %r pixels (%.2f to the point) and is %r for the pictures" % (_zz_was, _zz_scale, _zz_win))
         zz_b_fixture(day=9, period="Morning", here=ZZ_B_ROOM)
         check(ZZ_B_WHO in who_is_here(ZZ_B_ROOM), "(fixture) %s is in the %s on a weekday Morning" % (ZZ_B_WHO, ZZ_B_ROOM), who_is_here(ZZ_B_ROOM))
         renpy.scene()
@@ -349,8 +405,11 @@ label zz_smoke:
 
         _zz_meta = builtins.dict(
             size=zz_b_png_size(os.path.join(_zz_shots, ZZ_B_SHOTS[0] + ".png")),
+            scale=_zz_scale,
             fixture="day 9 (Tue), Morning, the %s with %s in it; the map opened from there, then its %s area; "
-                    "persistent.motion off; the pointer parked at %r" % (ZZ_B_ROOM, ZZ_B_WHO, ZZ_B_AREA, ZZ_B_PARK),
+                    "persistent.motion off; the pointer parked at %r; the window set to %dx%d pixels first "
+                    "(tools/smoke/u2_baseline.rpy, ZZ_B_SIZE), whatever the display"
+                    % (ZZ_B_ROOM, ZZ_B_WHO, ZZ_B_AREA, ZZ_B_PARK, ZZ_B_SIZE[0], ZZ_B_SIZE[1]),
             sha256=builtins.dict((n, zz_b_sha(os.path.join(_zz_shots, n + ".png"))) for n in ZZ_B_SHOTS
                                  if os.path.isfile(os.path.join(_zz_shots, n + ".png"))))
         check(len(_zz_meta["sha256"]) == len(ZZ_B_SHOTS), "the five pictures are taken", builtins.sorted(_zz_meta["sha256"]))
@@ -426,11 +485,20 @@ label zz_smoke:
                       [l for l in _zz_sprite.splitlines() if l.startswith("pickle:")])
             _zz_old = zz_b_load(os.path.join("baseline_shots", "ui2", "shots.json"))
             if check(_zz_old is not None, "tools/smoke/baseline_shots/ui2/shots.json is there"):
-                if _zz_old.get("size") != _zz_meta["size"]:
-                    note("pictures", "the window is %r now and was %r: the pictures cannot be compared byte for byte"
-                         % (_zz_meta["size"], _zz_old.get("size")))
-                for _zz_n in ZZ_B_SHOTS:
-                    check(_zz_old["sha256"].get(_zz_n) == _zz_meta["sha256"].get(_zz_n),
-                          "picture: %s.png is pixel for pixel the baseline's" % _zz_n,
-                          "compare %s with tools/smoke/baseline_shots/ui2/%s.png" % (os.path.join(_zz_shots, _zz_n + ".png"), _zz_n))
+                ## One check about the screen, then five about the game: the
+                ## five are made only when the pictures are the baseline's size.
+                if check(_zz_old.get("size") == _zz_meta["size"],
+                         "pictures: the window could be made the baseline's size, %r pixels" % (_zz_old.get("size"),),
+                         "the window could not be made that size on this display (it is %r, and opened at %r): the five "
+                         "pictures were NOT compared. This is about the screen, not the game: run it on a display that "
+                         "can hold a %dx%d window" % (_zz_meta["size"], _zz_was, ZZ_B_SIZE[0], ZZ_B_SIZE[1])):
+                    _zz_hint = ""
+                    if _zz_old.get("scale") not in (None, _zz_scale):
+                        _zz_hint = (" (the baseline was taken on a display of scale %r and this one is %r: if all five "
+                                    "differ and nothing else does, suspect the display first)" % (_zz_old.get("scale"), _zz_scale))
+                    for _zz_n in ZZ_B_SHOTS:
+                        check(_zz_old["sha256"].get(_zz_n) == _zz_meta["sha256"].get(_zz_n),
+                              "picture: %s.png is pixel for pixel the baseline's" % _zz_n,
+                              "compare %s with tools/smoke/baseline_shots/ui2/%s.png%s"
+                              % (os.path.join(_zz_shots, _zz_n + ".png"), _zz_n, _zz_hint))
         finish()

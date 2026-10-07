@@ -39,7 +39,7 @@ rule was made to fail on purpose, as the last column says.
 | `p2_rooms` "the first set of 4.10 is registered" | the registry equals the fifteen | the fifteen are present with their place, kind and action; more are allowed | (a table; U4 adds to it) |
 | `p2_rooms` "SPOT_LINES holds the look hotspots' lines" | `len(SPOT_LINES) == 3` | every row of `SPOT_LINES` is a registered look and holds its lines; at least three | (a count) |
 | `p2_rooms` "every point in game/layout/hot_<place>.json ..." | every sidecar point equals the code's default, and there are 15 | every id a sidecar names is registered for its place, or planned for it (`SPOT_PLANNED`), and its point passes `hot_point_findings`; no count, no equality with the code | a sidecar naming an unknown id, putting the cafeteria's counter in the toast lane, and standing the machine where people stand: FAIL, naming all three |
-| `p2_hud` section 3b, the eight named tiles ("the label of 'Practice' hides nothing where it opens") | the label opens on a named side, and opened on the other it "used to" cover a named exit | the label hides no exit, hotspot or corner button where it opens, and reads its title; the side and what it would have covered are a note | an exit placed where the label opens (the first moved-points overlay did exactly that): FAIL |
+| `p2_hud` section 3b, the eight named tiles ("the label of 'Practice' hides nothing where it opens") | the label opens on a named side, and opened on the other it "used to" cover a named exit | the label hides no exit, hotspot or corner button where it opens, and reads its title; the side and what it would have covered are a note | not breakable by a sidecar: with an exit put where a label opens the game moves the label clear, and the rule passes (129 of 129). It fails only if the placing of a tile's label regresses. (The first moved-points overlay failed the OLD line, which also pinned the side.) |
 | `p2_rooms` "the machine's point is clear of where one to four people stand" | the code row of `HOT_SPOTS` | the machine's applied point (the sidecar's) | the same sidecar: FAIL |
 
 **The moved-points test** (the acceptance of U0a): with an overlay that moves
@@ -49,10 +49,12 @@ Dormitories' map at least 50 px to other legal points, `p2_paths`, `p2_rooms`,
 overlay tried was not legal, and two rules that are still rules said so: the
 gate's exit was hidden by the Courtyard's commonest pair (`p2_paths`, "with two
 people the gate exit is in the picture ..."), and the Training Yard's exit sat
-where the label of "Practice" opens (`p2_hud`, section 3b). Both are what a
-layout sitting must respect. The second showed that `p2_hud`'s eight named
-tiles still pinned a side and a covered exit of the old pictures; that line
-became the rule in the table above.
+where the label of "Practice" opens (`p2_hud`, section 3b, as it then was: the
+line also pinned the side the label opens on, and that is what failed). The
+first is what a layout sitting must respect. The second overlay showed that
+`p2_hud`'s eight named tiles still pinned a side and a covered exit of the old
+pictures; that line became the rule in the table above, which an exit under a
+label does not break, because the game moves the label clear of it.
 
 **Every harness, before and after.** All 27 harness runs of `tools/README.md`
 (the 26 files, `p2_oldsave` on slot 1-1 among them) pass on the untouched game
@@ -87,11 +89,11 @@ with the same number of checks before U0a's edits and after: 3,299 in all.
 | `p2_paths.rpy:1126-1127` | `who_is_here("dorm_yard") == ["yuji", "panda"]` on a weekday Night | U0b | U0b (the garden is empty at Night) |
 | `p2_night.rpy:1732`, `wp4_board.rpy:434` | a "later build" or "combat update" note is on its screen | U8 (the notes are hidden) | U8 |
 | `wp0_stubs.rpy:341-353` | `place_actions("dorm")`, `("courtyard")` shapes | unchanged | – |
-| `wp8_journal.rpy` and `p2_contracts.rpy:1520` | the Preferences rows' words (MOTION, On, Off) | U6 (a row added, none renamed) | U6 |
+| `wp8_journal.rpy:516-519, 969-974, 1133-1136` and `p2_contracts.rpy:1520` | the Preferences rows' words (MOTION, On, Off) | U6 (a row added, none renamed) | U6 |
 | `tools/make_icon_workflow.py`'s own check | the sheets equal `ICONS` | U0b | U0b |
 | `wp0_stubs.rpy:574`, and the trips in `phase1_all` and `phase2_all` | `call sb_trip(...)` runs to the end without a click | unchanged; listed so nobody removes the autoplay line | – |
 | `p2_map.rpy:603-618` | the Tokyo layer's ids | unchanged | – |
-| `p2_journal.rpy:593-637` | patches `person_now` with the old "Somewhere I can't go right now" | unchanged (a patch of its own) | – |
+| `p2_journal.rpy:593-637`, `:1149`, `:1270` | patches `person_now` with the old "Somewhere I can't go right now" | unchanged (a patch of its own) | – |
 | `p2_paths.rpy:604-623` | the girls' corridor's lock in the Evening with the flag discarded | unchanged while Bond is below the door's level; U0c1 confirms | U0c1 |
 
 ---

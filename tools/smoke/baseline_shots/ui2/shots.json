@@ -1,14 +1,15 @@
 {
- "fixture": "day 9 (Tue), Morning, the classroom with megumi in it; the map opened from there, then its school area; persistent.motion off; the pointer parked at (960, 150)",
+ "fixture": "day 9 (Tue), Morning, the classroom with megumi in it; the map opened from there, then its school area; persistent.motion off; the pointer parked at (960, 150); the window set to 1280x720 pixels first (tools/smoke/u2_baseline.rpy, ZZ_B_SIZE), whatever the display",
+ "scale": 1.0,
  "sha256": {
-  "main_menu": "eac9bbee0af1c846dd0e59292ad1cde6123eb5de020aab261f80a80307bdbecd",
-  "map_area": "4eb04df199007301f672018c687ae189fa5e19939905aed3f7bbb4de1f8fa1ea",
-  "map_campus": "25cb73888c358b2b9c7ed41228f30ed0698fc2b20850ba9207a368a3dceba77b",
-  "person": "6b0308835f30a2f61d65b4d2e96b9a6319eff020e0214320bbeb2ea7e42e91a7",
-  "place": "adb205eeb4f411eba34c33aa50b8486dee6228a0883cc88c16f8f5545dafeca4"
+  "main_menu": "fa7c79fd59f827c8c42cec62d63c2ea83f85e770e71db99669dc122bc1cbb9af",
+  "map_area": "43e8bfdc3fead1a293ee14b534db06329675979ee61242cfd0eac717cc694f54",
+  "map_campus": "f3272db59dc080566cb748a6379876b5b24a1524a3d9ac37d643910ba9f12868",
+  "person": "31305a8339fac8fa43df692aeac2553188b7cd016d75063cf43ff0988fadb48b",
+  "place": "3981d3c59c3b07da9dd84a4172b1d34a043718f6c674210ba252bb54a94edb98"
  },
  "size": [
-  2666,
-  1499
+  1280,
+  720
  ]
 }

@@ -173,10 +173,19 @@ The second UI overhaul (U0a) added:
   `## smoke-pointer`, takes a machine-wide lock
   (`~/Library/Caches/jjk_smoke/pointer.lock`), waits for the other smoke runs
   to finish, and refuses with one line (exit status 3, a `result.txt` that
-  says REFUSED) while a Ren'Py game that is not a smoke run is open; the
+  says REFUSED) while a Ren'Py game that is not a smoke run is open, however
+  it was started: from the launcher's "Launch Project" (`renpy.app/Contents/
+  MacOS/pythonw renpy.py <project>`), with `renpy.sh`, or by hand. The
   launcher's own window does not count. Every other harness waits while the
   lock is held. It works across worktrees. `SMOKE_LOCK_WAIT` (seconds, default
-  3600) is how long a run waits; `SMOKE_POINTER=1` or `0` overrides the list.
+  14400, four hours) is how long a run waits; `SMOKE_POINTER=1` or `0`
+  overrides the list. **Exit status 3 means "run it again", never "the
+  harness failed"**: a game was open, or the wait ran out. A package's
+  acceptance closes the game or waits, and reruns. `tools/smoke.sh
+  --open-games` prints the games a pointer harness would refuse for;
+  `tools/smoke.sh --lock-selftest` checks that list against made-up process
+  lines (the six ways a game is started are seen; the launcher, a smoke run,
+  a lint, a compile and the tools are not).
 - **A file for the repository.** A harness line `## smoke-out: <file> ->
   <path>` names a file the harness writes into its results folder and where
   it belongs; after a pass the script copies it there, or to `--out <file>`.
@@ -269,7 +278,7 @@ The second UI overhaul's harnesses (wave 0; each later package adds its own):
 | harness | what it checks |
 |---|---|
 | `u2_dump.rpy` (9) | Writes `tools/art/game_layout.json`, the one file the art tools read the game's numbers from: exits and hotspots with their default and applied points, slots, frames and lanes, areas and pins, each person's canvas, the light and grade tables, the schedule, and a hash of the `.rpy` files and `game/layout/*.json` it was read from. Not pointer-dependent. `--out <file>` writes a local copy. Its header lists every key. |
-| `u2_baseline.rpy` (51 on the untouched tree) | Compares a tree with the overhaul's baselines (`baseline_u2.json`, `baseline_story_names.json`, `baseline_night_names_u0a.json`, `baseline_sprite_tree.txt`, `baseline_shots/ui2/`), one check for each part. A tool, not a member of the standing set: from U0b on, parts differ on purpose. `U2_BASELINE_WRITE=1` writes them afresh into the results folder (U0a did, once). It parks the pointer, so it takes the pointer lock. |
+| `u2_baseline.rpy` (52 on the untouched tree) | Compares a tree with the overhaul's baselines (`baseline_u2.json`, `baseline_story_names.json`, `baseline_night_names_u0a.json`, `baseline_sprite_tree.txt`, `baseline_shots/ui2/`), one check for each part. A tool, not a member of the standing set: from U0b on, parts differ on purpose. `U2_BASELINE_WRITE=1` writes them afresh into the results folder (U0a did, once). It parks the pointer, so it takes the pointer lock. **The five pictures do not depend on the display:** before they are taken the window is set to 1280x720 pixels (half as many points on a display that draws two pixels to the point), whatever size it opened at. Should a display be unable to hold that window, ONE check fails ("pictures: the window could be made the baseline's size") and the five are not compared; that failure is about the screen, not the game. |
 | `u2_mksaves.rpy` | How the nineteen made saves in `assets/ui2_saves/` were made (`U2_SAVES=campus`, `sunmall`, `warehouse`, `roster`, `prologue`). Kept as the record; the saves are not made again. |
 
 **Hover checks need the pointer.** `p2_contracts`, `p2_hud`, `p2_map`,
@@ -388,11 +397,15 @@ A4 and A6). The first three are part of `--all`:
   the place's picture composed. `--layout-dir <dir>` reads another folder;
 - `--decency` (K16) — a word list over the text of `room_bath.rpy`,
   `room_pool.rpy` and `room_tokyo.rpy`, and over every `AMBIENT`,
-  `SPOT_LINES` and `POSES` row for the Bathhouse, the Sauna, the Pool or a
-  friend's room;
+  `AMBIENT_STORY`, `SPOT_LINES` and `POSES` row for the Bathhouse, the Sauna,
+  the Pool or a friend's room. A row wrapped onto several lines is read to
+  its end, and an `AMBIENT_STORY` row for no place in particular (`None`) is
+  read as one for every place;
 - `--baths-optional` (K17) — `"bath"`, `bath_soak`, `bath_sauna`, `bath_ok`
   or `pool_swim` outside `room_bath.rpy` and `room_pool.rpy`, apart from the
-  four places the plan itself puts them;
+  four places the plan itself puts them. In a `register_hotspot(...)` call
+  only the ids are allowed: `"bath"` there (a `cond=` that reads whether I
+  bathed) is a finding like anywhere else;
 - `--later-notes` (not in `--all`) — "later build" and "combat update" in
   text a player can read, less the lines `tools/later_ok.txt` allows. A
   report (exit 0) until integration; `--strict` makes its lines findings.

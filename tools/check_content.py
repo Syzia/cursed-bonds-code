@@ -1192,6 +1192,14 @@ DECENCY_PLACES = ("bathhouse", "sauna", "pool",
                   "yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room")
 DECENCY_PAIR = re.compile(r"""\(\s*["'](\w+)["']\s*,\s*["'](\w+)["']""")
 DECENCY_KEY = re.compile(r"""^\s*["'](\w+)["']\s*:""")
+# Where a row of a caption table starts, and the place it is for. AMBIENT is
+# {("who", "place"): (caption, face)}; AMBIENT_STORY is a list of
+# ("who", "place" or None, condition, caption, face), read before AMBIENT.
+# A row may be wrapped: its place holds until the next row starts.
+DECENCY_ROW = {
+    "AMBIENT": re.compile(r"""\(\s*["'](\w+)["']\s*,\s*(?:["'](\w+)["']|(None))\s*\)\s*:"""),
+    "AMBIENT_STORY": re.compile(r"""^\s*\(\s*["'](\w+)["']\s*,\s*(?:["'](\w+)["']|(None))\s*,"""),
+}
 POSES_TOOL = os.path.join(ROOT, "tools", "make_pose_workflow.py")
 
 
@@ -1223,13 +1231,23 @@ def decency_findings(files, cache):
                 if ln.n not in docs:
                     hits(path, ln, "in %s" % os.path.basename(path))
             continue
-        inside = table_lines(lines, {"AMBIENT", "SPOT_LINES"})
+        inside = table_lines(lines, {"AMBIENT", "AMBIENT_STORY", "SPOT_LINES"})
         key = None
+        table, place = None, None
         for ln in lines:
-            if ln.n in inside.get("AMBIENT", ()):
-                m = DECENCY_PAIR.search(ln.code)
-                if m and m.group(2) in DECENCY_PLACES:
-                    hits(path, ln, "in the AMBIENT row for %s" % m.group(2))
+            cap = next((t for t in DECENCY_ROW if ln.n in inside.get(t, ())), None)
+            if cap != table:
+                table, place = cap, None
+            if cap is not None:
+                # The row's place is carried over the lines it is wrapped
+                # onto. A row for no place in particular (None) is shown
+                # everywhere, the baths included.
+                m = DECENCY_ROW[cap].search(ln.code)
+                if m:
+                    place = m.group(2) or "any place"
+                if place in DECENCY_PLACES or place == "any place":
+                    hits(path, ln, "in the %s row for %s" % (cap, place))
+                key = None
             elif ln.n in inside.get("SPOT_LINES", ()):
                 m = DECENCY_KEY.match(ln.code)
                 if m:
@@ -1282,7 +1300,11 @@ def baths_findings(files, cache):
         if not is_game(path) or base in BATHS_OWN:
             continue
         lines = read_lines(path, cache)
-        ok = set(call_lines(lines, "register_hotspot"))
+        # A register_hotspot row may name the ids (it is how the baths are
+        # put on the screen); it may not ask "bath" of anything (a `cond=`
+        # that reads whether I bathed is a lock like any other).
+        rows = set(call_lines(lines, "register_hotspot"))
+        ok = set()
         for nums in table_lines(lines, BATHS_TABLES.get(base, set())).values():
             ok |= nums
         for ln in lines:
@@ -1295,6 +1317,11 @@ def baths_findings(files, cache):
                     what = m.group(0)
             if what is None or ln.n in ok:
                 continue
+            if ln.n in rows:
+                if what != '"bath"':
+                    continue
+                # `"bath"` beside an id on one line: the id is allowed, the
+                # string is still reported.
             if base == "ui_icons.rpy" and BATHS_ICON_FOR.match(ln.code):
                 continue
             out.append((path, ln, what))
