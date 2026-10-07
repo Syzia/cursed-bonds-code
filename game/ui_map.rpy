@@ -13,7 +13,10 @@
 ##                     checkpoint B: "the black box is too big").
 ##   Campus, level 2   screen map_area(key): the area's own picture with one
 ##                     pin per place, its hub included (D53). Clicking a pin
-##                     walks there: ("go", loc).
+##                     walks there: ("go", loc). The second UI overhaul (U0b):
+##                     a room inside a house (WORLD_PINLESS in sb_world.rpy)
+##                     has no pin; nobody asleep carries a gold mark, and a
+##                     mission whose giver is asleep is not listed (D48).
 ##   Tokyo, level 1    the five districts as markers. Opens after Ijichi's
 ##                     ride-along (tokyo_open()).
 ##   Tokyo, level 2    screen map_district(key): the district's picture, its
@@ -116,7 +119,10 @@ init -1 python:
         """WP1. A gold "!" after someone's name: a mission with them, or a
         new scene, that the place view would offer now (view_tag_marks: no
         mission mark in explore mode, on a rest day, or when the night
-        won't let me start it; no scene the night won't let me start)."""
+        won't let me start it; no scene the night won't let me start).
+        Never for someone asleep (D48): nothing is offered with them."""
+        if world_asleep(who):
+            return False
         job, new = view_tag_marks(who, loc)
         return bool(job or new)
 
@@ -140,9 +146,38 @@ init -1 python:
             used += wd
         return shown, len(folk) - len(shown)
 
+    def map_mission_asleep(mid):
+        """U0b (D48). bool: the giver of this mission is asleep. The frozen
+        missions_here() finds a giver in who_is_here(), which still counts a
+        sleeper; the map leaves such a mission out, as the place view's
+        column does (rail_missions)."""
+        m = MISSION_BY_ID.get(mid) or {}
+        return bool(world_asleep(m.get("with_who") or m.get("who")))
+
     def map_waiting(area):
-        """WP1. How many missions are waiting in an area now (missions_here)."""
-        return sum(len(missions_here(l) or []) for l in places_in(area))
+        """WP1. How many missions are waiting in an area now (missions_here),
+        not counting one whose giver is asleep (D48)."""
+        return sum(len([m for m in (missions_here(l) or []) if not map_mission_asleep(m)])
+                   for l in places_in(area))
+
+    def map_marks():
+        """U0b (D48). mission_markers() for the map's second level, in the
+        same shape ({loc: [(text, kind)]}), without the "mission" rows of a
+        giver who is asleep (such a row's text begins with the giver's short
+        name: "Maki · The Armory")."""
+        out = {}
+        asleep = [CAST[w]["short"] + u" · " for w in ROSTER_ORDER if w in CAST and world_asleep(w)]
+        for loc, rows in (mission_markers() or {}).items():
+            keep = [(t, k) for t, k in rows
+                    if not (k == "mission" and any(t.startswith(a) for a in asleep))]
+            if keep:
+                out[loc] = keep
+        return out
+
+    def map_pins(key):
+        """U0b. The places of an area that have a pin, in map order: every
+        place but the rooms of WORLD_PINLESS, which are reached on foot."""
+        return [l for l in places_in(key) if world_pinned(l)]
 
     def map_markers_text(marks, loc):
         """WP1. The row's second line, from mission_markers()."""
@@ -273,7 +308,7 @@ init -1 python:
         side = rule_layout("area_" + key).get("spots")
         if isinstance(side, (dict, _map_builtins.dict)):
             for l, p in side.items():
-                if l in a["places"] and map_point_ok(p):
+                if l in a["places"] and world_pinned(l) and map_point_ok(p):
                     out[l] = (int(p[0]), int(p[1]))
         return out
 
@@ -313,11 +348,10 @@ init -1 python:
 
     def map_pin_icon(loc):
         """P9. The icon on a place's pin: place_<loc>, or for a hub that has
-        no picture of its own, its area's (D55: existing names only)."""
-        name = "place_" + str(loc)
-        if name in ICONS:
-            return name
-        return "area_" + str(area_of(loc))
+        no picture of its own, its area's (D55: existing names only). The
+        second overhaul gives each yard an icon name of its own; its pin
+        wears it once that picture is cut, as its exits do (path_icon)."""
+        return path_icon(loc)
 
     def map_area_rect(key):
         """P9. (x, y, w, h): where an area's marker is drawn on level 1."""
@@ -356,9 +390,10 @@ init -1 python:
         return ", ".join(CAST.get(w, {}).get("short", w.title()) for w in folk)
 
     def map_area_tip(key):
-        """P1. An area marker's hover line: its rooms, then its blurb."""
+        """P1. An area marker's hover line: its rooms (the ones with a pin:
+        a room inside a house is found through its house), then its blurb."""
         a = AREA_BY_KEY[key]
-        rooms = " · ".join(map_place_name(l) for l in a["places"])
+        rooms = " · ".join(map_place_name(l) for l in map_pins(key))
         return (rooms + "\n" + a["blurb"], "area_" + key)
 
     def map_pin_tip(loc, marks):
@@ -416,9 +451,10 @@ init -1 python:
 
     def map_validate():
         """P1. Lint findings for the pins: every room is in exactly one
-        area's spots, each point (the code's and the sidecar's) is inside
-        MAP_PIN_FRAME, a sidecar names only its area's rooms; the district
-        pins have known icons and sit inside the frame."""
+        area's spots (a room of WORLD_PINLESS in none: it has no pin), each
+        point (the code's and the sidecar's) is inside MAP_PIN_FRAME, a
+        sidecar names only its area's pinned rooms; the district pins have
+        known icons and sit inside the frame."""
         out = []
         x0, y0, x1, y1 = MAP_PIN_FRAME
         seen = {}
@@ -437,6 +473,8 @@ init -1 python:
             for l, p in sorted(pts.items()):
                 if l not in a["places"]:
                     out.append("layout/area_%s.json: %r is not a room of this area" % (key, l))
+                elif not world_pinned(l):
+                    out.append("layout/area_%s.json: %r has no pin (WORLD_PINLESS)" % (key, l))
                 elif not map_point_ok(p):
                     out.append("layout/area_%s.json: %r must be [x, y]" % (key, l))
             for l, (x, y) in sorted(map_spots(key).items()):
@@ -447,8 +485,8 @@ init -1 python:
                     out.append("map pin %r has no icon" % l)
         for l in LOCATIONS:
             n = len(seen.get(l, []))
-            if n != 1:
-                out.append("room %r is in %d areas' spots (must be exactly one)" % (l, n))
+            if n != (1 if world_pinned(l) else 0):
+                out.append("room %r is in %d areas' spots (must be exactly one, or none for a room without a pin)" % (l, n))
         ids = set()
         for dk, rows in sorted(MAP_DISTRICT_SPOTS.items()):
             if dk not in DISTRICTS:
@@ -798,7 +836,7 @@ screen sb_map_campus():
 screen map_area(key):
 
     $ _a = AREA_BY_KEY[key]
-    $ _marks = mission_markers() or {}
+    $ _marks = map_marks()
     $ _spots = map_spots(key)
 
     if view_motion():
@@ -809,7 +847,7 @@ screen map_area(key):
 
     use map_back("Jujutsu High")
 
-    for _l in _a["places"]:
+    for _l in map_pins(key):
         $ _x, _y = _spots[_l]
         $ _ok = place_access(_l)[0]
         $ _cur = (_l == here)

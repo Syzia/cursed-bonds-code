@@ -1,14 +1,21 @@
 """
 Build the ComfyUI workflows that draw the game's icons, thirty to a sheet.
 
-    python3 tools/make_icon_workflow.py            # all three sheets
-    python3 tools/make_icon_workflow.py 1          # just sheet 1
-    python3 tools/make_icon_workflow.py --names    # rewrite tools/icons/sheet_<n>.txt from ICONS
+    python3 tools/make_icon_workflow.py            # all four sheets
+    python3 tools/make_icon_workflow.py 4          # just sheet 4
+    python3 tools/make_icon_workflow.py --names    # rewrite tools/icons/sheet_4.txt from ICONS
 
-The game has 88 icon names (`ICONS` in game/ui_icons.rpy). Until an icon has a
-picture, the game draws its kanji on a seal with the word underneath; a
-picture at `game/images/icons/ic_<name>.png` (96x96, white lines on clear)
-replaces it with no script change.
+The game has 114 icon names (`ICONS` in game/ui_icons.rpy): the 88 of phase 2,
+on sheets 1 to 3, and the 26 of the second UI overhaul (docs/UI2_DESIGN.md
+4.8; U0b), all on sheet 4. Until an icon has a picture, the game draws its
+kanji on a seal with the word underneath; a picture at
+`game/images/icons/ic_<name>.png` (96x96, white lines on clear) replaces it
+with no script change.
+
+Sheets 1 to 3 are finished: their icons are drawn, cut and in the game, so
+their names files are frozen (FROZEN_SHEETS) and --names never rewrites them.
+It writes sheet 4 only: the names of `ICONS` that are on none of the first
+three, in the table's order (26 today; the last four cells stay empty).
 
 Each sheet is one picture of 6 x 5 white line icons on black. A sheet's
 workflow loads a blank grid (`icon_grid.png`, so the cells come back where
@@ -26,14 +33,15 @@ finished in. Then:
 
 Which icons are on which sheet, and in what order, is `tools/icons/sheet_<n>.txt`
 (one name a line, left to right, top row first). Those files are generated
-from `ICONS` by --names, and every run checks that the three files together
+from `ICONS` by --names, and every run checks that the four files together
 hold exactly the names of `ICONS`, each once, so the sheets and the table
 cannot disagree. What each icon should look like is `DRAW` below; the model is
 never told a name from the game.
 
 Cost: Nano Banana Pro is a paid partner node, about $0.16 a picture at 1K or
 2K (ComfyUI's own price list), and each candidate box is one picture: about
-$0.32 a sheet, $0.96 for the three. Nothing runs on this Mac's GPU.
+$0.32 a sheet (sheet 4 is the only one still to run). Nothing runs on this
+Mac's GPU.
 """
 import sys, os, re, json, copy, uuid, shutil
 
@@ -48,7 +56,8 @@ NAMES_DIR = os.path.join(ROOT, "tools", "icons")
 
 COLS, ROWS = 6, 5
 PER_SHEET = COLS * ROWS
-SHEETS = 3
+SHEETS = 4
+FROZEN_SHEETS = 3                    # sheets 1 to 3 are drawn and cut: --names leaves their files alone
 GRID = "icon_grid.png"
 GRID_SIZE = (1500, 1200)             # 5:4, the nearest shape the model offers to 6 x 5 cells
 GRID_LINE = (48, 48, 48)             # dark enough that cut_icons.py reads it as background
@@ -153,6 +162,36 @@ DRAW = {
     "buy": "a coin dropping into an open hand",
     "take": "a hand reaching down to pick up a small box",
     "record": "a book with a medal and ribbon on its cover",
+    # the second UI overhaul (sheet 4): the new places
+    "place_boys_dorm": "a corridor seen in perspective with three doors along one wall",
+    "place_yuji_room": "a small television set with two short antennae on top",
+    "place_megumi_room": "four upright books standing between two bookends",
+    "place_senpai_room": "two floor mattresses laid side by side, one much larger than the other",
+    "place_nobara_room": "a tall dressing mirror standing on a frame",
+    "place_maki_room": "a long narrow carrying case with two clasps",
+    "place_teachers_lounge": "a kettle with steam rising beside a cup",
+    "place_teachers_dorm": "a sliding paper door with a small blank name plate beside it",
+    "place_bathhouse": "an oval pool of water with three wavy lines of steam rising from it",
+    "place_sauna": "a wooden bucket with a ladle resting in it",
+    "place_pool": "a rectangular swimming pool seen from above with two lane ropes and a ladder at one corner",
+    # the five yards
+    "place_school_yard": "an open yard with a flagpole standing in the middle",
+    "place_dorm_yard": "a small garden pond with two stepping stones and a shrub beside it",
+    "place_staff_yard": "a wide flight of five stone steps seen from the front",
+    "place_training_yard": "three wooden striking posts standing in a row",
+    "place_trailhead": "a footpath winding uphill between two trees",
+    # actions
+    "bath_soak": "a round wooden tub, empty, with steam rising from the water in it",
+    "bath_sauna": "a small stove with a pile of stones on top and three heat lines rising",
+    "pool_swim": "two lane ropes with round floats lying across three wavy lines of water",
+    "cards_invite": "a fan of three playing cards with a plus sign beside it",
+    # menus
+    "history": "a round clock face with an arrow circling it anticlockwise",
+    "auto": "a triangle play symbol inside a circular arrow",
+    "save": "a square storage disk with a small label area and a shutter",
+    "help": "an open booklet with a small lit lightbulb above it",
+    "continue": "a ribbon bookmark with a triangle play symbol on it",
+    "at_home": "a small house with a chimney and one lit window",
 }
 
 STYLE = ("Every icon is a flat white line drawing on the pure black background: one even, medium line "
@@ -192,12 +231,23 @@ def read_sheet(path):
 
 
 def write_names():
+    """Writes the names files of the sheets that are not frozen (sheet 4):
+    the names of ICONS that the frozen sheets do not hold, in the table's
+    order, thirty to a sheet. The frozen sheets' files are read, never
+    written: their pictures are cut, and a name that moved cell would be cut
+    from the wrong one."""
     names = icon_names()
-    if len(names) > PER_SHEET * SHEETS:
-        raise SystemExit("%d icons do not fit on %d sheets of %d" % (len(names), SHEETS, PER_SHEET))
+    held = []
+    for n in range(1, FROZEN_SHEETS + 1):
+        if not os.path.exists(sheet_path(n)):
+            raise SystemExit("no %s -- sheets 1 to %d are frozen and must be there" % (sheet_path(n), FROZEN_SHEETS))
+        held += [x for x in read_sheet(sheet_path(n)) if x != "-"]
+    names = [x for x in names if x not in held]
+    if len(names) > PER_SHEET * (SHEETS - FROZEN_SHEETS):
+        raise SystemExit("%d new icons do not fit on %d sheet(s) of %d" % (len(names), SHEETS - FROZEN_SHEETS, PER_SHEET))
     os.makedirs(NAMES_DIR, exist_ok=True)
-    for n in range(1, SHEETS + 1):
-        part = names[(n - 1) * PER_SHEET:n * PER_SHEET]
+    for n in range(FROZEN_SHEETS + 1, SHEETS + 1):
+        part = names[(n - FROZEN_SHEETS - 1) * PER_SHEET:(n - FROZEN_SHEETS) * PER_SHEET]
         with open(sheet_path(n), "w", encoding="utf-8") as f:
             f.write("# Icon sheet %d of %d: the names on it, left to right, top row first (%d x %d cells).\n"
                     % (n, SHEETS, COLS, ROWS))
@@ -208,7 +258,7 @@ def write_names():
 
 
 def check_names():
-    """The three files hold exactly the names of ICONS, each once, and every
+    """The names files hold exactly the names of ICONS, each once, and every
     one has a line in DRAW. Returns the sheets as lists."""
     names = icon_names()
     sheets, seen = [], []

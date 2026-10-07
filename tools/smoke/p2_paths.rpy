@@ -315,12 +315,19 @@ init 999 python:
             return None
         h = store.here
         tm = (store.day, store.period, store.stamina)
+        ## The second UI overhaul (4.4; U0b): my room opens onto the corridor
+        ## of the Boys' Dormitory, and the corridor onto the garden (state 15
+        ## is the corridor, between the old states 1 and 2).
         if L[0] == 1 and h == "dorm":
             L[3] = tm
+            L[0], L[2] = 15, 0
+            return zz_loop_press("hot_go_dorm__boys_dorm")
+        if L[0] == 15 and h == "boys_dorm":
+            check(tm == L[3], "in the real loop (label sandbox): the exit in my room walks to the Boys' Dormitory, no time spent", (tm, L[3]))
             L[0], L[2] = 2, 0
-            return zz_loop_press("hot_go_dorm__dorm_yard")
+            return zz_loop_press("hot_go_boys_dorm__dorm_yard")
         if L[0] == 2 and h == "dorm_yard":
-            check(tm == L[3], "in the real loop (label sandbox): the exit in my room walks to the Dormitory Garden, no time spent", (tm, L[3]))
+            check(tm == L[3], "and the corridor's stairs walk on to the Dormitory Garden, no time spent", (tm, L[3]))
             renpy.take_screenshot()
             renpy.save("zz_p9_walk")
             check(not zz_loop_save_names("zz_p9_walk"), "a save made in a hub after an exit walk holds no registry row class", zz_loop_save_names("zz_p9_walk"))
@@ -412,9 +419,13 @@ label zz_smoke:
         check(all(path_neighbours(l) for l in LOCATIONS) and len(LOCATIONS) == len(LOC_ORDER) == len(set(LOC_ORDER)),
               "every place has at least one exit (%d places, the ones in LOC_ORDER)" % len(LOC_ORDER),
               [l for l in LOCATIONS if not path_neighbours(l)])
+        ## The second UI overhaul (4.4, the house rule; U0b): a room inside a
+        ## house (WORLD_INSIDE) leads to its house first; every other room to
+        ## its area's hub.
         _zz_bad = [(l, path_neighbours(l)) for l in LOCATIONS
-                   if path_hub(area_of(l)) != l and path_neighbours(l)[:1] != [path_hub(area_of(l))]]
-        check(not _zz_bad, "every room's first exit leads to its area's hub", _zz_bad)
+                   if path_hub(area_of(l)) != l and path_neighbours(l)[:1] != [world_inside(l) or path_hub(area_of(l))]]
+        check(not _zz_bad and world_inside("dorm") == "boys_dorm",
+              "every room's first exit leads to its area's hub, or to its house when it is a room inside one (my room: the Boys' Dormitory)", _zz_bad)
         _zz_links = {}
         for _zz_a, _zz_b in PATH_LINKS:
             _zz_links.setdefault(_zz_a, []).append(_zz_b)
@@ -422,10 +433,16 @@ label zz_smoke:
         _zz_bad = []
         for _zz_ar in AREAS:
             _zz_h = path_hub(_zz_ar["key"])
-            _zz_want = [l for l in _zz_ar["places"] if l != _zz_h] + _zz_links.get(_zz_h, [])
+            _zz_want = [l for l in _zz_ar["places"] if l != _zz_h and not world_inside(l)] + _zz_links.get(_zz_h, [])
             if sorted(_zz_want) != sorted(path_neighbours(_zz_h)):
                 _zz_bad.append((_zz_h, _zz_want, path_neighbours(_zz_h)))
-        check(not _zz_bad, "every hub has an exit to each of its rooms and to each neighbouring hub, and no other", _zz_bad)
+            ## a house: its yard first, then exactly the rooms inside it
+            for _zz_l in _zz_ar["places"]:
+                _zz_inside = [r for r in _zz_ar["places"] if world_inside(r) == _zz_l]
+                if _zz_l != _zz_h and sorted(path_neighbours(_zz_l)[1:]) != sorted(_zz_inside):
+                    _zz_bad.append((_zz_l, _zz_inside, path_neighbours(_zz_l)))
+        check(not _zz_bad, "every hub has an exit to each of its rooms (not to a room inside a house) and to each neighbouring hub, "
+              "and no other; a room leads on only to the rooms inside it", _zz_bad)
         check(("gate", "courtyard") not in PATH_LINKS and path_neighbours("gate") == ["courtyard"] and "gate" in path_neighbours("courtyard"),
               "the gate opens onto the courtyard, and the courtyard leads back to it")
         check(path_reach("dorm") == set(LOCATIONS), "the graph is connected: from my room every place is reached by exits alone",
@@ -447,9 +464,14 @@ label zz_smoke:
                       and not h["standalone"] and not h["front"] and h["icon"] in ICONS and h["icon"] != "back" for h in _zz_spots),
               "one action hotspot per exit, go_<from>__<to>, on the frozen framework; no exit uses the back icon", len(_zz_spots))
         _zz_ic = dict((l, path_icon(l)) for l in LOCATIONS)
-        check(all(_zz_ic[l] == ("area_" + area_of(l) if l == path_hub(area_of(l)) else "place_" + l) for l in LOCATIONS)
-              and all(icon_for("act", "path_" + l) == _zz_ic[l] for l in LOCATIONS),
-              "icons are existing names: place_<room> for a room, area_<key> for a hub (in the room and in the column)", _zz_ic)
+        ## The second UI overhaul (3.1): a yard has an icon name of its own,
+        ## place_<yard>, and wears it once that picture is cut; until then its
+        ## area's, as before.
+        check(all(_zz_ic[l] == (("place_" + l if icon_has_art("place_" + l) else "area_" + area_of(l)) if l == path_hub(area_of(l)) else "place_" + l)
+                  for l in LOCATIONS)
+              and all(icon_for("act", "path_" + l) == _zz_ic[l] and _zz_ic[l] in ICONS for l in LOCATIONS),
+              "icons are existing names: place_<room> for a room, and for a hub area_<key> until its own picture is cut "
+              "(in the room and in the column)", _zz_ic)
         note("action ids", "D55 says go_<to>; they are path_<to> (label sb_do_path_<to>), because R1's --prefixes "
              "rejects a label sb_do_go_<to> in room_paths.rpy. The hotspot ids are D55's go_<from>__<to>.")
         ## The registry's own rows leave the store with this statement: a
@@ -460,14 +482,22 @@ label zz_smoke:
     ## --- 2. taking an exit ------------------------------------------------------------------------
     python:
         zz_place("dorm", "Noon")
-        check(zz_action_value("hot_go_dorm__dorm_yard") == ("act", "path_dorm_yard"),
-              "the exit in my room is a button in the picture that returns ('act', 'path_dorm_yard')", zz_action_value("hot_go_dorm__dorm_yard"))
-        check(zz_tip("hot_go_dorm__dorm_yard") == "To the Dormitory Garden", "its hover label reads To the Dormitory Garden", zz_tip("hot_go_dorm__dorm_yard"))
-        check(zz_hot("rail_path_dorm_yard") is None, "and it is not in the icon column as well")
+        ## The second UI overhaul (4.4; U0b): my room's one exit is my door,
+        ## onto the corridor of the Boys' Dormitory.
+        check(zz_action_value("hot_go_dorm__boys_dorm") == ("act", "path_boys_dorm") and zz_hot("hot_go_dorm__dorm_yard") is None,
+              "the exit in my room is a button in the picture that returns ('act', 'path_boys_dorm')", zz_action_value("hot_go_dorm__boys_dorm"))
+        check(zz_tip("hot_go_dorm__boys_dorm") == "To the Boys' Dormitory", "its hover label reads To the Boys' Dormitory", zz_tip("hot_go_dorm__boys_dorm"))
+        check(zz_hot("rail_path_boys_dorm") is None, "and it is not in the icon column as well")
+        zz_place("boys_dorm", "Noon")
+        check(zz_tip("hot_go_boys_dorm__dorm") == "To My Room" and zz_action_value("hot_go_boys_dorm__dorm") == ("act", "path_dorm")
+              and zz_tip("hot_go_boys_dorm__dorm_yard") == "To the Dormitory Garden",
+              "in the corridor the door at the end reads To My Room, and the stairs To the Dormitory Garden",
+              (zz_tip("hot_go_boys_dorm__dorm"), zz_tip("hot_go_boys_dorm__dorm_yard")))
         zz_place("dorm_yard", "Noon")
-        check([zz_tip("hot_go_dorm_yard__" + l) for l in ("dorm", "utahime_office", "courtyard")][::2] == ["To My Room", "To the Courtyard"]
+        check([zz_tip("hot_go_dorm_yard__" + l) for l in ("boys_dorm", "utahime_office", "courtyard")][::2] == ["To the Boys' Dormitory", "To the Courtyard"]
+              and zz_hot("hot_go_dorm_yard__dorm") is None
               and path_words("utahime_office") == "To Utahime's Office" and path_words("girls_dorm") == "To the Girls' Dormitory",
-              "hover labels read naturally: To My Room, To the Courtyard, To Utahime's Office")
+              "hover labels read naturally: To the Boys' Dormitory, To the Courtyard, To Utahime's Office")
         _zz_log = []
     ## At every period: free, instant, the same arrival as a map trip.
     $ _zz_i = 0
@@ -479,28 +509,30 @@ label zz_smoke:
             here = "dorm"
             _zz_before = (day, period, stamina, ce)
             _zz_room, _zz_col = zz_exits_offered("dorm")
-        call sb_do_path_dorm_yard
+        call sb_do_path_boys_dorm
         python:
             _zz_log.append((PERIODS[_zz_i], here, (day, period, stamina, ce) == _zz_before, _zz_room, _zz_col,
-                            night_allows("path_dorm_yard", 0)))
+                            night_allows("path_boys_dorm", 0)))
         call sb_do_path_courtyard
         python:
             _zz_log[-1] = _zz_log[-1] + (here,)
             _zz_i += 1
     python:
-        check(all(r[1] == "dorm_yard" and r[2] and r[6] == "courtyard" for r in _zz_log),
+        check(all(r[1] == "boys_dorm" and r[2] and r[6] == "courtyard" for r in _zz_log),
               "taking an exit changes `here` and costs no time, stamina or energy, at every period", _zz_log)
-        check(NIGHT_STRICT and _zz_log[-1][0] == "Night" and _zz_log[-1][3] == ["path_dorm_yard"] and _zz_log[-1][5] and _zz_log[-1][1] == "dorm_yard",
+        check(NIGHT_STRICT and _zz_log[-1][0] == "Night" and _zz_log[-1][3] == ["path_boys_dorm"] and _zz_log[-1][5] and _zz_log[-1][1] == "boys_dorm",
               "at Night under the strict rule the exit is still offered and still walks", _zz_log[-1])
         zz_open_campus()
         zz_place("dorm", "Night")
-        check(night_is_night() and zz_action_value("hot_go_dorm__dorm_yard") == ("act", "path_dorm_yard") and zz_tip("hot_go_dorm__dorm_yard") == "To the Dormitory Garden",
-              "the Night's place view draws it as a live button (not 'Too late. Bed.')", (zz_action_value("hot_go_dorm__dorm_yard"), zz_tip("hot_go_dorm__dorm_yard")))
+        check(night_is_night() and zz_action_value("hot_go_dorm__boys_dorm") == ("act", "path_boys_dorm") and zz_tip("hot_go_dorm__boys_dorm") == "To the Boys' Dormitory",
+              "the Night's place view draws it as a live button (not 'Too late. Bed.')", (zz_action_value("hot_go_dorm__boys_dorm"), zz_tip("hot_go_dorm__boys_dorm")))
         zz_place("dorm_yard", "Night")
-        ## Yuji and Panda stand there at Night: the exits they cover (my
-        ## room's is one) are in the icon column, as the rule has it.
+        ## (Before the second overhaul Yuji and Panda stood here at Night and
+        ## covered some exits; the garden is empty at Night now. An exit that
+        ## someone covers is in the icon column, as the rule has it.)
         _zz_room, _zz_col = zz_exits_offered("dorm_yard")
-        check("path_dorm" in _zz_room + _zz_col and len(_zz_room) + len(_zz_col) == len(path_exits("dorm_yard")) <= 7
+        check("path_boys_dorm" in _zz_room + _zz_col and "path_dorm" not in _zz_room + _zz_col
+              and len(_zz_room) + len(_zz_col) == len(path_exits("dorm_yard")) <= 7
               and "night_bed" in [a[0] for a in rail_actions("dorm_yard")],
               "a hub at Night offers its exits beside Go to bed", (_zz_room, _zz_col))
         ## Explore mode.
@@ -1017,8 +1049,16 @@ label zz_smoke:
                     for _zz_w in ROSTER_ORDER:
                         if _zz_w != "gojo" and char_location(_zz_w, _zz_p) == _zz_h:
                             _zz_in.setdefault(_zz_h, []).append((weekday(), _zz_p, _zz_w))
-        check(all(1 <= len(set(w for d, p, w in _zz_in.get(h, []))) <= 2 for h in ZZ_HUBS),
-              "every new hub has one or two people in its week (D57)", _zz_in)
+        ## The second UI overhaul (4.3; U0b): Megumi's weekend Morning is his
+        ## own room now (it was the Mountain Path), and the garden's people at
+        ## Night went home: the garden keeps Yuji, on weekend Evenings, and
+        ## the Mountain Path has nobody by routine until the places off it
+        ## bring people past (U0c1). No yard holds more than two.
+        _zz_n = dict((h, len(set(w for d, p, w in _zz_in.get(h, [])))) for h in ZZ_HUBS)
+        check(all(n <= 2 for n in _zz_n.values()) and all(_zz_n[h] >= 1 for h in ZZ_HUBS if h != "trailhead")
+              and [x for x in _zz_in.get("dorm_yard", []) if x[1] == "Night"] == [],
+              "no yard has more than two people in its week, and four of the five have someone (D57; "
+              "the Mountain Path has %d, the garden nobody at Night)" % _zz_n["trailhead"], _zz_in)
         note("who stands in the hubs", _zz_in)
         note("their captions", "; ".join("%s in %s: %r" % (w, h, ambient_of(w, h)[0]) for h in ZZ_HUBS for w in sorted(set(x[2] for x in _zz_in.get(h, [])))))
         check(not [e["label"] for e in EVENTS if e["who"] and e["loc"]],
@@ -1028,8 +1068,13 @@ label zz_smoke:
         ## After checkpoint D Panda and Toge left the common room in the
         ## Evening for the library: the second list is theirs. Panda's Night
         ## left it for the garden after that (the same pair covers it).
+        ## The second UI overhaul (4.3; U0b): the four boys went home at
+        ## Night and for one weekend hour; the third list is the places they
+        ## left (the garden, the cafeteria at a weekend Noon and Evening, the
+        ## Mountain Path, the Courtyard and the rooftop on a weekend Morning).
         _zz_moved = [("yuji", "dorm_common"), ("nobara", "classroom"), ("toge", "rooftop"), ("megumi", "forest"), ("shoko", "rooftop"),
-                     ("panda", "dorm_common"), ("toge", "dorm_common")]
+                     ("panda", "dorm_common"), ("toge", "dorm_common"),
+                     ("yuji", "dorm_yard"), ("panda", "dorm_yard"), ("yuji", "cafeteria"), ("megumi", "trailhead"), ("panda", "courtyard")]
         _zz_lost = []
         for _zz_w, _zz_l in sorted(_zz_moved):
             _zz_at = set(routine_location(_zz_w, p, we) for p in PERIODS for we in (False, True))
@@ -1037,18 +1082,30 @@ label zz_smoke:
                 if _zz_a.get("loc") and _zz_l in _zz_a["loc"] and not (_zz_at & set(_zz_a["loc"])):
                     _zz_lost.append((_zz_w, _zz_l, _zz_a["id"]))
         check(not _zz_lost, "nobody who moved lost an activity that needs a place: each is still offered somewhere in their week", _zz_lost)
-        ## Panda's Night, garden against common room, with every bond full:
-        ## under the night rule the same things can be started with him.
+        ## Panda's Night, the room he shares against the common room, with
+        ## every bond full: under the night rule the same things can be
+        ## started with him. The second UI overhaul (4.3, D48; U0b): his Night
+        ## is the shared room (it was the garden), and on a weekday he is
+        ## asleep there, so this is read on a weekend Night, when he is up;
+        ## on a weekday Night he is counted there and is not on its stage.
         _zz_b0, _zz_s0 = bonds.get("panda", 0), set(spent_today)
-        day = 9
+        day = 13
         period = "Night"
+        roll_gojo()
         bonds["panda"] = 100
         spent_today.discard("panda")
         _zz_was = [(a["id"], ok, why) for a, ok, why in activities_for("panda", "dorm_common") if ok]
-        _zz_now = [(a["id"], ok, why) for a, ok, why in activities_for("panda", "dorm_yard") if ok]
-        check(night_on() and char_location("panda") == "dorm_yard" and _zz_now == _zz_was and ("talk", True, None) in _zz_now,
-              "at Night whatever can be started with Panda in the common room can be started with him in the garden (Bond 100)",
+        _zz_now = [(a["id"], ok, why) for a, ok, why in activities_for("panda", "senpai_room") if ok]
+        check(night_on() and is_weekend() and char_location("panda") == "senpai_room" and "panda" in stage_people("senpai_room")[0]
+              and _zz_now == _zz_was and ("talk", True, None) in _zz_now,
+              "on a weekend Night whatever can be started with Panda in the common room can be started with him in the room he shares (Bond 100)",
               (_zz_was, _zz_now))
+        day = 9
+        roll_gojo()
+        check(not is_weekend() and char_location("panda") == "senpai_room" and "panda" in who_is_here("senpai_room")
+              and "panda" not in stage_people("senpai_room")[0] and ambient_of("panda", "senpai_room")[0] == "asleep",
+              "on a weekday Night he is in that room asleep: counted there, not on its stage, so nothing can be started with him",
+              (who_is_here("senpai_room"), stage_people("senpai_room")))
         bonds["panda"] = _zz_b0
         spent_today.clear(); spent_today.update(_zz_s0)
         period = "Noon"
@@ -1082,7 +1139,11 @@ label zz_smoke:
         day = 9
         period = "Morning"
         here = "dorm"
-        _zz_route = ["hot_go_dorm__dorm_yard", "hot_go_dorm_yard__courtyard", "hot_go_courtyard__training_yard", "hot_go_training_yard__training"]
+        ## The second UI overhaul (4.4; U0b): one click more than before, the
+        ## corridor of the Boys' Dormitory ("is one more click to my door on
+        ## foot fine?" is checkpoint A's question to the owner).
+        _zz_route = ["hot_go_dorm__boys_dorm", "hot_go_boys_dorm__dorm_yard", "hot_go_dorm_yard__courtyard",
+                     "hot_go_courtyard__training_yard", "hot_go_training_yard__training"]
         _zz_i = 0
         del ZZ_WALK[:]
         autoplay()
@@ -1098,14 +1159,15 @@ label zz_smoke:
                 abort("the walk's click %r returned %r" % (_zz_route[_zz_i], _r))
         call expression "sb_do_" + _r[1]
         python:
-            if _zz_i == 2:
+            if here == "training_yard":
                 shot("walk_training_yard", wait=0.3)
             _zz_i += 1
     python:
         autoplay(False)
-        check(here == "training" and [w[0] for w in ZZ_WALK] == ["dorm", "dorm_yard", "courtyard", "training_yard"]
+        check(here == "training" and [w[0] for w in ZZ_WALK] == ["dorm", "boys_dorm", "dorm_yard", "courtyard", "training_yard"]
               and (day, period) == (9, "Morning"),
-              "owner's walk: from my room to the training hall in four clicks in the picture, the map never opened, no time spent", (here, ZZ_WALK))
+              "owner's walk: from my room to the training hall in five clicks in the picture (the corridor is the one more), "
+              "the map never opened, no time spent", (here, ZZ_WALK))
         check(who_is_here("training_yard") == ["nobara"], "and on a weekday morning Nobara is standing in the training yard on the way", who_is_here("training_yard"))
         here = "gate"
         zz_place("gate", "Morning")
@@ -1114,17 +1176,25 @@ label zz_smoke:
 
     ## --- 9. worst case, and what a save holds ---------------------------------------------------------------
     python:
+        ## The second UI overhaul (4.3; U0b): the garden is empty at Night on
+        ## every day (Yuji and Panda are in their rooms); its busiest hour by
+        ## routine is a weekend Evening, with Yuji by the pond.
         zz_open_campus()
         day = 9
         period = "Night"
+        roll_gojo()
+        check(who_is_here("dorm_yard") == [], "the Dormitory Garden on a weekday night: nobody (it held Yuji and Panda)", who_is_here("dorm_yard"))
+        day = 13
+        period = "Evening"
+        roll_gojo()
         here = "dorm_yard"
         renpy.scene()
         renpy.show("bg", what=graded_bg())
         arrival_caption()
         ARRIVAL[1] -= 10
         zz_worst("sb_place", hover="hot_go_dorm_yard__staff_yard")
-        check(who_is_here("dorm_yard") == ["yuji", "panda"] and len(hot_spots_for("dorm_yard")) + len([a for a in rail_actions("dorm_yard") if a[0].startswith("path_")]) == len(path_exits("dorm_yard")) <= 7,
-              "the Dormitory Garden on a weekday night: Yuji and Panda outside, every exit offered (at most seven)", (who_is_here("dorm_yard"), [h["id"] for h in hot_spots_for("dorm_yard")]))
+        check(who_is_here("dorm_yard") == ["yuji"] and len(hot_spots_for("dorm_yard")) + len([a for a in rail_actions("dorm_yard") if a[0].startswith("path_")]) == len(path_exits("dorm_yard")) <= 7,
+              "the Dormitory Garden on a weekend evening: Yuji outside, every exit offered (at most seven)", (who_is_here("dorm_yard"), [h["id"] for h in hot_spots_for("dorm_yard")]))
         ## Nothing un-picklable reaches a save (R10): the registry rows are
         ## init data; the screen's scope holds plain copies.
         _zz_rows = hot_spots_for("dorm_yard")

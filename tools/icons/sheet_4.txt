@@ -1,0 +1,29 @@
+# Icon sheet 4 of 4: the names on it, left to right, top row first (6 x 5 cells).
+# Generated from ICONS (game/ui_icons.rpy) by: python3 tools/make_icon_workflow.py --names
+# Read by tools/make_icon_workflow.py (what to ask for) and tools/cut_icons.py (what to cut).
+place_boys_dorm
+place_yuji_room
+place_megumi_room
+place_senpai_room
+place_nobara_room
+place_maki_room
+place_teachers_lounge
+place_teachers_dorm
+place_bathhouse
+place_sauna
+place_pool
+place_school_yard
+place_dorm_yard
+place_staff_yard
+place_training_yard
+place_trailhead
+bath_soak
+bath_sauna
+pool_swim
+cards_invite
+history
+auto
+save
+help
+continue
+at_home

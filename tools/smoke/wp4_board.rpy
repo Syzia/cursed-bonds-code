@@ -299,6 +299,14 @@ label zz_smoke:
         zz_open_state()
         _never = ("gojo", "yaga", "utahime", "shoko", "ijichi")
         _leak, _offc, _seen_off = [], [], set()
+        ## The second UI overhaul (U0b; docs/UI2_PINS.md): once Megumi and
+        ## Toge have a room no student is off campus at Night by routine, so
+        ## the sweep pins one off campus itself, for one hour of each of the
+        ## fourteen days: the rule is exercised whichever days it runs.
+        _zz_away = ZZ_STUDENTS[0]
+        _zz_pins = dict(schedule_overrides)
+        for _d in range(1, 15):
+            pin(_zz_away, "-", _d, PERIODS[(_d - 1) % len(PERIODS)])
         for _d in range(1, 15):
             day = _d
             roll_gojo()
@@ -308,9 +316,10 @@ label zz_smoke:
                 _leak += [(_d, _per, w) for w in _p if w in _never]
                 _offc += [(_d, _per, w) for w in _p if char_location(w) is None]
                 _seen_off |= set(w for w in ZZ_STUDENTS if char_location(w) is None)
+        schedule_overrides = _zz_pins
         check(not _leak, "gojo, yaga, utahime, shoko and ijichi are never offered as partners (14 days x 5 periods)", _leak[:5])
         check(not _offc, "nobody off campus is ever offered as a partner", _offc[:5])
-        check(_seen_off, "the sweep met students off campus (so the rule was exercised)", sorted(_seen_off))
+        check(_zz_away in _seen_off, "the sweep met a student off campus (pinned there by the fixture, so the rule was exercised)", sorted(_seen_off))
         zz_open_state()
         _senior_offer = [o for o in board_generate(0) if o["senior_only"]][0]
         _sp = board_partners(_senior_offer)

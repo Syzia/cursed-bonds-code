@@ -30,20 +30,29 @@ init 999 python:
     ## word moved two more, on purpose: Panda, Evening -> library; Toge,
     ## Evening -> library (the common room in the Evening is the first
     ## years'); and then one more: Panda, Night -> dorm_yard ("Put Panda in
-    ## the garden for now"). Every other cell is as it was.
+    ## the garden for now"). The second UI overhaul (docs/UI2_DESIGN.md 4.3,
+    ## O18; U0b) moved the four boys home, on purpose: at Night, on all seven
+    ## days, Yuji -> yuji_room, Megumi -> megumi_room, Panda and Toge ->
+    ## senpai_room (the garden is then empty at Night); each has one daytime
+    ## hour at home at weekends: Yuji, weekend Noon -> yuji_room; Megumi,
+    ## weekend Morning -> megumi_room (it was the trailhead); Panda, weekend
+    ## Morning -> senpai_room (it was the courtyard); Toge, weekend Morning ->
+    ## senpai_room (it was the rooftop); and Yuji, weekend Evening ->
+    ## dorm_yard, by the pond (it was the cafeteria). U0c1 moves the girls,
+    ## the teachers and the rest of 4.3. Every other cell is as it was.
     ZZ_OLD_SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
-                   "Evening": "dorm_common", "Night": "dorm_yard"},
+                   "Evening": "dorm_common", "Night": "yuji_room"},
         "megumi": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "forest",
-                   "Evening": "dorm_common", "Night": "-"},
+                   "Evening": "dorm_common", "Night": "megumi_room"},
         "nobara": {"Morning": "training_yard", "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "girls_dorm"},
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
-                   "Evening": "library",   "Night": "dorm_yard"},
+                   "Evening": "library",   "Night": "senpai_room"},
         "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
-                   "Evening": "library",   "Night": "-"},
+                   "Evening": "library",   "Night": "senpai_room"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
         "yaga":   {"Morning": "office",    "Noon": "office",    "Afternoon": "storehouse",
@@ -52,12 +61,12 @@ init 999 python:
                    "Evening": "-",         "Night": "-"},
     }
     ZZ_OLD_WEEKEND = {
-        "yuji":   {"Morning": "dorm_common", "Afternoon": "riverside", "Evening": "cafeteria"},
-        "megumi": {"Morning": "trailhead",   "Afternoon": "library"},
+        "yuji":   {"Morning": "dorm_common", "Noon": "yuji_room", "Afternoon": "riverside", "Evening": "dorm_yard"},
+        "megumi": {"Morning": "megumi_room", "Afternoon": "library"},
         "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
         "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
-        "panda":  {"Afternoon": "riverside"},
-        "toge":   {"Morning": "rooftop",     "Afternoon": "riverside"},
+        "panda":  {"Morning": "senpai_room", "Afternoon": "riverside"},
+        "toge":   {"Morning": "senpai_room", "Afternoon": "riverside"},
         "shoko":  {"Afternoon": "staff_yard"},
         "yaga":   {"Morning": "-", "Noon": "-", "Afternoon": "-", "Evening": "-"},
     }
@@ -244,8 +253,10 @@ label zz_smoke:
         check([a["anchor"] for a in AREAS] == [(960, 900), (420, 740), (900, 560), (1560, 440), (1560, 760), (1290, 215)],
               "AREAS anchors (P9, D59: the Mountain's sits on the mountain, it was (740, 290) over the lake)")
         check(places_in("staff") == ["staff_yard", "office", "utahime_office", "gojo_office"]
-              and places_in("dorms") == ["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop"],
-              "places_in (P9, D53: each area's hub is first)", (places_in("staff"), places_in("dorms")))
+              and places_in("dorms") == ["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop",
+                                         "boys_dorm", "yuji_room", "megumi_room", "senpai_room"],
+              "places_in (P9, D53: each area's hub is first; U0b: the Boys' Dormitory and its three rooms are appended)",
+              (places_in("staff"), places_in("dorms")))
         check(area_of("gate") == "heart" and area_of("ridge") == "mountain" and area_of("gojo_office") == "staff" and area_of("zz") is None, "area_of")
         _counts = {l: sum(1 for a in AREAS if l in a["places"]) for l in LOCATIONS}
         check(all(n == 1 for n in _counts.values()), "every place is in exactly one area", _counts)
@@ -317,23 +328,27 @@ label zz_smoke:
               "no table puts a second year, a teacher or staff in the common room in the Evening; the first years' cells are as they were",
               _zz_cells)
         check(SCHEDULE["panda"]["Evening"] == "library" and SCHEDULE["toge"]["Evening"] == "library"
-              and SCHEDULE["panda"]["Night"] == "dorm_yard" and "Night" not in WEEKEND.get("panda", {})
+              and SCHEDULE["panda"]["Night"] == "senpai_room" and SCHEDULE["toge"]["Night"] == "senpai_room"
+              and not [w for w in sorted(WEEKEND) if "Night" in WEEKEND[w]]
               and "Evening" not in WEEKEND.get("panda", {}) and "Evening" not in WEEKEND.get("toge", {})
               and "library" in LOCATIONS
-              and len(_zz_garden) == 7 and all(g == set([("yuji", "panda")]) for g in _zz_garden.values()),
-              "Panda and Toge spend the Evening in the library, weekends too; Panda's Night is the dormitory garden, "
-              "beside Yuji, on all seven days",
+              and len(_zz_garden) == 7 and all(g == set([()]) for g in _zz_garden.values()),
+              "Panda and Toge spend the Evening in the library, weekends too; their Night is the room they share, "
+              "and the dormitory garden is empty at Night on all seven days (U0b: it held Yuji and Panda)",
               (SCHEDULE["panda"], SCHEDULE["toge"], _zz_garden))
         ## "Put Panda in the garden for now" (the owner, 5 Oct 2026): nobody's
-        ## routine is the common room at Night any more.
+        ## routine is the common room at Night any more. (The second overhaul
+        ## gave him a room; the common room is still empty at Night.)
         _zz_cells = [(n, w) for n, tab in (("SCHEDULE", SCHEDULE), ("WEEKEND", WEEKEND))
                      for w, t in sorted(tab.items()) if t.get("Night") == "dorm_common"]
         _zz_cells += [("FLAG_SCHEDULES", w) for f, w, t in FLAG_SCHEDULES if t and t.get("Night") == "dorm_common"]
         check(not _zz_night and not _zz_cells and "dorm_common" not in GOJO_SPOTS,
               "the common room is empty at Night by routine on all seven days (days 1-14, everyone met, Gojo in and roaming; "
               "no table has a Night cell there)", (_zz_night[:4], _zz_cells))
-        check(sorted(_zz_five) == [("weekday", "Noon", "cafeteria"), ("weekend", "Afternoon", "riverside"), ("weekend", "Noon", "cafeteria")],
-              "by the routine, five stand together only in the cafeteria at Noon and at the riverside on a weekend Afternoon",
+        ## U0b: Yuji's weekend Noon is his own room, so the weekend cafeteria
+        ## drops to four. (U0c1 sends three of the river's five to the pool.)
+        check(sorted(_zz_five) == [("weekday", "Noon", "cafeteria"), ("weekend", "Afternoon", "riverside")],
+              "by the routine, five stand together only in the cafeteria at a weekday Noon and at the riverside on a weekend Afternoon",
               _zz_five)
         note("places that hold five or more by the routine (Gojo not counted: he may roam into the cafeteria)", _zz_five)
         roster, companion, gojo_in, day = _zz_r0, _zz_c0, _zz_g0, _zz_d0

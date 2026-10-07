@@ -15,7 +15,9 @@
 ##   board, board_partner `call screen board_screen`, and `call screen
 ##                        board_partner(...)` with a card picked
 ##   hub                  standing in a hub (the Dormitory Garden) after taking
-##                        the exit in my room (plan 13)
+##                        the exit in my room and the corridor's stairs (plan
+##                        13; the second UI overhaul put the Boys' Dormitory
+##                        between them)
 ##   map_area             `call screen sb_map` with an area opened by pressing
 ##                        its marker (the load comes back on level 1: the open
 ##                        area is a screen variable)
@@ -445,16 +447,23 @@ init 999 python:
                 zzs_next()
                 return zzs_set("dorm", "Noon")
         ## --- a hub, after an exit ---------------------------------------------------
+        ## The second UI overhaul (docs/UI2_DESIGN.md 4.4; U0b): my room opens
+        ## onto the corridor of the Boys' Dormitory, and the corridor onto the
+        ## garden: two exits where there was one, inside this one stage.
         elif s == 0:
             if ui == "sb_place" and here == "dorm":
                 zzs.keep["clock"] = (store.day, store.period, store.stamina)
+                return zzs_must("sb_place", "hot_go_dorm__boys_dorm")
+            if ui == "sb_place" and here == "boys_dorm":
+                check((store.day, store.period, store.stamina) == zzs.keep["clock"],
+                      "the exit in my room walks to the Boys' Dormitory, no time spent", (here, store.period))
                 zzs_next()
-                return zzs_must("sb_place", "hot_go_dorm__dorm_yard")
+                return zzs_must("sb_place", "hot_go_boys_dorm__dorm_yard")
         elif s == 1:
             if ui == "sb_place":
                 if "hub" not in zzs.parked:
                     check(here == "dorm_yard" and (store.day, store.period, store.stamina) == zzs.keep["clock"],
-                          "the exit in my room walks to the Dormitory Garden, no time spent", (here, store.period))
+                          "and the corridor's stairs walk on to the Dormitory Garden, no time spent", (here, store.period))
                 if zzs_park("hub", zzs_st_hub):
                     zzs_next()
                     return ("map",)

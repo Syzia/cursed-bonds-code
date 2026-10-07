@@ -163,7 +163,10 @@ init python:
         ("halfway through an enormous bowl", "happy") (4.4). Phase 2: a
         caption that follows the story (AMBIENT_STORY) comes first. A
         caption that names someone else (AMBIENT_NEEDS) only shows while
-        they're there."""
+        they're there. The second overhaul (D48): someone asleep is
+        ("asleep", None), ahead of everything else."""
+        if world_asleep(who):
+            return ("asleep", None)
         story = rail_story_caption(who, loc)
         if story:
             return story
@@ -185,8 +188,10 @@ init python:
 
     def stage_people(loc=None):
         """WP7. (on stage, overflow): who is at the place, the companion first,
-        at most four on stage."""
-        folk = who_is_here(loc)
+        at most four on stage. The second overhaul (D48): nobody asleep
+        (world_asleep) is on the stage or in the overflow, so every screen
+        that draws, lists or offers people takes the rule from here."""
+        folk = [w for w in who_is_here(loc) if not world_asleep(w)]
         c = store.companion
         if c in folk:
             folk.remove(c)
@@ -311,15 +316,33 @@ init python:
     def rail_missions(loc):
         """P2 (sb_screens.rpy). [(mid, title, hint)]: the missions the place
         view offers here now. None in explore mode or on a rest day
-        (night_can_work), and only the ones the night allows."""
+        (night_can_work), and only the ones the night allows. The second
+        overhaul (D48): not a mission whose giver is asleep (the frozen
+        missions_here finds its giver in who_is_here, which counts a
+        sleeper)."""
         if store.explore_mode or not night_can_work():
             return []
         out = []
         for m in missions_here(loc):
             mv = mission_view(m)
+            if world_asleep(_mget(MISSION_BY_ID.get(mv[0]), "with_who") or _mget(MISSION_BY_ID.get(mv[0]), "who")):
+                continue
             if night_allows("mission:" + mv[0], (MISSION_BY_ID.get(mv[0]) or {}).get("cost", 0)):
                 out.append(mv)
         return out
+
+    def rail_asleep_line(loc):
+        """U0b (sb_screens.rpy; D48, K16). "" unless the only people in the
+        place are asleep; then the one plain line the empty stage shows in
+        place of "Nobody here right now.": "Megumi is asleep." Nothing more
+        is said of a sleeper than that."""
+        folk = [w for w in who_is_here(loc) if world_asleep(w)]
+        if not folk or stage_people(loc)[0]:
+            return ""
+        names = [CAST[w]["short"] for w in folk]
+        if len(names) == 1:
+            return "%s is asleep." % names[0]
+        return "%s and %s are asleep." % (", ".join(names[:-1]), names[-1])
 
     def rail_rows(loc):
         """P2 (sb_screens.rpy). The icon column's tiles, top to bottom, as
@@ -724,14 +747,18 @@ screen sb_place():
                     action Return(("char", _w))
 
     ## Nobody home. (Not said in my own room, where it is the only line on
-    ## the screen and I am the one who is there.)
+    ## the screen and I am the one who is there.) The second overhaul (D48):
+    ## when the room's owner is in it asleep, the line says so, since they
+    ## are not on the stage and "nobody" would be untrue.
     if not _stage and here != "dorm":
+        $ _rail_asleep = rail_asleep_line(here)
         frame:
             xcenter 700
             ycenter 640
             background Frame("gui/panel_ghost.png", 4, 4)
             padding (28, 14)
-            text _("Nobody here right now."):
+            text (_rail_asleep or _("Nobody here right now.")):
+                substitute False
                 color gui.dim
                 size 22
 

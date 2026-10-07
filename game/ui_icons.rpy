@@ -3,8 +3,10 @@
 ##
 ## Phase 2, P0 (PHASE2_DESIGN.md 4.3, D8 to D11, 6.1). Final: frozen after wave 0.
 ##
-##   ICONS            {name: (kanji, word)}: the 88 icon names. A wave package
-##                    never adds one; it uses an existing name.
+##   ICONS            {name: (kanji, word)}: the 114 icon names (88 of phase 2,
+##                    and the 26 of the second UI overhaul, laid once by U0b:
+##                    docs/UI2_DESIGN.md 4.8, K11). A wave package never adds
+##                    one; it uses an existing name.
 ##   ICON_FOR         {(kind, id): name} for place actions ("act"), activities
 ##                    ("do"), journal tabs ("tab"), rooms ("place"), areas ("area")
 ##   ICON_GOLD        the names drawn in gold
@@ -122,6 +124,40 @@ init -3 python:
         "buy":           (u"買", "Buy"),
         "take":          (u"取", "Take"),
         "record":        (u"録", "Record book"),
+        ## The second UI overhaul (docs/UI2_DESIGN.md 4.8; U0b): 26 more, all
+        ## on sheet 4 (tools/icons/sheet_4.txt), in this order.
+        ## the new places (11)
+        "place_boys_dorm":       (u"男", "Boys' Dormitory"),
+        "place_yuji_room":       (u"悠", "Yuji's Room"),
+        "place_megumi_room":     (u"恵", "Megumi's Room"),
+        "place_senpai_room":     (u"輩", "Panda and Toge's Room"),
+        "place_nobara_room":     (u"野", "Nobara's Room"),
+        "place_maki_room":       (u"真", "Maki's Room"),
+        "place_teachers_lounge": (u"憩", "Teachers' Lounge"),
+        "place_teachers_dorm":   (u"師", "Teachers' Dormitory"),
+        "place_bathhouse":       (u"湯", "Onsen"),
+        "place_sauna":           (u"蒸", "Sauna"),
+        "place_pool":            (u"水", "Swimming Pool"),
+        ## the five yards (5): used once the picture is cut (path_icon in
+        ## room_paths.rpy, map_pin_icon in ui_map.rpy); until then a yard
+        ## keeps its area's icon, as in phase 2
+        "place_school_yard":     (u"舎", "School Courtyard"),
+        "place_dorm_yard":       (u"園", "Dormitory Garden"),
+        "place_staff_yard":      (u"階", "Staff Building Steps"),
+        "place_training_yard":   (u"場", "Training Yard"),
+        "place_trailhead":       (u"径", "Mountain Path"),
+        ## actions (4)
+        "bath_soak":     (u"浴", "Soak"),
+        "bath_sauna":    (u"熱", "Sit it out"),
+        "pool_swim":     (u"游", "Swim"),
+        "cards_invite":  (u"招", "Ask someone to the table"),
+        ## the three the quick menu has no icon for (3), and three more (3)
+        "history":       (u"歴", "History"),
+        "auto":          (u"自", "Auto"),
+        "save":          (u"保", "Save"),
+        "help":          (u"助", "How to play"),
+        "continue":      (u"続", "Continue"),
+        "at_home":       (u"宅", "At home"),
     }
 
     ## (kind, id) -> icon name. Kinds: "act" a place action id, "do" an
@@ -146,6 +182,8 @@ init -3 python:
         ("do", "rom_town"): "heart", ("do", "rom_close"): "heart", ("do", "rom_say"): "heart",
         ("do", "int_night"): "heart", ("do", "int_morning"): "heart", ("do", "int_day"): "heart",
         ("do", "int_after"): "heart",
+        ## "Swim together" at the pool takes the river's icon (4.8: no new icon).
+        ("do", "swim_pool"): "swim",
 
         ("tab", "people"): "people", ("tab", "missions"): "missions", ("tab", "memories"): "memories",
         ("tab", "stats"): "stats", ("tab", "equipment"): "equipment", ("tab", "inventory"): "inventory",
@@ -156,7 +194,12 @@ init -3 python:
     }
     for _icon_loc in ("gate", "courtyard", "classroom", "cafeteria", "training", "dojo", "dorm_common",
                       "dorm", "girls_dorm", "rooftop", "infirmary", "office", "utahime_office",
-                      "gojo_office", "storehouse", "forest", "riverside", "ridge", "library"):
+                      "gojo_office", "storehouse", "forest", "riverside", "ridge", "library",
+                      ## the eleven places of the second overhaul (a row for a
+                      ## place that is not built yet is never read)
+                      "boys_dorm", "yuji_room", "megumi_room", "senpai_room",
+                      "nobara_room", "maki_room", "teachers_lounge", "teachers_dorm",
+                      "bathhouse", "sauna", "pool"):
         ICON_FOR[("place", _icon_loc)] = "place_" + _icon_loc
     del _icon_loc
 
@@ -255,6 +298,11 @@ init -3 python:
         (("hud_map", "hud_journal", "hud_menu", "hud_chip_"), "bottom"),
         (("tag_", "stage_"), "top"),
         (("hot_go_courtyard__training_yard",), "left"),
+        ## The second UI overhaul (U0b): "To the Boys' Dormitory" is wider than
+        ## "To My Room" was, and above its exit it would lie over the garden's
+        ## exit to the Mountain Path. It opens to the right, where the garden
+        ## is clear. (The garden's own picture brings its sidecar's sides.)
+        (("hot_go_dorm_yard__boys_dorm",), "right"),
         (("hot_go_", "hot_computer"), "top"),
         (("map_campus", "map_tokyo"), "bottom"),
         (("row_school_yard", "row_staff_yard", "row_training_yard"), "left"),

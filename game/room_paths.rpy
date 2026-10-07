@@ -12,6 +12,12 @@
 ##   from a hub    one exit to each of its rooms, and one to each neighbouring
 ##                 hub (PATH_LINKS: as the paths on map_campus.png join the areas)
 ##
+## The second UI overhaul (docs/UI2_DESIGN.md 4.4, 4.5, D1; U0b): a building
+## with rooms inside. A room that opens off a house (WORLD_INSIDE in
+## sb_world.rpy: my room, off the Boys' Dormitory) has its house as its first
+## exit and no exit to the yard; the house's first exit is the yard, and its
+## others are the rooms inside it, seven exits at most (K11).
+##
 ## Walking is free and instant, at any hour, and works in explore mode. The
 ## map still goes anywhere in two clicks.
 ##
@@ -102,17 +108,29 @@ init python:
         "infirmary":      [("school_yard", 84, 500)],       # out past the desk
         "library":        [("school_yard", 1660, 880)],     # back the way I came in
         ## Dormitories ------------------------------------------------------------
-        "dorm_yard":      [("dorm", 248, 728),              # the left house's veranda steps
+        "dorm_yard":      [("boys_dorm", 248, 728),         # the left house's veranda steps
                            ("dorm_common", 930, 600),       # the centre house
                            ("girls_dorm", 1530, 600),       # the right house
                            ("rooftop", 1200, 285),          # the tower
                            ("courtyard", 450, 960),         # the flagstones, bottom left
                            ("staff_yard", 1290, 960),       # the stepping stones, bottom right
                            ("trailhead", 465, 615)],        # the dirt path behind the left house
-        "dorm":           [("dorm_yard", 150, 760)],        # my door (below the laptop's row)
+        "dorm":           [("boys_dorm", 150, 760)],        # my door (below the laptop's row)
         "dorm_common":    [("dorm_yard", 84, 540)],         # the sliding door
         "girls_dorm":     [("dorm_yard", 1090, 560)],       # the far end of the corridor
         "rooftop":        [("dorm_yard", 1680, 640)],       # the stairs behind the pillar
+        ## The Boys' Dormitory (U0b). Schematic points on the stand-in (the
+        ## girls' corridor, mirrored); the corridor's own picture brings its
+        ## sidecar (K2). A friend's room is my room mirrored: its door is on
+        ## the right.
+        "boys_dorm":      [("dorm_yard", 860, 960),         # the stairs, behind me
+                           ("dorm", 830, 500),              # the door at the far end: mine (above the "Nobody here" line)
+                           ("yuji_room", 435, 600),         # the near door on the left
+                           ("megumi_room", 1478, 600),      # the near door on the right
+                           ("senpai_room", 1200, 520)],     # the corner room, further along
+        "yuji_room":      [("boys_dorm", 1660, 760)],       # his door
+        "megumi_room":    [("boys_dorm", 1660, 760)],       # his door
+        "senpai_room":    [("boys_dorm", 1660, 760)],       # their door
         ## Staff Building ---------------------------------------------------------
         "staff_yard":     [("office", 878, 495),            # the main hall's doors
                            ("utahime_office", 1485, 660),   # the small house on the right
@@ -159,6 +177,7 @@ init python:
     }
     PATH_CLEAR = 120
     PATH_APART = 110        # between two exits of one place (their rings are 96 px)
+    PATH_HOUSE_EXITS = 7    # the most exits a house may hold (K11), its way out included
 
     ## The arrival caption's panel (screen sb_place: a frame at (40, 100), up
     ## to 744 wide, 157 tall with a two-line description). It lies over the
@@ -168,6 +187,9 @@ init python:
     ## "To the School Courtyard": the few names that take no article.
     PATH_TO_WORDS = {
         "dorm":           "To My Room",
+        "yuji_room":      "To Yuji's Room",
+        "megumi_room":    "To Megumi's Room",
+        "senpai_room":    "To Panda and Toge's Room",
         "utahime_office": "To Utahime's Office",
         "gojo_office":    "To Gojo's Office",
     }
@@ -191,8 +213,13 @@ init python:
 
     def path_icon(to):
         """P9. The icon an exit to `to` is drawn as: area_<key> for a hub,
-        place_<room> for a room (existing icon names only, D55)."""
+        place_<room> for a room (existing icon names only, D55). The second
+        overhaul (3.1): a yard has an icon of its own, place_<yard>, and is
+        drawn as it once that picture is cut (icon_has_art); until then it
+        keeps its area's, so no exit changes before the sheet is made."""
         if path_is_hub(to):
+            if icon_has_art("place_" + to):
+                return "place_" + to
             return "area_" + area_of(to)
         return "place_" + to
 
@@ -336,7 +363,11 @@ init python:
         """P9. Lint findings for the hubs and the exits: every area has a
         hub among its places; every place has an exit; a room's first exit
         is its hub; a hub leads to each of its rooms and each neighbouring
-        hub and nowhere else; every exit has a way back; from my room every
+        hub and nowhere else (the house rule, 4.4: a room inside a house
+        leads to its house first and its yard has no exit to it; a house is
+        a room of the same area that opens onto the yard, and leads on only
+        to the rooms inside it, PATH_HOUSE_EXITS at most); every exit has a
+        way back; from my room every
         place is reached; each point keeps clear of the room's own hotspots
         (PATH_KEEP_CLEAR), of the place's other exits and of the arrival caption's panel (the
         sidecar's point too). (Bounds and lanes are hot_validate's.)"""
@@ -351,7 +382,7 @@ init python:
             if hub not in area["places"]:
                 out.append("PATH_HUBS: area %r has no hub among its places (%r)" % (key, hub))
                 continue
-            want = [l for l in area["places"] if l != hub] + links.get(hub, [])
+            want = [l for l in area["places"] if l != hub and not world_inside(l)] + links.get(hub, [])
             got = path_neighbours(hub)
             for l in want:
                 if l not in got:
@@ -360,8 +391,21 @@ init python:
                 if l not in want:
                     out.append("exits: the hub %r has an exit to %r, which is neither its room nor a neighbouring hub" % (hub, l))
             for l in area["places"]:
-                if l != hub and path_neighbours(l)[:1] != [hub]:
+                if l == hub:
+                    continue
+                house = world_inside(l)
+                if house:
+                    if house == hub or house not in area["places"] or world_inside(house):
+                        out.append("exits: the house %r of %r must be a room of its own area that opens onto the yard" % (house, l))
+                    if path_neighbours(l)[:1] != [house]:
+                        out.append("exits: the first exit of %r must lead to its house %r" % (l, house))
+                elif path_neighbours(l)[:1] != [hub]:
                     out.append("exits: the first exit of %r must lead to its hub %r" % (l, hub))
+                for to in path_neighbours(l)[1:]:
+                    if world_inside(to) != l:
+                        out.append("exits: %r has an exit to %r, which is neither its way out nor a room inside it" % (l, to))
+                if len(path_neighbours(l)) > PATH_HOUSE_EXITS:
+                    out.append("exits: %r has %d exits (a house holds at most %d)" % (l, len(path_neighbours(l)), PATH_HOUSE_EXITS))
         for a, b in PATH_LINKS:
             if not (path_is_hub(a) and path_is_hub(b)):
                 out.append("PATH_LINKS: %r and %r must both be hubs" % (a, b))
@@ -519,4 +563,27 @@ label sb_do_path_training_yard:
 
 label sb_do_path_trailhead:
     call path_walk("trailhead")
+    return
+
+
+## The second UI overhaul (docs/UI2_DESIGN.md 2.3, 4.4; U0b) ####################
+##
+## The Boys' Dormitory and the three friends' rooms off its corridor. Appended;
+## protected from the commit they land in, each with its line. label
+## sb_do_path_dorm, above, is now walked from the corridor and is not touched.
+
+label sb_do_path_boys_dorm:
+    call path_walk("boys_dorm")
+    return
+
+label sb_do_path_yuji_room:
+    call path_walk("yuji_room")
+    return
+
+label sb_do_path_megumi_room:
+    call path_walk("megumi_room")
+    return
+
+label sb_do_path_senpai_room:
+    call path_walk("senpai_room")
     return

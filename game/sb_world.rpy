@@ -90,13 +90,31 @@ init -2 python:
         "trailhead": dict(
             indoor=False, name="Mountain Path", bg="bg trailhead", x=960, y=330,
             desc="Where the stone path gives out and the mountain starts. I can go level into the forest, down to the river, or up the steps to the ridge."),
+        ## The second UI overhaul (docs/UI2_DESIGN.md 4.1, D5; U0b): the Boys'
+        ## Dormitory, the left house of the garden. My room is the door at
+        ## the end of its corridor (WORLD_INSIDE, below); three friends'
+        ## rooms open off it. Appended: a key that has reached a save is
+        ## never removed. x/y are dead data (tools/genworld.py is not run).
+        "boys_dorm": dict(
+            indoor=True, name="Boys' Dormitory", bg="bg boys_dorm", x=735, y=600,
+            desc="The first-year corridor, upstairs. A shoe rack at the head of the stairs, doors down both sides, and mine at the far end."),
+        "yuji_room": dict(
+            indoor=True, name="Yuji's Room", bg="bg yuji_room", x=700, y=600,
+            desc="Film posters, a floor cushion and a small television. The window faces the garden."),
+        "megumi_room": dict(
+            indoor=True, name="Megumi's Room", bg="bg megumi_room", x=770, y=600,
+            desc="Spare and tidy. A full bookshelf, and shoes in a line by the door."),
+        "senpai_room": dict(
+            indoor=True, name="Panda and Toge's Room", bg="bg senpai_room", x=735, y=640,
+            desc="The big corner room. One very large futon, one neat one, and a shogi board between them."),
     }
 
     LOC_ORDER = ["gate", "courtyard", "classroom", "cafeteria", "training", "dojo",
                  "dorm_common", "dorm", "girls_dorm", "rooftop", "infirmary",
                  "office", "utahime_office", "gojo_office", "storehouse",
                  "forest", "riverside", "ridge", "library",
-                 "school_yard", "dorm_yard", "staff_yard", "training_yard", "trailhead"]
+                 "school_yard", "dorm_yard", "staff_yard", "training_yard", "trailhead",
+                 "boys_dorm", "yuji_room", "megumi_room", "senpai_room"]
 
     ## Areas (3.2, WP1) ----------------------------------------------------------
     ## The map's six cards, in order. anchor is the card centre on
@@ -113,6 +131,12 @@ init -2 python:
     ## Phase 2 (D53, D59, P9): each area's hub is the first of its places (the
     ## heart keeps its order; its hub is the courtyard). The Mountain's anchor
     ## sits on the peak drawn on map_campus.png (it sat over the lake).
+    ##
+    ## The second UI overhaul (D1, D3; U0b): a building with rooms inside is
+    ## not a new area. The Boys' Dormitory and the rooms off its corridor are
+    ## places of the Dormitories, appended. `spots` holds a pin for every
+    ## place that has one: the rooms of WORLD_PINLESS (below) have none and
+    ## are reached on foot. My room keeps its own pin.
 
     AREAS = [
         dict(key="heart",    name="Courtyard & Gate",  seal="門",
@@ -127,11 +151,15 @@ init -2 python:
              spots={"school_yard": (940, 560), "classroom": (520, 380), "cafeteria": (1300, 420),
                     "infirmary": (620, 760), "library": (1340, 780)}),
         dict(key="dorms",    name="Dormitories",       seal="寮",
-             places=["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop"], anchor=(900, 560),
+             places=["dorm_yard", "dorm", "dorm_common", "girls_dorm", "rooftop",
+                     "boys_dorm", "yuji_room", "megumi_room", "senpai_room"], anchor=(900, 560),
              bg="bg area_dorms",
              blurb="Where I sleep, and where everyone ends up by evening.",
              spots={"dorm_yard": (960, 520), "rooftop": (960, 260), "dorm": (480, 440),
-                    "girls_dorm": (1440, 440), "dorm_common": (960, 640)}),
+                    "girls_dorm": (1440, 440), "dorm_common": (960, 640),
+                    ## the near end of the left house on today's picture, clear
+                    ## of my room's pin (4.8's points arrive with the new map)
+                    "boys_dorm": (380, 790)}),
         dict(key="staff",    name="Staff Building",    seal="職",
              places=["staff_yard", "office", "utahime_office", "gojo_office"], anchor=(1560, 440),
              bg="bg area_staff",
@@ -239,19 +267,30 @@ init -2 python:
     ## then empty at Night by routine. "For now": until there are
     ## dormitories for him to sleep in (asked for after phase 2).
 
+    ##
+    ## The second UI overhaul (docs/UI2_DESIGN.md 4.3, O18; U0b): at Night
+    ## everyone who lives on campus is in their own room, on all seven days
+    ## (WEEKEND still has no Night cell for anyone, and _validate_world now
+    ## says so). U0b moves the four boys: Yuji and Megumi to their rooms,
+    ## Panda and Toge to the room they share; the garden is then empty at
+    ## Night, as the common room is. Who is asleep there is WORLD_ASLEEP,
+    ## below. At weekends each of the four has one daytime hour at home
+    ## (Yuji at Noon; Megumi, Panda and Toge in the Morning), and Yuji's
+    ## weekend Evening is the garden, by the pond.
+
     SCHEDULE = {
         "yuji":   {"Morning": "training",  "Noon": "cafeteria", "Afternoon": "courtyard",
-                   "Evening": "dorm_common", "Night": "dorm_yard"},
+                   "Evening": "dorm_common", "Night": "yuji_room"},
         "megumi": {"Morning": "classroom", "Noon": "cafeteria", "Afternoon": "forest",
-                   "Evening": "dorm_common", "Night": "-"},
+                   "Evening": "dorm_common", "Night": "megumi_room"},
         "nobara": {"Morning": "training_yard", "Noon": "cafeteria", "Afternoon": "courtyard",
                    "Evening": "dorm_common", "Night": "girls_dorm"},
         "maki":   {"Morning": "dojo",      "Noon": "dojo",      "Afternoon": "training",
                    "Evening": "riverside", "Night": "girls_dorm"},
         "panda":  {"Morning": "courtyard", "Noon": "cafeteria", "Afternoon": "training",
-                   "Evening": "library",   "Night": "dorm_yard"},
+                   "Evening": "library",   "Night": "senpai_room"},
         "toge":   {"Morning": "ridge",     "Noon": "cafeteria", "Afternoon": "school_yard",
-                   "Evening": "library",   "Night": "-"},
+                   "Evening": "library",   "Night": "senpai_room"},
         "shoko":  {"Morning": "infirmary", "Noon": "infirmary", "Afternoon": "infirmary",
                    "Evening": "rooftop",   "Night": "infirmary"},
         "yaga":   {"Morning": "office",    "Noon": "office",    "Afternoon": "storehouse",
@@ -266,13 +305,13 @@ init -2 python:
 
     ## Weekends shake the board up.
     WEEKEND = {
-        "yuji":   {"Morning": "dorm_common", "Afternoon": "riverside", "Evening": "cafeteria"},
+        "yuji":   {"Morning": "dorm_common", "Noon": "yuji_room", "Afternoon": "riverside", "Evening": "dorm_yard"},
         ## Phase 2 (D34): Megumi reads in the Library on weekend afternoons.
-        "megumi": {"Morning": "trailhead",   "Afternoon": "library"},
+        "megumi": {"Morning": "megumi_room", "Afternoon": "library"},
         "nobara": {"Morning": "girls_dorm",  "Afternoon": "riverside", "Evening": "courtyard"},
         "maki":   {"Morning": "dojo",        "Afternoon": "riverside", "Evening": "dojo"},
-        "panda":  {"Afternoon": "riverside"},
-        "toge":   {"Morning": "rooftop",     "Afternoon": "riverside"},
+        "panda":  {"Morning": "senpai_room", "Afternoon": "riverside"},
+        "toge":   {"Morning": "senpai_room", "Afternoon": "riverside"},
         "shoko":  {"Afternoon": "staff_yard"},
         "yaga":   {"Morning": "-", "Noon": "-", "Afternoon": "-", "Evening": "-"},
         "utahime": {"Afternoon": "-", "Evening": "courtyard"},
@@ -285,6 +324,112 @@ init -2 python:
     ## still win over it. Phase 4 adds Utahime leaving to lead Kyoto and
     ## Yuji's absence here; phase 1 ships it empty.
     FLAG_SCHEDULES = []
+
+    ## Houses, homes, doors and the Night (the second UI overhaul) -------------
+    ## docs/UI2_DESIGN.md 3.2, 4.2, 4.3; D1, D10, D48, D49. Init data, never
+    ## saved. U0b lays these with the Boys' Dormitory; U0c1 adds the rows of
+    ## the other houses and people.
+
+    ## room -> the place it opens off (its house), one level deep. A room
+    ## inside a house has its house as its first exit and no exit to the
+    ## yard (path_validate in room_paths.rpy holds the rule).
+    WORLD_INSIDE = {
+        "dorm":        "boys_dorm",
+        "yuji_room":   "boys_dorm",
+        "megumi_room": "boys_dorm",
+        "senpai_room": "boys_dorm",
+    }
+
+    ## Places with no pin on their area's map: reached on foot, or by the
+    ## journal's "Go there". My room is not one of them (D3).
+    WORLD_PINLESS = ("yuji_room", "megumi_room", "senpai_room")
+
+    ## who -> the place they live in. Gojo has no row.
+    WORLD_HOMES = {
+        "yuji":   "yuji_room",
+        "megumi": "megumi_room",
+        "panda":  "senpai_room",
+        "toge":   "senpai_room",
+        "shoko":  "infirmary",
+    }
+
+    ## A door that asks a Bond level (4.2): the place -> whose Bond it asks
+    ## (any one of them opens it).
+    WORLD_DOOR_OWNERS = {
+        "yuji_room":   ("yuji",),
+        "megumi_room": ("megumi",),
+        "senpai_room": ("panda", "toge"),
+    }
+
+    ## The level a door asks. None is the one entry every door reads today;
+    ## a row for a place ({"maki_room": 25}) sets that door apart.
+    WORLD_DOOR_BOND = {None: 15}
+
+    ## Who is asleep at Night, by the kind of day. world_asleep() is the
+    ## only reader.
+    WORLD_ASLEEP = {
+        "weekday": ("megumi", "panda"),
+        "weekend": ("yuji", "toge"),
+    }
+
+    def world_inside(loc):
+        """U0b (sb_world.rpy). The key of the house a place opens off
+        (WORLD_INSIDE), or None for a place that opens onto its yard."""
+        return WORLD_INSIDE.get(loc)
+
+    def world_pinned(loc):
+        """U0b. bool: the place has a pin on its area's map."""
+        return loc in LOCATIONS and loc not in WORLD_PINLESS
+
+    def world_home(who):
+        """U0b. The place key someone lives in (WORLD_HOMES), or None."""
+        return WORLD_HOMES.get(who)
+
+    def world_door_owners(loc):
+        """U0b. A list of person keys: whose Bond the door of this place
+        asks; [] for a place with no Bond door."""
+        return list(WORLD_DOOR_OWNERS.get(loc, ()))
+
+    def world_door_bond(loc):
+        """U0b. The Bond level the door of this place asks, an int
+        (WORLD_DOOR_BOND: the place's own row, else the one under None), or
+        None for a place with no Bond door."""
+        if loc not in WORLD_DOOR_OWNERS:
+            return None
+        return int(WORLD_DOOR_BOND.get(loc, WORLD_DOOR_BOND[None]))
+
+    def world_asleep(who, per=None):
+        """U0b (D48). bool: this person is asleep. True only at Night, for
+        someone on today's list of WORLD_ASLEEP who is in their home
+        (WORLD_HOMES) by their routine. Never for whoever is walking with
+        me, and never for someone a story pin or a flag schedule has placed.
+        A sleeper is still counted where they are (who_is_here); they are
+        not on the stage (stage_people) and nothing is offered with them."""
+        per = per or store.period
+        if per != "Night" or not who or who == store.companion:
+            return False
+        home = WORLD_HOMES.get(who)
+        if home is None:
+            return False
+        if who not in WORLD_ASLEEP["weekend" if is_weekend() else "weekday"]:
+            return False
+        if flag_schedule(who)[0] or (who, store.day, per) in store.schedule_overrides:
+            return False
+        return char_location(who, per) == home
+
+    def world_home_state(who, per=None):
+        """U0b (D49, a hook for later quests). "awake", "asleep" or "out":
+        this person against their home. "out" also for someone who has no
+        home, and for whoever walks with me unless we stand in their home."""
+        per = per or store.period
+        home = WORLD_HOMES.get(who)
+        if home is None:
+            return "out"
+        if who == store.companion:
+            return "awake" if store.here == home else "out"
+        if char_location(who, per) != home:
+            return "out"
+        return "asleep" if world_asleep(who, per) else "awake"
 
     ## Gojo is never where you expect him.
     GOJO_SPOTS = ["-", "-", "-", "rooftop", "courtyard", "office", "cafeteria", "training"]
@@ -606,10 +751,27 @@ init -2 python:
 
     def place_access(loc):
         """WP1. (allowed, reason, short): can_enter's answer plus a short tag
-        for the map row ("Night", "Sealed", "SOON!")."""
+        for the map row ("Night", "Sealed", "SOON!"). The second overhaul
+        (U0b): the flag door_<place> opens any place; a friend's room asks
+        world_door_bond of one of world_door_owners ("Bond 15")."""
         if store.explore_mode:
             return True, "", ""
+        ## A story quest can open any door, whatever its Bond, the hour or
+        ## its other locks (D49; no quest sets one in the second overhaul).
+        if has_flag("door_" + str(loc)):
+            return True, "", ""
         per = store.period
+        ## A friend's room asks a Bond level of one of its owners, and is
+        ## then open at any hour, whether they are in, out or asleep (4.2,
+        ## D10). An owner walking with me opens it too. It reads Bond, flags
+        ## and the companion only, never char_location.
+        need = world_door_bond(loc)
+        if need is not None:
+            owners = world_door_owners(loc)
+            if not (store.companion in owners
+                    or any(store.bonds.get(w, 0) >= need for w in owners)):
+                names = " or ".join(CAST[w]["short"] for w in owners)
+                return False, "I don't know %s well enough to let myself in." % names, "Bond %d" % need
         if loc == "girls_dorm" and per in ("Evening", "Night"):
             if not has_flag("invited_girls_dorm"):
                 return False, "I am not walking into the girls' dormitory after dark uninvited. That is how people get nailed to things.", "After dark"
@@ -807,8 +969,49 @@ init -2 python:
                 out.append("area %r: no image %r" % (a["key"], a["bg"]))
             if not a["blurb"]:
                 out.append("area %r has no blurb" % a["key"])
-            if sorted(a["spots"]) != sorted(a["places"]):
-                out.append("area %r: spots and places disagree" % a["key"])
+            if sorted(a["spots"]) != sorted(l for l in a["places"] if l not in WORLD_PINLESS):
+                out.append("area %r: spots and its pinned places disagree" % a["key"])
+        ## The second overhaul (3.2): the houses, homes, doors and the Night.
+        for room, house in sorted(WORLD_INSIDE.items()):
+            if room not in LOCATIONS or house not in LOCATIONS:
+                out.append("WORLD_INSIDE: %r -> %r names an unknown place" % (room, house))
+            elif house in WORLD_INSIDE or room == house:
+                out.append("WORLD_INSIDE: %r -> %r must be one level deep" % (room, house))
+            elif area_of(room) != area_of(house):
+                out.append("WORLD_INSIDE: %r and its house %r are in different areas" % (room, house))
+        for l in WORLD_PINLESS:
+            if l not in LOCATIONS:
+                out.append("WORLD_PINLESS has unknown place %r" % l)
+            elif l not in WORLD_INSIDE:
+                out.append("WORLD_PINLESS: %r opens off no house (a place without a pin is a room inside one)" % l)
+        for who, l in sorted(WORLD_HOMES.items()):
+            if who not in CAST:
+                out.append("WORLD_HOMES has unknown person %r" % who)
+            if l not in LOCATIONS:
+                out.append("WORLD_HOMES[%s] is unknown place %r" % (who, l))
+            elif SCHEDULE.get(who, {}).get("Night") != l:
+                out.append("WORLD_HOMES[%s] is %r but SCHEDULE's Night cell is %r" % (who, l, SCHEDULE.get(who, {}).get("Night")))
+        for who, t in sorted(WEEKEND.items()):
+            if "Night" in t:
+                out.append("WEEKEND[%s] has a Night cell (the Night is the same on all seven days)" % who)
+        if sorted(WORLD_ASLEEP) != ["weekday", "weekend"]:
+            out.append("WORLD_ASLEEP needs exactly the lists \"weekday\" and \"weekend\"")
+        for kind, names in sorted(WORLD_ASLEEP.items()):
+            for who in names:
+                if who not in WORLD_HOMES:
+                    out.append("WORLD_ASLEEP[%s]: %r has no WORLD_HOMES row" % (kind, who))
+        for l in sorted(WORLD_DOOR_BOND, key=str):
+            if l is not None and l not in LOCATIONS:
+                out.append("WORLD_DOOR_BOND has unknown place %r" % l)
+            if not isinstance(WORLD_DOOR_BOND[l], int) or isinstance(WORLD_DOOR_BOND[l], bool):
+                out.append("WORLD_DOOR_BOND[%r] must be a whole number" % l)
+        if None not in WORLD_DOOR_BOND:
+            out.append("WORLD_DOOR_BOND needs the entry under None (the level every door reads)")
+        for l, owners in sorted(WORLD_DOOR_OWNERS.items()):
+            if l not in LOCATIONS:
+                out.append("WORLD_DOOR_OWNERS has unknown place %r" % l)
+            if not owners or any(w not in CAST for w in owners):
+                out.append("WORLD_DOOR_OWNERS[%s] must name at least one person of CAST" % l)
         for k in DISTRICT_ORDER:
             if k not in DISTRICTS:
                 out.append("DISTRICT_ORDER lists unknown district %r" % k)

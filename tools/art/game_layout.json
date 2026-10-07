@@ -119,9 +119,23 @@
     "dorm",
     "dorm_common",
     "girls_dorm",
-    "rooftop"
+    "rooftop",
+    "boys_dorm",
+    "yuji_room",
+    "megumi_room",
+    "senpai_room"
    ],
    "spots": {
+    "boys_dorm": {
+     "applied": [
+      380,
+      790
+     ],
+     "default": [
+      380,
+      790
+     ]
+    },
     "dorm": {
      "applied": [
       560,
@@ -350,6 +364,68 @@
   }
  ],
  "exits": {
+  "boys_dorm": [
+   {
+    "applied": [
+     860,
+     960
+    ],
+    "default": [
+     860,
+     960
+    ],
+    "id": "go_boys_dorm__dorm_yard",
+    "to": "dorm_yard"
+   },
+   {
+    "applied": [
+     830,
+     500
+    ],
+    "default": [
+     830,
+     500
+    ],
+    "id": "go_boys_dorm__dorm",
+    "to": "dorm"
+   },
+   {
+    "applied": [
+     435,
+     600
+    ],
+    "default": [
+     435,
+     600
+    ],
+    "id": "go_boys_dorm__yuji_room",
+    "to": "yuji_room"
+   },
+   {
+    "applied": [
+     1478,
+     600
+    ],
+    "default": [
+     1478,
+     600
+    ],
+    "id": "go_boys_dorm__megumi_room",
+    "to": "megumi_room"
+   },
+   {
+    "applied": [
+     1200,
+     520
+    ],
+    "default": [
+     1200,
+     520
+    ],
+    "id": "go_boys_dorm__senpai_room",
+    "to": "senpai_room"
+   }
+  ],
   "cafeteria": [
    {
     "applied": [
@@ -452,8 +528,8 @@
      150,
      760
     ],
-    "id": "go_dorm__dorm_yard",
-    "to": "dorm_yard"
+    "id": "go_dorm__boys_dorm",
+    "to": "boys_dorm"
    }
   ],
   "dorm_common": [
@@ -480,8 +556,8 @@
      248,
      728
     ],
-    "id": "go_dorm_yard__dorm",
-    "to": "dorm"
+    "id": "go_dorm_yard__boys_dorm",
+    "to": "boys_dorm"
    },
    {
     "applied": [
@@ -640,6 +716,20 @@
     "to": "school_yard"
    }
   ],
+  "megumi_room": [
+   {
+    "applied": [
+     1660,
+     760
+    ],
+    "default": [
+     1660,
+     760
+    ],
+    "id": "go_megumi_room__boys_dorm",
+    "to": "boys_dorm"
+   }
+  ],
   "office": [
    {
     "applied": [
@@ -756,6 +846,20 @@
     ],
     "id": "go_school_yard__courtyard",
     "to": "courtyard"
+   }
+  ],
+  "senpai_room": [
+   {
+    "applied": [
+     1660,
+     760
+    ],
+    "default": [
+     1660,
+     760
+    ],
+    "id": "go_senpai_room__boys_dorm",
+    "to": "boys_dorm"
    }
   ],
   "staff_yard": [
@@ -972,6 +1076,20 @@
     ],
     "id": "go_utahime_office__staff_yard",
     "to": "staff_yard"
+   }
+  ],
+  "yuji_room": [
+   {
+    "applied": [
+     1660,
+     760
+    ],
+    "default": [
+     1660,
+     760
+    ],
+    "id": "go_yuji_room__boys_dorm",
+    "to": "boys_dorm"
    }
   ]
  },
@@ -1253,7 +1371,7 @@
    ]
   }
  },
- "hash": "c9c820d6b6cebec25e5661b21144d56f091505cba49d0d42df566bedd2928377",
+ "hash": "3aa35759f41dd1e9ac0ec0b3cb64cb220234dfe3b0a3a8bebe087ecafbfd66ea",
  "hotspots": {
   "cafeteria": [
    {
@@ -2233,6 +2351,54 @@
    "variants": {},
    "y": 0,
    "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg boys_dorm",
+   "file": "images/bg/boys_dorm.png",
+   "hub": false,
+   "indoor": true,
+   "key": "boys_dorm",
+   "name": "Boys' Dormitory",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg yuji_room",
+   "file": "images/bg/yuji_room.png",
+   "hub": false,
+   "indoor": true,
+   "key": "yuji_room",
+   "name": "Yuji's Room",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg megumi_room",
+   "file": "images/bg/megumi_room.png",
+   "hub": false,
+   "indoor": true,
+   "key": "megumi_room",
+   "name": "Megumi's Room",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
+  },
+  {
+   "area": "dorms",
+   "bg": "bg senpai_room",
+   "file": "images/bg/senpai_room.png",
+   "hub": false,
+   "indoor": true,
+   "key": "senpai_room",
+   "name": "Panda and Toge's Room",
+   "variants": {},
+   "y": 0,
+   "zoom": 0.52
   }
  ],
  "poses": {
@@ -2279,7 +2445,7 @@
    "Afternoon": "forest",
    "Evening": "dorm_common",
    "Morning": "classroom",
-   "Night": "-",
+   "Night": "megumi_room",
    "Noon": "cafeteria"
   },
   "nobara": {
@@ -2293,7 +2459,7 @@
    "Afternoon": "training",
    "Evening": "library",
    "Morning": "courtyard",
-   "Night": "dorm_yard",
+   "Night": "senpai_room",
    "Noon": "cafeteria"
   },
   "shoko": {
@@ -2307,7 +2473,7 @@
    "Afternoon": "school_yard",
    "Evening": "library",
    "Morning": "ridge",
-   "Night": "-",
+   "Night": "senpai_room",
    "Noon": "cafeteria"
   },
   "utahime": {
@@ -2328,7 +2494,7 @@
    "Afternoon": "courtyard",
    "Evening": "dorm_common",
    "Morning": "training",
-   "Night": "dorm_yard",
+   "Night": "yuji_room",
    "Noon": "cafeteria"
   }
  },
@@ -2337,6 +2503,76 @@
   1080
  ],
  "slots": {
+  "boys_dorm": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
   "cafeteria": {
    "1": [
     [
@@ -3247,6 +3483,76 @@
     ]
    ]
   },
+  "megumi_room": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
   "office": {
    "1": [
     [
@@ -3528,6 +3834,76 @@
    ]
   },
   "school_yard": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "senpai_room": {
    "1": [
     [
      700,
@@ -4011,6 +4387,76 @@
     ],
     [
      1190,
+     -40,
+     0.52,
+     0
+    ]
+   ]
+  },
+  "yuji_room": {
+   "1": [
+    [
+     700,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "2": [
+    [
+     470,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     930,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "3": [
+    [
+     330,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     700,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1070,
+     -40,
+     0.52,
+     0
+    ]
+   ],
+   "4": [
+    [
+     240,
+     -40,
+     0.52,
+     0
+    ],
+    [
+     540,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     860,
+     -50,
+     0.4992,
+     1
+    ],
+    [
+     1160,
      -40,
      0.52,
      0
@@ -4598,7 +5044,7 @@
   },
   "megumi": {
    "Afternoon": "library",
-   "Morning": "trailhead"
+   "Morning": "megumi_room"
   },
   "nobara": {
    "Afternoon": "riverside",
@@ -4606,14 +5052,15 @@
    "Morning": "girls_dorm"
   },
   "panda": {
-   "Afternoon": "riverside"
+   "Afternoon": "riverside",
+   "Morning": "senpai_room"
   },
   "shoko": {
    "Afternoon": "staff_yard"
   },
   "toge": {
    "Afternoon": "riverside",
-   "Morning": "rooftop"
+   "Morning": "senpai_room"
   },
   "utahime": {
    "Afternoon": "-",
@@ -4627,8 +5074,9 @@
   },
   "yuji": {
    "Afternoon": "riverside",
-   "Evening": "cafeteria",
-   "Morning": "dorm_common"
+   "Evening": "dorm_yard",
+   "Morning": "dorm_common",
+   "Noon": "yuji_room"
   }
  }
 }

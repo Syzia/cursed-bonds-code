@@ -6,8 +6,10 @@
 ## with no script change: when images/bg/<name>.png exists it is used instead
 ## (alley, alley_dark, ridge_veil, utahime_office, gojo_office, map_tokyo,
 ## shibuya, harajuku, shinjuku, kawasaki, yotsuka, library, the six
-## area_<key> pictures of the map's second level, and the five hubs:
-## school_yard, dorm_yard, staff_yard, training_yard, trailhead). Their light
+## area_<key> pictures of the map's second level, the five hubs:
+## school_yard, dorm_yard, staff_yard, training_yard, trailhead, and the new
+## places of the second UI overhaul: boys_dorm, yuji_room, megumi_room,
+## senpai_room). Their light
 ## rows are in BG_LIGHT in lighting.rpy (the hubs have none: they are outdoor
 ## places and take the outdoor light).
 ################################################################################
@@ -115,3 +117,34 @@ init -1 python:
     renpy.image("bg staff_yard", world_hub_bg("staff_yard"))
     renpy.image("bg training_yard", world_hub_bg("training_yard"))
     renpy.image("bg trailhead", world_hub_bg("trailhead"))
+
+    ## The second UI overhaul (docs/UI2_DESIGN.md 4.1, K12; U0b): a new place
+    ## is walkable on a stand-in before its picture exists. Each stand-in is a
+    ## picture the game already has, mirrored and tinted so that it cannot be
+    ## mistaken for the real room; images/bg/<key>.png replaces it at the next
+    ## launch with no script change. While config.developer is on, a small
+    ## "stand-in" tag sits near the bottom left corner (above the review
+    ## tools' button, which the same switch shows).
+    def standin_bg(key, src, matrix, **kw):
+        """U0b. What `bg <key>` shows: images/bg/<key>.png when it exists,
+        else the stand-in: images/bg/<src> under `matrix` (and any crop or
+        mirror in kw), with the developer's "stand-in" tag."""
+        tag = ConditionSwitch(
+            "config.developer", Text("stand-in", size=16, color="#ffffffb0", outlines=[(1, "#000000b0", 0, 0)]),
+            "True", Null())
+        return bg_placeholder("images/bg/%s.png" % key,
+            Fixed(_bg_tinted(src, matrix, **kw),
+                  Transform(tag, xpos=40, ypos=1014),
+                  xysize=(1920, 1080)))
+
+    ## The Boys' Dormitory: the girls' corridor, mirrored, in cool grey.
+    renpy.image("bg boys_dorm", standin_bg("boys_dorm", "girls_dorm.png",
+        TintMatrix("#d6dde8") * SaturationMatrix(0.45) * BrightnessMatrix(-0.02), xzoom=-1.0))
+    ## The three friends' rooms: my room, mirrored, in three tints (warm for
+    ## Yuji, blue for Megumi, green for the room Panda and Toge share).
+    renpy.image("bg yuji_room", standin_bg("yuji_room", "your_room.png",
+        TintMatrix("#ffd9b0") * SaturationMatrix(0.85), xzoom=-1.0))
+    renpy.image("bg megumi_room", standin_bg("megumi_room", "your_room.png",
+        TintMatrix("#b9cdf2") * SaturationMatrix(0.70) * BrightnessMatrix(-0.02), xzoom=-1.0))
+    renpy.image("bg senpai_room", standin_bg("senpai_room", "your_room.png",
+        TintMatrix("#c4e6c0") * SaturationMatrix(0.80), xzoom=-1.0))

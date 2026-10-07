@@ -372,6 +372,11 @@ label zz_smoke:
 
         ## The game's own sidecars (the overlay above replaces area_school.json
         ## in the scratch copy, so the shipped points are read from the tree).
+        ## The second UI overhaul (U0b): a sidecar names only pinned places
+        ## of its area, and a pinned place it does not name stands at the
+        ## code's default (the Boys' Dormitory, until the new map brings its
+        ## point): the rule is on the points the game applies, the sidecar's
+        ## laid over the code's, as map_spots does.
         _zz_close = []
         _zz_out = []
         _zz_miss = []
@@ -380,9 +385,12 @@ label zz_smoke:
             if _zz_raw is None:
                 _zz_miss.append(_zz_a["key"])
                 continue
-            _zz_pts = zz_json.loads(_zz_raw).get("spots", {})
-            if sorted(_zz_pts) != sorted(_zz_a["places"]):
-                _zz_miss.append((_zz_a["key"], sorted(_zz_pts)))
+            _zz_side = zz_json.loads(_zz_raw).get("spots", {})
+            _zz_want = [l for l in _zz_a["places"] if zz_pinned(l)]
+            _zz_pts = dict((l, tuple(p)) for l, p in _zz_a["spots"].items())
+            _zz_pts.update((l, tuple(p)) for l, p in _zz_side.items())
+            if [l for l in _zz_side if l not in _zz_want] or sorted(_zz_pts) != sorted(_zz_want):
+                _zz_miss.append((_zz_a["key"], sorted(_zz_side), sorted(_zz_pts)))
             for _zz_l, (_zz_x, _zz_y) in _zz_pts.items():
                 if not (MAP_PIN_FRAME[0] <= _zz_x <= MAP_PIN_FRAME[2] and MAP_PIN_FRAME[1] <= _zz_y <= MAP_PIN_FRAME[3]):
                     _zz_out.append((_zz_l, _zz_x, _zz_y))
@@ -390,8 +398,8 @@ label zz_smoke:
                     if _zz_l < _zz_m and abs(_zz_x - _zz_x2) < MAP_PIN_W and abs(_zz_y - _zz_y2) < 120:
                         _zz_close.append((_zz_l, _zz_m))
         check(not _zz_miss and not _zz_out and not _zz_close,
-              "the shipped sidecars: every room of each area has a point inside the frame, and no two pins of an area "
-              "are closer than 240 px across and 120 px down", (_zz_miss, _zz_out, _zz_close))
+              "the shipped sidecars: every pinned room of each area has a point inside the frame (the sidecar's, else the code's), "
+              "and no two pins of an area are closer than 240 px across and 120 px down", (_zz_miss, _zz_out, _zz_close))
         _zz_wide = [(l, map_text_width(n, gui.display_font, map_fit(n, 22, MAP_PIN_W - 24)) + 20)
                     for l in LOCATIONS for n in (LOCATIONS[l]["name"], "Empty Office")]
         check(all(w <= MAP_PIN_W for l, w in _zz_wide), "every pin's name plate fits inside the pin's %d px button" % MAP_PIN_W,
@@ -510,8 +518,8 @@ label zz_smoke:
             for _zz_l, (_zz_x, _zz_y) in _zz_a["spots"].items():
                 if not (200 <= _zz_x <= 1700 and 200 <= _zz_y <= 940):
                     _zz_out.append(("code default", _zz_l, _zz_x, _zz_y))
-        check(sorted(_zz_seen) == sorted(LOCATIONS) and all(len(v) == 1 and v[0] == area_of(l) for l, v in _zz_seen.items()),
-              "every room is in exactly one area's spots", _zz_seen)
+        check(sorted(_zz_seen) == sorted(l for l in LOCATIONS if zz_pinned(l)) and all(len(v) == 1 and v[0] == area_of(l) for l, v in _zz_seen.items()),
+              "every pinned room is in exactly one area's spots (a room inside a house has no pin)", _zz_seen)
         check(not _zz_out, "every spot (the code's and the sidecar's) is inside x 200 to 1700, y 200 to 940", _zz_out)
         _zz_code = AREA_BY_KEY["school"]["spots"]
         _zz_sp = map_spots("school")
@@ -552,11 +560,27 @@ label zz_smoke:
         check(not [w for w in _zz_in if w in _zz_m] and not [w for w in _zz_in if w in _zz_p]
               and not [w for w in _zz_in if w in map_area_people("dorms")] and map_pin_people("girls_dorm") == [],
               "a person in a locked room is on no marker and no pin", (_zz_in, _zz_m, _zz_p))
-        ## P9 (D53, D57): the hub is an open place of the area too (Yuji is in
-        ## the Dormitory Garden at night; Panda too, after checkpoint D).
-        check(sorted(_zz_p) == sorted(w for l in ("dorm_yard", "dorm", "dorm_common", "rooftop") for w in who_is_here(l)[:3])
-              and "yuji" in who_is_here("dorm_yard") and "panda" in who_is_here("dorm_yard"),
-              "the open places' pins still show who is there", (_zz_p,))
+        ## P9 (D53, D57): the hub is an open place of the area too. The second
+        ## UI overhaul (4.3; U0b): at Night the garden is empty (Yuji and Panda
+        ## are in their rooms), so the open pins are looked at twice: at Night,
+        ## and on a weekend Evening, when Yuji is by the pond.
+        _zz_open = [l for l in places_in("dorms") if zz_pinned(l) and place_access(l)[0]]
+        check(sorted(_zz_p) == sorted(w for l in _zz_open for w in who_is_here(l)[:3])
+              and who_is_here("dorm_yard") == [] and "dorm_yard" in _zz_open and "boys_dorm" in _zz_open,
+              "at Night the open places' pins still show who is there, and the garden is empty", (_zz_p, _zz_open))
+        _zz_day0 = day
+        day = [d for d in range(day, day + 7) if WEEKDAYS[(d - 1) % 7] == "Sat"][0]
+        period = "Evening"
+        roll_gojo()
+        zz_map(area="dorms")
+        _zz_p = zz_faces(renpy.get_screen("sb_map"))
+        _zz_open = [l for l in places_in("dorms") if zz_pinned(l) and place_access(l)[0]]
+        check(sorted(_zz_p) == sorted(w for l in _zz_open for w in who_is_here(l)[:3])
+              and "yuji" in who_is_here("dorm_yard") and "yuji" in _zz_p,
+              "on a weekend Evening Yuji is in the garden, and his face is on its pin", (_zz_p, who_is_here("dorm_yard")))
+        day = _zz_day0
+        period = "Night"
+        roll_gojo()
 
     ## --- 7. the two new screens ---------------------------------------------------------------
     python:
@@ -793,7 +817,21 @@ label zz_smoke:
         check(char_location("nobara") == "girls_dorm" and _zz_v == dict(place=None, name="Somewhere I can't go right now", doing="",
                                                                        reachable=False, hidden=True, with_me=False),
               "person_now: hidden=True for someone in a locked room, and the room isn't given away", _zz_v)
+        ## The second UI overhaul (4.3; U0b): Megumi's Night is his own room,
+        ## behind a door that asks a Bond level. Until it opens he is hidden,
+        ## as anyone in a locked room is (U1 gives the house's name). Nobody
+        ## among the students is off campus at Night by routine any more, so
+        ## that answer is read with him pinned there.
+        _zz_b0 = bonds.get("megumi", 0)
+        bonds["megumi"] = 0
         _zz_v = person_now("megumi")
+        check(char_location("megumi") == "megumi_room" and not place_access("megumi_room")[0]
+              and _zz_v == dict(place=None, name="Somewhere I can't go right now", doing="", reachable=False, hidden=True, with_me=False),
+              "person_now: at Night Megumi is in his room, behind a door I can't open yet: hidden, and the room isn't given away", _zz_v)
+        bonds["megumi"] = _zz_b0
+        pin("megumi", "-")
+        _zz_v = person_now("megumi")
+        schedule_overrides.pop(("megumi", day, period), None)
         check(_zz_v == dict(place=None, name="Off campus", doing="", reachable=False, hidden=False, with_me=False),
               "person_now: someone off campus", _zz_v)
         check(person_now("nanami")["name"] == "Off campus" and person_now("sana")["name"] == "Off campus", "person_now: someone not on the roster is 'Off campus'")
@@ -924,7 +962,8 @@ label zz_smoke:
             zz_map(area="dorms")
             _zz_w2 = zz_words("sb_map")
             gui.icon_words = _zz_icon_words0
-            check(len(_zz_w1) <= 20 and len(_zz_w2) <= 16 and not _zz_unknown,
+            ## K11: 18 words on an area view (the Dormitories have six pins).
+            check(len(_zz_w1) <= 20 and len(_zz_w2) <= 18 and not _zz_unknown,
                   "stand-in: the word counts are the same without icon art (%d, %d), and no icon is a question mark" % (len(_zz_w1), len(_zz_w2)),
                   (_zz_w1, _zz_w2, _zz_unknown))
             zz_map(area="grounds")
@@ -980,7 +1019,7 @@ label zz_smoke:
     python:
         zz_render(0.4)
         check(ZZ_SAVE[0] == 2 and renpy.get_screen("sb_map") is not None and zz_zone() == "dorms"
-              and zz_ids("row_") == sorted("row_" + l for l in places_in("dorms")),
+              and zz_ids("row_") == sorted("row_" + l for l in places_in("dorms") if zz_pinned(l)),
               "...and a shown map reloads with its scope (nothing un-picklable is in the map's scope)", (ZZ_SAVE[0], zz_ids("row_")))
         renpy.hide_screen("sb_map")
         finish()
