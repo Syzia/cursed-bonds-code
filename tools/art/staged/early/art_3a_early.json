@@ -1,0 +1,56 @@
+{
+ "about": [
+  "Batch 3a (the Common Room and My Room, redone in place) written early on 7 Oct 2026 at the owner's word, with: python3 tools/art_batch.py 3a --preview --record tools/art/staged/early/campus_for_batch2_third.json --out '~/Desktop/JJK Game images/ui2/early'. Its results are judged with tools/install_redo.py <place> <render a> <render b> --dry (nothing moved, nothing vanished, nothing added, sharper), which installs nothing."
+ ],
+ "written": "2026-10-07",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: Common Room, version A",
+   "save": "ui2_dorm_common_a",
+   "seed": 9238,
+   "prompt_sha256": "0b9563b5b6d54c60a4677905faeb5bc79b301ecfb6cf957d22d0b6444be643dc",
+   "references": [
+    {
+     "file": "ui2_in_dorm_common_1.png",
+     "sha256": "3d70f8ca1fcfb854aea15ae83c73515c20d4a0fae581f6814b8cf24a3fb9f331"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Common Room, version B",
+   "save": "ui2_dorm_common_b",
+   "seed": 9239,
+   "prompt_sha256": "0b9563b5b6d54c60a4677905faeb5bc79b301ecfb6cf957d22d0b6444be643dc",
+   "references": [
+    {
+     "file": "ui2_in_dorm_common_1.png",
+     "sha256": "3d70f8ca1fcfb854aea15ae83c73515c20d4a0fae581f6814b8cf24a3fb9f331"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: My Room, version A",
+   "save": "ui2_your_room_a",
+   "seed": 4910,
+   "prompt_sha256": "1cbb1d2b08ce0a6a859ea366abfe8278b89a6ee493202c8074cc262d576bdf13",
+   "references": [
+    {
+     "file": "ui2_in_your_room_1.png",
+     "sha256": "dbbcd2d52db9b6ac5aa13e800093ed950b6a85526e93f1b4eb7cde581f53cba3"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: My Room, version B",
+   "save": "ui2_your_room_b",
+   "seed": 4911,
+   "prompt_sha256": "1cbb1d2b08ce0a6a859ea366abfe8278b89a6ee493202c8074cc262d576bdf13",
+   "references": [
+    {
+     "file": "ui2_in_your_room_1.png",
+     "sha256": "dbbcd2d52db9b6ac5aa13e800093ed950b6a85526e93f1b4eb7cde581f53cba3"
+    }
+   ]
+  }
+ ]
+}
