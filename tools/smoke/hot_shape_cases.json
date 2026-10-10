@@ -3,7 +3,8 @@
   "tools/smoke/hot_shape_cases.json -- the three test shapes of docs/UI2_DESIGN.md 7.3 (D60, 'The rules').",
   "The game's lint (hot_validate in game/sb_hotspots.rpy) and tools/check_layout.py count 'two fifths of the picture' and 'under smaller shapes' with one function, hot_shape_count, whose text is the block between the two 'hot_shape:' marker lines of game/sb_hotspots.rpy. Both are given these shapes and must answer `expect`, `order` and `findings` exactly.",
   "tools/smoke/u2_contracts.rpy asserts it in the game; python3 tools/smoke/make_shape_overlay.py --selftest asserts it in plain Python (and --write-cases rewrites the three answers from the functions, after a deliberate change to them).",
-  "hall: two polygons that share a side; it is the largest, so the other two are on top of it. posts: a triangle, the smallest, lying over the hall, its porch and the path. path: a hollow-sided polygon with points between pixels, running to the picture's bottom edge; its point is under posts on purpose, which is the one finding."
+  "hall: two polygons that share a side; it is the largest, so the other two are on top of it. posts: a triangle, the smallest, lying over the hall, its porch and the path. path: a hollow-sided polygon with points between pixels, running to the picture's bottom edge; its point is under posts on purpose, which is the one finding.",
+  "layers: the game draws two layers, and a shape in the front one is above every back shape whatever their sizes. With the ids of layers.front in front (the hall, the largest), hot_shape_layers must answer layers.findings exactly; with nothing in front, or everything, it answers []."
  ],
  "expect": {
   "hall": {
@@ -37,6 +38,15 @@
   "shape 'path': its hotspot's point (850, 820) is under the smaller shape 'posts' (hot_zz_cases.json)"
  ],
  "grid": 4,
+ "layers": {
+  "findings": [
+   "shape 'posts': its hotspot's point (850, 640) is under the front shape 'hall' (hot_zz_cases.json)",
+   "shape 'posts': 69% of it is under front shapes and smaller ones (at most 50%) (hot_zz_cases.json)"
+  ],
+  "front": [
+   "hall"
+  ]
+ },
  "limits": {
   "area_max": 0.4,
   "area_min": 5184,

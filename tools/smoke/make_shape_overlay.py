@@ -100,6 +100,14 @@ def cases_expect(ns, cases):
     return dict((k, dict(v)) for k, v in got.items()), list(ns["hot_shape_order"](cases["shapes"]))
 
 
+def cases_layers(ns, cases):
+    """What hot_shape_layers says of the test shapes with the ids of
+    cases["layers"]["front"] drawn in the front layer."""
+    limits = dict(cases["limits"], polys=tuple(cases["limits"]["polys"]), points=tuple(cases["limits"]["points"]))
+    return list(ns["hot_shape_layers"]("zz_cases", cases["shapes"], dict((k, tuple(v)) for k, v in cases["points"].items()),
+                                       set(cases["layers"]["front"]), limits, tuple(cases["size"])))
+
+
 def selftest(write=False):
     ns = shape_functions()
     with open(CASES, encoding="utf-8") as f:
@@ -108,6 +116,7 @@ def selftest(write=False):
     if write:
         cases["expect"] = expect
         cases["order"] = order
+        cases["layers"]["findings"] = cases_layers(ns, cases)
         with open(CASES, "w", encoding="utf-8") as f:
             json.dump(cases, f, indent=1, sort_keys=True, ensure_ascii=False)
             f.write("\n")
@@ -125,6 +134,9 @@ def selftest(write=False):
                                      set(cases["shapes"]), set(cases["shapes"]), limits, tuple(cases["size"]))
     if found != cases.get("findings"):
         bad.append("findings: %r, expected %r" % (found, cases.get("findings")))
+    layers = cases_layers(ns, cases)
+    if layers != cases["layers"].get("findings"):
+        bad.append("layers: %r, expected %r" % (layers, cases["layers"].get("findings")))
     for line in bad:
         print("FAIL " + line)
     print("selftest %s: the block of game/sb_hotspots.rpy runs as plain Python and counts the %d test shapes of %s %s"

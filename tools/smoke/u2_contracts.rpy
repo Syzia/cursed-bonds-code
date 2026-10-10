@@ -8,6 +8,21 @@
 ## that fills a stub keeps the stub's name, signature, owning file and return
 ## shape, and this file goes on passing.
 ##
+## So nothing here may depend on what the wave is PLANNED to add. Where a
+## check needs today's state it makes it:
+##   - the Courtyard is the test place. Its checks lay the sidecar ZZC_COURT
+##     (today's five points and nothing else), and where they count its
+##     hotspots (section B's spacing test, all of section I) every row a later
+##     package registered there is taken out of HOT_SPOTS for the test and put
+##     back (zzc_court, zzc_court_back);
+##   - section A's four gates are read on test rows laid over an empty
+##     manifest (zzc_blank), whatever rows the real pictures.json has by then;
+##   - the dim table is kept and put back, never emptied (ZZC_HOLD["dim"]);
+##   - a stub-only check stands aside, with a NOTE, once its stub is filled:
+##     an empty TKY_LINES marks U5's screens, bath_ok() or pool_ok() the baths
+##     and the pool, and a store function light_follow marks U3's light at an
+##     hour that is only a tint (docs/UI2_CONTRACTS.md B7, B9, B10).
+##
 ## It runs in two states and says which it is in ("NOTE state"):
 ##
 ##   overlay  tools/smoke/assets/u2_contracts/game/ is laid over the scratch
@@ -82,6 +97,7 @@ init 999 python:
             self.art = None
             self.layout = None
             self.variant = None
+            self.blank = False
 
     zzc = ZZCState()
 
@@ -100,7 +116,18 @@ init 999 python:
         RULE_LAYOUT.update(copy.deepcopy(zzc.layout))
         TIME_VARIANT.clear()
         TIME_VARIANT.update(copy.deepcopy(zzc.variant))
+        if zzc.blank:
+            ART_PICTURES.clear()
         _BG_CACHE.clear()
+
+    def zzc_blank(on):
+        """Section A's gates are tested on rows laid over an EMPTY manifest
+        (every picture at revision 1, as wave 0 ships), so that they read
+        the same once the real pictures.json holds rows for the rooms they
+        use. While it is on, zzc_back() leaves the manifest empty; turning
+        it off puts the real rows back."""
+        zzc.blank = bool(on)
+        zzc_back()
 
     def zzc_art(**rows):
         """Lay manifest rows over the real ones (a row of None removes one)."""
@@ -111,6 +138,40 @@ init 999 python:
             else:
                 ART_PICTURES[k] = builtins.dict(r)
         _BG_CACHE.clear()
+
+    ## The Courtyard as wave 0 left it: its four exits and the vending
+    ## machine, each at the point it has today. Laid as the Courtyard's whole
+    ## sidecar it makes the test place the same whatever the real file comes to
+    ## hold (moved points, tips, shapes, a for_rev).
+    ZZC_COURT = {"go_courtyard__gate": [1300, 985], "go_courtyard__school_yard": [84, 600], "go_courtyard__dorm_yard": [960, 310],
+                 "go_courtyard__training_yard": [1640, 850], "spot_vend": [1600, 690]}
+
+    def zzc_court(trim=False):
+        """Lay the Courtyard's test sidecar: ZZC_COURT under "spots" and
+        nothing else. trim=True also takes out of HOT_SPOTS every row of
+        the Courtyard that is not one of those five (a hotspot a later
+        package registered there; a harness's own zz rows stay), until
+        zzc_court_back()."""
+        if trim:
+            if "spots" not in ZZC_HOLD:
+                ZZC_HOLD["spots"] = builtins.list(HOT_SPOTS)
+            HOT_SPOTS[:] = [h for h in HOT_SPOTS
+                            if h["place"] != "courtyard" or h["id"] in ZZC_COURT or builtins.str(h["id"]).startswith("zz")]
+        zzc_layout("hot_courtyard", builtins.dict(spots=ZZC_COURT))
+
+    def zzc_court_back():
+        """Put back the rows zzc_court(trim=True) took out. (The sidecar is
+        put back by zzc_back.) Returns how many came back."""
+        if "spots" not in ZZC_HOLD:
+            return 0
+        n = len(HOT_SPOTS)
+        HOT_SPOTS[:] = ZZC_HOLD.pop("spots")
+        return len(HOT_SPOTS) - n
+
+    def zzc_plain(loc):
+        """Lay a place's sidecar with its points alone (no shapes, no
+        keep_tile, no tips, no for_rev): the place with its buttons."""
+        zzc_layout("hot_" + loc, builtins.dict(spots=builtins.dict(rule_layout("hot_" + loc).get("spots") or {})))
 
     def zzc_layout(name, data):
         """Lay a sidecar over the real one (None: as if the file were absent)."""
@@ -343,6 +404,23 @@ init 999 python:
     def zz_two_faces(to):
         """A test path_faces: two people inside the Boys' Dormitory."""
         return ["megumi", "yuji", "zz_nobody"] if to == "boys_dorm" else []
+
+    def zz_four_faces(to):
+        """A test path_faces that breaks its own promise: four people."""
+        return ["megumi", "yuji", "nobara", "maki"] if to == "boys_dorm" else []
+
+    ZZC_ASLEEP = "images/bg/gate.png"
+
+    def zz_one_asleep(loc):
+        """A test view_asleep: one sleeper painted into the Courtyard (a
+        box of another place's picture stands in for the pose picture)."""
+        return [("megumi", builtins.dict(image=ZZC_ASLEEP, box=(300, 300, 240, 200)))] if loc == "courtyard" else []
+
+    def zzc_drawn(path, screen="sb_place"):
+        """How many displayables of a shown screen draw the picture file
+        `path`."""
+        sc = renpy.get_screen(screen)
+        return builtins.sum(1 for d in (zzc_tree(sc) if sc is not None else ()) if builtins.str(getattr(d, "filename", "")) == path)
 
     ZZC_DIM = builtins.list([""])
 
@@ -668,7 +746,11 @@ label zz_smoke:
             check(not renpy.loadable("layout/pictures.json") or isinstance(art_rows(), builtins.dict),
                   "A (bare): with no manifest, or the tree's own, the rows are a dict", builtins.sorted(art_rows()))
 
-        ## -- the manifest's rules, on rows laid in place
+        check(art_validate() == [], "A: the tree's own manifest lints clean", art_validate())
+
+        ## -- the manifest's rules, on rows laid in place (over an empty
+        ## manifest from here to the end of the four gates: zzc_blank)
+        zzc_blank(True)
         zzc_art(dorm_common=dict(rev=2, kind="inplace"))
         check(art_rev("dorm_common") == 2
               and art_fresh("dorm_common") is True
@@ -695,7 +777,7 @@ label zz_smoke:
         check(len(_zz_f) == 3 and all("zz_bad" in f for f in _zz_f) and not any("stale" in f for f in _zz_f),
               "A: art_validate reports a malformed row by name, and a stale row is not a finding", _zz_f)
         zzc_back()
-        check(art_validate() == [], "A: the tree's own manifest lints clean", art_validate())
+        check(art_validate() == [] and art_rev("dorm_common") == 1, "A: (the test rows taken out again)", art_validate())
 
         ## -- gate 1: bg_variant (a stale hour picture is not used: the day picture, tinted)
         _zz_before = [(l, p, bg_variant(l, p)) for l in LOC_ORDER for p in PERIODS]
@@ -764,11 +846,21 @@ label zz_smoke:
         zzc_back()
 
         ## -- gate 4: light_for_place (a stale light row is not used: the general row)
+        ## (U3's light_follow, 6.2 row 2, changes one thing here: the light at
+        ## an hour that is only a tint. Until it is in, that is the general
+        ## row, and the three checks below say so; once a store function
+        ## light_follow exists they ask only for a well-formed row that is
+        ## neither the night picture's nor the day row unchanged.)
+        _zz_follow = callable(getattr(store, "light_follow", None))
+        if _zz_follow:
+            note("A: gate 4", "U3's light_follow is in (wave 1): the pre-U3 value at an hour that is only a tint is not asserted")
+        zzc_layout("light_classroom", None)
         _zz_day = light_for_place("classroom", "Noon")
         _zz_night = light_for_place("classroom", "Night")
         check(light_row("classroom") is None and light_row("classroom", "night") is None
-              and _zz_day == INDOOR_LIGHT["Noon"] and _zz_night == INDOOR_LIGHT["Night"],
-              "A: gate 4, today: with no light_<place>.json a room takes the general row")
+              and _zz_day == INDOOR_LIGHT["Noon"]
+              and (light_row_ok(_zz_night) if _zz_follow else _zz_night == INDOOR_LIGHT["Night"]),
+              "A: gate 4, today: with no light_<place>.json a room takes the general row", (_zz_day, _zz_night))
         zzc_layout("light_classroom", {"": ["#f0e8d8", -0.02, 0.96, 0.5], "night": ["#c0c8f0", -0.1, 0.8, 0.4, -6, 1.3]})
         check(light_row("classroom") == ("#f0e8d8", -0.02, 0.96, 0.5) and light_row("classroom", "") == light_row("classroom")
               and light_row("classroom", "night") == ("#c0c8f0", -0.1, 0.8, 0.4, -6, 1.3)
@@ -776,8 +868,10 @@ label zz_smoke:
               and light_for_place("classroom", "Noon") == ("#f0e8d8", -0.02, 0.96, 0.5)
               and light_for_place("classroom", "Morning") == ("#f0e8d8", -0.02, 0.96, 0.5),
               "A: gate 4: a measured row wins while the day picture shows as painted (a row of four values, or six)")
-        check(light_for_place("classroom", "Night") == INDOOR_LIGHT["Night"] and light_for_place("classroom", "Evening") == INDOOR_LIGHT["Evening"],
-              "A: gate 4: at an hour that is only a tint the general row stays (the night row waits for the night picture)")
+        _zz_tint = (light_for_place("classroom", "Night"), light_for_place("classroom", "Evening"))
+        check(all(light_row_ok(r) and builtins.tuple(r) not in (("#c0c8f0", -0.1, 0.8, 0.4, -6, 1.3), ("#f0e8d8", -0.02, 0.96, 0.5)) for r in _zz_tint)
+              if _zz_follow else _zz_tint == (INDOOR_LIGHT["Night"], INDOOR_LIGHT["Evening"]),
+              "A: gate 4: at an hour that is only a tint the general row stays (the night row waits for the night picture)", _zz_tint)
         zzc_art(classroom=dict(rev=2, kind="inplace"))
         check(light_row("classroom") is None and light_for_place("classroom", "Noon") == INDOOR_LIGHT["Noon"],
               "A: gate 4: with the room's picture replaced, the row measured on the old one is not used: the general row")
@@ -798,8 +892,10 @@ label zz_smoke:
               and light_for_bg("bg rooftop evening") == PLACE_LIGHT[("rooftop", "evening")],
               "A: a painted hour takes its own measured row, by place and by image name; the hour beside it keeps the table's")
         zzc_art(rooftop=dict(rev=2, kind="inplace"))
-        check(light_for_place("rooftop", "Night") == OUTDOOR_LIGHT["Night"] and bg_variant("rooftop", "Night") is None,
-              "A: and with the rooftop's day picture replaced the old night picture and its row both step aside")
+        _zz_tint = light_for_place("rooftop", "Night")
+        check(((light_row_ok(_zz_tint) and builtins.tuple(_zz_tint) != ("#a0b0e0", -0.1, 0.8, 0.4, 4, 1.2)) if _zz_follow else _zz_tint == OUTDOOR_LIGHT["Night"])
+              and bg_variant("rooftop", "Night") is None,
+              "A: and with the rooftop's day picture replaced the old night picture and its row both step aside", _zz_tint)
         zzc_back()
         ## light.json, and six values through the two functions a save reads with
         zzc_layout("light", {"bg alley": ["#101820", -0.2, 0.7, 0.3, 2, 1.1], "bg zz_bad": ["#101820", 0]})
@@ -825,6 +921,8 @@ label zz_smoke:
               and zzc_sig(_shadow_light) == "(trans, st, at)",
               "A: and a four-value one, which is what an old save holds, still does (K9: same names, same signatures)")
         store.scene_light = _zz_old
+
+        zzc_blank(False)
 
         ## -- WORLD_VARIANTS (3.2, 5.7)
         _zz_rows = builtins.list(WORLD_VARIANTS)
@@ -1013,7 +1111,12 @@ label zz_smoke:
               "B: path_keep_clear(loc) is a list of (x, y): the place's own hotspots where they sit now, each point once",
               [(l, path_keep_clear(l)) for l in LOC_ORDER if path_keep_clear(l)])
         check(path_validate() == [], "B: path_validate is clean", path_validate())
-        _zz_vend = path_keep_clear("courtyard")[0]
+        ## (the Courtyard as wave 0 left it: its four exits and the machine)
+        zzc_court(trim=True)
+        _zz_vend = hot_place_points("courtyard")["spot_vend"]
+        check(path_keep_clear("courtyard") == [builtins.tuple(ZZC_COURT["spot_vend"])] and path_validate() == [],
+              "B: (the Courtyard with its own five: one point to keep clear, the vending machine's, and path_validate still clean)",
+              (path_keep_clear("courtyard"), path_validate()))
         _zz_exit = [r for r in path_exits("courtyard") if r["to"] == "training_yard"][0]
         _zz_side = rule_layout("hot_courtyard")
         _zz_side.setdefault("spots", {})["go_courtyard__training_yard"] = [_zz_vend[0] + 60, _zz_vend[1] + 30]
@@ -1030,6 +1133,7 @@ label zz_smoke:
               "B: and the hotspot's applied point: a sidecar that moves the machine onto an exit fails too", _zz_f)
         ## the code's row may be wrong where the sidecar puts it right
         zzc_back()
+        zzc_court(trim=True)
         _zz_rows = builtins.list(PATH_EXITS["courtyard"])
         _zz_side = rule_layout("hot_courtyard")
         _zz_side.setdefault("spots", {})["go_courtyard__training_yard"] = [_zz_exit["x"], _zz_exit["y"]]
@@ -1040,19 +1144,21 @@ label zz_smoke:
         PATH_EXITS["courtyard"] = _zz_rows
         check(_zz_f == [], "B: a code row that would break the rule is no finding while the sidecar's point is clear (a picture carries its numbers, K2)", _zz_f)
         zzc_back()
-        check(path_validate() == [] and path_faces("boys_dorm") == [] and zzc_owner(path_faces, "room_paths.rpy") and zzc_sig(path_faces) == "(to)",
-              "B: (tables put back); path_faces(to) is a stub that returns nobody")
+        zzc_court_back()
+        check(path_validate() == [] and "spots" not in ZZC_HOLD
+              and isinstance(path_faces("boys_dorm"), builtins.list) and zzc_owner(path_faces, "room_paths.rpy") and zzc_sig(path_faces) == "(to)",
+              "B: (tables put back); path_faces(to) lives in room_paths.rpy and returns a list (nobody, while it is the stub: section E)")
 
         ## -- hover-label sides: the sidecar's tips, then the table, then where the tile is
         fixture(here="courtyard", period="Noon")
-        zzc_layout("hot_courtyard", dict(spots=dict(rule_layout("hot_courtyard").get("spots") or {})))
+        zzc_court()
         check(icon_tip_side(("To the Main Gate", "hot_go_courtyard__gate")) == "top"
               and icon_tip_side(("x", "hot_go_courtyard__training_yard")) == "left"
               and icon_tip_side(("x", "hot_spot_vend")) == "left" and icon_tip_side(("x", "hud_map")) == "bottom"
               and icon_tip_side(("x", "tag_yuji")) == "top" and icon_tip_side(("x", "zz_unknown")) == "left"
               and icon_tip_side("plain") == "left" and icon_tip_hot("hot_go_courtyard__gate") is None,
               "B: with no tips in the sidecar every label opens on the side it opened on before")
-        zzc_layout("hot_courtyard", dict(spots=dict(rule_layout("hot_courtyard").get("spots") or {}),
+        zzc_layout("hot_courtyard", dict(spots=dict(ZZC_COURT),
                                          tips={"go_courtyard__gate": "right", "go_courtyard__training_yard": "bottom",
                                                "spot_vend": "top", "go_courtyard__dorm_yard": "sideways"}))
         check(icon_tip_side(("x", "hot_go_courtyard__gate")) == "right" and icon_tip_side(("x", "hot_go_courtyard__training_yard")) == "bottom"
@@ -1069,6 +1175,8 @@ label zz_smoke:
     show screen sb_place
     python:
         zzc_hold()
+        zzc_court()
+        renpy.restart_interaction()
         zz_render(0.2)
         _zz_tip = ("Vending machine\nA can of something cold.", "hot_spot_vend")
         _zz_gate = ("To the Main Gate", "hot_go_courtyard__gate")
@@ -1107,6 +1215,7 @@ label zz_smoke:
               and len(hot_planned()) == len(SPOT_PLANNED) and zzc_owner(hot_planned, "sb_hotspots.rpy"),
               "C: a planned id that is registered already is registered in its planned place as its planned kind")
         check(hot_validate() == [], "C: hot_validate is clean", hot_validate())
+        zzc_court()
         _zz_side = rule_layout("hot_courtyard")
         _zz_side.setdefault("spots", {}).update({"gateway": [900, 520], "straw_posts": [420, 760]})
         zzc_layout("hot_courtyard", _zz_side)
@@ -1146,6 +1255,7 @@ label zz_smoke:
 
         ## -- on the place view
         fixture(day=2)
+        zzc_court()
         zzc_alone("courtyard")
         _zz_rows = hot_spots_for("courtyard")
         _zz_names = [hot_name(h) for h in _zz_rows]
@@ -1186,10 +1296,15 @@ label zz_smoke:
               "C: a locked exit wears where it leads (its hover label still says why it is shut)")
         fixture(period="Noon")
 
-        ## -- the dim state
-        check(HOT_DIM == {} and hot_dim_reason(_zz_rows[0]) == "" and HOT_DIM_ALPHA == 0.45 and zzc_owner(hot_set_dim, "sb_hotspots.rpy")
+        ## -- the dim state (HOT_DIM is kept as it is found and put back as
+        ## it was: U5 names the card table's dim function in it)
+        ZZC_HOLD["dim"] = builtins.dict(HOT_DIM)
+        check("spot_vend" not in HOT_DIM and hot_dim_reason([h for h in _zz_rows if h["id"] == "spot_vend"][0]) == ""
+              and isinstance(HOT_DIM, builtins.dict) and all(isinstance(k, str) and isinstance(v, str) for k, v in HOT_DIM.items())
+              and HOT_DIM_ALPHA == 0.45 and zzc_owner(hot_set_dim, "sb_hotspots.rpy")
               and zzc_sig(hot_set_dim) == "(hot_id, fn)",
-              "C: no hotspot names a dim function today; hot_set_dim(hot_id, fn) is how one does")
+              "C: a hotspot that names no dim function has no reason (the vending machine); HOT_DIM is {hotspot id: function name}, and hot_set_dim(hot_id, fn) is how one names it",
+              builtins.dict(HOT_DIM))
         zzc_alone("courtyard")
         check(zzc_alpha("hot_spot_vend") == 1.0 and zzc_action("hot_spot_vend") == ("Return", ("act", "spot_vend")),
               "C: the vending machine, not dim: drawn at full strength, and pressing it returns its action", (zzc_alpha("hot_spot_vend"), zzc_action("hot_spot_vend")))
@@ -1220,14 +1335,17 @@ label zz_smoke:
         check(len(_zz_f) == 2 and all("zz_nothing" in f for f in _zz_f),
               "C: lint refuses a dim function that does not exist, and one named for an unknown hotspot", _zz_f)
         HOT_DIM.clear()
-        check(hot_validate() == [], "C: (the dim table put back)")
+        HOT_DIM.update(ZZC_HOLD["dim"])
+        check(hot_validate() == [] and "spot_vend" not in HOT_DIM, "C: (the dim table put back)", hot_validate())
 
-        ## -- an exit's tile shows the faces path_faces returns
+        ## -- an exit's tile shows the faces path_faces returns (the garden
+        ## with its buttons, and nobody on campus: zzc_alone)
+        zzc_plain("dorm_yard")
         zzc_alone("dorm_yard")
         _zz_exit = [h for h in hot_spots_for("dorm_yard") if h["id"] == "go_dorm_yard__boys_dorm"][0]
-        check(hot_faces(_zz_exit) == [] and path_faces("boys_dorm") == []
+        check(hot_faces(_zz_exit) == path_faces("boys_dorm") == [] and len(hot_faces(_zz_exit)) <= 3
               and zzc_face_count("megumi") == 0 and zzc_face_count("yuji") == 0,
-              "C: with the stub, no exit's tile shows a face")
+              "C: with nobody inside the house, no face is on its exit's tile (the stub's answer everywhere)")
         _zz_pf = store.path_faces
         store.path_faces = zz_two_faces
         renpy.restart_interaction()
@@ -1238,6 +1356,17 @@ label zz_smoke:
               and zz_rect("sb_place", "hot_go_dorm_yard__boys_dorm") is not None,
               "C: with path_faces patched to return two people, their two faces are drawn on that exit's tile and on no other (someone who is not in the cast is left out)")
         shot("exit_faces")
+        ## three at most (B9), whatever path_faces hands back
+        store.path_faces = zz_four_faces
+        renpy.restart_interaction()
+        zz_render(0.3)
+        check(hot_faces(_zz_exit) == ["megumi", "yuji", "nobara"]
+              and [zzc_face_count(w) for w in ("megumi", "yuji", "nobara", "maki")] == [1, 1, 1, 0],
+              "C: an exit's tile shows three faces at most: with path_faces patched to return four people, hot_faces answers the first three and three are drawn",
+              (hot_faces(_zz_exit), [zzc_face_count(w) for w in ("megumi", "yuji", "nobara", "maki")]))
+        store.path_faces = zz_two_faces
+        renpy.restart_interaction()
+        zz_render(0.2)
         ## R6's worst case for the place view with everything this sitting
         ## draws on it: names shown, faces on an exit, four toasts, the banner.
         persistent.show_names = True
@@ -1449,6 +1578,33 @@ label zz_smoke:
               "E (the stubs): each returns nothing: an empty list, an empty string or None")
         check(isinstance(TKY_LINES, builtins.dict) and TKY_BOND == NIGHT_OUT["bond"] == 4,
               "E: TKY_LINES is a dict and TKY_BOND is the Bond a night out gives a companion")
+
+        ## -- the stage lays what view_asleep returns on the room, before the
+        ## people, and it takes no focus (6.2 row 12; B10)
+        zzc_hold()
+        zzc_court(trim=True)
+        zzc_alone("courtyard")
+        _zz_a0, _zz_b0 = zzc_drawn(ZZC_ASLEEP), zz_buttons("sb_place")
+        _zz_va = store.view_asleep
+        store.view_asleep = zz_one_asleep
+        renpy.restart_interaction()
+        zz_render(0.3)
+        _zz_a1, _zz_b1 = zzc_drawn(ZZC_ASLEEP), zz_buttons("sb_place")
+        _zz_free = zzc_at(420, 400)
+        shot("asleep_patch")
+        store.view_asleep = _zz_va
+        renpy.restart_interaction()
+        zz_render(0.2)
+        check(renpy.loadable(ZZC_ASLEEP) and _zz_a0 == 0 and _zz_a1 == 1 and _zz_b1 == _zz_b0 and _zz_free is None
+              and zzc_drawn(ZZC_ASLEEP) == 0,
+              "E: screen view_stage lays each (who, patch) view_asleep returns on the room: with it patched to return one sleeper, one patch of that picture is drawn on the place view, it adds no button and takes no click, and it is gone with the patch",
+              (_zz_a0, _zz_a1, _zz_b0, _zz_b1, _zz_free))
+        del _zz_va
+        renpy.hide_screen("sb_place")
+        zzc_back()
+        zzc_court_back()
+        settle(day=2, period="Noon", here="courtyard")
+        store.schedule_overrides = {}
 
         ## -- hint_seen, the six ids
         check(isinstance(store.hint_seen, (set, builtins.set)) and HINT_IDS == ("place", "names", "map", "person", "hour", "night")
@@ -1781,7 +1937,15 @@ label zz_smoke:
     python:
         settle(day=2, period="Noon", here="courtyard")
         zzc_hold()
-        ZZC_REAL[0] = rule_layout("hot_courtyard")
+        ## The whole section stands in the Courtyard as wave 0 left it: its
+        ## own five hotspots at today's points (zzc_court), whatever the real
+        ## sidecar holds by now and whatever a later package registered there.
+        ZZC_HOLD["shapes0"] = hot_shapes_for("courtyard")
+        ZZC_HOLD["n_spots"] = len(HOT_SPOTS)
+        zzc_court(trim=True)
+        ZZC_REAL[0] = builtins.dict(spots=builtins.dict(ZZC_COURT))
+        if ZZC_SHAPED_TREE:
+            note("I", "the tree itself shapes %d place(s) by now: the check that no place is shaped stands aside" % len([l for l in LOC_ORDER if hot_shapes_for(l)]))
         _zz_pers = persistent.show_names
         ZZC_HOLD["pers"] = _zz_pers
         persistent.show_names = False
@@ -1798,10 +1962,10 @@ label zz_smoke:
               and builtins.sorted(hot_spots_for("courtyard")[0]) == builtins.sorted(HOT_KEYS) and len(HOT_KEYS) == 11
               and zzc_sig(hot_set_dim) == "(hot_id, fn)",
               "I: hot_shapes_for(loc), hot_tip_rect(key) and HOT_SHAPE live in sb_hotspots.rpy: 1 to 3 polygons of 3 to 60 points, 5,184 px2 to two fifths of the picture, at most half buried, a 4 px grid; the light's five keys; hot_layer keeps its two parameters and hot_spots_for its eleven keys")
-        check(hot_shapes_for("courtyard") == {} and all(hot_shapes_for(l) == {} for l in LOC_ORDER) == (not ZZC_SHAPED_TREE)
-              and hot_shapes_for("zz_nowhere") == {} and hot_tip_rect("hot_spot_vend") is (None if not hot_shapes_for("courtyard") else hot_tip_rect("hot_spot_vend"))
+        check(hot_shapes_for("courtyard") == {} and (ZZC_SHAPED_TREE or all(hot_shapes_for(l) == {} for l in LOC_ORDER))
+              and hot_shapes_for("zz_nowhere") == {} and hot_tip_rect("hot_spot_vend") is None
               and hot_tip_rect("hud_map") is None and hot_tip_rect("hotshape_zz") is None,
-              "I: in the tree as it ships no place is shaped: hot_shapes_for answers {} and hot_tip_rect None")
+              "I: a place whose sidecar holds no shapes is not shaped (the Courtyard with its points alone): hot_shapes_for answers {} and hot_tip_rect None; in the tree as wave 0 ships it that is every place")
 
         ## -- the counting functions, against the three test shapes
         with open(os.path.join(smoke_env("SMOKE_ROOT", "."), "tools", "smoke", "hot_shape_cases.json"), encoding="utf-8") as _zz_fh:
@@ -1852,7 +2016,21 @@ label zz_smoke:
              "spot_vend", "smaller than a button"),
             ("a shaped place with one exit that has no shape and is not under keep_tile", builtins.dict(drop=("go_courtyard__dorm_yard",)),
              "go_courtyard__dorm_yard", "has no shape and is not under keep_tile"),
+            ## the two layers: the machine is a front hotspot, so its shape is
+            ## above every exit's, though here it is the LARGER one (a patch
+            ## of empty ground makes it so)
+            ("a back hotspot's point under a larger shape of the front layer (a click at the gate's own point would be the machine's)",
+             builtins.dict(shapes={"spot_vend": ZZC_SHAPES["spot_vend"] + [[[1000, 500], [1300, 500], [1300, 700], [1000, 700]],
+                                                                         [[1280, 965], [1320, 965], [1320, 1005], [1280, 1005]]]}),
+             "go_courtyard__gate", "is under the front shape 'spot_vend'"),
+            ("a back shape more than half under a larger shape of the front layer",
+             builtins.dict(shapes={"spot_vend": ZZC_SHAPES["spot_vend"] + [[[1000, 500], [1300, 500], [1300, 700], [1000, 700]],
+                                                                         [[1320, 900], [1460, 900], [1460, 1040], [1320, 1040]]]}),
+             "go_courtyard__gate", "is under front shapes and smaller ones"),
         ]
+        check(builtins.set(h["id"] for h in HOT_SPOTS if h["place"] == "courtyard" and h["front"]) == {"spot_vend"}
+              and zzc_sig(hot_shape_layers) == "(place, shapes, points, front, limits, size)",
+              "I: (the Courtyard's one front hotspot is the vending machine; hot_shape_layers(place, shapes, points, front, limits, size) reads the two layers)")
         for _zz_what, _zz_kw, _zz_id, _zz_say in _zz_broken:
             zzc_d60(**_zz_kw)
             _zz_f = hot_validate()
@@ -1880,10 +2058,18 @@ label zz_smoke:
         _zz_store = rule_layout("hot_storehouse")
         _zz_store_real = rule_layout("hot_storehouse")
         _zz_ex = path_exits("storehouse")[0]
+        _zz_store.pop("for_rev", None)
+        _zz_store.setdefault("spots", {}).update({"racks": [1600, 600], "armory": [1600, 600],
+                                                  "go_storehouse__training_yard": [_zz_ex["x"], _zz_ex["y"]]})
         _zz_store["shapes"] = {"racks": _zz_one, "armory": _zz_one,
                                "go_storehouse__training_yard": [[[_zz_ex["x"] - 40, _zz_ex["y"] - 40], [_zz_ex["x"] + 40, _zz_ex["y"] - 40],
                                                                  [_zz_ex["x"] + 40, _zz_ex["y"] + 40], [_zz_ex["x"] - 40, _zz_ex["y"] + 40]]]}
-        _zz_store["keep_tile"] = builtins.dict((r[0], "planned, not registered yet") for r in SPOT_PLANNED if r[1] == "storehouse")
+        ## everything else there keeps its button: what is planned, and
+        ## whatever a later package has registered
+        _zz_store["keep_tile"] = builtins.dict((i, "test: keeps its button") for i in
+                                               builtins.set(r[0] for r in SPOT_PLANNED if r[1] == "storehouse")
+                                               | builtins.set(h["id"] for h in HOT_SPOTS if h["place"] == "storehouse" and not builtins.str(h["id"]).startswith("zz"))
+                                               if i not in _zz_store["shapes"])
         zzc_layout("hot_storehouse", _zz_store)
         _zz_pp = hot_place_points("storehouse")
         check(_zz_pp["racks"] == _zz_pp["armory"] and hot_validate() == [],
@@ -1913,8 +2099,11 @@ label zz_smoke:
         zzc_d60()
         _zz_room = rule_layout("hot_dorm")
         _zz_room_real = rule_layout("hot_dorm")
+        _zz_room_row = ART_PICTURES.get("your_room")
+        _zz_room.pop("for_rev", None)
         _zz_room["shapes"] = {"computer": [[[400, 550], [480, 550], [480, 630], [400, 630]]]}
         zzc_layout("hot_dorm", _zz_room)
+        zzc_art(your_room=None)
         _zz_a = hot_shapes_for("dorm")
         zzc_art(dorm={"rev": 2})
         _zz_b = hot_shapes_for("dorm")
@@ -1922,7 +2111,7 @@ label zz_smoke:
         _zz_c = hot_shapes_for("dorm")
         check(_zz_a == {} and _zz_b == {} and builtins.list(_zz_c) == ["computer"] and art_stem("dorm") == "your_room",
               "I: My Room is shaped by its picture's file stem: a manifest row for your_room at revision 2 shapes it, and a row named dorm does not (K1)")
-        zzc_art(your_room=None)
+        zzc_art(your_room=_zz_room_row)
         zzc_layout("hot_dorm", _zz_room_real)
 
         ## -- the Courtyard with buttons, as today (the manifest at revision 1): what a shaped one is compared with
@@ -1990,6 +2179,18 @@ label zz_smoke:
               == ["go_courtyard__training_yard", "go_courtyard__gate", "go_courtyard__dorm_yard", "go_courtyard__school_yard"],
               "I: where two shapes of one layer overlap the smaller takes the click (the gate's over the Training Yard's); the larger is drawn first and a hotspot with no shape last",
               [zzc_at(1420, 930), zzc_at(1500, 930), [h["id"] for h in hot_layer_rows("courtyard", False, hot_shape_rows("courtyard"))]])
+        ## the HUD's row: a traced shape may reach under the date and the
+        ## chips, and takes no pointer there
+        zzc_d60(shapes={"go_courtyard__dorm_yard": ZZC_SHAPES["go_courtyard__dorm_yard"] + [[[600, 0], [700, 0], [700, 160], [600, 160]]]})
+        _zz_top = [zzc_at(650, y) for y in (20, 60, HOT_SHAPE["top"] - 1, HOT_SHAPE["top"] + 1, 130)]
+        _zz_topbox = zz_rect("sb_place", "hotshape_go_courtyard__dorm_yard")
+        zzc_d60()
+        zz_render(0.2)
+        check(HOT_SHAPE["top"] == 92 and _zz_top == [None, None, None, "hotshape_go_courtyard__dorm_yard", "hotshape_go_courtyard__dorm_yard"]
+              and _zz_topbox is not None and _zz_topbox[1] == 0 and all(HOT_SHAPE["top"] <= lane[1] for lane in HOT_LANES)
+              and HOT_SHAPE["top"] < HOT_BOUNDS[1] - HOT_SIZE // 2,
+              "I: a shape that reaches into the HUD's row takes no pointer there (above y %d, HOT_SHAPE's top) and takes it just below; no hotspot's point can be that high"
+              % HOT_SHAPE["top"], (_zz_top, _zz_topbox))
         ## the pointer itself on a shape
         _zz_how = zzc_point(1640, 730, "hotshape_spot_vend")
         note("I: the pointer on a shape", {"pointer": "the window took the pointer: the real hover was read", "focus": "the window was not in front and took no pointer: the engine's own pick at that point (the shape) was focused instead",
@@ -2061,10 +2262,12 @@ label zz_smoke:
         zzc_unfocus()
         ZZC_DIM[0] = ""
         HOT_DIM.clear()
+        HOT_DIM.update(ZZC_HOLD["dim"])
         ## an action the night has shut: none of the Courtyard's is (walking
         ## is free and the machine has no cost), so the Library is shaped
         ## for it, as the overlay that shapes every place shapes it
         _zz_lib_row = ART_PICTURES.get("library")
+        _zz_lib_before = hot_shapes_for("library")
         zzc_art(library={"rev": 2, "kind": "composed"})
         _zz_lib_real = zzc_squares("library")
         zzc_alone("library", "Night")
@@ -2086,8 +2289,8 @@ label zz_smoke:
         zzc_unfocus()
         zzc_layout("hot_library", _zz_lib_real)
         zzc_art(library=_zz_lib_row)
-        check(hot_shapes_for("library") == ({} if not ZZC_SHAPED_TREE else hot_shapes_for("library")) and hot_validate() == [],
-              "I: (the Library put back)", hot_validate())
+        check(hot_shapes_for("library") == _zz_lib_before and hot_validate() == [],
+              "I: (the Library put back: its shapes are what they were before the test)", hot_validate())
         zzc_alone("courtyard")
         zzc_unfocus()
 
@@ -2337,7 +2540,10 @@ label zz_smoke:
         persistent.show_names = ZZC_HOLD["pers"]
         store.schedule_overrides = {}
         zzc_back()
-        check(hot_shapes_for("courtyard") == ({} if not ZZC_SHAPED_TREE else hot_shapes_for("courtyard")) and hot_validate() == [] and HOT_DIM == {},
-              "I: (every table put back)", hot_validate())
+        zzc_court_back()
+        check(hot_shapes_for("courtyard") == ZZC_HOLD["shapes0"] and hot_validate() == [] and HOT_DIM == ZZC_HOLD["dim"]
+              and len(HOT_SPOTS) == ZZC_HOLD["n_spots"] and "spots" not in ZZC_HOLD,
+              "I: (every table put back: the Courtyard's shapes, the dim table and the hotspots are what they were before the section)",
+              (hot_validate(), HOT_DIM, len(HOT_SPOTS), ZZC_HOLD["n_spots"]))
 
     $ finish()

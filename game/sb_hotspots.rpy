@@ -172,7 +172,8 @@ init -5 python:
     HOT_SHAPE = builtins.dict(
         polys=(1, 3), points=(3, 60), area_min=HOT_SIZE * HOT_SIZE, area_max=0.4, buried_max=0.5, grid=4,
         color="#fff0cc", wash=0.30, edge=0.85, dim=0.4, names=0.5,
-        blur=9, line=2)
+        blur=9, line=2,
+        top=92)     # the HUD's row: above this y a shape takes no pointer (hot_shape_hit)
     HOT_LOOK_KEYS = ("color", "wash", "edge", "dim", "names")
     HOT_LOOK_FILE = "hot_look"      # game/layout/hot_look.json
 
@@ -658,6 +659,75 @@ init -5 python:
         elif keep:
             out.append("keep_tile means nothing in a file that holds no shapes%s" % where)
         return out
+
+    def hot_shape_layers(place, shapes, points, front, limits, size):
+        """What the two LAYERS add to hot_shape_findings, for the shapes of
+        one place: a list of sentences, each naming the id it is about; []
+        when nothing is.
+
+        hot_shape_count reads "on top" by area alone, which is how the
+        shapes of ONE layer lie. The game draws two layers: every shape in
+        `front` (the ids of the hotspots registered front or standalone) is
+        above every other shape, whatever their sizes. So, for a shape that
+        is not in front:
+
+          - its hotspot's point must not lie inside a front shape (a front
+            shape that is also the smaller one is hot_shape_findings' own
+            "under the smaller shape");
+          - no more than limits["buried_max"] of it may lie under the front
+            shapes and the smaller shapes of its own layer together (when
+            the smaller shapes alone bury it, hot_shape_findings has said
+            so and nothing is added).
+
+        Only well-formed shapes are read (any other has its own finding),
+        and nothing is read between two hotspots at one point. `shapes`,
+        `points`, `limits` and `size` are hot_shape_findings'."""
+        out = []
+        if not isinstance(shapes, builtins.dict):
+            return out
+        where = " (hot_%s.json)" % place
+        p_lo, p_hi = limits["polys"]
+        n_lo, n_hi = limits["points"]
+        grid = limits["grid"]
+        good = {}
+        for hid in shapes:
+            shape = shapes[hid]
+            if (isinstance(shape, (builtins.list, builtins.tuple)) and p_lo <= len(shape) <= p_hi
+                    and all(hot_shape_poly(poly) and n_lo <= len(poly) <= n_hi
+                            and all(0 <= p[0] <= size[0] and 0 <= p[1] <= size[1] for p in poly)
+                            and not hot_shape_crossed(poly) for poly in shape)):
+                good[hid] = shape
+        order = hot_shape_order(good)
+        if not any(hid in front for hid in order) or all(hid in front for hid in order):
+            return out
+        cells = {}
+        for hid in order:
+            cells[hid] = hot_shape_cells(good[hid], size, grid)[0]
+        for hid in sorted(good):
+            if hid in front:
+                continue
+            n = order.index(hid)
+            pt = points.get(hid)
+            small = frozenset()
+            above = frozenset()
+            for m, other in enumerate(order):
+                if other == hid:
+                    continue
+                po = points.get(other)
+                if pt is not None and po is not None and pt[0] == po[0] and pt[1] == po[1]:
+                    continue
+                if m < n:
+                    small = small | cells[other]
+                if other in front:
+                    above = above | cells[other]
+                    if m > n and pt is not None and hot_shape_inside(good[other], pt[0], pt[1]):
+                        out.append("shape %r: its hotspot's point (%d, %d) is under the front shape %r%s" % (hid, pt[0], pt[1], other, where))
+            mine = cells[hid]
+            most = limits["buried_max"] * len(mine)
+            if mine and len(mine & (above | small)) > most and not len(mine & small) > most:
+                out.append("shape %r: %d%% of it is under front shapes and smaller ones (at most %d%%)%s"
+                           % (hid, 100.0 * len(mine & (above | small)) / len(mine), 100 * limits["buried_max"], where))
+        return out
     ## <<< hot_shape: plain Python, the same text in tools/check_layout.py (end)
 
     def hot_shape_size():
@@ -765,14 +835,20 @@ init -5 python:
         """D60. Lint findings for the shapes of one place's sidecar (7.3,
         "The rules"); [] for a sidecar that holds neither "shapes" nor
         "keep_tile". The rules are read whatever the picture's revision:
-        the shapes of a room redone in place wait in its file."""
+        the shapes of a room redone in place wait in its file. Two
+        readings: each shape and the shapes of one layer among themselves
+        (hot_shape_findings), then the two layers (hot_shape_layers: a
+        front shape is above every back one, whatever their sizes)."""
         data = rule_layout("hot_" + str(place))
         if "shapes" not in data and "keep_tile" not in data:
             return []
         known = builtins.set(h["id"] for h in HOT_SPOTS if h["place"] == place) | builtins.set(hot_planned(place))
         need = builtins.set(hid for hid in known if not str(hid).startswith("zz"))
-        return hot_shape_findings(place, data.get("shapes", builtins.dict()), data.get("keep_tile"), hot_place_points(place),
-                                  known, need, HOT_SHAPE, hot_shape_size())
+        front = builtins.set(h["id"] for h in HOT_SPOTS if h["place"] == place and h["front"])
+        shapes = data.get("shapes", builtins.dict())
+        points = hot_place_points(place)
+        return (builtins.list(hot_shape_findings(place, shapes, data.get("keep_tile"), points, known, need, HOT_SHAPE, hot_shape_size()))
+                + builtins.list(hot_shape_layers(place, shapes, points, front, HOT_SHAPE, hot_shape_size())))
 
     ## Drawing a shaped place (D60) --------------------------------------------------
 
@@ -875,8 +951,13 @@ init -5 python:
         with the first three: a top-level function, so that it pickles).
         (x, y) is a point in the button's own box. True inside one of the
         shape's polygons, unless the room's foreground cut-out `fg` (a back
-        shape's; None for a front one) covers the point."""
+        shape's; None for a front one) covers the point, or the point is in
+        the HUD's row (above HOT_SHAPE["top"]): the date and the chips are
+        drawn there over the picture, and a traced shape, unlike a button,
+        may reach under them."""
         px, py = x + box[0], y + box[1]
+        if py < HOT_SHAPE["top"]:
+            return False
         if not hot_shape_inside(shape, px, py):
             return False
         return not (fg and hot_fg_covers(fg, px, py))
@@ -1154,7 +1235,8 @@ init -5 python:
 ##     with its name on a plate against its square, while names are shown;
 ##   - within a layer the smaller shape is drawn last, so it is on top; a back
 ##     shape is under the people, under a painted pose's box and (by its focus
-##     test) under the room's foreground cut-out;
+##     test) under the room's foreground cut-out; no shape takes the pointer
+##     in the HUD's row (above HOT_SHAPE["top"]);
 ##   - a visible hotspot with no shape (a keep_tile row, a harness's own) is
 ##     drawn as its button, exactly as in a place with buttons, above the
 ##     shapes.

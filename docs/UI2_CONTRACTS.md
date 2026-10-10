@@ -143,7 +143,7 @@ layout has changed since the dump was written: run tools/smoke.sh u2_dump`.
 
 | key | shape |
 |---|---|
-| `hot_shape` | `HOT_SHAPE`: the limits `polys [1, 3]`, `points [3, 60]`, `area_min 5184`, `area_max 0.4`, `buried_max 0.5`, `grid 4`, and the light's default look `color`, `wash`, `edge`, `dim`, `names`, `blur`, `line` |
+| `hot_shape` | `HOT_SHAPE`: the limits `polys [1, 3]`, `points [3, 60]`, `area_min 5184`, `area_max 0.4`, `buried_max 0.5`, `grid 4`, the HUD's row `top 92` (above that y no shape takes the pointer), and the light's default look `color`, `wash`, `edge`, `dim`, `names`, `blur`, `line` |
 | `hot_look`, `look_keys` | the look in force (`HOT_SHAPE`'s with what `hot_look.json` replaces), and the keys that file may hold |
 | `shapes` | `{place: {id: [polygon, ...]}}`: what each `hot_` sidecar holds under `shapes`, as written, whatever the picture's revision; a place with none is left out |
 | `keep_tile` | `{place: {id: reason}}` |
@@ -449,6 +449,7 @@ with `(shadow lean in px, shadow stretch)` last; four means `(0, 1.0)`.
 |---|---|
 | `light_row(loc, variant=None)` | the measured row of `light_<loc>.json` as a tuple of four or six, when well formed and fresh; else None |
 | `light_for_place(loc, per)` | the measured row for the picture showing (its hour picture's row; the day row in the Morning, at Noon and in the Afternoon), else the tables as before. **In an Evening or a Night that is only a tint the general row stays** until U3's `light_follow` |
+| `light_follow(row, grade)` | not there in wave 0; U3 adds it to `lighting.rpy` (plan 3.2, 6.2 row 2). **Its presence in the store is what marks U3's light**: while there is no such function `u2_contracts` asserts the general row at a tinted hour; once there is, it notes so and asserts only that `light_for_place` answers a well-formed row there that is neither the night picture's measured row nor the day row unchanged. So U3 changes the tinted hour's light in the same commit that adds `light_follow`, under that name |
 | `light_for_bg(name)` | `light.json`'s row, then `BG_LIGHT`, then a campus picture's measured row or `PLACE_LIGHT`; a story picture's variant with no row keeps its base's |
 
 ### B8. The room's data (`view_stage.rpy`)
@@ -473,10 +474,10 @@ was.
 | symbol | file | returns |
 |---|---|---|
 | `path_keep_clear(loc)` | `room_paths.rpy` | a list of `(x, y)`: the place's own registered hotspots where they sit now (the sidecar applied), each point once; ids that begin `zz` (a harness's) are left out |
-| `path_faces(to)` | `room_paths.rpy` (a stub: `[]`; U2) | a list of person keys, three at most |
+| `path_faces(to)` | `room_paths.rpy` (a stub: `[]`; U2) | a list of person keys, three at most (`hot_faces` cuts a longer list to its first three, and `u2_contracts` asserts that) |
 | `path_hub`, `path_exits`, `path_neighbours` | | unchanged. `path_validate`'s spacing rules read each exit's applied point |
 | `register_hotspot`, `hot_spots_for` (the same eleven keys), `hot_covers`, `screen hot_layer(loc, front=False)` | `sb_hotspots.rpy` | unchanged |
-| `hot_set_dim(hot_id, fn)` | | None. `fn` is the NAME of a store function that returns a reason (a str) or `""`. While it gives a reason `hot_layer` draws the hotspot at `HOT_DIM_ALPHA` (0.45), its hover label says the reason and pressing it does nothing. (Separate from `register_hotspot`, whose signature is frozen.) **Only a hotspot `hot_spots_for` returns is drawn**: for an action hotspot U5 keeps the place action offered while it is dim (`hot_spots_for` drops an action hotspot whose place action is not offered), and the action's own label must refuse too, since the tile for the same action in the icon column is not dimmed by `hot_layer`. U5 names the card table's |
+| `hot_set_dim(hot_id, fn)` | | None. `fn` is the NAME of a store function that returns a reason (a str) or `""`. While it gives a reason `hot_layer` draws the hotspot at `HOT_DIM_ALPHA` (0.45), its hover label says the reason and pressing it does nothing. (Separate from `register_hotspot`, whose signature is frozen.) **Only a hotspot `hot_spots_for` returns is drawn**: for an action hotspot U5 keeps the place action offered while it is dim (`hot_spots_for` drops an action hotspot whose place action is not offered), and the action's own label must refuse too, since the tile for the same action in the icon column is not dimmed by `hot_layer`. U5 names the card table's. `HOT_DIM` is `{hotspot id: function name}`: `u2_contracts` keeps the table as it finds it and puts it back, and asserts nothing about which hotspots are in it besides the vending machine's absence |
 | `hot_dim_reason(h)`, `hot_planned(place=None)`, `hot_name(h)`, `hot_faces(h)` | | a str; `{id: row}`; a str; a list of person keys |
 | `hot_validate()` | | accepts a sidecar point for an id planned for that place; refuses one that is neither registered nor planned; reads the shape rules of B15 |
 | `hot_shapes_for(loc)`, `hot_tip_rect(key)`, `HOT_SHAPE` | | D60: B15 |
@@ -514,7 +515,7 @@ else, the opposite side when the label would leave the screen).
 | `hint_seen` | | `default hint_seen = set()`: the one new saved variable. Changed only by a function that then calls `renpy.retain_after_load()` | U4 |
 | `screen hint_layer()` | | empty | U4 |
 | `map_district_people(key)` | `ui_map.rpy` | `[]` (three at most) | U2 |
-| `view_asleep(loc)` | `view_stage.rpy` | `[]`; when filled: a list of `(who, patch)`, `patch` a pose dict `dict(image, box)`. `screen view_stage` lays each on the room before the people | U3 |
+| `view_asleep(loc)` | `view_stage.rpy` | `[]`; when filled: a list of `(who, patch)`, `patch` a pose dict `dict(image, box)`. `screen view_stage` lays each on the room before the people, and a patch is no button (`u2_contracts` asserts both with a test function in its place) | U3 |
 | `screen view_others(loc, who)` | `view_stage.rpy` | empty | U3 |
 | `night_club_bg(key)` | `sb_night.rpy` (final) | an image name: `"bg club"` when that image exists, else `night_bg(key)` | U9 adds the one line that calls it |
 
@@ -525,6 +526,42 @@ empty and neither `bath_ok()` nor `pool_ok()` is true; once they are filled it
 notes "the stub-only check is skipped" and calls neither, because a filled
 screen waits for its own input. U5 therefore fills `TKY_LINES` in the same
 commit as either screen.
+
+**`label tky_people` returns at once while `smoke_autoplay` is true** (plan
+7.6). `u2_contracts` rides to Harajuku at Sunday Noon under `autoplay()`, the
+one hour a filled `tky_here` finds Nobara and Maki there; a `tky_meet` that
+opened on that ride would hold every package's standard set until its
+watchdog.
+
+**What else `u2_contracts` does so that it goes on passing** (it is not edited
+after wave 0, so it depends on nothing the wave is planned to add):
+
+- the Courtyard is its test place. Wherever it stands there it lays a test
+  sidecar of today's five points (the four exits and `spot_vend`) and nothing
+  else, so the real `hot_courtyard.json` may come to hold moved points, `tips`,
+  `shapes` and a `for_rev`; and where it counts the Courtyard's hotspots
+  (section B's spacing test, section E's sleeper, all of section I) it takes
+  every other row registered there out of `HOT_SPOTS` for the test and puts it
+  back. **So `gateway` and `straw_posts`, or anything else U4 registers in the
+  Courtyard, change nothing in it.** The ids `go_courtyard__<to>` and
+  `spot_vend` must stay registered there;
+- section A's four gates are read on test rows laid over an empty manifest,
+  whatever rows `pictures.json` holds by then, and with `light_classroom.json`
+  taken as absent;
+- the stub-only checks stand aside, each with a NOTE, once the stub is filled:
+  an empty `TKY_LINES` (the two screens), `bath_ok()` or `pool_ok()` (the
+  baths, the pool, the seven labels), a store function `light_follow` (B7);
+- `view_asleep`, `path_faces`, `path_locked`, `view_person_rects`,
+  `view_stage_rows` and `view_fg_path` are replaced by test functions for one
+  check each and put back: each must stay a plain store function that is looked
+  up by name when it is called.
+
+It was run, as it is at this merge, over a wave-1 stand-in (the 59 planned
+ids registered, the baths, the pool and Tokyo filled, the card table's dim
+function named, `light_follow` in, `path_faces` and `map_district_people`
+filled) and over a batch-0 stand-in (the Courtyard and the Library shaped in
+their real sidecars with moved points, `tips` and a `for_rev`, every picture
+at revision 2): RESULT PASS in each.
 
 **Defaults that stay.** `hud_day_card`'s `n` and `weekday`, `hot_layer`'s
 `front` and `sb_map`'s `layer` and `area` keep a default (`u2_contracts`
@@ -651,7 +688,7 @@ picture is at revision 2 or later: `art_rev(art_stem(loc))`, the stem being
 |---|---|
 | `hot_shapes_for(loc)` | `{hotspot id: [polygon, ...]}`, a polygon a list of `[x, y]`; `{}` for a place that is not shaped. A fresh copy each call. An exit's id is `go_<from>__<to>` |
 | `hot_tip_rect(key)` | `(x, y, w, h)`: the 72 px square at a shaped hotspot's point, for either of its tooltip keys, `hot_<id>` and `hotshape_<id>`; `None` for any other key, for a hotspot with no shape and for one that is not showing |
-| `HOT_SHAPE` | one dict: the limits (`polys (1, 3)`, `points (3, 60)`, `area_min 5184`, `area_max 0.4`, `buried_max 0.5`, `grid 4`) and the light's default look (`color "#fff0cc"`, `wash 0.30`, `edge 0.85`, `dim 0.4`, `names 0.5`, `blur 9`, `line 2`). `HOT_LOOK_KEYS` are the five `hot_look.json` may replace |
+| `HOT_SHAPE` | one dict: the limits (`polys (1, 3)`, `points (3, 60)`, `area_min 5184`, `area_max 0.4`, `buried_max 0.5`, `grid 4`), the HUD's row (`top 92`) and the light's default look (`color "#fff0cc"`, `wash 0.30`, `edge 0.85`, `dim 0.4`, `names 0.5`, `blur 9`, `line 2`). `HOT_LOOK_KEYS` are the five `hot_look.json` may replace |
 | `hot_look()` | the look in force, a dict of those five keys |
 | `hot_keep_tile(loc)` | `{id: reason}` |
 | `hot_name_rect(h)` | `(x, y, w, h)` of a shaped hotspot's name plate while names are shown; `h` is a `hot_spots_for` row. The side is `icon_tip_side`'s, which reads the `tips` of `hot_<here>.json`: it answers for a hotspot of **the place I stand in** (a tool that asks about another place sets `here` first, as `u2_dump` does) |
@@ -673,8 +710,9 @@ picture is at revision 2 or later: `art_rev(art_stem(loc))`, the stem being
   bounding box, with the same action and the tooltip `(text, "hotshape_<id>")`.
   Its focus mask is `renpy.partial(hot_shape_hit, shape, box, fg)`: inside one
   of the polygons, and for a back shape not where the room's foreground cut-out
-  is opaque. `keyboard_focus False`. So a shaped place holds one more focusable
-  widget for each shaped hotspot;
+  is opaque; and never above `HOT_SHAPE["top"]` (y 92), the HUD's row.
+  `keyboard_focus False`. So a shaped place holds one more focusable widget for
+  each shaped hotspot;
 - **the light**, drawn only while it is lit: three layers of the class
   `hot_ShapeLight` (a dark rim, a wash added to the picture, the outline), each
   drawn from the polygons at that moment. Lit at strength 1.0 while the tooltip
@@ -695,6 +733,25 @@ picture is at revision 2 or later: `art_rev(art_stem(loc))`, the stem being
 `hover_label` opens against `hot_tip_rect(key)` when that answers, else beside
 the focused button as before, and draws `hot_tip_faces(key)` after the name.
 
+**A shape under a panel.** A button is kept inside `HOT_BOUNDS` and out of
+`HOT_LANES`; a traced shape (a roofline, a path to the picture's edge) is only
+asked to stay inside the picture, so it may lie under what the HUD draws over
+the place view. What was chosen:
+
+- **built here:** no shape takes the pointer in the HUD's row, above y 92
+  (`HOT_SHAPE["top"]`; the lanes begin there and no hotspot's point can be that
+  high). Resting the pointer on the date or between the chips lights nothing
+  and a click there walks nowhere;
+- **handed on, not built:** a toast, the objective banner (`HOT_LANES`), the
+  arrival caption and "Nobody here right now." are drawn over the picture for a
+  few seconds and are not buttons, so a shape under one still takes the pointer
+  there. `check_layout.py` (U0d3) REPORTS, and does not refuse, the cells of a
+  shape that lie above `top` (they are dead) and inside `HOT_LANES` (a toast or
+  the banner may cover them); U4, which owns `ui_hud.rpy`, decides whether a
+  toast and the banner take the pointer (a `button` with `NullAction()`, or a
+  `focus_mask True` frame). Where nothing is drawn over the picture (between
+  the tiles of the icon column) the picture is clicked, as it looks.
+
 **The rules** (`hot_validate`, in lint; the same text for `check_layout.py`).
 A sidecar that holds `shapes` or `keep_tile` is read whatever its picture's
 revision. Each finding names its id and ends `(hot_<place>.json)`:
@@ -711,6 +768,8 @@ revision. Each finding names its id and ends `(hot_<place>.json)`:
 | its hotspot's point inside it | `is outside its own shape`; `its hotspot has no point` for a planned id with no point under `spots` |
 | and under no smaller shape | `is under the smaller shape '<id>'` |
 | at most half of it under smaller shapes, by cells | `N% of it is under smaller shapes` |
+| **the two layers** (`hot_shape_layers`): a back hotspot's point is under no FRONT shape, whatever the two sizes | `is under the front shape '<id>'` (a front shape that is also the smaller one is the row above) |
+| and at most half of a back shape is under front shapes and smaller back ones together | `N% of it is under front shapes and smaller ones` (said only when the smaller ones alone do not bury it) |
 | its id is registered in the place or planned for it | `no hotspot or exit of that id` |
 | shaped all at once: every exit and hotspot registered or planned there has a shape or a `keep_tile` reason; ids that begin `zz` are left out | `<place> is shaped, and '<id>' has no shape and is not under keep_tile` |
 | `keep_tile`: a known id, a reason in words, no shape as well, and not without `shapes` | four sentences that begin `keep_tile` |
@@ -719,22 +778,38 @@ revision. Each finding names its id and ends `(hot_<place>.json)`:
 storehouse's `racks` and `armory`) carry the same polygons, and nothing is read
 between the two. Cells are 4 px squares counted by their centres.
 
+"Front" is the game's front layer: a hotspot registered `front=True` or
+`standalone=True` (the `front` flag of its row in the dump's `hotspots`; an
+exit is never in front). The
+game stacks by layer first and by size only within a layer, so the first ten
+rows, which read "on top" by area alone, are right for the shapes of one layer
+and `hot_shape_layers` adds what the layers change. It errs one way only: a
+front shape whose point lies under a smaller BACK shape is still refused by the
+row above, though the front one would take that click (the back shape would be
+dead there, so the sidecar is wrong either way).
+
 **The one text for both validators.** The functions between the lines
 `## >>> hot_shape: ...` and `## <<< hot_shape: ...` of `game/sb_hotspots.rpy`
 are plain Python that names nothing of Ren'Py and nothing else of the game
 (`import builtins` is their one import): `hot_shape_num`, `hot_shape_poly`,
 `hot_shape_area`, `hot_shape_box`, `hot_shape_inside`, `hot_shape_turn`,
 `hot_shape_between`, `hot_shape_meet`, `hot_shape_crossed`, `hot_shape_cells`,
-`hot_shape_order`, `hot_shape_count` and `hot_shape_findings(place, shapes,
-keep, points, known, need, limits, size)`, which returns the sentences above.
+`hot_shape_order`, `hot_shape_count`, `hot_shape_findings(place, shapes,
+keep, points, known, need, limits, size)`, which returns the first sentences
+above, and `hot_shape_layers(place, shapes, points, front, limits, size)`,
+which returns the two of the layers. Lint is the two lists, one after the
+other (`hot_shape_validate`), and `check_layout.py` calls both the same way,
+`front` being the ids whose dump row says `front`.
 `tools/check_layout.py` (U0d3) carries that text with the block's four leading
 spaces removed, or reads it from the file as
 `tools/smoke/make_shape_overlay.py` does (`shape_block()`,
 `shape_functions()`). **The three test shapes** are in
 `tools/smoke/hot_shape_cases.json` with their answers (`expect`: area, cells,
-twice, buried, point, under; `order`; `findings`): `u2_contracts` asserts them
-in the game and `python3 tools/smoke/make_shape_overlay.py --selftest` in plain
-Python.
+twice, buried, point, under; `order`; `findings`; and `layers`: with the ids of
+`layers.front` in the front layer, `hot_shape_layers` answers
+`layers.findings`): `python3 tools/smoke/make_shape_overlay.py --selftest`
+asserts all of them in plain Python, and `u2_contracts` asserts the first
+three in the game and the layers' two rules on the Courtyard.
 
 **The overlay that shapes every place** is generated, never committed:
 
@@ -757,6 +832,13 @@ comes back at the same depth, day, hour and place with the place view up, the
 shapes answer at their points, and neither `load_recover` nor `return_recover`
 runs. The state the night shuts is asserted there on the Library's `stacks`
 (shaped by a square round each of the Library's points, at Night).
+
+**The real pointer.** `u2_contracts` rests the pointer on a shape with
+`renpy.set_mouse_pos`. The window takes it only when it is the frontmost
+window; otherwise the harness focuses the widget the engine itself picks at
+that point and says so in its NOTE "the pointer on a shape". Every run since
+the second sitting's bare one took the second path, so the real pointer over a
+shape is the first thing the owner tries on the Courtyard at batch 0.
 
 **Not built** (plan 7.3, asked at checkpoint B): a shimmer on walking in; a
 thing staying clickable while someone stands on its point; a cut-out picture

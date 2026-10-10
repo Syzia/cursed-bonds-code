@@ -76,8 +76,12 @@
 ## Added by the scaffold's second sitting (D60, "the picture is what is
 ## clicked"; game/sb_hotspots.rpy):
 ##   hot_shape     HOT_SHAPE: the limits both validators read (polys, points,
-##                 area_min, area_max, buried_max, grid) and the light's
-##                 default look (color, wash, edge, dim, names, blur, line)
+##                 area_min, area_max, buried_max, grid), the HUD's row
+##                 (top: above that y no shape takes the pointer) and the
+##                 light's default look (color, wash, edge, dim, names, blur,
+##                 line). Whether a hotspot is in the front layer, which the
+##                 layers' rule reads (hot_shape_layers), is the `front` of
+##                 its row under hotspots.
 ##   hot_look      the look in force: HOT_SHAPE's, with what
 ##                 game/layout/hot_look.json replaces; look_keys: the keys
 ##                 that file may hold
@@ -348,7 +352,8 @@ label zz_smoke:
               "the scaffold's keys are in it: variants_planned (%d), keep_clear, tips, faces (%d people), world, standins, names_key"
               % (len(_zz_d["variants_planned"]), len(_zz_d["faces"])))
         check(builtins.sorted(_zz_d["hot_shape"]) == builtins.sorted(HOT_SHAPE)
-              and all(k in _zz_d["hot_shape"] for k in ("polys", "points", "area_min", "area_max", "buried_max", "grid"))
+              and all(k in _zz_d["hot_shape"] for k in ("polys", "points", "area_min", "area_max", "buried_max", "grid", "top"))
+              and all(isinstance(h["front"], bool) for v in _zz_d["hotspots"].values() for h in v)
               and builtins.sorted(_zz_d["hot_look"]) == builtins.sorted(_zz_d["look_keys"]) == builtins.sorted(HOT_LOOK_KEYS)
               and builtins.sorted(_zz_d["shapes"]) == builtins.sorted(l for l in LOC_ORDER if rule_layout("hot_" + l).get("shapes"))
               and all(_zz_d["shapes"][l] == rule_layout("hot_" + l)["shapes"] for l in _zz_d["shapes"])
