@@ -1,0 +1,633 @@
+{
+ "about": [
+  "How tools/art/staged/early/campus_for_batch3.json was made, on 11 Oct 2026, by the script make_batch3.py (kept in the session's scratchpad, ring2/). It is campus_for_batch2_third.json with the second ring fixed from the owner's chosen pictures (O36): for each place its exits were read off the chosen picture by eye, as points in the 1920x1080 frame, and check_campus.fix_from_layout was called with them (rev 2, the date the owner chose, the chosen render's name, kind composed, batch 2). The points are kept as `first_guess` in the record's `pictures`, as the first ring's are.",
+  "THE COPY IS NOT THE RECORD. tools/bgs/campus.json is untouched; the real rows are written at each place's layout sitting.",
+  "No prompt was written to a file, no workflow was written and nothing was copied to ComfyUI: the table below was built in memory."
+ ],
+ "made_from": {
+  "file": "tools/art/staged/early/campus_for_batch2_third.json",
+  "sha256": "cafe3e0b04d64eb59c6443a3d789894e37bd17b46fd4a2571673ab4862830ae1"
+ },
+ "places": {
+  "staff_yard": {
+   "picture": "~/Desktop/JJK Game images/ui2/early/chosen/staff_yard_1920.png",
+   "picture_sha256": "a12a18f156c3745c2177e3a73dfa8c5d93fd2eef5c52cedbd22d2ea1950becd4",
+   "render": "ui2_staff_yard_b_00001_.png",
+   "render_named_in": "art_2_early.json chosen.staff_yard (version b of the first go, art_2.json)",
+   "call": "check_campus.fix_from_layout(record, 'staff_yard', spots, rev=2, date='2026-10-07', render='ui2_staff_yard_b_00001_.png', kind='composed', batch='2')",
+   "spots": {
+    "gojo_office": [
+     612,
+     655
+    ],
+    "office": [
+     960,
+     480
+    ],
+    "utahime_office": [
+     1350,
+     625
+    ],
+    "teachers_lounge": [
+     1680,
+     610
+    ],
+    "dorm_yard": [
+     140,
+     960
+    ],
+    "training_yard": [
+     1720,
+     960
+    ]
+   },
+   "how_sure": {
+    "gojo_office": "the door of the small detached office, at the right-hand end of its front. Sure of the door. It is 28 px left of the line between the left and the middle third (x 640); the building itself spans about x 240 to 780 and its middle (about x 510) is plainly on the left.",
+    "office": "the closed doors of the principal's hall at the top of the steps. Sure.",
+    "utahime_office": "the paper screens of the office pavilion's front, right of its round window. Sure of the building; no separate door is painted, so the point is on the screens. The pavilion spans about x 1140 to 1520 and straddles the line at x 1280: the round window (about x 1250) is in the middle third, the screens and the building's middle (about x 1335) on the right.",
+    "teachers_lounge": "the entrance of the two-storey house, the doorway with the dark red curtain. Sure of the house; fairly sure the curtained doorway is its door.",
+    "dorm_yard": "the paved path that leaves the frame at the bottom left. Sure of the path; that it is the way to the garden is the record's word (the same path also runs up to the small office's door).",
+    "training_yard": "the walled flight of steps going down at the bottom right. Sure."
+   },
+   "against_the_proposals_before_fixing": "no disagreement (check_campus.check_exits, strict)",
+   "returned": {
+    "rewritten": [],
+    "moved": [],
+    "off_plan": []
+   }
+  },
+  "gate": {
+   "picture": "~/Desktop/JJK Game images/ui2/early/chosen/gate_1920.png",
+   "picture_sha256": "5267988f77a1b8611383c7f082fddfc3103e9884518b7becafafa283e3ae7312",
+   "render": "ui2_gate3_b_00001_.png",
+   "render_named_in": "art_2_early.json chosen.gate (the third go's B, art_2s.json)",
+   "call": "check_campus.fix_from_layout(record, 'gate', spots, rev=2, date='2026-10-07', render='ui2_gate3_b_00001_.png', kind='composed', batch='2')",
+   "spots": {
+    "courtyard": [
+     960,
+     660
+    ]
+   },
+   "how_sure": {
+    "courtyard": "the open doorway of the gatehouse, on the flagstones seen through it. Sure."
+   },
+   "against_the_proposals_before_fixing": "no disagreement (check_campus.check_exits, strict)",
+   "returned": {
+    "rewritten": [],
+    "moved": [],
+    "off_plan": []
+   }
+  },
+  "trailhead": {
+   "picture": "~/Desktop/JJK Game images/ui2/early/chosen/trailhead_1920.png",
+   "picture_sha256": "9ff6e239ba6cad2b48a68daa610ca1787622f032950f4f239dde36858d766fc8",
+   "render": "ui2_trailhead_sa_b_00001_.png",
+   "render_named_in": "art_2_early.json chosen.trailhead (the third go's path A, version B, art_2s.json)",
+   "call": "check_campus.fix_from_layout(record, 'trailhead', spots, rev=2, date='2026-10-07', render='ui2_trailhead_sa_b_00001_.png', kind='composed', batch='2')",
+   "spots": {
+    "forest": [
+     190,
+     610
+    ],
+    "ridge": [
+     860,
+     400
+    ],
+    "bathhouse": [
+     1345,
+     560
+    ],
+    "riverside": [
+     1700,
+     800
+    ],
+    "dorm_yard": [
+     950,
+     1020
+    ]
+   },
+   "how_sure": {
+    "forest": "the level dirt path that goes in among the cedar trunks at the left. Sure of the path; where exactly it leaves sight is soft (it fades into shadow at about x 150 to 300, y 600).",
+    "ridge": "the stone stairs, about half-way up the hill. Sure.",
+    "bathhouse": "the door of the hot-spring house under its small porch roof. Sure.",
+    "riverside": "the dirt path that runs down the right-hand edge between the bank wall and the trees, beside the river. Fairly sure: the path is plain, the river shows at the right edge beyond the trees; the path also runs on to the bottom right corner (y over 900), and the point is taken higher up so that it stays out of the bottom band.",
+    "dorm_yard": "the stone slabs at the bottom middle. Sure."
+   },
+   "against_the_proposals_before_fixing": "no disagreement (check_campus.check_exits, strict)",
+   "returned": {
+    "rewritten": [],
+    "moved": [],
+    "off_plan": []
+   }
+  }
+ },
+ "hand_edits": [
+  {
+   "row": "building.gate",
+   "key": "look",
+   "was": "a Japanese garden before the gate: still, clear water on either side of the way, crossed by a low flat bridge of timber planks; stepping stones and raked pale gravel; shaped black pines and red maples; stone lanterns standing among low clipped green shrubs; low white plaster garden walls with grey tiled copings; a short broad flight of stone steps up to the gatehouse; nothing stands in the way before the gatehouse, and there is no paved road, no concrete and no wall of stone blocks",
+   "now": "a Japanese garden before the gate: still, clear water on either side of the way, crossed by a low flat bridge of timber planks; stepping stones and raked pale gravel; shaped black pines and red maples; stone lanterns standing among low clipped green shrubs; low white plaster garden walls with grey tiled copings, standing on a base of large fitted stones; a short broad flight of stone steps up to the gatehouse; nothing stands in the way before the gatehouse, and there is no paved road and no concrete",
+   "why": "The chosen gate picture plainly shows the plaster garden wall standing on a base of large fitted stone blocks, on both sides of the gatehouse. The row said 'no wall of stone blocks', and this row becomes a fixed fact of that picture. The denial is taken out and the base is named; nothing else in the look is touched."
+  },
+  {
+   "row": "place.gate",
+   "key": "check[1]",
+   "was": "there is water and a garden before the gate, and no paved road or stone-block wall",
+   "now": "there is water and a garden before the gate, and no paved road",
+   "why": "The same fact in the place's checklist: read against the chosen picture the line would answer 'no' because of the stone-block base under the garden wall."
+  }
+ ],
+ "rows_changed": [
+  {
+   "row": "exit.staff_yard.gojo_office",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.staff_yard.office",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.staff_yard.utahime_office",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.staff_yard.teachers_lounge",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.staff_yard.dorm_yard",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.staff_yard.training_yard",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "place.staff_yard",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "building.staff_yard",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "staff_yard",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.gate.courtyard",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "gate",
+      "rev": 2
+     }
+    ],
+    "order": [
+     2,
+     1
+    ]
+   }
+  },
+  {
+   "row": "place.gate",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "gate",
+      "rev": 2
+     }
+    ],
+    "check": [
+     [
+      "the gatehouse is the one already painted, with nothing standing in front of it",
+      "there is water and a garden before the gate, and no paved road or stone-block wall",
+      "through the gate is the open Courtyard, with no hall"
+     ],
+     [
+      "the gatehouse is the one already painted, with nothing standing in front of it",
+      "there is water and a garden before the gate, and no paved road",
+      "through the gate is the open Courtyard, with no hall"
+     ]
+    ]
+   }
+  },
+  {
+   "row": "building.gate",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "gate",
+      "rev": 2
+     }
+    ],
+    "look": [
+     "a Japanese garden before the gate: still, clear water on either side of the way, crossed by a low flat bridge of timber planks; stepping stones and raked pale gravel; shaped black pines and red maples; stone lanterns standing among low clipped green shrubs; low white plaster garden walls with grey tiled copings; a short broad flight of stone steps up to the gatehouse; nothing stands in the way before the gatehouse, and there is no paved road, no concrete and no wall of stone blocks",
+     "a Japanese garden before the gate: still, clear water on either side of the way, crossed by a low flat bridge of timber planks; stepping stones and raked pale gravel; shaped black pines and red maples; stone lanterns standing among low clipped green shrubs; low white plaster garden walls with grey tiled copings, standing on a base of large fitted stones; a short broad flight of stone steps up to the gatehouse; nothing stands in the way before the gatehouse, and there is no paved road and no concrete"
+    ]
+   }
+  },
+  {
+   "row": "exit.trailhead.forest",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "trailhead",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.trailhead.ridge",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "trailhead",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.trailhead.bathhouse",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "trailhead",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.trailhead.riverside",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "trailhead",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "exit.trailhead.dorm_yard",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "trailhead",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "place.trailhead",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "trailhead",
+      "rev": 2
+     }
+    ]
+   }
+  },
+  {
+   "row": "building.trailhead",
+   "was": "proposed",
+   "now": "fixed",
+   "changed": {
+    "by": [
+     null,
+     {
+      "picture": "trailhead",
+      "rev": 2
+     }
+    ]
+   }
+  }
+ ],
+ "rows_changed_note": "Every row listed was a proposal and is now fixed by its place's picture at rev 2. No fixed fact of the first ring or of any earlier picture changed (the script stops if one does), and nothing changed in sheet, rules, areas, campus_map, waived or waits, nor in the picture rows already there. `about` gained one line. fix_from_layout numbers a place's exits from left to right among the exits it was given points for, so the gate's one exit (the Courtyard, ahead) went from order 2 to order 1; the gate's two `seen` rows (the schoolhouse on the left, order 1; the training hall on the right, order 3) are not exits, were given no point and stay proposals. Order is only compared within one side when a prompt is built, so the prompt does not change; the function does not count this as a rewrite.",
+ "table": [
+  {
+   "place": "office",
+   "name": "Principal's Office",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "k8_before": "Principal's Office cannot be made yet: Staff Building Steps has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_redo_workflow.redo_job(record, {'pictures': {}}, 'office')",
+   "input": [
+    "game/images/bg/office.png"
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "3ee1b11c949662c7d79d600c6826a124003061fc4b1cc8dd2fd53201b385e2eb",
+   "prompt_chars": 1279,
+   "check_prompts": "OK",
+   "record_note": "with a low writing desk and a framed photograph on it as a named addition",
+   "with_the_named_addition": "Refused: Principal's Office has no `allow` row in its keep list (tools/bgs/keep/office.json): the art-install role writes it before the room's batch, and the prompt says exactly what it names"
+  },
+  {
+   "place": "gojo_office",
+   "name": "Gojo's Office",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "k8_before": "Gojo's Office cannot be made yet: Staff Building Steps has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_redo_workflow.redo_job(record, {'pictures': {}}, 'gojo_office')",
+   "input": [
+    "game/images/bg/gojo_office.png"
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "91cbeacc43765784d7ea28dae73e662fb88a63c1a09aaf81cc0aee6e6b842b85",
+   "prompt_chars": 1308,
+   "window_line": "Through the windows: cedars.",
+   "check_prompts": "OK"
+  },
+  {
+   "place": "utahime_office",
+   "name": "Utahime's Office",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "k8_before": "Utahime's Office cannot be made yet: Staff Building Steps has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_redo_workflow.redo_job(record, {'pictures': {}}, 'utahime_office')",
+   "input": [
+    "game/images/bg/utahime_office.png"
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "bc03c1199a9c2b2eb2e0f2f18d82208d608252a72202273ee0581a81b7178816",
+   "prompt_chars": 1329,
+   "window_line": "Through the windows: a small raked gravel garden.",
+   "check_prompts": "OK"
+  },
+  {
+   "place": "teachers_lounge",
+   "name": "Teachers' Lounge",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "k8_before": "Teachers' Lounge cannot be made yet: Staff Building Steps has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_scene_workflow.scene_job(record, {'pictures': {}}, 'teachers_lounge')",
+   "refs": [
+    [
+     "neighbour",
+     "staff_yard",
+     "~/Desktop/JJK Game images/ui2/early/chosen/staff_yard_1920.png"
+    ]
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "e705ea402c41535cfd2e2710635aca6cdcf4772a60d0d4a74d897b3697362a0b",
+   "prompt_chars": 1770,
+   "window_line": "Through the windows: the staff building steps.",
+   "check_prompts": "OK"
+  },
+  {
+   "place": "teachers_dorm",
+   "name": "Teachers' Dormitory",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "k8_before": "Teachers' Dormitory cannot be made yet: Staff Building Steps has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_scene_workflow.scene_job(record, {'pictures': {}}, 'teachers_dorm')",
+   "refs": [
+    [
+     "neighbour",
+     "staff_yard",
+     "~/Desktop/JJK Game images/ui2/early/chosen/staff_yard_1920.png"
+    ]
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "48fdf8e94dffe90eea159d87c6908327255cc67d200c24182e942076ccc4ebd4",
+   "prompt_chars": 1762,
+   "window_line": "Through the windows: a small inner garden.",
+   "check_prompts": "OK"
+  },
+  {
+   "place": "forest",
+   "name": "Forest Trail",
+   "how": "inplace",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ],
+   "k8_before": "Forest Trail cannot be made yet: Mountain Path has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_redo_workflow.redo_job(record, {'pictures': {}}, 'forest')",
+   "input": [
+    "game/images/bg/forest.png"
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "bb68d59d26c2dcd51cfc7f3d9ab0e5cbce28cbbf5be61cf5618ab615afae480a",
+   "prompt_chars": 1205,
+   "check_prompts": "OK"
+  },
+  {
+   "place": "ridge",
+   "name": "Mountain Ridge",
+   "how": "inplace",
+   "batch": "18",
+   "after": [
+    "trailhead"
+   ],
+   "k8_before": "Mountain Ridge cannot be made yet: Mountain Path has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_redo_workflow.redo_job(record, {'pictures': {}}, 'ridge')",
+   "input": [
+    "game/images/bg/ridge.png"
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "bb68d59d26c2dcd51cfc7f3d9ab0e5cbce28cbbf5be61cf5618ab615afae480a",
+   "prompt_chars": 1205,
+   "check_prompts": "OK",
+   "record_note": "with the veil in the sky as a named addition",
+   "with_the_named_addition": "Refused: Mountain Ridge has no `allow` row in its keep list (tools/bgs/keep/ridge.json): the art-install role writes it before the room's batch, and the prompt says exactly what it names"
+  },
+  {
+   "place": "bathhouse",
+   "name": "Onsen",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "k8_before": "Onsen cannot be made yet: Mountain Path has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_scene_workflow.scene_job(record, {'pictures': {}}, 'bathhouse')",
+   "refs": [
+    [
+     "neighbour",
+     "trailhead",
+     "~/Desktop/JJK Game images/ui2/early/chosen/trailhead_1920.png"
+    ]
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "51fb95fa53ccc28933f5b0e7cea4d6fdb5089fdd4df637139675101b3c3cdd9a",
+   "prompt_chars": 1877,
+   "window_line": "Through the windows: the hot spring and the cedar slope behind it.",
+   "check_prompts": "OK"
+  },
+  {
+   "place": "sauna",
+   "name": "Sauna",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "k8_before": "Sauna cannot be made yet: Mountain Path has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_scene_workflow.scene_job(record, {'pictures': {}}, 'sauna')",
+   "refs": [
+    [
+     "neighbour",
+     "trailhead",
+     "~/Desktop/JJK Game images/ui2/early/chosen/trailhead_1920.png"
+    ]
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "b6ebe21213d901213592d04dee08cb9457c617dd34c1e67a913dd5e9b197386d",
+   "prompt_chars": 1755,
+   "check_prompts": "OK"
+  },
+  {
+   "place": "riverside",
+   "name": "Riverside",
+   "how": "inplace",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ],
+   "k8_before": "Riverside cannot be made yet: Mountain Path has no chosen picture (batch 2). A place is made after the yard it stands off, working outwards from the Courtyard.",
+   "k8": "OK",
+   "route": "make_redo_workflow.redo_job(record, {'pictures': {}}, 'riverside')",
+   "input": [
+    "game/images/bg/riverside.png"
+   ],
+   "prompt": "OK",
+   "prompt_sha256": "bb68d59d26c2dcd51cfc7f3d9ab0e5cbce28cbbf5be61cf5618ab615afae480a",
+   "prompt_chars": 1205,
+   "check_prompts": "OK"
+  }
+ ],
+ "table_note": "Every place of the record whose `after` names staff_yard, gate or trailhead and that has no row in `pictures`. No place stands off the Main Gate (its own `after` is the Courtyard), so none is listed for it. k8_before is k8_place on campus_for_batch2_third.json; k8 is on the new copy. In-place rooms were tried the way the recent sittings were written (redo_job with an empty manifest: the input is the picture the game shows today); composed places by scene_job with an empty manifest, which writes no file. A neighbour's chosen picture is found through `source` in the record's `pictures`, which names the file under ~/Desktop/JJK Game images/ui2/early/chosen/; no scratch root was needed and none was touched. `with_the_named_addition` is the same route with add=True, for a place whose row carries a note about a named addition."
+}
