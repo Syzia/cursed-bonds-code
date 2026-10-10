@@ -103,5 +103,37 @@
   },
   "my_picks": "School Courtyard: evening A, night A. Library: evening B; night with the lights off, version A, which follows O38 (the desk-lamps A is the faithful alternative if the owner likes the lamps lit). Put to the owner; nothing was chosen when this was written.",
   "lessons": "Forbidding added benches, signs, lamps and lights in the outdoor night sentence worked: neither School Courtyard night added any. Indoors, a relight still left bags in the Library once: 'add nothing' needs the same plain list of what is not to appear (bags, books, papers, shelves)."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks. But we should have someone studying late sometimes, and when someone is in the library after hours, have the lamps on. This should apply to locations if someone is there after dark.\" (my picks were: the School Courtyard's evening A and night A; the Library's evening B and its lights-off night A)",
+  "school_yard_evening": {
+   "version": "a",
+   "render": "ui2_school_yard_evening_a_00001_.png",
+   "sha256": "f9c28d16962d8084410f093fcedcb0970db4a6c9fea63d66ebaa1250fae7e14e"
+  },
+  "school_yard_night": {
+   "version": "a",
+   "render": "ui2_school_yard_night_a_00001_.png",
+   "sha256": "fdc3a50aa711bf521af1a0981f9d10cdcbce7835a918072139270ff01e145819",
+   "treatment": "every window dark"
+  },
+  "library_evening": {
+   "version": "b",
+   "render": "ui2_library_evening_b_00001_.png",
+   "sha256": "f4b6694b1b7daffb879174b3d59d0df1ed6bb2fbfb037d4be538ecfa5eea5f3c"
+  },
+  "library_night": {
+   "version": "a",
+   "render": "ui2_library_night_a_00001_.png",
+   "sha256": "daa0797a25fd6b2a76cc826f00adde8bd90f6eb6c4aadbf433cdbe0268faa914",
+   "treatment": "every light off: the picture for an empty Library"
+  },
+  "kept_for_D61": {
+   "version": "a",
+   "render": "ui2_library_night_lamps_a_00001_.png",
+   "sha256": "409c1533d8650d1b84e790ec5a375e172bf49bbc7d6508647dc4bf8ec263c567",
+   "treatment": "the green desk lamps on: the picture for a Library with someone in it after dark (the owner's ruling O42; its image name and reader are owed by D61)"
+  },
+  "in_the_batch_table": "tools/art/batches.json, batch 7, file art_7b: the School Courtyard's night and the Library's evening and lights-off night carry their sentences as hour_words. The lamps-on night has no row there until D61 is specified."
  }
 }

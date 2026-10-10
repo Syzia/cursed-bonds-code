@@ -415,17 +415,20 @@
       {
        "place": "school_yard",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows. Every window of the buildings is dark and no lamp is lit. Everything in the yard and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       },
       {
        "place": "library",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: low warm orange sunlight slants in through the windows, long soft shadows cross the floor, and the sky outside is orange and pink. Everything that stands outside the windows is still there."
       },
       {
        "place": "library",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the ceiling lights and the desk lamps are dark. Outside the windows it is night, under a deep blue sky with stars, and everything that stands outside the windows is still there, as dark shapes against the sky. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly."
       }
      ]
     }
