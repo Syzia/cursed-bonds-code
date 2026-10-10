@@ -1,0 +1,80 @@
+{
+ "about": [
+  "Sitting 6b (the classroom's and the infirmary's evening and night) written early by hand on 11 Oct 2026, straight after the owner chose 6a ('Lets go with your picks, they all look good!'), from the two chosen day pictures (the classroom's version B, the infirmary's version A), which are NOT installed: each fitted to 1920x1080 and laid into a scratch root with a scratch manifest; the prompts are the tool's own relight prompt with the hour sentences below.",
+  "The classroom's night follows O38 to O40 (lights off, moonlight), offered as the default. The infirmary's night is painted two ways: with its lights on low, because the two memories that show it ('Two in the Morning', 'Four in the Morning', sb_memories.rpy) are time with Shoko while she works there; and with every light off. Both night sentences say that what stands outside the windows stays (the lesson of 4b).",
+  "Judge without installing: tools/py_art.sh tools/install_redo.py --relight <place> <evening|night> <a> <b> --dry --against <the chosen day render>, then by eye against the day picture for anything added."
+ ],
+ "written": "2026-10-11",
+ "day_pictures": {
+  "classroom": "ui2_classroom_b_00001_.png",
+  "infirmary": "ui2_infirmary_a_00001_.png"
+ },
+ "sentences": {
+  "evening": "Change the time of day to early evening: low warm orange sunlight slants in through the windows, long soft shadows cross the floor, and the sky outside is orange and pink.",
+  "night_off": "Change the time of day to night, with every light in the room switched off: the ceiling lights and every lamp are dark. Outside the windows it is night, under a deep blue sky with stars, and everything that stands outside the windows is still there, as dark shapes against the sky. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly.",
+  "infirmary_night_late": "Change the time of day to the middle of the night: outside the windows it is dark, under a deep blue sky with stars, and everything that stands outside the windows is still there, as dark shapes against the sky. The room's own ceiling lights are switched on and turned low, and fill it with a soft warm light and soft shadows; the monitor on the desk glows. Add no new lamp."
+ },
+ "rows": [
+  {
+   "label": "Classroom, evening",
+   "saves": [
+    "ui2_classroom_evening_a",
+    "ui2_classroom_evening_b"
+   ],
+   "seeds": [
+    3774,
+    3775
+   ],
+   "prompt_sha256": "7657e0172ef3457d0d7129467f5862f2821ed6e3431fe8ef45d49afcee121e17"
+  },
+  {
+   "label": "Classroom, night, lights off",
+   "saves": [
+    "ui2_classroom_night_a",
+    "ui2_classroom_night_b"
+   ],
+   "seeds": [
+    4852,
+    4853
+   ],
+   "prompt_sha256": "acf094bb9d510e69ef8daced4cb6fb80428197601b022a3829b594f047705d18"
+  },
+  {
+   "label": "Infirmary, evening",
+   "saves": [
+    "ui2_infirmary_evening_a",
+    "ui2_infirmary_evening_b"
+   ],
+   "seeds": [
+    3742,
+    3743
+   ],
+   "prompt_sha256": "7657e0172ef3457d0d7129467f5862f2821ed6e3431fe8ef45d49afcee121e17"
+  },
+  {
+   "label": "Infirmary, night, someone working late",
+   "saves": [
+    "ui2_infirmary_night_a",
+    "ui2_infirmary_night_b"
+   ],
+   "seeds": [
+    4820,
+    4821
+   ],
+   "prompt_sha256": "b6e784e5eda69d1bcd184c624ab4bd9153070323ba40fa86a67c7b2c7664f4e8"
+  },
+  {
+   "label": "Infirmary, night, lights off",
+   "saves": [
+    "ui2_infirmary_night_off_a",
+    "ui2_infirmary_night_off_b"
+   ],
+   "seeds": [
+    3182,
+    3183
+   ],
+   "prompt_sha256": "acf094bb9d510e69ef8daced4cb6fb80428197601b022a3829b594f047705d18"
+  }
+ ],
+ "workflow_sha256": "fa1dd8f79db2609bbfdc43d93e6e56a856ffe3e9e9aba128afd9207db82f367d"
+}
