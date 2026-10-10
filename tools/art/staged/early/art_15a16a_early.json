@@ -1,0 +1,50 @@
+{
+ "about": [
+  "Sitting 15a (the training hall and the dojo) and the storehouse of 16a, written early by hand as one file on 11 Oct 2026, straight after the owner chose 8b: each redone in place from the game's own picture, by the tool's own prompt (make_redo_workflow.redo_job) from the scratch record in which the three yards of the first ring are fixed. All three stand off the Training Yard, which is chosen.",
+  "The Forest Trail and the Riverside (17a) were meant for this file and are REFUSED by K8 in that record: 'Mountain Path has no chosen picture'. They, the three offices (12a) and everything else off the second ring wait for a scratch record in which the Staff Building Steps, the Main Gate and the Mountain Path are fixed from their chosen pictures, as the first ring was.",
+  "None of the three rooms has a keep list yet, so the installer's check cannot see additions: judge by eye against today's picture (tools/py_art.sh tools/install_redo.py <place> <a> <b> --dry gives 'moved' and 'sharper')."
+ ],
+ "written": "2026-10-11",
+ "rows": [
+  {
+   "label": "Training Hall",
+   "kind": "inplace",
+   "saves": [
+    "ui2_training_a",
+    "ui2_training_b"
+   ],
+   "seeds": [
+    10658,
+    10659
+   ],
+   "prompt_sha256": "704c9755a7d450c1e156ff85863aa720f115589cb66662360e7d55dbf8cde0b7"
+  },
+  {
+   "label": "Dojo",
+   "kind": "inplace",
+   "saves": [
+    "ui2_dojo_a",
+    "ui2_dojo_b"
+   ],
+   "seeds": [
+    5168,
+    5169
+   ],
+   "prompt_sha256": "f842a55f029c6a5e13e1c0a0275ce11c4b5fccb7fd52307ebc27908dad8fab72"
+  },
+  {
+   "label": "Storehouse",
+   "kind": "inplace",
+   "saves": [
+    "ui2_storehouse_a",
+    "ui2_storehouse_b"
+   ],
+   "seeds": [
+    7046,
+    7047
+   ],
+   "prompt_sha256": "3ee1b11c949662c7d79d600c6826a124003061fc4b1cc8dd2fd53201b385e2eb"
+  }
+ ],
+ "workflow_sha256": "6f185821461cc95919543541a485fb79699f2e8d5aee070becb21e1f263ca890"
+}
