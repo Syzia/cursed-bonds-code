@@ -76,5 +76,30 @@
    "prompt_sha256": "acf094bb9d510e69ef8daced4cb6fb80428197601b022a3829b594f047705d18"
   }
  ],
- "workflow_sha256": "fa1dd8f79db2609bbfdc43d93e6e56a856ffe3e9e9aba128afd9207db82f367d"
+ "workflow_sha256": "fa1dd8f79db2609bbfdc43d93e6e56a856ffe3e9e9aba128afd9207db82f367d",
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (the ten files as ComfyUI saved them on 11 Oct 2026)",
+ "renders_sha256": {
+  "ui2_classroom_evening_a": "7d6a513ab96b2924f63b44a04aa7b2ab978863011fc714dd2fce609acf5ac399",
+  "ui2_classroom_evening_b": "8f78f1a8dde27f3518acf3b3a5b861143f116eb45df20167cbfbf9c846e2f093",
+  "ui2_classroom_night_a": "63694400bfebf71f4cd90ce6c2964350af3c76539c527d9346b512026313469d",
+  "ui2_classroom_night_b": "5b40d60986eac9464feb4ea082d03271e47c7e889e527602aebe05bac6466bb7",
+  "ui2_infirmary_evening_a": "0fc0cd882c24e6e192a9f77a0c90e6e7a7c40bed1b3c1c94ffb060a245b0dfce",
+  "ui2_infirmary_evening_b": "f02719743784c6bfb144c7ed0ebba391219b4a5d19cf56e937ae4fe660696027",
+  "ui2_infirmary_night_a": "ff03b926903f2a6d24574cd3507eb0763c7c4b4e938dc97a83218e527df96f7f",
+  "ui2_infirmary_night_b": "d7299cb93408e2189ca2ab756ee037e928eb0567864cdaf5b40ef47654062b90",
+  "ui2_infirmary_night_off_a": "cc832944ea34f8f8ee9bc44176187d4b619e280cbc7044eace436d2bc8f15a52",
+  "ui2_infirmary_night_off_b": "9bab6cf2e0db8bcaa8c359ecc6c128271831462ccd3fea301b7ee7fc33db8e1d"
+ },
+ "read_11_oct": {
+  "install_redo_dry": "Classroom: all four PASS on the points (the room has no keep list, so nothing else is checked). Infirmary: both evenings PASS; the working-late night A PASS, B LOOK (the top-left of the picture drawn differently: two ceiling lights that are not in the day picture); the lights-off night A PASS, B REFUSED for a floor row under a grid of moonlight, the false alarm already on the installer's list.",
+  "by_eye": {
+   "classroom_evening": "both faithful, nothing added, the roof and the cedars still outside. B is the lighter and easier to read (mean 110 against 103); A is a heavier orange and its right-hand side goes brown.",
+   "classroom_night": "A is faithful: every light off, moonlight across the desks, the roof and the cedars as dark shapes outside. B ADDS a tall bookshelf left of the blackboard and a low shelf with a globe on the right.",
+   "infirmary_evening": "B keeps the cedars outside the window, lit orange, and throws one beam across the wall and the bed. A REPLACES the trees outside with open sunset sky.",
+   "infirmary_night_working_late": "A: the monitor glows, one ceiling tube that the day picture already has is on low, the trees are still outside; it reads as someone at work there in the small hours. B ADDS two round ceiling lights and changes what is outside the window.",
+   "infirmary_night_lights_off": "both faithful: monitor dark, moonlight on the floor, the trees outside. A is the plainer to read."
+  },
+  "my_picks": "Classroom: evening B, night A. Infirmary: evening B; night 'working late' A, because the two memories that show this picture are time with Shoko while she works there (the lights-off A is the faithful alternative if the owner wants the room dark like the others). Put to the owner; nothing was chosen when this was written.",
+  "lessons": "Saying that what stands outside the windows stays kept the trees in all six nights. The evening sentence does not say it, and one evening of four lost them: say it in every hour sentence. Bookshelves appeared in the classroom again, in a relight this time: the room wants a keep list with its bare front wall named."
+ }
 }
