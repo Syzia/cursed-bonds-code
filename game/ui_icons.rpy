@@ -383,6 +383,17 @@ init -3 python:
 
     ICON_SIDES = ("top", "bottom", "left", "right")
 
+    def icon_tip_key(key):
+        """U0c2 (ui_icons.rpy). D60. A tooltip key as the side lookups read
+        it: a shape's key, "hotshape_<id>", is read as its hotspot's,
+        "hot_<id>", so the name of a shaped hotspot opens on the same side
+        whichever of its two focus areas has the focus. Any other key is
+        returned as it is."""
+        key = str(key)
+        if key.startswith("hotshape_"):
+            return "hot_" + key[len("hotshape_"):]
+        return key
+
     def icon_tip_hot(key):
         """U0c2 (ui_icons.rpy). The side the hover label of a hotspot or an
         exit of the place I stand in opens on, from the picture's own
@@ -403,7 +414,7 @@ init -3 python:
         anything else), unless the label would leave the screen there, and
         then the opposite side. Worked out from where the tile is: its
         point as the place shows it now, and the label's own size."""
-        key = str(tip[1])
+        key = icon_tip_key(tip[1])
         size = icon_tip_size(tip)
         if size is None or renpy.get_screen("sb_place") is None:
             return side
@@ -429,9 +440,12 @@ init -3 python:
         "tips" of hot_<place>.json, icon_tip_hot); then this table, as
         before; and a hotspot or exit with no row of its own here (only the
         general "hot_go_" row, or none) is placed from where its tile is
-        (icon_tip_where)."""
+        (icon_tip_where).
+
+        D60: a shaped hotspot has two tooltip keys, "hot_<id>" (its square)
+        and "hotshape_<id>" (its shape); both are answered alike."""
         if isinstance(tip, tuple) and len(tip) > 1:
-            key = str(tip[1])
+            key = icon_tip_key(tip[1])      # D60: a shape's key reads as its hotspot's
             side = icon_tip_hot(key)
             if side:
                 return side
@@ -451,6 +465,7 @@ init -3 python:
     ICON_TIP_PAD = (14, 8)
     ICON_TIP_TEXT = (22, 18)
     ICON_TIP_GAP = 2
+    ICON_TIP_FACE_GAP = 10      # between a shaped exit's name and the faces beside it (D60)
 
     ## After checkpoint D (5 Oct 2026, the owner: "Make the label open
     ## above."). A tile of the place view's icon column used to open its
@@ -489,6 +504,11 @@ init -3 python:
         if parts[1]:
             w2, h2 = Text(parts[1], style="text", substitute=False, size=ICON_TIP_TEXT[1]).size(room, config.screen_height)
             w, h = max(w, w2), h + ICON_TIP_GAP + h2
+        ## D60: the faces beside a shaped exit's name (screen hover_label).
+        faces = len(hot_tip_faces(tip[1]))
+        if faces:
+            w += ICON_TIP_FACE_GAP + faces * HOT_FACE_SIZE + (faces - 1) * 2
+            h = max(h, HOT_FACE_SIZE)
         return (int(w) + 2 * ICON_TIP_PAD[0], int(h) + 2 * ICON_TIP_PAD[1])
 
     def icon_tip_blocks(loc):
@@ -637,9 +657,17 @@ screen hover_label():
     $ _hover_tip = GetTooltip()
     $ _hover_t = icon_tip_parts(_hover_tip)
     $ _hover_side, _hover_mid, _hover_dy = icon_tip_place(_hover_tip)
+    ## D60: the name of a shaped hotspot opens against the 72 px square at its
+    ## point, whichever of its two focus areas has the focus (hot_tip_rect:
+    ## None for any other tooltip, and then the label lies beside the focused
+    ## button, as before); a house's faces are drawn beside a shaped exit's
+    ## name (hot_tip_faces: nobody for any other tooltip).
+    $ _hover_rect = hot_tip_rect(_hover_tip[1]) if _hover_t else None
+    $ _hover_faces = hot_tip_faces(_hover_tip[1]) if _hover_t else []
     if _hover_t:
         nearrect:
-            focus "tooltip"
+            rect _hover_rect
+            focus (None if _hover_rect else "tooltip")
             preferred_side _hover_side
             frame:
                 background Frame("gui/panel_dark.png", 4, 4)
@@ -648,18 +676,26 @@ screen hover_label():
                 xpos _hover_mid
                 xanchor _hover_mid
                 ypos _hover_dy
-                vbox:
-                    spacing ICON_TIP_GAP
-                    text _hover_t[0]:
-                        substitute False
-                        font gui.display_font
-                        color gui.paper
-                        size ICON_TIP_TEXT[0]
-                    if _hover_t[1]:
-                        text _hover_t[1]:
+                hbox:
+                    spacing ICON_TIP_FACE_GAP
+                    vbox:
+                        spacing ICON_TIP_GAP
+                        text _hover_t[0]:
                             substitute False
-                            color gui.dim
-                            size ICON_TIP_TEXT[1]
+                            font gui.display_font
+                            color gui.paper
+                            size ICON_TIP_TEXT[0]
+                        if _hover_t[1]:
+                            text _hover_t[1]:
+                                substitute False
+                                color gui.dim
+                                size ICON_TIP_TEXT[1]
+                    if _hover_faces:
+                        hbox:
+                            spacing 2
+                            yalign 0.5
+                            for _hover_w in _hover_faces:
+                                add face_chip(_hover_w, HOT_FACE_SIZE)
 
 
 ## The style sample (checkpoint A): Review tools, "Style sample". Twelve icon

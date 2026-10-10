@@ -978,6 +978,13 @@ def lf_poly(v):
     return isinstance(v, list) and len(v) >= 3 and all(lf_point(q) for q in v)
 
 
+def lf_shape(v):
+    """D60: one to three polygons, each a list of 3 to 60 [x, y] points."""
+    return (isinstance(v, list) and LF_SHAPE_POLYS[0] <= len(v) <= LF_SHAPE_POLYS[1]
+            and all(isinstance(p, list) and LF_SHAPE_POINTS[0] <= len(p) <= LF_SHAPE_POINTS[1]
+                    and all(lf_point(q) for q in p) for p in v))
+
+
 def lf_box(v):
     return isinstance(v, list) and len(v) == 4 and all(lf_num(q) for q in v) and v[2] > 0 and v[3] > 0
 
@@ -992,6 +999,11 @@ def lf_light_row(v):
 
 
 LF_SIDES = ("top", "bottom", "left", "right")
+# D60 (game/sb_hotspots.rpy, HOT_SHAPE and HOT_LOOK_KEYS): what a shape is made
+# of, and the keys of hot_look.json (the colour first, then the strengths).
+LF_SHAPE_POLYS = (1, 3)
+LF_SHAPE_POINTS = (3, 60)
+LF_LOOK_KEYS = ("color", "wash", "edge", "dim", "names")
 LF_FACES = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 LF_HOURS = ("", "evening", "night")
 LF_PERIODS = ("Morning", "Noon", "Afternoon", "Evening", "Night")
@@ -1104,9 +1116,35 @@ def layout_file_findings(folder, cache):
 
     for stem in sorted(data):
         path, got = data[stem]
-        if stem.startswith("hot_"):
+        if stem == "hot_look":
+            # D60: the light of a shaped hotspot (game/sb_hotspots.rpy, HOT_SHAPE):
+            # every key optional, the code's values otherwise.
+            keys(path, got, LF_LOOK_KEYS)
+            if "color" in got and not (isinstance(got["color"], str) and re.match(r"#[0-9a-fA-F]{6}$", got["color"])):
+                bad(path, "color must be \"#rrggbb\"")
+            for k in LF_LOOK_KEYS[1:]:
+                if k in got and not (lf_num(got[k]) and 0 <= got[k] <= 1):
+                    bad(path, "%s must be a number from 0 to 1" % k)
+        elif stem.startswith("hot_"):
             place = place_of(path, stem, "hot_")
-            keys(path, got, ("spots", "tips", "spare", "for_rev"))
+            keys(path, got, ("spots", "tips", "shapes", "keep_tile", "spare", "for_rev"))
+            # D60: the shapes that are clicked in a hotspot's or an exit's
+            # place, and the few that keep a button. Only what the file is
+            # made of is read here; the rules about a shape (its area, its
+            # point, what lies over it) are the game's lint and
+            # tools/check_layout.py.
+            v = got.get("shapes", {})
+            if not (isinstance(v, dict) and all(isinstance(k, str) and lf_shape(p) for k, p in v.items())):
+                bad(path, "shapes must be {\"<hotspot or exit id>\": [polygon, ...]}: %d to %d polygons, each a list "
+                          "of %d to %d [x, y] points" % (LF_SHAPE_POLYS + LF_SHAPE_POINTS))
+            k_t = got.get("keep_tile", {})
+            if not (isinstance(k_t, dict) and all(isinstance(k, str) and isinstance(w, str) and w.strip() for k, w in k_t.items())):
+                bad(path, "keep_tile must be {\"<hotspot or exit id>\": \"<why it keeps its button>\"}")
+            elif isinstance(v, dict):
+                for k in sorted(set(k_t) & set(v)):
+                    bad(path, "%r is under keep_tile and has a shape as well (one or the other)" % k)
+                if k_t and not v:
+                    bad(path, "keep_tile means nothing in a file that holds no shapes")
             v = got.get("spots", {})
             if not (isinstance(v, dict) and all(isinstance(k, str) and lf_point(p) for k, p in v.items())):
                 bad(path, "spots must be {\"<hotspot or exit id>\": [x, y]}")
@@ -1231,7 +1269,7 @@ def layout_file_findings(folder, cache):
                     if pair in r and not lf_point(r[pair]):
                         bad(path, "pictures[%r]: %s must be two numbers" % (k, pair))
         else:
-            bad(path, "not a layout file name (hot_<place>, view_<place>, pose_<place>, light_<place>, "
+            bad(path, "not a layout file name (hot_<place>, hot_look, view_<place>, pose_<place>, light_<place>, "
                       "area_<key>, light, map_campus, faces, pictures)")
     return out
 
