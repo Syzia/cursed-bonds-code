@@ -126,5 +126,30 @@
     }
    ]
   }
- ]
+ ],
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (copies of the six results; none has a black bar at an edge)",
+ "chosen": {
+  "said": "the owner, in chat, 7 Oct 2026: \"The images are done. With the trailhead, we can see the veil in the background. But there not accurate to the. We'll redo it but i can provide references as to what the veils look like.\" and \"B for staff yard, A for main gate, we can redo the main gate to make it more feel more like a main gate\" Then, of the third go (art_2s.json): \"I think we go with B for the gate as the mountains line up in the background. and for the mountain path we go with path A version B.\"",
+  "staff_yard": {
+   "version": "b",
+   "render": "ui2_staff_yard_b_00001_.png",
+   "sha256": "75cd28b114036768280b1c17d202e24d791cea0cc54d00cfb5d3332f5cfbdeb3",
+   "note": "read by eye against its checklist: all yes (the small detached office on the left, the principal's hall ahead at the top of the steps, the office pavilion with the round window on the right, the teachers' house beyond it with its bamboo fence, the paved path back to the garden at the bottom left, the walled steps down to the training yard at the bottom right). No tower and no pagoda. One unnamed timber building shows at the far left edge."
+  },
+  "gate": {
+   "version": "the third go's B",
+   "render": "ui2_gate3_b_00001_.png",
+   "sha256": "8518f7a1ea4aab7103501bf09e93cd273bb640219bbdbc0251805a53ab740ff7",
+   "workflow": "art_2s.json",
+   "note": "CHOSEN. The gatehouse of the second go's version A, seen in the first person across a Japanese garden with water; nothing stands in front of it (no torii); the mountains show behind it; through the open doors the chosen Courtyard and its gateway; the pagoda behind the schoolhouse on the left. Composed from campus_for_batch2_third.json. The place's one look can no longer be 'the torii': it becomes the garden pond. One written line of chapter 2 calls the gate a torii (ch2_tour.rpy:64): for the story pass."
+  },
+  "trailhead": {
+   "version": "the third go's path A, version B",
+   "render": "ui2_trailhead_sa_b_00001_.png",
+   "sha256": "6faea93a2700212eda2ab70e4a65adcc7232475610e6f55aa8bf007d8d3e5643",
+   "workflow": "art_2s.json",
+   "note": "CHOSEN. The first sitting's version A with one named change: the veil is a small smooth dome of black glass on the very top of the hill, at the head of the stone stairs. Everything else is as first painted and reads yes down the checklist (the forest trail on the left, the stairs to the ridge ahead, the hot-spring house and the path to the river on the right, the stone slabs back to the garden at the bottom)."
+  }
+ },
+ "fits": "~/Desktop/JJK Game images/ui2/early/chosen/<stem>_1920.png: each chosen render fitted to 1920x1080 by tools/redo_measure.fit (no black rows)"
 }

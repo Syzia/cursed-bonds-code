@@ -1,0 +1,81 @@
+{
+ "about": [
+  "Batch 3a (the Common Room and My Room, redone in place) written early on 7 Oct 2026 at the owner's word, with: python3 tools/art_batch.py 3a --preview --record tools/art/staged/early/campus_for_batch2_third.json --out '~/Desktop/JJK Game images/ui2/early'. Its results are judged with tools/install_redo.py <place> <render a> <render b> --dry (nothing moved, nothing vanished, nothing added, sharper), which installs nothing."
+ ],
+ "written": "2026-10-07",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: Common Room, version A",
+   "save": "ui2_dorm_common_a",
+   "seed": 9238,
+   "prompt_sha256": "0b9563b5b6d54c60a4677905faeb5bc79b301ecfb6cf957d22d0b6444be643dc",
+   "references": [
+    {
+     "file": "ui2_in_dorm_common_1.png",
+     "sha256": "3d70f8ca1fcfb854aea15ae83c73515c20d4a0fae581f6814b8cf24a3fb9f331"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Common Room, version B",
+   "save": "ui2_dorm_common_b",
+   "seed": 9239,
+   "prompt_sha256": "0b9563b5b6d54c60a4677905faeb5bc79b301ecfb6cf957d22d0b6444be643dc",
+   "references": [
+    {
+     "file": "ui2_in_dorm_common_1.png",
+     "sha256": "3d70f8ca1fcfb854aea15ae83c73515c20d4a0fae581f6814b8cf24a3fb9f331"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: My Room, version A",
+   "save": "ui2_your_room_a",
+   "seed": 4910,
+   "prompt_sha256": "1cbb1d2b08ce0a6a859ea366abfe8278b89a6ee493202c8074cc262d576bdf13",
+   "references": [
+    {
+     "file": "ui2_in_your_room_1.png",
+     "sha256": "dbbcd2d52db9b6ac5aa13e800093ed950b6a85526e93f1b4eb7cde581f53cba3"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: My Room, version B",
+   "save": "ui2_your_room_b",
+   "seed": 4911,
+   "prompt_sha256": "1cbb1d2b08ce0a6a859ea366abfe8278b89a6ee493202c8074cc262d576bdf13",
+   "references": [
+    {
+     "file": "ui2_in_your_room_1.png",
+     "sha256": "dbbcd2d52db9b6ac5aa13e800093ed950b6a85526e93f1b4eb7cde581f53cba3"
+    }
+   ]
+  }
+ ],
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/",
+ "chosen": {
+  "said": "the owner, in chat, 7 Oct 2026: \"Take a look. I think we go with A then B\" (the Common Room's version A, My Room's version B)",
+  "dorm_common": {
+   "version": "a",
+   "render": "ui2_dorm_common_a_00001_.png",
+   "sha256": "25035942f363025f3d7c9a2c29a492b6744fdb8fd85fb43efbd7534efa00062b",
+   "install_redo_dry": "REFUSED: 'the spot the way to Dormitory Garden sits on no longer lines up with the picture in the game (moved further than 24 px, or gone)'. Whole picture 0, 0 px; 38 points, the furthest other one 2 px; nothing vanished, nothing added; 15.6 times sharper than revision 1. (Version b: LOOK, only the window views; 3.7 times sharper.)",
+   "by_eye": "A FALSE ALARM. The exit's point lies on the left sliding glass door, and the view through that glass was changed on purpose (the prompt's window line: the boys' dormitory on the left). The door's post and its handle are where they were: their edge profile across x 30 to 200, rows 420 to 660, lines up with the game's picture at a shift of 0 px. The 192 px guard window round the point is mostly glass, so the new view reads as a moved door."
+  },
+  "your_room": {
+   "version": "b",
+   "render": "ui2_your_room_b_00001_.png",
+   "sha256": "ad2e69fc6df8996c5674fcb13c66336db05186beddefd65cae0d30f95839f23b",
+   "install_redo_dry": "REFUSED: 7 registered spots no longer line up (the computer's, and the floor where people stand); 'the calendar by the door is gone'; 'the thing at the hotspot computer is gone'; 'something new is on the floor (at its left end, from x 650 to 890)'. Whole picture 0, 0 px; the door's spot 1 px; 3.1 times sharper. (Version a: LOOK, only the window views and the laptop; 2.4 times sharper.)",
+   "by_eye": "FALSE ALARMS, with two real differences that move nothing. Every wall, door, window and piece of furniture is where it was. (1) The floor is drawn again: its boards run toward the back wall where they ran across, and sunlight from the right-hand window lies on it; that is what the floor's guard windows and 'something new on the floor' are reading. (2) The laptop stands on the desk exactly where the computer's hotspot is, which is where the plan wants it, so the old thing there reads as gone. (3) The calendar by the door is there: the wall behind it is lighter and it no longer stands out. Real differences to know: the floorboards' direction; and the laptop is OPEN in both versions, where the prompt asked for a closed one."
+  }
+ },
+ "for_the_installer_before_these_are_installed": [
+  "A guard window round a point that lies on glass must leave the glass out (the keep list's window boxes), or a view changed on purpose reads as a moved door. Test case: ui2_dorm_common_a_00001_.png must not be refused for the garden door.",
+  "A floor that is drawn again (other boards, sunlight) is not a moved floor: the points where people stand are judged by the floor's outline and by what stands on it, not by the boards' lines. Test case: ui2_your_room_b_00001_.png.",
+  "A named addition placed on a hotspot's own object (the laptop at the computer) must not make that object 'gone': the allow box wins over the automatic keep box round the same point.",
+  "A pale thing on a wall that became lighter (the calendar) should read as LOOK, not as gone.",
+  "Until then install_redo.py refuses both of the owner's choices; K6 stands (a picture is installed only by the tool that proves it), so the tool is corrected first, with these two renders as its tests, and the corrected tool must still refuse the second look test's emptied Common Room and a door slid 30 px."
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "about": [
+  "Sitting 4, fourth go, written by hand on 7 Oct 2026 at the owner's word: 'They look good. But the issue is the spacing of the doors. Its not uniform, some doors are touching and others have a gap. We need them uniform.' Two ways in one file, from the third go's version A (six doors, solid right wall): one named change (the spacing), and the corridor laid out again from words with that picture as its look."
+ ],
+ "written": "2026-10-07",
+ "rows": [
+  {
+   "label": "Girls' corridor: the doors spaced evenly (the last picture, one change)",
+   "saves": [
+    "ui2_girls_dorm4e_a",
+    "ui2_girls_dorm4e_b"
+   ],
+   "seeds": [
+    10440,
+    10441
+   ],
+   "prompt_sha256": "205437f04052dc045b0939962502e5ad9c325a24cd9a017241f70f7beea9b4a3"
+  },
+  {
+   "label": "Girls' corridor: laid out again from words",
+   "saves": [
+    "ui2_girls_dorm4n_a",
+    "ui2_girls_dorm4n_b"
+   ],
+   "seeds": [
+    10656,
+    10657
+   ],
+   "prompt_sha256": "b2de630bc46eee0d147252b269bb3d1b783e37b10c904c863b6ca4f19790ccea"
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "about": [
+  "Sitting 3, again, written by hand on 7 Oct 2026 at the owner's word ('for the night one, i feel like we should turn the main light off'): the Common Room's and My Room's night relit from the chosen day pictures with the tool's own relight prompt and these hour words in place of the lamplit night's.",
+  "Change the time of day to night, with every light in the room switched off: the ceiling light and every lamp are dark. Outside the windows it is night, under a deep blue sky with stars. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly."
+ ],
+ "written": "2026-10-07",
+ "rows": [
+  {
+   "label": "Common Room, night, lights off",
+   "saves": [
+    "ui2_dorm_common_night_off_a",
+    "ui2_dorm_common_night_off_b"
+   ],
+   "seeds": [
+    3682,
+    3683
+   ],
+   "prompt_sha256": "7dac04b3487409573638a4556e8f3da29f3006d3577d2d19e0ffacc972600bf7"
+  },
+  {
+   "label": "My Room, night, lights off",
+   "saves": [
+    "ui2_your_room_night_off_a",
+    "ui2_your_room_night_off_b"
+   ],
+   "seeds": [
+    3182,
+    3183
+   ],
+   "prompt_sha256": "7dac04b3487409573638a4556e8f3da29f3006d3577d2d19e0ffacc972600bf7"
+  }
+ ]
+}

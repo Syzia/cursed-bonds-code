@@ -1,0 +1,67 @@
+{
+ "about": [
+  "Batch 3b (the Common Room's and My Room's evening and night) written early on 7 Oct 2026 at the owner's word, from the two day pictures the owner chose in 3a, which are NOT installed: art_batch.write_batch(data, '3b', record, manifest, out, preview=True, root=<a scratch root>) with the chosen pictures fitted to 1920x1080 as that root's game/images/bg/dorm_common.png and your_room.png, and a scratch manifest putting both at revision 2 or more. Judge the results with tools/py_art.sh tools/install_redo.py --relight <place> <evening|night> <a> <b> --dry --against <the chosen day picture>, then by eye."
+ ],
+ "written": "2026-10-07",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: Common Room, evening, version A",
+   "save": "ui2_dorm_common_evening_a",
+   "seed": 3442,
+   "prompt_sha256": "7657e0172ef3457d0d7129467f5862f2821ed6e3431fe8ef45d49afcee121e17"
+  },
+  {
+   "title": "Nano Banana Pro: Common Room, evening, version B",
+   "save": "ui2_dorm_common_evening_b",
+   "seed": 3443,
+   "prompt_sha256": "7657e0172ef3457d0d7129467f5862f2821ed6e3431fe8ef45d49afcee121e17"
+  },
+  {
+   "title": "Nano Banana Pro: Common Room, night, version A",
+   "save": "ui2_dorm_common_night_a",
+   "seed": 3680,
+   "prompt_sha256": "6f74213f2b6ceeaa318144d250871582d4a2586a4cf89c945bc25bca087f4f1d"
+  },
+  {
+   "title": "Nano Banana Pro: Common Room, night, version B",
+   "save": "ui2_dorm_common_night_b",
+   "seed": 3681,
+   "prompt_sha256": "6f74213f2b6ceeaa318144d250871582d4a2586a4cf89c945bc25bca087f4f1d"
+  },
+  {
+   "title": "Nano Banana Pro: My Room, evening, version A",
+   "save": "ui2_your_room_evening_a",
+   "seed": 3742,
+   "prompt_sha256": "7657e0172ef3457d0d7129467f5862f2821ed6e3431fe8ef45d49afcee121e17"
+  },
+  {
+   "title": "Nano Banana Pro: My Room, evening, version B",
+   "save": "ui2_your_room_evening_b",
+   "seed": 3743,
+   "prompt_sha256": "7657e0172ef3457d0d7129467f5862f2821ed6e3431fe8ef45d49afcee121e17"
+  },
+  {
+   "title": "Nano Banana Pro: My Room, night, version A",
+   "save": "ui2_your_room_night_a",
+   "seed": 4820,
+   "prompt_sha256": "6f74213f2b6ceeaa318144d250871582d4a2586a4cf89c945bc25bca087f4f1d"
+  },
+  {
+   "title": "Nano Banana Pro: My Room, night, version B",
+   "save": "ui2_your_room_night_b",
+   "seed": 4821,
+   "prompt_sha256": "6f74213f2b6ceeaa318144d250871582d4a2586a4cf89c945bc25bca087f4f1d"
+  }
+ ],
+ "read_7_oct": {
+  "install_redo_dry": "all eight pass (the Common Room's four PASS; My Room's four LOOK, for the laptop).",
+  "by_eye": {
+   "dorm_common_evening": "both faithful; A is the calmer (B has a light shaft and an orange reflection on the television)",
+   "dorm_common_night": "B is faithful; A ADDS a blanket over the sofa's arm, which the check did not catch",
+   "your_room_evening": "B is the better: in A the right-hand window still shows daylight-green trees beside a sunset in the other window",
+   "your_room_night": "A is faithful; B ADDS a lit desk lamp and turns the walls blue, which the check did not catch"
+  },
+  "my_picks": "Common Room: evening A, night B. My Room: evening B, night A. The owner had not chosen yet when this was written.",
+  "for_the_installer": "two more blind spots, the other way round from art_3a_early.json: an addition on the sofa's arm and one on the desk beside the laptop's allow box both passed. The relight wording itself works: nothing moved in any of the eight, and no window shows daylight except My Room evening A's right-hand one."
+ }
+}

@@ -1,0 +1,2504 @@
+{
+ "format": 1,
+ "about": [
+  "tools/bgs/campus.json -- the campus record (docs/UI2_DESIGN.md 5.2, K4, D14). The only place an outdoor fact is written.",
+  "`fixed` rows are facts a picture the owner chose shows; each names that picture and its revision in `by`.",
+  "`proposed` rows are the plan's words for what is not painted yet: they go into prompts, and change without ceremony when a chosen picture says otherwise.",
+  "`waived` rows name a fixed fact, the chosen picture that stands against it and the date the owner accepted that; only tools/install_redo.py --waive writes one.",
+  "`pictures` are the pictures the owner has chosen; `waits` are things a new picture must put right that no tool can see.",
+  "tools/check_campus.py checks it, tools/campus_plan.py draws it and writes CAMPUS2.md from it (which also explains every key), and tools/make_scene_workflow.py builds every outdoor and map prompt from it.",
+  "No row a prompt reads (`as`, `look`, `court_side`, `words`, `shows`) names the series or a character.",
+  "THIS COPY IS NOT THE RECORD. It is tools/bgs/campus.json of 7 Oct 2026 with the three yards the owner chose that day (B, A, B) fixed from a first-guess layout read off the pictures by eye, so that batch 2 could be written early (docs/UI2_DESIGN.md 10.2). The real rows are written by install_redo.py --compose at each yard's layout sitting.",
+  "Also added in this copy, for batch 2 (7 Oct): one sentence in the `facts` of staff_yard, trailhead and gate saying where the tower and the pagodas are, or that they are out of sight. The garden's version A gained its second pagoda because the editor copied the one in its reference picture; these sentences are there so that batch 2 does not gain a third. They belong in the real record once the garden is installed.",
+  "Reworded on 7 Oct, in this copy, at the owner's word: the Main Gate is a great gatehouse at the top of a long flight of steps (the owner: 'we can redo the main gate to make it more feel more like a main gate'); the veil is a dome of black glass over the ridge's peak (the owner's reference pictures, ~/Desktop/JJK Game images/ui2/refs/). Both rows are proposals in the real record and are rewritten there when these pictures are chosen and installed.",
+  "Reworded again on 7 Oct, in this copy, at the owner's word: the gate is seen in the first person from a Japanese garden with water, with nothing standing in front of the gatehouse ('A would be good if there wasnt that little stone arch infront. Take and make it from a first person veiw. Add some water and Japanese garden vibes instead of the concrete paths generic trees and stone walls.'); the veil is a SMALL dome on the very top of the mountain ('We should also make the veil smaller since its on the hill. And its only holding 1 person body. Make the veil feel like its on top of the mountain. Not covering mountain.')."
+ ],
+ "sheet": [
+  1920,
+  1080
+ ],
+ "rules": {
+  "thirds": [
+   640,
+   1280
+  ],
+  "bottom_band": 900,
+  "apart": 60,
+  "plan_apart": 60,
+  "left_max_deg": -15,
+  "right_min_deg": 15,
+  "ahead_max_deg": 50,
+  "behind_min_deg": 90
+ },
+ "areas": {
+  "heart": {
+   "name": "Courtyard & Gate",
+   "hub": "courtyard",
+   "stem": "area_heart",
+   "batch": "21a"
+  },
+  "school": {
+   "name": "School Building",
+   "hub": "school_yard",
+   "stem": "area_school",
+   "batch": "21b"
+  },
+  "dorms": {
+   "name": "Dormitories",
+   "hub": "dorm_yard",
+   "stem": "area_dorms",
+   "batch": "21b"
+  },
+  "staff": {
+   "name": "Staff Building",
+   "hub": "staff_yard",
+   "stem": "area_staff",
+   "batch": "21b"
+  },
+  "grounds": {
+   "name": "Training Grounds",
+   "hub": "training_yard",
+   "stem": "area_grounds",
+   "batch": "21b"
+  },
+  "mountain": {
+   "name": "The Mountain",
+   "hub": "trailhead",
+   "stem": "area_mountain",
+   "batch": "21b"
+  }
+ },
+ "campus_map": {
+  "stem": "map_campus",
+  "batch": "22",
+  "mountain_only_north": true
+ },
+ "pictures": {
+  "courtyard": {
+   "place": "courtyard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "0",
+   "chosen": "2026-10-06",
+   "render": "look2_courtyard_gateway_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/courtyard_1920.png",
+   "source_2k": "~/Desktop/JJK Game images/look_test/chosen/courtyard_gateway_2752.png"
+  },
+  "library": {
+   "place": "library",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "0",
+   "chosen": "2026-10-06",
+   "render": "look2_library_bright_00001_.png",
+   "source": "~/Desktop/JJK Game images/look_test/chosen/library_bright_1920.png",
+   "source_2k": "~/Desktop/JJK Game images/look_test/chosen/library_bright_2752.png"
+  },
+  "dorm_common": {
+   "place": "dorm_common",
+   "rev": 2,
+   "kind": "inplace",
+   "batch": "0",
+   "chosen": "2026-10-06",
+   "render": "look3_dorm_common_keep_00001_.png",
+   "source": "~/Desktop/JJK Game images/look_test/fit3_dorm_common.png"
+  },
+  "cafeteria": {
+   "place": "cafeteria",
+   "rev": 2,
+   "kind": "inplace",
+   "batch": "0",
+   "chosen": "2026-10-06",
+   "render": "look3_cafeteria_keep_00001_.png",
+   "source": "~/Desktop/JJK Game images/look_test/fit3_cafeteria.png"
+  },
+  "school_yard": {
+   "place": "school_yard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "1",
+   "chosen": "2026-10-07",
+   "render": "ui2_school_yard_b_00001_.png (trimmed: ui2_school_yard_b_fit.png)",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/school_yard_1920.png",
+   "first_guess": {
+    "infirmary": [
+     395,
+     735
+    ],
+    "library": [
+     1160,
+     700
+    ],
+    "classroom": [
+     1430,
+     700
+    ],
+    "cafeteria": [
+     170,
+     950
+    ],
+    "courtyard": [
+     1690,
+     950
+    ]
+   }
+  },
+  "dorm_yard": {
+   "place": "dorm_yard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "1",
+   "chosen": "2026-10-07",
+   "render": "ui2_dorm_yard_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/dorm_yard_1920.png",
+   "first_guess": {
+    "boys_dorm": [
+     360,
+     510
+    ],
+    "trailhead": [
+     600,
+     610
+    ],
+    "dorm_common": [
+     1000,
+     520
+    ],
+    "rooftop": [
+     950,
+     225
+    ],
+    "girls_dorm": [
+     1600,
+     420
+    ],
+    "courtyard": [
+     190,
+     930
+    ],
+    "staff_yard": [
+     1640,
+     950
+    ]
+   },
+   "first_guess_note": "The tower stands behind the common room and a little to its left (its axis about x 950, the common room's ridge about x 1110). The first guess puts the common room's point on its left-hand doors, within 60 px across of the tower's, so that the two are not ordered; the layout sitting decides whether the tower's place on the ground plan moves west instead. A second pagoda stands beyond the girls' dormitory (the owner keeps it, O35); it is written into the record at the layout sitting."
+  },
+  "training_yard": {
+   "place": "training_yard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "1",
+   "chosen": "2026-10-07",
+   "render": "ui2_training_yard_b_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/training_yard_1920.png",
+   "first_guess": {
+    "courtyard": [
+     110,
+     930
+    ],
+    "training": [
+     560,
+     650
+    ],
+    "storehouse": [
+     940,
+     680
+    ],
+    "staff_yard": [
+     1160,
+     680
+    ],
+    "dojo": [
+     1420,
+     640
+    ],
+    "pool": [
+     1690,
+     760
+    ]
+   }
+  }
+ },
+ "fixed": [
+  {
+   "id": "building.courtyard",
+   "kind": "building",
+   "key": "courtyard",
+   "name": "Courtyard",
+   "as": "the central courtyard",
+   "holds": [
+    "courtyard"
+   ],
+   "at": [
+    960,
+    800
+   ],
+   "ground": true,
+   "look": "a wide flagstone court",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.gateway",
+   "kind": "building",
+   "key": "gateway",
+   "name": "Gateway",
+   "as": "the roofed gateway",
+   "holds": [],
+   "at": [
+    960,
+    690
+   ],
+   "look": "a roofed timber gate with a grey tiled roof, a stone lantern either side; behind it a flight of stone steps uphill",
+   "note": "the way to the dormitories; a landmark, not a place",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.lodge_west",
+   "kind": "building",
+   "key": "lodge_west",
+   "name": "Gate Lodge (west)",
+   "as": "the gate lodge left of the gateway",
+   "holds": [],
+   "at": [
+    890,
+    690
+   ],
+   "look": "one of a matching pair of gate lodges, either side of the gateway steps behind the low stone wall: brown timber, a railed veranda, a grey tiled roof",
+   "note": "Fixed as a lodge: it stands at the foot of the steps and is not a dormitory. The dormitories stand further up, round the garden, and keep their own two looks.",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.lodge_east",
+   "kind": "building",
+   "key": "lodge_east",
+   "name": "Gate Lodge (east)",
+   "as": "the gate lodge right of the gateway",
+   "holds": [],
+   "at": [
+    1040,
+    690
+   ],
+   "look": "one of a matching pair of gate lodges, either side of the gateway steps behind the low stone wall: brown timber, a railed veranda, a grey tiled roof",
+   "note": "Fixed as a lodge: it stands at the foot of the steps and is not a dormitory. The dormitories stand further up, round the garden, and keep their own two looks.",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.pagoda",
+   "kind": "building",
+   "key": "pagoda",
+   "name": "Pagoda",
+   "as": "the pagoda",
+   "holds": [],
+   "at": [
+    840,
+    640
+   ],
+   "look": "a pagoda of five storeys, dark timber and grey tiled roofs, behind the schoolhouse's north end",
+   "note": "a landmark, not a place",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.school_building",
+   "kind": "building",
+   "key": "school_building",
+   "name": "School Building",
+   "as": "the schoolhouse",
+   "holds": [
+    "classroom"
+   ],
+   "at": [
+    720,
+    760
+   ],
+   "shape": "long, north to south",
+   "look": "a two-storey schoolhouse of warm brown timber boarding, two rows of large white-framed windows",
+   "court_side": "a covered entrance porch with shoe lockers",
+   "court_seen_from": [
+    "courtyard"
+   ],
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.library",
+   "kind": "building",
+   "key": "library",
+   "name": "Library",
+   "as": "the library",
+   "holds": [
+    "library"
+   ],
+   "at": [
+    430,
+    640
+   ],
+   "look": "white plaster and timber, tall gridded windows",
+   "by": {
+    "picture": "library",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.archive_wing",
+   "kind": "building",
+   "key": "archive_wing",
+   "name": "Archive Wing",
+   "as": "the low wing behind the library",
+   "holds": [],
+   "at": [
+    430,
+    560
+   ],
+   "look": "a low grey-tiled roof behind the library, among treetops",
+   "note": "a landmark, not a place: it is what the chosen Library's two far windows show",
+   "by": {
+    "picture": "library",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.training_hall",
+   "kind": "building",
+   "key": "training_hall",
+   "name": "Training Hall",
+   "as": "the training hall",
+   "holds": [
+    "training"
+   ],
+   "at": [
+    1200,
+    760
+   ],
+   "shape": "long, north to south",
+   "look": "a broad brown-timber hall with a deep roofed veranda and paper-screened sliding doors",
+   "court_side": "a weapon rack on the veranda and straw posts by the steps; the vending machine at the court end of the veranda",
+   "court_seen_from": [
+    "courtyard"
+   ],
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.courtyard",
+   "kind": "place",
+   "key": "courtyard",
+   "name": "Courtyard",
+   "stem": "courtyard",
+   "area": "heart",
+   "indoor": false,
+   "building": "courtyard",
+   "how": "composed",
+   "batch": "0",
+   "after": [],
+   "words": "the central courtyard of the school, seen from its south edge, looking north",
+   "camera": [
+    960,
+    870
+   ],
+   "facing": "north",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.cafeteria",
+   "kind": "place",
+   "key": "cafeteria",
+   "name": "Cafeteria",
+   "stem": "cafeteria",
+   "area": "school",
+   "indoor": true,
+   "building": "cafeteria",
+   "how": "inplace",
+   "batch": "0",
+   "after": [
+    "school_yard"
+   ],
+   "note": "already made (the third look test); run once more in batch 4, from its revision-1 picture, for its window line; the picture shows its windows along the left wall and no compass, so which way it faces is not a fixed fact (see window.cafeteria.left)",
+   "by": {
+    "picture": "cafeteria",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.library",
+   "kind": "place",
+   "key": "library",
+   "name": "Library",
+   "stem": "library",
+   "area": "school",
+   "indoor": true,
+   "building": "library",
+   "how": "composed",
+   "batch": "0",
+   "after": [
+    "school_yard"
+   ],
+   "facing": "north",
+   "camera_in": "doorway",
+   "entered_from": "school_yard",
+   "note": "the chosen bright room; it shows no door, because the camera stands in it",
+   "by": {
+    "picture": "library",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.dorm_common",
+   "kind": "place",
+   "key": "dorm_common",
+   "name": "Common Room",
+   "stem": "dorm_common",
+   "area": "dorms",
+   "indoor": true,
+   "building": "common_room",
+   "how": "inplace",
+   "batch": "0",
+   "after": [
+    "dorm_yard"
+   ],
+   "facing": "north",
+   "camera_in": "doorway",
+   "entered_from": "dorm_yard",
+   "note": "already made (the third look test); run once more in batch 3, from its revision-1 picture, for its window line",
+   "by": {
+    "picture": "dorm_common",
+    "rev": 2
+   }
+  },
+  {
+   "id": "path.courtyard.school_yard",
+   "kind": "path",
+   "a": "courtyard",
+   "b": "school_yard",
+   "words": "through the passage by the schoolhouse's porch",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "path.courtyard.dorm_yard",
+   "kind": "path",
+   "a": "courtyard",
+   "b": "dorm_yard",
+   "words": "up the gateway steps",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "path.courtyard.training_yard",
+   "kind": "path",
+   "a": "courtyard",
+   "b": "training_yard",
+   "words": "by the training hall's veranda steps",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.courtyard.school_yard",
+   "kind": "exit",
+   "place": "courtyard",
+   "to": "school_yard",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "school_building",
+   "words": "on the schoolhouse's covered entrance porch",
+   "against": "in this version the schoolhouse is not on the left of the Courtyard, where the Courtyard you chose has it",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "seen.courtyard.pagoda",
+   "kind": "seen",
+   "place": "courtyard",
+   "thing": "pagoda",
+   "side": "ahead",
+   "order": 2,
+   "words": "behind the schoolhouse's north end, left of the gateway",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "seen.courtyard.lodge_west",
+   "kind": "seen",
+   "place": "courtyard",
+   "thing": "lodge_west",
+   "side": "ahead",
+   "order": 3,
+   "words": "behind the low stone wall, left of the gateway steps",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.courtyard.dorm_yard",
+   "kind": "exit",
+   "place": "courtyard",
+   "to": "dorm_yard",
+   "side": "ahead",
+   "order": 4,
+   "on": "building",
+   "thing": "gateway",
+   "words": "on the gateway's steps, which climb to the dormitories",
+   "against": "in this version the gateway to the dormitories is not straight ahead, where the Courtyard you chose has it",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "seen.courtyard.lodge_east",
+   "kind": "seen",
+   "place": "courtyard",
+   "thing": "lodge_east",
+   "side": "ahead",
+   "order": 5,
+   "words": "behind the low stone wall, right of the gateway steps",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.courtyard.training_yard",
+   "kind": "exit",
+   "place": "courtyard",
+   "to": "training_yard",
+   "side": "right",
+   "order": 6,
+   "on": "building",
+   "thing": "training_hall",
+   "words": "on the training hall's veranda steps",
+   "against": "in this version the training hall is not on the right of the Courtyard, where the Courtyard you chose has it",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.courtyard.gate",
+   "kind": "exit",
+   "place": "courtyard",
+   "to": "gate",
+   "side": "bottom",
+   "on": "path",
+   "words": "the flagstones at the bottom of the frame, leading back to the gate",
+   "against": "in this version the way back to the Main Gate is not at the bottom of the picture, where the Courtyard you chose has it",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.training",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "training",
+   "side": "left",
+   "order": 2,
+   "on": "building",
+   "thing": "training_hall",
+   "words": "its doors onto this yard",
+   "against": "in this version the training hall is on the far side of the yard from the Courtyard you chose",
+   "by": {
+    "picture": "courtyard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.library.school_yard",
+   "kind": "exit",
+   "place": "library",
+   "to": "school_yard",
+   "side": "bottom",
+   "on": "path",
+   "words": "the way out is behind the camera (the chosen picture shows no door), so it sits at the bottom of the picture",
+   "against": "in this version the Library's way out is not at the bottom of the picture; the room you chose shows no door, because the camera stands in it",
+   "by": {
+    "picture": "library",
+    "rev": 2
+   }
+  },
+  {
+   "id": "window.library.far",
+   "kind": "window",
+   "room": "library",
+   "wall": "far",
+   "faces": "north",
+   "by": {
+    "picture": "library",
+    "rev": 2
+   }
+  },
+  {
+   "id": "line.library.far",
+   "kind": "line",
+   "room": "library",
+   "wall": "far",
+   "shows": "the low grey tiled roof of the wing behind the building, among treetops",
+   "names": [
+    "archive_wing"
+   ],
+   "needs": [],
+   "by": {
+    "picture": "library",
+    "rev": 2
+   }
+  },
+  {
+   "id": "window.dorm_common.far",
+   "kind": "window",
+   "room": "dorm_common",
+   "wall": "far",
+   "faces": "north",
+   "by": {
+    "picture": "dorm_common",
+    "rev": 2
+   }
+  },
+  {
+   "id": "window.dorm_common.left",
+   "kind": "window",
+   "room": "dorm_common",
+   "wall": "left",
+   "faces": "west",
+   "by": {
+    "picture": "dorm_common",
+    "rev": 2
+   }
+  },
+  {
+   "id": "interior.library",
+   "kind": "interior",
+   "room": "library",
+   "words": "tall bookshelves with a rolling ladder along the left wall; two tall windows in the far wall; a long reading table with green-shaded lamps in the middle distance and a second table at the right; two low armchairs between the windows; a glass-fronted cabinet with a small brass padlock against the right wall, holding scrolls; a wide clear wooden floor in the foreground; no door in view",
+   "by": {
+    "picture": "library",
+    "rev": 2
+   }
+  },
+  {
+   "id": "interior.dorm_common",
+   "kind": "interior",
+   "room": "dorm_common",
+   "words": "seen from the sliding glass doors: a sofa along the left wall under a large window; a bookshelf with board games on top in the far left corner; a window in the far wall; a low table on a rug in the middle with two floor cushions; a small fridge, a kettle and a microwave at the far right; a television on a low cabinet on the right; an air conditioner high on the far wall",
+   "by": {
+    "picture": "dorm_common",
+    "rev": 2
+   }
+  },
+  {
+   "id": "interior.cafeteria",
+   "kind": "interior",
+   "room": "cafeteria",
+   "words": "a wall of tall windows with tied-back curtains along the left; a water cooler and potted plants at the far left; the serving counter with a food warmer and stacked trays along the far wall; rows of long wooden tables and chairs on the right; round paper lamps hanging from the ceiling; a clear wooden floor on the left",
+   "by": {
+    "picture": "cafeteria",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.infirmary",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "infirmary",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "infirmary",
+   "words": "its door is the way in",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.library",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "library",
+   "side": "ahead",
+   "order": 2,
+   "on": "building",
+   "thing": "library",
+   "words": "its door, with the pine and its bench in front of it",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.classroom",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "classroom",
+   "side": "right",
+   "order": 3,
+   "on": "building",
+   "thing": "school_building",
+   "words": "a side porch in its west wall, facing this yard",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.cafeteria",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "cafeteria",
+   "side": "bottom",
+   "half": "left",
+   "on": "building",
+   "thing": "cafeteria",
+   "words": "the path to the dining hall's glass doors; the dining hall is behind the camera",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.courtyard",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "courtyard",
+   "side": "bottom",
+   "half": "right",
+   "on": "path",
+   "words": "the passage by the schoolhouse, back to the central courtyard",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.school_yard",
+   "kind": "place",
+   "key": "school_yard",
+   "name": "School Courtyard",
+   "stem": "school_yard",
+   "area": "school",
+   "indoor": false,
+   "building": "school_yard",
+   "how": "composed",
+   "batch": "1",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the school courtyard, the yard west of the schoolhouse that the school's rooms open onto, seen from its south edge, looking north",
+   "camera": [
+    470,
+    840
+   ],
+   "facing": "north",
+   "old_picture": "school",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.school_yard",
+   "kind": "building",
+   "key": "school_yard",
+   "name": "School Courtyard",
+   "as": "the school courtyard",
+   "holds": [
+    "school_yard"
+   ],
+   "at": [
+    470,
+    770
+   ],
+   "ground": true,
+   "look": "packed earth, one pine with a bench under it",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.boys_dorm",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "boys_dorm",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "boys_dorm",
+   "words": "its door, under the blue door curtain",
+   "alias": [
+    "dorm"
+   ],
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.trailhead",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "trailhead",
+   "side": "left",
+   "order": 2,
+   "on": "path",
+   "words": "the dirt path that goes up behind the boys' dormitory",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.dorm_common",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "dorm_common",
+   "side": "ahead",
+   "order": 3,
+   "on": "building",
+   "thing": "common_room",
+   "words": "its glass doors open onto the deck",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.rooftop",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "rooftop",
+   "side": "ahead",
+   "order": 3,
+   "on": "building",
+   "thing": "tower",
+   "words": "it rises behind and above the common room",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.girls_dorm",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "girls_dorm",
+   "side": "right",
+   "order": 4,
+   "on": "building",
+   "thing": "girls_dorm",
+   "words": "its door, under the red door curtain, beyond the pond",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.courtyard",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "courtyard",
+   "side": "bottom",
+   "half": "left",
+   "on": "path",
+   "words": "the steps down to the central courtyard",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.staff_yard",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "staff_yard",
+   "side": "bottom",
+   "half": "right",
+   "on": "path",
+   "words": "the stepping stones east, to the staff building steps",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.dorm_yard",
+   "kind": "place",
+   "key": "dorm_yard",
+   "name": "Dormitory Garden",
+   "stem": "dorm_yard",
+   "area": "dorms",
+   "indoor": false,
+   "building": "dorm_yard",
+   "how": "composed",
+   "batch": "1",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the dormitory garden, the kept garden up the gateway steps that the dormitories stand round, seen from its south edge, looking north",
+   "camera": [
+    960,
+    610
+   ],
+   "facing": "north",
+   "old_picture": "camera",
+   "clear": 1,
+   "facts": [
+    "The two timber lodges at the foot of the gateway steps in the central courtyard's picture are gate lodges, not the dormitories: the dormitories stand up here, round the garden, and each looks different from the lodges and from the other."
+   ],
+   "check": [
+    "the two dormitories can be told apart, and neither is one of the gate lodges"
+   ],
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.dorm_yard",
+   "kind": "building",
+   "key": "dorm_yard",
+   "name": "Dormitory Garden",
+   "as": "the dormitory garden",
+   "holds": [
+    "dorm_yard"
+   ],
+   "at": [
+    960,
+    540
+   ],
+   "ground": true,
+   "look": "a stone path through a kept garden, a pond with two stone lanterns",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.courtyard",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "courtyard",
+   "side": "left",
+   "order": 1,
+   "on": "path",
+   "words": "the passage at the bottom left, back to the central courtyard",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.storehouse",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "storehouse",
+   "side": "ahead",
+   "order": 3,
+   "on": "building",
+   "thing": "storehouse",
+   "words": "it stands beyond the striking posts",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.staff_yard",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "staff_yard",
+   "side": "ahead",
+   "order": 4,
+   "on": "path",
+   "words": "the walled path and its steps, right of the storehouse",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.dojo",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "dojo",
+   "side": "right",
+   "order": 5,
+   "on": "building",
+   "thing": "dojo",
+   "words": "its door faces the yard",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.pool",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "pool",
+   "side": "right",
+   "order": 6,
+   "on": "path",
+   "words": "a roofed timber gate at the edge, beside the dojo: the way to the swimming pool",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.training_yard",
+   "kind": "place",
+   "key": "training_yard",
+   "name": "Training Yard",
+   "stem": "training_yard",
+   "area": "grounds",
+   "indoor": false,
+   "building": "training_yard",
+   "how": "composed",
+   "batch": "1",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the training yard, the yard east of the training hall, seen from its south edge, looking north",
+   "camera": [
+    1470,
+    890
+   ],
+   "facing": "north",
+   "old_picture": "school",
+   "clear": 1,
+   "check": [
+    "no vending machine and no shoe lockers in this yard"
+   ],
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.training_yard",
+   "kind": "building",
+   "key": "training_yard",
+   "name": "Training Yard",
+   "as": "the training yard",
+   "holds": [
+    "training_yard"
+   ],
+   "at": [
+    1470,
+    780
+   ],
+   "ground": true,
+   "look": "bare earth, a row of striking posts",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  }
+ ],
+ "proposed": [
+  {
+   "id": "building.gate",
+   "kind": "building",
+   "key": "gate",
+   "name": "Main Gate",
+   "as": "the main gate",
+   "holds": [
+    "gate"
+   ],
+   "at": [
+    960,
+    985
+   ],
+   "ground": true,
+   "look": "a Japanese garden before the gate: still, clear water on either side of the way, crossed by a low flat bridge of timber planks; stepping stones and raked pale gravel; shaped black pines and red maples; stone lanterns standing among low clipped green shrubs; low white plaster garden walls with grey tiled copings; a short broad flight of stone steps up to the gatehouse; nothing stands in the way before the gatehouse, and there is no paved road, no concrete and no wall of stone blocks"
+  },
+  {
+   "id": "building.infirmary",
+   "kind": "building",
+   "key": "infirmary",
+   "name": "Infirmary",
+   "as": "the infirmary",
+   "holds": [
+    "infirmary"
+   ],
+   "at": [
+    250,
+    760
+   ],
+   "look": "a small white annex with a pale green door and a ramp, at the forest edge"
+  },
+  {
+   "id": "building.cafeteria",
+   "kind": "building",
+   "key": "cafeteria",
+   "name": "Cafeteria",
+   "as": "the dining hall",
+   "holds": [
+    "cafeteria"
+   ],
+   "at": [
+    430,
+    890
+   ],
+   "look": "a low wide hall with a grey tiled roof, a wall of glass sliding doors, a metal kitchen chimney, benches outside"
+  },
+  {
+   "id": "building.storehouse",
+   "kind": "building",
+   "key": "storehouse",
+   "name": "Storehouse",
+   "as": "the storehouse",
+   "holds": [
+    "storehouse"
+   ],
+   "at": [
+    1480,
+    640
+   ],
+   "look": "a white kura with a black tiled roof and one heavy door"
+  },
+  {
+   "id": "building.dojo",
+   "kind": "building",
+   "key": "dojo",
+   "name": "Dojo",
+   "as": "the dojo",
+   "holds": [
+    "dojo"
+   ],
+   "at": [
+    1720,
+    760
+   ],
+   "look": "a long low hall with one unbroken band of windows"
+  },
+  {
+   "id": "building.pool",
+   "kind": "building",
+   "key": "pool",
+   "name": "Swimming Pool",
+   "as": "the swimming pool",
+   "holds": [
+    "pool"
+   ],
+   "at": [
+    1740,
+    900
+   ],
+   "ground": true,
+   "look": "an open-air pool set into a stone terrace behind the dojo, edged in the yards' grey stone, a timber deck and a low wooden fence, a small changing hut under the school's grey tiled roof",
+   "note": "built with the school, not added to it (the owner's ruling, O17)"
+  },
+  {
+   "id": "building.boys_dorm",
+   "kind": "building",
+   "key": "boys_dorm",
+   "name": "Boys' Dormitory",
+   "as": "the boys' dormitory",
+   "holds": [
+    "boys_dorm",
+    "dorm",
+    "yuji_room",
+    "megumi_room",
+    "senpai_room"
+   ],
+   "at": [
+    720,
+    480
+   ],
+   "look": "two storeys of dark timber, an upstairs gallery, an outside stair, a plain blue door curtain"
+  },
+  {
+   "id": "building.common_room",
+   "kind": "building",
+   "key": "common_room",
+   "name": "Common Room",
+   "as": "the common room",
+   "holds": [
+    "dorm_common"
+   ],
+   "at": [
+    960,
+    470
+   ],
+   "look": "one storey, glass doors the whole width, a deck over the pond"
+  },
+  {
+   "id": "building.tower",
+   "kind": "building",
+   "key": "tower",
+   "name": "Tower",
+   "as": "the tower",
+   "holds": [
+    "rooftop"
+   ],
+   "at": [
+    960,
+    380
+   ],
+   "look": "the tall wooden tower with an open top veranda"
+  },
+  {
+   "id": "building.girls_dorm",
+   "kind": "building",
+   "key": "girls_dorm",
+   "name": "Girls' Dormitory",
+   "as": "the girls' dormitory",
+   "holds": [
+    "girls_dorm",
+    "nobara_room",
+    "maki_room"
+   ],
+   "at": [
+    1200,
+    480
+   ],
+   "look": "two storeys of white plaster and timber, latticed windows, a plain red door curtain, flower boxes"
+  },
+  {
+   "id": "building.staff_yard",
+   "kind": "building",
+   "key": "staff_yard",
+   "name": "Staff Building Steps",
+   "as": "the staff building steps",
+   "holds": [
+    "staff_yard"
+   ],
+   "at": [
+    1560,
+    520
+   ],
+   "ground": true,
+   "look": "wide stone steps, gravel either side"
+  },
+  {
+   "id": "building.principal_hall",
+   "kind": "building",
+   "key": "principal_hall",
+   "name": "Principal's Hall",
+   "as": "the principal's hall",
+   "holds": [
+    "office"
+   ],
+   "at": [
+    1560,
+    400
+   ],
+   "look": "the largest roof, on a stone platform, heavy closed doors, no windows"
+  },
+  {
+   "id": "building.gojo_office",
+   "kind": "building",
+   "key": "gojo_office",
+   "name": "Gojo's Office",
+   "as": "the small detached office",
+   "holds": [
+    "gojo_office"
+   ],
+   "at": [
+    1400,
+    470
+   ],
+   "look": "a small detached house with one very large window"
+  },
+  {
+   "id": "building.utahime_office",
+   "kind": "building",
+   "key": "utahime_office",
+   "name": "Utahime's Office",
+   "as": "the small office pavilion",
+   "holds": [
+    "utahime_office"
+   ],
+   "at": [
+    1690,
+    480
+   ],
+   "look": "a neat small pavilion, a round window, paper screens"
+  },
+  {
+   "id": "building.teachers_house",
+   "kind": "building",
+   "key": "teachers_house",
+   "name": "Teachers' House",
+   "as": "the teachers' house",
+   "holds": [
+    "teachers_lounge",
+    "teachers_dorm"
+   ],
+   "at": [
+    1790,
+    400
+   ],
+   "look": "a two-storey house with a veranda all round, warm windows, a bamboo fence"
+  },
+  {
+   "id": "building.trailhead",
+   "kind": "building",
+   "key": "trailhead",
+   "name": "Mountain Path",
+   "as": "the mountain path",
+   "holds": [
+    "trailhead"
+   ],
+   "at": [
+    900,
+    300
+   ],
+   "ground": true,
+   "look": "where the stone gives out: a standing stone and a low gate"
+  },
+  {
+   "id": "building.bathhouse",
+   "kind": "building",
+   "key": "bathhouse",
+   "name": "Bathhouse (shown as Onsen)",
+   "as": "the hot-spring house",
+   "holds": [
+    "bathhouse",
+    "sauna"
+   ],
+   "at": [
+    1160,
+    240
+   ],
+   "look": "a tall tiled roof with a steam vent, a stone basin by the door, steam above the fence"
+  },
+  {
+   "id": "building.forest",
+   "kind": "building",
+   "key": "forest",
+   "name": "Forest Trail",
+   "as": "the forest trail",
+   "holds": [
+    "forest"
+   ],
+   "at": [
+    330,
+    230
+   ],
+   "ground": true,
+   "look": "tall cedars, nothing built"
+  },
+  {
+   "id": "building.riverside",
+   "kind": "building",
+   "key": "riverside",
+   "name": "Riverside",
+   "as": "the riverside",
+   "holds": [
+    "riverside"
+   ],
+   "at": [
+    1380,
+    170
+   ],
+   "ground": true,
+   "look": "a clear river, a pebble bank, a deep pool"
+  },
+  {
+   "id": "building.ridge",
+   "kind": "building",
+   "key": "ridge",
+   "name": "Mountain Ridge",
+   "as": "the mountain ridge",
+   "holds": [
+    "ridge"
+   ],
+   "at": [
+    950,
+    110
+   ],
+   "ground": true,
+   "look": "grass and rock above the trees; on its very top sits the veil, a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen",
+   "note": "straight up the stone stairs from the Mountain Path"
+  },
+  {
+   "id": "place.gate",
+   "kind": "place",
+   "key": "gate",
+   "name": "Main Gate",
+   "stem": "gate",
+   "area": "heart",
+   "indoor": false,
+   "building": "gate",
+   "how": "composed",
+   "batch": "2",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the main gate of the school, seen as I walk up to it: from the garden path in front of the gatehouse, close enough that the gatehouse towers over me, looking north",
+   "camera": [
+    960,
+    1040
+   ],
+   "facing": "north",
+   "facts": [
+    "The gatehouse stands in the middle and is the largest thing in the picture: a great two-storey timber gatehouse with a railed upper floor and a heavy grey tiled roof, its tall doors standing open.",
+    "Through the open gate is the open flagstone court of the central courtyard's picture: no hall stands there.",
+    "The pagoda of the central courtyard's picture may show above the garden wall, on the left; no tower and no pagoda stands in the middle or on the right."
+   ],
+   "check": [
+    "the gatehouse is the one already painted, with nothing standing in front of it",
+    "there is water and a garden before the gate, and no paved road or stone-block wall",
+    "through the gate is the open Courtyard, with no hall"
+   ]
+  },
+  {
+   "id": "place.classroom",
+   "kind": "place",
+   "key": "classroom",
+   "name": "Classroom",
+   "stem": "classroom",
+   "area": "school",
+   "indoor": true,
+   "building": "school_building",
+   "how": "inplace",
+   "batch": "6",
+   "after": [
+    "school_yard"
+   ]
+  },
+  {
+   "id": "place.infirmary",
+   "kind": "place",
+   "key": "infirmary",
+   "name": "Infirmary",
+   "stem": "infirmary",
+   "area": "school",
+   "indoor": true,
+   "building": "infirmary",
+   "how": "inplace",
+   "batch": "6",
+   "after": [
+    "school_yard"
+   ]
+  },
+  {
+   "id": "place.boys_dorm",
+   "kind": "place",
+   "key": "boys_dorm",
+   "name": "Boys' Dormitory",
+   "stem": "boys_dorm",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "9",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the upstairs corridor of the boys' dormitory, a two-storey house of dark timber: a shoe rack at the head of the stairs in the near corner, three sliding doors along each side, a window seat, and one more door at the far end of the corridor; the side doors are plain and shut",
+   "refs_also": [
+    "dorm"
+   ],
+   "spare_doors": 3
+  },
+  {
+   "id": "place.dorm",
+   "kind": "place",
+   "key": "dorm",
+   "name": "My Room",
+   "stem": "your_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "inplace",
+   "batch": "3",
+   "after": [
+    "dorm_yard"
+   ],
+   "at": [
+    700,
+    430
+   ],
+   "note": "the room at the end of the boys' corridor; with a closed laptop on the desk as a named addition"
+  },
+  {
+   "id": "place.yuji_room",
+   "kind": "place",
+   "key": "yuji_room",
+   "name": "Yuji's Room",
+   "stem": "yuji_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "9",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the boys' dormitory, a house of dark timber: a low bed along one wall, film posters without lettering, a shelf of films, a floor cushion and a small television",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true
+  },
+  {
+   "id": "place.megumi_room",
+   "kind": "place",
+   "key": "megumi_room",
+   "name": "Megumi's Room",
+   "stem": "megumi_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "10",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the boys' dormitory, a house of dark timber, spare and tidy: a bed made square, a full bookshelf, shoes in a line by the door",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true
+  },
+  {
+   "id": "place.senpai_room",
+   "kind": "place",
+   "key": "senpai_room",
+   "name": "Panda and Toge's Room",
+   "stem": "senpai_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "10",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the big corner bedroom of the boys' dormitory, a house of dark timber, a room for two: a very large futon and a neat small one laid on the floor, and a shogi board on the floor between them",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true
+  },
+  {
+   "id": "place.rooftop",
+   "kind": "place",
+   "key": "rooftop",
+   "name": "Rooftop",
+   "stem": "rooftop",
+   "area": "dorms",
+   "indoor": false,
+   "building": "tower",
+   "how": "inplace",
+   "batch": "8",
+   "after": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "place.girls_dorm",
+   "kind": "place",
+   "key": "girls_dorm",
+   "name": "Girls' Dormitory",
+   "stem": "girls_dorm",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "inplace",
+   "batch": "4",
+   "after": [
+    "dorm_yard"
+   ],
+   "note": "its far doors are the girls' spare doors (D50)"
+  },
+  {
+   "id": "place.nobara_room",
+   "kind": "place",
+   "key": "nobara_room",
+   "name": "Nobara's Room",
+   "stem": "nobara_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "composed",
+   "batch": "11",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber: a bed, a tall dressing mirror, shopping bags in a row, a roll of tools on the desk",
+   "refs_also": [
+    "girls_dorm"
+   ],
+   "pinless": true
+  },
+  {
+   "id": "place.maki_room",
+   "kind": "place",
+   "key": "maki_room",
+   "name": "Maki's Room",
+   "stem": "maki_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "composed",
+   "batch": "11",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber, kept plain: a bed, a long weapon case against the wall, a pull-up bar fixed in the door frame",
+   "refs_also": [
+    "girls_dorm"
+   ],
+   "pinless": true
+  },
+  {
+   "id": "place.staff_yard",
+   "kind": "place",
+   "key": "staff_yard",
+   "name": "Staff Building Steps",
+   "stem": "staff_yard",
+   "area": "staff",
+   "indoor": false,
+   "building": "staff_yard",
+   "how": "composed",
+   "batch": "2",
+   "after": [
+    "dorm_yard",
+    "training_yard"
+   ],
+   "words": "the staff building steps, the wide stone steps below the principal's hall that the teachers' buildings stand round, seen from the foot of the steps, looking north",
+   "camera": [
+    1560,
+    610
+   ],
+   "facing": "north",
+   "old_picture": "camera",
+   "facts": [
+    "The tower and the pagodas of the other pictures are out of sight from here, behind the buildings on the left: no tower and no pagoda stands in this picture."
+   ]
+  },
+  {
+   "id": "place.office",
+   "kind": "place",
+   "key": "office",
+   "name": "Principal's Office",
+   "stem": "office",
+   "area": "staff",
+   "indoor": true,
+   "building": "principal_hall",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "note": "with a low writing desk and a framed photograph on it as a named addition"
+  },
+  {
+   "id": "place.gojo_office",
+   "kind": "place",
+   "key": "gojo_office",
+   "name": "Gojo's Office",
+   "stem": "gojo_office",
+   "area": "staff",
+   "indoor": true,
+   "building": "gojo_office",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ]
+  },
+  {
+   "id": "place.utahime_office",
+   "kind": "place",
+   "key": "utahime_office",
+   "name": "Utahime's Office",
+   "stem": "utahime_office",
+   "area": "staff",
+   "indoor": true,
+   "building": "utahime_office",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ]
+  },
+  {
+   "id": "place.teachers_lounge",
+   "kind": "place",
+   "key": "teachers_lounge",
+   "name": "Teachers' Lounge",
+   "stem": "teachers_lounge",
+   "area": "staff",
+   "indoor": true,
+   "building": "teachers_house",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "words": "the ground-floor sitting room of the teachers' house: sofas round a low table, a kitchenette with a kettle, a television, a duty board on the wall with no lettering, and stairs going up at the back"
+  },
+  {
+   "id": "place.teachers_dorm",
+   "kind": "place",
+   "key": "teachers_dorm",
+   "name": "Teachers' Dormitory",
+   "stem": "teachers_dorm",
+   "area": "staff",
+   "indoor": true,
+   "building": "teachers_house",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "words": "the upstairs sitting room of the teachers' house: cushions round a sunken hearth, a workbench under the end window, and six sliding bedroom doors, each with a small blank wooden plate beside it",
+   "refs_also": [
+    "teachers_lounge"
+   ],
+   "pinless": true,
+   "spare_doors": 3
+  },
+  {
+   "id": "place.training",
+   "kind": "place",
+   "key": "training",
+   "name": "Training Hall",
+   "stem": "training",
+   "area": "grounds",
+   "indoor": true,
+   "building": "training_hall",
+   "how": "inplace",
+   "batch": "15",
+   "after": [
+    "training_yard"
+   ]
+  },
+  {
+   "id": "place.storehouse",
+   "kind": "place",
+   "key": "storehouse",
+   "name": "Storehouse",
+   "stem": "storehouse",
+   "area": "grounds",
+   "indoor": true,
+   "building": "storehouse",
+   "how": "inplace",
+   "batch": "16",
+   "after": [
+    "training_yard"
+   ]
+  },
+  {
+   "id": "place.dojo",
+   "kind": "place",
+   "key": "dojo",
+   "name": "Dojo",
+   "stem": "dojo",
+   "area": "grounds",
+   "indoor": true,
+   "building": "dojo",
+   "how": "inplace",
+   "batch": "15",
+   "after": [
+    "training_yard"
+   ]
+  },
+  {
+   "id": "place.pool",
+   "kind": "place",
+   "key": "pool",
+   "name": "Swimming Pool",
+   "stem": "pool",
+   "area": "grounds",
+   "indoor": false,
+   "building": "pool",
+   "how": "composed",
+   "batch": "16",
+   "after": [
+    "training_yard"
+   ],
+   "words": "the school's open-air swimming pool, seen from its timber deck: a pool of twenty-five metres set into a stone terrace on the slope behind a long low hall, edged in the same grey stone as the school's yards, with a low wooden fence, a small changing hut under a grey tiled roof, a lane board on the fence with no lettering, cedars close round it and mountains beyond; the water is still",
+   "check": [
+    "the pool looks as if it was built with the school, not added to it",
+    "nobody is in the picture"
+   ]
+  },
+  {
+   "id": "place.trailhead",
+   "kind": "place",
+   "key": "trailhead",
+   "name": "Mountain Path",
+   "stem": "trailhead",
+   "area": "mountain",
+   "indoor": false,
+   "building": "trailhead",
+   "how": "composed",
+   "batch": "2",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the mountain path, the top edge of the school where the stone path gives out and the mountain starts, seen looking north and uphill",
+   "camera": [
+    900,
+    340
+   ],
+   "facing": "north",
+   "old_picture": "camera",
+   "facts": [
+    "The tower and the pagoda of the dormitory garden's picture are behind the camera here: no tower and no pagoda stands in this picture."
+   ]
+  },
+  {
+   "id": "place.forest",
+   "kind": "place",
+   "key": "forest",
+   "name": "Forest Trail",
+   "stem": "forest",
+   "area": "mountain",
+   "indoor": false,
+   "building": "forest",
+   "how": "inplace",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ]
+  },
+  {
+   "id": "place.ridge",
+   "kind": "place",
+   "key": "ridge",
+   "name": "Mountain Ridge",
+   "stem": "ridge",
+   "area": "mountain",
+   "indoor": false,
+   "building": "ridge",
+   "how": "inplace",
+   "batch": "18",
+   "after": [
+    "trailhead"
+   ],
+   "note": "with the veil in the sky as a named addition"
+  },
+  {
+   "id": "place.bathhouse",
+   "kind": "place",
+   "key": "bathhouse",
+   "name": "Onsen",
+   "stem": "bathhouse",
+   "area": "mountain",
+   "indoor": true,
+   "building": "bathhouse",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "words": "the rest hall of a timber mountain hot-spring house at the edge of the trees: benches, a standing fan, a small glass-fronted fridge of milk bottles, a cedar door in one wall, and through open screens the stone-edged hot spring outside, its water steaming and still, with the forest behind it",
+   "check": [
+    "nobody is in the picture, and the spring has nobody in it"
+   ]
+  },
+  {
+   "id": "place.sauna",
+   "kind": "place",
+   "key": "sauna",
+   "name": "Sauna",
+   "stem": "sauna",
+   "area": "mountain",
+   "indoor": true,
+   "building": "bathhouse",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "words": "a small windowless room lined with cedar boards, lit only by its own stove: the stove with its stones, a wooden bucket and ladle, a bench along the wall, and beside the door a stone cold-plunge tub fed by a bamboo spout, its water still",
+   "refs_also": [
+    "bathhouse"
+   ],
+   "pinless": true,
+   "check": [
+    "nobody is in the picture",
+    "the room has no window"
+   ]
+  },
+  {
+   "id": "place.riverside",
+   "kind": "place",
+   "key": "riverside",
+   "name": "Riverside",
+   "stem": "riverside",
+   "area": "mountain",
+   "indoor": false,
+   "building": "riverside",
+   "how": "inplace",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ]
+  },
+  {
+   "id": "path.dorm_yard.staff_yard",
+   "kind": "path",
+   "a": "dorm_yard",
+   "b": "staff_yard",
+   "words": "east along stepping stones"
+  },
+  {
+   "id": "path.dorm_yard.trailhead",
+   "kind": "path",
+   "a": "dorm_yard",
+   "b": "trailhead",
+   "words": "north, behind the boys' dormitory"
+  },
+  {
+   "id": "path.staff_yard.training_yard",
+   "kind": "path",
+   "a": "staff_yard",
+   "b": "training_yard",
+   "words": "south, down a walled path"
+  },
+  {
+   "id": "exit.staff_yard.gojo_office",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "gojo_office",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "gojo_office",
+   "words": "its door faces the steps"
+  },
+  {
+   "id": "exit.staff_yard.office",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "office",
+   "side": "ahead",
+   "order": 2,
+   "on": "building",
+   "thing": "principal_hall",
+   "words": "it stands at the top of the steps"
+  },
+  {
+   "id": "exit.staff_yard.utahime_office",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "utahime_office",
+   "side": "right",
+   "order": 3,
+   "on": "building",
+   "thing": "utahime_office",
+   "words": "its door faces the steps"
+  },
+  {
+   "id": "exit.staff_yard.teachers_lounge",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "teachers_lounge",
+   "side": "right",
+   "order": 4,
+   "on": "building",
+   "thing": "teachers_house",
+   "words": "it stands beyond the office pavilion, at the edge"
+  },
+  {
+   "id": "exit.staff_yard.dorm_yard",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "dorm_yard",
+   "side": "bottom",
+   "half": "left",
+   "on": "path",
+   "words": "the path back to the dormitory garden"
+  },
+  {
+   "id": "exit.staff_yard.training_yard",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "training_yard",
+   "side": "bottom",
+   "half": "right",
+   "on": "path",
+   "words": "the walled path down to the training yard"
+  },
+  {
+   "id": "exit.trailhead.forest",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "forest",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "forest",
+   "words": "a level path leads into the cedars"
+  },
+  {
+   "id": "exit.trailhead.ridge",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "ridge",
+   "side": "ahead",
+   "order": 2,
+   "on": "building",
+   "thing": "ridge",
+   "words": "stone stairs climb straight up the mountain toward it"
+  },
+  {
+   "id": "exit.trailhead.bathhouse",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "bathhouse",
+   "side": "right",
+   "order": 3,
+   "on": "building",
+   "thing": "bathhouse",
+   "words": "it stands in the middle distance, among the trees"
+  },
+  {
+   "id": "exit.trailhead.riverside",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "riverside",
+   "side": "right",
+   "order": 4,
+   "on": "path",
+   "words": "the path that goes down at the edge, toward the river"
+  },
+  {
+   "id": "exit.trailhead.dorm_yard",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "dorm_yard",
+   "side": "bottom",
+   "on": "path",
+   "words": "the stone slabs back down to the dormitory garden"
+  },
+  {
+   "id": "exit.gate.courtyard",
+   "kind": "exit",
+   "place": "gate",
+   "to": "courtyard",
+   "side": "ahead",
+   "order": 2,
+   "on": "building",
+   "thing": "courtyard",
+   "words": "it is reached over the plank bridge, up the steps and through the open gate"
+  },
+  {
+   "id": "seen.gate.school_building",
+   "kind": "seen",
+   "place": "gate",
+   "thing": "school_building",
+   "side": "left",
+   "order": 1,
+   "words": "the schoolhouse's roof and upper windows show above the garden wall, on the left"
+  },
+  {
+   "id": "seen.gate.training_hall",
+   "kind": "seen",
+   "place": "gate",
+   "thing": "training_hall",
+   "side": "right",
+   "order": 3,
+   "words": "the training hall's roof shows above the garden wall, on the right"
+  },
+  {
+   "id": "line.dorm_common.far",
+   "kind": "line",
+   "room": "dorm_common",
+   "wall": "far",
+   "shows": "at the back, the foot of a tall wooden tower and cedars",
+   "names": [
+    "tower"
+   ],
+   "needs": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "line.dorm_common.left",
+   "kind": "line",
+   "room": "dorm_common",
+   "wall": "left",
+   "shows": "on the left, the dark timber and upstairs gallery of the boys' dormitory",
+   "names": [
+    "boys_dorm"
+   ],
+   "needs": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "window.cafeteria.left",
+   "kind": "window",
+   "room": "cafeteria",
+   "wall": "left",
+   "faces": "north",
+   "note": "that the windows are along the left wall is fixed by the Cafeteria's picture (interior.cafeteria); that this wall faces north, so the camera faces east, comes from the ground plan, where the School Courtyard lies north of the cafeteria, and stays a proposal until the School Courtyard is chosen"
+  },
+  {
+   "id": "line.cafeteria.left",
+   "kind": "line",
+   "room": "cafeteria",
+   "wall": "left",
+   "shows": "the school courtyard and its pine",
+   "names": [
+    "school_yard"
+   ],
+   "needs": [
+    "school_yard"
+   ]
+  },
+  {
+   "id": "window.classroom.side",
+   "kind": "window",
+   "room": "classroom",
+   "wall": "side",
+   "faces": "west"
+  },
+  {
+   "id": "line.classroom.side",
+   "kind": "line",
+   "room": "classroom",
+   "wall": "side",
+   "shows": "the school courtyard below, the library's roof beyond it, and cedars",
+   "names": [
+    "school_yard",
+    "library"
+   ],
+   "needs": [
+    "school_yard"
+   ]
+  },
+  {
+   "id": "window.infirmary.side",
+   "kind": "window",
+   "room": "infirmary",
+   "wall": "side",
+   "faces": "west"
+  },
+  {
+   "id": "line.infirmary.side",
+   "kind": "line",
+   "room": "infirmary",
+   "wall": "side",
+   "shows": "cedar trunks at the forest edge",
+   "names": [],
+   "needs": []
+  },
+  {
+   "id": "window.dorm.side",
+   "kind": "window",
+   "room": "dorm",
+   "wall": "side",
+   "faces": "north"
+  },
+  {
+   "id": "line.dorm.side",
+   "kind": "line",
+   "room": "dorm",
+   "wall": "side",
+   "shows": "the forested mountain slope and the ridge above it, with nothing built in view",
+   "names": [
+    "ridge"
+   ],
+   "needs": []
+  },
+  {
+   "id": "window.yuji_room.side",
+   "kind": "window",
+   "room": "yuji_room",
+   "wall": "side",
+   "faces": "east"
+  },
+  {
+   "id": "line.yuji_room.side",
+   "kind": "line",
+   "room": "yuji_room",
+   "wall": "side",
+   "shows": "the dormitory garden and its pond",
+   "names": [
+    "dorm_yard"
+   ],
+   "needs": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "window.megumi_room.side",
+   "kind": "window",
+   "room": "megumi_room",
+   "wall": "side",
+   "faces": "west"
+  },
+  {
+   "id": "line.megumi_room.side",
+   "kind": "line",
+   "room": "megumi_room",
+   "wall": "side",
+   "shows": "the cedar forest",
+   "names": [
+    "forest"
+   ],
+   "needs": []
+  },
+  {
+   "id": "window.senpai_room.side",
+   "kind": "window",
+   "room": "senpai_room",
+   "wall": "side",
+   "faces": "east"
+  },
+  {
+   "id": "line.senpai_room.side",
+   "kind": "line",
+   "room": "senpai_room",
+   "wall": "side",
+   "shows": "the tall wooden tower",
+   "names": [
+    "tower"
+   ],
+   "needs": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "window.girls_dorm.end",
+   "kind": "window",
+   "room": "girls_dorm",
+   "wall": "end",
+   "faces": "west"
+  },
+  {
+   "id": "line.girls_dorm.end",
+   "kind": "line",
+   "room": "girls_dorm",
+   "wall": "end",
+   "shows": "the dormitory garden and the common room's roof",
+   "names": [
+    "dorm_yard",
+    "common_room"
+   ],
+   "needs": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "window.nobara_room.side",
+   "kind": "window",
+   "room": "nobara_room",
+   "wall": "side",
+   "faces": "west"
+  },
+  {
+   "id": "line.nobara_room.side",
+   "kind": "line",
+   "room": "nobara_room",
+   "wall": "side",
+   "shows": "the dormitory garden and the common room's roof",
+   "names": [
+    "dorm_yard",
+    "common_room"
+   ],
+   "needs": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "window.maki_room.side",
+   "kind": "window",
+   "room": "maki_room",
+   "wall": "side",
+   "faces": "west"
+  },
+  {
+   "id": "line.maki_room.side",
+   "kind": "line",
+   "room": "maki_room",
+   "wall": "side",
+   "shows": "the dormitory garden and the common room's roof",
+   "names": [
+    "dorm_yard",
+    "common_room"
+   ],
+   "needs": [
+    "dorm_yard"
+   ]
+  },
+  {
+   "id": "window.teachers_lounge.side",
+   "kind": "window",
+   "room": "teachers_lounge",
+   "wall": "side",
+   "faces": "west"
+  },
+  {
+   "id": "line.teachers_lounge.side",
+   "kind": "line",
+   "room": "teachers_lounge",
+   "wall": "side",
+   "shows": "the staff building steps",
+   "names": [
+    "staff_yard"
+   ],
+   "needs": [
+    "staff_yard"
+   ]
+  },
+  {
+   "id": "window.teachers_dorm.end",
+   "kind": "window",
+   "room": "teachers_dorm",
+   "wall": "end",
+   "faces": null
+  },
+  {
+   "id": "line.teachers_dorm.end",
+   "kind": "line",
+   "room": "teachers_dorm",
+   "wall": "end",
+   "shows": "a small inner garden",
+   "names": [],
+   "needs": []
+  },
+  {
+   "id": "window.training.high",
+   "kind": "window",
+   "room": "training",
+   "wall": "high",
+   "faces": null
+  },
+  {
+   "id": "line.training.high",
+   "kind": "line",
+   "room": "training",
+   "wall": "high",
+   "shows": "sky and cedar tops",
+   "names": [],
+   "needs": []
+  },
+  {
+   "id": "window.dojo.side",
+   "kind": "window",
+   "room": "dojo",
+   "wall": "side",
+   "faces": "west"
+  },
+  {
+   "id": "line.dojo.side",
+   "kind": "line",
+   "room": "dojo",
+   "wall": "side",
+   "shows": "the training yard's striking posts",
+   "names": [
+    "training_yard"
+   ],
+   "needs": [
+    "training_yard"
+   ]
+  },
+  {
+   "id": "window.bathhouse.open screens",
+   "kind": "window",
+   "room": "bathhouse",
+   "wall": "open screens",
+   "faces": null
+  },
+  {
+   "id": "line.bathhouse.open screens",
+   "kind": "line",
+   "room": "bathhouse",
+   "wall": "open screens",
+   "shows": "the hot spring and the cedar slope behind it",
+   "names": [],
+   "needs": []
+  },
+  {
+   "id": "window.utahime_office.round",
+   "kind": "window",
+   "room": "utahime_office",
+   "wall": "round",
+   "faces": null
+  },
+  {
+   "id": "line.utahime_office.round",
+   "kind": "line",
+   "room": "utahime_office",
+   "wall": "round",
+   "shows": "a small raked gravel garden",
+   "names": [],
+   "needs": []
+  },
+  {
+   "id": "window.gojo_office.large",
+   "kind": "window",
+   "room": "gojo_office",
+   "wall": "large",
+   "faces": null
+  },
+  {
+   "id": "line.gojo_office.large",
+   "kind": "line",
+   "room": "gojo_office",
+   "wall": "large",
+   "shows": "cedars",
+   "names": [],
+   "needs": []
+  }
+ ],
+ "waived": [],
+ "waits": [
+  {
+   "id": "wait.gate.hall",
+   "picture": "gate",
+   "batch": "2",
+   "until_rev": 2,
+   "what": "today's gate picture shows a large hall with a hipped tiled roof at the top of the steps behind the torii; the Courtyard the owner chose has no hall there"
+  },
+  {
+   "id": "wait.dorm_common.windows",
+   "picture": "dorm_common",
+   "batch": "3a",
+   "until_rev": 3,
+   "what": "the Common Room's windows show a town-style house; they are redone to show the tower and the boys' dormitory once the garden is chosen"
+  },
+  {
+   "id": "wait.cafeteria.windows",
+   "picture": "cafeteria",
+   "batch": "4a",
+   "until_rev": 3,
+   "what": "the Cafeteria's windows show roofs that are not the campus; they are redone to show the School Courtyard once it is chosen"
+  }
+ ]
+}

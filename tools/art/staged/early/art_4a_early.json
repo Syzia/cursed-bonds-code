@@ -1,0 +1,70 @@
+{
+ "about": [
+  "Batch 4a (the Cafeteria and the girls' corridor, redone in place) written early on 7 Oct 2026 at the owner's word, with: python3 tools/art_batch.py 4a --preview --record tools/art/staged/early/campus_for_batch2_third.json --out '~/Desktop/JJK Game images/ui2/early'. Judge its results with tools/py_art.sh tools/install_redo.py <place> <a> <b> --dry, then by eye: the check has four known blind spots (art_3a_early.json)."
+ ],
+ "written": "2026-10-07",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: Cafeteria, version A",
+   "save": "ui2_cafeteria_a",
+   "seed": 4400,
+   "prompt_sha256": "9261e137179b8f325f809e0b6278e879de42072e208d43437c5951f62c2e0ce2",
+   "references": [
+    {
+     "file": "ui2_in_cafeteria_1.png",
+     "sha256": "354c3a4837a130ee6601e950bde36ed0ff4925d3659edd5c5db0b8536f109331"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Cafeteria, version B",
+   "save": "ui2_cafeteria_b",
+   "seed": 4401,
+   "prompt_sha256": "9261e137179b8f325f809e0b6278e879de42072e208d43437c5951f62c2e0ce2",
+   "references": [
+    {
+     "file": "ui2_in_cafeteria_1.png",
+     "sha256": "354c3a4837a130ee6601e950bde36ed0ff4925d3659edd5c5db0b8536f109331"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Girls' Dormitory, version A",
+   "save": "ui2_girls_dorm_a",
+   "seed": 6872,
+   "prompt_sha256": "483be17e2e15320dabda51e61e2b2fbdcaee3c79ddd8dca520c32bc11adc38d5",
+   "references": [
+    {
+     "file": "ui2_in_girls_dorm_1.png",
+     "sha256": "85386df703185db59e6b984fa562581458c2cadd1f2af42ad2fed486dd27b649"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Girls' Dormitory, version B",
+   "save": "ui2_girls_dorm_b",
+   "seed": 6873,
+   "prompt_sha256": "483be17e2e15320dabda51e61e2b2fbdcaee3c79ddd8dca520c32bc11adc38d5",
+   "references": [
+    {
+     "file": "ui2_in_girls_dorm_1.png",
+     "sha256": "85386df703185db59e6b984fa562581458c2cadd1f2af42ad2fed486dd27b649"
+    }
+   ]
+  }
+ ],
+ "chosen": {
+  "said": "the owner, in chat, 7 Oct 2026: \"New cafetières look good. We need to redo the girls dorms as there are doors that lead to nothing.\"",
+  "cafeteria": {
+   "version": "a, unless the owner says b (both 'look good'; no letter was named)",
+   "render": "ui2_cafeteria_a_00001_.png",
+   "sha256": "b7c5f2cdc4782dc4ca9da7267133aa515fd4706e48a57c2e66de84c35b05d8f5",
+   "install_redo_dry": "version a PASS (nothing moved: 19 points, none off; nothing vanished or added; 12.0 times sharper). Version b LOOK (one window's view; 7.4 times sharper).",
+   "by_eye": "Version a's windows show packed earth and a long white building under a grey roof, which is the School Courtyard the owner chose; version b's show only trees."
+  },
+  "girls_dorm": {
+   "version": "neither",
+   "note": "TO BE REDONE at the owner's word: the corridor has eight doors and two rooms (Nobara's, the first door on the left; Maki's, the first door on the right), so six doors lead nowhere. Painted again as art_4r.json: the same corridor with only those two doors. (For the record, the check refused both versions of this sitting, for the same kinds of false alarm as in art_3a_early.json.)"
+  }
+ }
+}

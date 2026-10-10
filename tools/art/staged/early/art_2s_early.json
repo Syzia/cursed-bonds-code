@@ -1,0 +1,88 @@
+{
+ "about": [
+  "Sitting 2, third go, written by hand on 7 Oct 2026 at the owner's word: the Main Gate composed again from campus_for_batch2_third.json, seen in the first person from a Japanese garden with water, with the gatehouse of the last sitting's version A as its second reference picture; and the Mountain Path's first versions A and B, each with one named change, the veil as a small dome on the very top of the hill, from words alone (no reference picture, so that the dome's size is not copied)."
+ ],
+ "written": "2026-10-07",
+ "pictures": [
+  {
+   "title": "Nano Banana Pro: Main Gate, from the garden path, version A",
+   "save": "ui2_gate3_a",
+   "seed": 5608,
+   "prompt_sha256": "b837390c290086c343931016b5b91cbccf5d846801ac7aff7d86c870a14a7193",
+   "references": [
+    {
+     "file": "ui2_in_gate3_1.png",
+     "sha256": "72ff262ebcac799090bd74956b6e767b3bb23c7b55352d9e37d1fe54ecadc81f"
+    },
+    {
+     "file": "ui2_in_gate3_2.png",
+     "sha256": "5cc67b7c872ed593acda2f04252b16af2f1209b7aa23fedd26751ee7cd67eea6"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Main Gate, from the garden path, version B",
+   "save": "ui2_gate3_b",
+   "seed": 5609,
+   "prompt_sha256": "b837390c290086c343931016b5b91cbccf5d846801ac7aff7d86c870a14a7193",
+   "references": [
+    {
+     "file": "ui2_in_gate3_1.png",
+     "sha256": "72ff262ebcac799090bd74956b6e767b3bb23c7b55352d9e37d1fe54ecadc81f"
+    },
+    {
+     "file": "ui2_in_gate3_2.png",
+     "sha256": "5cc67b7c872ed593acda2f04252b16af2f1209b7aa23fedd26751ee7cd67eea6"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path A, a small veil on the hilltop, version A",
+   "save": "ui2_trailhead_sa_a",
+   "seed": 10962,
+   "prompt_sha256": "be5204346d93454c49e8699dc8130b462a9c57325b99b05408d5cd42274e9fbf",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_sa_1.png",
+     "sha256": "32e4f31d5a75ccf50b4e6f3f362723bd9007e03ecb226a89c66e55a4a642c37b"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path A, a small veil on the hilltop, version B",
+   "save": "ui2_trailhead_sa_b",
+   "seed": 10963,
+   "prompt_sha256": "be5204346d93454c49e8699dc8130b462a9c57325b99b05408d5cd42274e9fbf",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_sa_1.png",
+     "sha256": "32e4f31d5a75ccf50b4e6f3f362723bd9007e03ecb226a89c66e55a4a642c37b"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path B, a small veil on the hilltop, version A",
+   "save": "ui2_trailhead_sb_a",
+   "seed": 10986,
+   "prompt_sha256": "612b58352d59bebcb82acf044272b2fa61daae6824f802e1575da51465727fd5",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_sb_1.png",
+     "sha256": "f779d37c4ef56aa5dd50f45ba8893c544058ea5e9521e1076eb2c7455c1f5325"
+    }
+   ]
+  },
+  {
+   "title": "Nano Banana Pro: Mountain Path B, a small veil on the hilltop, version B",
+   "save": "ui2_trailhead_sb_b",
+   "seed": 10987,
+   "prompt_sha256": "612b58352d59bebcb82acf044272b2fa61daae6824f802e1575da51465727fd5",
+   "references": [
+    {
+     "file": "ui2_in_trailhead_sb_1.png",
+     "sha256": "f779d37c4ef56aa5dd50f45ba8893c544058ea5e9521e1076eb2c7455c1f5325"
+    }
+   ]
+  }
+ ]
+}
