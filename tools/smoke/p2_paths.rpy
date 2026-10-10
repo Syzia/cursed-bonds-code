@@ -588,8 +588,24 @@ label zz_smoke:
               "an exit to a locked place: path_exits gives the lock's reason", _zz_row)
         check(_zz_row["icon"] == "place_storehouse", "path_exits keeps the destination's icon for a locked exit (only the hotspot is drawn as the lock)", _zz_row["icon"])
         check(zz_tip("hot_go_training_yard__storehouse") == _zz_why, "its hover label is the lock's reason", zz_tip("hot_go_training_yard__storehouse"))
-        check("lock" in zz_icons(zz_hot("hot_go_training_yard__storehouse")) and "place_storehouse" not in zz_icons(zz_hot("hot_go_training_yard__storehouse"))
-              and "place_dojo" in zz_icons(zz_hot("hot_go_training_yard__dojo")),
+        ## The second overhaul (D60; docs/UI2_PINS.md Part 2b): a rule that holds
+        ## in both kinds of place. Where the place draws buttons the locked
+        ## exit is drawn as the lock icon, as before. Where the picture itself
+        ## is clicked (the exit has a traced shape: hot_shapes_for) no icon is
+        ## drawn for either exit; there the lock is the reason its square and
+        ## its shape both say, and neither of the two can be pressed, while the
+        ## open exit's two still walk.
+        _zz_shaped = getattr(store, "hot_shapes_for", lambda loc: {})("training_yard")
+        if "go_training_yard__storehouse" in _zz_shaped and "go_training_yard__dojo" in _zz_shaped:
+            _zz_drawn = (zz_icons(zz_hot("hot_go_training_yard__storehouse")) == [] and zz_icons(zz_hot("hot_go_training_yard__dojo")) == []
+                         and zz_tip("hotshape_go_training_yard__storehouse") == _zz_why
+                         and zz_action_value("hot_go_training_yard__storehouse") is None
+                         and zz_action_value("hotshape_go_training_yard__storehouse") is None
+                         and zz_action_value("hot_go_training_yard__dojo") == zz_action_value("hotshape_go_training_yard__dojo") == ("act", "path_dojo"))
+        else:
+            _zz_drawn = ("lock" in zz_icons(zz_hot("hot_go_training_yard__storehouse")) and "place_storehouse" not in zz_icons(zz_hot("hot_go_training_yard__storehouse"))
+                         and "place_dojo" in zz_icons(zz_hot("hot_go_training_yard__dojo")))
+        check(_zz_drawn,
               "it is drawn as the lock icon (an open exit keeps its place's icon)", zz_icons(zz_hot("hot_go_training_yard__storehouse")))
         check(zz_alpha("hot_go_training_yard__storehouse") == 0.45 and zz_alpha("hot_go_training_yard__dojo") == 1.0,
               "a locked exit's icon is drawn dim (alpha 0.45); an open one is not",
