@@ -583,7 +583,8 @@ init -5 python:
           need     the ids that must carry one, or be under keep_tile, once
                    the place holds any shape: `known` without a test
                    harness's own (ids that begin "zz")
-          limits   HOT_SHAPE
+          limits   the game's table of limits: polys, points, area_min,
+                   area_max, buried_max, grid
           size     the picture's (w, h)
         """
         out = []

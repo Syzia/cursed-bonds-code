@@ -41,12 +41,21 @@
 ##      screen reaches no save
 ##   H  what wave 0 froze earlier and still holds: home, the eleven keys, the
 ##      door, asleep and away tables with their functions, the 114 icons
+##   I  the picture is what is clicked (D60, 7.3; the second sitting): the
+##      frozen names, the counting functions against the three test shapes of
+##      tools/smoke/hot_shape_cases.json, the rules in lint (each broken test
+##      sidecar refused by name), the gates, and the shaped Courtyard: no ring
+##      and no icon, the square and the shape, the light, the layers, hidden
+##      behind a person, dimmed, names shown, faces, hot_look.json, pickling.
+##      The test sidecar and the manifest row are laid in place, so this
+##      section is the same in both states.
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
 ##
-## It sets the focus (renpy.set_focus) to read a hover label, so it takes the
-## pointer lock:
+## It sets the focus (renpy.set_focus) to read a hover label, and section I
+## rests the pointer on a shape (renpy.set_mouse_pos), so it takes the pointer
+## lock:
 ## smoke-pointer
 
 init 999 python:
@@ -294,6 +303,195 @@ init 999 python:
 
     def zzc_sig(fn):
         return builtins.str(inspect.signature(fn))
+
+    ## --- section I (D60) ---------------------------------------------------------
+    ## The Courtyard's whole test shapes: each exit's and the vending
+    ## machine's, traced round its applied point. The gate's and the Training
+    ## Yard's overlap on purpose (the gate's is the smaller); the garden's is
+    ## not a rectangle, so its box holds a corner that is outside it; the exit
+    ## to the School Courtyard keeps its button (keep_tile).
+    ZZC_SHAPES = {
+        "go_courtyard__dorm_yard":     [[[860, 250], [1060, 250], [1060, 420], [960, 420], [960, 340], [860, 340]]],
+        "go_courtyard__training_yard": [[[1380, 790], [1760, 790], [1760, 960], [1380, 960]]],
+        "go_courtyard__gate":          [[[1200, 900], [1460, 900], [1460, 1040], [1200, 1040]]],
+        "spot_vend":                   [[[1540, 630], [1660, 630], [1660, 750], [1540, 750]]],
+    }
+    ZZC_KEEP = {"go_courtyard__school_yard": "test: this exit keeps its button",
+                "gateway": "planned, not registered yet", "straw_posts": "planned, not registered yet"}
+    ZZC_REAL = builtins.list([None])
+
+    def zzc_d60(shapes=None, drop=(), keep=None, **more):
+        """Lay the Courtyard's test sidecar in place: the real file's own
+        keys, the whole test shapes with `shapes` laid over them and `drop`
+        taken out, the keep_tile rows, and any other key."""
+        side = json.loads(json.dumps(ZZC_REAL[0]))
+        sh = json.loads(json.dumps(ZZC_SHAPES))
+        sh.update(shapes or {})
+        for k in drop:
+            sh.pop(k, None)
+        side["shapes"] = sh
+        side["keep_tile"] = builtins.dict(ZZC_KEEP if keep is None else keep)
+        side.update(more)
+        zzc_layout("hot_courtyard", side)
+        renpy.restart_interaction()
+
+    def zzc_at(x, y, screen="sb_place"):
+        """The id of the widget that would take a click at (x, y) now, as
+        the engine picks it (the topmost focus area there); None when
+        nothing would."""
+        zz_render(0.2)
+        f = renpy.display.render.focus_at_point(x, y)
+        if f is None:
+            return None
+        sc = renpy.get_screen(screen)
+        for wid, w in (sc.widgets.items() if sc is not None else ()):
+            if w is f.widget:
+                return wid
+        return "?"
+
+    def zzc_lights(screen="sb_place"):
+        """{hotspot id: {part: strength}} for every shape light a shown
+        screen draws: the alpha of the outer transform of each of its
+        layers, told apart by the box they are drawn for."""
+        sc = renpy.get_screen(screen)
+        boxes = builtins.dict((hot_shape_box(sh), hid) for hid, sh in hot_shape_rows(store.here).items())
+        out = builtins.dict()
+        T = renpy.display.transform.Transform
+        for d in (zzc_tree(sc) if sc is not None else ()):
+            c = getattr(d, "child", None)
+            if isinstance(d, T) and isinstance(c, T) and isinstance(getattr(c, "child", None), hot_ShapeLight):
+                light = c.child
+                part = "glow" if light.part == "wash" else ("dark" if light.width > HOT_SHAPE["line"] else "line")
+                out.setdefault(boxes.get(light.box, "?"), builtins.dict())[part] = (round(float(d.alpha), 3), float(d.additive), c.blur)
+        return out
+
+    def zzc_fn_transforms(screen="sb_place"):
+        """The names of the functions of every function transform a shown
+        screen holds."""
+        sc = renpy.get_screen(screen)
+        return builtins.sorted(getattr(d.function, "__name__", "?") for d in (zzc_tree(sc) if sc is not None else ())
+                               if isinstance(d, renpy.display.transform.Transform) and d.function is not None)
+
+    def zzc_icons_under(wid, screen="sb_place"):
+        """How many icons (a picture of images/icons/, or a stand-in's
+        glyph) are drawn inside a widget; None when it is not there."""
+        w = renpy.get_displayable(screen, wid)
+        if w is None:
+            return None
+        n = 0
+        for d in zzc_tree(w):
+            if builtins.str(getattr(d, "filename", "")).startswith("images/icons/"):
+                n += 1
+            elif isinstance(d, renpy.text.text.Text) and d.style.name and "icon_glyph" in builtins.str(d.style.name):
+                n += 1
+        return n
+
+    def zzc_label_rect():
+        """(x, y, w, h) of the hover label as it was last drawn; None when
+        none is up."""
+        sc = renpy.get_screen("hover_label")
+        for d in (zzc_tree(sc) if sc is not None else ()):
+            if isinstance(d, renpy.display.layout.NearRect) and d.child is not None:
+                size = getattr(d.child, "window_size", None)
+                offs = getattr(d, "offsets", None)
+                if size and offs:
+                    return (int(offs[0][0]), int(offs[0][1]), int(size[0]), int(size[1]))
+        return None
+
+    def zzc_focus(wid, screen="sb_place"):
+        """Focus a widget as the keyboard would, and draw."""
+        renpy.set_focus(screen, wid)
+        zz_render(0.35)
+
+    def zzc_unfocus():
+        """Nothing focused, as when the pointer leaves every button: the
+        pointer is parked where the place view has none, and the focus (and
+        with it the tooltip in force) is cleared as the engine clears it."""
+        try:
+            renpy.set_mouse_pos(960, 150)
+        except Exception:
+            pass
+        zz_render(0.2)
+        renpy.display.focus.override = None
+        renpy.display.focus.clear_focus()
+        renpy.restart_interaction()
+        zz_render(0.3)
+
+    def zzc_point(x, y, wid, screen="sb_place"):
+        """Rest the pointer at (x, y). Returns "pointer" when the window
+        took it (the tooltip in force is then the one under the pointer).
+        A window that is not in front takes no pointer: then the widget the
+        engine itself picks at that point (zzc_at; it must be `wid`) is
+        focused as the pointer would focus it, and "focus" is returned;
+        "missed" when the engine picks another."""
+        try:
+            renpy.set_mouse_pos(x, y)
+        except Exception:
+            pass
+        zz_render(0.5)
+        tip = GetTooltip()
+        if isinstance(tip, builtins.tuple) and tip[1] == wid:
+            return "pointer"
+        if zzc_at(x, y, screen) != wid:
+            return "missed"
+        zzc_focus(wid, screen)
+        return "focus"
+
+    def zzc_pixel_diff(a, b, box):
+        """How many pixels of a box differ between two screenshots of this
+        run (by more than 6 in any channel), the box in the game's own
+        1920 x 1080 and scaled to the pictures."""
+        import pygame_sdl2
+        pa = pygame_sdl2.image.load(os.path.join(zz_smoke_state.shots, a + ".png"))
+        pb = pygame_sdl2.image.load(os.path.join(zz_smoke_state.shots, b + ".png"))
+        if pa.get_size() != pb.get_size():
+            return -1
+        k = pa.get_size()[0] / float(config.screen_width)
+        n = 0
+        for y in range(int(box[1] * k), int((box[1] + box[3]) * k)):
+            for x in range(int(box[0] * k), int((box[0] + box[2]) * k)):
+                ca, cb = pa.get_at((x, y)), pb.get_at((x, y))
+                if max(abs(ca[0] - cb[0]), abs(ca[1] - cb[1]), abs(ca[2] - cb[2])) > 6:
+                    n += 1
+        return n
+
+    def zz_d60_faces(to):
+        """A test path_faces: two people inside the garden's house and the
+        school's."""
+        return ["megumi", "yuji"] if to in ("dorm_yard", "school_yard") else []
+
+    def zz_d60_locked(to):
+        """A test path_locked: the Dormitory Garden is shut."""
+        return "The garden gate is barred." if to == "dorm_yard" else ZZC_HOLD["path_locked"](to)
+
+    def zz_d60_rects(loc):
+        """A test view_person_rects: one person, over ZZC_HOLD["rect"]."""
+        return [ZZC_HOLD["rect"]]
+
+    def zz_d60_fg(loc, per=None):
+        """A test view_fg_path: the room's foreground cut-out is ZZC_HOLD["fg"]."""
+        return ZZC_HOLD["fg"]
+
+    def zz_d60_rows(loc):
+        """A test view_stage_rows: one person painted into the room, in
+        the box ZZC_HOLD["pose"]."""
+        b = ZZC_HOLD["pose"]
+        return [builtins.dict(who="megumi", x=int(b[0] + b[2] / 2), yoff=-40, zoom=0.52, far=0,
+                              pose=builtins.dict(image=ZZC_HOLD["pose_image"], box=b), rect=b)]
+
+    ZZC_HOLD = builtins.dict()
+    ZZC_PF = store.path_faces
+    ## True when the tree itself (or an overlay) already shapes a place: the
+    ## checks that say "as it ships no place is shaped" then stand aside.
+    ZZC_SHAPED_TREE = builtins.any(hot_shapes_for(l) for l in LOC_ORDER)
+
+
+## Section I: a patch of one flat colour with the Courtyard's hotspots on it,
+## to see the light on white and on black.
+screen zz_d60_patch(col):
+    add Solid(col)
+    use hot_layer("courtyard")
+    use hot_layer("courtyard", front=True)
 
 
 ## D31's test screen: the person view as U3 would build it, with the painted
@@ -1424,5 +1622,514 @@ label zz_smoke:
         _zz_all = [f for fn in (_validate_world, path_validate, hot_validate, view_validate, night_validate, icon_validate, art_validate,
                                 rule_validate, _validate_board) for f in fn()]
         check(_zz_all == [], "H: the validators of every file this sitting touched are clean together", _zz_all)
+
+    ## --- I. the picture is what is clicked (D60, 7.3) ------------------------------------
+    python:
+        settle(day=2, period="Noon", here="courtyard")
+        zzc_hold()
+        ZZC_REAL[0] = rule_layout("hot_courtyard")
+        _zz_pers = persistent.show_names
+        persistent.show_names = False
+
+        ## -- the frozen names
+        check(zzc_owner(hot_shapes_for, "sb_hotspots.rpy") and zzc_sig(hot_shapes_for) == "(loc)"
+              and zzc_owner(hot_tip_rect, "sb_hotspots.rpy") and zzc_sig(hot_tip_rect) == "(key)"
+              and isinstance(HOT_SHAPE, builtins.dict)
+              and (HOT_SHAPE["polys"], HOT_SHAPE["points"], HOT_SHAPE["area_min"], HOT_SHAPE["area_max"], HOT_SHAPE["buried_max"], HOT_SHAPE["grid"])
+              == ((1, 3), (3, 60), 5184, 0.4, 0.5, 4)
+              and HOT_LOOK_KEYS == ("color", "wash", "edge", "dim", "names") and all(k in HOT_SHAPE for k in HOT_LOOK_KEYS)
+              and HOT_SHAPE["dim"] < 0.5 and 0 < HOT_SHAPE["names"] < 1
+              and zzc_sig(hot_layer_rows) == "(loc, front, shapes)" and zzc_screen_params("hot_layer") == ["loc", "front"]
+              and builtins.sorted(hot_spots_for("courtyard")[0]) == builtins.sorted(HOT_KEYS) and len(HOT_KEYS) == 11
+              and zzc_sig(hot_set_dim) == "(hot_id, fn)",
+              "I: hot_shapes_for(loc), hot_tip_rect(key) and HOT_SHAPE live in sb_hotspots.rpy: 1 to 3 polygons of 3 to 60 points, 5,184 px2 to two fifths of the picture, at most half buried, a 4 px grid; the light's five keys; hot_layer keeps its two parameters and hot_spots_for its eleven keys")
+        check(hot_shapes_for("courtyard") == {} and all(hot_shapes_for(l) == {} for l in LOC_ORDER) == (not ZZC_SHAPED_TREE)
+              and hot_shapes_for("zz_nowhere") == {} and hot_tip_rect("hot_spot_vend") is (None if not hot_shapes_for("courtyard") else hot_tip_rect("hot_spot_vend"))
+              and hot_tip_rect("hud_map") is None and hot_tip_rect("hotshape_zz") is None,
+              "I: in the tree as it ships no place is shaped: hot_shapes_for answers {} and hot_tip_rect None")
+
+        ## -- the counting functions, against the three test shapes
+        with open(os.path.join(smoke_env("SMOKE_ROOT", "."), "tools", "smoke", "hot_shape_cases.json"), encoding="utf-8") as _zz_fh:
+            _zz_cases = json.load(_zz_fh)
+        _zz_pts = builtins.dict((k, builtins.tuple(v)) for k, v in _zz_cases["points"].items())
+        _zz_got = hot_shape_count(_zz_cases["shapes"], _zz_pts, builtins.tuple(_zz_cases["size"]), _zz_cases["grid"])
+        _zz_got = json.loads(json.dumps(builtins.dict((k, builtins.dict(v)) for k, v in _zz_got.items())))
+        check(len(_zz_cases["shapes"]) == 3 and _zz_got == _zz_cases["expect"]
+              and builtins.list(hot_shape_order(_zz_cases["shapes"])) == _zz_cases["order"],
+              "I: hot_shape_count gives the three test shapes of tools/smoke/hot_shape_cases.json their recorded answers (area, cells, twice, buried, point, under), and hot_shape_order their order",
+              [(k, _zz_got.get(k), _zz_cases["expect"].get(k)) for k in _zz_cases["shapes"] if _zz_got.get(k) != _zz_cases["expect"].get(k)])
+        _zz_lim = builtins.dict(_zz_cases["limits"], polys=builtins.tuple(_zz_cases["limits"]["polys"]), points=builtins.tuple(_zz_cases["limits"]["points"]))
+        _zz_f = builtins.list(hot_shape_findings("zz_cases", _zz_cases["shapes"], None, _zz_pts, builtins.set(_zz_cases["shapes"]),
+                                                 builtins.set(_zz_cases["shapes"]), _zz_lim, builtins.tuple(_zz_cases["size"])))
+        check(_zz_f == _zz_cases["findings"] and len(_zz_f) == 1
+              and builtins.dict((k, HOT_SHAPE[k]) for k in ("area_min", "area_max", "buried_max", "grid")) == builtins.dict((k, _zz_lim[k]) for k in ("area_min", "area_max", "buried_max", "grid"))
+              and HOT_SHAPE["polys"] == _zz_lim["polys"] and HOT_SHAPE["points"] == _zz_lim["points"],
+              "I: and hot_shape_findings says of them the one sentence recorded there; the file's limits are HOT_SHAPE's", _zz_f)
+        with open(os.path.join(smoke_env("SMOKE_ROOT", "."), "game", "sb_hotspots.rpy"), encoding="utf-8") as _zz_fh:
+            _zz_src = _zz_fh.read().split("\n")
+        _zz_a = [n for n, l in enumerate(_zz_src) if l.strip().startswith("## >>> hot_shape:")]
+        _zz_b = [n for n, l in enumerate(_zz_src) if l.strip().startswith("## <<< hot_shape:")]
+        _zz_blk = "\n".join(_zz_src[_zz_a[0] + 1:_zz_b[0]]) if len(_zz_a) == 1 and len(_zz_b) == 1 else ""
+        check(_zz_blk and all(("def " + n + "(") in _zz_blk for n in ("hot_shape_count", "hot_shape_cells", "hot_shape_order", "hot_shape_inside",
+                                                                         "hot_shape_area", "hot_shape_crossed", "hot_shape_findings", "hot_shape_box"))
+              and not any(w in _zz_blk for w in ("renpy", "store.", "config.", "HOT_", "rule_layout", "persistent")),
+              "I: the counting and rule functions stand between the two hot_shape marker lines of sb_hotspots.rpy, and that text names nothing of Ren'Py and nothing else of the game (it is copied unchanged into tools/check_layout.py)")
+
+        ## -- the rules in lint: the whole test sidecar is accepted, each broken one refused by name
+        zzc_art(courtyard={"rev": 2, "kind": "composed"})
+        zzc_d60()
+        check(hot_validate() == [] and path_validate() == [] and rule_validate() == [],
+              "I: lint accepts the Courtyard's whole test sidecar (four shapes, the gate's and the Training Yard's overlapping; one exit and the two planned things under keep_tile)",
+              hot_validate() + path_validate() + rule_validate())
+        _zz_broken = [
+            ("a point outside its own shape", builtins.dict(shapes={"go_courtyard__dorm_yard": [[[860, 400], [1060, 400], [1060, 520], [860, 520]]]}),
+             "go_courtyard__dorm_yard", "outside its own shape"),
+            ("a point under a smaller shape", builtins.dict(shapes={"spot_vend": [[[1540, 630], [1700, 630], [1700, 900], [1540, 900]]]}),
+             "go_courtyard__training_yard", "under the smaller shape 'spot_vend'"),
+            ("a polygon of two points", builtins.dict(shapes={"go_courtyard__gate": [[[1200, 900], [1460, 1040]]]}),
+             "go_courtyard__gate", "has 2 points"),
+            ("a polygon that crosses itself", builtins.dict(shapes={"go_courtyard__gate": [[[1200, 900], [1460, 1040], [1460, 900], [1200, 1040]]]}),
+             "go_courtyard__gate", "crosses itself"),
+            ("a shape more than half under smaller ones",
+             builtins.dict(shapes={"go_courtyard__gate": [[[1260, 945], [1340, 945], [1340, 1025], [1260, 1025]], [[1400, 795], [1630, 795], [1630, 960], [1400, 960]]]}),
+             "go_courtyard__training_yard", "is under smaller shapes"),
+            ("a shape smaller than a button", builtins.dict(shapes={"spot_vend": [[[1570, 660], [1630, 660], [1630, 720], [1570, 720]]]}),
+             "spot_vend", "smaller than a button"),
+            ("a shaped place with one exit that has no shape and is not under keep_tile", builtins.dict(drop=("go_courtyard__dorm_yard",)),
+             "go_courtyard__dorm_yard", "has no shape and is not under keep_tile"),
+        ]
+        for _zz_what, _zz_kw, _zz_id, _zz_say in _zz_broken:
+            zzc_d60(**_zz_kw)
+            _zz_f = hot_validate()
+            check(len(_zz_f) == 1 and repr(_zz_id) in _zz_f[0] and _zz_say in _zz_f[0] and "hot_courtyard.json" in _zz_f[0],
+                  "I: lint refuses %s, by name" % _zz_what, _zz_f)
+        zzc_d60(shapes={"zz_gone": [[[300, 300], [400, 300], [400, 400], [300, 400]]], "gateway": [[[500, 500], [600, 500], [600, 600], [500, 600]]],
+                        "go_courtyard__gate": [[[1200, 900], [1460, 900], [1460, 1040], [2000, 1040]]],
+                        "spot_vend": [[[1540, 630], [1660, 630], [1660, 750], [1540, 750]], [[1600, 700], [1700, 700], [1700, 780], [1600, 780]]]},
+                keep={"go_courtyard__school_yard": "", "straw_posts": "planned", "gateway": "planned", "zz_other": "x"})
+        _zz_f = hot_validate()
+        check(len(_zz_f) == 7 and any("'zz_gone'" in f and "planned" in f for f in _zz_f) and any("'gateway'" in f and "no point" in f for f in _zz_f)
+              and any("'go_courtyard__gate'" in f and "leaves the picture" in f for f in _zz_f) and any("'spot_vend'" in f and "polygons overlap" in f for f in _zz_f)
+              and any("keep_tile 'go_courtyard__school_yard'" in f and "reason" in f for f in _zz_f) and any("keep_tile 'gateway'" in f and "shape as well" in f for f in _zz_f)
+              and builtins.sum(1 for f in _zz_f if "keep_tile 'zz_other'" in f) == 1,
+              "I: and the rest of the rules: a shape for an id that is neither registered nor planned, a planned id with a shape and no point, a polygon that leaves the picture, two polygons of one shape that overlap, a keep_tile row with no reason, one that has a shape as well, one for an unknown id", _zz_f)
+        zzc_layout(HOT_LOOK_FILE, {"color": "warm", "wash": 2, "zz_key": 1, "names": 0.25})
+        _zz_f = hot_validate()
+        zzc_d60()
+        check(len(_zz_f) >= 3 and builtins.sum(1 for f in _zz_f if f.startswith("hot_look.json")) == 3
+              and hot_look() == builtins.dict(color=HOT_SHAPE["color"], wash=HOT_SHAPE["wash"], edge=HOT_SHAPE["edge"], dim=HOT_SHAPE["dim"], names=0.25),
+              "I: lint refuses a hot_look.json with an unknown key, a colour that is not #rrggbb and a strength outside 0 to 1, and the game then keeps its own value for each", _zz_f)
+        zzc_layout(HOT_LOOK_FILE, None)
+        ## two hotspots at one point share one shape (the storehouse's racks and armory)
+        _zz_one = [[[1560, 560], [1640, 560], [1640, 640], [1560, 640]]]
+        _zz_store = rule_layout("hot_storehouse")
+        _zz_store_real = rule_layout("hot_storehouse")
+        _zz_ex = path_exits("storehouse")[0]
+        _zz_store["shapes"] = {"racks": _zz_one, "armory": _zz_one,
+                               "go_storehouse__training_yard": [[[_zz_ex["x"] - 40, _zz_ex["y"] - 40], [_zz_ex["x"] + 40, _zz_ex["y"] - 40],
+                                                                 [_zz_ex["x"] + 40, _zz_ex["y"] + 40], [_zz_ex["x"] - 40, _zz_ex["y"] + 40]]]}
+        _zz_store["keep_tile"] = builtins.dict((r[0], "planned, not registered yet") for r in SPOT_PLANNED if r[1] == "storehouse")
+        zzc_layout("hot_storehouse", _zz_store)
+        _zz_pp = hot_place_points("storehouse")
+        check(_zz_pp["racks"] == _zz_pp["armory"] and hot_validate() == [],
+              "I: two hotspots registered at one point and never offered together (the storehouse's racks and armory) carry the same polygons, and nothing is read between the two",
+              hot_validate())
+        zzc_layout("hot_storehouse", _zz_store_real)
+
+        ## -- the gates: when a place is shaped
+        zzc_d60()
+        _zz_want = builtins.dict((k, v) for k, v in ZZC_SHAPES.items())
+        check(hot_shapes_for("courtyard") == _zz_want and hot_shapes_for("courtyard") is not hot_shapes_for("courtyard")
+              and isinstance(hot_shapes_for("courtyard")["spot_vend"][0][0], builtins.list),
+              "I: with its picture at revision 2 and shapes in its sidecar the Courtyard is shaped: hot_shapes_for returns {id: [polygon, ...]}, a polygon a list of [x, y], a fresh copy each call")
+        zzc_art(courtyard={"rev": 1})
+        _zz_a = hot_shapes_for("courtyard")
+        zzc_art(courtyard=None)
+        _zz_b = hot_shapes_for("courtyard")
+        zzc_art(courtyard={"rev": 2, "kind": "composed"})
+        zzc_d60(for_rev=3)
+        _zz_c = hot_shapes_for("courtyard")
+        _zz_cf = rule_validate()
+        zzc_d60(for_rev=2)
+        _zz_d = hot_shapes_for("courtyard")
+        check(_zz_a == {} and _zz_b == {} and _zz_c == {} and len(_zz_cf) == 1 and "hot_courtyard" in _zz_cf[0] and _zz_d == _zz_want,
+              "I: the same sidecar with the manifest at revision 1, with no manifest row, and with a for_rev that does not match (which lint reports) shapes nothing; a for_rev that matches does",
+              (_zz_a, _zz_b, _zz_c, _zz_cf))
+        zzc_d60()
+        _zz_room = rule_layout("hot_dorm")
+        _zz_room_real = rule_layout("hot_dorm")
+        _zz_room["shapes"] = {"computer": [[[400, 550], [480, 550], [480, 630], [400, 630]]]}
+        zzc_layout("hot_dorm", _zz_room)
+        _zz_a = hot_shapes_for("dorm")
+        zzc_art(dorm={"rev": 2})
+        _zz_b = hot_shapes_for("dorm")
+        zzc_art(dorm=None, your_room={"rev": 2})
+        _zz_c = hot_shapes_for("dorm")
+        check(_zz_a == {} and _zz_b == {} and builtins.list(_zz_c) == ["computer"] and art_stem("dorm") == "your_room",
+              "I: My Room is shaped by its picture's file stem: a manifest row for your_room at revision 2 shapes it, and a row named dorm does not (K1)")
+        zzc_art(your_room=None)
+        zzc_layout("hot_dorm", _zz_room_real)
+
+        ## -- the Courtyard with buttons, as today (the manifest at revision 1): what a shaped one is compared with
+        zzc_art(courtyard={"rev": 1})
+        zzc_alone("courtyard")
+        zzc_unfocus()
+        _zz_ids = [h["id"] for h in hot_spots_for("courtyard")]
+        _zz_sq0 = builtins.dict((i, zz_rect("sb_place", "hot_" + i)) for i in _zz_ids)
+        _zz_act0 = builtins.dict((i, zzc_action("hot_" + i)) for i in _zz_ids)
+        _zz_tip0 = builtins.dict((i, renpy.get_displayable("sb_place", "hot_" + i)._tooltip) for i in _zz_ids)
+        _zz_btn0 = zz_buttons("sb_place")
+        check(len(_zz_ids) == 5 and all(zzc_icons_under("hot_" + i) == 1 for i in _zz_ids) and zzc_fn_transforms().count("hot_pulse_fn") == 5
+              and not any(renpy.get_displayable("sb_place", "hotshape_" + i) is not None for i in _zz_ids) and zzc_lights() == {},
+              "I: with the same sidecar and the manifest at revision 1 the Courtyard draws its five buttons as today: an icon on a pulsing ring each, and no shape",
+              ([zzc_icons_under("hot_" + i) for i in _zz_ids], zzc_fn_transforms()))
+        _zz_fn0 = zzc_fn_transforms()
+        shot("d60_buttons")
+
+        ## -- the shaped Courtyard
+        zzc_art(courtyard={"rev": 2, "kind": "composed"})
+        zzc_d60()
+        zzc_alone("courtyard")
+        zzc_unfocus()
+        _zz_shaped = [i for i in _zz_ids if i in ZZC_SHAPES]
+        check([h["id"] for h in hot_spots_for("courtyard")] == _zz_ids and len(_zz_shaped) == 4
+              and all(zzc_icons_under("hot_" + i) == 0 for i in _zz_shaped) and zzc_fn_transforms().count("hot_pulse_fn") == 1
+              and zzc_icons_under("hot_go_courtyard__school_yard") == 1 and zzc_lights() == {}
+              and zzc_fn_transforms() == builtins.sorted([f for f in _zz_fn0 if f != "hot_pulse_fn"] + ["hot_pulse_fn"]),
+              "I: shaped, no ring and no icon is drawn for a hotspot that has a shape, and nothing is lit until the pointer is on one; the exit under keep_tile is drawn as its button, on its ring",
+              ([zzc_icons_under("hot_" + i) for i in _zz_ids], zzc_fn_transforms(), zzc_lights()))
+        check(builtins.dict((i, zz_rect("sb_place", "hot_" + i)) for i in _zz_ids) == _zz_sq0
+              and builtins.dict((i, zzc_action("hot_" + i)) for i in _zz_ids) == _zz_act0
+              and builtins.dict((i, renpy.get_displayable("sb_place", "hot_" + i)._tooltip) for i in _zz_ids) == _zz_tip0
+              and all(zzc_alpha("hot_" + i) == 1.0 for i in _zz_ids),
+              "I: each hotspot keeps its 72 px square at its point, with its id hot_<id>, its action and its hover label under the key hot_<id>, inside today's alpha wrapper",
+              builtins.dict((i, zz_rect("sb_place", "hot_" + i)) for i in _zz_ids))
+        check(all(zz_rect("sb_place", "hotshape_" + i) == hot_shape_box(hot_shape_rows("courtyard")[i]) for i in _zz_shaped)
+              and all(zzc_action("hotshape_" + i) == _zz_act0[i] == zzc_action("hot_" + i) for i in _zz_shaped)
+              and all(renpy.run(renpy.get_displayable("sb_place", "hotshape_" + i).action) == renpy.run(renpy.get_displayable("sb_place", "hot_" + i).action)
+                      == (("act", "spot_vend") if i == "spot_vend" else ("act", "path_" + i.split("__")[1])) for i in _zz_shaped)
+              and all(renpy.get_displayable("sb_place", "hotshape_" + i)._tooltip == (_zz_tip0[i][0], "hotshape_" + i) for i in _zz_shaped)
+              and all(renpy.get_displayable("sb_place", "hotshape_" + i).style.keyboard_focus is False
+                      and renpy.get_displayable("sb_place", "hot_" + i).style.keyboard_focus is not False for i in _zz_shaped)
+              and renpy.get_displayable("sb_place", "hotshape_go_courtyard__school_yard") is None
+              and zz_buttons("sb_place") == _zz_btn0 + 4,
+              "I: its shape is a second focus area, hotshape_<id>, the size of the shape's box: pressing it and pressing hot_<id> return the same value; it says the same words under the key hotshape_<id>; the keyboard skips it and not the square",
+              [(i, zz_rect("sb_place", "hotshape_" + i), zzc_action("hotshape_" + i)) for i in _zz_shaped])
+        _zz_keys = [d._tooltip[1] for d in zzc_tree(renpy.get_screen("sb_place")) if isinstance(getattr(d, "_tooltip", None), builtins.tuple)]
+        check(len(_zz_keys) == len(builtins.set(_zz_keys)) and "hotshape_spot_vend" in _zz_keys and "hot_spot_vend" in _zz_keys,
+              "I: every tooltip key on the shaped place view is unique (%d)" % len(_zz_keys), [k for k in _zz_keys if _zz_keys.count(k) > 1])
+        ## what takes a click, point by point
+        check(zzc_at(960, 310) == "hotshape_go_courtyard__dorm_yard" and zzc_at(1040, 400) == "hotshape_go_courtyard__dorm_yard"
+              and zzc_at(1600, 690) == "hotshape_spot_vend" and zzc_at(1700, 850) == "hotshape_go_courtyard__training_yard"
+              and zzc_at(84, 600) == "hot_go_courtyard__school_yard",
+              "I: a click inside a shape is the shape's, anywhere in it and at its hotspot's point too (the empty square takes no pointer); the exit that keeps its button is clicked on its button",
+              [zzc_at(960, 310), zzc_at(1040, 400), zzc_at(1600, 690), zzc_at(1700, 850), zzc_at(84, 600)])
+        check(zzc_at(700, 500) is None and zzc_at(1080, 330) is None and zzc_at(1180, 950) is None and zzc_at(1500, 780) is None
+              and zzc_at(880, 400) is None and hot_overlap((880, 400, 1, 1), zz_rect("sb_place", "hotshape_go_courtyard__dorm_yard")),
+              "I: a point outside every polygon focuses nothing: beside a shape, and inside a shape's box but outside its polygon (the garden's is not a rectangle)",
+              [zzc_at(700, 500), zzc_at(1080, 330), zzc_at(1180, 950), zzc_at(1500, 780), zzc_at(880, 400)])
+        check(zzc_at(1420, 930) == "hotshape_go_courtyard__gate" and zzc_at(1300, 985) == "hotshape_go_courtyard__gate"
+              and zzc_at(1500, 930) == "hotshape_go_courtyard__training_yard"
+              and hot_shape_order(hot_shape_rows("courtyard"))[:1] == ["spot_vend"]
+              and [h["id"] for h in hot_layer_rows("courtyard", False, hot_shape_rows("courtyard"))]
+              == ["go_courtyard__training_yard", "go_courtyard__gate", "go_courtyard__dorm_yard", "go_courtyard__school_yard"],
+              "I: where two shapes of one layer overlap the smaller takes the click (the gate's over the Training Yard's); the larger is drawn first and a hotspot with no shape last",
+              [zzc_at(1420, 930), zzc_at(1500, 930), [h["id"] for h in hot_layer_rows("courtyard", False, hot_shape_rows("courtyard"))]])
+        ## the pointer itself on a shape
+        _zz_how = zzc_point(1640, 730, "hotshape_spot_vend")
+        note("I: the pointer on a shape", {"pointer": "the window took the pointer: the real hover was read", "focus": "the window was not in front and took no pointer: the engine's own pick at that point (the shape) was focused instead",
+                                             "missed": "the engine picked something else at that point"}[_zz_how])
+        _zz_tip = GetTooltip()
+        _zz_lab = zzc_label_rect()
+        _zz_lit = zzc_lights()
+        shot("d60_lit_pointer", wait=0)
+        check(_zz_how in ("pointer", "focus") and _zz_tip == (_zz_tip0["spot_vend"][0], "hotshape_spot_vend")
+              and builtins.list(_zz_lit) == ["spot_vend"]
+              and _zz_lit["spot_vend"] == {"dark": (round(min(1.0, 0.75 * HOT_SHAPE["edge"]), 3), 0.0, 3.0), "glow": (HOT_SHAPE["wash"], 1.0, float(HOT_SHAPE["blur"])),
+                                           "line": (HOT_SHAPE["edge"], 0.0, 1.0)},
+              "I: with the pointer inside a shape (away from its square) the shape is lit at full strength and no other is: a dark rim, a wash that is ADDED to the picture by the outer transform with the blur inside it, and the outline (hover check: needs the pointer)",
+              (_zz_tip, _zz_lit))
+        check(hot_tip_rect("hotshape_spot_vend") == hot_tip_rect("hot_spot_vend") == _zz_sq0["spot_vend"] and _zz_lab is not None
+              and _zz_lab[0] + _zz_lab[2] <= _zz_sq0["spot_vend"][0] + 1 and _zz_lab[1] == _zz_sq0["spot_vend"][1]
+              and _zz_tip0["spot_vend"][0].split("\n")[0] in zz_texts("hover_label"),
+              "I: and its name opens against the 72 px square at its point, on the side a button's name opens (left of the vending machine), not against the pointer or the shape's box (hover check: needs the pointer)",
+              (_zz_lab, _zz_sq0["spot_vend"]))
+        zzc_unfocus()
+        ## the square, focused as the keyboard would
+        zzc_focus("hot_spot_vend")
+        _zz_tip2 = GetTooltip()
+        _zz_lab2 = zzc_label_rect()
+        _zz_lit2 = zzc_lights()
+        check(_zz_tip2 == _zz_tip0["spot_vend"] and _zz_lab2 == _zz_lab and _zz_lit2 == _zz_lit,
+              "I: with the square focused by renpy.set_focus the same name opens in the same place and the shape is lit the same (hover check: needs the pointer)",
+              (_zz_tip2, _zz_lab2, _zz_lab, _zz_lit2))
+        zzc_focus("hot_go_courtyard__dorm_yard")
+        _zz_lab3 = zzc_label_rect()
+        check(builtins.list(zzc_lights()) == ["go_courtyard__dorm_yard"] and _zz_lab3 is not None
+              and _zz_lab3[1] + _zz_lab3[3] <= _zz_sq0["go_courtyard__dorm_yard"][1] + 1 and _zz_lab3[0] == _zz_sq0["go_courtyard__dorm_yard"][0]
+              and icon_tip_side(("x", "hotshape_go_courtyard__dorm_yard")) == icon_tip_side(("x", "hot_go_courtyard__dorm_yard")) == "top"
+              and icon_tip_side(("x", "hotshape_spot_vend")) == icon_tip_side(("x", "hot_spot_vend")) == "left",
+              "I: an exit's name opens above its square, as its button's does, and the side is the same for either of its two keys",
+              (_zz_lab3, _zz_sq0["go_courtyard__dorm_yard"]))
+        shot("d60_lit_exit", wait=0)
+        zzc_unfocus()
+        check(zzc_lights() == {} and GetTooltip() is None, "I: with the focus gone nothing is lit")
+
+        ## -- a locked exit, an action the night shuts, a dim function
+        ZZC_HOLD["path_locked"] = store.path_locked
+        store.path_locked = zz_d60_locked
+        renpy.restart_interaction()
+        zzc_focus("hot_go_courtyard__dorm_yard")
+        _zz_dimmed = builtins.dict(dark=round(min(1.0, 0.75 * HOT_SHAPE["edge"]) * HOT_SHAPE["dim"], 3), glow=round(HOT_SHAPE["wash"] * HOT_SHAPE["dim"], 3),
+                                   line=round(HOT_SHAPE["edge"] * HOT_SHAPE["dim"], 3))
+        _zz_l = zzc_lights().get("go_courtyard__dorm_yard", {})
+        check(GetTooltip() == ("The garden gate is barred.", "hot_go_courtyard__dorm_yard")
+              and builtins.dict((k, v[0]) for k, v in _zz_l.items()) == _zz_dimmed
+              and zzc_alpha("hot_go_courtyard__dorm_yard") == HOT_DIM_ALPHA
+              and zzc_action("hot_go_courtyard__dorm_yard")[0] == zzc_action("hotshape_go_courtyard__dorm_yard")[0] == "NullAction"
+              and renpy.get_displayable("sb_place", "hotshape_go_courtyard__dorm_yard")._tooltip == ("The garden gate is barred.", "hotshape_go_courtyard__dorm_yard")
+              and zzc_at(960, 310) == "hotshape_go_courtyard__dorm_yard",
+              "I: a locked exit lights dimmed (under half strength), its square and its shape both say the lock's reason, and neither does anything; its square is in the alpha wrapper at 0.45",
+              (GetTooltip(), _zz_l))
+        shot("d60_locked", wait=0)
+        zzc_unfocus()
+        store.path_locked = ZZC_HOLD["path_locked"]
+        hot_set_dim("spot_vend", "zz_dim_test")
+        ZZC_DIM[0] = "Sold out till morning."
+        renpy.restart_interaction()
+        zzc_focus("hotshape_spot_vend")
+        _zz_l = zzc_lights().get("spot_vend", {})
+        check(GetTooltip() == ("Sold out till morning.", "hotshape_spot_vend") and builtins.dict((k, v[0]) for k, v in _zz_l.items()) == _zz_dimmed
+              and zzc_action("hot_spot_vend")[0] == zzc_action("hotshape_spot_vend")[0] == "NullAction" and zzc_alpha("hot_spot_vend") == HOT_DIM_ALPHA
+              and "Sold out till morning." in zz_texts("hover_label"),
+              "I: a test dim function's reason is said by the shape, which lights dimmed and does nothing", (GetTooltip(), _zz_l))
+        zzc_unfocus()
+        ZZC_DIM[0] = ""
+        HOT_DIM.clear()
+        fixture(period="Night")
+        renpy.restart_interaction()
+        zz_render(0.3)
+        _zz_night = [h for h in hot_spots_for("courtyard") if h["id"] in ZZC_SHAPES and not hot_open(h)]
+        if _zz_night:
+            zzc_focus("hot_" + _zz_night[0]["id"])
+            check(GetTooltip() == ("Too late. Bed.", "hot_" + _zz_night[0]["id"])
+                  and builtins.dict((k, v[0]) for k, v in zzc_lights().get(_zz_night[0]["id"], {}).items()) == _zz_dimmed,
+                  "I: an action the night has shut lights dimmed and says so", GetTooltip())
+            zzc_unfocus()
+        else:
+            note("I: an action the night has shut", "none of the Courtyard's shaped hotspots is shut at Night (walking is free and the machine has no cost): the dimmed strength is the one branch for all three states")
+        fixture(period="Noon")
+
+        ## -- names shown: every shape lit, each with its name against its square
+        persistent.show_names = True
+        store.path_faces = zz_d60_faces
+        renpy.restart_interaction()
+        zz_render(0.4)
+        _zz_l = zzc_lights()
+        _zz_txt = zz_texts("sb_place")
+        _zz_rows = builtins.dict((h["id"], h) for h in hot_spots_for("courtyard"))
+        _zz_nr = builtins.dict((i, hot_name_rect(_zz_rows[i])) for i in _zz_shaped)
+        check(builtins.sorted(_zz_l) == builtins.sorted(_zz_shaped)
+              and all(_zz_l[i]["line"][0] == round(HOT_SHAPE["edge"] * HOT_SHAPE["names"], 3) and _zz_l[i]["glow"][0] == round(HOT_SHAPE["wash"] * HOT_SHAPE["names"], 3)
+                      for i in _zz_shaped)
+              and all(hot_name(_zz_rows[i]) in _zz_txt for i in _zz_ids),
+              "I: while names are shown every shape of the place is lit at the reduced strength, and every hotspot and exit is named", (_zz_l, _zz_txt))
+        check(all(not hot_overlap(_zz_nr[i], _zz_sq0[i]) and (_zz_nr[i][0] + _zz_nr[i][2] == _zz_sq0[i][0] or _zz_nr[i][1] + _zz_nr[i][3] == _zz_sq0[i][1])
+                  for i in _zz_shaped)
+              and _zz_nr["go_courtyard__dorm_yard"][0] == _zz_sq0["go_courtyard__dorm_yard"][0]
+              and all(0 <= r[0] and r[0] + r[2] <= config.screen_width and 0 <= r[1] for r in _zz_nr.values())
+              and not any(hot_overlap(_zz_nr[a], _zz_nr[b]) for a in _zz_shaped for b in _zz_shaped if a < b),
+              "I: a shaped hotspot's name is drawn against the square at its point, on the side its hover label opens (hot_name_rect: above an exit, left of the machine), on screen, and no two of the Courtyard's meet",
+              _zz_nr)
+        check(zzc_face_count("megumi") == 2 and zzc_face_count("yuji") == 2 and hot_tip_faces("hot_go_courtyard__dorm_yard") == ["megumi", "yuji"]
+              and hot_tip_faces("hotshape_go_courtyard__dorm_yard") == ["megumi", "yuji"] and hot_tip_faces("hot_go_courtyard__school_yard") == []
+              and hot_tip_faces("hot_spot_vend") == [] and hot_tip_faces("hud_map") == [],
+              "I: with path_faces patched to return two people, their faces show beside the shaped exit's name (on its plate) and on the unshaped exit's tile, and nowhere else",
+              (zzc_face_count("megumi"), zzc_face_count("yuji")))
+        shot("d60_names")
+        zzc_focus("hot_go_courtyard__dorm_yard")
+        _zz_lf = builtins.sum(1 for d in zzc_tree(renpy.get_screen("hover_label"))
+                              if isinstance(d, renpy.display.transform.Transform) and d.crop is not None
+                              and builtins.str(getattr(d.child, "filename", "")).startswith("images/side/"))
+        _zz_lw = zzc_label_rect()
+        check(_zz_lf == 2 and zzc_lights()["go_courtyard__dorm_yard"]["line"][0] == HOT_SHAPE["edge"]
+              and icon_tip_size(GetTooltip()) is not None and _zz_lw is not None and abs(icon_tip_size(GetTooltip())[0] - _zz_lw[2]) <= 2,
+              "I: under the pointer the hover label draws the two faces beside the shaped exit's name (and is measured with them), and that shape is lit at full strength while the others stay at the names strength",
+              (_zz_lf, _zz_lw, icon_tip_size(GetTooltip())))
+        shot("d60_names_faces", wait=0)
+        zzc_focus("hot_go_courtyard__school_yard")
+        _zz_lf = builtins.sum(1 for d in zzc_tree(renpy.get_screen("hover_label"))
+                              if isinstance(d, renpy.display.transform.Transform) and d.crop is not None
+                              and builtins.str(getattr(d.child, "filename", "")).startswith("images/side/"))
+        check(_zz_lf == 0, "I: an exit that keeps its button shows the faces on its tile, and its hover label draws none", _zz_lf)
+        zzc_unfocus()
+        ## the worst case (R6) for the shaped place view: names, faces, four toasts, the banner
+        zz_worst("sb_place", name="worst_place_shaped")
+        toast_clear()
+        persistent.show_names = False
+        store.path_faces = ZZC_PF
+        renpy.restart_interaction()
+
+        ## -- hidden behind a person: the hotspot is not drawn and its shape takes no click
+        HOT_SPOTS.append(builtins.dict(id="zz_d60_look", place="courtyard", x=1300, y=700, icon="look", kind="look", act=None,
+                                       lines=["A test line."], label="A test look", hint="", cost=0, when=None, standalone=False, front=False))
+        HOT_SPOTS.append(builtins.dict(id="zz_d60_plain", place="courtyard", x=500, y=850, icon="look", kind="look", act=None,
+                                       lines=["A test line."], label="A test button", hint="", cost=0, when=None, standalone=False, front=False))
+        zzc_d60(shapes={"zz_d60_look": [[[1250, 650], [1350, 650], [1350, 750], [1250, 750]]]})
+        zzc_alone("courtyard")
+        zzc_unfocus()
+        check(hot_validate() == [] and zzc_at(1300, 700) == "hotshape_zz_d60_look" and zzc_at(1300, 985) == "hotshape_go_courtyard__gate"
+              and zzc_icons_under("hot_zz_d60_plain") == 1 and zzc_at(500, 850) == "hot_zz_d60_plain"
+              and renpy.get_displayable("sb_place", "hotshape_zz_d60_plain") is None,
+              "I: lint is clean with a harness's own zz hotspots registered in the shaped place: one with a shape is clicked on its shape, and one without is drawn as its button",
+              hot_validate())
+        ZZC_HOLD["view_person_rects"] = store.view_person_rects
+        ZZC_HOLD["rect"] = (1240, 680, 120, 330)
+        store.view_person_rects = zz_d60_rects
+        renpy.restart_interaction()
+        zz_render(0.4)
+        _zz_now = [h["id"] for h in hot_spots_for("courtyard")]
+        _zz_offer = [d.action.value for d in zzc_tree(renpy.get_screen("sb_place"))
+                     if isinstance(getattr(d, "action", None), Return) and isinstance(d.action.value, builtins.tuple)]
+        check("go_courtyard__gate" not in _zz_now and "zz_d60_look" not in _zz_now and "spot_vend" in _zz_now
+              and all(renpy.get_displayable("sb_place", w + i) is None for w in ("hot_", "hotshape_") for i in ("go_courtyard__gate", "zz_d60_look"))
+              and zzc_at(1300, 985) is None and zzc_at(1300, 700) is None and zzc_at(1420, 930) == "hotshape_go_courtyard__training_yard"
+              and "path_gate" in [a[0] for a in rail_actions("courtyard")] and ("act", "path_gate") in _zz_offer
+              and not any(v[0] == "hot" and v[1] == "zz_d60_look" for v in _zz_offer),
+              "I: with a person's rectangle over a hotspot's square the hotspot is not drawn and its shape takes no click (the shape under it does); an exit's row is then in the column, and a look is offered nowhere",
+              (_zz_now, zzc_at(1300, 985), zzc_at(1300, 700), [a[0] for a in rail_actions("courtyard")]))
+        store.view_person_rects = ZZC_HOLD["view_person_rects"]
+
+        ## -- layers: a front shape over a person; a back shape under a pose's box and under the foreground cut-out
+        zzc_alone("courtyard")
+        pin("megumi", "courtyard")
+        renpy.restart_interaction()
+        zz_render(0.4)
+        _zz_pr = zz_rect("sb_place", "stage_megumi")
+        _zz_px, _zz_py = int(_zz_pr[0] + _zz_pr[2] / 2), int(_zz_pr[1] + _zz_pr[3] * 0.45)
+        _zz_who0 = zzc_at(_zz_px, _zz_py)
+        _zz_patch = [[_zz_px - 60, _zz_py - 60], [_zz_px + 60, _zz_py - 60], [_zz_px + 60, _zz_py + 60], [_zz_px - 60, _zz_py + 60]]
+        _zz_back = [h["id"] for h in hot_spots_for("courtyard") if h["id"] in ZZC_SHAPES and not h["front"]][0]
+        zzc_d60(shapes={_zz_back: ZZC_SHAPES[_zz_back] + [_zz_patch]})
+        _zz_who1 = zzc_at(_zz_px, _zz_py)
+        _zz_beside = [(x, _zz_py) for x in (_zz_px - 58, _zz_px + 58) if zzc_at(x, _zz_py) == "hotshape_" + _zz_back]
+        zzc_d60(shapes={"spot_vend": ZZC_SHAPES["spot_vend"] + [_zz_patch]})
+        _zz_who2 = zzc_at(_zz_px, _zz_py)
+        check(_zz_who0 == "stage_megumi" and _zz_who1 == "stage_megumi" and _zz_who2 == "hotshape_spot_vend" and zzc_at(1600, 690) == "hotshape_spot_vend",
+              "I: a back shape is under the people (a click on a standing person's own pixels is the person's), and a front shape takes the click over a person standing inside it",
+              (_zz_pr, _zz_who0, _zz_who1, _zz_who2, _zz_beside))
+        shot("d60_person")
+        pin("megumi", "-")
+        ## a painted pose is a button over its whole box
+        ZZC_HOLD["view_stage_rows"] = store.view_stage_rows
+        ZZC_HOLD["pose"] = (1400, 800, 200, 150)
+        ZZC_HOLD["pose_image"] = "images/bg/courtyard.png"
+        zzc_d60()
+        store.view_stage_rows = zz_d60_rows
+        renpy.restart_interaction()
+        zz_render(0.4)
+        _zz_under = [h["id"] for h in hot_spots_for("courtyard")]
+        check("go_courtyard__training_yard" in _zz_under and zzc_at(1450, 830) == "stage_megumi" and zzc_at(1700, 830) == "hotshape_go_courtyard__training_yard",
+              "I: a back shape takes no click under a test pose's box (the pose is a button over its whole box) and takes it beside the box",
+              (_zz_under, zzc_at(1450, 830), zzc_at(1700, 830)))
+        store.view_stage_rows = ZZC_HOLD["view_stage_rows"]
+        ## the room's foreground cut-out: its own pixels cover a back shape, and it is no button
+        ZZC_HOLD["fg"] = "images/fg/fg_dorm_common.png"
+        _zz_surf = renpy.load_surface(ZZC_HOLD["fg"])
+        _zz_on = [(x, y) for y in range(300, 1040, 20) for x in range(200, 1300, 20) if _zz_surf.get_at((x, y))[3] == 255][:1]
+        _zz_off = [(x, y) for y in range(300, 1040, 20) for x in range(200, 1300, 20) if _zz_surf.get_at((x, y))[3] == 0][:1]
+        if check(len(_zz_on) == 1 and len(_zz_off) == 1 and _zz_surf.get_size() == (1920, 1080), "I: (a test foreground cut-out with a covered and a clear point)", (_zz_on, _zz_off)):
+            _zz_cut = [[[x - 12, y - 12], [x + 12, y - 12], [x + 12, y + 12], [x - 12, y + 12]] for x, y in (_zz_on[0], _zz_off[0])]
+            zzc_d60(shapes={"go_courtyard__dorm_yard": ZZC_SHAPES["go_courtyard__dorm_yard"] + _zz_cut,
+                            "spot_vend": ZZC_SHAPES["spot_vend"]})
+            _zz_b0 = (zzc_at(*_zz_on[0]), zzc_at(*_zz_off[0]))
+            ZZC_HOLD["view_fg_path"] = store.view_fg_path
+            store.view_fg_path = zz_d60_fg
+            renpy.restart_interaction()
+            zz_render(0.4)
+            _zz_b1 = (zzc_at(*_zz_on[0]), zzc_at(*_zz_off[0]))
+            zzc_d60(shapes={"spot_vend": ZZC_SHAPES["spot_vend"] + _zz_cut})
+            _zz_b2 = (zzc_at(*_zz_on[0]), zzc_at(*_zz_off[0]))
+            store.view_fg_path = ZZC_HOLD["view_fg_path"]
+            check(_zz_b0 == ("hotshape_go_courtyard__dorm_yard", "hotshape_go_courtyard__dorm_yard") and _zz_b1 == (None, "hotshape_go_courtyard__dorm_yard")
+                  and _zz_b2 == ("hotshape_spot_vend", "hotshape_spot_vend"),
+                  "I: a back shape takes no click where a test foreground cut-out covers it and takes it where the cut-out is clear; a front shape is in front of the cut-out",
+                  (_zz_b0, _zz_b1, _zz_b2))
+        zzc_d60()
+        HOT_SPOTS[:] = [h for h in HOT_SPOTS if not builtins.str(h["id"]).startswith("zz_d60_")]
+        check(not any(builtins.str(h["id"]).startswith("zz_d60_") for h in HOT_SPOTS) and hot_validate() == [], "I: (the test hotspots taken out again)", hot_validate())
+
+        ## -- the light itself: on a white patch and on a black one; hot_look.json
+        renpy.hide_screen("sb_place")
+        _zz_box = hot_shape_box(hot_shape_rows("courtyard")["go_courtyard__dorm_yard"])
+        _zz_area = (_zz_box[0] - 10, _zz_box[1] + 60, _zz_box[2] + 20, _zz_box[3] - 50)     # the label lies over the box's top
+        _zz_px = builtins.dict()
+        for _zz_col, _zz_nm in (("#ffffff", "white"), ("#000000", "black")):
+            renpy.show_screen("zz_d60_patch", _zz_col)
+            zzc_unfocus()
+            shot("d60_%s_unlit" % _zz_nm)
+            zzc_focus("hot_go_courtyard__dorm_yard", "zz_d60_patch")
+            _zz_onp = builtins.list(zzc_lights("zz_d60_patch"))
+            shot("d60_%s_lit" % _zz_nm, wait=0)
+            zzc_unfocus()
+            renpy.hide_screen("zz_d60_patch")
+            _zz_px[_zz_nm] = (zzc_pixel_diff("d60_%s_unlit" % _zz_nm, "d60_%s_lit" % _zz_nm, _zz_area), _zz_onp)
+        check(all(_zz_px[n][0] >= 300 and _zz_px[n][1] == ["go_courtyard__dorm_yard"] for n in ("white", "black")) and _zz_px["black"][0] > _zz_px["white"][0],
+              "I: a lit and an unlit frame differ measurably on a white test patch (%d pixels: the outline and its dark rim) and on a black one (%d: the wash as well) (hover check: needs the pointer)"
+              % (_zz_px["white"][0], _zz_px["black"][0]), _zz_px)
+        zzc_alone("courtyard")
+        zzc_focus("hot_spot_vend")
+        _zz_l0 = zzc_lights()["spot_vend"]
+        zzc_layout(HOT_LOOK_FILE, {"wash": 0.6, "edge": 0.5, "color": "#aaccff"})
+        renpy.restart_interaction()
+        zz_render(0.4)
+        _zz_l1 = zzc_lights()["spot_vend"]
+        _zz_c1 = [d.color for d in zzc_tree(renpy.get_screen("sb_place")) if isinstance(d, hot_ShapeLight) and d.part == "wash"]
+        _zz_v1 = hot_validate()
+        zzc_layout(HOT_LOOK_FILE, None)
+        renpy.restart_interaction()
+        zz_render(0.4)
+        _zz_l2 = zzc_lights()["spot_vend"]
+        zzc_unfocus()
+        check(_zz_l0["glow"][0] == HOT_SHAPE["wash"] and _zz_l1["glow"][0] == 0.6 and _zz_l1["line"][0] == 0.5 and _zz_c1 == ["#aaccff"] and _zz_v1 == []
+              and _zz_l2 == _zz_l0 and hot_look() == builtins.dict((k, HOT_SHAPE[k]) for k in HOT_LOOK_KEYS),
+              "I: a test hot_look.json changes the light's strength and colour, and its absence leaves HOT_SHAPE's", (_zz_l0, _zz_l1, _zz_l2))
+
+        ## -- saves and motion
+        _zz_pk = renpy.compat.pickle
+        _zz_shape = hot_shape_rows("courtyard")["spot_vend"]
+        _zz_one = _zz_pk.loads(_zz_pk.dumps(hot_ShapeLight(_zz_shape, hot_shape_box(_zz_shape), hot_light_pad(), "wash", "#fff0cc")))
+        _zz_fn = _zz_pk.loads(_zz_pk.dumps(renpy.partial(hot_shape_hit, _zz_shape, hot_shape_box(_zz_shape), None)))
+        _zz_no = _zz_pk.loads(_zz_pk.dumps(hot_no_point))
+        check(type(_zz_one).__name__ == "hot_ShapeLight" and _zz_one.shape == _zz_shape and _zz_one.part == "wash"
+              and _zz_fn(60, 60) is True and _zz_fn(-5, 60) is False and _zz_no(0, 0) is False
+              and renpy.get_displayable("sb_place", "hot_spot_vend").style.focus_mask is hot_no_point
+              and renpy.get_displayable("sb_place", "hotshape_spot_vend").style.focus_mask == renpy.partial(hot_shape_hit, _zz_shape, hot_shape_box(_zz_shape), None),
+              "I: an instance of the light's class (a plain top-level class) and the shape's focus function (a curried top-level function) pickle and come back working; the square's focus mask refuses every point")
+        check(zzc_fn_transforms() == builtins.sorted([f for f in _zz_fn0 if f != "hot_pulse_fn"] + ["hot_pulse_fn"]) and _zz_fn0.count("hot_pulse_fn") == 5
+              and zzc_saved_pictures("", screen="sb_place") >= 1,
+              "I: no function transform is added to the place view (the one left is the ring of the exit that keeps its button), and what a save made on the shaped Courtyard would hold pickles and reads back with its place view in it",
+              (zzc_fn_transforms(), _zz_fn0, zzc_saved_pictures("", screen="sb_place")))
+        zzc_d60(keep=builtins.dict((k, v) for k, v in ZZC_KEEP.items() if k != "go_courtyard__school_yard"),
+                shapes={"go_courtyard__school_yard": [[[44, 480], [200, 480], [200, 760], [44, 760]]]})
+        zz_render(0.4)
+        check(zzc_fn_transforms() == [f for f in _zz_fn0 if f != "hot_pulse_fn"] and hot_validate() == [] and zzc_lights() == {},
+              "I: with every hotspot of the Courtyard shaped there is no function transform on its place view at all (the rings' are gone)", zzc_fn_transforms())
+        shot("d60_unlit")
+        try:
+            renpy.take_screenshot()
+            renpy.save("zzc_d60")
+            _zz_saved = bool(renpy.can_load("zzc_d60"))
+        except Exception as _zz_e:
+            _zz_saved = repr(_zz_e)
+        check(_zz_saved is True, "I: a save made on the place view of the shaped Courtyard is written (p2_saves over the overlay that shapes every place loads such saves)", _zz_saved)
+        renpy.unlink_save("zzc_d60")
+
+        renpy.hide_screen("sb_place")
+        persistent.show_names = _zz_pers
+        store.schedule_overrides = {}
+        zzc_back()
+        check(hot_shapes_for("courtyard") == ({} if not ZZC_SHAPED_TREE else hot_shapes_for("courtyard")) and hot_validate() == [] and HOT_DIM == {},
+              "I: (every table put back)", hot_validate())
 
     $ finish()

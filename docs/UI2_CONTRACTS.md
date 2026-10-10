@@ -1,7 +1,8 @@
 # The second UI overhaul: contracts
 
 **Final for wave 0.** Started by U0a (the safety net); made final by U0c2, the
-scaffold's first sitting, for everything that sitting built.
+scaffold: its first sitting for everything but shapes, its second for D60
+("the picture is what is clicked", B15).
 `tools/smoke/u2_contracts.rpy` asserts it and is in every package's standard
 set; it is not edited after wave 0. The plan is `docs/UI2_DESIGN.md`; its
 section 9 says what is frozen and in what order of cost. This file is where
@@ -11,11 +12,11 @@ the exact shapes live.
   shapes, the checks), with A3 and A4 brought up to date by U0c2.
 - Part B: the symbols, stubs, hooks and names the scaffold froze, each with
   its example call and return shape.
-- **Not in this file yet:** clicking the picture itself (D60: `hot_shapes_for`,
+- **B15: clicking the picture itself** (D60: `hot_shapes_for`,
   `hot_tip_rect`, `HOT_SHAPE`, the `shapes` and `keep_tile` keys of a `hot_`
-  file, `hot_look.json`, the `hotshape_<id>` widgets). That is U0c2's second
-  sitting, which adds its own section here and its own checks to
-  `u2_contracts.rpy`. Nothing below changes when it lands.
+  file, `hot_look.json`, the `hotshape_<id>` widgets), added by U0c2's second
+  sitting with section I of `u2_contracts.rpy`. Nothing in Part A or in B1 to
+  B14 changed shape when it landed; A3, A4, B9 and B13 gained rows.
 
 ---
 
@@ -138,6 +139,17 @@ layout has changed since the dump was written: run tools/smoke.sh u2_dump`.
 | `standins` | `copies {lender: file}`, `names {image key: lender}`, `if_file {image name: file}`, `people` |
 | `names_key` | `"K_n"` |
 
+**Added by U0c2's second sitting (D60)**, new keys again:
+
+| key | shape |
+|---|---|
+| `hot_shape` | `HOT_SHAPE`: the limits `polys [1, 3]`, `points [3, 60]`, `area_min 5184`, `area_max 0.4`, `buried_max 0.5`, `grid 4`, and the light's default look `color`, `wash`, `edge`, `dim`, `names`, `blur`, `line` |
+| `hot_look`, `look_keys` | the look in force (`HOT_SHAPE`'s with what `hot_look.json` replaces), and the keys that file may hold |
+| `shapes` | `{place: {id: [polygon, ...]}}`: what each `hot_` sidecar holds under `shapes`, as written, whatever the picture's revision; a place with none is left out |
+| `keep_tile` | `{place: {id: reason}}` |
+| `shaped` | the places that are shaped now (`hot_shapes_for` answers), in `LOC_ORDER` |
+| `name_rects` | `{place: {id: [x, y, w, h]}}`: for every registered hotspot and exit, where its name plate is drawn in a shaped place while names are shown (`hot_name_rect` at its applied point). `check_layout.py` refuses a place where two meet |
+
 **The committed file is regenerated in the owner's folder after U0c2 merges**
 (`tools/smoke.sh u2_dump`), never from a worktree.
 
@@ -148,7 +160,8 @@ lists, not tuples. An unknown file name or an unknown key is a finding.
 
 | file | keys |
 |---|---|
-| `hot_<place>.json` | `spots {id: [x, y]}` (a hotspot's id, registered or planned in `SPOT_PLANNED`, or an exit's `go_<from>__<to>`); `tips {id: "top" / "bottom" / "left" / "right"}` (the same ids; read by `icon_tip_side`); `spare [[x, y], ...]` (the three houses painted with spare doors only: `boys_dorm`, `girls_dorm`, `teachers_dorm`; read by the tools, never by the game); `for_rev` |
+| `hot_<place>.json` | `spots {id: [x, y]}` (a hotspot's id, registered or planned in `SPOT_PLANNED`, or an exit's `go_<from>__<to>`); `tips {id: "top" / "bottom" / "left" / "right"}` (the same ids; read by `icon_tip_side`); `shapes {id: [polygon, ...]}` (D60: one to three polygons, each a list of 3 to 60 `[x, y]`; the same ids); `keep_tile {id: "<why it keeps its button>"}` (D60: a non-empty string; an id is under one or the other; it means nothing without `shapes`); `spare [[x, y], ...]` (the three houses painted with spare doors only: `boys_dorm`, `girls_dorm`, `teachers_dorm`; read by the tools, never by the game); `for_rev` |
+| `hot_look.json` | D60, the light of a shaped hotspot: `color` (`"#rrggbb"`), `wash`, `edge`, `dim`, `names` (each a number from 0 to 1); every key optional, `HOT_SHAPE`'s value otherwise. Written by L on the owner's word. (It is not a place's file: there is no place `look`.) |
 | `view_<place>.json` | `slots {"1".."4": [[x centre, y offset, zoom(, far)], ...]}` (key `n` holds `n` rows); `poses {key: [x, y, w, h]}` (the older home of pose boxes: still read, after `pose_<place>.json`); `floor {"on": [polygons], "off": [polygons]}` (`on`: one or more polygons people may stand on, required when the key is there; `off`: optional; a polygon is three or more `[x, y]`); `scale [x, y top, y bottom]`; `slot_light {hour: {"1".."4": [one entry a slot: null or ["#rrggbb", brightness]]}}` (key `n` holds `n` entries, in the slots' order); `cast {hour: [direction, length, darkness]}`; `talk` (true or false); `for_rev` |
 | `pose_<place>.json` | `poses {key: [x, y, w, h]}` (required). `<place>` is a place key or a Tokyo district of `WORLD_AWAY` (`harajuku`, `shibuya`). A key is `<who>`, `<who>__<variant>` or `<who>__<variant>__asleep` |
 | `light_<place>.json` | `""`, `"evening"`, `"night"`: each a row `["#rrggbb", brightness, saturation, shadow opacity]`, or the same with `[shadow lean in px, shadow stretch]` after it (the installer writes six); `note` (a string, the installer's own words; not read by the game) |
@@ -464,7 +477,8 @@ was.
 | `register_hotspot`, `hot_spots_for` (the same eleven keys), `hot_covers`, `screen hot_layer(loc, front=False)` | `sb_hotspots.rpy` | unchanged |
 | `hot_set_dim(hot_id, fn)` | | None. `fn` is the NAME of a store function that returns a reason (a str) or `""`. While it gives a reason `hot_layer` draws the hotspot at `HOT_DIM_ALPHA` (0.45), its hover label says the reason and pressing it does nothing. (Separate from `register_hotspot`, whose signature is frozen.) U5 names the card table's |
 | `hot_dim_reason(h)`, `hot_planned(place=None)`, `hot_name(h)`, `hot_faces(h)` | | a str; `{id: row}`; a str; a list of person keys |
-| `hot_validate()` | | accepts a sidecar point for an id planned for that place; refuses one that is neither registered nor planned |
+| `hot_validate()` | | accepts a sidecar point for an id planned for that place; refuses one that is neither registered nor planned; reads the shape rules of B15 |
+| `hot_shapes_for(loc)`, `hot_tip_rect(key)`, `HOT_SHAPE` | | D60: B15 |
 
 **Names.** `persistent.show_names` (default False; its Preferences row is
 U6's). The key held to show names is **N** (`ICON_NAMES_KEY = "K_n"`), in no
@@ -594,6 +608,8 @@ python3 tools/install_face.py --prepare <who> | <render> <who> blink|talk | --sh
 python3 tools/install_pose.py <render> [--box x,y,w,h] [--name pose_<place>__<who>] [--dry]
 python3 tools/check_content.py --all game/*.rpy tools/smoke/*.rpy      (also: --layout-files [--layout-dir <dir>])
 tools/smoke.sh u2_dump [--out shots/art/game_layout.json]
+python3 tools/smoke/make_shape_overlay.py --out shots/shape_overlay/<name> [--with tools/smoke/assets/<harness>]
+        options: --dump <file> --only a,b --rev <n> --for-rev <n> --size <px> | --selftest | --write-cases
 ```
 
 `check_layout.py`, `stage_preview.py` and the new `layout_sheet.py` are U0d3's
@@ -602,4 +618,125 @@ and join this list with that package.
 ### B14. Budgets and the ledger
 
 A9 (K11) and `docs/UI2_PINS.md`. The motion budget is unchanged: no function
-transform was added to the place view.
+transform was added to the place view (a shaped hotspot has no ring, so a
+shaped place has fewer).
+
+### B15. The picture is what is clicked (D60; `sb_hotspots.rpy`, final)
+
+Plan 7.3. Asserted by section I of `u2_contracts.rpy`. **No real sidecar holds
+shapes yet, so no place is shaped and the game plays as it did**; the first two
+are the Courtyard and the Library at batch 0 (U0d3 stages them, L traces the
+rest).
+
+**When a place is shaped.** Its `hot_<place>.json` holds `shapes`, the file is
+not stale (`for_rev`, if it carries one, is its picture's revision), and its
+picture is at revision 2 or later: `art_rev(art_stem(loc))`, the stem being
+`your_room` for `dorm`. Anything else draws its buttons exactly as before.
+
+| symbol | returns |
+|---|---|
+| `hot_shapes_for(loc)` | `{hotspot id: [polygon, ...]}`, a polygon a list of `[x, y]`; `{}` for a place that is not shaped. A fresh copy each call. An exit's id is `go_<from>__<to>` |
+| `hot_tip_rect(key)` | `(x, y, w, h)`: the 72 px square at a shaped hotspot's point, for either of its tooltip keys, `hot_<id>` and `hotshape_<id>`; `None` for any other key, for a hotspot with no shape and for one that is not showing |
+| `HOT_SHAPE` | one dict: the limits (`polys (1, 3)`, `points (3, 60)`, `area_min 5184`, `area_max 0.4`, `buried_max 0.5`, `grid 4`) and the light's default look (`color "#fff0cc"`, `wash 0.30`, `edge 0.85`, `dim 0.4`, `names 0.5`, `blur 9`, `line 2`). `HOT_LOOK_KEYS` are the five `hot_look.json` may replace |
+| `hot_look()` | the look in force, a dict of those five keys |
+| `hot_keep_tile(loc)` | `{id: reason}` |
+| `hot_name_rect(h)` | `(x, y, w, h)` of a shaped hotspot's name plate while names are shown; `h` is a `hot_spots_for` row |
+| `hot_tip_faces(key)` | the people whose faces the hover label draws beside a shaped exit's name (`hot_faces`); `[]` for any other key |
+| `hot_place_points(place)` | `{id: (x, y)}`: the applied point of every hotspot and exit registered there, and the sidecar's point of a planned one |
+| `icon_tip_key(key)` (`ui_icons.rpy`) | `hot_<id>` for `hotshape_<id>`, any other key unchanged: the side lookups (`icon_tip_side`) answer alike for both |
+
+**What `hot_layer` draws for a shaped hotspot** (its two parameters and
+`hot_spots_for`'s eleven keys are unchanged):
+
+- no ring and no icon;
+- **the square**: a button with the id `hot_<id>`, 72 px at the point, inside
+  today's alpha wrapper (1.0, or `HOT_DIM_ALPHA` 0.45), with today's action and
+  today's tooltip `(text, "hot_<id>")`. It is empty and its focus mask
+  (`hot_no_point`) refuses every point: the keyboard and `renpy.set_focus` reach
+  it, the pointer never does. `zz_rect("sb_place", "hot_<id>")` is the same
+  rectangle as with buttons;
+- **the shape**: a second button, id `hotshape_<id>`, the size of the shape's
+  bounding box, with the same action and the tooltip `(text, "hotshape_<id>")`.
+  Its focus mask is `renpy.partial(hot_shape_hit, shape, box, fg)`: inside one
+  of the polygons, and for a back shape not where the room's foreground cut-out
+  is opaque. `keyboard_focus False`. So a shaped place holds one more focusable
+  widget for each shaped hotspot;
+- **the light**, drawn only while it is lit: three layers of the class
+  `hot_ShapeLight` (a dark rim, a wash added to the picture, the outline), each
+  drawn from the polygons at that moment. Lit at strength 1.0 while the tooltip
+  in force is the hotspot's under either key (`hot_lit_id`; never the button's
+  own hover state), at `names` while names are shown, and both times `dim` for
+  one that is locked, shut by the night or spent;
+- **while names are shown**, its name on a plate at `hot_name_rect`: against
+  the square, on the side its hover label opens (`tips`, else the table), left
+  edges together above or below and top edges together beside it, flipped when
+  it would leave the screen; a house's faces after the name;
+- **order** within a layer: the larger shape first, so the smaller is on top
+  (`hot_shape_order`: by area, then the id that sorts first), then every
+  visible hotspot with no shape as its button (a `keep_tile` row, a harness's
+  `zz` hotspot). A back shape is under the people, under a painted pose's box
+  and under the foreground cut-out; a front one (`front=True`, or a
+  standalone) is over all three.
+
+`hover_label` opens against `hot_tip_rect(key)` when that answers, else beside
+the focused button as before, and draws `hot_tip_faces(key)` after the name.
+
+**The rules** (`hot_validate`, in lint; the same text for `check_layout.py`).
+A sidecar that holds `shapes` or `keep_tile` is read whatever its picture's
+revision. Each finding names its id and ends `(hot_<place>.json)`:
+
+| rule | finding |
+|---|---|
+| one to three polygons | `a shape is 1 to 3 polygons` |
+| 3 to 60 points, each `[x, y]` | `polygon N has K points`, `polygon N is not a list of [x, y] points` |
+| inside the picture (0 to 1920, 0 to 1080) | `polygon N leaves the picture` |
+| a polygon does not cross or touch itself, repeat a point or fold back | `polygon N crosses itself` |
+| a shape's polygons do not overlap (they may share a side) | `two of its polygons overlap` |
+| area (the shoelace sum) at least 5,184 px² | `smaller than a button` |
+| at most two fifths of the picture, by cells | `it covers N% of the picture` |
+| its hotspot's point inside it | `is outside its own shape`; `its hotspot has no point` for a planned id with no point under `spots` |
+| and under no smaller shape | `is under the smaller shape '<id>'` |
+| at most half of it under smaller shapes, by cells | `N% of it is under smaller shapes` |
+| its id is registered in the place or planned for it | `no hotspot or exit of that id` |
+| shaped all at once: every exit and hotspot registered or planned there has a shape or a `keep_tile` reason; ids that begin `zz` are left out | `<place> is shaped, and '<id>' has no shape and is not under keep_tile` |
+| `keep_tile`: a known id, a reason in words, no shape as well, and not without `shapes` | four sentences that begin `keep_tile` |
+
+"Smaller" is by `hot_shape_order`. Two hotspots whose points are equal (the
+storehouse's `racks` and `armory`) carry the same polygons, and nothing is read
+between the two. Cells are 4 px squares counted by their centres.
+
+**The one text for both validators.** The functions between the lines
+`## >>> hot_shape: ...` and `## <<< hot_shape: ...` of `game/sb_hotspots.rpy`
+are plain Python that names nothing of Ren'Py and nothing else of the game
+(`import builtins` is their one import): `hot_shape_num`, `hot_shape_poly`,
+`hot_shape_area`, `hot_shape_box`, `hot_shape_inside`, `hot_shape_turn`,
+`hot_shape_between`, `hot_shape_meet`, `hot_shape_crossed`, `hot_shape_cells`,
+`hot_shape_order`, `hot_shape_count` and `hot_shape_findings(place, shapes,
+keep, points, known, need, limits, size)`, which returns the sentences above.
+`tools/check_layout.py` (U0d3) carries that text with the block's four leading
+spaces removed, or reads it from the file as
+`tools/smoke/make_shape_overlay.py` does (`shape_block()`,
+`shape_functions()`). **The three test shapes** are in
+`tools/smoke/hot_shape_cases.json` with their answers (`expect`: area, cells,
+twice, buried, point, under; `order`; `findings`): `u2_contracts` asserts them
+in the game and `python3 tools/smoke/make_shape_overlay.py --selftest` in plain
+Python.
+
+**The overlay that shapes every place** is generated, never committed:
+
+```
+tools/smoke.sh u2_dump --out shots/art/game_layout.json
+python3 tools/smoke/make_shape_overlay.py --out shots/shape_overlay/all
+SMOKE_ASSETS=shots/shape_overlay/all tools/smoke.sh p2_hud
+python3 tools/smoke/make_shape_overlay.py --with tools/smoke/assets/p2_view --out shots/shape_overlay/p2_view
+SMOKE_ASSETS=shots/shape_overlay/p2_view tools/smoke.sh p2_view
+```
+
+An 80 px square round each applied point, the planned ids under `keep_tile`,
+every picture at revision 2 and a manifest row for everything made from one,
+so that nothing but the shapes differs. `--rev 1` and `--for-rev 3` build the
+two states in which nothing is shaped.
+
+**Not built** (plan 7.3, asked at checkpoint B): a shimmer on walking in; a
+thing staying clickable while someone stands on its point; a cut-out picture
+for each light; shapes on the maps.
