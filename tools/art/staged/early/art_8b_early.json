@@ -1,0 +1,55 @@
+{
+ "about": [
+  "Sitting 8b (the rooftop's evening and night) written early by hand on 11 Oct 2026, straight after the owner chose 8a ('I think we go B,A,A. Just so that the lighting is consistent.'), from the chosen rooftop (version A), which is NOT installed; and with it one named change on the chosen garden night (ui2_dorm_yard_night_a), whose crescent moon is made full so that it agrees with the full moon at the edge of the chosen Courtyard night.",
+  "The rooftop's night says what moon is in view (a full one) and shows a few small warm lights among the roofs below, because people are at home (O42, O43). The moon change is written as a sentence of its own after the keep text, not with the tool's 'change' sentence, which asks for the thing's outline to be kept.",
+  "Judge without installing: tools/py_art.sh tools/install_redo.py --relight rooftop <evening|night> <a> <b> --dry --against chosen/rooftop_1920.png; for the moon, compare each version with chosen/dorm_yard_night_1920.png by eye and by install_redo's 'moved' figures: nothing but the moon may differ."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "rooftop_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight with long soft shadows. Everything in the view is still there. Add no new light.",
+  "rooftop_night": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. Among the roofs far below, a few windows show small warm lights, because people are at home; add no other light. Everything in the view is still there, as dark shapes against the sky. Add no bench, sign or lamp that is not in the picture now.",
+  "dorm_yard_night_moon_change": "Change one thing only: the crescent moon in the sky becomes a full moon, round and whole, in the same place and about as wide as the crescent is tall. Change nothing else in the picture."
+ },
+ "rows": [
+  {
+   "label": "Rooftop, evening",
+   "kind": "relight",
+   "saves": [
+    "ui2_rooftop_evening_a",
+    "ui2_rooftop_evening_b"
+   ],
+   "seeds": [
+    4674,
+    4675
+   ],
+   "prompt_sha256": "6f9699cbe1fe1c8987e35791fefae5f4844372d604512a7a35e9da8ac50dac78"
+  },
+  {
+   "label": "Rooftop, night, people at home below",
+   "kind": "relight",
+   "saves": [
+    "ui2_rooftop_night_a",
+    "ui2_rooftop_night_b"
+   ],
+   "seeds": [
+    6592,
+    6593
+   ],
+   "prompt_sha256": "2a122c7f37837fdec95a071dadc3bde1fe117c82e37ed737092f9ef89aaa3fb3"
+  },
+  {
+   "label": "Dormitory Garden, night, its moon made full",
+   "kind": "inplace",
+   "saves": [
+    "ui2_dorm_yard_night_moon_a",
+    "ui2_dorm_yard_night_moon_b"
+   ],
+   "seeds": [
+    7854,
+    7855
+   ],
+   "prompt_sha256": "8582e72a73c047ec01b4d7fe52146a782520ddfbdbcf68b205dd342de08e0f50"
+  }
+ ],
+ "workflow_sha256": "f55955491ef52c3d718303f2ff4a655e3a072b3433bc84487172f0aea001b8f5"
+}
