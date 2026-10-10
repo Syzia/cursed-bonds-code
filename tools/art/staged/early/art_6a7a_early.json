@@ -85,5 +85,35 @@
    "prompt_sha256": "c38acba398b993ea9b5a011b918cf47e24288a9dd4a07ef3651c8b82a08b2541"
   }
  ],
- "workflow_sha256": "db8e59d80f885b7c05f6201f497477cb4dbb651d70364d05fbd431339f1fc839"
+ "workflow_sha256": "db8e59d80f885b7c05f6201f497477cb4dbb651d70364d05fbd431339f1fc839",
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (the ten files as ComfyUI saved them on 11 Oct 2026)",
+ "renders_sha256": {
+  "ui2_classroom_a": "340639a3a3267b411ed6e5e1493e3c2b28a3e639247b3cf957d9c83f3ece233e",
+  "ui2_classroom_b": "16555abb6f15f6eae95e5f8da26ba717cb949fb088d0dedcf4e4dc57fb2940f6",
+  "ui2_infirmary_a": "ed14cf2b922f28897c99ceab32832e4acc3dccb0fc35a9099dacd2fad21576a0",
+  "ui2_infirmary_b": "ec11628deaaff29e06e7d254a519d3ab7b56c936059b9b17cffd4853d3ba9e30",
+  "ui2_courtyard_evening_a": "4de041780b38649aaf76765d867d0601f3e636cbadeec65a53f339f5fbc77744",
+  "ui2_courtyard_evening_b": "2ff0173a7ca9232773a3e135caebd84acc12aab3bebaa6bb99deac672a9cffcc",
+  "ui2_courtyard_night_a": "c5fefb4e784d665ee019c5c21005a626f43b21812d399e782854fd2d708a3a46",
+  "ui2_courtyard_night_b": "298b8aaf05e99ac572a67e896fbd37b2f5ec12c80dba4b134c3de5060587c38c",
+  "ui2_courtyard_night_lit_a": "f2fdc6ccf7f1594ff6e73d41889fd8d319770d227913340fa899f67ce39c33ee",
+  "ui2_courtyard_night_lit_b": "2240d15e1f7b7a3633aea8adee0c559eb96b43f967be5f6490801bce9053dc3b"
+ },
+ "read_11_oct": {
+  "install_redo_dry": {
+   "classroom": "A LOOK, B LOOK, both only for the window views, as asked; nothing moved (B 6.8 times sharper than today's picture, A 4.5). The check looked for nothing added ('0 places checked'): the classroom has no keep list yet, so it cannot see what A adds.",
+   "infirmary": "A PASS; B LOOK (two parts of the right-hand side drawn differently; the cot agrees 0.86 with 58% of its edge, against 0.97 and 98% in A).",
+   "courtyard": "all six relights PASS on the fifteen points (none off by a pixel). A relight is not checked for additions, by design."
+  },
+  "by_eye": {
+   "classroom": "B is faithful: every desk, the square clock, the notices, and through the windows a long roof below and cedars, as the record says ('the school courtyard below'). A ADDS school bags hanging on four desks and a low bookshelf either side of the teacher's desk, turns the clock round, and shows a school building at eye level across the yard, not below.",
+   "infirmary": "A is the closer: its one addition is a keyboard and a mouse in front of the monitor. B adds cardboard boxes on top of the filing cabinets and redraws the right-hand side.",
+   "courtyard_evening": "both faithful, nothing added; A has the stronger sky and lit windows on the schoolhouse, B a softer sky and a gold rim on the tall cedar. Close.",
+   "courtyard_night_dark": "A is faithful: every window dark, the stone lamps by the gateway and the vending machine glowing, the pagoda, the steps and the hills all still there. B ADDS a notice board and a bench in front of the schoolhouse.",
+   "courtyard_night_lit": "A is faithful, with every window of the schoolhouse and the hall's open front lit warm. B ADDS three benches and strings of lights on the pagoda."
+  },
+  "measured": "mean brightness out of 255: classroom A 114, B 118; infirmary A 101, B 96; Courtyard evening A 109, B 112; night with dark windows A 64, B 61 (12 to 14% of it darker than 25); night with lit windows A 85, B 75.",
+  "my_picks": "Classroom B; infirmary A; Courtyard evening A (close); Courtyard night with every window dark, version A, which follows O38 and O39 (the windows-lit A is the faithful alternative if the owner would rather the campus looked awake). Put to the owner; nothing was chosen when this was written.",
+  "lessons": "The first outdoor relight holds: nothing moved in six of six. Two of the four nights added street furniture (benches, a notice board) and one strung lights on the pagoda although the sentence ends 'add no new light': a night outdoors is read by eye for added benches, boards and lights. A room with no keep list is not checked for additions at all: write the keep list before judging a room redone in place."
+ }
 }
