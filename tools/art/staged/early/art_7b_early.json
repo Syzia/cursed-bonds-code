@@ -78,5 +78,30 @@
    "prompt_sha256": "c5ade94f63fa5cb207cbe67fe5432b73ca2a4b5fc6f78ab806029132b405ee8e"
   }
  ],
- "workflow_sha256": "dc6fd4b2aa8b2df307cb4c09ec03f6375a535f5f19340beec1a00c08f742ce99"
+ "workflow_sha256": "dc6fd4b2aa8b2df307cb4c09ec03f6375a535f5f19340beec1a00c08f742ce99",
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (the ten files as ComfyUI saved them on 11 Oct 2026)",
+ "renders_sha256": {
+  "ui2_school_yard_evening_a": "f9c28d16962d8084410f093fcedcb0970db4a6c9fea63d66ebaa1250fae7e14e",
+  "ui2_school_yard_evening_b": "f307282c5b4a8da4442c43cf6f1b0c13b75376e467d8e4d45810b0e0ffcd0427",
+  "ui2_school_yard_night_a": "fdc3a50aa711bf521af1a0981f9d10cdcbce7835a918072139270ff01e145819",
+  "ui2_school_yard_night_b": "e992917424772f67ce42cbc6072891acbed710a6e79c2f63825f94fd1da85097",
+  "ui2_library_evening_a": "55d0b717dffb822a466d3d69dab1b65839a3311053e2e126ca90a7f25868552e",
+  "ui2_library_evening_b": "f4b6694b1b7daffb879174b3d59d0df1ed6bb2fbfb037d4be538ecfa5eea5f3c",
+  "ui2_library_night_a": "daa0797a25fd6b2a76cc826f00adde8bd90f6eb6c4aadbf433cdbe0268faa914",
+  "ui2_library_night_b": "e0b9479a7562f1467ea0ad9a6ebf21f124040581eccd9097ee6e43fbf87c131f",
+  "ui2_library_night_lamps_a": "409c1533d8650d1b84e790ec5a375e172bf49bbc7d6508647dc4bf8ec263c567",
+  "ui2_library_night_lamps_b": "49432c7325d76a645fd0281f56b5011467d47f1a60580fcb49486e4ce413133d"
+ },
+ "read_11_oct": {
+  "install_redo_dry": "Nine of ten PASS on the points. The Library's lights-off night B is REFUSED for a floor row under a grid of moonlight, the false alarm already on the installer's list (and B is set aside for another reason).",
+  "by_eye": {
+   "school_yard_evening": "both faithful, nothing added; the windows of all three buildings glow warm in both. Hardly anything between them.",
+   "school_yard_night": "both faithful: every window dark, no lamp, no bench or sign added (the sentence forbade them). B shows a crescent moon; the chosen Courtyard night has a full one at its edge, so A, which shows none, cannot disagree with it.",
+   "library_evening": "both faithful, the roofs still outside. B lays the window frames across the floor in sunset light and reads as evening at a glance; A is the calmer.",
+   "library_night_lights_off": "A is faithful: lamps dark, moonlight under the table, the roofs and trees outside as dark shapes. B ADDS two school bags, one on an armchair and one on the floor.",
+   "library_night_desk_lamps": "A is faithful, with all three green lamps glowing and small pools of light on the tables. B puts papers on the left table that the day picture does not have."
+  },
+  "my_picks": "School Courtyard: evening A, night A. Library: evening B; night with the lights off, version A, which follows O38 (the desk-lamps A is the faithful alternative if the owner likes the lamps lit). Put to the owner; nothing was chosen when this was written.",
+  "lessons": "Forbidding added benches, signs, lamps and lights in the outdoor night sentence worked: neither School Courtyard night added any. Indoors, a relight still left bags in the Library once: 'add nothing' needs the same plain list of what is not to appear (bags, books, papers, shelves)."
+ }
 }
