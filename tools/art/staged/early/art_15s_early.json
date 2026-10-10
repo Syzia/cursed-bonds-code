@@ -2,7 +2,8 @@
  "about": [
   "The view outside, put right: written by hand on 11 Oct 2026, straight after reading art_15r.json. Each row is ONE named change on a render of 15r (given at full size), by the tool's own keep-everything prompt from tools/art/staged/early/campus_for_batch3.json with the change as its own sentence after 'Do not remove, tidy away or add anything.', the way the garden's moon was made full in 8b.",
   "The training hall's prompt leaves out the record's window line ('Through the windows: sky and cedar tops'), which would have repainted the view through every opening.",
-  "Why the views were wrong: the editor was given the whole yard and a crop of the room's own building, and painted what those pictures show beside the building (the stone steps beside the kura, the kura beside the hall) as what is seen from inside it. A view from inside is named side by side in words from now on (what is on the right, what is on the left, what is at the far end), and the crop of a room's own building is cut tight to the building."
+  "Why the views were wrong: the editor was given the whole yard and a crop of the room's own building, and painted what those pictures show beside the building (the stone steps beside the kura, the kura beside the hall) as what is seen from inside it. A view from inside is named side by side in words from now on (what is on the right, what is on the left, what is at the far end), and the crop of a room's own building is cut tight to the building.",
+  "What the editor does with 'change one thing only: what is seen through the door' when the new view is wider than the door: it widens the door. A view through a narrow far door is asked for as a narrow view (what is seen straight ahead, with only a glimpse at each side), or is placed by tool from a repaint of the same camera, as here."
  ],
  "written": "2026-10-11",
  "sentences": {
@@ -56,5 +57,30 @@
    "prompt_sha256": "2a898616007fe40f3d51f1cfdf344cc48df4be9381023b5c4cedb828fa569adf"
   }
  ],
- "workflow_sha256": "7d213c26948a86783c64a65789e6982fa4cf00fa9a2147ae49a737526929c5a6"
+ "workflow_sha256": "7d213c26948a86783c64a65789e6982fa4cf00fa9a2147ae49a737526929c5a6",
+ "renders_sha256": {
+  "ui2_training2a_view_a_00001_.png": "2519b787f03145a6b51932fc0bf5f6fd88e8317f1e73fe0742c4c2f93337e5a2",
+  "ui2_training2a_view_b_00001_.png": "15ce70ff4c6292e181ce3b6658273b78ac342e1ddb11ce0e6d75ba1da9cea62d",
+  "ui2_storehouse2b_view_a_00001_.png": "b76bb69e20b8fdbc71961d16805336556017123f60247f91b843538b5709f450",
+  "ui2_storehouse2b_view_b_00001_.png": "04d6213881764dfd1efd489c9c9cd32aae7b28416a3e7925d7874c22f5cde867",
+  "ui2_storehouse2a_view_a_00001_.png": "507256334e9dffc447cded03a2e87605d10251a040f51a151e8e414886bdb3d6",
+  "ui2_storehouse2a_view_b_00001_.png": "8a4b36828c90f3e7d3d31c39b25922416fce61790b08bfb7b53a5b773e5c0c04",
+  "ui2_storehouse2b_doorview_00001_.png": "95ca58135f23f6a98288cf20e2f10e315059765c5ff16821356a8c362a691275"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "Each repaint against the render it was made from: by eye at the opening, and by the mean difference of the two pictures outside the opening at half size (a plain re-render of an unchanged picture reads about 4 to 6 levels). Sheets: ~/Desktop/JJK Game images/ui2/early/compare_training2a_view.jpg, compare_storehouse2b_view.jpg, compare_storehouse2a_view.jpg, the three *_full.jpg, compare_storehouse2b_doorview_zoom.jpg, compare_three_rooms_picks.jpg.",
+  "training2a_view_a": "PICK. The farther opening now shows a small roofed timber gate, a low wall and bare earth, and no white building. The nearer opening, its four posts, the dojo across the yard and everything in the hall are as they were (5.6 levels outside the opening).",
+  "training2a_view_b": "Not used: the white building with its canopy, door and steps is still there.",
+  "storehouse2b_view_a": "The view is right (the long dark hall on the left, trees at the far end, the posts, the big hall's veranda on the right) and the room is unchanged, but the DOORWAY WAS WIDENED to about twice its width and its two leaves are gone, with the sword rack now standing across its edge (8.2 levels outside the old opening, 6 per cent of it changed by more than 30). Not used as it is; its view is used in the composite below.",
+  "storehouse2b_view_b": "Not used: the doorway widened in the same way, and the striking posts are gone.",
+  "storehouse2a_view_a": "Clean, and the alternative: door and leaves as they were, and through them the long dark hall on the left, the big hall's corner on the right, trees at the end, three posts on bare earth (4.5 levels outside the opening).",
+  "storehouse2a_view_b": "Clean too; the big hall stands more squarely ahead, which reads less as an open yard than version A.",
+  "storehouse2b_doorview": {
+   "what": "PICK. The storehouse's version B as painted in 15r, with ONLY the patch of outdoors inside its own doorway taken from storehouse2b_view_a. The two pictures share one camera, so that patch is what the narrow door shows of the repainted yard: a glimpse of the long dark hall on the left, trees and sky, the striking posts, the big hall's roof corner on the right. Every pixel of the room, the door frame and both leaves is the original's.",
+   "how": "tools/art/staged/early/door_view_15s.py (our own tool, no editor): a mask of the opening inside the frame less the two leaves, read off a measuring grid, drawn four times over and softened by 0.8 px. Changed pixels lie within (1169, 687)-(1586, 1091) of 2752 x 1536.",
+   "why not a third sitting": "both of the editor's tries widened the door to fit the wider view it was asked for; the view it painted is right, and only the door was wrong."
+  },
+  "put_to_the_owner": "Training Hall: training2a_view_a. Dojo: dojo2_a (15r). Storehouse: storehouse2b_doorview, with storehouse2a_view_a as the alternative (the closer room with the corded boxes and the larger bench)."
+ }
 }
