@@ -101,5 +101,31 @@
   },
   "my_picks": "Classroom: evening B, night A. Infirmary: evening B; night 'working late' A, because the two memories that show this picture are time with Shoko while she works there (the lights-off A is the faithful alternative if the owner wants the room dark like the others). Put to the owner; nothing was chosen when this was written.",
   "lessons": "Saying that what stands outside the windows stays kept the trees in all six nights. The evening sentence does not say it, and one evening of four lost them: say it in every hour sentence. Bookshelves appeared in the classroom again, in a relight this time: the room wants a keep list with its bare front wall named."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks. The scenery lines up outside the windows nicely.\" (my picks were: the classroom's evening B and night A; the infirmary's evening B and its working-late night A)",
+  "classroom_evening": {
+   "version": "b",
+   "render": "ui2_classroom_evening_b_00001_.png",
+   "sha256": "8f78f1a8dde27f3518acf3b3a5b861143f116eb45df20167cbfbf9c846e2f093"
+  },
+  "classroom_night": {
+   "version": "a",
+   "render": "ui2_classroom_night_a_00001_.png",
+   "sha256": "63694400bfebf71f4cd90ce6c2964350af3c76539c527d9346b512026313469d",
+   "treatment": "every light off"
+  },
+  "infirmary_evening": {
+   "version": "b",
+   "render": "ui2_infirmary_evening_b_00001_.png",
+   "sha256": "f02719743784c6bfb144c7ed0ebba391219b4a5d19cf56e937ae4fe660696027"
+  },
+  "infirmary_night": {
+   "version": "a",
+   "render": "ui2_infirmary_night_a_00001_.png",
+   "sha256": "ff03b926903f2a6d24574cd3507eb0763c7c4b4e938dc97a83218e527df96f7f",
+   "treatment": "someone working late: the monitor on, one ceiling light low"
+  },
+  "in_the_batch_table": "tools/art/batches.json, batch 6, file art_6b: the two nights carry their sentences as hour_words"
  }
 }
