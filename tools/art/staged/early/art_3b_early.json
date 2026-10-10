@@ -63,5 +63,20 @@
   },
   "my_picks": "Common Room: evening A, night B. My Room: evening B, night A. The owner had not chosen yet when this was written.",
   "for_the_installer": "two more blind spots, the other way round from art_3a_early.json: an addition on the sofa's arm and one on the desk beside the laptop's allow box both passed. The relight wording itself works: nothing moved in any of the eight, and no window shows daylight except My Room evening A's right-hand one."
+ },
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/",
+ "chosen": {
+  "said": "the owner, in chat, 10 Oct 2026: \"A and A for nights, A then B for evenings. Lets go with that\" (the evenings: the Common Room's version A, My Room's version B)",
+  "dorm_common_evening": {
+   "version": "a",
+   "render": "ui2_dorm_common_evening_a_00001_.png",
+   "sha256": "41a6bede49f200773f2ac95d95c498655121c3024684a4538efa01dee17b791f"
+  },
+  "your_room_evening": {
+   "version": "b",
+   "render": "ui2_your_room_evening_b_00001_.png",
+   "sha256": "3fb41afdda01f878a3db4167cf6907217e8493db2f1404d59ae8833e6081c142"
+  },
+  "nights": "neither lamplit night is chosen: the owner had both rooms painted again with the lights off and chose those (art_3c_early.json; plan O38)"
  }
 }

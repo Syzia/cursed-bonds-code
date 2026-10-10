@@ -214,7 +214,8 @@
       {
        "place": "dorm_common",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the ceiling light and every lamp are dark. Outside the windows it is night, under a deep blue sky with stars. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly."
       },
       {
        "place": "dorm",
@@ -224,7 +225,8 @@
       {
        "place": "dorm",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the ceiling light and every lamp are dark. Outside the windows it is night, under a deep blue sky with stars. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly."
       }
      ]
     }

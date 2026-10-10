@@ -46,5 +46,20 @@
   "measured": "mean brightness out of 255: Common Room day 118, lamplit nights 100 and 102, lights off A 69 and B 66; My Room day 111, lamplit nights 89 and 84, lights off A 69 and B 62. Share of the picture darker than 25: Common Room A 5.9%, B 7.4%; My Room A 7.8%, B 11.6%.",
   "my_picks": "Lights off for both rooms, version A of each: the two rooms then sit at the same brightness (69), and the things one clicks stay easy to see. Evenings as on 7 Oct: Common Room A, My Room B. The owner had not chosen when this was written.",
   "open": "The laptop's lit screen: kept unless the owner wants it dark (one more small run). If the lights-off nights are chosen the plan says so: a night picture of an empty or sleeping room has its lights off."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 10 Oct 2026: \"A and A for nights, A then B for evenings. Lets go with that\" (the nights: version A of each room, lights off)",
+  "dorm_common_night": {
+   "version": "a",
+   "render": "ui2_dorm_common_night_off_a_00001_.png",
+   "sha256": "b74673b13c84168339e7e7eff25d8be7eaa461fa8ab26e4bbf41609da64c323c"
+  },
+  "your_room_night": {
+   "version": "a",
+   "render": "ui2_your_room_night_off_a_00001_.png",
+   "sha256": "a9971e453cf790501f6260dc6ea0caa10e29f7106a97fbcabc4f3c85ea16f9df"
+  },
+  "laptop": "the screen stays lit in the chosen night, as in the day picture; the owner was told and did not ask for it dark",
+  "in_the_batch_table": "tools/art/batches.json, batch 3, file art_3b: the two night pictures carry this file's hour sentence as hour_words"
  }
 }
