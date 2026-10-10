@@ -770,10 +770,10 @@ label zz_smoke:
         zzc_layout("hot_courtyard", _zz_side)
         check(hot_validate() == [] and path_validate() == [],
               "C: lint accepts a sidecar point for a hotspot that is planned for the place and not registered yet", hot_validate() + path_validate())
-        _zz_side["spots"].update({"zz_gone": [900, 700], "torii": [700, 700], "gateway": [1500, 200], "straw_posts": "here"})
+        _zz_side["spots"].update({"zz_gone": [900, 700], "gate_pond": [700, 700], "gateway": [1500, 200], "straw_posts": "here"})
         zzc_layout("hot_courtyard", _zz_side)
         _zz_f = hot_validate()
-        check(len(_zz_f) == 4 and any("zz_gone" in f and "planned" in f for f in _zz_f) and any("torii" in f and "planned" in f for f in _zz_f)
+        check(len(_zz_f) == 4 and any("zz_gone" in f and "planned" in f for f in _zz_f) and any("gate_pond" in f and "planned" in f for f in _zz_f)
               and any("gateway" in f and "lane" in f for f in _zz_f) and any("straw_posts" in f and "two numbers" in f for f in _zz_f),
               "C: and refuses a stale point (an id that is neither registered nor planned for that place; one planned for another place), a planned point in a lane, and a point that is not two numbers", _zz_f)
         zzc_back()

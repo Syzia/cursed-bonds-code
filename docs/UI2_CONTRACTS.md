@@ -336,7 +336,7 @@ sidecar brings `tips`.
 
 | place | looks | actions (the action each stands for) |
 |---|---|---|
-| `gate` | `torii` | |
+| `gate` | `gate_pond` | |
 | `courtyard` | `gateway` | `straw_posts` (`train`, "Practice") |
 | `school_yard` | `pine_bench` | |
 | `classroom` | `notices` | `front_desk` (`study`) |

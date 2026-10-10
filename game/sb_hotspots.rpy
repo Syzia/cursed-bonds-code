@@ -62,7 +62,7 @@ init -5 python:
     ##          action it stands for
     SPOT_PLANNED = (
         ## Courtyard & Gate
-        ("torii",          "gate",            "look"),
+        ("gate_pond",      "gate",            "look"),
         ("gateway",        "courtyard",       "look"),
         ("straw_posts",    "courtyard",       "act"),     # train ("Practice")
         ## School Building
