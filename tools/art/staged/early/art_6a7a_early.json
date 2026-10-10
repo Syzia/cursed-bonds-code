@@ -1,0 +1,89 @@
+{
+ "about": [
+  "Sittings 6a (the classroom and the infirmary, each redone in place from the game's own picture) and 7a (the Courtyard's evening and night, relit from the chosen Courtyard, which is not installed), written early by hand as one file on 11 Oct 2026 at the owner's word ('Can we go on with the next batch of images?'). The prompts are the tool's own (make_redo_workflow.redo_job and prompt_for) from the scratch record in which the three chosen yards are fixed, so the classroom's windows show the School Courtyard as chosen.",
+  "7a is the first outdoor relight (plan 5.1). Its night is painted two ways for the owner to choose between: every window dark with only the stone lamps by the gateway and the vending machine glowing, which follows the owner's rulings O38 and O39 for rooms nobody is up in; and the plan's general outdoor night, in which windows and lamps glow warm.",
+  "Judge without installing: tools/py_art.sh tools/install_redo.py <place> <a> <b> --dry for the two rooms, and --relight courtyard <evening|night> <a> <b> --dry --against <the chosen Courtyard> for the three relights; then by eye against the day picture for anything added, and that what stands beyond the gateway is still there."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "courtyard_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight with long soft shadows. Windows already in the picture catch the light or begin to glow warm; add no new light.",
+  "courtyard_night": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows. Every window of the buildings is dark. Only the stone lamps beside the gateway and the front of the vending machine give a small warm glow; add no new light. Everything beyond the gateway and on the hills is still there, as dark shapes against the sky.",
+  "courtyard_night_lit": "Change the time of day to night: a deep blue night sky with a few stars and a faint moon, and cool blue moonlight on everything, with soft shadows. Windows and lamps already in the picture glow warm yellow; add no new light."
+ },
+ "window_lines": {
+  "classroom": [
+   "Through the windows: the school courtyard below, the library's roof beyond it, and cedars"
+  ],
+  "infirmary": [
+   "Through the windows: cedar trunks at the forest edge"
+  ]
+ },
+ "rows": [
+  {
+   "label": "Classroom",
+   "kind": "inplace",
+   "saves": [
+    "ui2_classroom_a",
+    "ui2_classroom_b"
+   ],
+   "seeds": [
+    4942,
+    4943
+   ],
+   "prompt_sha256": "bacdf2ec1840b8d0b40365e0804ac9c5601e10ace711645119ea9a630f96dc57"
+  },
+  {
+   "label": "Infirmary",
+   "kind": "inplace",
+   "saves": [
+    "ui2_infirmary_a",
+    "ui2_infirmary_b"
+   ],
+   "seeds": [
+    4910,
+    4911
+   ],
+   "prompt_sha256": "0b5b6904d3bb830ebff065b7c80b171f574518af3fc22cfb4031fbcb7aa3c192"
+  },
+  {
+   "label": "Courtyard, evening",
+   "kind": "relight",
+   "saves": [
+    "ui2_courtyard_evening_a",
+    "ui2_courtyard_evening_b"
+   ],
+   "seeds": [
+    3682,
+    3683
+   ],
+   "prompt_sha256": "044621345e8267f5d79fe7dcdf053c4554f61beb079ebc4d7766e7dd6ae1e4db"
+  },
+  {
+   "label": "Courtyard, night, every window dark",
+   "kind": "relight",
+   "saves": [
+    "ui2_courtyard_night_a",
+    "ui2_courtyard_night_b"
+   ],
+   "seeds": [
+    4760,
+    4761
+   ],
+   "prompt_sha256": "16d3a92f8f198496586fc45d59e459e898c64225c40d3722260acdec87874440"
+  },
+  {
+   "label": "Courtyard, night, the windows lit",
+   "kind": "relight",
+   "saves": [
+    "ui2_courtyard_night_lit_a",
+    "ui2_courtyard_night_lit_b"
+   ],
+   "seeds": [
+    3660,
+    3661
+   ],
+   "prompt_sha256": "c38acba398b993ea9b5a011b918cf47e24288a9dd4a07ef3651c8b82a08b2541"
+  }
+ ],
+ "workflow_sha256": "db8e59d80f885b7c05f6201f497477cb4dbb651d70364d05fbd431339f1fc839"
+}
