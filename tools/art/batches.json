@@ -458,7 +458,7 @@
        "place": "dorm_yard",
        "kind": "relight",
        "hour": "night",
-       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows; the pond reflects the night sky. A few of the upstairs windows of the dormitories on either side glow warm, because people are at home; every other window is dark, and the house in the middle is dark. The stone lamps by the pond give a small warm glow. Everything in the garden and beyond it is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows; the pond reflects the night sky. A few of the upstairs windows of the dormitories on either side glow warm, because people are at home; every other window is dark, and the house in the middle is dark. The stone lamps by the pond give a small warm glow. Everything in the garden and beyond it is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       },
       {
        "place": "rooftop",
@@ -476,12 +476,14 @@
       {
        "place": "rooftop",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight with long soft shadows. Everything in the view is still there. Add no new light."
       },
       {
        "place": "rooftop",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. Among the roofs far below, a few windows show small warm lights, because people are at home; add no other light. Everything in the view is still there, as dark shapes against the sky. Add no bench, sign or lamp that is not in the picture now."
       }
      ]
     }

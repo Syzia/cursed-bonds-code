@@ -99,7 +99,8 @@
    "render": "ui2_dorm_yard_night_a_00001_.png",
    "sha256": "2a46632224f6775b29ca49670529287a6a4867efe919ff150b6ab37620663c72",
    "treatment": "people at home: a few dormitory windows lit",
-   "note": "shows a crescent moon; to be made full by one named change (offered with the next file)"
+   "note": "shows a crescent moon; to be made full by one named change (offered with the next file)",
+   "replaced_by": "ui2_dorm_yard_night_moon_a (art_8b_early.json; plan O44): the same picture with a full moon. The fitted file chosen/dorm_yard_night_1920.png is the full-moon one."
   },
   "rooftop": {
    "version": "a",

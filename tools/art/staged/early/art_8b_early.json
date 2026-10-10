@@ -70,5 +70,26 @@
   },
   "my_picks": "Rooftop: evening A; night B (its pagoda is dark, as in the Courtyard's night). The garden's night: the full-moon version A replaces the crescent one. Put to the owner; nothing was chosen when this was written.",
   "lessons": "One change written as a sentence of its own after the keep text ('Change one thing only: ... Change nothing else in the picture.') held the rest of a night picture to 0.977 agreement. Saying 'a full moon, round and whole' gave a full moon in all four pictures. 'A few windows show small warm lights ... add no other light' still let one version light the pagoda: name what must stay dark."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\" (my picks were: the rooftop's evening A and night B; the garden's full-moon version A in place of the crescent night)",
+  "rooftop_evening": {
+   "version": "a",
+   "render": "ui2_rooftop_evening_a_00001_.png",
+   "sha256": "a31d005c2e09c9b0462c1356583fa5d41417d05eb2eb3b25132d6f4d3fb833ad"
+  },
+  "rooftop_night": {
+   "version": "b",
+   "render": "ui2_rooftop_night_b_00001_.png",
+   "sha256": "fc2a505c8ae3681ce26301cb595e4cfa09c2ef806100f276e7ffff0954261a91",
+   "treatment": "a full moon; a few lights among the roofs below; the pagoda dark"
+  },
+  "dorm_yard_night": {
+   "version": "a",
+   "render": "ui2_dorm_yard_night_moon_a_00001_.png",
+   "sha256": "a483fa73f38777e588a91574b7f1a8b984bdeb371d109422483f8d4235db10e4",
+   "treatment": "the garden's Night from now on: the chosen night with its moon made full"
+  },
+  "in_the_batch_table": "tools/art/batches.json, batch 8: the rooftop's two sentences as hour_words in art_8b; the garden night's sentence in art_8a now says 'a full moon, round and whole'. The picture itself was made in two steps (the night, then the one change), and a single run of that sentence is judged against it."
  }
 }
