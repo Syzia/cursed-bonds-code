@@ -393,7 +393,8 @@
       {
        "place": "courtyard",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows. Every window of the buildings is dark. Only the stone lamps beside the gateway and the front of the vending machine give a small warm glow; add no new light. Everything beyond the gateway and on the hills is still there, as dark shapes against the sky."
       }
      ]
     },

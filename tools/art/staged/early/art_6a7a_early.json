@@ -115,5 +115,31 @@
   "measured": "mean brightness out of 255: classroom A 114, B 118; infirmary A 101, B 96; Courtyard evening A 109, B 112; night with dark windows A 64, B 61 (12 to 14% of it darker than 25); night with lit windows A 85, B 75.",
   "my_picks": "Classroom B; infirmary A; Courtyard evening A (close); Courtyard night with every window dark, version A, which follows O38 and O39 (the windows-lit A is the faithful alternative if the owner would rather the campus looked awake). Put to the owner; nothing was chosen when this was written.",
   "lessons": "The first outdoor relight holds: nothing moved in six of six. Two of the four nights added street furniture (benches, a notice board) and one strung lights on the pagoda although the sentence ends 'add no new light': a night outdoors is read by eye for added benches, boards and lights. A room with no keep list is not checked for additions at all: write the keep list before judging a room redone in place."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, they all look good!\" (my picks were: classroom B; infirmary A; the Courtyard's evening A; its night with every window dark, version A)",
+  "classroom": {
+   "version": "b",
+   "render": "ui2_classroom_b_00001_.png",
+   "sha256": "16555abb6f15f6eae95e5f8da26ba717cb949fb088d0dedcf4e4dc57fb2940f6"
+  },
+  "infirmary": {
+   "version": "a",
+   "render": "ui2_infirmary_a_00001_.png",
+   "sha256": "ed14cf2b922f28897c99ceab32832e4acc3dccb0fc35a9099dacd2fad21576a0",
+   "note": "it has a keyboard and a mouse at the monitor that the picture of before did not; shown to the owner and chosen"
+  },
+  "courtyard_evening": {
+   "version": "a",
+   "render": "ui2_courtyard_evening_a_00001_.png",
+   "sha256": "4de041780b38649aaf76765d867d0601f3e636cbadeec65a53f339f5fbc77744"
+  },
+  "courtyard_night": {
+   "version": "a",
+   "render": "ui2_courtyard_night_a_00001_.png",
+   "sha256": "c5fefb4e784d665ee019c5c21005a626f43b21812d399e782854fd2d708a3a46",
+   "treatment": "every window dark; the stone lamps and the vending machine glow"
+  },
+  "in_the_batch_table": "tools/art/batches.json, batch 7, file art_7a: the Courtyard's night carries its sentence as hour_words"
  }
 }
