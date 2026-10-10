@@ -89,7 +89,9 @@
 ##   name_rects    {place: {id: [x, y, w, h]}}: where the name plate of every
 ##                 registered hotspot and exit would be drawn in a shaped
 ##                 place while names are shown (hot_name_rect, at its applied
-##                 point), so that a layout tool can refuse two that meet
+##                 point), so that a layout tool can refuse two that meet.
+##                 Measured standing in each place in turn, so a place's own
+##                 "tips" rows decide the side its plates lie on
 ##
 ## Keys the tree does not have yet are written empty and filled when U0c
 ## regenerates the file. Nothing in it depends on the day, the hour, a flag or
@@ -282,7 +284,12 @@ init 999 python:
         d["hot_look"] = zz_dump_plain(hot_look())
         d["look_keys"] = builtins.list(HOT_LOOK_KEYS)
         shapes, keep, rects = builtins.dict(), builtins.dict(), builtins.dict()
+        ## A name plate lies on the side its hover label opens on, and that is
+        ## read from the `tips` of the sidecar of the place I stand in
+        ## (icon_tip_hot): so the dump stands in each place in turn.
+        was_here = store.here
         for loc in LOC_ORDER:
+            store.here = loc
             side = rule_layout("hot_" + loc)
             if isinstance(side.get("shapes"), builtins.dict) and side["shapes"]:
                 shapes[loc] = zz_dump_plain(side["shapes"])
@@ -296,6 +303,7 @@ init 999 python:
                     row["x"], row["y"] = pts[h["id"]]
                     got[h["id"]] = [int(v) for v in hot_name_rect(row)]
             rects[loc] = got
+        store.here = was_here
         d["shapes"] = shapes
         d["keep_tile"] = keep
         d["shaped"] = [loc for loc in LOC_ORDER if hot_shapes_for(loc)]
@@ -350,6 +358,31 @@ label zz_smoke:
               and sum(len(v) for v in _zz_d["name_rects"].values()) == len(builtins.set(h["id"] for h in HOT_SPOTS)),
               "D60: the limits and the light's look (HOT_SHAPE, hot_look), each place's shapes and keep_tile rows as its sidecar holds them (%d places; %d shaped now), and a name plate's rectangle for every hotspot and exit (%d)"
               % (len(_zz_d["shapes"]), len(_zz_d["shaped"]), sum(len(v) for v in _zz_d["name_rects"].values())))
+        ## A `tips` row of a place I do not stand in moves that place's plates
+        ## (and no other's): the dump stands in each place while it measures.
+        _zz_side = rule_layout("hot_courtyard")
+        _zz_had = "hot_courtyard" in RULE_LAYOUT
+        _zz_real = RULE_LAYOUT.get("hot_courtyard")
+        _zz_side["tips"] = {"go_courtyard__gate": "left", "spot_vend": "bottom"}
+        RULE_LAYOUT["hot_courtyard"] = _zz_side
+        _zz_here = store.here
+        _zz_t = zz_dump_build()
+        if _zz_had:
+            RULE_LAYOUT["hot_courtyard"] = _zz_real
+        else:
+            RULE_LAYOUT.pop("hot_courtyard", None)
+        _zz_a, _zz_b = _zz_d["name_rects"]["courtyard"], _zz_t["name_rects"]["courtyard"]
+        _zz_g, _zz_v = hot_place_points("courtyard")["go_courtyard__gate"], hot_place_points("courtyard")["spot_vend"]
+        check(_zz_here != "courtyard" and store.here == _zz_here
+              and _zz_b["go_courtyard__gate"][0] + _zz_b["go_courtyard__gate"][2] == int(_zz_g[0]) - 36 and _zz_b["go_courtyard__gate"][1] == int(_zz_g[1]) - 36
+              and _zz_b["spot_vend"][:2] == [int(_zz_v[0]) - 36, int(_zz_v[1]) + 36]
+              and _zz_a["go_courtyard__gate"] != _zz_b["go_courtyard__gate"] and _zz_a["spot_vend"] != _zz_b["spot_vend"]
+              and all(_zz_a[k] == _zz_b[k] for k in _zz_a if k not in ("go_courtyard__gate", "spot_vend"))
+              and all(_zz_d["name_rects"][l] == _zz_t["name_rects"][l] for l in LOC_ORDER if l != "courtyard")
+              and _zz_t["tips"].get("courtyard") == _zz_side["tips"]
+              and json.dumps(zz_dump_build(), sort_keys=True) == json.dumps(_zz_d, sort_keys=True),
+              "D60: name_rects is measured standing in each place: a test `tips` row for the Courtyard, a place I do not stand in (I am in %s), puts the gate's plate left of its square and the machine's under it, and moves no other plate" % _zz_here,
+              (_zz_a.get("go_courtyard__gate"), _zz_b.get("go_courtyard__gate"), _zz_a.get("spot_vend"), _zz_b.get("spot_vend")))
         _zz_path = os.path.join(zz_smoke_state.shots, "game_layout.json")
         with open(_zz_path, "w", encoding="utf-8") as _zz_f:
             _zz_f.write(_zz_text)

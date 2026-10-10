@@ -148,7 +148,7 @@ layout has changed since the dump was written: run tools/smoke.sh u2_dump`.
 | `shapes` | `{place: {id: [polygon, ...]}}`: what each `hot_` sidecar holds under `shapes`, as written, whatever the picture's revision; a place with none is left out |
 | `keep_tile` | `{place: {id: reason}}` |
 | `shaped` | the places that are shaped now (`hot_shapes_for` answers), in `LOC_ORDER` |
-| `name_rects` | `{place: {id: [x, y, w, h]}}`: for every registered hotspot and exit, where its name plate is drawn in a shaped place while names are shown (`hot_name_rect` at its applied point). `check_layout.py` refuses a place where two meet |
+| `name_rects` | `{place: {id: [x, y, w, h]}}`: for every registered hotspot and exit, where its name plate is drawn in a shaped place while names are shown (`hot_name_rect` at its applied point). **Measured standing in each place in turn** (`here` is set to the place while its rectangles are computed), so the place's own `tips` rows decide the side each plate lies on, as in the game. `check_layout.py` refuses a place where two meet |
 
 **The committed file is regenerated in the owner's folder after U0c2 merges**
 (`tools/smoke.sh u2_dump`), never from a worktree.
@@ -465,7 +465,8 @@ was.
 | `view_pose_box(loc, key)` | the box from `pose_<loc>.json`, then from `view_<loc>.json`'s `poses` |
 | `view_blink_also(who)` | a tuple of faces: `faces.json`, then `VIEW_BLINK_ALSO` |
 | `view_face_box(who, key)` | `(x, y, w, h)` or None, key `"eyes"` or `"mouth"`: `faces.json`, then `VIEW_FACE` |
-| `view_slots`, `view_slot_rects`, `view_person_rects`, `view_motion`, `stage_person`, `char_focus` | unchanged |
+| `view_slots`, `view_slot_rects`, `view_person_rects`, `view_motion`, `char_focus` | unchanged |
+| `label stage_person(who, expr=None)` (`sb_activities.rpy`, not this file) | unchanged |
 
 ### B9. Exits and hotspots
 
@@ -475,7 +476,7 @@ was.
 | `path_faces(to)` | `room_paths.rpy` (a stub: `[]`; U2) | a list of person keys, three at most |
 | `path_hub`, `path_exits`, `path_neighbours` | | unchanged. `path_validate`'s spacing rules read each exit's applied point |
 | `register_hotspot`, `hot_spots_for` (the same eleven keys), `hot_covers`, `screen hot_layer(loc, front=False)` | `sb_hotspots.rpy` | unchanged |
-| `hot_set_dim(hot_id, fn)` | | None. `fn` is the NAME of a store function that returns a reason (a str) or `""`. While it gives a reason `hot_layer` draws the hotspot at `HOT_DIM_ALPHA` (0.45), its hover label says the reason and pressing it does nothing. (Separate from `register_hotspot`, whose signature is frozen.) U5 names the card table's |
+| `hot_set_dim(hot_id, fn)` | | None. `fn` is the NAME of a store function that returns a reason (a str) or `""`. While it gives a reason `hot_layer` draws the hotspot at `HOT_DIM_ALPHA` (0.45), its hover label says the reason and pressing it does nothing. (Separate from `register_hotspot`, whose signature is frozen.) **Only a hotspot `hot_spots_for` returns is drawn**: for an action hotspot U5 keeps the place action offered while it is dim (`hot_spots_for` drops an action hotspot whose place action is not offered), and the action's own label must refuse too, since the tile for the same action in the icon column is not dimmed by `hot_layer`. U5 names the card table's |
 | `hot_dim_reason(h)`, `hot_planned(place=None)`, `hot_name(h)`, `hot_faces(h)` | | a str; `{id: row}`; a str; a list of person keys |
 | `hot_validate()` | | accepts a sidecar point for an id planned for that place; refuses one that is neither registered nor planned; reads the shape rules of B15 |
 | `hot_shapes_for(loc)`, `hot_tip_rect(key)`, `HOT_SHAPE` | | D60: B15 |
@@ -516,6 +517,19 @@ else, the opposite side when the label would leave the screen).
 | `view_asleep(loc)` | `view_stage.rpy` | `[]`; when filled: a list of `(who, patch)`, `patch` a pose dict `dict(image, box)`. `screen view_stage` lays each on the room before the people | U3 |
 | `screen view_others(loc, who)` | `view_stage.rpy` | empty | U3 |
 | `night_club_bg(key)` | `sb_night.rpy` (final) | an image name: `"bg club"` when that image exists, else `night_bg(key)` | U9 adds the one line that calls it |
+
+**What marks the stubs.** `TKY_LINES` is `{}` only until U5 fills it, and U5
+fills it together with `tky_meet` and `cards_invite_pick`. `u2_contracts`
+calls those two screens (to see each answer at once) only while `TKY_LINES` is
+empty and neither `bath_ok()` nor `pool_ok()` is true; once they are filled it
+notes "the stub-only check is skipped" and calls neither, because a filled
+screen waits for its own input. U5 therefore fills `TKY_LINES` in the same
+commit as either screen.
+
+**Defaults that stay.** `hud_day_card`'s `n` and `weekday`, `hot_layer`'s
+`front` and `sb_map`'s `layer` and `area` keep a default (`u2_contracts`
+asserts it): `hud_day_card` must be showable with no argument, so that a save
+that holds it loads.
 
 Hook lines placed in screens other packages own: `use hint_layer` in
 `sb_place` and in `sb_map`; `use view_others(here, who)` in `sb_char`.
@@ -640,7 +654,7 @@ picture is at revision 2 or later: `art_rev(art_stem(loc))`, the stem being
 | `HOT_SHAPE` | one dict: the limits (`polys (1, 3)`, `points (3, 60)`, `area_min 5184`, `area_max 0.4`, `buried_max 0.5`, `grid 4`) and the light's default look (`color "#fff0cc"`, `wash 0.30`, `edge 0.85`, `dim 0.4`, `names 0.5`, `blur 9`, `line 2`). `HOT_LOOK_KEYS` are the five `hot_look.json` may replace |
 | `hot_look()` | the look in force, a dict of those five keys |
 | `hot_keep_tile(loc)` | `{id: reason}` |
-| `hot_name_rect(h)` | `(x, y, w, h)` of a shaped hotspot's name plate while names are shown; `h` is a `hot_spots_for` row |
+| `hot_name_rect(h)` | `(x, y, w, h)` of a shaped hotspot's name plate while names are shown; `h` is a `hot_spots_for` row. The side is `icon_tip_side`'s, which reads the `tips` of `hot_<here>.json`: it answers for a hotspot of **the place I stand in** (a tool that asks about another place sets `here` first, as `u2_dump` does) |
 | `hot_tip_faces(key)` | the people whose faces the hover label draws beside a shaped exit's name (`hot_faces`); `[]` for any other key |
 | `hot_place_points(place)` | `{id: (x, y)}`: the applied point of every hotspot and exit registered there, and the sidecar's point of a planned one |
 | `icon_tip_key(key)` (`ui_icons.rpy`) | `hot_<id>` for `hotshape_<id>`, any other key unchanged: the side lookups (`icon_tip_side`) answer alike for both |
@@ -736,6 +750,13 @@ An 80 px square round each applied point, the planned ids under `keep_tile`,
 every picture at revision 2 and a manifest row for everything made from one,
 so that nothing but the shapes differs. `--rev 1` and `--for-rev 3` build the
 two states in which nothing is shaped.
+
+**A save on a shaped place view.** Section I of `u2_contracts` makes a save
+on the place view of the shaped Courtyard and loads it in the same run: it
+comes back at the same depth, day, hour and place with the place view up, the
+shapes answer at their points, and neither `load_recover` nor `return_recover`
+runs. The state the night shuts is asserted there on the Library's `stacks`
+(shaped by a square round each of the Library's points, at Night).
 
 **Not built** (plan 7.3, asked at checkpoint B): a shimmer on walking in; a
 thing staying clickable while someone stands on its point; a cut-out picture

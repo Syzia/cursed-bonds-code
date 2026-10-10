@@ -46,7 +46,9 @@
 ##      tools/smoke/hot_shape_cases.json, the rules in lint (each broken test
 ##      sidecar refused by name), the gates, and the shaped Courtyard: no ring
 ##      and no icon, the square and the shape, the light, the layers, hidden
-##      behind a person, dimmed, names shown, faces, hot_look.json, pickling.
+##      behind a person, dimmed (locked, a dim function, and shut by the night
+##      on the Library's stacks), names shown, faces, hot_look.json, pickling,
+##      and a save made on the shaped place view, loaded in the same run.
 ##      The test sidecar and the manifest row are laid in place, so this
 ##      section is the same in both states.
 ##
@@ -187,6 +189,52 @@ init 999 python:
             return None
         p = sc.parameters
         return [] if p is None else [q.name for q in p.parameters.values()]
+
+    def zzc_screen_optional(name):
+        """The names of a screen's parameters that have a default (so the
+        screen can be shown without them); None when there is no such
+        screen."""
+        sc = renpy.display.screen.get_screen_variant(name)
+        if sc is None:
+            return None
+        p = sc.parameters
+        return [] if p is None else [q.name for q in p.parameters.values() if q.default is not q.empty]
+
+    def zzc_register(row, rows):
+        """world_variants_register() run again, after init, with the
+        manifest rows `rows` laid in place and the file of the planned row
+        `row` taken as loadable whether or not it is there. An image may
+        only be declared at init, so renpy.image is stood in for while it
+        runs. Returns (used, declared) for that row alone: the rows the
+        function says it used, and the images it would have declared.
+        TIME_VARIANT, the manifest and the two functions are put back before
+        it returns."""
+        declared = builtins.list()
+        loadable, image = renpy.loadable, renpy.image
+        tv = copy.deepcopy(builtins.dict((k, builtins.dict(v)) for k, v in TIME_VARIANT.items()))
+        art = copy.deepcopy(builtins.dict(ART_PICTURES))
+
+        def zz_loadable(path, *args, **kwargs):
+            return True if path == row[3] else loadable(path, *args, **kwargs)
+
+        def zz_image(name, d):
+            if d == row[3]:
+                declared.append((name, d))
+
+        used = builtins.list()
+        try:
+            zzc_art(**rows)
+            renpy.loadable, renpy.image = zz_loadable, zz_image
+            used = [r for r in world_variants_register() if builtins.tuple(r) == builtins.tuple(row)]
+        finally:
+            renpy.loadable, renpy.image = loadable, image
+            TIME_VARIANT.clear()
+            TIME_VARIANT.update(tv)
+            art_rows()
+            ART_PICTURES.clear()
+            ART_PICTURES.update(art)
+            _BG_CACHE.clear()
+        return (used, declared)
 
     def zzc_uses(screen, target):
         """How many `use <target>` statements a screen's own source holds."""
@@ -334,6 +382,88 @@ init 999 python:
         side.update(more)
         zzc_layout("hot_courtyard", side)
         renpy.restart_interaction()
+
+    def zzc_squares(loc, size=80):
+        """Lay a test sidecar that shapes a whole place, as
+        tools/smoke/make_shape_overlay.py does for all 35: a square of
+        `size` px round the applied point of every exit and every hotspot
+        registered there (two at one point share it), and the ids that are
+        only planned under keep_tile. Returns the real sidecar, to put back
+        with zzc_layout."""
+        real = rule_layout("hot_" + loc)
+        side = json.loads(json.dumps(real))
+        reg = builtins.set(h["id"] for h in HOT_SPOTS if h["place"] == loc)
+        k = size // 2
+        side["shapes"] = builtins.dict((hid, [[[int(x) - k, int(y) - k], [int(x) + k, int(y) - k], [int(x) + k, int(y) + k], [int(x) - k, int(y) + k]]])
+                                       for hid, (x, y) in hot_place_points(loc).items() if hid in reg)
+        side["keep_tile"] = builtins.dict((hid, "planned, not registered yet") for hid in hot_planned(loc) if hid not in reg)
+        side.pop("for_rev", None)
+        zzc_layout("hot_" + loc, side)
+        renpy.restart_interaction()
+        return real
+
+    ## The save of section I: 0 before it is made, 1 while it is being made,
+    ## 2 once it has been loaded (a builtins list: a load leaves it alone).
+    ZZC_SAVE = builtins.list([0, None])
+    ZZC_RECOVER = builtins.list()
+
+    def zzc_label_cb(name, abnormal):
+        if name in ("load_recover", "return_recover"):
+            ZZC_RECOVER.append(name)
+
+    config.label_callbacks.append(zzc_label_cb)
+
+    def zzc_scrub():
+        """Nothing of the harness goes into a save: its working variables
+        leave the store."""
+        for k in [k for k in builtins.list(builtins.vars(store)) if k.startswith("_zz")]:
+            try:
+                builtins.delattr(store, k)
+            except Exception:
+                pass
+
+    def zzc_where():
+        """Where I am, as a save and its load must agree on it: the call
+        depth, the day, the hour, the place, whether the place view is up,
+        and the shape widgets on it."""
+        sc = renpy.get_screen("sb_place")
+        shapes = builtins.sorted(w for w in (sc.widgets if sc is not None else ()) if builtins.str(w).startswith("hotshape_"))
+        return (renpy.call_stack_depth(), store.day, store.period, store.here, sc is not None, builtins.tuple(shapes))
+
+    def zzc_unpicklable():
+        """[(name, why)] for every store variable a save would hold that
+        does not pickle."""
+        bad = builtins.list()
+        for k in builtins.sorted(renpy.python.store_dicts["store"].ever_been_changed):
+            if k.startswith("_zz") or k not in builtins.vars(store):
+                continue
+            try:
+                renpy.compat.pickle.dumps(getattr(store, k))
+            except Exception as e:
+                bad.append((k, repr(e)[:120]))
+        return bad
+
+    def zzc_save_load(slot):
+        """Make the save `slot` where I stand and load it. It does not
+        return: the load comes back on the statement that called it, with
+        ZZC_SAVE[0] == 2 and ZZC_SAVE[1] what zzc_where() said before."""
+        ZZC_SAVE[0] = 1
+        ZZC_SAVE[1] = zzc_where()
+        check(not zzc_unpicklable(), "I: every store variable the save will hold pickles", zzc_unpicklable())
+        ## the rollback log still remembers the working variables: cut it
+        ## short, so the save holds what a player's would
+        del renpy.game.log.log[:-2]
+        try:
+            renpy.take_screenshot()
+            renpy.save(slot)
+            ok = bool(renpy.can_load(slot))
+        except Exception as e:
+            ok = repr(e)
+        if not check(ok is True, "I: a save made on the place view of the shaped Courtyard is written", ok):
+            ZZC_SAVE[0] = 3
+            return
+        ZZC_SAVE[0] = 2
+        renpy.load(slot)
 
     def zzc_at(x, y, screen="sb_place"):
         """The id of the widget that would take a click at (x, y) now, as
@@ -728,6 +858,20 @@ label zz_smoke:
             check(TIME_VARIANT["dorm"]["Evening"] == ("evening" if renpy.loadable("images/bg/your_room_evening.png") else "night"),
                   "A (bare): without a My Room evening file the Evening cell is the night picture, as before",
                   TIME_VARIANT["dorm"])
+        ## the registration's two clauses, on one planned row whose file is taken as there
+        _zz_row = ("dorm", "Evening", "evening", "images/bg/your_room_evening.png")
+        _zz_tv0 = copy.deepcopy(builtins.dict((k, builtins.dict(v)) for k, v in TIME_VARIANT.items()))
+        _zz_r_fresh = zzc_register(_zz_row, builtins.dict(your_room=None, your_room_evening=None))
+        _zz_r_stale = zzc_register(_zz_row, builtins.dict(your_room=dict(rev=2, kind="inplace"), your_room_evening=None))
+        _zz_r_again = zzc_register(_zz_row, builtins.dict(your_room=dict(rev=2, kind="inplace"),
+                                                          your_room_evening=dict(rev=2, kind="relight", of="your_room", of_rev=2)))
+        check(_zz_row in WORLD_VARIANTS
+              and _zz_r_fresh == ([_zz_row], [("bg your_room evening", _zz_row[3])])
+              and _zz_r_stale == ([], [])
+              and _zz_r_again == ([_zz_row], [("bg your_room evening", _zz_row[3])])
+              and _zz_tv0 == builtins.dict((k, builtins.dict(v)) for k, v in TIME_VARIANT.items()),
+              "A: world_variants_register uses a row whose file is loadable and fresh, and leaves out one whose file is loadable but stale (My Room at revision 2, its evening still the old one): no image, no cell; made again for revision 2 it registers",
+              (_zz_r_fresh, _zz_r_stale, _zz_r_again))
         ## the registration's own rules, on a row whose file is known to exist
         _zz_tv = copy.deepcopy(builtins.dict((k, builtins.dict(v)) for k, v in TIME_VARIANT.items()))
         check(_validate_world() == [], "A: the world's validator is clean", _validate_world())
@@ -1322,6 +1466,11 @@ label zz_smoke:
         _zz_bad = [(n, zzc_screen_params(n), p) for n, p in _zz_want
                    if zzc_screen_params(n) is None or (p is not None and zzc_screen_params(n) != p)]
         check(not _zz_bad, "E: the new screens exist with their parameters, and the old ones keep their names and parameters", _zz_bad)
+        _zz_opt = [("hud_day_card", ["n", "weekday"]), ("hot_layer", ["front"]), ("sb_map", ["layer", "area"])]
+        _zz_bad = [(n, zzc_screen_optional(n), p) for n, p in _zz_opt if zzc_screen_optional(n) != p]
+        check(not _zz_bad,
+              "E: and the parameters that have a default keep one: hud_day_card takes no required argument (a save that holds it loads), hot_layer's front and sb_map's layer and area stay optional",
+              _zz_bad)
         check(zzc_uses("sb_place", "hint_layer") == 1 and zzc_uses("sb_map", "hint_layer") == 1 and zzc_uses("sb_char", "view_others") == 1
               and zzc_uses("sb_place", "hot_layer") == 2 and zzc_uses("sb_place", "view_stage") == 1,
               "E: the hooks are in place: `use hint_layer` in sb_place and in sb_map, `use view_others` in sb_char",
@@ -1338,12 +1487,17 @@ label zz_smoke:
             check(all(zzc_label_only_returns(l) for l in ("district_harajuku", "district_shibuya", "tky_people", "sb_do_bath_soak",
                                                           "sb_do_bath_sauna", "sb_do_pool_swim", "act_swim_pool")),
                   "E (the stubs): each of the seven labels is one statement, `return`")
-    if not tky_here("harajuku"):
+    ## A filled screen waits for its own input, and a harness never waits:
+    ## the two are called only while they are stubs. An empty TKY_LINES is
+    ## what marks them (U5 fills the table and both screens together).
+    if not TKY_LINES and not (bath_ok() or pool_ok()):
         call screen tky_meet("harajuku")
         $ _zz_m = _return
         call screen cards_invite_pick
         $ check(_zz_m == ("back",) and _return == ("close",),
                 "E (the stubs): tky_meet answers ('back',) and cards_invite_pick ('close',) at once: nothing can wait on a stub", (_zz_m, _return))
+    else:
+        $ note("E (the stubs)", "tky_meet and cards_invite_pick are filled (wave 1): the stub-only check is skipped")
 
     ## -- a Sunday ride to Harajuku, with the stubs, plays exactly as today
     python:
@@ -1629,6 +1783,7 @@ label zz_smoke:
         zzc_hold()
         ZZC_REAL[0] = rule_layout("hot_courtyard")
         _zz_pers = persistent.show_names
+        ZZC_HOLD["pers"] = _zz_pers
         persistent.show_names = False
 
         ## -- the frozen names
@@ -1906,19 +2061,35 @@ label zz_smoke:
         zzc_unfocus()
         ZZC_DIM[0] = ""
         HOT_DIM.clear()
-        fixture(period="Night")
-        renpy.restart_interaction()
-        zz_render(0.3)
-        _zz_night = [h for h in hot_spots_for("courtyard") if h["id"] in ZZC_SHAPES and not hot_open(h)]
-        if _zz_night:
-            zzc_focus("hot_" + _zz_night[0]["id"])
-            check(GetTooltip() == ("Too late. Bed.", "hot_" + _zz_night[0]["id"])
-                  and builtins.dict((k, v[0]) for k, v in zzc_lights().get(_zz_night[0]["id"], {}).items()) == _zz_dimmed,
-                  "I: an action the night has shut lights dimmed and says so", GetTooltip())
-            zzc_unfocus()
-        else:
-            note("I: an action the night has shut", "none of the Courtyard's shaped hotspots is shut at Night (walking is free and the machine has no cost): the dimmed strength is the one branch for all three states")
-        fixture(period="Noon")
+        ## an action the night has shut: none of the Courtyard's is (walking
+        ## is free and the machine has no cost), so the Library is shaped
+        ## for it, as the overlay that shapes every place shapes it
+        _zz_lib_row = ART_PICTURES.get("library")
+        zzc_art(library={"rev": 2, "kind": "composed"})
+        _zz_lib_real = zzc_squares("library")
+        zzc_alone("library", "Night")
+        zzc_unfocus()
+        _zz_night = [h["id"] for h in hot_spots_for("library") if h["id"] in hot_shapes_for("library") and not hot_open(h)]
+        check("stacks" in _zz_night and hot_validate() == [] and not path_locked("library")
+              and renpy.get_displayable("sb_place", "hotshape_stacks") is not None and zzc_icons_under("hot_stacks") == 0,
+              "I: (the Library, shaped by a square round each of its points, at Night: its stacks are shown and shut, and lint is clean)",
+              (_zz_night, [h["id"] for h in hot_spots_for("library")], hot_validate()))
+        zzc_focus("hot_stacks")
+        _zz_l = zzc_lights().get("stacks", {})
+        check(GetTooltip() == ("Too late. Bed.", "hot_stacks") and builtins.dict((k, v[0]) for k, v in _zz_l.items()) == _zz_dimmed
+              and renpy.get_displayable("sb_place", "hotshape_stacks")._tooltip == ("Too late. Bed.", "hotshape_stacks")
+              and zzc_action("hot_stacks")[0] == zzc_action("hotshape_stacks")[0] == "NullAction" and zzc_alpha("hot_stacks") == HOT_DIM_ALPHA
+              and "Too late. Bed." in zz_texts("hover_label"),
+              "I: an action the night has shut (the Library's stacks at Night) lights dimmed, its square and its shape both say \"Too late. Bed.\", and neither does anything",
+              (GetTooltip(), _zz_l, zzc_action("hot_stacks"), zzc_action("hotshape_stacks")))
+        shot("d60_night_shut", wait=0)
+        zzc_unfocus()
+        zzc_layout("hot_library", _zz_lib_real)
+        zzc_art(library=_zz_lib_row)
+        check(hot_shapes_for("library") == ({} if not ZZC_SHAPED_TREE else hot_shapes_for("library")) and hot_validate() == [],
+              "I: (the Library put back)", hot_validate())
+        zzc_alone("courtyard")
+        zzc_unfocus()
 
         ## -- names shown: every shape lit, each with its name against its square
         persistent.show_names = True
@@ -1941,6 +2112,20 @@ label zz_smoke:
               and not any(hot_overlap(_zz_nr[a], _zz_nr[b]) for a in _zz_shaped for b in _zz_shaped if a < b),
               "I: a shaped hotspot's name is drawn against the square at its point, on the side its hover label opens (hot_name_rect: above an exit, left of the machine), on screen, and no two of the Courtyard's meet",
               _zz_nr)
+        ## a `tips` row moves the plate with the hover label, for the place I stand in
+        zzc_d60(tips={"spot_vend": "bottom", "go_courtyard__gate": "left"})
+        _zz_nt = builtins.dict((i, hot_name_rect(_zz_rows[i])) for i in _zz_shaped)
+        store.here = "dorm"
+        _zz_nt_away = builtins.dict((i, hot_name_rect(_zz_rows[i])) for i in _zz_shaped)
+        store.here = "courtyard"
+        zzc_d60()
+        check(_zz_nt["spot_vend"][:2] == (_zz_sq0["spot_vend"][0], _zz_sq0["spot_vend"][1] + 72)
+              and _zz_nt["go_courtyard__gate"][0] + _zz_nt["go_courtyard__gate"][2] == _zz_sq0["go_courtyard__gate"][0]
+              and _zz_nt["go_courtyard__gate"][1] == _zz_sq0["go_courtyard__gate"][1]
+              and all(_zz_nt[i] == _zz_nr[i] for i in _zz_shaped if i not in ("spot_vend", "go_courtyard__gate"))
+              and _zz_nt_away == _zz_nr and builtins.dict((i, hot_name_rect(_zz_rows[i])) for i in _zz_shaped) == _zz_nr,
+              "I: hot_name_rect follows the sidecar's `tips`: a row for the machine puts its plate under its square and one for the gate puts it left of it, the others stay; the row read is the one of the place I stand in (tools/smoke/u2_dump.rpy stands in each place in turn)",
+              (_zz_nt, _zz_nr, _zz_nt_away))
         check(zzc_face_count("megumi") == 2 and zzc_face_count("yuji") == 2 and hot_tip_faces("hot_go_courtyard__dorm_yard") == ["megumi", "yuji"]
               and hot_tip_faces("hotshape_go_courtyard__dorm_yard") == ["megumi", "yuji"] and hot_tip_faces("hot_go_courtyard__school_yard") == []
               and hot_tip_faces("hot_spot_vend") == [] and hot_tip_faces("hud_map") == [],
@@ -2116,17 +2301,40 @@ label zz_smoke:
         check(zzc_fn_transforms() == [f for f in _zz_fn0 if f != "hot_pulse_fn"] and hot_validate() == [] and zzc_lights() == {},
               "I: with every hotspot of the Courtyard shaped there is no function transform on its place view at all (the rings' are gone)", zzc_fn_transforms())
         shot("d60_unlit")
-        try:
-            renpy.take_screenshot()
-            renpy.save("zzc_d60")
-            _zz_saved = bool(renpy.can_load("zzc_d60"))
-        except Exception as _zz_e:
-            _zz_saved = repr(_zz_e)
-        check(_zz_saved is True, "I: a save made on the place view of the shaped Courtyard is written (p2_saves over the overlay that shapes every place loads such saves)", _zz_saved)
-        renpy.unlink_save("zzc_d60")
+        ## -- a save made on the shaped place view loads on it
+        zzc_scrub()
+    ## (An entry of the rollback log ends at an interaction: two, so the
+    ## working variables are in entries of their own, behind the two the
+    ## save keeps. The statement that saves runs again after the load, which
+    ## is what ZZC_SAVE[0] is for.)
+    $ zz_render(0.1)
+    $ zz_render(0.1)
+    python:
+        if ZZC_SAVE[0] == 0:
+            zzc_save_load("zzc_d60")
+    python:
+        zz_render(0.5)
+        check(ZZC_SAVE[0] == 2 and zzc_where() == ZZC_SAVE[1] and ZZC_SAVE[1] is not None and ZZC_SAVE[1][3:5] == ("courtyard", True)
+              and len(ZZC_SAVE[1][5]) == 5 and not ZZC_RECOVER,
+              "I: and it loads on it: the load comes back at the same depth, day, hour and place with the place view up and its five shape widgets on it, and neither load_recover nor return_recover ran",
+              (ZZC_SAVE[0], zzc_where(), ZZC_SAVE[1], ZZC_RECOVER))
+        zzc_unfocus()
+        check(hot_shapes_for("courtyard") and zzc_at(1600, 690) == "hotshape_spot_vend" and zzc_at(1300, 985) == "hotshape_go_courtyard__gate"
+              and zzc_at(120, 600) == "hotshape_go_courtyard__school_yard" and zzc_at(700, 500) is None
+              and renpy.get_displayable("sb_place", "hot_spot_vend").style.focus_mask is hot_no_point
+              and zzc_icons_under("hot_spot_vend") == 0 and zzc_lights() == {} and zzc_fn_transforms().count("hot_pulse_fn") == 0,
+              "I: after the load the shapes answer at their points, a point outside every polygon focuses nothing, the square takes no pointer, and no ring or icon is drawn",
+              (zzc_at(1600, 690), zzc_at(1300, 985), zzc_at(120, 600), zzc_at(700, 500), zzc_lights()))
+        zzc_focus("hot_spot_vend")
+        check(builtins.list(zzc_lights()) == ["spot_vend"] and isinstance(GetTooltip(), builtins.tuple) and GetTooltip()[1] == "hot_spot_vend",
+              "I: and a shape lights again under the focus (hover check: needs the pointer)", (zzc_lights(), GetTooltip()))
+        shot("d60_after_load", wait=0)
+        zzc_unfocus()
+        if renpy.can_load("zzc_d60"):
+            renpy.unlink_save("zzc_d60")
 
         renpy.hide_screen("sb_place")
-        persistent.show_names = _zz_pers
+        persistent.show_names = ZZC_HOLD["pers"]
         store.schedule_overrides = {}
         zzc_back()
         check(hot_shapes_for("courtyard") == ({} if not ZZC_SHAPED_TREE else hot_shapes_for("courtyard")) and hot_validate() == [] and HOT_DIM == {},
