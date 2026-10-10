@@ -51,5 +51,24 @@
    "prompt_sha256": "8582e72a73c047ec01b4d7fe52146a782520ddfbdbcf68b205dd342de08e0f50"
   }
  ],
- "workflow_sha256": "f55955491ef52c3d718303f2ff4a655e3a072b3433bc84487172f0aea001b8f5"
+ "workflow_sha256": "f55955491ef52c3d718303f2ff4a655e3a072b3433bc84487172f0aea001b8f5",
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (the six files as ComfyUI saved them on 11 Oct 2026)",
+ "renders_sha256": {
+  "ui2_rooftop_evening_a": "a31d005c2e09c9b0462c1356583fa5d41417d05eb2eb3b25132d6f4d3fb833ad",
+  "ui2_rooftop_evening_b": "7fd454166ed8830868e5028f81c04471de6a0a37307a8a5a022af0a30a563e1d",
+  "ui2_rooftop_night_a": "48950054bcadcecbf98332f6d50f7212af143cc67a7b8ffc9f9b29e664ad49c4",
+  "ui2_rooftop_night_b": "fc2a505c8ae3681ce26301cb595e4cfa09c2ef806100f276e7ffff0954261a91",
+  "ui2_dorm_yard_night_moon_a": "a483fa73f38777e588a91574b7f1a8b984bdeb371d109422483f8d4235db10e4",
+  "ui2_dorm_yard_night_moon_b": "deb4f58ff7ec84fa2335fdd220247c96cfa38ad1d028e2e7d3257c9d91b77caf"
+ },
+ "read_11_oct": {
+  "install_redo_dry": "Rooftop evenings: both PASS (A agrees with the day picture 0.975, B 0.932). Rooftop nights: both LOOK, for the one part of the sky where the moon now is, as asked. The garden's moon, measured against the chosen night: both PASS, no point off by a pixel, no part drawn differently (agreement 0.977 and 0.976).",
+  "by_eye": {
+   "rooftop_evening": "A keeps the day picture's own clouds and hills and turns them to sunset. B paints a smoother sky and a taller far ridge.",
+   "rooftop_night": "both show a full moon, stars and a few warm lights among the roofs below. A also lights two windows of the pagoda, which the chosen Courtyard night shows dark; B leaves the pagoda dark and puts a few far lights in the valley, where the day picture has a town.",
+   "dorm_yard_night_moon": "both are the chosen garden night with a full moon where the crescent was; the lit windows, the stone lamps, the pond and the houses are as they were. About 6% of the picture differs by more than 24 levels, the ordinary drift of a repaint; nothing is added or moved. Nothing between A and B."
+  },
+  "my_picks": "Rooftop: evening A; night B (its pagoda is dark, as in the Courtyard's night). The garden's night: the full-moon version A replaces the crescent one. Put to the owner; nothing was chosen when this was written.",
+  "lessons": "One change written as a sentence of its own after the keep text ('Change one thing only: ... Change nothing else in the picture.') held the rest of a night picture to 0.977 agreement. Saying 'a full moon, round and whole' gave a full moon in all four pictures. 'A few windows show small warm lights ... add no other light' still let one version light the pagoda: name what must stay dark."
+ }
 }
