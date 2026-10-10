@@ -46,5 +46,23 @@
    "prompt_sha256": "3ee1b11c949662c7d79d600c6826a124003061fc4b1cc8dd2fd53201b385e2eb"
   }
  ],
- "workflow_sha256": "6f185821461cc95919543541a485fb79699f2e8d5aee070becb21e1f263ca890"
+ "workflow_sha256": "6f185821461cc95919543541a485fb79699f2e8d5aee070becb21e1f263ca890",
+ "renders_sha256": {
+  "ui2_training_a_00001_.png": "8e7eb09a40501b76518059ad23d6a565c5ce164bd23102925b3f75f5bd29252a",
+  "ui2_training_b_00001_.png": "2a3f2365880e2f5549f76e4ef535be14a7809e93655ef5800dc2013c93bb71dd",
+  "ui2_dojo_a_00001_.png": "52a1669f64fc5723d73c316cf12c89e45eee9942155f48cb3c2186842732bea1",
+  "ui2_dojo_b_00001_.png": "81c541d96d01ef7d6cc12e87bfb65654f7d94ce70b69b9c28b040440c1130e5c",
+  "ui2_storehouse_a_00001_.png": "d544cd73442efa5f9f6f359ba8998a88df80af242fda31cebd2f23941a3e1ef5",
+  "ui2_storehouse_b_00001_.png": "872edca33d5a67d868eb4bcf710cf31d69ce0ac401cb35e945d534ecfa17f63e"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look. But they need to be reworked like the other locations. Not just sharpened. Think about where they fit on the map, and I feel as if they would be more spacious. Whilst also staying accurate to the story, think about how the characters are going to interact with the space.\"",
+  "by_eye": [
+   "All six keep today's layout, camera and size, as an in-place redo must: the training hall dim and full of pillars, the dojo small, the storehouse crowded under its loft with a post in the foreground.",
+   "The dojo's version A paints a lawn outside its windows where the chosen Training Yard is bare earth.",
+   "None shows its way out as a door a player could click."
+  ],
+  "verdict": "NOT USED, none of the six: the three rooms are composed again (plan: owner row O45; tools/art/staged/early/art_15r.json)."
+ },
+ "chosen": null
 }

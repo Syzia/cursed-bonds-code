@@ -1,0 +1,122 @@
+{
+ "about": [
+  "The training hall, the dojo and the storehouse COMPOSED AGAIN, written by hand on 11 Oct 2026 at the owner's word of their in-place renders (art_15a16a.json): \"The renders are in, take a look. But they need to be reworked like the other locations. Not just sharpened. Think about where they fit on the map, and I feel as if they would be more spacious. Whilst also staying accurate to the story, think about how the characters are going to interact with the space.\"",
+  "Each room is written from words as the inside of its own building in the chosen Training Yard, and is given two pictures: the chosen yard, and a crop of its own building cut from that yard's full-size render (ui2_training_yard_b_00001_.png; the boxes are in `crops`). Today's pictures of the rooms are not given: the editor copies the layout of any picture of the place it is handed.",
+  "The prompt of each row is: the tool's `open_room` sentence, `refs`, the tool's `the_place` sentence with the room's words, `stage`, and tools/bgs/look.txt. Each passed check_prompts.check against tools/art/staged/early/campus_for_batch2_third.json. A sum is the sha256 of a prompt's UTF-8 text or of a file's bytes.",
+  "A FIRST DRAFT of this file had the two halls the wrong way round (the dojo as the big hall on the left). It was never given to the owner. The sides were taken from the comments beside the game's exits (game/room_paths.rpy:162-163), which sit on the OLD yard picture; the record's fixed facts say the opposite and are right. Sides are read from the record, never from the game's exit points, until a place's new picture is installed."
+ ],
+ "written": "2026-10-11",
+ "the_four_questions": {
+  "the map": [
+   "Fixed by the chosen Training Yard (rev 2): exit.training_yard.training is on the LEFT, on the training hall, 'its doors onto this yard'; exit.training_yard.dojo is on the RIGHT, 'its door faces the yard'; exit.training_yard.storehouse is AHEAD, 'it stands beyond the striking posts'; exit.training_yard.pool is 'a roofed timber gate at the edge, beside the dojo'. The yard is seen from its south edge, looking north.",
+   "So the training hall is the big brown-timber hall with the veranda and the paper screens (west of the yard), the dojo the long low hall with one band of windows (east), the storehouse the white kura with the double door (north).",
+   "Read off the chosen picture: the hall's screens stand open near its north end, by the striking posts, and a band of dark high windows runs above them under the eaves (the record's line.training.high, 'sky and cedar tops'); no door shows in the dojo's windowed wall, whose south end is hidden by the pool gate, so its door is put at that end; the kura has a double door under a small tiled canopy with stone steps, and one small slit window high in its gable. The sun in that picture is in the east: the hall's screens are sunlit and the dojo's windows are in shade.",
+   "Each room's way out is its building's wall onto the yard, and the yard is what is seen through it: from the hall, the veranda, the posts and the dojo across the yard; from the dojo's windows, bare earth, the posts and the hall across the yard (line.dojo.side); from the storehouse, the steps, the posts and the yard."
+  ],
+  "the room": [
+   "Training hall: 'Training hall — bigger inside than the building, don't think about it.' (game/ch2_tour.rpy:76), and the first prompt it was made from (tools/bgs/prompts/training.txt: 'far bigger than the building could possibly hold'). About fifty metres by twenty, a high open roof, no pillar on the floor: today's is dim and full of pillars.",
+   "Dojo: about sixteen metres by ten, some four times today's floor, under the low roof the building has outside.",
+   "Storehouse: about seven metres by eleven and open to its roof, a clear floor down the middle; a little wider than the kura in the yard could be, and still believable for it."
+  ],
+  "the story": [
+   "Training hall: Yuji shadow-boxing on the open floor, Maki's staff drill in the middle, Panda's plank by the right wall (plan 7.2, rows 33, 51, 58); 'He sits down on the floor of the training hall.' (ch2_tour.rpy:376); a second-year 'walks into the training hall ... carrying a naginata' (story_arc1.rpy:485). Kept from today's picture: the straw bundles, the rolled mats, the high windows.",
+   "Dojo: Maki's place, mornings and noon (sb_world.rpy:342); 'Dojo. Dawn. Bring something to hit.' (story_arc1.rpy:380); 'the dojo lamps are down to one' (events_arc1.rpy:917), so it has lamps. Kept: the shrine shelf, the rack of wooden swords, staffs, spears and a naginata, the windows from waist height.",
+   "Storehouse: 'Storehouse is Yaga's' (ch2_tour.rpy:80); 'Nothing on those racks leaves without a grade and a reason.' (story_arc1.rpy:99); 'Yaga is in the back of the storehouse with a half-finished cursed corpse on the bench' (events_arc1.rpy:1507), so it has a workbench; Yaga 'checking the seals along the shelves' (plan 7.2, row 44); 'lamps, one high window' (lighting.rpy:42). Kept: the shelves of tied and sealed boxes, the loft and its ladder-stair, the sword rack, the chest, the barred window."
+  ],
+  "the people": [
+   "The picture is what is clicked (D60, O34): each room shows its way out as a door and its thing to do as an object. Training hall: the open screens at the left; Train on the straw bundles, right of the middle (7.3). Dojo: the open sliding door at the left edge; Train on the weapon rack on the end wall. Storehouse: the open double door, left of the middle; the racks (tools, then the armory) beside it.",
+   "People stand between: a person's picture is about 395 by 728 px and reaches up to y 312 (4.6), so the door is kept to the left and the thing to the right of where a row of one or two stands, and nothing a visitor uses is in the right ninth (the icon column) or under the arrival caption at the top left (room_paths.rpy: PATH_CAPTION_BOX).",
+   "A room is lit at Night when someone is up in it (D61): each room is given lamps, unlit by day, for its later night pictures."
+  ]
+ },
+ "refs": "Picture 1 is the training yard this room's building stands on, already painted: the same school. What is seen from inside this room through its door and its windows is this yard, seen from the other side. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its wall onto the yard is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building.",
+ "stage": "The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, racks and anything else a visitor would walk to or use.",
+ "sentences": {
+  "training": "the inside of the training hall, the big timber hall with the grey tiled roof that stands on the left of picture 1 and is shown close up in picture 2. It is far larger inside than the building looks from outside: an enormous, bright, airy hall about fifty metres long and twenty metres wide, under a very high open roof of great timber trusses, with no pillar and no post standing anywhere on its floor. I stand inside at one end and look down its whole length. The whole left wall is the hall's yard side, the wall of picture 2 seen from inside: a long row of tall sliding paper screens in dark timber frames and, above them, right under the roof, one long band of high windows, through which I see only sky and the tops of cedars. Near me in that left wall the screens are slid wide open: this wide opening is the way out. Through it I see the timber veranda outside, the wooden striking posts standing in the bare earth just beyond it, the sunlit yard and, on the yard's far side, the long low hall with its band of windows. Sunlight comes through the paper screens and the opening and lies in long bright panels across the floor. The right wall is dark timber boarding below and white plaster above, with the same band of high windows under the roof; the stretch of it nearest me is bare. Further along the right wall, in the middle distance, a row of straw bundles for striking stands against it: thick sheaves of straw bound with rope, each upright on a low wooden stand, evenly spaced. Beyond them, at the far end, rolled practice mats are stacked by the wall and a rack of long wooden staffs stands against the end wall. Large paper-shaded lamps hang in a row from the roof beams, not lit. The floor is one vast clear expanse of pale polished timber boards, open and empty across the whole bottom of the picture and all the way down the hall.",
+  "dojo": "the inside of the dojo, the long low hall with the band of windows that stands on the right of picture 1 and is shown close up in picture 2. It is a wide, airy hall, about sixteen metres long and ten metres wide, under a low ceiling of dark exposed beams, with nothing standing on its floor. I stand inside near one corner and look across the floor to the far corner, where the window wall meets the end wall: the window wall fills the left half of the picture, running away from me to that corner, and the end wall fills the right half. The window wall is the hall's yard side, the wall of picture 2 seen from inside: dark timber boarding up to waist height and, above it, one unbroken band of sliding windows with slim timber glazing bars, the whole length of the wall. Through these windows I see the training yard of picture 1 from this side: its bare earth, the wooden striking posts standing in it, the big timber hall with the grey tiled roof and the veranda on the yard's far side and, above the roofs, cedars and green mountains. At the near end of the window wall, at the left edge of the picture, a wide sliding door stands open: this is the way out, with the bare earth of the yard and daylight beyond it. Soft bright daylight comes in through the band of windows and lies in pale panels across the floor. The end wall is white plaster between dark timber posts. High in the middle of it is a small wooden shrine shelf with a folded white paper streamer. Below the shelf, against the same wall, stand a tiered rack of wooden practice swords and, beside it, a stand of long wooden staffs, spears and a naginata. The right-hand end of that wall, at the right edge of the picture, is bare. A row of paper-shaded lamps hangs from the beams down the middle of the hall, not lit. The floor is pale polished timber boards, clear, open and empty across the whole bottom of the picture.",
+  "storehouse": "the inside of the storehouse, the white plastered storehouse with the black tiled roof that stands at the far end of the yard in picture 1 and is shown close up in picture 2. It is one tall room, about seven metres wide and eleven metres deep and open to its roof two storeys up, with thick white plastered walls, heavy dark timber posts and roof beams, and a broad clear floor down its middle. I stand at the back of the room, a little to the right of its middle, and look the length of it to the front wall. In the front wall, a little left of the middle of the picture, the storehouse's heavy double door, the door of picture 2 seen from inside, stands wide open: this is the way out. Daylight pours in through it across the floor, and through it I see the top of the stone steps, the wooden striking posts standing in the bare earth of the yard just outside, and the sunlit yard beyond them. High in the front wall above the door, under the roof, is one small barred window. Along the whole left wall and along the right wall stand tall, deep shelves of dark timber, filled with rows of plain wooden boxes and long narrow wooden cases, each tied with cord and sealed with a strip of white paper. Above the shelves on the left a loft gallery with a wooden railing runs the length of the wall, and a steep wooden ladder-stair climbs to it at its far end. Against the front wall, right of the door, stands a tiered rack of swords in black scabbards, with a stand of spears beside it and a large iron-bound chest on the floor next to them. Halfway along the right wall, between the shelves, stands a sturdy wooden workbench with hand tools, bolts of cloth and spools of thread on it. Plain iron lamps hang from the beams, not lit. The floor is wide dark timber boards, clear and open across the whole bottom of the picture and all the way to the door."
+ },
+ "crops": {
+  "of": "ui2_training_yard_b_00001_.png (2752 x 1536)",
+  "boxes": {
+   "training": [
+    0,
+    0,
+    1190,
+    1284
+   ],
+   "storehouse": [
+    1089,
+    539,
+    1634,
+    1127
+   ],
+   "dojo": [
+    1763,
+    539,
+    2322,
+    1227
+   ]
+  },
+  "files": {
+   "training": {
+    "file": "~/Desktop/JJK Game images/ui2/early/crops/training_outside.png",
+    "sha256": "576e196dc13c80ae0a70e486fdf923a4a92c3036b3580edbb8ff333757b2ce1a"
+   },
+   "dojo": {
+    "file": "~/Desktop/JJK Game images/ui2/early/crops/dojo_outside.png",
+    "sha256": "4dd05c5b3f283e597b002c7b8fbd5c64270b1b9d4984cc46c6cff8babdaa72d0"
+   },
+   "storehouse": {
+    "file": "~/Desktop/JJK Game images/ui2/early/crops/storehouse_outside.png",
+    "sha256": "49396c173e3dd74ded3b97fbc955ddb97a0545617136a9ae09934ef835ab7e4e"
+   }
+  }
+ },
+ "rows": [
+  {
+   "label": "Training Hall, composed again",
+   "kind": "composed",
+   "place": "training",
+   "saves": [
+    "ui2_training2_a",
+    "ui2_training2_b"
+   ],
+   "seeds": [
+    3558,
+    3559
+   ],
+   "prompt_sha256": "1cbb9c2011585d33a0f23cb2cff61ded590e62d17a4fdac03182acfbb3a59548"
+  },
+  {
+   "label": "Dojo, composed again",
+   "kind": "composed",
+   "place": "dojo",
+   "saves": [
+    "ui2_dojo2_a",
+    "ui2_dojo2_b"
+   ],
+   "seeds": [
+    5668,
+    5669
+   ],
+   "prompt_sha256": "dbbd1dc9083bb910ced3e8173a9885a9ae07a24dc78bc4ffe262b198b442028d"
+  },
+  {
+   "label": "Storehouse, composed again",
+   "kind": "composed",
+   "place": "storehouse",
+   "saves": [
+    "ui2_storehouse2_a",
+    "ui2_storehouse2_b"
+   ],
+   "seeds": [
+    8146,
+    8147
+   ],
+   "prompt_sha256": "f9096b9e962e16c4d4533680ace6b03c509fc123604605018c1cea12c83e2b27"
+  }
+ ],
+ "workflow_sha256": "bed8af1fe21da9871eed6f136017999b21e1ace34e7b70b00df1c5e58441e4a1",
+ "plan_sheet": "~/Desktop/JJK Game images/ui2/early/plan_three_rooms.jpg (which building is which room, where each picture is taken from, what goes where on it): shown to the owner with the file"
+}

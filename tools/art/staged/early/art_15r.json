@@ -1,0 +1,1218 @@
+{
+ "id": "8c2d47e7-0fa5-4251-9c5f-73055e3c2900",
+ "revision": 0,
+ "last_node_id": 22,
+ "last_link_id": 18,
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.35,
+   "offset": [
+    2040,
+    640
+   ]
+  },
+  "frontendVersion": "1.51.9"
+ },
+ "version": 0.4,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "MarkdownNote",
+   "pos": [
+    -640,
+    -560
+   ],
+   "size": [
+    600,
+    480
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {},
+   "title": "Start here",
+   "color": "#222",
+   "bgcolor": "#000",
+   "widgets_values": [
+    "## The training hall, the dojo and the storehouse, composed again\n\n3 rows, each painted twice: the three rooms off the Training Yard drawn afresh, each as the inside of its own building in the yard you chose, larger, with its door onto that yard in the picture.\n\nRun this in the **local ComfyUI**. Press **Run** once.\n\nEach row is one picture, painted twice: **version A** on top, **version B** under it. You choose between them afterwards.\n\nThe **Load Image** boxes on the left should already show their pictures. If one shows an error, click **choose file to upload** and pick the file with the same name from `JJK Game images/ui2/early`.\n\n**Cost:** 6 pictures, about **$0.96** (Nano Banana Pro, about $0.16 a picture, charged to your Comfy account).\n\nYou don't need to save anything: the results go to ComfyUI's output folder and Claude picks them up from there.\n\nIf it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
+   ]
+  },
+  {
+   "id": 2,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_training2_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the Training Yard, as chosen"
+  },
+  {
+   "id": 3,
+   "type": "LoadImage",
+   "pos": [
+    -1630,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      2
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_training2_2.png",
+    "image"
+   ],
+   "title": "Load Image 2: this room's building from outside, cut from the chosen yard"
+  },
+  {
+   "id": 4,
+   "type": "BatchImagesNode",
+   "pos": [
+    -600,
+    40
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 1
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 2
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      3,
+      5
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [],
+   "title": "The pictures, in order"
+  },
+  {
+   "id": 5,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    0
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 3
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      4
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the training yard this room's building stands on, already painted: the same school. What is seen from inside this room through its door and its windows is this yard, seen from the other side. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its wall onto the yard is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the inside of the training hall, the big timber hall with the grey tiled roof that stands on the left of picture 1 and is shown close up in picture 2. It is far larger inside than the building looks from outside: an enormous, bright, airy hall about fifty metres long and twenty metres wide, under a very high open roof of great timber trusses, with no pillar and no post standing anywhere on its floor. I stand inside at one end and look down its whole length. The whole left wall is the hall's yard side, the wall of picture 2 seen from inside: a long row of tall sliding paper screens in dark timber frames and, above them, right under the roof, one long band of high windows, through which I see only sky and the tops of cedars. Near me in that left wall the screens are slid wide open: this wide opening is the way out. Through it I see the timber veranda outside, the wooden striking posts standing in the bare earth just beyond it, the sunlit yard and, on the yard's far side, the long low hall with its band of windows. Sunlight comes through the paper screens and the opening and lies in long bright panels across the floor. The right wall is dark timber boarding below and white plaster above, with the same band of high windows under the roof; the stretch of it nearest me is bare. Further along the right wall, in the middle distance, a row of straw bundles for striking stands against it: thick sheaves of straw bound with rope, each upright on a low wooden stand, evenly spaced. Beyond them, at the far end, rolled practice mats are stacked by the wall and a rack of long wooden staffs stands against the end wall. Large paper-shaded lamps hang in a row from the roof beams, not lit. The floor is one vast clear expanse of pale polished timber boards, open and empty across the whole bottom of the picture and all the way down the hall. The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, racks and anything else a visitor would walk to or use. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    3558,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Training Hall, composed again, version A"
+  },
+  {
+   "id": 6,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    0
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 4
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_training2_a"
+   ],
+   "title": "Training Hall, composed again: version A"
+  },
+  {
+   "id": 7,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    600
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 5
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      6
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the training yard this room's building stands on, already painted: the same school. What is seen from inside this room through its door and its windows is this yard, seen from the other side. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its wall onto the yard is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the inside of the training hall, the big timber hall with the grey tiled roof that stands on the left of picture 1 and is shown close up in picture 2. It is far larger inside than the building looks from outside: an enormous, bright, airy hall about fifty metres long and twenty metres wide, under a very high open roof of great timber trusses, with no pillar and no post standing anywhere on its floor. I stand inside at one end and look down its whole length. The whole left wall is the hall's yard side, the wall of picture 2 seen from inside: a long row of tall sliding paper screens in dark timber frames and, above them, right under the roof, one long band of high windows, through which I see only sky and the tops of cedars. Near me in that left wall the screens are slid wide open: this wide opening is the way out. Through it I see the timber veranda outside, the wooden striking posts standing in the bare earth just beyond it, the sunlit yard and, on the yard's far side, the long low hall with its band of windows. Sunlight comes through the paper screens and the opening and lies in long bright panels across the floor. The right wall is dark timber boarding below and white plaster above, with the same band of high windows under the roof; the stretch of it nearest me is bare. Further along the right wall, in the middle distance, a row of straw bundles for striking stands against it: thick sheaves of straw bound with rope, each upright on a low wooden stand, evenly spaced. Beyond them, at the far end, rolled practice mats are stacked by the wall and a rack of long wooden staffs stands against the end wall. Large paper-shaded lamps hang in a row from the roof beams, not lit. The floor is one vast clear expanse of pale polished timber boards, open and empty across the whole bottom of the picture and all the way down the hall. The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, racks and anything else a visitor would walk to or use. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    3559,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Training Hall, composed again, version B"
+  },
+  {
+   "id": 8,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    600
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 6
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_training2_b"
+   ],
+   "title": "Training Hall, composed again: version B"
+  },
+  {
+   "id": 9,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      7
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_dojo2_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the Training Yard, as chosen"
+  },
+  {
+   "id": 10,
+   "type": "LoadImage",
+   "pos": [
+    -1630,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      8
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_dojo2_2.png",
+    "image"
+   ],
+   "title": "Load Image 2: this room's building from outside, cut from the chosen yard"
+  },
+  {
+   "id": 11,
+   "type": "BatchImagesNode",
+   "pos": [
+    -600,
+    1300
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 7
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 8
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      9,
+      11
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [],
+   "title": "The pictures, in order"
+  },
+  {
+   "id": 12,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1260
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 9
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      10
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the training yard this room's building stands on, already painted: the same school. What is seen from inside this room through its door and its windows is this yard, seen from the other side. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its wall onto the yard is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the inside of the dojo, the long low hall with the band of windows that stands on the right of picture 1 and is shown close up in picture 2. It is a wide, airy hall, about sixteen metres long and ten metres wide, under a low ceiling of dark exposed beams, with nothing standing on its floor. I stand inside near one corner and look across the floor to the far corner, where the window wall meets the end wall: the window wall fills the left half of the picture, running away from me to that corner, and the end wall fills the right half. The window wall is the hall's yard side, the wall of picture 2 seen from inside: dark timber boarding up to waist height and, above it, one unbroken band of sliding windows with slim timber glazing bars, the whole length of the wall. Through these windows I see the training yard of picture 1 from this side: its bare earth, the wooden striking posts standing in it, the big timber hall with the grey tiled roof and the veranda on the yard's far side and, above the roofs, cedars and green mountains. At the near end of the window wall, at the left edge of the picture, a wide sliding door stands open: this is the way out, with the bare earth of the yard and daylight beyond it. Soft bright daylight comes in through the band of windows and lies in pale panels across the floor. The end wall is white plaster between dark timber posts. High in the middle of it is a small wooden shrine shelf with a folded white paper streamer. Below the shelf, against the same wall, stand a tiered rack of wooden practice swords and, beside it, a stand of long wooden staffs, spears and a naginata. The right-hand end of that wall, at the right edge of the picture, is bare. A row of paper-shaded lamps hangs from the beams down the middle of the hall, not lit. The floor is pale polished timber boards, clear, open and empty across the whole bottom of the picture. The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, racks and anything else a visitor would walk to or use. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    5668,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Dojo, composed again, version A"
+  },
+  {
+   "id": 13,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1260
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 10
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_dojo2_a"
+   ],
+   "title": "Dojo, composed again: version A"
+  },
+  {
+   "id": 14,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1860
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 11
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      12
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the training yard this room's building stands on, already painted: the same school. What is seen from inside this room through its door and its windows is this yard, seen from the other side. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its wall onto the yard is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the inside of the dojo, the long low hall with the band of windows that stands on the right of picture 1 and is shown close up in picture 2. It is a wide, airy hall, about sixteen metres long and ten metres wide, under a low ceiling of dark exposed beams, with nothing standing on its floor. I stand inside near one corner and look across the floor to the far corner, where the window wall meets the end wall: the window wall fills the left half of the picture, running away from me to that corner, and the end wall fills the right half. The window wall is the hall's yard side, the wall of picture 2 seen from inside: dark timber boarding up to waist height and, above it, one unbroken band of sliding windows with slim timber glazing bars, the whole length of the wall. Through these windows I see the training yard of picture 1 from this side: its bare earth, the wooden striking posts standing in it, the big timber hall with the grey tiled roof and the veranda on the yard's far side and, above the roofs, cedars and green mountains. At the near end of the window wall, at the left edge of the picture, a wide sliding door stands open: this is the way out, with the bare earth of the yard and daylight beyond it. Soft bright daylight comes in through the band of windows and lies in pale panels across the floor. The end wall is white plaster between dark timber posts. High in the middle of it is a small wooden shrine shelf with a folded white paper streamer. Below the shelf, against the same wall, stand a tiered rack of wooden practice swords and, beside it, a stand of long wooden staffs, spears and a naginata. The right-hand end of that wall, at the right edge of the picture, is bare. A row of paper-shaded lamps hangs from the beams down the middle of the hall, not lit. The floor is pale polished timber boards, clear, open and empty across the whole bottom of the picture. The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, racks and anything else a visitor would walk to or use. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    5669,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Dojo, composed again, version B"
+  },
+  {
+   "id": 15,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1860
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 15,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 12
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_dojo2_b"
+   ],
+   "title": "Dojo, composed again: version B"
+  },
+  {
+   "id": 16,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    2520
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 16,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      13
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_storehouse2_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the Training Yard, as chosen"
+  },
+  {
+   "id": 17,
+   "type": "LoadImage",
+   "pos": [
+    -1630,
+    2520
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 17,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      14
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_storehouse2_2.png",
+    "image"
+   ],
+   "title": "Load Image 2: this room's building from outside, cut from the chosen yard"
+  },
+  {
+   "id": 18,
+   "type": "BatchImagesNode",
+   "pos": [
+    -600,
+    2560
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 18,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 13
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 14
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      15,
+      17
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [],
+   "title": "The pictures, in order"
+  },
+  {
+   "id": 19,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    2520
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 19,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 15
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      16
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the training yard this room's building stands on, already painted: the same school. What is seen from inside this room through its door and its windows is this yard, seen from the other side. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its wall onto the yard is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the inside of the storehouse, the white plastered storehouse with the black tiled roof that stands at the far end of the yard in picture 1 and is shown close up in picture 2. It is one tall room, about seven metres wide and eleven metres deep and open to its roof two storeys up, with thick white plastered walls, heavy dark timber posts and roof beams, and a broad clear floor down its middle. I stand at the back of the room, a little to the right of its middle, and look the length of it to the front wall. In the front wall, a little left of the middle of the picture, the storehouse's heavy double door, the door of picture 2 seen from inside, stands wide open: this is the way out. Daylight pours in through it across the floor, and through it I see the top of the stone steps, the wooden striking posts standing in the bare earth of the yard just outside, and the sunlit yard beyond them. High in the front wall above the door, under the roof, is one small barred window. Along the whole left wall and along the right wall stand tall, deep shelves of dark timber, filled with rows of plain wooden boxes and long narrow wooden cases, each tied with cord and sealed with a strip of white paper. Above the shelves on the left a loft gallery with a wooden railing runs the length of the wall, and a steep wooden ladder-stair climbs to it at its far end. Against the front wall, right of the door, stands a tiered rack of swords in black scabbards, with a stand of spears beside it and a large iron-bound chest on the floor next to them. Halfway along the right wall, between the shelves, stands a sturdy wooden workbench with hand tools, bolts of cloth and spools of thread on it. Plain iron lamps hang from the beams, not lit. The floor is wide dark timber boards, clear and open across the whole bottom of the picture and all the way to the door. The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, racks and anything else a visitor would walk to or use. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    8146,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Storehouse, composed again, version A"
+  },
+  {
+   "id": 20,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    2520
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 20,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 16
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_storehouse2_a"
+   ],
+   "title": "Storehouse, composed again: version A"
+  },
+  {
+   "id": 21,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    3120
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 21,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 17
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      18
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the training yard this room's building stands on, already painted: the same school. What is seen from inside this room through its door and its windows is this yard, seen from the other side. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its wall onto the yard is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the inside of the storehouse, the white plastered storehouse with the black tiled roof that stands at the far end of the yard in picture 1 and is shown close up in picture 2. It is one tall room, about seven metres wide and eleven metres deep and open to its roof two storeys up, with thick white plastered walls, heavy dark timber posts and roof beams, and a broad clear floor down its middle. I stand at the back of the room, a little to the right of its middle, and look the length of it to the front wall. In the front wall, a little left of the middle of the picture, the storehouse's heavy double door, the door of picture 2 seen from inside, stands wide open: this is the way out. Daylight pours in through it across the floor, and through it I see the top of the stone steps, the wooden striking posts standing in the bare earth of the yard just outside, and the sunlit yard beyond them. High in the front wall above the door, under the roof, is one small barred window. Along the whole left wall and along the right wall stand tall, deep shelves of dark timber, filled with rows of plain wooden boxes and long narrow wooden cases, each tied with cord and sealed with a strip of white paper. Above the shelves on the left a loft gallery with a wooden railing runs the length of the wall, and a steep wooden ladder-stair climbs to it at its far end. Against the front wall, right of the door, stands a tiered rack of swords in black scabbards, with a stand of spears beside it and a large iron-bound chest on the floor next to them. Halfway along the right wall, between the shelves, stands a sturdy wooden workbench with hand tools, bolts of cloth and spools of thread on it. Plain iron lamps hang from the beams, not lit. The floor is wide dark timber boards, clear and open across the whole bottom of the picture and all the way to the door. The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, racks and anything else a visitor would walk to or use. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    8147,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Storehouse, composed again, version B"
+  },
+  {
+   "id": 22,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    3120
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 22,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 18
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_storehouse2_b"
+   ],
+   "title": "Storehouse, composed again: version B"
+  }
+ ],
+ "links": [
+  [
+   1,
+   2,
+   0,
+   4,
+   0,
+   "IMAGE"
+  ],
+  [
+   2,
+   3,
+   0,
+   4,
+   1,
+   "IMAGE"
+  ],
+  [
+   3,
+   4,
+   0,
+   5,
+   0,
+   "IMAGE"
+  ],
+  [
+   4,
+   5,
+   0,
+   6,
+   0,
+   "IMAGE"
+  ],
+  [
+   5,
+   4,
+   0,
+   7,
+   0,
+   "IMAGE"
+  ],
+  [
+   6,
+   7,
+   0,
+   8,
+   0,
+   "IMAGE"
+  ],
+  [
+   7,
+   9,
+   0,
+   11,
+   0,
+   "IMAGE"
+  ],
+  [
+   8,
+   10,
+   0,
+   11,
+   1,
+   "IMAGE"
+  ],
+  [
+   9,
+   11,
+   0,
+   12,
+   0,
+   "IMAGE"
+  ],
+  [
+   10,
+   12,
+   0,
+   13,
+   0,
+   "IMAGE"
+  ],
+  [
+   11,
+   11,
+   0,
+   14,
+   0,
+   "IMAGE"
+  ],
+  [
+   12,
+   14,
+   0,
+   15,
+   0,
+   "IMAGE"
+  ],
+  [
+   13,
+   16,
+   0,
+   18,
+   0,
+   "IMAGE"
+  ],
+  [
+   14,
+   17,
+   0,
+   18,
+   1,
+   "IMAGE"
+  ],
+  [
+   15,
+   18,
+   0,
+   19,
+   0,
+   "IMAGE"
+  ],
+  [
+   16,
+   19,
+   0,
+   20,
+   0,
+   "IMAGE"
+  ],
+  [
+   17,
+   18,
+   0,
+   21,
+   0,
+   "IMAGE"
+  ],
+  [
+   18,
+   21,
+   0,
+   22,
+   0,
+   "IMAGE"
+  ]
+ ],
+ "groups": [
+  {
+   "id": 1,
+   "title": "TRAINING HALL, COMPOSED AGAIN:  A over B",
+   "bounding": [
+    -1980,
+    -50,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 2,
+   "title": "DOJO, COMPOSED AGAIN:  A over B",
+   "bounding": [
+    -1980,
+    1210,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 3,
+   "title": "STOREHOUSE, COMPOSED AGAIN:  A over B",
+   "bounding": [
+    -1980,
+    2470,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  }
+ ]
+}
