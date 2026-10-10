@@ -109,5 +109,31 @@
   "my_picks": "Cafeteria: evening A, night A. Corridor: night with the lights off, version A (no fault in it, and it follows O38); its evening is close: A for the mood, B for light that is strictly believable. Put to the owner; nothing was chosen when this was written.",
   "for_the_installer": "A seventh blind spot, the same family as the first three of art_3a_early.json: in a relight, a standing-row point on open floor is refused when the new light throws an edge across it (a window grid of sunlight or moonlight). The floor cannot move on its own while every other point agrees to 2 px; the check should say LOOK there, not REFUSED. Tests: ui2_cafeteria_evening_a and both cafeteria nights must not be refused; evening B must still pass.",
   "a_relight_can_lose_what_is_outside_a_window": "three of the four corridor nights drop the trees outside the end window. The hour sentence says what the sky is but not that what stands outside stays: say so in a night sentence ('the dark shapes of the trees outside are still there against the sky')."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 10 Oct 2026: \"Lets go with your picks, they look good to me. Only thing is that 1/3 lights are on in Night lights on renders. Can be fixed later, if at all.\" (my picks were: the Cafeteria's evening A and night A; the corridor's night with the lights off, version A; the corridor's evening A, narrowly)",
+  "cafeteria_evening": {
+   "version": "a",
+   "render": "ui2_cafeteria_evening_a_00001_.png",
+   "sha256": "819439d3b07ca1e8bd751b332b4143a707301787ac4bb87c40263e172d503869"
+  },
+  "cafeteria_night": {
+   "version": "a",
+   "render": "ui2_cafeteria_night_a_00001_.png",
+   "sha256": "d035ff2fe59629035e638217a2be4b2bcb012a5a8ac98fc014fbc93fdb60ecbd"
+  },
+  "girls_dorm_evening": {
+   "version": "a",
+   "render": "ui2_girls_dorm_evening_a_00001_.png",
+   "sha256": "4c6142d5a94f8fd34e8de3dfe545433385388f6d9d6a58e2f455b16bdca3f5c0"
+  },
+  "girls_dorm_night": {
+   "version": "a",
+   "render": "ui2_girls_dorm_night_off_a_00001_.png",
+   "sha256": "ab5602d0827535c91621102ba78889f49d7a0620672f7d6eb109a79ef50dd775",
+   "treatment": "every light off"
+  },
+  "not_chosen": "the corridor's night with one ceiling light on low (ui2_girls_dorm_night_a/b): the owner remarked that one lamp of three is lit there and that it can be fixed later, if at all; it is not used, so nothing is fixed",
+  "in_the_batch_table": "tools/art/batches.json, batch 4, file art_4b: the Cafeteria's night and the corridor's evening and night carry their sentences as hour_words"
  }
 }

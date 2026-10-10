@@ -272,17 +272,20 @@
       {
        "place": "cafeteria",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the hanging ceiling lamps are dark. Outside the windows it is night, under a deep blue sky with stars. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the tables. The room is dim, but everything in it can still be seen clearly."
       },
       {
        "place": "girls_dorm",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: the sky in the window at the far end of the corridor is orange and pink, and low warm orange sunlight comes in through that window and lies along the floor with long soft shadows. The ceiling lights are switched on and give a soft warm light. Add no new window and no new light."
       },
       {
        "place": "girls_dorm",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the corridor switched off: the ceiling lights are dark. The sky in the window at the far end is deep blue with stars. The corridor is lit only by cool blue moonlight coming in through that window, which lies in a pale patch on the floor. The corridor is dim, but every door can still be seen clearly. Add no new window and no new light."
       }
      ]
     }
