@@ -148,6 +148,15 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   in the game depends on it.
 - `fitcheck.py <background.png> yuji megumi ...` — characters standing in a
   background as the game shows them, without launching Ren'Py.
+- `mods/roadmap/` — not a game tool: a Claude Code mod (a panel in the Claude
+  desktop app) that draws `docs/roadmap.json`, the road to the finished game:
+  the main goal, its phases, each phase's steps and roughly how far along
+  each is. `/roadmap` opens its panel. Claude keeps `docs/roadmap.json`
+  current as steps finish; the mod only reads it. The copy that runs is in
+  `~/.claude/dev-mods/<session>/roadmap/`; this folder is its source, kept
+  with the data it draws. Check it with the app's own engine:
+  `claude plugin validate tools/mods/roadmap` and
+  `claude plugin test tools/mods/roadmap` (20 tests).
 - Helpers: `raster.py` (drawing and PNG writing), `pngread.py` (PNG reading),
   `make_workflow.py` (the `Graph` and `recipe` helpers `make_base_workflow.py`
   builds on; its own inpainting workflow for expressions is superseded by

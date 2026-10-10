@@ -1,0 +1,17 @@
+{
+  "name": "roadmap",
+  "version": "0.1.0",
+  "description": "The road to the finished game above the prompt: the main goal, the phase in hand and roughly how far along each is, with a panel (/roadmap) listing every phase and its steps. Reads docs/roadmap.json.",
+  "author": {
+    "name": "Hunter Jolly"
+  },
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "file": {
+      "type": "string",
+      "title": "Roadmap file",
+      "description": "The roadmap's JSON file, from the project's root",
+      "default": "docs/roadmap.json"
+    }
+  }
+}

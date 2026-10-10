@@ -1,0 +1,134 @@
+{
+ "format": 1,
+ "about": [
+  "The road to the finished game, as data: the main goal, the phases that lead to it, and each phase's steps. The roadmap mod (a panel in Claude Code, /roadmap) reads this file and draws it; Claude keeps it current as steps finish.",
+  "A step is done, now or planned. A step with `done` and `total` is a count (sittings chosen, packages merged) and counts for that share. `weight` is a rough share of the work, Claude's estimate and nothing measured, so every percentage drawn from this file is rough.",
+  "A phase marked `outline` has not been planned yet: its steps are the storyboard's own list, and the real plan is written when we get there.",
+  "Sources: docs/arc1_storyboard.html (the acts and the build order), docs/PHASE2_UI_OVERHAUL.md (the phase order), docs/UI2_DESIGN.md sections 10.4, 10.5 and 11 (this overhaul's steps and what comes after), tools/art/batches.json (the picture sittings)."
+ ],
+ "goal": {
+  "title": "Cursed Bonds: Arc One, finished",
+  "what": "Arc One playable from New Game to the end of Act V: a campus you walk through, real fights, and the story's five acts."
+ },
+ "phases": [
+  {
+   "id": "foundation",
+   "title": "Phase 1 · Foundation",
+   "what": "First person, grades, one mission system, the journal, and the test kit everything since is checked with.",
+   "when": "done 1 Oct",
+   "weight": 12,
+   "steps": [
+    {"title": "The plan, and your seven answers", "state": "done"},
+    {"title": "The foundation and the test kit", "state": "done"},
+    {"title": "Ten packages built side by side", "state": "done", "weight": 4},
+    {"title": "Dev tools and a thirty-day test run", "state": "done"},
+    {"title": "Your four checkpoints, then merged into the game", "state": "done"}
+   ]
+  },
+  {
+   "id": "ui1",
+   "title": "Phase 2 · First UI overhaul",
+   "what": "The two-level map, icons with hover labels, the five-tab journal, the place and person views, rooms to click, cards.",
+   "when": "done 6 Oct",
+   "weight": 13,
+   "steps": [
+    {"title": "The plan, and your eight answers", "state": "done"},
+    {"title": "Wave 0: the groundwork", "state": "done"},
+    {"title": "Wave 1: the map, the icons, the journal, the views", "state": "done", "weight": 3},
+    {"title": "Wave 2: rooms to click, paths on foot, cards, gear, the night", "state": "done", "weight": 3},
+    {"title": "The pictures of phase 2, in five sittings", "state": "done", "weight": 2},
+    {"title": "Your checkpoints, then merged into the game", "state": "done"}
+   ]
+  },
+  {
+   "id": "ui2",
+   "title": "UI overhaul 2 · The campus, redone",
+   "what": "Every place repainted in the new look, eleven new places to walk into, the picture itself clickable, and people who belong in their rooms.",
+   "when": "since 6 Oct",
+   "weight": 20,
+   "steps": [
+    {"title": "The review of the game, and the plan written, checked and approved", "state": "done", "weight": 2},
+    {"title": "The look test: the new look chosen", "state": "done"},
+    {"title": "The characters settled; Yuji redrawn; the uniforms matched", "state": "done"},
+    {"title": "Wave 0 · The safety net", "state": "done", "weight": 2},
+    {"title": "Wave 0 · The cut-out's clean edge", "state": "done"},
+    {"title": "Wave 0 · My room moved into the Boys' Dormitory", "state": "done", "weight": 2},
+    {"title": "Wave 0 · The campus record and the prompt checks", "state": "done", "weight": 2},
+    {"title": "Wave 0 · Seven more places, on stand-in pictures", "state": "done", "weight": 2},
+    {"title": "Wave 0 · The picture installer", "state": "done", "weight": 2},
+    {"title": "Wave 0 · The scaffold: readers, gates and hooks", "state": "done", "weight": 3},
+    {"title": "Wave 0 · Click-the-picture", "state": "now", "weight": 3},
+    {"title": "Wave 0 · The scaffold checked and merged into the game", "state": "planned", "weight": 2},
+    {"title": "Wave 0 · The layout tools and the first two layouts", "state": "planned", "weight": 2},
+    {"title": "Yuji's new sprite installed, with his blink and his mouth", "state": "planned"},
+    {"title": "Checkpoint A: you play", "state": "planned"},
+    {"title": "The look installed on the first four places", "state": "planned"},
+    {"title": "Picture sittings run and chosen", "done": 6, "total": 49, "weight": 12},
+    {"title": "Pictures installed in the game", "done": 0, "total": 49, "weight": 8},
+    {"title": "Wave 1 · Six packages, built side by side", "done": 0, "total": 6, "weight": 12},
+    {"title": "Checkpoint B: you play", "state": "planned"},
+    {"title": "Wave 2 · Three more packages", "done": 0, "total": 3, "weight": 6},
+    {"title": "Checkpoint C: you play, and choose the main menu", "state": "planned"},
+    {"title": "Everything played end to end, and the record brought up to date", "state": "planned", "weight": 3},
+    {"title": "Checkpoint D, then merged into the game", "state": "planned"}
+   ]
+  },
+  {
+   "id": "combat",
+   "title": "Phase 3 · Combat",
+   "what": "Fights that are fights: Black Flash, partner moves, tools and talismans that do something, curses by grade.",
+   "weight": 10,
+   "outline": true,
+   "steps": [
+    {"title": "The plan, and your answers", "state": "planned"},
+    {"title": "The fight screen", "state": "planned", "weight": 2},
+    {"title": "Black Flash and partner moves", "state": "planned", "weight": 2},
+    {"title": "Cursed tools and talismans that do something", "state": "planned", "weight": 2},
+    {"title": "Curses by grade, enemy phases and cut-ins", "state": "planned", "weight": 2},
+    {"title": "The board's jobs become real fights", "state": "planned", "weight": 2},
+    {"title": "Your checkpoints", "state": "planned"}
+   ]
+  },
+  {
+   "id": "act1",
+   "title": "Phase 4 · Act I: Grade Four",
+   "what": "The Sun Mall and the detention center; Utahime's board live; the first scenes staged in the rooms.",
+   "weight": 12,
+   "outline": true,
+   "steps": [
+    {"title": "The Sun Mall", "state": "planned"},
+    {"title": "The detention center, and Yuji's secret", "state": "planned"},
+    {"title": "Utahime's board, live", "state": "planned"},
+    {"title": "The first scenes staged in the rooms", "state": "planned"}
+   ]
+  },
+  {
+   "id": "act23",
+   "title": "Acts II and III: The Ones Who Stay, Overtime",
+   "what": "The second-years' training, Gojo against Jogo, Nanami, Junpei and Mahito; music.",
+   "weight": 16,
+   "outline": true,
+   "steps": [
+    {"title": "The second-years' training", "state": "planned"},
+    {"title": "Gojo against Jogo", "state": "planned"},
+    {"title": "Nanami", "state": "planned"},
+    {"title": "Junpei and Mahito", "state": "planned"},
+    {"title": "Music", "state": "planned"}
+   ]
+  },
+  {
+   "id": "act45",
+   "title": "Acts IV and V: Goodwill, Cursed Womb",
+   "what": "The Kyoto cast and the Goodwill Event, the Death Paintings, Mei Mei, the recommendation, Sana's answer.",
+   "weight": 17,
+   "outline": true,
+   "steps": [
+    {"title": "The Kyoto cast and the Goodwill Event", "state": "planned"},
+    {"title": "The Death Paintings", "state": "planned"},
+    {"title": "Mei Mei and the recommendation", "state": "planned"},
+    {"title": "Sana's answer", "state": "planned"},
+    {"title": "Big-moment pictures and a few clips", "state": "planned"}
+   ]
+  }
+ ]
+}
