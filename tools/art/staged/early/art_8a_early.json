@@ -1,0 +1,68 @@
+{
+ "about": [
+  "Sitting 8a (the Dormitory Garden's evening and night, and the rooftop redone in place) written early by hand on 11 Oct 2026 at the owner's word ('Can we go on with the next batch of images?'): the garden relit from its chosen picture (version A), which is NOT installed, laid into a scratch root with a scratch manifest; the rooftop from the game's own picture. The prompts are the tool's own with the hour sentences below.",
+  "The garden's night is painted two ways for the owner to choose between. 'People at home' follows the owner's ruling O42 (a place is lit where someone is): a few upstairs windows of the two dormitories glow, the Common Room's house is dark, the stone lamps by the pond glow. 'Every window dark' is the same without the lit windows, as the Courtyard's night was chosen (O40). Both forbid added benches, signs, lamps and lights. check_prompts refuses a count of movable things ('two stone lamps').",
+  "Judge without installing: tools/py_art.sh tools/install_redo.py --relight dorm_yard <evening|night> <a> <b> --dry --against chosen/dorm_yard_1920.png, and tools/py_art.sh tools/install_redo.py rooftop <a> <b> --dry; then by eye for anything added, and that the tower, the far pagoda and the hills are still there."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "dorm_yard_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight with long soft shadows. Windows already in the picture catch the light or begin to glow warm; add no new light.",
+  "dorm_yard_night": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows; the pond reflects the night sky. A few of the upstairs windows of the dormitories on either side glow warm, because people are at home; every other window is dark, and the house in the middle is dark. The stone lamps by the pond give a small warm glow. Everything in the garden and beyond it is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now.",
+  "dorm_yard_night_dark": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows; the pond reflects the night sky. Every window of every building is dark. The stone lamps by the pond give a small warm glow. Everything in the garden and beyond it is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
+ },
+ "rows": [
+  {
+   "label": "Dormitory Garden, evening",
+   "kind": "relight",
+   "saves": [
+    "ui2_dorm_yard_evening_a",
+    "ui2_dorm_yard_evening_b"
+   ],
+   "seeds": [
+    3416,
+    3417
+   ],
+   "prompt_sha256": "044621345e8267f5d79fe7dcdf053c4554f61beb079ebc4d7766e7dd6ae1e4db"
+  },
+  {
+   "label": "Dormitory Garden, night, people at home",
+   "kind": "relight",
+   "saves": [
+    "ui2_dorm_yard_night_a",
+    "ui2_dorm_yard_night_b"
+   ],
+   "seeds": [
+    4494,
+    4495
+   ],
+   "prompt_sha256": "a7eb79cd56fb6d51ef2de4701fa9a6832daeb59f40ace57c1eb287eb77e6f68c"
+  },
+  {
+   "label": "Dormitory Garden, night, every window dark",
+   "kind": "relight",
+   "saves": [
+    "ui2_dorm_yard_night_dark_a",
+    "ui2_dorm_yard_night_dark_b"
+   ],
+   "seeds": [
+    7038,
+    7039
+   ],
+   "prompt_sha256": "2dcc17f1052787f7697bc961c0d07adc9f74f448f2374b49db2e6ea04549677a"
+  },
+  {
+   "label": "Rooftop",
+   "kind": "inplace",
+   "saves": [
+    "ui2_rooftop_a",
+    "ui2_rooftop_b"
+   ],
+   "seeds": [
+    9214,
+    9215
+   ],
+   "prompt_sha256": "bb68d59d26c2dcd51cfc7f3d9ab0e5cbce28cbbf5be61cf5618ab615afae480a"
+  }
+ ],
+ "workflow_sha256": "5f3ad9e53f62b2df161693f81f309b6398419fd489bd9a9d857fa7174a5a5a34"
+}
