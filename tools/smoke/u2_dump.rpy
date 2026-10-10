@@ -73,6 +73,23 @@
 ##   standins      copies ({lender: file}), names ({image key: lender}),
 ##                 if_file ({image name: file}), people (the five stand-in names)
 ##   names_key     the key held to show names ("K_n")
+## Added by the scaffold's second sitting (D60, "the picture is what is
+## clicked"; game/sb_hotspots.rpy):
+##   hot_shape     HOT_SHAPE: the limits both validators read (polys, points,
+##                 area_min, area_max, buried_max, grid) and the light's
+##                 default look (color, wash, edge, dim, names, blur, line)
+##   hot_look      the look in force: HOT_SHAPE's, with what
+##                 game/layout/hot_look.json replaces; look_keys: the keys
+##                 that file may hold
+##   shapes        {place: {id: [polygon, ...]}}: the "shapes" each hot_
+##                 sidecar holds, as written, whatever the picture's revision
+##                 (a room redone in place waits with its shapes traced)
+##   keep_tile     {place: {id: reason}}: the few that keep a button
+##   shaped        the places that are shaped now (hot_shapes_for answers)
+##   name_rects    {place: {id: [x, y, w, h]}}: where the name plate of every
+##                 registered hotspot and exit would be drawn in a shaped
+##                 place while names are shown (hot_name_rect, at its applied
+##                 point), so that a layout tool can refuse two that meet
 ##
 ## Keys the tree does not have yet are written empty and filled when U0c
 ## regenerates the file. Nothing in it depends on the day, the hour, a flag or
@@ -259,6 +276,30 @@ init 999 python:
             names=builtins.dict(STANDIN_NAMES), if_file=builtins.dict(STANDIN_IF_FILE),
             people=[k for k, path, tint in STANDIN_PEOPLE]))
         d["names_key"] = ICON_NAMES_KEY
+
+        ## The second sitting (D60): the limits, the look, each place's shapes.
+        d["hot_shape"] = zz_dump_plain(HOT_SHAPE)
+        d["hot_look"] = zz_dump_plain(hot_look())
+        d["look_keys"] = builtins.list(HOT_LOOK_KEYS)
+        shapes, keep, rects = builtins.dict(), builtins.dict(), builtins.dict()
+        for loc in LOC_ORDER:
+            side = rule_layout("hot_" + loc)
+            if isinstance(side.get("shapes"), builtins.dict) and side["shapes"]:
+                shapes[loc] = zz_dump_plain(side["shapes"])
+            if isinstance(side.get("keep_tile"), builtins.dict) and side["keep_tile"]:
+                keep[loc] = zz_dump_plain(side["keep_tile"])
+            pts = hot_place_points(loc)
+            got = builtins.dict()
+            for h in HOT_SPOTS:
+                if h["place"] == loc and h["id"] not in got and h["id"] in pts:
+                    row = builtins.dict((k, h[k]) for k in HOT_KEYS)
+                    row["x"], row["y"] = pts[h["id"]]
+                    got[h["id"]] = [int(v) for v in hot_name_rect(row)]
+            rects[loc] = got
+        d["shapes"] = shapes
+        d["keep_tile"] = keep
+        d["shaped"] = [loc for loc in LOC_ORDER if hot_shapes_for(loc)]
+        d["name_rects"] = rects
         return d
 
 
@@ -298,6 +339,17 @@ label zz_smoke:
               and all(k in _zz_d for k in ("keep_clear", "tips", "faces", "names_key")),
               "the scaffold's keys are in it: variants_planned (%d), keep_clear, tips, faces (%d people), world, standins, names_key"
               % (len(_zz_d["variants_planned"]), len(_zz_d["faces"])))
+        check(builtins.sorted(_zz_d["hot_shape"]) == builtins.sorted(HOT_SHAPE)
+              and all(k in _zz_d["hot_shape"] for k in ("polys", "points", "area_min", "area_max", "buried_max", "grid"))
+              and builtins.sorted(_zz_d["hot_look"]) == builtins.sorted(_zz_d["look_keys"]) == builtins.sorted(HOT_LOOK_KEYS)
+              and builtins.sorted(_zz_d["shapes"]) == builtins.sorted(l for l in LOC_ORDER if rule_layout("hot_" + l).get("shapes"))
+              and all(_zz_d["shapes"][l] == rule_layout("hot_" + l)["shapes"] for l in _zz_d["shapes"])
+              and _zz_d["shaped"] == [l for l in LOC_ORDER if hot_shapes_for(l)] and builtins.set(_zz_d["shaped"]) <= builtins.set(_zz_d["shapes"])
+              and builtins.sorted(_zz_d["name_rects"]) == builtins.sorted(LOCATIONS)
+              and all(len(r) == 4 for v in _zz_d["name_rects"].values() for r in v.values())
+              and sum(len(v) for v in _zz_d["name_rects"].values()) == len(builtins.set(h["id"] for h in HOT_SPOTS)),
+              "D60: the limits and the light's look (HOT_SHAPE, hot_look), each place's shapes and keep_tile rows as its sidecar holds them (%d places; %d shaped now), and a name plate's rectangle for every hotspot and exit (%d)"
+              % (len(_zz_d["shapes"]), len(_zz_d["shaped"]), sum(len(v) for v in _zz_d["name_rects"].values())))
         _zz_path = os.path.join(zz_smoke_state.shots, "game_layout.json")
         with open(_zz_path, "w", encoding="utf-8") as _zz_f:
             _zz_f.write(_zz_text)
