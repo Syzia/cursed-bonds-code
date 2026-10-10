@@ -86,5 +86,26 @@
   },
   "my_picks": "Garden: evening A; night with people at home, version B (the owner's ruling O42: the dormitories have people in them after dark; the dark B is the faithful alternative). Rooftop: A. Put to the owner; nothing was chosen when this was written.",
   "lessons": "Forbidding added benches, signs, lamps and lights held again: nothing was added to any of the six garden pictures. Two of the four nights drew a crescent moon and two none; the Courtyard's chosen night has a full one, so the moon is worth a sentence of its own in every outdoor night ('no moon is in view' or its phase)."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"I think we go B,A,A. Just so that the lighting is consistent.\" (shown three rows with my picks: evening A; night with people at home, B; rooftop A. Read as the three rows in order, and said back to the owner)",
+  "dorm_yard_evening": {
+   "version": "b",
+   "render": "ui2_dorm_yard_evening_b_00001_.png",
+   "sha256": "2486a49216dad58370e3e3ffe0eeb848d93d86f27f7161d52e9ba106039e4cc2"
+  },
+  "dorm_yard_night": {
+   "version": "a",
+   "render": "ui2_dorm_yard_night_a_00001_.png",
+   "sha256": "2a46632224f6775b29ca49670529287a6a4867efe919ff150b6ab37620663c72",
+   "treatment": "people at home: a few dormitory windows lit",
+   "note": "shows a crescent moon; to be made full by one named change (offered with the next file)"
+  },
+  "rooftop": {
+   "version": "a",
+   "render": "ui2_rooftop_a_00001_.png",
+   "sha256": "147016b22f4f94646e7ab806b16b4a93fb979ed2a240dde0c9b34266a0d92e80"
+  },
+  "in_the_batch_table": "tools/art/batches.json, batch 8, file art_8a: the garden's night carries its sentence as hour_words"
  }
 }

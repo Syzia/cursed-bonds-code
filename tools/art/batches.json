@@ -457,7 +457,8 @@
       {
        "place": "dorm_yard",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows; the pond reflects the night sky. A few of the upstairs windows of the dormitories on either side glow warm, because people are at home; every other window is dark, and the house in the middle is dark. The stone lamps by the pond give a small warm glow. Everything in the garden and beyond it is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       },
       {
        "place": "rooftop",
