@@ -1,0 +1,82 @@
+{
+ "about": [
+  "Sitting 7b (the School Courtyard's and the Library's evening and night) written early by hand on 11 Oct 2026, straight after the owner chose 6b, from the chosen day pictures, which are NOT installed: the School Courtyard's version B (its trimmed fit) and the bright Library of the look test (~/Desktop/JJK Game images/look_test/chosen/library_bright_1920.png), laid into a scratch root with a scratch manifest; the prompts are the tool's own relight prompt with the hour sentences below.",
+  "The School Courtyard's night follows O40 (every window dark; the yard has no lamp), offered as the default, and its sentence ends by forbidding added benches, signs, lamps and lights, since two Courtyard nights added them. The Library's night is painted two ways: every light off (O38), and only its green desk lamps on, a second treatment offered because the lamps are the room's own and already in the picture. Every indoor sentence says that what stands outside the windows stays.",
+  "Judge without installing: tools/py_art.sh tools/install_redo.py --relight <place> <evening|night> <a> <b> --dry --against <the chosen day picture>, then by eye against the day picture for anything added."
+ ],
+ "written": "2026-10-11",
+ "day_pictures": {
+  "school_yard": "renders/ui2_school_yard_b_fit.png (chosen/school_yard_1920.png)",
+  "library": "look_test/chosen/library_bright_1920.png"
+ },
+ "sentences": {
+  "school_yard_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight with long soft shadows. Windows already in the picture catch the light or begin to glow warm; add no new light.",
+  "school_yard_night": "Change the time of day to night: a deep blue night sky with stars and a faint moon, and cool blue moonlight on everything, with soft shadows. Every window of the buildings is dark and no lamp is lit. Everything in the yard and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now.",
+  "library_evening": "Change the time of day to early evening: low warm orange sunlight slants in through the windows, long soft shadows cross the floor, and the sky outside is orange and pink. Everything that stands outside the windows is still there.",
+  "library_night": "Change the time of day to night, with every light in the room switched off: the ceiling lights and the desk lamps are dark. Outside the windows it is night, under a deep blue sky with stars, and everything that stands outside the windows is still there, as dark shapes against the sky. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly.",
+  "library_night_lamps": "Change the time of day to night: outside the windows it is dark, under a deep blue sky with stars, and everything that stands outside the windows is still there, as dark shapes against the sky. The ceiling lights are off. The green desk lamps on the reading tables are switched on and make small warm pools of light on the tables; the rest of the room is dim, in cool blue moonlight from the windows, but everything in it can still be seen clearly. Add no new lamp."
+ },
+ "rows": [
+  {
+   "label": "School Courtyard, evening",
+   "saves": [
+    "ui2_school_yard_evening_a",
+    "ui2_school_yard_evening_b"
+   ],
+   "seeds": [
+    3240,
+    3241
+   ],
+   "prompt_sha256": "044621345e8267f5d79fe7dcdf053c4554f61beb079ebc4d7766e7dd6ae1e4db"
+  },
+  {
+   "label": "School Courtyard, night, every window dark",
+   "saves": [
+    "ui2_school_yard_night_a",
+    "ui2_school_yard_night_b"
+   ],
+   "seeds": [
+    3478,
+    3479
+   ],
+   "prompt_sha256": "9c8d68d99c074e8b98a2893055ee99098d30ee2f40f543ee22dfc5080f3348f0"
+  },
+  {
+   "label": "Library, evening",
+   "saves": [
+    "ui2_library_evening_a",
+    "ui2_library_evening_b"
+   ],
+   "seeds": [
+    4628,
+    4629
+   ],
+   "prompt_sha256": "fabdd19cad9ed149a873b2b1d2d25ed239bcfff50b9329cdd1ad88cd5b478662"
+  },
+  {
+   "label": "Library, night, lights off",
+   "saves": [
+    "ui2_library_night_a",
+    "ui2_library_night_b"
+   ],
+   "seeds": [
+    6546,
+    6547
+   ],
+   "prompt_sha256": "fd3fce9ff03e73de69bc47b287c96c77dbdcfe3caae2cffabf890aec5762585e"
+  },
+  {
+   "label": "Library, night, the desk lamps on",
+   "saves": [
+    "ui2_library_night_lamps_a",
+    "ui2_library_night_lamps_b"
+   ],
+   "seeds": [
+    3658,
+    3659
+   ],
+   "prompt_sha256": "c5ade94f63fa5cb207cbe67fe5432b73ca2a4b5fc6f78ab806029132b405ee8e"
+  }
+ ],
+ "workflow_sha256": "dc6fd4b2aa8b2df307cb4c09ec03f6375a535f5f19340beec1a00c08f742ce99"
+}
