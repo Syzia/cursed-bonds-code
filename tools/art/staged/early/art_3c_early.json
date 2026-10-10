@@ -29,5 +29,22 @@
    ],
    "prompt_sha256": "7dac04b3487409573638a4556e8f3da29f3006d3577d2d19e0ffacc972600bf7"
   }
- ]
+ ],
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (the four files as ComfyUI saved them on 10 Oct 2026)",
+ "renders_sha256": {
+  "ui2_dorm_common_night_off_a": "b74673b13c84168339e7e7eff25d8be7eaa461fa8ab26e4bbf41609da64c323c",
+  "ui2_dorm_common_night_off_b": "c9bf84f7cc317a7106fd532b441d41820c52da6aaad36949dd7f9982d47cbd14",
+  "ui2_your_room_night_off_a": "a9971e453cf790501f6260dc6ea0caa10e29f7106a97fbcabc4f3c85ea16f9df",
+  "ui2_your_room_night_off_b": "9033550161d0e925a41ca32e4aca246f8b077f4a3f5da39a58b14f9fb0997a57"
+ },
+ "read_10_oct": {
+  "install_redo_dry": "tools/py_art.sh tools/install_redo.py --relight <place> night <a> <b> --dry --against <the chosen day render>: the Common Room's two PASS (nothing moved, 20 things checked, none gone); My Room's two LOOK, for the one note every My Room picture gets (the record asks for a closed laptop and the chosen day picture has it open).",
+  "by_eye": {
+   "dorm_common_night_off": "both faithful to the day picture: nothing added (no blanket on the sofa this time), nothing moved, the ceiling dark, the television dark, moonlight through the garden door and on the rug under the table. A is the clearer: the counter, the fridge and the board games on the bookshelf read plainly. In B the shaft of moonlight from the door is stronger and lies as a haze over the board games.",
+   "your_room_night_off": "both faithful: the hanging lamp is dark, nothing is added to the desk (no desk lamp this time), the moonlit patch on the wall beside the bed is where the day picture has its sunlit one. The laptop screen is lit in both, as it is in the day picture. A is the brighter and reads everywhere, the sliding doors on the left included; B is darker and moodier, and its left side falls nearly black."
+  },
+  "measured": "mean brightness out of 255: Common Room day 118, lamplit nights 100 and 102, lights off A 69 and B 66; My Room day 111, lamplit nights 89 and 84, lights off A 69 and B 62. Share of the picture darker than 25: Common Room A 5.9%, B 7.4%; My Room A 7.8%, B 11.6%.",
+  "my_picks": "Lights off for both rooms, version A of each: the two rooms then sit at the same brightness (69), and the things one clicks stay easy to see. Evenings as on 7 Oct: Common Room A, My Room B. The owner had not chosen when this was written.",
+  "open": "The laptop's lit screen: kept unless the owner wants it dark (one more small run). If the lights-off nights are chosen the plan says so: a night picture of an empty or sleeping room has its lights off."
+ }
 }
