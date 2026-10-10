@@ -1,0 +1,82 @@
+{
+ "about": [
+  "Sitting 4b (the Cafeteria's and the girls' corridor's evening and night) written early by hand on 10 Oct 2026 at the owner's word ('Can we go on with the next batch of images?'), from the two day pictures chosen in 4a, which are NOT installed: the Cafeteria's version A and the corridor composed afresh (ui2_girls_dorm5x_b). Each was fitted to 1920x1080 and laid into a scratch root as the installed file would be, with a scratch manifest; the prompts are the tool's own relight prompt (make_redo_workflow.prompt_for) with the hour sentences below.",
+  "The Cafeteria's night follows the owner's ruling O38 (lights off, moonlight), offered here as the default and told to the owner. The corridor has no window but the one at its far end, so its hour sentences are its own, and its night is painted two ways for the owner to choose between: one ceiling light on low, and every light off. Every corridor sentence ends 'Add no new window and no new light', because a window in a side wall is what the owner had removed (O37).",
+  "Judge the results without installing: tools/py_art.sh tools/install_redo.py --relight <place> <evening|night> <a> <b> --dry --against <the chosen day render>, then by eye against the day picture for anything added. The corridor's keep list (tools/bgs/keep/girls_dorm.json) still describes the picture of before the overhaul, so the check's 'vanished' list is not to be trusted there until the corridor is laid out afresh."
+ ],
+ "written": "2026-10-10",
+ "day_pictures": {
+  "cafeteria": "ui2_cafeteria_a_00001_.png",
+  "girls_dorm": "ui2_girls_dorm5x_b_00001_.png"
+ },
+ "sentences": {
+  "cafeteria_night": "Change the time of day to night, with every light in the room switched off: the hanging ceiling lamps are dark. Outside the windows it is night, under a deep blue sky with stars. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the tables. The room is dim, but everything in it can still be seen clearly.",
+  "girls_dorm_evening": "Change the time of day to early evening: the sky in the window at the far end of the corridor is orange and pink, and low warm orange sunlight comes in through that window and lies along the floor with long soft shadows. The ceiling lights are switched on and give a soft warm light. Add no new window and no new light.",
+  "girls_dorm_night": "Change the time of day to night: the sky in the window at the far end of the corridor is deep blue with stars. Only the nearest ceiling light is switched on, turned low, and gives a dim warm glow; the other ceiling lights are dark, and the far end of the corridor is in soft blue shadow, with pale moonlight on the floor under the window. The corridor is dim, but every door can still be seen clearly. Add no new window and no new light.",
+  "girls_dorm_night_off": "Change the time of day to night, with every light in the corridor switched off: the ceiling lights are dark. The sky in the window at the far end is deep blue with stars. The corridor is lit only by cool blue moonlight coming in through that window, which lies in a pale patch on the floor. The corridor is dim, but every door can still be seen clearly. Add no new window and no new light.",
+  "cafeteria_evening": "Change the time of day to early evening: low warm orange sunlight slants in through the windows, long soft shadows cross the floor, and the sky outside is orange and pink."
+ },
+ "rows": [
+  {
+   "label": "Cafeteria, evening",
+   "saves": [
+    "ui2_cafeteria_evening_a",
+    "ui2_cafeteria_evening_b"
+   ],
+   "seeds": [
+    3232,
+    3233
+   ],
+   "prompt_sha256": "7657e0172ef3457d0d7129467f5862f2821ed6e3431fe8ef45d49afcee121e17"
+  },
+  {
+   "label": "Cafeteria, night, lights off",
+   "saves": [
+    "ui2_cafeteria_night_a",
+    "ui2_cafeteria_night_b"
+   ],
+   "seeds": [
+    4310,
+    4311
+   ],
+   "prompt_sha256": "932e7b1bd6bb368c5ca9e90327e5f361cfa0334dbe5be2be9b43e1c52df6432d"
+  },
+  {
+   "label": "Girls' Dormitory, evening",
+   "saves": [
+    "ui2_girls_dorm_evening_a",
+    "ui2_girls_dorm_evening_b"
+   ],
+   "seeds": [
+    7390,
+    7391
+   ],
+   "prompt_sha256": "6fe30233fdce4f71f3df077277a35a3c54c1f2ef98c4a12809b551987e72fac0"
+  },
+  {
+   "label": "Girls' Dormitory, night, one light on low",
+   "saves": [
+    "ui2_girls_dorm_night_a",
+    "ui2_girls_dorm_night_b"
+   ],
+   "seeds": [
+    8048,
+    8049
+   ],
+   "prompt_sha256": "23f89652958a9f6702cd7eddac1e87b3aeaf03334b940995c5071528fb220d39"
+  },
+  {
+   "label": "Girls' Dormitory, night, lights off",
+   "saves": [
+    "ui2_girls_dorm_night_off_a",
+    "ui2_girls_dorm_night_off_b"
+   ],
+   "seeds": [
+    7230,
+    7231
+   ],
+   "prompt_sha256": "2c70bb4c56f1e360323fb98955133ad0668787fec37fc1e2f2022ff94843ecf2"
+  }
+ ],
+ "workflow_sha256": "d538931954e522db95a0607b5afecfa1d077cff370f52babf0c57a083b84b683"
+}
