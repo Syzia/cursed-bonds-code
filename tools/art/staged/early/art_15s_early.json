@@ -1,0 +1,60 @@
+{
+ "about": [
+  "The view outside, put right: written by hand on 11 Oct 2026, straight after reading art_15r.json. Each row is ONE named change on a render of 15r (given at full size), by the tool's own keep-everything prompt from tools/art/staged/early/campus_for_batch3.json with the change as its own sentence after 'Do not remove, tidy away or add anything.', the way the garden's moon was made full in 8b.",
+  "The training hall's prompt leaves out the record's window line ('Through the windows: sky and cedar tops'), which would have repainted the view through every opening.",
+  "Why the views were wrong: the editor was given the whole yard and a crop of the room's own building, and painted what those pictures show beside the building (the stone steps beside the kura, the kura beside the hall) as what is seen from inside it. A view from inside is named side by side in words from now on (what is on the right, what is on the left, what is at the far end), and the crop of a room's own building is cut tight to the building."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "training_far_opening": "Change one thing only: what is seen outside through the farther opening in the left wall, the narrower opening between the paper screens halfway along that wall. The white building with the small tiled canopy, its door and its steps is not there. In its place, seen through that opening: bare earth and, across the yard, more of the same long low dark timber hall with the band of windows and the grey tiled roof that is seen through the nearer opening, ending at a small roofed timber gate. Change nothing else in the picture: the nearer opening, its striking posts and everything inside the hall stay exactly as they are.",
+  "storehouse_door_view": "Change one thing only: what is seen outside through the open door. There are no stone steps, no stone wall and no white building outside the door. Through the door I see an open yard from this doorway: bare sunlit earth stretching away to trees at its far end; the wooden striking posts standing just outside, where they are now; along the right side of the yard, the raised timber veranda and grey tiled roof of a big timber hall; along the left side of the yard, a long low dark timber hall with a band of windows. Change nothing else in the picture: the door, its two leaves and everything inside the room stay exactly as they are."
+ },
+ "rows": [
+  {
+   "label": "Training Hall A, the farther opening put right",
+   "kind": "inplace",
+   "place": "training",
+   "saves": [
+    "ui2_training2a_view_a",
+    "ui2_training2a_view_b"
+   ],
+   "seeds": [
+    3548,
+    3549
+   ],
+   "from": "ui2_training2_a_00001_.png",
+   "prompt_sha256": "e58e3a10c6d1a892f3534b82daa49d8f8ccb3946ae57bb8075ef63d73a61de27"
+  },
+  {
+   "label": "Storehouse B, the view through the door put right",
+   "kind": "inplace",
+   "place": "storehouse",
+   "saves": [
+    "ui2_storehouse2b_view_a",
+    "ui2_storehouse2b_view_b"
+   ],
+   "seeds": [
+    10700,
+    10701
+   ],
+   "from": "ui2_storehouse2_b_00001_.png",
+   "prompt_sha256": "2a898616007fe40f3d51f1cfdf344cc48df4be9381023b5c4cedb828fa569adf"
+  },
+  {
+   "label": "Storehouse A, the view through the door put right",
+   "kind": "inplace",
+   "place": "storehouse",
+   "saves": [
+    "ui2_storehouse2a_view_a",
+    "ui2_storehouse2a_view_b"
+   ],
+   "seeds": [
+    10676,
+    10677
+   ],
+   "from": "ui2_storehouse2_a_00001_.png",
+   "prompt_sha256": "2a898616007fe40f3d51f1cfdf344cc48df4be9381023b5c4cedb828fa569adf"
+  }
+ ],
+ "workflow_sha256": "7d213c26948a86783c64a65789e6982fa4cf00fa9a2147ae49a737526929c5a6"
+}

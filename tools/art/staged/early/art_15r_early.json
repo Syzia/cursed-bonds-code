@@ -118,5 +118,24 @@
   }
  ],
  "workflow_sha256": "bed8af1fe21da9871eed6f136017999b21e1ace34e7b70b00df1c5e58441e4a1",
- "plan_sheet": "~/Desktop/JJK Game images/ui2/early/plan_three_rooms.jpg (which building is which room, where each picture is taken from, what goes where on it): shown to the owner with the file"
+ "plan_sheet": "~/Desktop/JJK Game images/ui2/early/plan_three_rooms.jpg (which building is which room, where each picture is taken from, what goes where on it): shown to the owner with the file",
+ "renders_sha256": {
+  "ui2_training2_a_00001_.png": "115774aee8eb7112a6c34dae3184a47bb11cd1645933a1b88cf340cb093edc29",
+  "ui2_training2_b_00001_.png": "4a8c0f6d8d49b1b240a1ea99b9124e5937c697f1645cf63905f6a571cf275f2c",
+  "ui2_dojo2_a_00001_.png": "d1962508d5a434d7003c23b62ff681548a756783277270428ae83d77117fa4d9",
+  "ui2_dojo2_b_00001_.png": "0aef5e6e21d770ff4e1c4e223e53525f216914c24c7bda354bd01d452d5f356c",
+  "ui2_storehouse2_a_00001_.png": "1005213dd880c6d9d77c1a84954bd8135ec11f9a50872af810ba900cdbc4dbb3",
+  "ui2_storehouse2_b_00001_.png": "30f8526f2eb938c7703fee023db107df9e7544bc7cb1db569c85cc196b5991d0"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye, against each row's checklist and the four questions; a composed picture has no earlier picture of the same camera for the installer's check to measure against. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_training2.jpg, compare_dojo2.jpg, compare_storehouse2.jpg, compare_15r_outside.jpg.",
+  "training2_a": "PICK. A large bright hall under open trusses, no pillar, paper lanterns, a wide clear floor. The screens stand open at the left onto the veranda, four striking posts and, across the yard, the long low hall with its band of windows: the dojo, as the yard has it. Four big straw bundles lean along the right wall near the camera (the nearest reaches the edge of the icon column). ONE FAULT: a second, farther opening shows the white storehouse, which stands at the other end of the yard; put right in art_15s.json.",
+  "training2_b": "Not picked. Across the yard it shows a hall with a veranda and paper screens, which is the training hall's own outside; farther openings show the stone steps and the kura's side. Its high windows do show sky and cedar tops, better than A's, and its six straw bundles stand in a neat row at the far wall, small and behind where people stand.",
+  "dojo2_a": "PICK. Nothing to correct. The sliding door at the left edge opens on bare earth, striking posts by the big hall's veranda and the hall's tiled roof; the windows, dark boarding to the waist and two tiers of panes as the building has outside, show the hall's roof, the stone wall and the white storehouse farther along, which is where they are. Shrine shelf high on the end wall, the sword rack and the stand of staffs, spears and a naginata below it, clear of the icon column. Square paper-shaded lamps, darker boards and a flat ceiling set it apart from the training hall.",
+  "dojo2_b": "Good, and brighter, with larger views of the hall and the storehouse. Two small things against the yard: the striking posts stand close outside its door, where the yard has them by the hall, and a timber deck lies at the door, which the building does not have. Its round lanterns and pale boards are the training hall's.",
+  "storehouse2_a": "The truer to the story in its details: boxes tied with cord, long strapped cases, a large workbench with a board of tools, bolts of cloth and spools of thread; the door and the racks are larger. It is the closer room, the shelves filling the left third. Outside the door: the posts and a hall's veranda, and on the left the stone steps and a white building, which stand beside the storehouse and not opposite it.",
+  "storehouse2_b": "PICK for the owner's first wish, more room: taller and deeper, the loft gallery running the left wall with its stair, shelves on both sides, the racks, the chest and a small bench by the door. Its boxes have iron fittings and no cord. ONE FAULT: outside the door are two stone walls and the staff steps straight ahead, where the open yard is; put right in art_15s.json (A's view is put right there as well, in case A is preferred).",
+  "put_to_the_owner": "Training Hall A, Dojo A, Storehouse B; with art_15s.json for the two views outside."
+ }
 }
