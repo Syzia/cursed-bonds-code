@@ -78,5 +78,36 @@
    "prompt_sha256": "2c70bb4c56f1e360323fb98955133ad0668787fec37fc1e2f2022ff94843ecf2"
   }
  ],
- "workflow_sha256": "d538931954e522db95a0607b5afecfa1d077cff370f52babf0c57a083b84b683"
+ "workflow_sha256": "d538931954e522db95a0607b5afecfa1d077cff370f52babf0c57a083b84b683",
+ "renders_kept_in": "~/Desktop/JJK Game images/ui2/early/renders/ (the ten files as ComfyUI saved them on 10 Oct 2026)",
+ "renders_sha256": {
+  "ui2_cafeteria_evening_a": "819439d3b07ca1e8bd751b332b4143a707301787ac4bb87c40263e172d503869",
+  "ui2_cafeteria_evening_b": "baf1dbd2e9a6b294066507bcf9889989cec4e5f6a28fffa727740aacf88dc89b",
+  "ui2_cafeteria_night_a": "d035ff2fe59629035e638217a2be4b2bcb012a5a8ac98fc014fbc93fdb60ecbd",
+  "ui2_cafeteria_night_b": "3ef5446bba21453bff4a715f8a2d698457a0ced25299b75c49d4b53f08e65fd9",
+  "ui2_girls_dorm_evening_a": "4c6142d5a94f8fd34e8de3dfe545433385388f6d9d6a58e2f455b16bdca3f5c0",
+  "ui2_girls_dorm_evening_b": "69e76973c6209b48bd7c5cf785ffa6be8fc19b42ac524485599315a46a850062",
+  "ui2_girls_dorm_night_a": "1163ad26e2633ab7c0c3f95b8f94470f4129b192310e71d7a17e7dc2db6cf0b5",
+  "ui2_girls_dorm_night_b": "3f85c7b4c7a0a1e0366c642cfb79231da272d18476e0dbbc1a68307b597edb81",
+  "ui2_girls_dorm_night_off_a": "ab5602d0827535c91621102ba78889f49d7a0620672f7d6eb109a79ef50dd775",
+  "ui2_girls_dorm_night_off_b": "1b028606a5cb2f26322a18ccf2c9876589ed0ef85c2170068871b0743bb216fa"
+ },
+ "read_10_oct": {
+  "install_redo_dry": {
+   "cafeteria_evening": "A REFUSED, B PASS",
+   "cafeteria_night": "A REFUSED, B REFUSED",
+   "the_refusals": "all three name the same two things: 'the floor where people stand (a row of 3, at x 760)' and '(a row of 4, at x 800)' no longer line up. Read by eye they are FALSE ALARMS: the floor has not moved (the whole picture is 0, 0 px off and no other point is off by more than 2 px); the window frames' shadow now lies across those floor points as a grid of sunlight or moonlight, which evening B happens not to throw there.",
+   "girls_dorm": "all six PASS on the points (0 to 1 px). Its vanished list reads the old corridor's keep list and means nothing here."
+  },
+  "by_eye": {
+   "cafeteria_evening": "both faithful; nothing added or gone. A lights the three hanging lamps and throws the window grid across the floor: it reads as the dinner hour. B leaves the lamps unlit and puts one broad beam on the back wall.",
+   "cafeteria_night": "both faithful; lamps dark, moonlight on the floor and the tables. A is the clearer (mean 78; 6.5% of it darker than 25); B is darker (68; 11.7%) and its tables sink.",
+   "girls_dorm_evening": "both keep six doors, no side window, the shoe rack, the plant and the trees in the end window. A has far more evening in it, but paints sunset light on BOTH side walls at once, which one low sun through the end window cannot do. B is quiet and correct: a patch on the floor at the far end and a glow on one wall; it is close to the day picture in brightness (141 against 160).",
+   "girls_dorm_night_one_light_low": "A is the better of the two (a warm pool under the nearest lamp, blue depth beyond; mean 92); B is too bright to read as night (104). In both the trees outside the end window are gone, replaced by plain starry sky.",
+   "girls_dorm_night_lights_off": "A is faithful and convincing (mean 85): every lamp dark, moonlight on the floor under the window, every door plain to see, and the trees still outside the window. B is too bright to read as night (110) and loses the trees."
+  },
+  "my_picks": "Cafeteria: evening A, night A. Corridor: night with the lights off, version A (no fault in it, and it follows O38); its evening is close: A for the mood, B for light that is strictly believable. Put to the owner; nothing was chosen when this was written.",
+  "for_the_installer": "A seventh blind spot, the same family as the first three of art_3a_early.json: in a relight, a standing-row point on open floor is refused when the new light throws an edge across it (a window grid of sunlight or moonlight). The floor cannot move on its own while every other point agrees to 2 px; the check should say LOOK there, not REFUSED. Tests: ui2_cafeteria_evening_a and both cafeteria nights must not be refused; evening B must still pass.",
+  "a_relight_can_lose_what_is_outside_a_window": "three of the four corridor nights drop the trees outside the end window. The hour sentence says what the sky is but not that what stands outside stays: say so in a night sentence ('the dark shapes of the trees outside are still there against the sky')."
+ }
 }
