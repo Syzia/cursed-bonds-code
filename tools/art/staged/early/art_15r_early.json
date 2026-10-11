@@ -137,5 +137,16 @@
   "storehouse2_a": "The truer to the story in its details: boxes tied with cord, long strapped cases, a large workbench with a board of tools, bolts of cloth and spools of thread; the door and the racks are larger. It is the closer room, the shelves filling the left third. Outside the door: the posts and a hall's veranda, and on the left the stone steps and a white building, which stand beside the storehouse and not opposite it.",
   "storehouse2_b": "PICK for the owner's first wish, more room: taller and deeper, the loft gallery running the left wall with its stair, shelves on both sides, the racks, the chest and a small bench by the door. Its boxes have iron fittings and no cord. ONE FAULT: outside the door are two stone walls and the staff steps straight ahead, where the open yard is; put right in art_15s.json (A's view is put right there as well, in case A is preferred).",
   "put_to_the_owner": "Training Hall A, Dojo A, Storehouse B; with art_15s.json for the two views outside."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, and yes to all three\"",
+  "dojo": {
+   "version": "a",
+   "render": "ui2_dojo2_a_00001_.png",
+   "sha256": "d1962508d5a434d7003c23b62ff681548a756783277270428ae83d77117fa4d9",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/dojo_1920.png"
+  },
+  "training": "version A, with its farther opening repainted: see art_15s_early.json",
+  "storehouse": "version B, with the view through its door put right: see art_15s_early.json"
  }
 }

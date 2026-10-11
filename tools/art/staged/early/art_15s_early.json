@@ -82,5 +82,24 @@
    "why not a third sitting": "both of the editor's tries widened the door to fit the wider view it was asked for; the view it painted is right, and only the door was wrong."
   },
   "put_to_the_owner": "Training Hall: training2a_view_a. Dojo: dojo2_a (15r). Storehouse: storehouse2b_doorview, with storehouse2a_view_a as the alternative (the closer room with the corded boxes and the larger bench)."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, and yes to all three\"",
+  "training": {
+   "render": "ui2_training2a_view_a_00001_.png",
+   "sha256": "2519b787f03145a6b51932fc0bf5f6fd88e8317f1e73fe0742c4c2f93337e5a2",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/training_1920.png"
+  },
+  "storehouse": {
+   "render": "ui2_storehouse2b_doorview_00001_.png",
+   "sha256": "95ca58135f23f6a98288cf20e2f10e315059765c5ff16821356a8c362a691275",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/storehouse_1920.png",
+   "note": "version B of 15r with the doorway's view placed by tools/art/staged/early/door_view_15s.py"
+  }
+ },
+ "fits_sha256": {
+  "training_1920.png": "a3086db5a4e90fd9ac701000d86b5f3389fc27ca3975ca6546b2067a909c3f3b",
+  "dojo_1920.png": "872eabc5a9f98c8ec520754b0d05ff1a266123a10b17960b751b3bbac31560a5",
+  "storehouse_1920.png": "956040821cb367e2c7f21c321aafd4b19f2df7cfcd8bdab619f9f33992b9e39b"
  }
 }

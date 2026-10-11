@@ -12,7 +12,8 @@
   "Also added in this copy, for batch 2 (7 Oct): one sentence in the `facts` of staff_yard, trailhead and gate saying where the tower and the pagodas are, or that they are out of sight. The garden's version A gained its second pagoda because the editor copied the one in its reference picture; these sentences are there so that batch 2 does not gain a third. They belong in the real record once the garden is installed.",
   "Reworded on 7 Oct, in this copy, at the owner's word: the Main Gate is a great gatehouse at the top of a long flight of steps (the owner: 'we can redo the main gate to make it more feel more like a main gate'); the veil is a dome of black glass over the ridge's peak (the owner's reference pictures, ~/Desktop/JJK Game images/ui2/refs/). Both rows are proposals in the real record and are rewritten there when these pictures are chosen and installed.",
   "Reworded again on 7 Oct, in this copy, at the owner's word: the gate is seen in the first person from a Japanese garden with water, with nothing standing in front of the gatehouse ('A would be good if there wasnt that little stone arch infront. Take and make it from a first person veiw. Add some water and Japanese garden vibes instead of the concrete paths generic trees and stone walls.'); the veil is a SMALL dome on the very top of the mountain ('We should also make the veil smaller since its on the hill. And its only holding 1 person body. Make the veil feel like its on top of the mountain. Not covering mountain.').",
-  "The second ring fixed, in this copy, on 11 Oct 2026 (campus_for_batch3.json, made from campus_for_batch2_third.json; how: campus_for_batch3_how.json): the Staff Building Steps, the Main Gate and the Mountain Path the owner chose on 7 Oct (O36) are fixed from a first-guess layout read off each chosen picture by eye, as the first ring was, so that the places that stand off them can be written early (K8). The real rows are written by install_redo.py --compose at each place's layout sitting. Two of the gate's rows had words the chosen picture contradicts and were corrected by hand."
+  "The second ring fixed, in this copy, on 11 Oct 2026 (campus_for_batch3.json, made from campus_for_batch2_third.json; how: campus_for_batch3_how.json): the Staff Building Steps, the Main Gate and the Mountain Path the owner chose on 7 Oct (O36) are fixed from a first-guess layout read off each chosen picture by eye, as the first ring was, so that the places that stand off them can be written early (K8). The real rows are written by install_redo.py --compose at each place's layout sitting. Two of the gate's rows had words the chosen picture contradicts and were corrected by hand.",
+  "11 Oct 2026: the training hall, the dojo and the storehouse, composed again and chosen (O46), have rows under `pictures` so that their hours and their neighbours can be written from this copy. Their `place` rows still say how: inplace; the real record takes how: composed and their words when they are installed."
  ],
  "sheet": [
   1920,
@@ -299,6 +300,33 @@
      1020
     ]
    }
+  },
+  "training": {
+   "place": "training",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "15r",
+   "chosen": "2026-10-11",
+   "render": "ui2_training2a_view_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/training_1920.png"
+  },
+  "dojo": {
+   "place": "dojo",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "15r",
+   "chosen": "2026-10-11",
+   "render": "ui2_dojo2_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/dojo_1920.png"
+  },
+  "storehouse": {
+   "place": "storehouse",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "15r",
+   "chosen": "2026-10-11",
+   "render": "ui2_storehouse2b_doorview_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/storehouse_1920.png"
   }
  },
  "fixed": [
