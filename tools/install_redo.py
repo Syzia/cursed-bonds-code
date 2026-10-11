@@ -46,8 +46,10 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
        the boards: a floor drawn again has other boards, and a relight lays
        a window's grid of light across it. Such a point is refused only when
        the floor's outline and what stands on it moved (a wider window, on a
-       coarse edge map); otherwise it is a LOOK ("the floor is drawn
-       differently where people stand").
+       coarse edge map), or when the keep list's floor zone round it is
+       still the same drawing as the game's (then something stands there);
+       otherwise it is a LOOK ("the floor is drawn differently where people
+       stand").
   3. NOTHING VANISHED. Every `keep` and `doors` row of the room's keep list
      (tools/bgs/keep/<picture>.json), a 110 px box round every hotspot and
      the box round every foreground object must still be there. A thing

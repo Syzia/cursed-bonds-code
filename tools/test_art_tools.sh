@@ -15,6 +15,10 @@
 # and the last line is RESULT PASS or RESULT FAIL. Nothing touches the game:
 # every install goes into a scratch copy, and the last check is that no file
 # under game/ changed. No Ren'Py is started. About ten minutes in full.
+# The scratch copy is the tree as it was before the overhaul installed any
+# picture (what an install wrote is put back from git), so the suite reads
+# the same before and after batch 0; it needs a git checkout once a picture
+# is installed, and will not run where game/images is a symbolic link.
 #
 # Exit status 0 when nothing failed, 1 otherwise, 2 when the layout dump is
 # out of date ("run tools/smoke.sh u2_dump").

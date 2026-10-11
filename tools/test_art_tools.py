@@ -11,7 +11,12 @@ The tests of the art tools. Run it through tools/test_art_tools.sh.
 docs/UI2_DESIGN.md 5.4, 6.5, 10.2 (U0d2's acceptance). Nothing here touches
 the game: every install goes into a scratch copy of the tree (its .rpy files,
 its layout files and its pictures; no .rpyc), and the last check is that no
-file under game/ changed.
+file under game/ changed. The scratch copy is the tree as it was BEFORE the
+overhaul installed anything: whatever a real install has written (a picture,
+its foreground, its light row, a layout with for_rev, the manifest) is put
+back from git (before_overhaul), so the fixtures stand at revision 1 and the
+suite reads the same before and after batch 0. Where git cannot give a file,
+or a manifest row is of a kind the suite does not know, a line is SKIPPED.
 
   SYNTHETIC cases run anywhere the repository is: pictures made from the
   game's own by hand (shifted 12 px, enlarged 2%, recoloured, a thing rubbed
@@ -99,9 +104,128 @@ def game_status():
     return p.stdout.decode().strip()
 
 
+def _git(*args):
+    p = subprocess.run(["git", "-C", REPO] + list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return p.returncode, p.stdout
+
+
+_BEFORE = {}
+
+
+def before_overhaul():
+    """The suite's fixtures stand in the tree as it was BEFORE any picture of the overhaul was installed,
+    whatever is installed today: a test that installs the Common Room at revision 2, or expects a relight to be
+    refused because its day picture is not in the new look, must not change its answer on the day batch 0 goes
+    in. This says what to put back in a scratch copy:
+
+        {"files": {path under the tree: its bytes then, or None for a file that was not there},
+         "pictures": {stem: its `pictures` row of the campus record then, or None},
+         "places": {place: the committed layout dump of then (tools/art/game_layout.json), whose rows for that
+                    place stamp() lays into a test's dump: its points and slots as they were on the old picture},
+         "problems": [what could not be put back, in words]}
+
+    Read from git, never from the working files. A picture, a foreground and a light row are taken from the
+    parent of the commit in which the manifest (game/layout/pictures.json) first held their row, or from HEAD
+    when no commit holds it yet (an install not committed). A layout file that carries for_rev is taken from
+    its newest commit without for_rev. The manifest itself is taken away. With no manifest and no such file
+    (the tree today) nothing is put back and git is not asked."""
+    if _BEFORE:
+        return _BEFORE
+    out = {"files": {}, "pictures": {}, "places": {}, "problems": []}
+    _BEFORE.update(out)
+    lay_dir = os.path.join(REPO, "game", "layout")
+    man = check_campus.load_manifest(REPO).get("pictures") or {}
+    stamped = []
+    for n in sorted(os.listdir(lay_dir)):
+        if re.match(r"(hot|view|area|map)_\w+\.json$", n):
+            try:
+                if "for_rev" in json.load(open(os.path.join(lay_dir, n), encoding="utf-8")):
+                    stamped.append(n)
+            except ValueError:
+                pass
+    lights = [n for n in sorted(os.listdir(lay_dir)) if re.match(r"light_\w+\.json$", n)]
+    if not man and not stamped and not lights and not os.path.exists(os.path.join(lay_dir, "pictures.json")):
+        return out
+    if _git("rev-parse", "HEAD")[0] != 0:
+        out["problems"].append("pictures of the overhaul are installed in this tree and it is not a git checkout: the "
+                               "fixtures cannot be taken from before the overhaul")
+        return out
+
+    def show(commit, rel):
+        code, blob = _git("show", "%s:%s" % (commit, rel))
+        return blob if code == 0 else None
+
+    # the commit before each row arrived
+    mrel = "game/layout/pictures.json"
+    first = {}
+    code, log = _git("log", "--reverse", "--format=%H", "--", mrel)
+    for c in log.decode().split():
+        try:
+            rows = json.loads(show(c, mrel) or b"{}").get("pictures") or {}
+        except ValueError:
+            rows = {}
+        for k in rows:
+            first.setdefault(k, c + "^")
+    out["files"][mrel] = None
+    for n in lights:
+        out["files"]["game/layout/" + n] = show(first.get(n[:-5], "HEAD"), "game/layout/" + n)
+    record = {}
+    for k in sorted(man):
+        base = first.get(k, "HEAD")
+        if k.startswith("fg_"):
+            rel = "game/images/fg/%s.png" % k
+        elif k.startswith("light_"):
+            rel = "game/layout/%s.json" % k
+        elif isinstance(man[k], dict) and "kind" in man[k]:
+            rel = "game/images/bg/%s.png" % k
+            if base not in record:
+                try:
+                    record[base] = json.loads(show(base, "tools/bgs/campus.json") or b"{}").get("pictures") or {}
+                except ValueError:
+                    record[base] = {}
+            out["pictures"][k] = record[base].get(k)
+        else:
+            out["problems"].append("the manifest row %r is of a kind the suite's fixtures do not know how to put back "
+                                   "(tools/test_art_tools.py, before_overhaul)" % k)
+            continue
+        out["files"][rel] = show(base, rel)
+    dumps = {}
+
+    def dump_then(place):
+        base = first.get(place, "HEAD")
+        if base not in dumps:
+            try:
+                dumps[base] = json.loads(show(base, "tools/art/game_layout.json") or b"null")
+            except ValueError:
+                dumps[base] = None
+        if dumps[base] is None:
+            out["problems"].append("git has no layout dump at %s to give %s's points as they were" % (base[:10], place))
+        else:
+            out["places"][place] = dumps[base]
+
+    for place in sorted(set([k for k in man if isinstance(man[k], dict) and "kind" in man[k]]
+                            + [re.match(r"(hot|view)_(\w+)\.json$", n).group(2) for n in stamped if re.match(r"(hot|view)_", n)])):
+        dump_then(place)
+    for n in stamped:
+        rel = "game/layout/" + n
+        code, log = _git("log", "--format=%H", "--", rel)
+        found = None
+        for c in ["HEAD"] + log.decode().split():
+            blob = show(c, rel)
+            try:
+                if blob is not None and "for_rev" not in json.loads(blob):
+                    found = blob
+                    break
+            except ValueError:
+                continue
+        out["files"][rel] = found
+    return out
+
+
 def mkroot(path):
     """A scratch copy of the tree: the .rpy files, the layout files, the pictures (cloned, not copied, where the
-    disk can), the foreground outlines and the campus record. Never a .rpyc."""
+    disk can), the foreground outlines and the campus record. Never a .rpyc. What the overhaul has installed
+    is put back to what it was before (before_overhaul): the fixtures stand at revision 1."""
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(os.path.join(path, "game"))
@@ -110,13 +234,35 @@ def mkroot(path):
         if n.endswith(".rpy"):
             shutil.copyfile(os.path.join(REPO, "game", n), os.path.join(path, "game", n))
     for sub in ("layout", "images"):
-        src, dst = os.path.join(REPO, "game", sub), os.path.join(path, "game", sub)
-        if subprocess.run(["cp", "-cR", src, dst], stderr=subprocess.PIPE).returncode != 0:
+        # -L: a link is never copied as a link (an install into the copy would write through it)
+        src, dst = os.path.realpath(os.path.join(REPO, "game", sub)), os.path.join(path, "game", sub)
+        if subprocess.run(["cp", "-cRL", src, dst], stderr=subprocess.PIPE).returncode != 0:
             if os.path.exists(dst):
                 shutil.rmtree(dst)
             shutil.copytree(src, dst)
     shutil.copytree(os.path.join(REPO, "tools", "fg"), os.path.join(path, "tools", "fg"))
     shutil.copyfile(os.path.join(REPO, "tools", "bgs", "campus.json"), os.path.join(path, "tools", "bgs", "campus.json"))
+    then = before_overhaul()
+    for rel, blob in then["files"].items():
+        dst = os.path.join(path, *rel.split("/"))
+        if os.path.lexists(dst):
+            os.remove(dst)              # never written through: a cloned file is replaced, not opened
+        if blob is not None:
+            with open(dst, "wb") as f:
+                f.write(blob)
+    if then["pictures"]:
+        rp = os.path.join(path, "tools", "bgs", "campus.json")
+        text = open(rp, encoding="utf-8").read()
+        rec = json.loads(text)
+        for stem, row in then["pictures"].items():
+            if row is None:
+                rec.get("pictures", {}).pop(stem, None)
+            else:
+                rec.setdefault("pictures", {})[stem] = row
+        if rec != json.loads(text):     # a record that is the same is left byte for byte as it was
+            with open(rp, "w", encoding="utf-8") as f:
+                json.dump(rec, f, indent=1, ensure_ascii=False)
+                f.write("\n")
     return path
 
 
@@ -130,6 +276,19 @@ def stamp(dump_path, root, out=None, extra=None):
         # a test's world tables are laid over the dump's own, table by table; the rest of `world` stays
         extra["world"] = dict(d.get("world") or {}, **extra["world"])
     drop = extra.pop("__drop__", ())
+    # the scratch tree stands before the overhaul (before_overhaul): so does its dump, place by place
+    for place, then in before_overhaul()["places"].items():
+        for key, val in d.items():
+            if isinstance(val, dict) and isinstance(then.get(key), dict):
+                if place in then[key]:
+                    val[place] = then[key][place]
+                else:
+                    val.pop(place, None)
+            elif isinstance(val, list) and isinstance(then.get(key), list) and all(isinstance(v, str) for v in val + then[key]):
+                if place in val and place not in then[key]:
+                    val.remove(place)
+                elif place in then[key] and place not in val:
+                    val.append(place)
     d.update(extra)
     for key in drop:
         d.pop(key, None)
@@ -236,6 +395,9 @@ elif cmd == "inside":  # a thing drawn differently inside its outline: the box, 
     out = look(a); x, y, w, h = box
     part = out.crop((x + 3, y + 3, x + w - 3, y + h - 3)).transpose(Image.FLIP_TOP_BOTTOM)
     out.paste(Image.blend(part, Image.new("RGB", part.size, (236, 232, 222)), 0.45), (x + 3, y + 3))
+elif cmd == "bag":     # a flat dark thing set down (a bag, a mat): an ellipse with no pattern and no rim
+    out = look(a); x, y, w, h = box
+    ImageDraw.Draw(out).ellipse([x, y, x + w, y + h], fill=(34, 30, 36))
 elif cmd == "copy":
     out = a
 out.save(dst)
@@ -318,6 +480,13 @@ def group_layout(lab):
     ok("a dump with no `world` answers None (\"not known\") from asleep(), away() and districts(), whatever "
        "top-level keys of the old names it holds",
        (old.asleep("megumi", "Mon", "Night"), old.away("nobara", "Sun", "Afternoon"), old.districts()) == (None, None, None))
+    world = lay.d.get("world") or {}
+    nohome = game_layout.Layout(dict(lay.d, world=dict(world, asleep={"weekday": ["gojo", "megumi"], "weekend": []})))
+    ok("asleep() is the game's world_asleep: someone on the list who has no home (Gojo, were he on it) is asleep "
+       "nowhere, and Megumi beside him on the same list still is",
+       "gojo" not in (world.get("homes") or {}) and nohome.asleep("gojo", "Mon", "Night") is False
+       and nohome.asleep("megumi", "Mon", "Night") is True,
+       (nohome.asleep("gojo", "Mon", "Night"), nohome.asleep("megumi", "Mon", "Night")))
     test = game_layout.Layout(dict(lay.d, shapes={"courtyard": {"spot_vend": [[[1560, 640], [1640, 640], [1640, 740], [1560, 740]]]}},
                                    keep_tile={"courtyard": {"gateway": "a test"}}, shaped=["courtyard"]))
     got = test.shapes("courtyard")
@@ -748,6 +917,28 @@ def group_redo(lab):
        "(the wider window on the coarse drawing), where the same floor with nothing moved is only shown",
        v[0] == "REFUSED" and rc == 1
        and re.search(r"the floor where people stand \(a row of \d, at x \d+\) moved 12 px right \(the floor's edge and what stands round it\)", v[1]) is not None, out)
+
+    # and a floor that is NOT drawn again (review 2): a flat dark bag set down where the rows of three and four
+    # stand in the Cafeteria. It has too little fine edge for "something new is on the floor"; the standing
+    # points say it, because the keep list's floor zone still agrees with the game's everywhere else.
+    caf = os.path.join(root, "game", "images", "bg", "cafeteria.png")
+    credo = [tool("install_redo.py"), "cafeteria"]
+    rc, out = run(credo + [lab.syn("bag", caf, "syn_cafbag_a_00001_.png", "700,900,90,60"), "--dry"] + tail, py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    ok("a flat dark bag set down where people stand, on a floor that is otherwise the same drawing, is REFUSED by "
+       "the standing points (\"something stands there\"), not shown as a floor drawn differently",
+       v[0] == "REFUSED" and rc == 1
+       and "the floor where people stand (a row of 3, at x 760) no longer lines up with the picture in the game, on a "
+           "floor that is otherwise the same drawing: something stands there" in v[1]
+       and "drawn differently where people stand" not in v[1] and "moved" not in v[1], out)
+    rc, out = run(credo + [lab.syn("look", caf, "syn_caflook_a_00001_.png"), "--dry"] + tail, py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    ok("and the same Cafeteria with nothing set down passes", v[0] == "PASS" and rc == 0, out)
+    rc, out = run(credo + [os.path.join(lab.work, "syn_cafbag_a_00001_.png"), "--dry", "--keep", bare] + tail, py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    ok("with no keep list (no floor zone to say the floor is the same drawing) the bag is only shown: nothing is "
+       "known of that floor",
+       v[0] == "LOOK" and rc == 0 and "drawn differently where people stand" in v[1], out)
 
     # 3. the named addition on a hotspot's own object: the allow box wins over the automatic keep box, and over
     # nothing else
@@ -1902,8 +2093,9 @@ def group_real(lab, write=False):
         record["canary_shape"] = {"render": "look3_dorm_common_keep_00001_.png", "figures": fig}
     real_early(tail)
     for place, stem, hour in PAIRS:
-        day = os.path.join(REPO, "game", "images", "bg", stem + ".png")
-        pic = os.path.join(REPO, "game", "images", "bg", "%s_%s.png" % (stem, hour))
+        # the pairs the game had before the overhaul: read from the scratch copy, which stands there (mkroot)
+        day = os.path.join(root, "game", "images", "bg", stem + ".png")
+        pic = os.path.join(root, "game", "images", "bg", "%s_%s.png" % (stem, hour))
         rc, out = run([tool("install_redo.py"), place, pic, "--against", day] + tail, py=True)
         v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
         fig = (figures(out) or [{}])[0]
@@ -2028,6 +2220,10 @@ def main(argv):
         print(STALE)
         raise SystemExit(2)
     dump = os.path.abspath(dump)
+    for rel in ("game/images", "game/images/bg", "game/images/fg", "game/layout", "tools/fg", "tools/bgs"):
+        if os.path.islink(os.path.join(REPO, *rel.split("/"))):
+            raise SystemExit("%s is a symbolic link in this tree: the tests copy the tree and install into the copy, "
+                             "and will not run where a copy could write through a link" % rel)
     art = have_art_python()
     game_before = game_status()
     hash_before = tree_hash(REPO)
@@ -2036,6 +2232,8 @@ def main(argv):
     lab = Lab(work, dump, art)
     t0 = time.time()
     print("# test_art_tools: %s; ComfyUI's Python %s; scratch %s" % (", ".join(groups), "found" if art else "NOT found", work))
+    for why in before_overhaul()["problems"]:
+        skipped("the fixtures stand in the tree as it was before the overhaul", why)
     try:
         for g in groups:
             print("## %s" % g)

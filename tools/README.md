@@ -196,7 +196,10 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   crossed by a window's grid of light is a LOOK, both where people stand and
   as "something new on the floor" (but a standing point whose own window
   LOCKS on an offset has moved and is refused like any other point, and so
-  is one whose floor is drawn again while what stands on it slid); the named addition on a hotspot's own
+  is one whose floor is drawn again while what stands on it slid, and one
+  that no longer lines up on a floor the keep list's floor zone shows to be
+  the same drawing: "something stands there", a flat bag or a mat that has
+  too little fine edge for "something new is on the floor"); the named addition on a hotspot's own
   object does not make that object "gone"; a pale thing on a wall that became
   lighter is a LOOK ("fainter"). **A relight is read by eye beside its day
   picture for anything added** (a lamp, a blanket, a bench): it is never
@@ -212,7 +215,18 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   pass unseen: **look at every relight beside its day picture.**
   `tools/test_art_tools.sh` runs every picture the owner chose early that
   was redone in place or relit (76, to the records of 11 Oct): none may be
-  REFUSED. To try an install in a scratch copy of the tree, run THIS tree's
+  REFUSED. **The suite's fixtures are the tree as it was before the
+  overhaul installed anything**: whatever an install has written (a picture,
+  its foreground, its light row, a layout with `for_rev`, the manifest, the
+  place's rows of the dump) is put back from git in the scratch copy
+  (`before_overhaul()` in `tools/test_art_tools.py`), so the suite reads the
+  same before and after batch 0 (proved in a clone holding batch 0: every
+  line the same, but that the six lines on the two staged layouts become
+  two saying the installed files are the staged ones). A manifest row of a kind it does not
+  know how to put back (the first pose, say) is a SKIPPED line, which
+  `--strict` fails: teach `before_overhaul()` that kind then. It will not
+  run where `game/images`, `game/layout` or `tools/fg` is a symbolic link
+  (a copy would write through it). To try an install in a scratch copy of the tree, run THIS tree's
   tool with `--root <the copy>`; a copy that is not a git checkout keeps its
   approved render beside itself whichever tool is run.
 - **The stage preview.** `tools/py_art.sh tools/stage_preview.py <place>

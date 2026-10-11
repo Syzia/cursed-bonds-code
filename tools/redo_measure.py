@@ -34,8 +34,12 @@ enlarged 2% by hand read as moved everywhere):
               only no longer the same drawing (other boards, light across
               it) is held again in a wider window on a coarse edge map (the
               floor's outline, a table's legs; not the lines between
-              boards). Moved there, it is refused; otherwise it is shown
-              (LOOK). An OUTLINE (a foreground's, a traced shape's) is held
+              boards). Moved there, it is refused. Not moved, and lying in
+              an `empty` zone of the keep list (a floor) whose 160 px cells
+              still agree with the game's (the same drawing), it is refused
+              too: something stands there. Otherwise (a floor drawn again,
+              a relight, a room with no floor zone) it is shown (LOOK). An
+              OUTLINE (a foreground's, a traced shape's) is held
               at many points and said once, with its largest offset.
   VANISHED    inside a keep box: the agreement of the two edge maps (the
               best within 3 px) against the agreement of the picture's 24
@@ -425,6 +429,7 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
     change_boxes = [box_of(z) for z in change if z.get("box")]
     glass = glass_mask(windows)
     coarse = []                 # the coarse edge maps, made when first needed
+    same_cache = {}             # an empty zone's cells against the game's, measured once (_same_cells)
 
     def coarse_maps():
         if not coarse:
@@ -504,6 +509,13 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                 if far is not None:
                     refused.append("%s moved %s (the floor's edge and what stands round it)" % (p["name"], _way(*far)))
                     marks["moved"].append(box)
+                elif not relight and _floor_same(eo, en, empty, p["at"], same_cache):
+                    # The floor round the point is still the SAME drawing (the keep list's floor zone agrees
+                    # with the game's, cell by cell), and yet the point's own window agrees with nothing: a
+                    # thing was set down there. A flat bag or a mat has too little fine edge for step 4.
+                    refused.append("%s no longer lines up with the picture in the game, on a floor that is otherwise "
+                                   "the same drawing: something stands there" % p["name"])
+                    marks["added"].append(box)
                 else:
                     floor.append(p["name"])
                     marks["different"].append(box)
@@ -655,16 +667,14 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                 continue
             r, by = rise(fo, fn, mask, fgain)
             # one thing on a wide floor is lost in the floor's mean: a wide zone is judged cell by cell as well
-            hit, same = [], []
+            hit = []
             for cmask, cbox in cells(mask, box):
                 cr, cby = rise(fo, fn, cmask, fgain)
                 if cr >= CELL_RISE and cby >= CELL_ADD:
                     hit.append(cbox)
                 if cell_most is None or cr > cell_most[0]:
                     cell_most = (cr, cby, z["name"])
-                ca, cb = eo[cbox[1]:cbox[3], cbox[0]:cbox[2]], en[cbox[1]:cbox[3], cbox[0]:cbox[2]]
-                if ca.std() >= FLAT * 0.5:
-                    same.append(shift(ca, cb, search=SHIFT_POINT)[2])
+            same = _same_cells(eo, en, mask, box)
             # A floor DRAWN AGAIN (its boards run another way, sunlight lies on it) gains and loses fine edge
             # everywhere: "something new" cannot be read from its lines. It is shown, not refused; a thing set
             # down on a floor that is still the same drawing leaves the rest of it agreeing, and is refused.
@@ -744,6 +754,33 @@ def _auto_box(pt):
     """The box kept round a hotspot's point without being written down, as (x0, y0, x1, y1)."""
     h = AUTO_BOX // 2
     return (pt[0] - h, pt[1] - h, pt[0] - h + AUTO_BOX, pt[1] - h + AUTO_BOX)
+
+
+def _same_cells(eo, en, mask, box):
+    """How well each 160 px cell of a wide empty zone agrees with the game's picture: the measure by which a
+    floor is "drawn again" (few agree) or "the same drawing" (most do). [] for a zone judged whole only."""
+    same = []
+    for _cmask, cbox in cells(mask, box):
+        ca, cb = eo[cbox[1]:cbox[3], cbox[0]:cbox[2]], en[cbox[1]:cbox[3], cbox[0]:cbox[2]]
+        if ca.std() >= FLAT * 0.5:
+            same.append(shift(ca, cb, search=SHIFT_POINT)[2])
+    return same
+
+
+def _floor_same(eo, en, empty, pt, cache):
+    """Does a standing point lie in an `empty` zone of the keep list (a floor) that is still the same drawing
+    as the game's: at least REDRAWN_CELLS cells, whose middle agreement is REDRAWN or more? False where the
+    room has no such zone round the point: nothing is known of that floor, and it is only shown."""
+    for k, z in enumerate(empty):
+        mask, box = zone_mask(z)
+        if box is None or not (0 <= pt[1] < mask.shape[0] and 0 <= pt[0] < mask.shape[1]) or not mask[pt[1], pt[0]]:
+            continue
+        if k not in cache:
+            cache[k] = _same_cells(eo, en, mask, box)
+        same = cache[k]
+        if len(same) >= REDRAWN_CELLS and float(np.median(same)) >= REDRAWN:
+            return True
+    return False
 
 
 def _floor_moved(maps, pt, glass=None):

@@ -1288,6 +1288,39 @@ def cases():
          lambda d: None, {"area_heart": {"spots": {"classroom": [960, 500]}}})
     case("an area map that carries for_rev (the game's lint takes only spots there today)", "pin", "the file carries for_rev",
          lambda d: None, {"area_heart": {"spots": {}, "for_rev": 2}}, also=("file",))
+    # ---- review 2: every refusal that still had no line of its own. One apiece.
+    # 6.1: a composed picture's layout (for_rev) carries its floor and its scale; leaving one out is no way round
+    # the rules that read them
+    def composed(d):
+        hot(d)["for_rev"] = 2
+        d["view_courtyard"].update({"for_rev": 2, "scale": [1750, 340, 1030]})
+
+    case("a composed picture's layout (for_rev) with its floor and its scale passes", None, "", composed)
+    case("a composed picture's layout with no `floor`", "floor", "has no `floor`",
+         lambda d: (composed(d), d["view_courtyard"].pop("floor")))
+    case("a composed picture's layout with no `scale`", "scale", "has no `scale`",
+         lambda d: (composed(d), d["view_courtyard"].pop("scale")))
+    case("an area map with a pin for a room that has none (it is reached on foot)", "pin", "has no pin on the map",
+         lambda d: None, {"area_dorms": {"spots": {"yuji_room": [960, 500]}}})
+    case("a layout folder that carries pictures.json", "file", "the installer's alone",
+         lambda d: d.__setitem__("pictures", {"pictures": {}}))
+    case("a point that is not two numbers", "point", "its point is not two numbers",
+         lambda d: hot(d)["spots"].__setitem__("gateway", "here"), also=("file", "shape", "placed"))
+    case("the campus map with a marker for an area the game has not", "map", "is not an area of the game",
+         lambda d: None, {"map_campus": {"anchors": {"nowhere": [500, 500]}}}, also=("file",))
+    case("an area map for an area the game has not", "pin", "is not an area of the game",
+         lambda d: None, {"area_nowhere": {"spots": {}}}, also=("file", "campus"))
+    case("a hot_ file for a place the game has not", "file", "'nowhere' is not a place of the game",
+         lambda d: None, {"hot_nowhere": {"spots": {}}})
+    # 7.3, the three sentences of the game's own block that had no case
+    case("shape rule: a shape whose hotspot has no point", "shape", "its hotspot has no point",
+         lambda d: hot(d)["spots"].pop("straw_posts"), also=("placed",))
+    case("shape rule: keep_tile for an id that is no hotspot or exit of the place", "shape",
+         "keep_tile 'blackboard': no hotspot or exit of that id",
+         lambda d: hot(d).__setitem__("keep_tile", {"blackboard": "a test"}), also=("file",))
+    case("shape rule: keep_tile in a file that holds no shapes", "shape", "keep_tile means nothing in a file that holds no shapes",
+         lambda d: (hot(d).pop("shapes"), hot(d).__setitem__("keep_tile", {"gateway": "a test"}), d.pop("check_courtyard")),
+         also=("file",))
     return out
 
 
