@@ -4,7 +4,7 @@
   "Two files, one a room (art_10b.json: Megumi's; art_10c.json: the shared room), because twelve renders are more than one run should hold (plan 5.13). Each holds the room's evening, its Night with nobody up (`night`) and its Night with someone up (`lit`).",
   "A lit room is lit by what the room has (O62) with every lamp it has on (O48): Megumi's desk lamp; the shared room's paper floor lamp. Megumi's window faces west, so the evening sun comes straight in; the shared room's faces east onto the tower, which each sentence names so that it stays. No moon is in view in either window (O44).",
   "NOBODY is in any picture (K16: bedrooms); the beds and futons are said to be made and empty; the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root: nothing is written to chosen/ before the owner chooses.",
-  "The owner chose version A of each room (O63) and ran both files on 11 Oct 2026 (the renders are stamped 16:43 to 16:45); read the same day, see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O64)."
  ],
  "written": "2026-10-11",
  "rooms": {
@@ -149,5 +149,45 @@
   "senpai_room_lit_a": "PICK. The paper floor lamp is the only light, a soft warm pool round it; the rest in soft shadow; nothing added. Mean 74.",
   "senpai_room_lit_b": "The same, but the whole room is lighter than one lamp would make it (mean 87).",
   "put_to_the_owner": "Megumi's room: evening B, night B, lamp on B. The shared room: evening B, night A, lamp on A."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The picks as put: Megumi's room evening B, night B, lamp-on B; the shared room evening B, night A, lamp-on A.",
+  "megumi_room_evening": {
+   "render": "ui2_megumi_room_evening_b_00001_.png",
+   "sha256": "a5aa26381c43fc6292aadf702632fb4f4c571d62422b6dac678ba6ce14c28306",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/megumi_room_evening_1920.png",
+   "fit_sha256": "97d6dd822ed6cc14e182bf578dc7696c29c02909f35cfc99b2ab9ff169f0e3c8"
+  },
+  "megumi_room_night": {
+   "render": "ui2_megumi_room_night_b_00001_.png",
+   "sha256": "64e71a0a03f95cc64ef3e624c3518ac9aaf7539c66fd7ca2ef3d416ccfe39cfb",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/megumi_room_night_1920.png",
+   "fit_sha256": "a4cca5fe53c5a51534f2f5d4089d47ed7a5aeef620dabbf300849d667ad4ad9e"
+  },
+  "megumi_room_lit": {
+   "render": "ui2_megumi_room_lit_b_00001_.png",
+   "sha256": "408943cf981cc4f4607590b7a72473feceb04a9402f40a268da072ab12ac1673",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/megumi_room_lit_1920.png",
+   "fit_sha256": "871a30197fa1755635f3c8240a3a5e2551d4ab836eafe19862528bf8dec99755"
+  },
+  "senpai_room_evening": {
+   "render": "ui2_senpai_room_evening_b_00001_.png",
+   "sha256": "1fbb56c475718f004367b02b98497f24bb99d29f5bca67fd17a7b8ebcc9e91c5",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/senpai_room_evening_1920.png",
+   "fit_sha256": "2201b865bceb97f5afd91f269e285607f75f84e0fd5aa75ad5424ab70249c8ae"
+  },
+  "senpai_room_night": {
+   "render": "ui2_senpai_room_night_a_00001_.png",
+   "sha256": "9628c45d81d21f1e3f452c40a7e19357466bdf1c9982fdb5a88d1a2524b38138",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/senpai_room_night_1920.png",
+   "fit_sha256": "94ce1bb0d616cda38288cb8a0b4452de0a631f6860631df2a959cda7d35cadf4"
+  },
+  "senpai_room_lit": {
+   "render": "ui2_senpai_room_lit_a_00001_.png",
+   "sha256": "49cf2684c322057bf80acbbc3711d8dcc9ee2289d8de377ed564f3a592ae2534",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/senpai_room_lit_1920.png",
+   "fit_sha256": "53fdff4d825d9a88423eaab671a8ee93e88f47eb3b7292973c3678dd1156ace8"
+  }
  }
 }
