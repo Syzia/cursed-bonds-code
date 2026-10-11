@@ -970,12 +970,14 @@
       {
        "place": "forest",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: low golden sunlight comes from straight ahead, between the trunks at the far end of the trail, and the long shadows of the trunks fall toward me across the clearing; the sun itself is hidden behind the trunks, and the small pieces of sky high between the crowns are warm orange and pink. Everything in the picture is still there: every tree, the root at the foot of the great tree, the stone markers and the trail. Add no new light."
       },
       {
        "place": "forest",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: the small pieces of sky high between the crowns are deep blue with stars; the moon itself is not in view. Cool blue moonlight falls through the crowns and lies on the ground in pale patches where the sunlight lay by day; between them the forest is dark, but every trunk, the root at the foot of the great tree, the stone markers and the trail can still be seen clearly. Nothing here gives light of its own. Everything in the picture is still there. Add no bench, sign, lamp or light that is not in the picture now."
       },
       {
        "place": "riverside",
