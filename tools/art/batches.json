@@ -535,17 +535,19 @@
       {
        "place": "yuji_room",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: outside the window the sky is orange and pink and the garden lies in low warm light, and everything that stands outside is still there: the timber rail of the gallery, the pond below and the white-plastered house with its flower boxes across the garden. Soft warm light comes in through the window and lies on the floor with long soft shadows. The television is off and no lamp is lit. Add no new lamp, no new light and no new window."
       },
       {
        "place": "yuji_room",
        "kind": "relight",
        "hour": "night",
-       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+       "hour_words": "Change the time of day to night, with the television switched on and nothing else lit. The television's screen shows a still picture of a starry sky over dark hills, with no lettering on it, and its cool light falls on the floor cushion in front of it, on the floor round it and on the shelf beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, the posters and the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the timber rail of the gallery, the pond below and the white-plastered house across the garden, with a few of its upstairs windows glowing warm. Add no lamp and no other light."
       }
      ]
     }
-   ]
+   ],
+   "note": "Yuji's room: the row marked night is the room with him up (5.7a's `lit`): the room has no lamp, so it is lit by its television. Its dark night, batch 47's, was made early with it; that sentence is in tools/art/staged/early/art_9c_early.json."
   },
   {
    "id": "10",
