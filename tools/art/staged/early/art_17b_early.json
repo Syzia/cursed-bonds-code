@@ -4,7 +4,8 @@
   "The four hour pictures are relit from the chosen day pictures (the 1920 px fits, laid into the scratch root as the installed files would be). The sun and the moon stand where the chosen Mountain Path has them (its evening has the sun setting on the left; its night has a full moon high and right of the middle): the ridge looks the same way. The Riverside's sky is a small piece at the upper left, under the place's name, so its night says the moon is not in view (O44: full, or none in view).",
   "The ridge's night says the dome is a black shape against the stars, that no star shows through it and that nothing is seen inside it; and that no light shows in the valley, which the story calls empty. It is the picture of Gojo's night and one of the three mock-ups of the main menu (5.10).",
   "The Forest Trail's row is ONE named change on the chosen render, the tool's keep-everything prompt with the change as its own sentence (as in art_15s.json): the sawn plank becomes a root of the tree. The owner chose that version for its trail, having been told of the plank, and did not ask for this: it is offered, to take or leave. If taken, only the seat is placed onto the chosen picture by a script (Method note 34), and the forest's evening and night are made after it; if left, they are made from the picture as chosen.",
-  "Not in this file: the forest's evening and night, and the strong veil picture (bg ridge_veil) made from the new ridge."
+  "Not in this file: the forest's evening and night, and the strong veil picture (bg ridge_veil) made from the new ridge.",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:12) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -101,5 +102,42 @@
   }
  ],
  "workflow_sha256": "93f4da6a5028bfa3e67aae8e616c97082098a927401fedd91b83249c3b2de8e5",
- "cost": "10 renders, about $1.60"
+ "cost": "10 renders, about $1.60",
+ "renders_sha256": {
+  "ui2_forest2a_seat_a_00001_.png": "a123fa456e4dd74e401d75b5f706d0a84de83ea4059e3345c0603748cc62a9df",
+  "ui2_forest2a_seat_b_00001_.png": "92c0aca8cdc4fda589262f7194f99704656822c13228bb219128a7205aa3d211",
+  "ui2_riverside_evening_a_00001_.png": "898ca1baa1a33e68fcee0641a64ffdb9ac2c518e7e133ad9f2ff1e6e4f7317da",
+  "ui2_riverside_evening_b_00001_.png": "bcd50c52b6d28b1c275b88b5ee79ec88dd35207802979cf08f8902ed6057dd33",
+  "ui2_riverside_night_a_00001_.png": "42ec0c84350239c82fac8d4cf2c2b1853c85caa90a7623b6345c99bc750205e9",
+  "ui2_riverside_night_b_00001_.png": "bcf8561dfd5c7062404ac684f9fd0a42abd678bdb57deb5bd1a40bdc525c061e",
+  "ui2_ridge_evening_a_00001_.png": "4520751982791144f6ae9756d9389b168a4ed4d79041e081864015b5d0d07a18",
+  "ui2_ridge_evening_b_00001_.png": "bad7ce1cdff1d997def9591b550ce3d2385123bcbd6f9e133129ef0960a54642",
+  "ui2_ridge_night_a_00001_.png": "1f1a053ef6aa3fea8c69e294dce0888c0bfa9c4de0f50167eadab59e7424c6a4",
+  "ui2_ridge_night_b_00001_.png": "755c015a1eeaf329936cc1454c83afcc8047c96d18b7ef8423330294846bc7e2"
+ },
+ "placed_by_tool": {
+  "script": "tools/art/staged/early/forest_seat_17b.py",
+  "from": "ui2_forest2a_seat_a_00001_.png onto ui2_forest2_a_00001_.png",
+  "result": "ui2_forest2a_root_00001_.png",
+  "sha256": "91fd80e7c9a7d92b8a9b69e9cd473c797b1e79fed8414ac9c934fe2aaa3b59a7",
+  "patch": "x 531 to 988, y 856 to 1091 of 2752 x 1536 (1.96% of the picture); every pixel outside it is the chosen render's own (asserted by the script)",
+  "why": "each repaint also redrew the rest of the picture a little (about 3% of it differs strongly from the chosen render, all over), so only the seat is taken (Method note 34)"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "The four relit pairs through install_redo.py --relight <place> <hour> <a> <b> --dry --against the chosen day picture, with the scratch record; then each by eye against its day picture for anything added, moved or recoloured; brightness and sky colour beside the eight outdoor nights and six outdoor evenings already chosen. The seat by eye, and by a difference from the chosen render. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_ridge_hours.jpg, compare_riverside_hours.jpg, compare_forest_seat.jpg.",
+  "install_redo_dry": "Riverside evening A and B PASS; Riverside night A and B PASS; ridge evening A and B PASS (no point off by a pixel in any of the eight); ridge night A and B LOOK, for the top row of the sky drawn differently, which is the moon and the stars that were asked for.",
+  "ridge_evening_b": "PICK. An orange and pink sunset sky like the chosen evenings (sky median 222, 145, 129 against 216 to 240, 126 to 157, 99 to 131), the sun low on the left, long shadows to the right. The dome stays dark, with the sunset reflected on its left side as a glossy black thing would show it; nothing is inside it. Nothing added or moved.",
+  "ridge_evening_a": "Not offered as the pick: the dome has turned bronze all over and the forested valley rust-coloured, as if in autumn; the top of the sky is still blue.",
+  "ridge_night_a": "PICK. A deep blue sky with stars (sky median 22, 52, 111: among the chosen nights, 23 to 43, 53 to 78, 100 to 153) and one full moon, round and whole, right of the middle and clear of the right ninth (about (1362, 114) of 1920). The dome is a black shape against the stars with a thin rim of moonlight on its right; no star shows through it and nothing is inside it. The streamers are pale; no light shows in the valley. Whole-picture mean 70 (the chosen outdoor nights are 64 to 90).",
+  "ridge_night_b": "Good, with more stars; its sky is darker and greyer than any night chosen so far (sky median 20, 33, 73), so it would not sit with the others.",
+  "riverside_evening_a": "PICK. Warm orange and pink over the mountains, the waterfall and the pool catching the light; as bright as the Mountain Path's evening (mean 101 against 100). Nothing added or moved.",
+  "riverside_evening_b": "Good, later and more purple, and darker (mean 92).",
+  "riverside_night_a": "PICK. Moonlit, stars over the mountains, no moon in view as asked; the waterfall pale, the pool blue, nothing lit. Nothing added or moved.",
+  "riverside_night_b": "The same picture with the waterfall and the pool a little brighter, which begins to read as a light of their own.",
+  "forest2a_seat_a": "PICK, placed by tool. The plank is gone; a thick rounded root of the tree fills its place, smooth on top, low enough to sit on, its bark running on from the tree's own. Placed onto the chosen render as ui2_forest2a_root: no seam shows.",
+  "forest2a_seat_b": "Good too, flatter, but its top shows rings and a split face like a half log, which reads a little as cut timber again.",
+  "said_to_the_owner": "In the ridge's evening B the dome is dark with the sunset on its left side, not pure black; it can be darkened by tool, the dome alone, if wanted.",
+  "put_to_the_owner": "The ridge: evening B, night A. The Riverside: evening A, night A. The Forest Trail: take the root (repaint A, placed)."
+ }
 }
