@@ -4,7 +4,7 @@
   "Three pictures (5.7a): the evening; the Night with nobody up (`night`: every light and the television off, moonlight through the window); and the Night with him up (`lit`). The chosen room shows no lamp and none is added, so that the room is the same room at every hour: the lit picture is lit by its television, which is in the picture, as pose row 17 has him on weekday Nights (\"on the floor in front of a paused film\"). 5.7a says a friend who is up has \"one small lamp\" on; here the television is that lamp, and the owner is told so. The screen shows a still with no lettering and nobody on it.",
   "What stands outside the window is named in every sentence (the gallery's rail, the pond, the girls' dormitory), and at Night that house has a few upstairs windows lit, as the garden's chosen night has (O43). The sky in the window is a small piece, so no moon is in view (O44).",
   "NOBODY is in any picture (K16: a bedroom); the bed is said to be made and empty; the prompt check was run for the place by name.",
-  "Run by the owner on 11 Oct 2026 (the renders are stamped 16:24) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O62)."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -81,5 +81,29 @@
   "yuji_room_lit_a": "PICK. The television is the only light: its screen shows a starry sky over dark hills with no lettering, and its cool light lies on the cushion and the floor before it; the rest in soft shadow, everything still plain. No lamp added. Outside as at night. Nobody; the bed made and empty.",
   "yuji_room_lit_b": "The same, but the whole room is lighter and warmer than one screen would make it (mean 76 against A's 70).",
   "put_to_the_owner": "Evening B; night with the lights off, B; night with the television on, A."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The picks as put: evening B; night with the lights off, B; night with the television on, A.",
+  "yuji_room_evening": {
+   "render": "ui2_yuji_room_evening_b_00001_.png",
+   "sha256": "d5223c471db6e4d1df56d53c903d8e38283724c4eac04bb040610888ccde934f",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/yuji_room_evening_1920.png",
+   "fit_sha256": "22e5fcf435460a2c91a964d9a2085ee58d748c9f35beebf67c429b1dffc089ee"
+  },
+  "yuji_room_night": {
+   "render": "ui2_yuji_room_night_b_00001_.png",
+   "sha256": "e0e937fb509082771524fd751d42c9734a7e8edd7f63e9e6652c94fb920d68d1",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/yuji_room_night_1920.png",
+   "fit_sha256": "b170a92c1af289231315bf52edd253b6865f7d42e2db483970a5c93869e85a7b",
+   "is": "`bg yuji_room night`: the room with nobody up (5.7a). In the plan this picture is batch 47's; it was made early with the others."
+  },
+  "yuji_room_lit": {
+   "render": "ui2_yuji_room_lit_a_00001_.png",
+   "sha256": "1f8f4568a0b8f29e32efa8fd41c5bc9aa7459d07d3a1891ae6252ae9557871ed",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/yuji_room_lit_1920.png",
+   "fit_sha256": "dae09a9710eba759875c2c774543092adc2392a9ac20cf0466f3ca80b381e412",
+   "is": "`bg yuji_room lit`: the room with him up (5.7a). In the sittings table it is the row of batch 9, file b, marked night, whose sentence was a small lamp's; the room has no lamp, so it is the television's."
+  }
  }
 }
