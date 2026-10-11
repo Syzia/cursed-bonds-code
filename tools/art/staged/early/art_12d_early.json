@@ -1,0 +1,58 @@
+{
+ "about": [
+  "Sitting 12b, written early by hand on 11 Oct 2026, straight after the owner chose the three rooms (O53): the evening of Gojo's office, the Principal's Office and Utahime's office, each relit from its chosen day picture (fitted, in the scratch root) by the tool's own relight prompt with the sentences below, from tools/art/staged/early/campus_for_batch3.json. All three are shut at Night (4.1) and have no night picture.",
+  "A lit room has all its lamps on (O48): the hall's candles all burn; each office has every lamp on. Every sentence says that what stands outside is still there.",
+  "The three sentences go into tools/art/batches.json with the art tools' tests, next."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "gojo_office_evening": "Change the time of day to early evening: outside the open door and the windows the sky is orange and pink and the yard lies in low warm light with long shadows, and everything that stands outside is still there. Inside, the hanging paper lamp is switched on and fills the room with warm light; the television stays off. Add no new lamp and no new window.",
+  "office_evening": "Change the time of day to evening: outside the open doors the sky is dusk blue with a last band of orange, and everything that stands outside is still there. The hall is lit by its candles, every one of them burning, which make warm pools of light and deep soft shadows. Add no new light.",
+  "utahime_office_evening": "Change the time of day to early evening: outside the open door and the round window the sky is orange and pink and the yard lies in low warm light, and everything that stands outside is still there; the paper screens glow with the last daylight. Inside, every lamp in the room is switched on and gives a warm light over the desk. Add no new lamp and no new window."
+ },
+ "rows": [
+  {
+   "label": "Gojo's Office, evening",
+   "kind": "relight",
+   "place": "gojo_office",
+   "saves": [
+    "ui2_gojo_office_evening_a",
+    "ui2_gojo_office_evening_b"
+   ],
+   "seeds": [
+    10812,
+    10813
+   ],
+   "prompt_sha256": "491521516c46dd401b66637eeb82a5090918a9c53217f26a9fbbd5e55ed417ea"
+  },
+  {
+   "label": "Principal's Office, evening",
+   "kind": "relight",
+   "place": "office",
+   "saves": [
+    "ui2_office_evening_a",
+    "ui2_office_evening_b"
+   ],
+   "seeds": [
+    9058,
+    9059
+   ],
+   "prompt_sha256": "d40c43fd08ffae02fc23e90f1e954562ae6f8a49893462ad67fd67b74b28ff14"
+  },
+  {
+   "label": "Utahime's Office, evening",
+   "kind": "relight",
+   "place": "utahime_office",
+   "saves": [
+    "ui2_utahime_office_evening_a",
+    "ui2_utahime_office_evening_b"
+   ],
+   "seeds": [
+    7870,
+    7871
+   ],
+   "prompt_sha256": "e8a98bf7119eb0935555d64465bc6b8ebb7945ff85f3a36d690e9cfc3ac09547"
+  }
+ ],
+ "workflow_sha256": "0812aaea302379b0d8b404d05dfa22846809588c0734bfd76100a911933720d4"
+}
