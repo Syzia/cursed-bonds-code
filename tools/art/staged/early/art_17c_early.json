@@ -5,7 +5,8 @@
   "bg ridge_veil is what the game shows when I look up at the veil with a sorcerer's sight: the tour (ch2_tour.rpy:144, \"Above us, where the ridge flattens out, the air is wrong\"), the daily look (sb_world.rpy, sb_do_veil: \"I look up past the rope markers\") and the memory \"The Veil on the Ridge\". Today it is the old ridge under a violet ellipse 1,100 px wide (bg_placeholders.rpy). The plan (5.3, batch 18b) made it \"from the new ridge by the same edit, stronger\", written when the veil was to be added to a picture that had none. The chosen ridge has the dome in it, so the picture is made two ways for the owner to choose between.",
   "THE SAME VIEW: one named change on the chosen ridge render (the tool's keep-everything prompt with the change as its own sentence): the dome darker than glass with a thin violet rim, the air close round it dimmer and violet, the grass under it grey; nothing else changes, so a person standing on the ridge stands in the same place in both pictures. If chosen it is placed by tool, as the forest's seat was. THE CLOSER LOOK: composed from words with the chosen ridge as its one reference: from the rope, looking up, the dome about a sixth of the picture wide (the owner's ruling O36: it should not feel too big).",
   "Nothing is ever shown inside the dome (plan 0: the body is never shown; every sentence here says so).",
-  "The game tints bg ridge_veil for the hour today (veil_bg in sb_world.rpy). Whether it should have a painted evening and night of its own is a question for the sitting that installs it."
+  "The game tints bg ridge_veil for the hour today (veil_bg in sb_world.rpy). Whether it should have a painted evening and night of its own is a question for the sitting that installs it.",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:31) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -86,5 +87,30 @@
   }
  ],
  "workflow_sha256": "b68bafb74e1665a582eebc4650553d4f5b1846e417598f96d029d628bf3a5e21",
- "cost": "8 renders, about $1.28"
+ "cost": "8 renders, about $1.28",
+ "renders_sha256": {
+  "ui2_forest_evening_a_00001_.png": "6fb84cbda71232f1f59ac2d1478048929707b0c696f6e17f09473293c03b6d4f",
+  "ui2_forest_evening_b_00001_.png": "1679add89d86597a92a8a38f5656aa224c117077f1927d05e4e014321916eb28",
+  "ui2_forest_night_a_00001_.png": "dd67f3ec83fa9c64df23b3174fc3547a9008cbc387a643b13f9c14d5715bfc37",
+  "ui2_forest_night_b_00001_.png": "73d328b1c718d23a3faf9ce304f94c92d5087a36c7f36b5f80e107089dd81033",
+  "ui2_ridge_veil_a_00001_.png": "45fa239d089ffc608f727bf01896a89353008fcc3109c997b59a12bd870fd27c",
+  "ui2_ridge_veil_b_00001_.png": "0850f745b6a70e11119243bb4aa1313ba1b84f5fc927de9ed4e2670ea4c067ef",
+  "ui2_ridge_veil2_a_00001_.png": "eca24a44030269265e265282a3b0524a896c9662a9b856fe2e5b3b7ec30dddba",
+  "ui2_ridge_veil2_b_00001_.png": "09de030ac2ce1e5bef02a8961d5d8675a9074a0d96342861343b9f27e4b78d0f"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "The forest's two pairs through install_redo.py --relight forest <hour> <a> <b> --dry --against the chosen day picture with the root; then by eye against it; brightness beside the hours already chosen. The veil pictures by eye, each against its checklist; the same-view pair also by a difference from the chosen ridge render. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_veil.jpg, compare_forest_hours.jpg.",
+  "install_redo_dry": "Forest evening A and B PASS; forest night A and B PASS (no point off by a pixel in any of the four).",
+  "forest_evening_a": "PICK. The low sun glows at the far end of the trail between the trunks, the pieces of sky between the crowns are pink and orange, the trunks are warm; the root, the markers and the trail are unchanged. Mean 82.",
+  "forest_evening_b": "The same picture with a softer glow (mean 84). The shadows on the clearing lie as by day in both: the sentence asked for them to fall toward me, and the editor kept the day's.",
+  "forest_night_a": "PICK. Deep blue, moonlight in pale patches where the sunlight lay, stars in the pieces of sky, no moon in view; every trunk, the root, the markers and the trail can be seen. Mean 69, as the chosen outdoor nights (64 to 90).",
+  "forest_night_b": "The same, a little darker (mean 66), with one brighter patch of sky at the upper right that begins to read as the moon behind the crowns.",
+  "ridge_veil2_a": "PICK. From the rope: the rope with its four streamers hangs across the picture between its pair of posts (the right one at about x 1476 of 1920, clear of the right ninth); beyond it the path climbs the rise to the dome, about a ninth of the picture wide (a sixth was asked), violet-black with a violet rim; the sky round it is dark violet and the grass on the top of the rise grey; far mountains low at both sides; no building. It is the sentence of the script, \"I look up past the rope markers\", and where the tour stops (\"as far as a rope strung between two posts\"). The dome keeps one glossy highlight, though none was asked. Nothing is inside it.",
+  "ridge_veil2_b": "Good too, lighter and gentler: the dark about the dome is fainter and the posts stand closer together.",
+  "ridge_veil_a": "The same view: the dome darker with a violet rim, a dark violet column in the sky above it and the whole rise turned grey. It reads a little as smoke. About 10% of the picture differs strongly from the chosen ridge, so it would be placed by tool if chosen.",
+  "ridge_veil_b": "The same view: the dome darker with a violet rim and a rounder dark patch about it; the grass grey only at the top of the rise. The tidier of the two; about 6.5% differs strongly, to be placed by tool if chosen.",
+  "said_to_the_owner": "The look from the rope is the stronger picture and is where both scenes that use it stand; the same view is subtle. The dome from the rope came out about a ninth of the picture wide and keeps a glossy highlight.",
+  "put_to_the_owner": "The look at the veil: from the rope, version A. The Forest Trail: evening A, night A."
+ }
 }
