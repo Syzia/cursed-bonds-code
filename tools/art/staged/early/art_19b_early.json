@@ -1,0 +1,48 @@
+{
+ "about": [
+  "Sitting 19b: the Onsen's rest hall in the evening and at night, written early by hand on 11 Oct 2026, straight after the owner chose the rest hall and the sauna (O58), and handed over unasked. Relit from the chosen rest hall (the 1920 px fit, laid into the scratch root). The sauna has one picture for every hour (5.7).",
+  "The chosen hall shows no lamp, so the evening is lit by the sunset through the open end and the entrance, and the sentence forbids a new lamp. At Night nobody is up there (the students are at home; the soak is shut), so every light is off and the hall is lit by moonlight (O38, D61), the fridge's glass dark with the rest; the sky through the openings is a small piece, so no moon is in view (O44). What stands outside is named in both sentences, so that it stays (Method note 30).",
+  "Nobody is in either picture and the spring is empty (K16); the prompt check was run for the place by name."
+ ],
+ "written": "2026-10-11",
+ "made_from": {
+  "fit": "~/Desktop/JJK Game images/ui2/early/chosen/bathhouse_1920.png",
+  "fit_sha256": "a4214d36c123565cabc873edb3826ffdfb6510e2fd22aa326489adaab1962e0e"
+ },
+ "sentences": {
+  "bathhouse_evening": "Change the time of day to early evening: through the open end of the hall and through the entrance the sky is orange and pink, and the low warm light of the sunset comes in and lies across the floor with long soft shadows. The spring outside steams in the warm light, still and quite empty, and everything that stands outside is still there: the stones round the spring, the fence of wooden planks, the cedars and the mountain slope above it, and outside the entrance the stone basin, the path and the cedars. No lamp is lit in the hall, and the fridge is as it is by day. Add no new lamp, no new light and no new window.",
+  "bathhouse_night": "Change the time of day to night, with every light in the hall switched off; the glass front of the fridge is dark too. Outside the open end of the hall and outside the entrance it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the stones round the spring, the fence of wooden planks, the cedars and the mountain slope above it, and outside the entrance the stone basin, the path and the cedars. The spring still steams, pale in the moonlight, still and quite empty. The hall is lit only by cool blue moonlight coming in through its open end and its entrance, which lies in pale patches on the floor. The hall is dim, but everything in it can still be seen clearly. Add no new light."
+ },
+ "rows": [
+  {
+   "label": "Onsen, evening",
+   "kind": "relight",
+   "place": "bathhouse",
+   "saves": [
+    "ui2_bathhouse_evening_a",
+    "ui2_bathhouse_evening_b"
+   ],
+   "seeds": [
+    3612,
+    3613
+   ],
+   "prompt_sha256": "4a39761b5242a9ac9c5d855b7ab08580c92c6a3bbfc0adbb0d25f314cedbfa06"
+  },
+  {
+   "label": "Onsen, night, every light off",
+   "kind": "relight",
+   "place": "bathhouse",
+   "saves": [
+    "ui2_bathhouse_night_a",
+    "ui2_bathhouse_night_b"
+   ],
+   "seeds": [
+    4690,
+    4691
+   ],
+   "prompt_sha256": "2420f62c065a63faa7c9da061481757a693d4b3603b389a9026b8b587dc5d0d1"
+  }
+ ],
+ "workflow_sha256": "061fce9a6c4f7dfa63ad3c1791e20fec974e37bc3efe03e63507140f48612abc",
+ "cost": "4 renders, about $0.64"
+}
