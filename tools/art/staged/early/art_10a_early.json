@@ -4,7 +4,8 @@
   "Both are upstairs in the boys' dormitory, off the chosen corridor, where I look north (My Room's side window faces north). Megumi's is on the left, the west side: its window shows the cedar forest and no gallery (the record's line). The shared room is on the garden side: its window looks over the gallery's rail to the tall wooden tower beyond the Common Room's roof (the record's line, the tower). In each picture the door is in the left wall near me and the window in the right wall.",
   "Megumi's desk has a small lamp and the shared room a paper floor lamp, both switched off by day: each is the light of its room's lit picture later (5.7a; O62: a lit room is lit by what the room has).",
   "References: the boys' house from outside and Yuji's chosen room as 'the same house inside', with the garden as a third picture for the tower. Yuji's posters are named as not to be copied.",
-  "NOBODY is in either picture (K16: bedrooms); the beds are said to be made, with nothing lying on them. NOTHING carries lettering (O60): it is said of the book spines, of the shogi pieces (which carry characters on a real board) and of the whole picture. The stage sentence says the right edge is plain wall painted to the picture's edge, not that it is left free (Method note 37)."
+  "NOBODY is in either picture (K16: bedrooms); the beds are said to be made, with nothing lying on them. NOTHING carries lettering (O60): it is said of the book spines, of the shogi pieces (which carry characters on a real board) and of the whole picture. The stage sentence says the right edge is plain wall painted to the picture's edge, not that it is left free (Method note 37).",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 16:33) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "refs": {
@@ -52,5 +53,20 @@
   }
  ],
  "workflow_sha256": "fdfa9a28b0927c4207d91b5a9f1e79326eb265c67c3c9d0cbe23575ca4c848e8",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_megumi_room_a_00001_.png": "d0b595326c5a78854df914cd93d9c939f1a7a3690434184888ae61620aacea9c",
+  "ui2_megumi_room_b_00001_.png": "45a2da0c0ceb8e0d0b8987d843fffa70ff6e655a3351e0b662ad495cebc6ea6d",
+  "ui2_senpai_room_a_00001_.png": "54d512600528fd98b17bca2c21569819da45bba6f1d94cd1543a793a8715623d",
+  "ui2_senpai_room_b_00001_.png": "32c506c67f1b81dbb2506001b0f7114fcec58474e4e1dee020243398f530018f"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye, each against its checklist; the bookshelf and the shogi board at the render's own size for lettering; each render's darkest and brightest columns measured for a blank band (none). Sheet: ~/Desktop/JJK Game images/ui2/early/compare_boys_rooms.jpg.",
+  "megumi_room_a": "PICK. Nobody. The door in the left wall near me with a neat row of shoes by it; the bed beyond, made square under a dark blanket; a full bookshelf against the far wall with a desk, a chair, a small lamp and a closed book before it, right of the middle (to about x 1304 of 1920); the window in the right wall shows cedar trunks and forest and nothing else. No lettering on any spine; no posters; painted to its edges.",
+  "megumi_room_b": "Good, and roomier; its bed is a low one against the far wall. Not the pick: its window shows the gallery's rail and roof, copied from the reference room, and the gallery is on the garden side of the house, not on his.",
+  "senpai_room_a": "PICK. Nobody. Straw mats; the door in the left wall near me; a very large thick futon at the far left and a small neat one at the right, both made and empty; the shogi board between them with plain wooden pieces and a cushion each side; a paper floor lamp and a chest at the far wall; a wide window in the right wall with the gallery's rail, a tiled roof and the tall wooden tower beyond. No lettering anywhere.",
+  "senpai_room_b": "Good too, a longer and narrower room; its large futon is hardly larger than the small one, and its view of the tower is smaller.",
+  "put_to_the_owner": "Megumi's room A; Panda and Toge's room A; with art_10b.json and art_10c.json, their evenings and nights, already written from those two."
+ }
 }

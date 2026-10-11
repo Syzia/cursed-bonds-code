@@ -1,0 +1,120 @@
+{
+ "about": [
+  "Megumi's room and the shared room after dark: sitting 10b and the two rooms' share of batch 47, written early by hand on 11 Oct 2026 on reading sitting 10a, BEFORE the owner chose, on the picks put to them (version A of each), and handed over with those picks. If the owner chooses otherwise these files are not run and are written again.",
+  "Two files, one a room (art_10b.json: Megumi's; art_10c.json: the shared room), because twelve renders are more than one run should hold (plan 5.13). Each holds the room's evening, its Night with nobody up (`night`) and its Night with someone up (`lit`).",
+  "A lit room is lit by what the room has (O62) with every lamp it has on (O48): Megumi's desk lamp; the shared room's paper floor lamp. Megumi's window faces west, so the evening sun comes straight in; the shared room's faces east onto the tower, which each sentence names so that it stays. No moon is in view in either window (O44).",
+  "NOBODY is in any picture (K16: bedrooms); the beds and futons are said to be made and empty; the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root: nothing is written to chosen/ before the owner chooses."
+ ],
+ "written": "2026-10-11",
+ "rooms": {
+  "megumi_room": {
+   "file": "art_10b.json",
+   "rows": [
+    {
+     "label": "Megumi's Room, evening",
+     "kind": "relight",
+     "place": "megumi_room",
+     "saves": [
+      "ui2_megumi_room_evening_a",
+      "ui2_megumi_room_evening_b"
+     ],
+     "seeds": [
+      3500,
+      3501
+     ],
+     "prompt_sha256": "7017679f2fe88f824cf2f8413e59ec1fe989783e135b096744e5759770d13f1a"
+    },
+    {
+     "label": "Megumi's Room, night, every light off",
+     "kind": "relight",
+     "place": "megumi_room",
+     "saves": [
+      "ui2_megumi_room_night_a",
+      "ui2_megumi_room_night_b"
+     ],
+     "seeds": [
+      3738,
+      3739
+     ],
+     "prompt_sha256": "7053d86205ce99d8a0f7ced38766c12043cb58d063db8b9736743be31bad6c20"
+    },
+    {
+     "label": "Megumi's Room, night, the desk lamp on",
+     "kind": "relight",
+     "place": "megumi_room",
+     "saves": [
+      "ui2_megumi_room_lit_a",
+      "ui2_megumi_room_lit_b"
+     ],
+     "seeds": [
+      4804,
+      4805
+     ],
+     "prompt_sha256": "d414a9af166d66fe8d9c717f5d5e4f0c27072bed85682f84bcc597c178fc36a4"
+    }
+   ],
+   "sentences": {
+    "evening": "Change the time of day to early evening: low warm orange sunlight slants in through the window and lies across the floor and the desk with long soft shadows; outside the window the cedar trunks are lit orange on one side and the forest behind them is in warm shade, and everything that stands outside is still there. The desk lamp is off. Add no new lamp, no new light and no new window.",
+    "night": "Change the time of day to night, with every light in the room switched off: the desk lamp is dark. Outside the window it is night: the cedar trunks and the forest are still there, as dark shapes, with pieces of deep blue sky and stars between them; the moon itself is not in view. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made and empty, the bookshelf, the desk and the shoes by the door. Add no new light.",
+    "lit": "Change the time of day to night, with the small desk lamp switched on and nothing else lit. The lamp makes a warm pool of light on the desk, the closed book and the nearest shelves; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, the bookshelf and the door. Outside the window it is night: the cedar trunks and the forest are still there, as dark shapes, with pieces of deep blue sky and stars between them; the moon itself is not in view. Add no other lamp and no other light."
+   },
+   "made_from": "ui2_megumi_room_a_00001_.png",
+   "workflow_sha256": "c633702bc20a05dabd91f1996e26c25ec6b16ab0d4151968eb118835544710fd"
+  },
+  "senpai_room": {
+   "file": "art_10c.json",
+   "rows": [
+    {
+     "label": "Panda and Toge's Room, evening",
+     "kind": "relight",
+     "place": "senpai_room",
+     "saves": [
+      "ui2_senpai_room_evening_a",
+      "ui2_senpai_room_evening_b"
+     ],
+     "seeds": [
+      3394,
+      3395
+     ],
+     "prompt_sha256": "528dceed100a4844d2a5a9e3fed8fdffa3383ef7adf013824c814f9d18f60c5c"
+    },
+    {
+     "label": "Panda and Toge's Room, night, every light off",
+     "kind": "relight",
+     "place": "senpai_room",
+     "saves": [
+      "ui2_senpai_room_night_a",
+      "ui2_senpai_room_night_b"
+     ],
+     "seeds": [
+      3632,
+      3633
+     ],
+     "prompt_sha256": "b4193fae84a41eff945d68b0305088df1058cd05bef85d93e4b7335574c1ac04"
+    },
+    {
+     "label": "Panda and Toge's Room, night, the paper floor lamp on",
+     "kind": "relight",
+     "place": "senpai_room",
+     "saves": [
+      "ui2_senpai_room_lit_a",
+      "ui2_senpai_room_lit_b"
+     ],
+     "seeds": [
+      4698,
+      4699
+     ],
+     "prompt_sha256": "2ab9afa6fce9f680995f5f54cf71eb86851cd46174962ede33e1b4e5f9dafa4a"
+    }
+   ],
+   "sentences": {
+    "evening": "Change the time of day to early evening: outside the window the sky is orange and pink, and the tall wooden tower, the tiled roof and the gallery's rail are in low warm light; everything that stands outside is still there. Soft warm light comes in through the window and lies on the mats with long soft shadows. The paper floor lamp is off. Add no new lamp, no new light and no new window.",
+    "night": "Change the time of day to night, with every light in the room switched off: the paper floor lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the gallery's rail, the tiled roof and the tall wooden tower, with no window lit. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the mats. The room is dim, but everything in it can still be seen clearly: both futons, made and empty, the shogi board and its cushions, the chest and the door. Add no new light.",
+    "lit": "Change the time of day to night, with the paper floor lamp switched on and nothing else lit. The lamp glows warm and makes a soft pool of light on the mats, on the chest beside it and on the head of the large futon; the rest of the room is in soft shadow, but everything in it can still be seen clearly: both futons, made and empty, the shogi board and its cushions, and the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the gallery's rail, the tiled roof and the tall wooden tower, with no window lit. Add no other lamp and no other light."
+   },
+   "made_from": "ui2_senpai_room_a_00001_.png",
+   "workflow_sha256": "aa5d5f4d1e8e70e91ec1e72d458743254b5d21430f8518146f0b348d49339e6d"
+  }
+ },
+ "cost": "12 renders in two files, about $1.92"
+}
