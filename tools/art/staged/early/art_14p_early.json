@@ -85,5 +85,28 @@
    "prompt_sha256": "3d60fd88bda34477fc1322cc2f9bfcaf486988b238202dfc12741736fdcc043e"
   }
  ],
- "workflow_sha256": "c5f626e0c9fddd5f052e91b03b63eaecf925dba2f8af6e2de9b77d3ae4802833"
+ "workflow_sha256": "c5f626e0c9fddd5f052e91b03b63eaecf925dba2f8af6e2de9b77d3ae4802833",
+ "renders_sha256": {
+  "ui2_pool_evening_a_00001_.png": "b5f285e8178c4921f0abd79bb4824ff82cee9f3ed14fc486c7f55ca6986f5bd8",
+  "ui2_pool_evening_b_00001_.png": "9084ba7f5a329ccb99d94feece0906d4e5735ae0d27ba2410b367a3da5e3bdd6",
+  "ui2_staff_yard_evening_a_00001_.png": "4e0065c4f9efe7528823e843c1c630d5ec188833c3e4a04ef86fdf00a2b859eb",
+  "ui2_staff_yard_evening_b_00001_.png": "6888dc96bb4ad508f8e6388c8a169c9beaebee27f958c26065959eb15b6d32e5",
+  "ui2_staff_yard_night_a_00001_.png": "be5ea522e31b97a639b9ace5a80c0b821847b599c3372acd53606eebd10a1a3e",
+  "ui2_staff_yard_night_b_00001_.png": "120a61c83f0b999c8b83133eb309b155e320cb349bea5224b9ee64e9444985ca",
+  "ui2_trailhead_evening_a_00001_.png": "b7823dcca075ea6ba9bbfd781b1fcd8bcfe02c8edb0ec7c0539e2cb3890cdf7d",
+  "ui2_trailhead_evening_b_00001_.png": "4266cb80fcb2b9cd7a9634b46f6af3321c63e48631097af7a535248c0389a3f6",
+  "ui2_trailhead_night_a_00001_.png": "121457fbe543262d49a4543ebf47b19359df81f221cc5966de6b6f917d5eb626",
+  "ui2_trailhead_night_b_00001_.png": "380bc3585bdf81c58eb02356192c9805604356f23fad21e43696ad797e9f2877"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"the renders are in if you want to have a look.\"",
+  "how": "tools/py_art.sh tools/install_redo.py --relight <place> <evening|night> <a> <b> --dry --against chosen/<place>_1920.png, then by eye. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_pool_evening.jpg, compare_staff_yard_hours.jpg, compare_trailhead_hours.jpg, compare_staff_house_windows.jpg.",
+  "by_the_tool": "All ten PASS: nothing moved (11 to 16 points checked in each, none off by more than a pixel).",
+  "pool_evening": "A (PICK): gold light from the left and the wall's long shadow across the paving, the water holding the sky; nothing gone. B is clean and gentler, its walls still in full light.",
+  "staff_yard_evening": "B (PICK): an orange and pink sky like the Training Yard's evening; the teachers' house lit, as it is lived in at that hour. A is clean, with a redder sky.",
+  "staff_yard_night": "A (PICK, with one change owed): a full moon like the other yards', the hall and the two offices dark, the teachers' house lit upstairs. In BOTH versions its ground-floor windows are lit too, as the day picture has them; the lounge is empty at Night (5.7a), so they should be dark: art_14q.json makes that one change on version A.",
+  "trailhead_evening": "B (PICK): low sun through the trunks on the left, long shadows to the right, the onsen's door and windows lit, as it is open at that hour. A is clean and nearer the day picture.",
+  "trailhead_night": "B (PICK): a full moon, the onsen dark with its steam pale, the dome a dark shape. A is clean and brighter than the other nights.",
+  "put_to_the_owner": "Pool evening A; staff steps evening B and night A (with the lounge's windows to be darkened); Mountain Path evening B and night B."
+ }
 }

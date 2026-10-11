@@ -1,0 +1,27 @@
+{
+ "about": [
+  "The Staff Building Steps at Night, one change: written by hand on 11 Oct 2026 after reading art_14p.json. Both versions kept the teachers' house lit on both floors, as its chosen day picture has it. By 5.7a a room is lit at Night only when someone is up in it: Yaga is up upstairs on every Night and the lounge on the ground floor is empty. One named change on version A (given at full size) by the tool's own keep-everything prompt with the change as its own sentence, as in 8b and 15s."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "change": "Change one thing only: in the two-storey house on the right, the windows of the ground floor are dark, with no light behind them, like the other dark windows in the picture. The upstairs windows of that house stay lit exactly as they are. Change nothing else in the picture: it stays night, with the same moon."
+ },
+ "rows": [
+  {
+   "label": "Staff Building Steps, night: the lounge's windows dark",
+   "kind": "inplace",
+   "place": "staff_yard",
+   "saves": [
+    "ui2_staff_yard_night2_a",
+    "ui2_staff_yard_night2_b"
+   ],
+   "seeds": [
+    9426,
+    9427
+   ],
+   "from": "ui2_staff_yard_night_a_00001_.png",
+   "prompt_sha256": "575deb7f0083513d89bb6b1cde176d7ca78e43b4e5e416cc83647812c28af217"
+  }
+ ],
+ "workflow_sha256": "f3e832b61db83a457288b1293ce2983de1e73afaa3591d757ce86353227394fc"
+}
