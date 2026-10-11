@@ -159,6 +159,47 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   `lock-label` is only reported, on a label at its largest, and `tag-x` is
   not checked: both begin to refuse once `tools/smoke.sh u2_dump` has
   rewritten the committed dump in the owner's folder.
+- **The installer's check, corrected (U0d3).** `install_redo.py` (its own
+  header has the whole proof) holds, besides every exit, hotspot, standing
+  row, pose box and foreground outline, **the wall under each traced shape's
+  outline** (D60): a render in which it moved is REFUSED and the shape is
+  named. Seven false alarms and blind spots met on the pictures run early are
+  corrected, each against the render that showed it
+  (`tools/art/staged/early/art_3a_early.json`, `art_3b_early.json`,
+  `art_4b_early.json`): a point on glass is held by the door's post and frame
+  and not by the view (the keep list's `windows` rows,
+  `tools/bgs/keep/README.md`); a floor drawn again (other boards, sunlight) or
+  crossed by a window's grid of light is a LOOK, both where people stand and
+  as "something new on the floor"; the named addition on a hotspot's own
+  object does not make that object "gone"; a pale thing on a wall that became
+  lighter is a LOOK ("fainter"). **A relight is read by eye beside its day
+  picture for anything added** (a lamp, a blanket, a bench): it is never
+  refused for one, and the one case that can be measured without a false
+  alarm is shown as a LOOK (a small `empty` row of the keep list that gained
+  edge: the blanket over the sofa's arm is caught, the lamp on the desk is
+  not). `tools/test_art_tools.sh` runs every picture the owner chose early
+  that was redone in place or relit (55): none may be REFUSED.
+- **The stage preview.** `tools/py_art.sh tools/stage_preview.py <place>
+  [hour] [--who a,b,c]` draws a place as the game would, with the people
+  standing in it: the hour's picture or the day picture under the hour's
+  tint, the ink wash, each sprite at its slot with its contact shadow under
+  the room's light, the foreground over the far people, the name tags. With
+  no hour it writes the sheet `shots/stage/<place>.jpg` (one to four people
+  by day and a frame for each hour, at half size); with an hour, one frame at
+  full size. `--bg <render>` draws on a picture that is not installed (a
+  2752 px render is fitted) and `--staged <folder>` reads `hot_`, `view_`,
+  `light_` and `check_<place>.json` from a folder such as
+  `tools/art/staged/<stem>/`: it is what a room is judged on BEFORE it goes
+  in. **For a shaped place** each shape's outline is drawn (a front one
+  dashed), and the sheet gains two frames at full size: the outlines with the
+  people, and every shape lit and named. `--dialogue` is the scene case;
+  `--plain` leaves out everything the game does not draw, and `--beside
+  <screenshot>` lays the drawing beside a game screenshot. Measured against a
+  screenshot of the Common Room at evening with three people, the sprites,
+  the wall and the foreground agree to one level in 255. Not drawn, because
+  the game does not draw them yet: a slot's own light, a cast shadow, the
+  shadow's lean, a painted pose, the HUD. `--layout-dump <file>` in a
+  worktree.
 - **The dump's reader.** `python3 tools/game_layout.py` says whether the dump
   is fresh and what it holds. `where()`, `asleep()` and `away()` read the
   dump's `world.homes`, `world.asleep` and `world.away`; `shapes(place)`,

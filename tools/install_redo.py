@@ -598,6 +598,8 @@ def run_compose(o):
         cmd = [sys.executable if not os.environ.get("JJK_PY_ART") else "python3", checker, "--layout"] + files
         if o["dump"]:
             cmd += ["--layout-dump", o["dump"]]
+        # the tree being installed into: its keep lists, foreground outlines and layout files are the ones read
+        cmd += ["--root", root, "--keep", o["keep"] or KEEP_DIR]
         p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         text = p.stdout.decode("utf-8", "replace").strip()
         for line in text.splitlines():

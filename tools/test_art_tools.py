@@ -3,7 +3,7 @@ The tests of the art tools. Run it through tools/test_art_tools.sh.
 
     tools/test_art_tools.sh                        # everything that can run here
     tools/test_art_tools.sh --layout-dump <file>   # in a worktree: the local dump (tools/smoke.sh u2_dump --out <file>)
-    tools/test_art_tools.sh --only redo,pose       # some groups: reader layout redo compose pose face set status real yuji
+    tools/test_art_tools.sh --only redo,pose       # some groups: reader layout redo stage compose pose face set status real yuji
     tools/test_art_tools.sh --strict               # an art sitting: a SKIPPED line is a failure
     tools/test_art_tools.sh --keep-work            # leave the scratch folder, and say where it is
     tools/test_art_tools.sh --write-measures       # rewrite tools/art/redo_measures.json from the real cases (U0d only)
@@ -39,7 +39,7 @@ OUTPUT = os.path.expanduser("~/ComfyUI-Shared/output")
 YUJI = os.path.expanduser("~/Desktop/JJK Game images/redo_yuji")
 MEASURES = os.path.join(TOOLS, "art", "redo_measures.json")
 STALE = check_campus.STALE
-GROUPS = ("reader", "layout", "redo", "compose", "pose", "face", "set", "status", "real", "yuji")
+GROUPS = ("reader", "layout", "redo", "stage", "compose", "pose", "face", "set", "status", "real", "yuji")
 
 counts = {"PASS": 0, "FAIL": 0, "SKIPPED": 0}
 failed = []
@@ -769,6 +769,122 @@ def group_redo(lab):
                    "--layout-dump", stamp(lab.dump, root2)], py=True)
     ok("a relight is not installed before its day picture is in the new look (K8)", rc != 0 and "not installed in the new look" in out, out)
     return root
+
+
+PIXELS = r'''
+import sys, json, numpy as np
+from PIL import Image
+a = np.asarray(Image.open(sys.argv[1]).convert("RGB")).astype(int)
+out = {"size": [a.shape[1], a.shape[0]]}
+if len(sys.argv) > 2:
+    b = np.asarray(Image.open(sys.argv[2]).convert("RGB")).astype(int)
+    if a.shape == b.shape:
+        d = np.abs(a - b).max(axis=2) > 24
+        d[:30] = False                      # the line of words over a frame
+        ys, xs = np.where(d)
+        out["changed"] = int(d.sum())
+        out["box"] = [int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1] if len(ys) else None
+        for k, v in enumerate(sys.argv[3:]):
+            x0, y0, x1, y1 = [int(n) for n in v.split(",")]
+            out["in%d" % k] = int(d[y0:y1, x0:x1].sum())
+            out["lighter%d" % k] = float((a[y0:y1, x0:x1].mean() - b[y0:y1, x0:x1].mean()))
+print(json.dumps(out))
+'''
+
+
+def group_stage(lab):
+    """stage_preview.py: a place drawn as the game would, with the people standing in it (6.5, D60)."""
+    if not lab.art:
+        skipped("stage_preview.py", "no ComfyUI python")
+        return
+    root = mkroot(os.path.join(lab.work, "r_stage"))
+    dump = stamp(lab.dump, root)
+    pix = os.path.join(lab.work, "pixels.py")
+    open(pix, "w").write(PIXELS)
+    out = os.path.join(lab.work, "stage")
+    os.makedirs(out, exist_ok=True)
+
+    def draw(args, name, d=None):
+        path = os.path.join(out, name)
+        rc, text = run([tool("stage_preview.py")] + args + ["--root", root, "--layout-dump", d or dump, "--out", path], py=True)
+        return rc, text, path
+
+    def pixels(*args):
+        rc, text = run([pix] + list(args), py=True)
+        return json.loads(text.strip().splitlines()[-1]) if rc == 0 else {"error": text}
+
+    rc, text, empty = draw(["dorm_common", "evening", "--who", "none", "--plain"], "empty.png")
+    rc2, text2, three = draw(["dorm_common", "evening", "--who", "megumi,yuji,maki", "--plain"], "three.png")
+    got = pixels(three, empty)
+    ok("the Common Room at evening is drawn with three people, on the room's own evening picture and under its light",
+       rc == 0 and rc2 == 0 and got.get("size") == [1920, 1110] and "dorm_common_evening.png; as painted" in text2
+       and "the game's own row for the place" in text2, text + text2 + json.dumps(got))
+    # where the game stands three people there (view_stage.rpy: VIEW_SLOTS), and the tags' line; 30 px is the title
+    slots = json.load(open(dump))["slots"]["dorm_common"]["3"]
+    box = got.get("box") or [0, 0, 0, 0]
+    x0 = min(s[0] - 760 * s[2] / 2 for s in slots)
+    x1 = max(s[0] + 760 * s[2] / 2 for s in slots)
+    top = min(1080 + s[1] - 1400 * s[2] for s in slots) + 30
+    ok("the people are where the game stands them: nothing is drawn outside the three slots' rectangles and the "
+       "name-tag line (changed pixels lie in x %d to %d, y %d to %d)" % (box[0], box[2], box[1], box[3]),
+       got.get("changed", 0) > 60000 and box[0] >= x0 - 4 and box[2] <= x1 + 4 and box[1] >= top - 4 and box[3] <= 1080 + 30, json.dumps(got))
+    far = [s for s in slots if s[3]][0]
+    # the far person stands behind the low table: where the foreground is solid, at the table, nothing changes
+    fg = os.path.join(root, "game", "images", "fg", "fg_dorm_common_evening.png")
+    code = ("import sys, json, numpy as np; from PIL import Image; a = np.asarray(Image.open(sys.argv[1]).convert('RGBA'))[..., 3]; "
+            "ys, xs = np.where(a > 250); x = int(%d); col = ys[xs == x]; print(json.dumps([x, int(col.min()), int(col.max())]))" % far[0])
+    rc, text = run(["-c", code, fg], py=True)
+    col = json.loads(text.strip().splitlines()[-1]) if rc == 0 else [0, 0, 0]
+    got = pixels(three, empty, "%d,%d,%d,%d" % (col[0] - 3, col[1] + 30 + 4, col[0] + 3, col[2] + 30 - 4))
+    ok("the foreground is laid over the far person: in the low table's own column under them (x %d, y %d to %d) "
+       "not a pixel changed" % (col[0], col[1], col[2]), rc == 0 and col[2] - col[1] > 40 and got.get("in0") == 0, text + json.dumps(got))
+    rc, text, marked = draw(["dorm_common", "evening", "--who", "megumi,yuji,maki"], "marked.png")
+    got = pixels(marked, three)
+    ok("without --plain the exit's tile and each thing to do are drawn at their points", rc == 0 and got.get("changed", 0) > 3000, json.dumps(got))
+
+    # a shaped place (D60): the outlines, and a frame with every shape lit and named
+    frame = [[612, 222], [1045, 222], [1045, 535], [612, 535]]
+    shaped = stamp(lab.dump, root, out=os.path.join(root, "dump_shaped.json"), extra={"shapes": {"dorm_common": {"tv": [frame]}}})
+    rc, text, plain_sheet = draw(["dorm_common"], "sheet.jpg")
+    rc2, text2, shape_sheet = draw(["dorm_common"], "sheet_shaped.jpg", shaped)
+    a, b = pixels(plain_sheet), pixels(shape_sheet)
+    ok("the sheet of a place: one to four people by day and a frame for each hour, at half size (%s)" % a.get("size"),
+       rc == 0 and a.get("size") == [1928, 3 * 570 + 16] and "shaped" not in text, text)
+    ok("the sheet of a SHAPED place has two frames more, at full size: every shape's outline, and every shape lit "
+       "and named (%s)" % b.get("size"),
+       rc2 == 0 and b.get("size") == [1928, 3 * 570 + 16 + 2 * (1110 + 8)]
+       and "shaped: 1 shapes; two frames more, their outlines and every shape lit and named" in text2, text2)
+    rc, text, lit = draw(["dorm_common", "day", "--who", "none"], "shape_frame.png", shaped)
+    rc2, text2, unlit = draw(["dorm_common", "day", "--who", "none", "--plain"], "shape_plain.png", shaped)
+    got = pixels(lit, unlit, "612,%d,1045,%d" % (222 + 30 - 3, 222 + 30 + 3))
+    ok("and one frame of it draws the shape's outline on the picture", rc == 0 and rc2 == 0 and got.get("in0", 0) > 800, text + json.dumps(got))
+
+    # a picture and a layout that are only staged
+    staged = os.path.join(lab.work, "staged_room")
+    os.makedirs(staged, exist_ok=True)
+    json.dump({"spots": {"tv": [1500, 500]}, "shapes": {"tv": [[[1420, 380], [1690, 380], [1690, 700], [1420, 700]]]}},
+              open(os.path.join(staged, "hot_dorm_common.json"), "w"))
+    json.dump({"slots": {"1": [[900, -40, 0.52, 0]]}}, open(os.path.join(staged, "view_dorm_common.json"), "w"))
+    render = lab.syn("look", os.path.join(root, "game", "images", "bg", "dorm_common.png"), "syn_stage_bg.png")
+    rc, text, one = draw(["dorm_common", "day", "--who", "megumi", "--plain", "--bg", render, "--staged", staged], "staged_one.png")
+    rc2, text2, none = draw(["dorm_common", "day", "--who", "none", "--plain", "--bg", render, "--staged", staged], "staged_none.png")
+    got = pixels(one, none)
+    box = got.get("box") or [0, 0, 0, 0]
+    ok("a picture given by --bg and a layout that is only staged are drawn: the person stands at the staged slot "
+       "(x 900; drawn from x %d to %d), under a light measured on that picture" % (box[0], box[2]),
+       rc == 0 and rc2 == 0 and "view_dorm_common.json from the staged folder" in text and "taken as the day picture" in text
+       and "measured on this picture, as the installer would write it" in text and 700 <= box[0] and box[2] <= 1100
+       and "shaped: 1 shapes" in text, text + json.dumps(got))
+    rc, text, _p = draw(["dorm_common", "evening", "--who", "megumi,yuji,maki", "--dialogue"], "scene.png")
+    got = pixels(_p, three)
+    ok("--dialogue draws the scene case: the people larger, their feet on the bottom edge", rc == 0 and got.get("changed", 0) > 100000, text)
+    rc, text, _p = draw(["nowhere"], "x.png")
+    ok("a name that is no place is refused in one line", rc != 0 and "is not a place of the game" in text and len(text.strip().splitlines()) == 1, text)
+    stale = os.path.join(lab.work, "stale_dump.json")
+    with open(stale, "w") as f:
+        json.dump(dict(json.load(open(dump)), hash="0" * 64), f)
+    rc, text = run([tool("stage_preview.py"), "dorm_common", "day", "--root", root, "--layout-dump", stale], py=True)
+    ok("an out-of-date dump is refused (status 2), as every art tool refuses it", rc == 2 and text.strip() == STALE, text)
 
 
 def test_layout(place, swap=None):
