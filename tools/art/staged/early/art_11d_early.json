@@ -1,0 +1,52 @@
+{
+ "about": [
+  "Nobara's room and Maki's with more of their owners in them, written by hand on 11 Oct 2026 at the owner's question of the rooms of sitting 11a, asked before choosing: \"Do you think they should be more girly? or should we keep them bland for arc 1?\"",
+  "The answer put to the owner with this file: neither 'girly' nor bland. A room says who lives in it, as the boys' rooms now do (Yuji's films, Megumi's books, the shared room's futons and shogi board), and a room painted now is the room of every arc: its evening and both its nights are made from it, so it is settled first. Nobara's becomes plainly hers (clothes, shoes, a dressing table, colour); Maki's stays spare, which is hers too, with her training things in it so that the plainness reads as chosen.",
+  "Each is drawn again from the version picked in 11a as the camera to keep (the tool's `ref_old_camera` sentence; Method note 36): the door, the bed, the window and its view stay; what is added is listed. art_11b.json and art_11c.json, the rooms' hours, were written from the plainer rooms and are NOT to be run until the owner has chosen between the two kinds; they are written again from whichever is chosen.",
+  "NOBODY is in either picture (K16: bedrooms) and NOTHING carries lettering or a maker's mark (O60). The prompt check refused 'the things of someone who trains every day' (somebody, in a bedroom); it reads 'the gear of daily training'."
+ ],
+ "written": "2026-10-11",
+ "asked": "Do you think they should be more girly? or should we keep them bland for arc 1?",
+ "made_from": {
+  "nobara_room": "ui2_nobara_room_b_00001_.png",
+  "maki_room": "ui2_maki_room_a_00001_.png"
+ },
+ "refs": "Picture 1 is this place as it was painted before: keep its camera position and the side each thing stands on, and design the rest again.",
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge.",
+ "the_place": {
+  "nobara_room": "a bedroom upstairs in the girls' dormitory, a house of white plaster and timber: the same room as picture 1, now full of clothes and colour, and kept neat. Everything picture 1 has stays where it is: the door in the left wall near me; the bed at the far left with its patchwork quilt and its bedside lamp, switched off; the row of plain paper shopping bags along the far wall; the tall dressing mirror, its glass showing only the room; the desk with the canvas roll of tools, rolled and tied; and the latticed window in the right wall with the flowers in its box, the pond and the house of dark timber with its gallery and stair across the garden. Added to it: along the far wall, between the bed and the bags, a clothes rail hung with bright dresses, skirts and coats on hangers, with a neat line of shoes and boots on the floor under it; on the wall above the bed, a few framed pictures of clothes and of city streets, with no lettering on them; on the bed, bright cushions; on the desk, beside the tool roll, a small round table mirror with little bottles, brushes and a hairbrush set out in a row; hats hanging on pegs by the door; a soft round rug of a warm colour lying flat in the middle of the floor; and a leafy plant in a pot on the floor by the window. The room is full but tidy, and the floor across the whole bottom of the picture is still clear and open. No lettering and no maker's mark anywhere in the picture: none on any bag, box, book, bottle, picture or wall",
+  "maki_room": "a bedroom upstairs in the girls' dormitory, a house of white plaster and timber: the same room as picture 1, still kept very plain and in perfect order, with the gear of daily training in it. Everything picture 1 has stays where it is: the door in the left wall near me with the steel bar fixed across the top of its frame; the plain bed, made tight and flat; the long leather weapon case, closed, leaning on the far wall; the plain desk with its small lamp, switched off; and the latticed window in the right wall with the cedars, the small house with one very large window and the great tiled roof behind it. Added to it: on the far wall above the bed, a timber rack holding wooden practice weapons hung level, one above another: a long staff, a wooden sword and a short wooden spear; on the floor by the far wall, a rolled training mat and a pair of iron dumbbells, set down squarely; at the foot of the bed, a dark training uniform folded flat; and on the desk a closed glasses case and a plain steel water bottle. Nothing else is added: the walls carry no pictures, and the floor across the whole bottom of the picture is clear and open. No lettering and no maker's mark anywhere in the picture: none on any bag, box, book, bottle, picture or wall"
+ },
+ "rows": [
+  {
+   "label": "Nobara's Room, with more of her in it",
+   "kind": "composed",
+   "place": "nobara_room",
+   "saves": [
+    "ui2_nobara_room2_a",
+    "ui2_nobara_room2_b"
+   ],
+   "seeds": [
+    10302,
+    10303
+   ],
+   "prompt_sha256": "44b583c8cb5347ca6a2a89ef99e1017ab32abe256d13e56aadea505c86ba8b5f"
+  },
+  {
+   "label": "Maki's Room, with her training things",
+   "kind": "composed",
+   "place": "maki_room",
+   "saves": [
+    "ui2_maki_room2_a",
+    "ui2_maki_room2_b"
+   ],
+   "seeds": [
+    5698,
+    5699
+   ],
+   "prompt_sha256": "4f53f13b6fe206d416541bdaadd622a91af2113d2d42067b62e9e6ee7d2c3991"
+  }
+ ],
+ "workflow_sha256": "c944260fdc82c11d9eba63503a9201aac7d3756130ec5cc488d3c17ed40c7782",
+ "cost": "4 renders, about $0.64"
+}
