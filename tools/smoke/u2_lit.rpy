@@ -23,7 +23,10 @@
 ##     cell set by the test (zzl_night), whatever hour pictures the tree has;
 ##   - whether a file "exists" is answered by the test for the few paths it
 ##     names (ZZL_FILES: a foreground cut, a pose), through renpy.loadable,
-##     so no test cut or pose is laid in the overlay;
+##     so no test cut or pose is laid in the overlay; and while the manifest
+##     is emptied, the two rooms the tests light (the Library and Megumi's
+##     room) have NO foreground cut unless a check says so (ZZL_BASE), so a
+##     cut installed for either at an art sitting changes no line here;
 ##   - who is where is compared with the table emptied, never with a copy of
 ##     today's schedule.
 ##
@@ -71,16 +74,24 @@ init 999 python:
     zzl = ZZLState()
     ZZL_FILES = builtins.dict()          ## path -> bool: what renpy.loadable answers for it
     ZZL_REAL = builtins.dict(loadable=renpy.loadable)
+    ## The rooms the tests light, and their foreground cuts: answered "not
+    ## there" while the manifest is emptied (zzl_blank), whatever an art
+    ## sitting has installed, unless a check names the path in ZZL_FILES.
+    ZZL_ROOMS = ("library", "megumi_room")
+    ZZL_BASE = builtins.dict(("images/fg/fg_%s%s.png" % (l, a), False)
+                             for l in ZZL_ROOMS for a in ("",) + builtins.tuple("_" + h for h in ART_HOURS))
 
     def zzl_loadable(name, *args, **kwargs):
         if name in ZZL_FILES:
             return ZZL_FILES[name]
+        if zzl.blank and name in ZZL_BASE:
+            return ZZL_BASE[name]
         return ZZL_REAL["loadable"](name, *args, **kwargs)
 
     def zzl_set_files(table):
         ZZL_FILES.clear()
         ZZL_FILES.update(table)
-        renpy.loadable = zzl_loadable if ZZL_FILES else ZZL_REAL["loadable"]
+        renpy.loadable = zzl_loadable if (ZZL_FILES or zzl.blank) else ZZL_REAL["loadable"]
         _BG_CACHE.clear()
 
     def zzl_hold():
@@ -356,7 +367,8 @@ label zz_smoke:
               "A: recut, it shows; and a pose and a light row made for the old lit picture are not used (the standing sprite, the general row)",
               (bg_variant("library", "Night"), view_pose("megumi", "library", "Night"), light_for_place("library", "Night")))
         zzl_back()
-        check(renpy.loadable is ZZL_REAL["loadable"] and not ZZL_FILES, "A: (tables and files put back)")
+        check(not ZZL_FILES and not world_fg_room("library") and builtins.dict(ART_PICTURES) == {},
+              "A: (tables and files put back: the manifest is still the empty one, and the test's two rooms have no foreground)")
 
     ## --- B. the table and its registration -----------------------------------------
     python:
@@ -594,9 +606,9 @@ label zz_smoke:
         store.period = _zz_per
         check(_zz_got == (False,) + _zz_want and bg_variant("library", "Night") == "lit",
               "C: with no hour in the store (init: the memory tiles; lint) world_night_up is False and bg_name answers as today, the plain night", (_zz_got, _zz_want))
+        zzl_blank(False)        ## the tree's own manifest, as at init
         check(all(m["bg"] == zzl_no_lit(lambda: bg_name(*m["place"])) for m in MEMORIES if m.get("place") and m["args"]),
               "C: every memory tile built from a place holds the picture bg_name answers with no lit picture (they are built at init)")
-        zzl_blank(False)
 
     ## --- D. written scenes: world_lit_bg --------------------------------------------
     python:
