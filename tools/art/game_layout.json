@@ -1763,7 +1763,7 @@
    ]
   }
  },
- "hash": "db9d5ac1dc05a4e636d39e9d237f40f119fac8b8fa2eac32232bbee2ec58e400",
+ "hash": "b4a799781e2e9f8e66054a4bdc09fe07ad3623bcb2b91c60a06bea808afb1319",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -2153,6 +2153,20 @@
   ]
  },
  "keep_tile": {},
+ "late": {
+  "megumi": {
+   "days": [
+    "Sun"
+   ],
+   "place": "library"
+  },
+  "toge": {
+   "days": [
+    "Wed"
+   ],
+   "place": "library"
+  }
+ },
  "light": {
   "bg": {
    "bg alley": [
@@ -2421,6 +2435,40 @@
    ]
   }
  },
+ "lit_planned": [
+  [
+   "library",
+   "images/bg/library_lit.png"
+  ],
+  [
+   "yuji_room",
+   "images/bg/yuji_room_lit.png"
+  ],
+  [
+   "megumi_room",
+   "images/bg/megumi_room_lit.png"
+  ],
+  [
+   "senpai_room",
+   "images/bg/senpai_room_lit.png"
+  ],
+  [
+   "nobara_room",
+   "images/bg/nobara_room_lit.png"
+  ],
+  [
+   "maki_room",
+   "images/bg/maki_room_lit.png"
+  ],
+  [
+   "dorm",
+   "images/bg/your_room_lit.png"
+  ],
+  [
+   "dojo",
+   "images/bg/dojo_lit.png"
+  ]
+ ],
  "lock_labels": {
   "boys_dorm": {
    "go_boys_dorm__megumi_room": [
