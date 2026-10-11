@@ -97,7 +97,11 @@ def find(data, n):
     return None
 
 
-LIT_ROOMS = ("library", "yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room", "dorm", "dojo")   # 5.7a
+LIT_ROOMS = redo.LIT_ROOMS      # 5.7a: the rooms of the game's WORLD_LIT; one tuple, in make_redo_workflow.py
+
+
+# The first words of the owner's page for a batch marked "painted_early": true in the table.
+EARLY_LINE = "Every picture of this sitting is already painted and chosen: there is nothing to run."
 
 
 def versions(pic):
@@ -207,12 +211,25 @@ def page(b, written, waiting, record, cost):
     rec = check_campus.Rec(record)
     L = ["# Art sitting %s: %s" % (b["id"], b["title"]), ""]
     total = sum(len(j["seeds"]) for _, jobs in written for j in jobs)
-    L.append("**%d picture%s to run, about $%.2f.** Each picture is painted twice, so you choose between a "
-             "version A and a version B." % (total, "" if total == 1 else "s", total * cost))
+    early = bool(b.get("painted_early"))
+    if early:
+        # every picture of the sitting exists and is chosen (the batch's note says where): the page must not
+        # send the owner to ComfyUI for them. The workflows are still written, for a picture the owner wants once more.
+        L.append("**%s** The workflow file%s written beside this page %s only for a picture you want painted once "
+                 "more: running %s would paint, and charge for, %d picture%s that exist (about $%.2f)." % (
+                     EARLY_LINE, "" if len(written) == 1 else "s", "is" if len(written) == 1 else "are",
+                     "it" if len(written) == 1 else "them", total, "" if total == 1 else "s", total * cost))
+    else:
+        L.append("**%d picture%s to run, about $%.2f.** Each picture is painted twice, so you choose between a "
+                 "version A and a version B." % (total, "" if total == 1 else "s", total * cost))
     L.append("")
     L += ["## What to do", ""]
     n = 1
-    for i, (f, jobs) in enumerate(written):
+    if early:
+        L.append("1. Nothing in ComfyUI. Tell Claude this sitting can be installed: the versions you chose are on "
+                 "record, and Claude checks each again as it goes in.")
+        n = 2
+    for i, (f, jobs) in enumerate([] if early else written):
         r = sum(len(j["seeds"]) for j in jobs)
         L.append("%d. Open the **local ComfyUI**. Drag `%s.json` from `JJK Game images/ui2` onto the canvas." % (n, f["name"])); n += 1
         L.append("%d. Press **Run** once. It paints %d pictures (about $%.2f): %s." % (
@@ -222,7 +239,7 @@ def page(b, written, waiting, record, cost):
         if f.get("part") and i == len(written) - 1 and waiting:
             L.append("%d. Tell Claude it has finished, and which version of each picture you like better. Claude "
                      "checks both versions of each and installs the ones you choose." % n); n += 1
-    if not (written and written[-1][0].get("part") and waiting):
+    if not early and not (written and written[-1][0].get("part") and waiting):
         L.append("%d. Tell Claude it has finished, and which version of each picture you like better. You don't "
                  "need to save or move anything: Claude picks the results up from ComfyUI's output folder." % n); n += 1
     for f, why in waiting:
@@ -631,6 +648,18 @@ def selftest():
            [lit_text, night_text])
         ok("a yard has no lit picture: the prompt is refused",
            "has one Night picture and no lit one" in (refused(lambda: redo.prompt_for(record, "school_yard", hour="lit")) or ""))
+        said = refused(lambda: redo.prompt_for(record, "classroom", hour="lit")) or ""
+        man_c = copy.deepcopy(man)
+        man_c["pictures"]["classroom"] = {"rev": 2, "kind": "inplace"}
+        said_job = refused(lambda: redo.redo_job(record, man_c, "classroom", "lit")) or ""
+        said_old = refused(lambda: redo.redo_job(record, man, "classroom", "lit")) or ""
+        ok("an indoor room that is not in the game's lit table has no lit picture: its prompt and its job are refused in one "
+           "line that names WORLD_LIT (also once its day picture is in the new look, and before that without promising one), "
+           "while its night is not refused for that and a lit room's lit prompt is written",
+           all("has no lit picture" in x and "WORLD_LIT" in x for x in (said, said_job, said_old))
+           and "cannot be made yet" not in said_old
+           and "every light in the room switched off" in redo.prompt_for(record, "classroom", hour="night")
+           and all(redo.prompt_for(record, r, hour="lit") for r in LIT_ROOMS), [said, said_job, said_old])
         ok("an hour that is not evening, night or lit is refused",
            "evening, night or lit" in (refused(lambda: redo.prompt_for(record, "dorm", hour="dusk")) or ""))
         if all(os.path.exists(x) for x in need_files) and have_git:
@@ -649,6 +678,22 @@ def selftest():
                          ["dojo_lit"]] and written[1][1][0]["save"] == ["ui2_dojo_lit_a", "ui2_dojo_lit_b"]
                and all(two_each(path) for _, _, path in written)
                and "every one of the hanging lamps is switched on" in written[1][1][0]["prompt"], stems)
+            note47 = open(os.path.join(tmp, "batch47", "art_47.md"), encoding="utf-8").read()
+            top47 = note47.split("## For the session that installs")[0]
+            b47 = find(data, "47")
+            page_plain = page(dict(b47, painted_early=False), [(f, jobs) for f, jobs, _ in written], [], later, 0.16)
+            ok("batch 47 is marked painted early, and its page tells the owner so before anything else: nothing to run, "
+               "no \"Press Run\", no \"Drag\" and no \"pictures to run\" above the installer's part (the same batch "
+               "without the mark has all three)",
+               b47.get("painted_early") is True and EARLY_LINE in top47.split("## What to do")[0]
+               and not any(w in top47 for w in ("Press **Run**", "Drag `", "to run, about"))
+               and "Nothing in ComfyUI" in top47
+               and all(w in page_plain.split("## For the session that installs")[0]
+                       for w in ("Press **Run**", "Drag `art_47_1.json`", "12 pictures to run, about"))
+               and EARLY_LINE not in page_plain.split("## For the session that installs")[0],
+               [top47[:600]])
+            ok("no other batch is marked painted early (a sitting with a picture still to paint keeps its numbered steps)",
+               [b["id"] for b in data["batches"] if b.get("painted_early")] == ["47"])
             none = {"name": "art_x", "pictures": [{"place": "dorm", "kind": "relight", "hour": "lit", "versions": 0, "made": "a test"}]}
             ok("a picture made already (`versions` 0) gives no job, and the same row without it does",
                file_jobs(none, later, man)[0] == [] and len(file_jobs(

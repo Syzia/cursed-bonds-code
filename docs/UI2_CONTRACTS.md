@@ -757,7 +757,8 @@ in one line):
   its picture (`dorm` or `your_room`). The room's `night` is not touched.
 - `make_redo_workflow.py --relight <place> lit`: the general indoor sentence
   with the room's lamps on is the `lit` one; the general indoor `night`
-  sentence is the room with every light off; a yard has no `lit`. Renders are
+  sentence is the room with every light off; a yard has no `lit`, and neither
+  has a room outside `WORLD_LIT` (refused in one line). Renders are
   saved as `ui2_<stem>_lit_a` and `_b`.
 - `game_layout.py`: `HOURS` holds `"lit"`; `lit_places()`, `lit_file(place)`
   and `late()` read the dump's `lit_planned` and `late` (None for a dump

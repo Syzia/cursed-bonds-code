@@ -101,7 +101,8 @@ either at Night shows it dark. Every other room has one Night picture.
 
 All eight lit pictures are already painted and chosen. Nothing is left to run
 for them, and sitting 47 (the friends' rooms dark, the dojo lit) is finished
-before it starts.
+before it starts: its page of steps says so in its first line and has no
+ComfyUI step.
 
 For the session that installs: a lit picture goes in with the same tool as an
 evening or a night, under the hour `lit`, after the room's day picture:

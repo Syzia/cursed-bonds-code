@@ -396,6 +396,24 @@ label zz_smoke:
               "B: at init a row registered exactly when its file was loadable and fresh against its day picture (the Library's test picture: %s), "
               "and a row with no file defined no image" % ("registered by the game" if "library" in ZZL_INIT["on"] else "stale in this tree's manifest, registered by the harness"),
               ZZL_INIT)
+        ## the freshness half of that rule, asked again in any tree (review round 1: the line above sees it
+        ## only where the tree's manifest already makes the test picture stale). Every lit room's day picture
+        ## is laid at revision 2 with no row for its lit file, so every lit file there is is stale and the
+        ## registration must take none: it returns before renpy.image, which may only run at init.
+        zzl_back()
+        zzl_art(**builtins.dict((art_stem(l), builtins.dict(rev=2, kind="inplace")) for l, p in WORLD_LIT))
+        WORLD_LIT_ON.clear()
+        _zz_files = [l for l, p in WORLD_LIT if renpy.loadable(p)]
+        try:
+            _zz_used = world_lit_register()
+        except Exception as _zz_e:
+            _zz_used = "raised: %r" % (_zz_e,)
+        _zz_on = builtins.dict(WORLD_LIT_ON)
+        zzl_back()
+        check("library" in _zz_files and _zz_used == [] and _zz_on == {},
+              "B: a lit file that is there but stale is not registered: with every lit room's day picture at revision 2 and no row "
+              "for its lit file, world_lit_register() takes no row and leaves WORLD_LIT_ON empty (the Library's test picture is loadable)",
+              (_zz_files, _zz_used, _zz_on))
         check(world_lit_validate() == [] and world_late_validate() == [] and _validate_world() == [],
               "B: lint finds nothing in the tables as they are", world_lit_validate() + world_late_validate() + _validate_world())
 
@@ -608,7 +626,8 @@ label zz_smoke:
               "C: with no hour in the store (init: the memory tiles; lint) world_night_up is False and bg_name answers as today, the plain night", (_zz_got, _zz_want))
         zzl_blank(False)        ## the tree's own manifest, as at init
         check(all(m["bg"] == zzl_no_lit(lambda: bg_name(*m["place"])) for m in MEMORIES if m.get("place") and m["args"]),
-              "C: every memory tile built from a place holds the picture bg_name answers with no lit picture (they are built at init)")
+              "C: every memory tile built from a place holds the picture bg_name answers with no lit picture (they are built at init; "
+              "no memory sits in a two-picture room at Night today, so this line guards and the rule is the line above)")
 
     ## --- D. written scenes: world_lit_bg --------------------------------------------
     python:

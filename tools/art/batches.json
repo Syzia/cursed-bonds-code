@@ -7,6 +7,7 @@
   "`done` is the art-install role's: `tools/art_batch.py --done 3a` adds a marker when that file's pictures are installed (or, for a test of a wording, judged).",
   "Picture kinds art_batch.py writes itself: composed (a yard, the gate, a new place), inplace, relight, map. The others name the tool or the sitting that makes them.",
   "`hour_words` is a relight's own hour sentence, for a room the general one would not fit (a windowless room by lamplight; a friend's room at Night with one small lamp on). A relight's `hour` is evening, night or lit: `night` is the room at Night with nobody up in it, `lit` the same room with someone up (D61, 5.7a; the eight rooms of the game's WORLD_LIT). Every indoor night row has words of its own (lights off; for the infirmary and the Teachers' Dormitory, their lamps), because the tool's general indoor sentence with the lamps on is the `lit` one.",
+  "`painted_early`: true on a batch says every picture of it was painted and chosen at an earlier sitting (its `note` says where the records are). Its renders are still counted, as the plan prices them, and its workflows can still be written for a picture wanted once more, but its page of steps opens by telling the owner there is nothing to run.",
   "`canary` and install figures are added beside a batch by the installer (5.2); nothing here is read by the game."
  ],
  "cost_per_render": 0.16,
@@ -2277,6 +2278,7 @@
    "id": "47",
    "heading": "Rooms lit at Night (D61, docs/UI2_DESIGN.md 5.7a)",
    "title": "the friends' rooms dark, and the dojo lit",
+   "painted_early": true,
    "needs": [
     "9",
     "10",

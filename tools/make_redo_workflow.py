@@ -32,7 +32,9 @@ docs/UI2_DESIGN.md 5.1, 5.4, 5.7, K5, K8. The prompt is, in this order:
      the batch table every indoor night row has words of its own (lights
      off; for the infirmary and the Teachers' Dormitory, their lamps), so
      the general night sentence is only for a relight made by hand. A yard
-     has one Night picture and no `lit`.
+     has one Night picture and no `lit`, and neither has a room the game's
+     table WORLD_LIT does not name (LIT_ROOMS below): `lit` is refused for
+     both, as the installer would refuse the render.
   3. by day, where the campus record has one for the room, the window line:
      "Through the windows: ...". It is written by the tool from the record,
      never by hand, and a line that names a neighbour is left out until that
@@ -104,6 +106,9 @@ HOURS = {
 }
 HOUR_NAMES = ("evening", "night", "lit")
 LIT = "lit"
+# The rooms that have a lit picture: the game's table WORLD_LIT (sb_world.rpy; 5.7a), by place key. The installer reads
+# the same list from the layout dump (game_layout.lit_places()); tools/test_art_tools.py holds the two together.
+LIT_ROOMS = ("library", "yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room", "dorm", "dojo")
 
 
 def place_of(rec, name):
@@ -136,6 +141,18 @@ def named(rec, place, key, keep_dir=None):
     return "; ".join(rows)
 
 
+def lit_asked(p, place, hour):
+    """Refused when the hour is lit and the place has no lit picture: a yard, or a room the game's table does not
+    name. The installer would refuse the render (install_redo.py), so nothing is written for it."""
+    if hour != LIT:
+        return
+    if not p["indoor"]:
+        raise Refused("%s is outdoors: a yard has one Night picture and no lit one (5.7a)" % p["name"])
+    if place not in LIT_ROOMS:
+        raise Refused("%s has no lit picture: only a room of the game's WORLD_LIT has one (5.7a). Its Night picture "
+                      "is --relight %s night" % (p["name"], place))
+
+
 def prompt_for(record, place, hour=None, add=None, change=None, window=True, ignore_needs=False, hour_words=None):
     """The prompt of a redo in place (hour None) or of a relight ("evening", "night", "lit").
     add / change: the words of the keep list's `allow` / `change` line."""
@@ -161,8 +178,7 @@ def prompt_for(record, place, hour=None, add=None, change=None, window=True, ign
     else:
         if hour not in HOUR_NAMES:
             raise Refused("the hour is evening, night or lit, not %r" % hour)
-        if hour == LIT and not p["indoor"]:
-            raise Refused("%s is outdoors: a yard has one Night picture and no lit one (5.7a)" % p["name"])
+        lit_asked(p, place, hour)
         out.append(hour_words or HOURS[(hour, bool(p["indoor"]))])
     out.append(check_prompts.text_of("look.txt"))
     return " ".join(out)
@@ -215,6 +231,7 @@ def redo_job(record, manifest, name, hour=None, from_rev1=False, add=False, chan
         if "Through the windows:" in prompt:
             checklist.append("the windows show what the record says: yes / no")
         return kit.job(stem, label, prompt, [(title, src)], again, checklist, kind="inplace", place=place)
+    lit_asked(p, place, hour)          # before "its day picture is not installed": that would promise a picture
     if check_campus.rev_of(manifest, stem) < 2:
         raise Refused("%s's %s cannot be made yet: its day picture is not installed in the new look (batch %s). An "
                       "hour picture is relit from the day picture the owner chose." % (p["name"], hour, p.get("batch", "?")))

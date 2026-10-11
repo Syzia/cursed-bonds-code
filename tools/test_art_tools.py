@@ -807,6 +807,11 @@ def group_layout(lab):
        lit_rooms is not None and "library" in lit_rooms and "dorm" in lit_rooms and lay.lit_file("dorm") == "images/bg/your_room_lit.png"
        and all(lay.indoor(p) for p in lit_rooms) and "courtyard" not in lit_rooms and lay.lit_file("courtyard") is None
        and all(lay.lit_file(p) == "images/bg/%s_lit.png" % lay.bg_stem(p) for p in lit_rooms), lit_rooms)
+    import make_redo_workflow
+    ok("the workflow maker's own list of lit rooms (make_redo_workflow.LIT_ROOMS, which art_batch.py shares) is the game's "
+       "table as the dump holds it: a room added to WORLD_LIT, or taken out, is seen here",
+       lit_rooms is not None and sorted(make_redo_workflow.LIT_ROOMS) == sorted(lit_rooms),
+       [make_redo_workflow.LIT_ROOMS, lit_rooms])
     not_lit = [p["key"] for p in lay.d["places"] if p["key"] not in (lit_rooms or [])][0]
     ok("periods_showing(place, \"lit\") is Night and nothing else for a room of the lit table, and no hour at all for a "
        "place that is not in it (%s); a room's night and evening pictures show when they did" % not_lit,
