@@ -1014,12 +1014,14 @@
       {
        "place": "gate",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right; the still water reflects the evening sky. Everything in the picture and on the hills is still there. Add no new light."
       },
       {
        "place": "gate",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows; the still water reflects the night sky. Every window of the buildings is dark. The stone lamps standing in the garden give a small warm glow; add no other light. Everything in the picture and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       }
      ]
     },
