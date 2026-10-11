@@ -797,7 +797,8 @@
       {
        "place": "staff_yard",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. Everything in the picture and on the hills is still there. Add no new light."
       }
      ]
     },
@@ -807,17 +808,20 @@
       {
        "place": "staff_yard",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. In the two-storey house on the right a few of the upstairs windows glow warm, because someone is up there; every other window in the picture is dark: the hall at the top of the steps and the two small buildings beside them. Everything in the picture and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       },
       {
        "place": "trailhead",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. Everything in the picture and on the hills is still there. Add no new light."
       },
       {
        "place": "trailhead",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. Every window of the small house on the right is dark and no lamp is lit; its steam still rises, pale in the moonlight. The dome on top of the hill stays as it is, a dark shape against the sky. Everything in the picture and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       }
      ]
     }
@@ -926,7 +930,8 @@
       {
        "place": "pool",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right; the still water reflects the evening sky. Everything in the picture and on the hills is still there. Nobody is in the picture. Add no new light."
       }
      ]
     }

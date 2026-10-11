@@ -1312,6 +1312,168 @@
    }
   ]
  },
+ "faces": {
+  "gojo": {
+   "blink_also": [],
+   "eyes": null,
+   "mouth": [
+    326,
+    226,
+    54,
+    34
+   ]
+  },
+  "ijichi": {
+   "blink_also": [],
+   "eyes": [
+    322,
+    247,
+    76,
+    30
+   ],
+   "mouth": [
+    332,
+    300,
+    54,
+    36
+   ]
+  },
+  "maki": {
+   "blink_also": [],
+   "eyes": [
+    332,
+    271,
+    80,
+    36
+   ],
+   "mouth": [
+    346,
+    325,
+    44,
+    28
+   ]
+  },
+  "megumi": {
+   "blink_also": [],
+   "eyes": [
+    308,
+    283,
+    114,
+    44
+   ],
+   "mouth": [
+    345,
+    338,
+    48,
+    28
+   ]
+  },
+  "nobara": {
+   "blink_also": [],
+   "eyes": [
+    347,
+    372,
+    88,
+    44
+   ],
+   "mouth": [
+    366,
+    424,
+    44,
+    30
+   ]
+  },
+  "panda": {
+   "blink_also": [],
+   "eyes": [
+    400,
+    165,
+    125,
+    32
+   ],
+   "mouth": [
+    378,
+    256,
+    160,
+    56
+   ]
+  },
+  "shoko": {
+   "blink_also": [],
+   "eyes": [
+    332,
+    250,
+    88,
+    38
+   ],
+   "mouth": [
+    354,
+    312,
+    48,
+    40
+   ]
+  },
+  "toge": {
+   "blink_also": [],
+   "eyes": [
+    327,
+    287,
+    84,
+    40
+   ],
+   "mouth": [
+    338,
+    340,
+    60,
+    40
+   ]
+  },
+  "utahime": {
+   "blink_also": [],
+   "eyes": [
+    341,
+    256,
+    80,
+    40
+   ],
+   "mouth": [
+    352,
+    318,
+    48,
+    26
+   ]
+  },
+  "yaga": {
+   "blink_also": [],
+   "eyes": null,
+   "mouth": [
+    330,
+    226,
+    100,
+    54
+   ]
+  },
+  "yuji": {
+   "blink_also": [
+    "happy",
+    "sad",
+    "serious",
+    "surprised"
+   ],
+   "eyes": [
+    336,
+    296,
+    88,
+    44
+   ],
+   "mouth": [
+    350,
+    345,
+    60,
+    34
+   ]
+  }
+ },
  "fg_rooms": [
   "dorm_common",
   "cafeteria",
@@ -1321,6 +1483,7 @@
   "cafeteria"
  ],
  "files": [
+  "art_manifest.rpy",
   "bg_placeholders.rpy",
   "ch1_alley.rpy",
   "ch1b_the_offer.rpy",
@@ -1360,12 +1523,15 @@
   "missions_arc1.rpy",
   "missions_stubs.rpy",
   "options.rpy",
+  "room_bath.rpy",
   "room_cards.rpy",
   "room_computer.rpy",
   "room_fishing.rpy",
   "room_library.rpy",
   "room_paths.rpy",
+  "room_pool.rpy",
   "room_spots.rpy",
+  "room_tokyo.rpy",
   "sb_activities.rpy",
   "sb_board.rpy",
   "sb_combat.rpy",
@@ -1391,6 +1557,7 @@
   "story_arc1.rpy",
   "story_kurose.rpy",
   "story_oda.rpy",
+  "ui_hints.rpy",
   "ui_hud.rpy",
   "ui_icons.rpy",
   "ui_journal.rpy",
@@ -1590,7 +1757,36 @@
    ]
   }
  },
- "hash": "81e8ae8555cada024bc26cd2536fc5d494d8f4159bdf076b09aa43aa1701f503",
+ "hash": "db9d5ac1dc05a4e636d39e9d237f40f119fac8b8fa2eac32232bbee2ec58e400",
+ "hot_look": {
+  "color": "#fff0cc",
+  "dim": 0.4,
+  "edge": 0.85,
+  "names": 0.5,
+  "wash": 0.3
+ },
+ "hot_shape": {
+  "area_max": 0.4,
+  "area_min": 5184,
+  "blur": 9,
+  "buried_max": 0.5,
+  "color": "#fff0cc",
+  "dim": 0.4,
+  "edge": 0.85,
+  "grid": 4,
+  "line": 2,
+  "names": 0.5,
+  "points": [
+   3,
+   60
+  ],
+  "polys": [
+   1,
+   3
+  ],
+  "top": 92,
+  "wash": 0.3
+ },
  "hotspots": {
   "cafeteria": [
    {
@@ -1870,6 +2066,87 @@
    }
   ]
  },
+ "keep_clear": {
+  "cafeteria": [
+   [
+    1500,
+    600
+   ]
+  ],
+  "classroom": [
+   [
+    1450,
+    500
+   ]
+  ],
+  "courtyard": [
+   [
+    1600,
+    690
+   ]
+  ],
+  "dorm": [
+   [
+    440,
+    590
+   ],
+   [
+    1330,
+    720
+   ]
+  ],
+  "dorm_common": [
+   [
+    1400,
+    876
+   ],
+   [
+    1590,
+    560
+   ]
+  ],
+  "infirmary": [
+   [
+    1420,
+    700
+   ]
+  ],
+  "library": [
+   [
+    300,
+    520
+   ],
+   [
+    1630,
+    480
+   ]
+  ],
+  "ridge": [
+   [
+    960,
+    250
+   ]
+  ],
+  "riverside": [
+   [
+    1580,
+    905
+   ]
+  ],
+  "storehouse": [
+   [
+    1600,
+    600
+   ]
+  ],
+  "utahime_office": [
+   [
+    1500,
+    470
+   ]
+  ]
+ },
+ "keep_tile": {},
  "light": {
   "bg": {
    "bg alley": [
@@ -1914,6 +2191,18 @@
     0.88,
     0.5
    ],
+   "bg mall_atrium": [
+    "#c0b4dc",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg mall_front": [
+    "#b0bbe6",
+    -0.08,
+    0.85,
+    0.39
+   ],
    "bg map_tokyo": [
     "#b0bbe6",
     -0.08,
@@ -1938,6 +2227,24 @@
     0.85,
     0.39
    ],
+   "bg site_karaoke": [
+    "#b0bbe6",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg site_platform": [
+    "#b0bbe6",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg site_pool": [
+    "#c0b4dc",
+    -0.08,
+    0.85,
+    0.39
+   ],
    "bg utahime_office": [
     "#e8eefc",
     -0.03,
@@ -1946,6 +2253,12 @@
    ],
    "bg veil": [
     "#c0b4dc",
+    -0.08,
+    0.85,
+    0.39
+   ],
+   "bg warehouse": [
+    "#b0bbe6",
     -0.08,
     0.85,
     0.39
@@ -2102,6 +2415,596 @@
    ]
   }
  },
+ "look_keys": [
+  "color",
+  "wash",
+  "edge",
+  "dim",
+  "names"
+ ],
+ "name_rects": {
+  "bathhouse": {
+   "go_bathhouse__sauna": [
+    1604,
+    495,
+    111,
+    29
+   ],
+   "go_bathhouse__trailhead": [
+    48,
+    435,
+    169,
+    29
+   ]
+  },
+  "boys_dorm": {
+   "go_boys_dorm__dorm": [
+    794,
+    435,
+    105,
+    29
+   ],
+   "go_boys_dorm__dorm_yard": [
+    824,
+    895,
+    194,
+    29
+   ],
+   "go_boys_dorm__megumi_room": [
+    1442,
+    535,
+    149,
+    29
+   ],
+   "go_boys_dorm__senpai_room": [
+    1164,
+    455,
+    212,
+    29
+   ],
+   "go_boys_dorm__yuji_room": [
+    399,
+    535,
+    119,
+    29
+   ]
+  },
+  "cafeteria": {
+   "counter": [
+    1422,
+    564,
+    42,
+    29
+   ],
+   "go_cafeteria__school_yard": [
+    194,
+    455,
+    191,
+    29
+   ]
+  },
+  "classroom": {
+   "blackboard": [
+    1288,
+    464,
+    126,
+    29
+   ],
+   "go_classroom__school_yard": [
+    1634,
+    555,
+    191,
+    29
+   ]
+  },
+  "courtyard": {
+   "go_courtyard__dorm_yard": [
+    924,
+    245,
+    194,
+    29
+   ],
+   "go_courtyard__gate": [
+    1264,
+    920,
+    137,
+    29
+   ],
+   "go_courtyard__school_yard": [
+    48,
+    535,
+    191,
+    29
+   ],
+   "go_courtyard__training_yard": [
+    1445,
+    814,
+    159,
+    29
+   ],
+   "spot_vend": [
+    1433,
+    654,
+    131,
+    29
+   ]
+  },
+  "dojo": {
+   "go_dojo__training_yard": [
+    48,
+    555,
+    159,
+    29
+   ]
+  },
+  "dorm": {
+   "bed": [
+    1240,
+    684,
+    54,
+    29
+   ],
+   "computer": [
+    404,
+    525,
+    108,
+    29
+   ],
+   "go_dorm__boys_dorm": [
+    114,
+    695,
+    181,
+    29
+   ]
+  },
+  "dorm_common": {
+   "card_table": [
+    1305,
+    840,
+    59,
+    29
+   ],
+   "go_dorm_common__dorm_yard": [
+    48,
+    475,
+    194,
+    29
+   ],
+   "tv": [
+    1442,
+    524,
+    112,
+    29
+   ]
+  },
+  "dorm_yard": {
+   "go_dorm_yard__boys_dorm": [
+    284,
+    692,
+    181,
+    29
+   ],
+   "go_dorm_yard__courtyard": [
+    414,
+    895,
+    140,
+    29
+   ],
+   "go_dorm_yard__dorm_common": [
+    894,
+    535,
+    218,
+    29
+   ],
+   "go_dorm_yard__girls_dorm": [
+    1494,
+    535,
+    177,
+    29
+   ],
+   "go_dorm_yard__rooftop": [
+    1164,
+    220,
+    127,
+    29
+   ],
+   "go_dorm_yard__staff_yard": [
+    1254,
+    895,
+    211,
+    29
+   ],
+   "go_dorm_yard__trailhead": [
+    429,
+    550,
+    169,
+    29
+   ]
+  },
+  "forest": {
+   "go_forest__trailhead": [
+    48,
+    535,
+    169,
+    29
+   ]
+  },
+  "gate": {
+   "go_gate__courtyard": [
+    924,
+    215,
+    140,
+    29
+   ]
+  },
+  "girls_dorm": {
+   "go_girls_dorm__dorm_yard": [
+    1054,
+    495,
+    194,
+    29
+   ],
+   "go_girls_dorm__maki_room": [
+    1439,
+    535,
+    128,
+    29
+   ],
+   "go_girls_dorm__nobara_room": [
+    434,
+    535,
+    149,
+    29
+   ]
+  },
+  "gojo_office": {
+   "go_gojo_office__staff_yard": [
+    1644,
+    575,
+    211,
+    29
+   ]
+  },
+  "infirmary": {
+   "cot": [
+    1259,
+    664,
+    125,
+    29
+   ],
+   "go_infirmary__school_yard": [
+    48,
+    435,
+    191,
+    29
+   ]
+  },
+  "library": {
+   "go_library__school_yard": [
+    1624,
+    815,
+    191,
+    29
+   ],
+   "locked_shelf": [
+    1463,
+    444,
+    131,
+    29
+   ],
+   "stacks": [
+    112,
+    484,
+    152,
+    29
+   ]
+  },
+  "maki_room": {
+   "go_maki_room__girls_dorm": [
+    114,
+    695,
+    177,
+    29
+   ]
+  },
+  "megumi_room": {
+   "go_megumi_room__boys_dorm": [
+    1624,
+    695,
+    181,
+    29
+   ]
+  },
+  "nobara_room": {
+   "go_nobara_room__girls_dorm": [
+    114,
+    695,
+    177,
+    29
+   ]
+  },
+  "office": {
+   "go_office__staff_yard": [
+    48,
+    495,
+    211,
+    29
+   ]
+  },
+  "pool": {
+   "go_pool__training_yard": [
+    124,
+    755,
+    159,
+    29
+   ]
+  },
+  "ridge": {
+   "go_ridge__trailhead": [
+    48,
+    655,
+    169,
+    29
+   ],
+   "veil": [
+    778,
+    214,
+    146,
+    29
+   ]
+  },
+  "riverside": {
+   "bank": [
+    1500,
+    869,
+    44,
+    29
+   ],
+   "go_riverside__trailhead": [
+    48,
+    695,
+    169,
+    29
+   ]
+  },
+  "rooftop": {
+   "go_rooftop__dorm_yard": [
+    1644,
+    575,
+    194,
+    29
+   ]
+  },
+  "sauna": {
+   "go_sauna__bathhouse": [
+    48,
+    455,
+    111,
+    29
+   ]
+  },
+  "school_yard": {
+   "go_school_yard__cafeteria": [
+    949,
+    615,
+    135,
+    29
+   ],
+   "go_school_yard__classroom": [
+    369,
+    565,
+    143,
+    29
+   ],
+   "go_school_yard__courtyard": [
+    1404,
+    885,
+    140,
+    29
+   ],
+   "go_school_yard__infirmary": [
+    1574,
+    745,
+    131,
+    29
+   ],
+   "go_school_yard__library": [
+    48,
+    625,
+    118,
+    29
+   ]
+  },
+  "senpai_room": {
+   "go_senpai_room__boys_dorm": [
+    1624,
+    695,
+    181,
+    29
+   ]
+  },
+  "staff_yard": {
+   "go_staff_yard__dorm_yard": [
+    189,
+    865,
+    194,
+    29
+   ],
+   "go_staff_yard__gojo_office": [
+    144,
+    595,
+    132,
+    29
+   ],
+   "go_staff_yard__office": [
+    842,
+    430,
+    186,
+    29
+   ],
+   "go_staff_yard__teachers_lounge": [
+    1654,
+    435,
+    190,
+    29
+   ],
+   "go_staff_yard__training_yard": [
+    1604,
+    785,
+    159,
+    29
+   ],
+   "go_staff_yard__utahime_office": [
+    1449,
+    595,
+    157,
+    29
+   ]
+  },
+  "storehouse": {
+   "armory": [
+    1496,
+    564,
+    68,
+    29
+   ],
+   "go_storehouse__training_yard": [
+    48,
+    455,
+    159,
+    29
+   ],
+   "racks": [
+    1383,
+    564,
+    181,
+    29
+   ]
+  },
+  "teachers_dorm": {
+   "go_teachers_dorm__teachers_lounge": [
+    84,
+    555,
+    190,
+    29
+   ]
+  },
+  "teachers_lounge": {
+   "go_teachers_lounge__staff_yard": [
+    48,
+    475,
+    211,
+    29
+   ],
+   "go_teachers_lounge__teachers_dorm": [
+    1654,
+    435,
+    210,
+    29
+   ]
+  },
+  "trailhead": {
+   "go_trailhead__bathhouse": [
+    1444,
+    495,
+    111,
+    29
+   ],
+   "go_trailhead__dorm_yard": [
+    1044,
+    925,
+    194,
+    29
+   ],
+   "go_trailhead__forest": [
+    144,
+    595,
+    150,
+    29
+   ],
+   "go_trailhead__ridge": [
+    826,
+    295,
+    174,
+    29
+   ],
+   "go_trailhead__riverside": [
+    1604,
+    765,
+    130,
+    29
+   ]
+  },
+  "training": {
+   "go_training__training_yard": [
+    194,
+    535,
+    159,
+    29
+   ]
+  },
+  "training_yard": {
+   "go_training_yard__courtyard": [
+    114,
+    775,
+    140,
+    29
+   ],
+   "go_training_yard__dojo": [
+    129,
+    535,
+    100,
+    29
+   ],
+   "go_training_yard__pool": [
+    1564,
+    815,
+    172,
+    29
+   ],
+   "go_training_yard__staff_yard": [
+    584,
+    495,
+    211,
+    29
+   ],
+   "go_training_yard__storehouse": [
+    916,
+    580,
+    148,
+    29
+   ],
+   "go_training_yard__training": [
+    1614,
+    535,
+    154,
+    29
+   ]
+  },
+  "utahime_office": {
+   "board": [
+    1351,
+    434,
+    113,
+    29
+   ],
+   "go_utahime_office__staff_yard": [
+    48,
+    455,
+    211,
+    29
+   ]
+  },
+  "yuji_room": {
+   "go_yuji_room__boys_dorm": [
+    1624,
+    695,
+    181,
+    29
+   ]
+  }
+ },
+ "names_key": "K_n",
  "people": {
   "gojo": {
    "canvas": [
@@ -2805,6 +3708,8 @@
   1920,
   1080
  ],
+ "shaped": [],
+ "shapes": {},
  "slots": {
   "bathhouse": {
    "1": [
@@ -5819,7 +6724,675 @@
    ]
   }
  },
- "spot_planned": [],
+ "spot_planned": [
+  [
+   "gate_pond",
+   "gate",
+   "look"
+  ],
+  [
+   "gateway",
+   "courtyard",
+   "look"
+  ],
+  [
+   "straw_posts",
+   "courtyard",
+   "act"
+  ],
+  [
+   "pine_bench",
+   "school_yard",
+   "look"
+  ],
+  [
+   "notices",
+   "classroom",
+   "look"
+  ],
+  [
+   "front_desk",
+   "classroom",
+   "act"
+  ],
+  [
+   "water_cooler",
+   "cafeteria",
+   "look"
+  ],
+  [
+   "shoko_desk",
+   "infirmary",
+   "look"
+  ],
+  [
+   "reading_table",
+   "library",
+   "look"
+  ],
+  [
+   "pond",
+   "dorm_yard",
+   "look"
+  ],
+  [
+   "lit_windows",
+   "dorm_yard",
+   "look"
+  ],
+  [
+   "wardrobe",
+   "dorm",
+   "look"
+  ],
+  [
+   "window",
+   "dorm",
+   "look"
+  ],
+  [
+   "desk",
+   "dorm",
+   "act"
+  ],
+  [
+   "fridge",
+   "dorm_common",
+   "look"
+  ],
+  [
+   "game_boxes",
+   "dorm_common",
+   "look"
+  ],
+  [
+   "manga_shelf",
+   "dorm_common",
+   "look"
+  ],
+  [
+   "plant",
+   "girls_dorm",
+   "look"
+  ],
+  [
+   "rooftop_view",
+   "rooftop",
+   "look"
+  ],
+  [
+   "railing",
+   "rooftop",
+   "act"
+  ],
+  [
+   "shoe_rack",
+   "boys_dorm",
+   "look"
+  ],
+  [
+   "notice_board",
+   "boys_dorm",
+   "look"
+  ],
+  [
+   "film_shelf",
+   "yuji_room",
+   "look"
+  ],
+  [
+   "bed_yuji",
+   "yuji_room",
+   "look"
+  ],
+  [
+   "bookshelf",
+   "megumi_room",
+   "look"
+  ],
+  [
+   "bed_megumi",
+   "megumi_room",
+   "look"
+  ],
+  [
+   "shogi_board",
+   "senpai_room",
+   "look"
+  ],
+  [
+   "bed_panda",
+   "senpai_room",
+   "look"
+  ],
+  [
+   "bed_toge",
+   "senpai_room",
+   "look"
+  ],
+  [
+   "mirror",
+   "nobara_room",
+   "look"
+  ],
+  [
+   "bed_nobara",
+   "nobara_room",
+   "look"
+  ],
+  [
+   "weapon_case",
+   "maki_room",
+   "look"
+  ],
+  [
+   "bed_maki",
+   "maki_room",
+   "look"
+  ],
+  [
+   "stone_lanterns",
+   "staff_yard",
+   "look"
+  ],
+  [
+   "dolls",
+   "office",
+   "look"
+  ],
+  [
+   "photograph",
+   "office",
+   "look"
+  ],
+  [
+   "binders",
+   "utahime_office",
+   "look"
+  ],
+  [
+   "gojo_tv",
+   "gojo_office",
+   "look"
+  ],
+  [
+   "sweets",
+   "gojo_office",
+   "look"
+  ],
+  [
+   "rota",
+   "teachers_lounge",
+   "look"
+  ],
+  [
+   "kettle",
+   "teachers_lounge",
+   "look"
+  ],
+  [
+   "workbench",
+   "teachers_dorm",
+   "look"
+  ],
+  [
+   "name_plates",
+   "teachers_dorm",
+   "look"
+  ],
+  [
+   "striking_posts",
+   "training_yard",
+   "act"
+  ],
+  [
+   "mats",
+   "training",
+   "look"
+  ],
+  [
+   "straw_bundles",
+   "training",
+   "act"
+  ],
+  [
+   "wall_shrine",
+   "dojo",
+   "look"
+  ],
+  [
+   "weapon_rack",
+   "dojo",
+   "act"
+  ],
+  [
+   "big_chest",
+   "storehouse",
+   "look"
+  ],
+  [
+   "lane_board",
+   "pool",
+   "look"
+  ],
+  [
+   "pool_swim",
+   "pool",
+   "act"
+  ],
+  [
+   "standing_stone",
+   "trailhead",
+   "look"
+  ],
+  [
+   "stone_markers",
+   "forest",
+   "look"
+  ],
+  [
+   "waterfall",
+   "riverside",
+   "look"
+  ],
+  [
+   "deep_pool",
+   "riverside",
+   "act"
+  ],
+  [
+   "milk_fridge",
+   "bathhouse",
+   "look"
+  ],
+  [
+   "bath_soak",
+   "bathhouse",
+   "act"
+  ],
+  [
+   "bucket",
+   "sauna",
+   "look"
+  ],
+  [
+   "bath_sauna",
+   "sauna",
+   "act"
+  ]
+ ],
+ "standins": {
+  "copies": {
+   "city_night": "images/bg/standin/standin_city_night.png",
+   "ruin_hall": "images/bg/standin/standin_ruin_hall.png",
+   "street_morning": "images/bg/standin/standin_street_morning.png",
+   "town_street": "images/bg/standin/standin_town_street.png",
+   "veil": "images/bg/standin/standin_veil.png"
+  },
+  "if_file": {
+   "bg club": "images/bg/club.png",
+   "bg shibuya night": "images/bg/shibuya_night.png",
+   "bg shinjuku night": "images/bg/shinjuku_night.png"
+  },
+  "names": {
+   "annexe": "ruin_hall",
+   "mall_atrium": "veil",
+   "mall_front": "city_night",
+   "mall_hall": "ruin_hall",
+   "site_karaoke": "city_night",
+   "site_platform": "city_night",
+   "site_pool": "veil",
+   "site_tunnel": "ruin_hall",
+   "site_ward": "ruin_hall",
+   "warehouse": "city_night"
+  },
+  "people": [
+   "mother",
+   "father",
+   "oda",
+   "kurose",
+   "nade"
+  ]
+ },
+ "tips": {},
+ "variants_planned": [
+  [
+   "dorm",
+   "Evening",
+   "evening",
+   "images/bg/your_room_evening.png"
+  ],
+  [
+   "cafeteria",
+   "Evening",
+   "evening",
+   "images/bg/cafeteria_evening.png"
+  ],
+  [
+   "cafeteria",
+   "Night",
+   "night",
+   "images/bg/cafeteria_night.png"
+  ],
+  [
+   "girls_dorm",
+   "Evening",
+   "evening",
+   "images/bg/girls_dorm_evening.png"
+  ],
+  [
+   "classroom",
+   "Evening",
+   "evening",
+   "images/bg/classroom_evening.png"
+  ],
+  [
+   "classroom",
+   "Night",
+   "night",
+   "images/bg/classroom_night.png"
+  ],
+  [
+   "infirmary",
+   "Evening",
+   "evening",
+   "images/bg/infirmary_evening.png"
+  ],
+  [
+   "courtyard",
+   "Evening",
+   "evening",
+   "images/bg/courtyard_evening.png"
+  ],
+  [
+   "courtyard",
+   "Night",
+   "night",
+   "images/bg/courtyard_night.png"
+  ],
+  [
+   "school_yard",
+   "Evening",
+   "evening",
+   "images/bg/school_yard_evening.png"
+  ],
+  [
+   "school_yard",
+   "Night",
+   "night",
+   "images/bg/school_yard_night.png"
+  ],
+  [
+   "library",
+   "Evening",
+   "evening",
+   "images/bg/library_evening.png"
+  ],
+  [
+   "library",
+   "Night",
+   "night",
+   "images/bg/library_night.png"
+  ],
+  [
+   "dorm_yard",
+   "Evening",
+   "evening",
+   "images/bg/dorm_yard_evening.png"
+  ],
+  [
+   "dorm_yard",
+   "Night",
+   "night",
+   "images/bg/dorm_yard_night.png"
+  ],
+  [
+   "office",
+   "Evening",
+   "evening",
+   "images/bg/office_evening.png"
+  ],
+  [
+   "utahime_office",
+   "Evening",
+   "evening",
+   "images/bg/utahime_office_evening.png"
+  ],
+  [
+   "gojo_office",
+   "Evening",
+   "evening",
+   "images/bg/gojo_office_evening.png"
+  ],
+  [
+   "training_yard",
+   "Evening",
+   "evening",
+   "images/bg/training_yard_evening.png"
+  ],
+  [
+   "training_yard",
+   "Night",
+   "night",
+   "images/bg/training_yard_night.png"
+  ],
+  [
+   "staff_yard",
+   "Evening",
+   "evening",
+   "images/bg/staff_yard_evening.png"
+  ],
+  [
+   "staff_yard",
+   "Night",
+   "night",
+   "images/bg/staff_yard_night.png"
+  ],
+  [
+   "trailhead",
+   "Evening",
+   "evening",
+   "images/bg/trailhead_evening.png"
+  ],
+  [
+   "trailhead",
+   "Night",
+   "night",
+   "images/bg/trailhead_night.png"
+  ],
+  [
+   "training",
+   "Evening",
+   "evening",
+   "images/bg/training_evening.png"
+  ],
+  [
+   "training",
+   "Night",
+   "night",
+   "images/bg/training_night.png"
+  ],
+  [
+   "dojo",
+   "Evening",
+   "evening",
+   "images/bg/dojo_evening.png"
+  ],
+  [
+   "dojo",
+   "Night",
+   "night",
+   "images/bg/dojo_night.png"
+  ],
+  [
+   "storehouse",
+   "Evening",
+   "evening",
+   "images/bg/storehouse_evening.png"
+  ],
+  [
+   "storehouse",
+   "Night",
+   "night",
+   "images/bg/storehouse_night.png"
+  ],
+  [
+   "forest",
+   "Evening",
+   "evening",
+   "images/bg/forest_evening.png"
+  ],
+  [
+   "forest",
+   "Night",
+   "night",
+   "images/bg/forest_night.png"
+  ],
+  [
+   "riverside",
+   "Night",
+   "night",
+   "images/bg/riverside_night.png"
+  ],
+  [
+   "ridge",
+   "Evening",
+   "evening",
+   "images/bg/ridge_evening.png"
+  ],
+  [
+   "ridge",
+   "Night",
+   "night",
+   "images/bg/ridge_night.png"
+  ],
+  [
+   "gate",
+   "Evening",
+   "evening",
+   "images/bg/gate_evening.png"
+  ],
+  [
+   "gate",
+   "Night",
+   "night",
+   "images/bg/gate_night.png"
+  ],
+  [
+   "boys_dorm",
+   "Evening",
+   "evening",
+   "images/bg/boys_dorm_evening.png"
+  ],
+  [
+   "boys_dorm",
+   "Night",
+   "night",
+   "images/bg/boys_dorm_night.png"
+  ],
+  [
+   "yuji_room",
+   "Evening",
+   "evening",
+   "images/bg/yuji_room_evening.png"
+  ],
+  [
+   "yuji_room",
+   "Night",
+   "night",
+   "images/bg/yuji_room_night.png"
+  ],
+  [
+   "megumi_room",
+   "Evening",
+   "evening",
+   "images/bg/megumi_room_evening.png"
+  ],
+  [
+   "megumi_room",
+   "Night",
+   "night",
+   "images/bg/megumi_room_night.png"
+  ],
+  [
+   "senpai_room",
+   "Evening",
+   "evening",
+   "images/bg/senpai_room_evening.png"
+  ],
+  [
+   "senpai_room",
+   "Night",
+   "night",
+   "images/bg/senpai_room_night.png"
+  ],
+  [
+   "nobara_room",
+   "Evening",
+   "evening",
+   "images/bg/nobara_room_evening.png"
+  ],
+  [
+   "nobara_room",
+   "Night",
+   "night",
+   "images/bg/nobara_room_night.png"
+  ],
+  [
+   "maki_room",
+   "Evening",
+   "evening",
+   "images/bg/maki_room_evening.png"
+  ],
+  [
+   "maki_room",
+   "Night",
+   "night",
+   "images/bg/maki_room_night.png"
+  ],
+  [
+   "teachers_lounge",
+   "Evening",
+   "evening",
+   "images/bg/teachers_lounge_evening.png"
+  ],
+  [
+   "teachers_lounge",
+   "Night",
+   "night",
+   "images/bg/teachers_lounge_night.png"
+  ],
+  [
+   "teachers_dorm",
+   "Evening",
+   "evening",
+   "images/bg/teachers_dorm_evening.png"
+  ],
+  [
+   "teachers_dorm",
+   "Night",
+   "night",
+   "images/bg/teachers_dorm_night.png"
+  ],
+  [
+   "pool",
+   "Evening",
+   "evening",
+   "images/bg/pool_evening.png"
+  ],
+  [
+   "bathhouse",
+   "Evening",
+   "evening",
+   "images/bg/bathhouse_evening.png"
+  ],
+  [
+   "bathhouse",
+   "Night",
+   "night",
+   "images/bg/bathhouse_night.png"
+  ]
+ ],
  "weekdays": [
   "Mon",
   "Tue",
@@ -5871,5 +7444,95 @@
    "Morning": "dorm_common",
    "Noon": "yuji_room"
   }
+ },
+ "world": {
+  "asleep": {
+   "weekday": [
+    "megumi",
+    "maki",
+    "panda",
+    "utahime",
+    "ijichi"
+   ],
+   "weekend": [
+    "yuji",
+    "nobara",
+    "toge",
+    "utahime",
+    "ijichi"
+   ]
+  },
+  "away": {
+   "maki": {
+    "Sun Afternoon": "harajuku"
+   },
+   "nobara": {
+    "Sun Afternoon": "harajuku"
+   },
+   "yuji": {
+    "Sun Afternoon": "shibuya"
+   }
+  },
+  "door_bond": {
+   "girls_dorm": 15,
+   "maki_room": 15,
+   "megumi_room": 15,
+   "nobara_room": 15,
+   "senpai_room": 15,
+   "yuji_room": 15
+  },
+  "door_owners": {
+   "girls_dorm": [
+    "nobara",
+    "maki"
+   ],
+   "maki_room": [
+    "maki"
+   ],
+   "megumi_room": [
+    "megumi"
+   ],
+   "nobara_room": [
+    "nobara"
+   ],
+   "senpai_room": [
+    "panda",
+    "toge"
+   ],
+   "yuji_room": [
+    "yuji"
+   ]
+  },
+  "homes": {
+   "ijichi": "teachers_dorm",
+   "maki": "maki_room",
+   "megumi": "megumi_room",
+   "nobara": "nobara_room",
+   "panda": "senpai_room",
+   "shoko": "infirmary",
+   "toge": "senpai_room",
+   "utahime": "teachers_dorm",
+   "yaga": "teachers_dorm",
+   "yuji": "yuji_room"
+  },
+  "inside": {
+   "dorm": "boys_dorm",
+   "maki_room": "girls_dorm",
+   "megumi_room": "boys_dorm",
+   "nobara_room": "girls_dorm",
+   "sauna": "bathhouse",
+   "senpai_room": "boys_dorm",
+   "teachers_dorm": "teachers_lounge",
+   "yuji_room": "boys_dorm"
+  },
+  "pinless": [
+   "yuji_room",
+   "megumi_room",
+   "senpai_room",
+   "nobara_room",
+   "maki_room",
+   "teachers_dorm",
+   "sauna"
+  ]
  }
 }
