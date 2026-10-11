@@ -1,0 +1,85 @@
+{
+ "about": [
+  "Sitting 12a, composed: the Principal's Hall and the two offices, written early by hand on 11 Oct 2026 at the owner's word, \"Can we go on with the next batch of images?\". The plan had all three redone in place; O45 asks its four questions of every such room first, and each fails at least one, so each is composed again from words as the inside of its own building on the chosen Staff Building Steps, with the yard and a tight crop of its building as the only pictures and its view named side by side (Method note 34). Each prompt passed check_prompts.check against tools/art/staged/early/campus_for_batch3.json.",
+  "Gojo's office: its building is the small detached house on the left with ONE very large window and a door beside it; today's room has two ordinary windows and its door at the right edge, under the icon column. Kept: the long sofa, the low table of sweets and shopping bags, the very large television ('The television is on in there anyway.'). New: the door on the left, the one large window onto the yard, a lamp for its evening.",
+  "The Principal's Office: its building is the great hall at the top of the steps, with heavy doors and no windows, which today's dim candle-lit hall suits; but today's shows no door to click, has pillars across the middle of the floor, and lacks the low desk with the framed photograph the plan adds (the record's note). Kept: the candles, the shelves of cloth dolls. New: the heavy doors open in the left wall with the steps outside, pillars along the sides only, the desk and photograph.",
+  "Utahime's office: its building is the pavilion on the right with a ROUND window and paper screens; today's room has square windows and no round one. Kept: her desk and chair, the wall of pinned notices (the mission board, the room's thing to click), the vase. New: the paper door on the left, the round window onto the yard's gravel (the record's line), paper screens, the board on the right wall clear of the icon column.",
+  "All three are shut at Night (4.1), so each has a day and an evening only; the evenings follow the choice."
+ ],
+ "written": "2026-10-11",
+ "refs": "Picture 1 is the yard this room's building stands on, already painted: the same school. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the new picture is the inside of that building, and its front wall is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building.",
+ "stage": "The picture is seen from a standing person's eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, shelves and anything else a visitor would walk to or use.",
+ "sentences": {
+  "gojo_office": "the inside of a teacher's office, the small detached house with one very large window that stands on the left of picture 1 and is shown close up in picture 2. It is a bright, comfortable sitting room, about eight metres long and six wide, with pale plaster walls, dark timber posts and a timber ceiling. I stand inside at one end and look along the room. The left wall is the front of the house seen from inside. Near me in it a sliding door stands open: this is the way out, with the paved yard outside. Beyond the door the one very large window fills the rest of that wall from low sill to head, and through it I see the yard's paving and gravel in sunlight, a low stone wall and cedars. Against the far end wall stands a long, deep sofa. In front of it a low table is covered with open boxes of sweets, with paper shopping bags on the floor beside it. Against the right wall, further along than the middle, stands a very large flat television on a low cabinet; the stretch of the right wall nearest me is bare. One paper-shaded lamp hangs from the ceiling, not lit. The floor is polished timber boards, clear and open across the whole bottom of the picture",
+  "office": "the inside of the principal's hall, the great hall with the largest roof at the top of the stone steps in picture 1, shown close up in picture 2. It has no windows. It is a tall, wide, solemn hall, about twenty metres long and twelve wide, with a high coffered timber ceiling and dark round timber pillars standing along its two long walls and none in the middle. I stand inside at one end and look along it. The left wall is the front of the hall seen from inside: partway along it the heavy double doors stand open, and this is the way out, with daylight coming in across the floor and the top of the stone steps outside. The rest is lit by candles on tall iron stands, which make warm pools of light. Along the whole far end wall are tiers of low shelves crowded with soft cloth dolls of many shapes and sizes, sitting in rows. Before me, right of the middle and well forward of the shelves, stands a low writing desk with a framed photograph on it and a flat cushion behind it. The floor is wide dark polished timber boards, clear and open across the whole bottom of the picture",
+  "utahime_office": "the inside of a teacher's office, the neat small pavilion with the round window and the paper screens that stands on the right of the stone steps in picture 1 and is shown close up in picture 2. It is a tidy, light study, about seven metres long and five wide, with pale plaster walls and slim dark timber posts. I stand inside at one end and look along the room. The left wall is the front of the pavilion seen from inside. Near me in it a sliding paper door stands open: this is the way out, with the paved yard outside. Beyond the door is the round window, through which I see the raked gravel of the yard; beyond that the wall is closed paper screens, glowing with daylight. In the middle of the room, facing me, stands a broad timber desk with neat stacks of paper, a desk lamp and a brush stand on it, and a chair behind it. Behind the desk, the far end wall is shelves of files and boxes. On the right wall, further along than the middle, hangs a large board covered with rows of small pinned paper notices, with no writing that can be read; the stretch of the right wall nearest me is bare. A vase of flowers stands on a low cabinet under the board. The floor is polished timber boards, clear and open across the whole bottom of the picture"
+ },
+ "crops": {
+  "of": "ui2_staff_yard_b_00001_.png",
+  "boxes": {
+   "gojo_office": [
+    172,
+    310,
+    803,
+    912
+   ],
+   "office": [
+    717,
+    80,
+    2035,
+    912
+   ],
+   "utahime_office": [
+    1605,
+    467,
+    2236,
+    912
+   ]
+  }
+ },
+ "rows": [
+  {
+   "label": "Gojo's Office, composed again",
+   "kind": "composed",
+   "place": "gojo_office",
+   "saves": [
+    "ui2_gojo_office2_a",
+    "ui2_gojo_office2_b"
+   ],
+   "seeds": [
+    9808,
+    9809
+   ],
+   "prompt_sha256": "d3d7e465fc127be131bf9d3db219fa13b99124c1365489a0367c923198095150"
+  },
+  {
+   "label": "Principal's Office, composed again",
+   "kind": "composed",
+   "place": "office",
+   "saves": [
+    "ui2_office2_a",
+    "ui2_office2_b"
+   ],
+   "seeds": [
+    7984,
+    7985
+   ],
+   "prompt_sha256": "ed2d673046a13c9b76e24c0735b409d164fa4ccb57569a06f6b7c9d5e3cac42b"
+  },
+  {
+   "label": "Utahime's Office, composed again",
+   "kind": "composed",
+   "place": "utahime_office",
+   "saves": [
+    "ui2_utahime_office2_a",
+    "ui2_utahime_office2_b"
+   ],
+   "seeds": [
+    10108,
+    10109
+   ],
+   "prompt_sha256": "22915ad8f1774e18026991ae934d1c63e18dea26a031ec2c7b2ee45c2ab6b73b"
+  }
+ ],
+ "workflow_sha256": "8af7add277aaff5ecfe74e7fa17e8b77d2362cdade28d510303c91a6ad974ffd"
+}
