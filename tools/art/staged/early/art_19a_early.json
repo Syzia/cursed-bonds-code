@@ -3,7 +3,8 @@
   "Sitting 19a: the Onsen's rest hall and its sauna, the two rooms inside the hot-spring house of the chosen Mountain Path. Written early by hand on 11 Oct 2026, straight after the owner chose the last of the mountain's wild places (O57), and handed over unasked. Both are new places, composed, as the plan has them.",
   "Each is written from the record's words as the inside of its own building (Method note 34), by O45's four questions; the answers are below. The rest hall is given the chosen Mountain Path and a crop of the house; the sauna only the crop, since nothing of the outside is seen from it.",
   "NOBODY IS IN EITHER PICTURE, and the spring and the cold-plunge tub hold nobody (K16). The prompt check was run for the two places by name, where it is strictest; the stage sentence is the file's own, because the tool's names \"a visitor\".",
-  "The sauna has no window and one picture for every hour, lit by its stove (5.7). The rest hall's evening and night are sitting 19b, made from the version chosen."
+  "The sauna has no window and one picture for every hour, lit by its stove (5.7). The rest hall's evening and night are sitting 19b, made from the version chosen.",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:41) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "four_questions": {
@@ -63,5 +64,21 @@
   }
  ],
  "workflow_sha256": "1fde3f17b87f1c671b60922f547165f7d67c2be8fde83b2a13aee11f1e0d8c49",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_bathhouse_a_00001_.png": "b85a7e3313e2e6c9286e83f32173ad11100c4488ce450132c8fd22f0c9a78b37",
+  "ui2_bathhouse_b_00001_.png": "e9112826d75ea159bd8c3e9e22d4642aa697d615a0cf7bd5184bab01caeaae09",
+  "ui2_sauna_a_00001_.png": "586ce3c47f2faced8a33313a0e02745d58e73f9d0fe8999eb4ea4cd2187f5217",
+  "ui2_sauna_b_00001_.png": "ec2234ce895d24da39e15a350492cf4bd0964f003489036b95528bb89cda113e"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye, each against its row's checklist and against the hot-spring house on the chosen Mountain Path (a composed picture has no earlier picture of the same camera to measure against); the fridge zoomed for lettering; the dark band in one sauna measured. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_onsen.jpg.",
+  "bathhouse_a": "PICK. Nobody; the spring empty. The far end stands open between paper screens onto the spring, edged with grey stones and steaming, inside the plank fence, with cedars and a green slope above. The entrance is open in the right wall under the dark-blue curtain (about x 1314 to 1662 of 1920, clear of the right ninth), with the stone basin, the path and cedars outside. On the left the milk fridge, with a fan standing on it, and the shut cedar door just beyond; benches along the walls and at the two bottom corners; the floor clear. The bottles' labels carry specks that read as lettering only when zoomed to the render's own size.",
+  "bathhouse_b": "Good too, a longer hall with a smaller view of the spring. Not the pick: its entrance reaches the line of the right ninth (about x 1452 to 1704), so part of the way out would lie under the icon column.",
+  "sauna_b": "PICK. Nobody; the tub empty; no window. Lit by the stove's fire, the corners dim and everything still plain: the door in the far wall, the stone tub with its bamboo spout beside it, the bench along the left wall, the stove with its stones at the right (about x 1218 to 1500 of 1920) and the bucket and ladle beside it (to about x 1620), all clear of the right ninth. A bench's edge crosses the bottom right, as if I stood on the back bench.",
+  "sauna_a": "Not offered as the pick, for two faults: the right eighth of the picture is a black band (columns 2408 to 2751 of 2752, 12.5%: the stage sentence's \"leave the right ninth free\" painted literally), and the room is lit evenly and brightly, not by its stove (mean 117 against B's 85).",
+  "said_to_the_owner": "The specks on the milk bottles' labels; they can be painted plain by tool if wanted.",
+  "put_to_the_owner": "The Onsen's rest hall: A. The sauna: B."
+ }
 }
