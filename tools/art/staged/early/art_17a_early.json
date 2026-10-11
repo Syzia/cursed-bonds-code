@@ -4,7 +4,7 @@
   "The Forest Trail and the ridge each fail more than one, and are composed again from words. The Riverside passes all four, so it is made both ways for the owner to choose between: redone in place, and drawn again from today's camera with a larger waterfall and a deep pool (the two things one clicks there, which today are a waterfall about fifty pixels wide and water that is not plainly deep).",
   "References. For the forest and the ridge: one crop of the chosen Mountain Path each (the path among the cedars; the stairs and the dome), and nothing else. Today's picture of the place is not given, because the editor copies the layout of any picture of the place it is handed; the whole Mountain Path is not given, because its house, gate and standing stone would be painted as the view (Method note 34). For the Riverside drawn again: today's picture, with the tool's own sentence for a camera that is kept.",
   "The opening sentence is this file's own, not the tool's `open_yard`: that one names timber halls and tiled roofs, and nothing is built in any of the three.",
-  "Run by the owner on 11 Oct 2026 (the renders are stamped 14:55) and read the same day; see read_2026_10_11. Nothing is chosen yet."
+  "Run by the owner on 11 Oct 2026, read the same day (read_2026_10_11) and chosen the same day (chosen; the plan's owner row O55)."
  ],
  "written": "2026-10-11",
  "four_questions": {
@@ -160,7 +160,7 @@
  ],
  "workflow_sha256": "4d94b2ef6ec37ce522f809f937729e9584822bc75e5117048f6a8749a624924e",
  "cost": "8 renders, about $1.28",
- "if_chosen": "The Forest Trail and the ridge become composed places (the plan's count of rooms redone in place falls from nine to seven, and to six if the Riverside's drawn-again row is chosen). The ridge's `veil` icon moves onto the dome and its exit to the stairs' head at the bottom; the forest's exit to the trail at the bottom. If the Riverside is drawn again, the fishing float and the fishing spot are checked against the picture at its layout sitting, and moved by the layout if the water or the rock is not under them.",
+ "if_chosen": "DONE 11 Oct (O55): all three are composed places now. Six rooms are left redone in place, eighteen composed again, by O45's count. Still to do at each layout sitting: the ridge's look-up icon onto the dome (about (705, 210)) and its way back onto the stairs' head; the forest's way back onto the trail at the bottom; the riverside's way back onto the sandy path at the left. The fishing float and the fishing spot stay where they are.",
  "renders_sha256": {
   "ui2_forest2_a_00001_.png": "5bad433804d80f054c9c6e2cd77780784a2825a123e681b4079a4101b5c2ef92",
   "ui2_forest2_b_00001_.png": "eaf228cb1c12ba2b04505dcc0750446a3b07ea378954b15fd0a1d189ab794b8d",
@@ -184,5 +184,31 @@
   "ridge2_b": "Good too: a wider top and very wide stairs across the bottom (wider than the Mountain Path's), a flat rock on the grass at the right, and taller posts, with straw tassels between the streamers, that frame the rise and the dome like a gate; the dome is dead centre and a little smaller (about 91 px), its foot hidden by the crest.",
   "said_to_the_owner": "The kept Riverside is only sharper. Riverside drawn again B would need its fishing spot moved. The dome is small in both ridges, about a hut's size and further off than it looks from the Mountain Path, which follows O36 (\"you don't want it to feel to big\").",
   "put_to_the_owner": "Forest Trail B; Riverside drawn again A; the ridge A."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"I had the same picks as you except for forest trail. I think we should go with A since the path continues left and straight compared to B where the path just stops.\"",
+  "read_as": "Forest Trail version A (ui2_forest2_a); the Riverside drawn again, version A (ui2_riverside2_a); the ridge version A (ui2_ridge2_a). The two kept Riverside renders are not used.",
+  "forest": {
+   "version": "a",
+   "render": "ui2_forest2_a_00001_.png",
+   "sha256": "5bad433804d80f054c9c6e2cd77780784a2825a123e681b4079a4101b5c2ef92",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/forest_1920.png",
+   "fit_sha256": "d25ebf760921f8c8d1484acee17899b098b8d132df59fd86e350889c7ed69e2b",
+   "note": "Chosen for its trail, which runs on straight and to the left; B's is lost among the trunks and reads as a path that stops. The owner was told A's seat is a sawn plank where the story has a root; a repaint of that one thing, placed by tool, is offered with the next file."
+  },
+  "riverside": {
+   "version": "a",
+   "render": "ui2_riverside2_a_00001_.png",
+   "sha256": "03d949803a447a2d5db51ddf4e06a6e345f8d0051e974f9a964b4a432f604982",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/riverside_1920.png",
+   "fit_sha256": "667f25c2640cc9c604804aa9a26f2baa8ef303490cb62f39ed03cb9cb0bed1f1"
+  },
+  "ridge": {
+   "version": "a",
+   "render": "ui2_ridge2_a_00001_.png",
+   "sha256": "39e8bd5196a2bd86de72534bfc247dd23f4ab6becd6a8c755965035adfcabdaf",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/ridge_1920.png",
+   "fit_sha256": "59362b9debf9dca1c87db0f00e8465aa90bb304fa92e76117eb8f8ec41146fc5"
+  }
  }
 }

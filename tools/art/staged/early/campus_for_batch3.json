@@ -407,6 +407,51 @@
      600
     ]
    }
+  },
+  "forest": {
+   "place": "forest",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "17a",
+   "chosen": "2026-10-11",
+   "render": "ui2_forest2_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/forest_1920.png",
+   "first_guess": {
+    "trailhead": [
+     960,
+     985
+    ]
+   }
+  },
+  "riverside": {
+   "place": "riverside",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "17a",
+   "chosen": "2026-10-11",
+   "render": "ui2_riverside2_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/riverside_1920.png",
+   "first_guess": {
+    "trailhead": [
+     192,
+     576
+    ]
+   }
+  },
+  "ridge": {
+   "place": "ridge",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "17a",
+   "chosen": "2026-10-11",
+   "render": "ui2_ridge2_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/ridge_1920.png",
+   "first_guess": {
+    "trailhead": [
+     732,
+     960
+    ]
+   }
   }
  },
  "fixed": [
@@ -1806,6 +1851,125 @@
     "picture": "utahime_office",
     "rev": 2
    }
+  },
+  {
+   "id": "place.forest",
+   "kind": "place",
+   "key": "forest",
+   "name": "Forest Trail",
+   "stem": "forest",
+   "area": "mountain",
+   "indoor": false,
+   "building": "forest",
+   "how": "inplace",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ],
+   "by": {
+    "picture": "forest",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.forest",
+   "kind": "building",
+   "key": "forest",
+   "name": "Forest Trail",
+   "as": "the forest trail",
+   "holds": [
+    "forest"
+   ],
+   "at": [
+    330,
+    230
+   ],
+   "ground": true,
+   "look": "tall cedars, nothing built",
+   "by": {
+    "picture": "forest",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.riverside",
+   "kind": "place",
+   "key": "riverside",
+   "name": "Riverside",
+   "stem": "riverside",
+   "area": "mountain",
+   "indoor": false,
+   "building": "riverside",
+   "how": "inplace",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ],
+   "by": {
+    "picture": "riverside",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.riverside",
+   "kind": "building",
+   "key": "riverside",
+   "name": "Riverside",
+   "as": "the riverside",
+   "holds": [
+    "riverside"
+   ],
+   "at": [
+    1380,
+    170
+   ],
+   "ground": true,
+   "look": "a clear river, a pebble bank, a deep pool",
+   "by": {
+    "picture": "riverside",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.ridge",
+   "kind": "place",
+   "key": "ridge",
+   "name": "Mountain Ridge",
+   "stem": "ridge",
+   "area": "mountain",
+   "indoor": false,
+   "building": "ridge",
+   "how": "inplace",
+   "batch": "18",
+   "after": [
+    "trailhead"
+   ],
+   "note": "composed again from words (art_17a.json, O45's four questions) and chosen on 11 Oct 2026 (O55): the veil is the small dome on the rise beyond the rope, never in the sky (O36)",
+   "by": {
+    "picture": "ridge",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.ridge",
+   "kind": "building",
+   "key": "ridge",
+   "name": "Mountain Ridge",
+   "as": "the mountain ridge",
+   "holds": [
+    "ridge"
+   ],
+   "at": [
+    950,
+    110
+   ],
+   "ground": true,
+   "look": "grass and rock above the trees; on its very top sits the veil, a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen",
+   "note": "straight up the stone stairs from the Mountain Path",
+   "by": {
+    "picture": "ridge",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2011,55 +2175,6 @@
     240
    ],
    "look": "a tall tiled roof with a steam vent, a stone basin by the door, steam above the fence"
-  },
-  {
-   "id": "building.forest",
-   "kind": "building",
-   "key": "forest",
-   "name": "Forest Trail",
-   "as": "the forest trail",
-   "holds": [
-    "forest"
-   ],
-   "at": [
-    330,
-    230
-   ],
-   "ground": true,
-   "look": "tall cedars, nothing built"
-  },
-  {
-   "id": "building.riverside",
-   "kind": "building",
-   "key": "riverside",
-   "name": "Riverside",
-   "as": "the riverside",
-   "holds": [
-    "riverside"
-   ],
-   "at": [
-    1380,
-    170
-   ],
-   "ground": true,
-   "look": "a clear river, a pebble bank, a deep pool"
-  },
-  {
-   "id": "building.ridge",
-   "kind": "building",
-   "key": "ridge",
-   "name": "Mountain Ridge",
-   "as": "the mountain ridge",
-   "holds": [
-    "ridge"
-   ],
-   "at": [
-    950,
-    110
-   ],
-   "ground": true,
-   "look": "grass and rock above the trees; on its very top sits the veil, a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen",
-   "note": "straight up the stone stairs from the Mountain Path"
   },
   {
    "id": "place.classroom",
@@ -2300,37 +2415,6 @@
    "spare_doors": 3
   },
   {
-   "id": "place.forest",
-   "kind": "place",
-   "key": "forest",
-   "name": "Forest Trail",
-   "stem": "forest",
-   "area": "mountain",
-   "indoor": false,
-   "building": "forest",
-   "how": "inplace",
-   "batch": "17",
-   "after": [
-    "trailhead"
-   ]
-  },
-  {
-   "id": "place.ridge",
-   "kind": "place",
-   "key": "ridge",
-   "name": "Mountain Ridge",
-   "stem": "ridge",
-   "area": "mountain",
-   "indoor": false,
-   "building": "ridge",
-   "how": "inplace",
-   "batch": "18",
-   "after": [
-    "trailhead"
-   ],
-   "note": "the veil is the small dome on its very top (O36), never in the sky; composed again from words in art_17a.json, by the four questions of O45 (11 Oct 2026), and its row here changes when the owner chooses"
-  },
-  {
    "id": "place.bathhouse",
    "kind": "place",
    "key": "bathhouse",
@@ -2371,21 +2455,6 @@
    "check": [
     "nobody is in the picture",
     "the room has no window"
-   ]
-  },
-  {
-   "id": "place.riverside",
-   "kind": "place",
-   "key": "riverside",
-   "name": "Riverside",
-   "stem": "riverside",
-   "area": "mountain",
-   "indoor": false,
-   "building": "riverside",
-   "how": "inplace",
-   "batch": "17",
-   "after": [
-    "trailhead"
    ]
   },
   {
