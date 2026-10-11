@@ -31,19 +31,41 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
      room at 1920x1072, laid 4 px down.
   2. NOTHING MOVED. The whole picture is off by 0 or 1 px. Round every
      registered point of the place (each exit, each hotspot, the feet of
-     every standing row, each pose box, the outline of each foreground) a
-     192 px window must agree within 3 px. A window that moved refuses the
-     picture and is named; so does one that no longer lines up at all (the
-     door an exit sits on moved further than the 24 px a shift is looked
-     for, or was painted out).
+     every standing row, each pose box, the outline of each foreground and
+     the outline of each traced shape, D60) a 192 px window must agree
+     within 3 px. A window that moved refuses the picture and is named
+     ("the outline of the shape traced for the hotspot tv moved 9 px
+     right"); so does one that no longer lines up at all (the door an exit
+     sits on moved further than the 24 px a shift is looked for, or was
+     painted out). Two things are read as what they are:
+       GLASS. A point that lies on glass (the keep list's `windows` rows:
+       the panes of a door or a window) is held by what is round the glass,
+       its post, its handle, its frame. The view through it may be changed
+       on purpose, and is shown as a LOOK.
+       A FLOOR. A point where people stand is not held by the lines between
+       the boards: a floor drawn again has other boards, and a relight lays
+       a window's grid of light across it. Such a point is refused only when
+       the floor's outline and what stands on it moved (a wider window, on a
+       coarse edge map); otherwise it is a LOOK ("the floor is drawn
+       differently where people stand").
   3. NOTHING VANISHED. Every `keep` and `doors` row of the room's keep list
      (tools/bgs/keep/<picture>.json), a 110 px box round every hotspot and
      the box round every foreground object must still be there. A thing
-     that sits a little way off is named as moved, not as gone.
+     that sits a little way off is named as moved, not as gone. A door is
+     kept by its frame, not by the view through its glass. The box round a
+     hotspot is not judged where the room's named addition (`allow`) stands
+     on that hotspot's own object (the laptop at the computer). A thing
+     that reads as gone inside its own box while that box, 16 px wider,
+     agrees as well as the picture does (a pale calendar on a wall that
+     became lighter) is a LOOK: "fainter, or drawn differently inside its
+     outline".
   4. NOTHING WAS ADDED. Every `empty` row, the floor among them, has not
      gained fine edge (a jacket, a cup, leaves), unless it is in `allow`.
      A wide zone (a floor) is judged whole and again in overlapping 160 px
-     parts, so one bag set on a wide floor is found and its part named.
+     parts, so one bag set on a wide floor is found and its part named. A
+     floor that is DRAWN AGAIN (its parts no longer agree with the game's:
+     other boards, sunlight on it) cannot be read that way, and is a LOOK
+     ("the floor is drawn again: look that nothing new stands on it").
   5. SHARPER, against the picture the place had BEFORE the overhaul
      (revision 1, from git by the manifest's `rev1_commit`), never against
      the installed one: twice as sharp passes, 1.3 to 2 is a LOOK, under 1.3
@@ -58,7 +80,12 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
   A `change` row is left out of steps 3 and 4; its outline must not move.
   A RELIGHT runs steps 1 and 2, and step 3 with a threshold of its own; a
   night picture loses edge in its dark corners and gains pools of light, and
-  neither is a fault.
+  neither is a fault. It is NOT judged for added things (5.7), and never
+  refused for one: A RELIGHT IS READ BY EYE BESIDE ITS DAY PICTURE for a lamp,
+  a blanket, a bench. One case is shown as a LOOK, because it can be measured
+  without a false alarm: a small `empty` row of the keep list (not a floor)
+  that gained fine edge against what is round it ("something new may be on
+  the sofa's near arm").
 
 FOR THE VERSION THE OWNER NAMES (--choose), when it is a PASS or a LOOK:
   - the picture, game/images/bg/<picture>.png;
@@ -122,7 +149,7 @@ ROOT = os.path.dirname(TOOLS)
 IMAGES = os.path.expanduser("~/Desktop/JJK Game images")
 KEEP_DIR = os.path.join(ROOT, "tools", "bgs", "keep")
 HOURS = ("evening", "night")
-AUTO_BOX = 110
+AUTO_BOX = rm.AUTO_BOX
 
 
 # ---- small readers ------------------------------------------------------------------------------------------
@@ -157,7 +184,7 @@ def keep_list(stem, place, keep_dir=None):
     for name in (stem, place):
         got = read_json(os.path.join(keep_dir or KEEP_DIR, name + ".json"))
         if got is not None:
-            for key in ("keep", "empty", "allow", "change", "doors"):
+            for key in ("keep", "empty", "allow", "change", "doors", "windows"):
                 for row in got.get(key, []):
                     if not row.get("name") or not (row.get("box") or row.get("poly")):
                         raise SystemExit("the keep list of %s: every `%s` row needs a name and a box or a poly" % (stem, key))
@@ -209,6 +236,27 @@ def points_for(lay, place, root, polys, hour=""):
                 x, y = x0 + (x1 - x0) * s / float(steps), y0 + (y1 - y0) * s / float(steps)
                 if 0 <= x < rm.W and 0 <= y < rm.H:
                     out.append({"name": "the outline of the foreground object", "at": (int(x), int(y)), "kind": "fg"})
+    # D60: the picture is what is clicked, so the wall under each traced shape's outline is held as well
+    names = dict((p["id"], p["name"]) for p in lay.points(place, root))
+    for hid, shape in sorted(lay.shapes(place).items()):
+        for x, y in outline_samples(shape):
+            out.append({"name": "the outline of the shape traced for %s" % names.get(hid, hid), "at": (x, y),
+                        "kind": "shape", "id": hid})
+    return out
+
+
+def outline_samples(shape, step=96):
+    """Points along the outline of a traced shape (its polygons), one at each corner and every `step` px between."""
+    out = []
+    for poly in shape:
+        n = len(poly)
+        for i in range(n):
+            (x0, y0), (x1, y1) = poly[i], poly[(i + 1) % n]
+            steps = max(1, int(max(abs(x1 - x0), abs(y1 - y0)) // step))
+            for k in range(steps):
+                x, y = x0 + (x1 - x0) * k / float(steps), y0 + (y1 - y0) * k / float(steps)
+                if 0 <= x < rm.W and 0 <= y < rm.H and (int(x), int(y)) not in out:
+                    out.append((int(x), int(y)))
     return out
 
 
@@ -397,14 +445,14 @@ def run_inplace(o):
         try:
             new, note = rm.load(path)
             got = rm.judge(old, new, points, keep, kl.get("empty", []), kl.get("allow", []), kl.get("change", []),
-                           rev1=rev1, relight=relight)
+                           rev1=rev1, relight=relight, windows=kl.get("windows", []))
         except rm.Refused as e:
             new, note, got = None, None, refused_fit(e)
         report(letter, path, note, got)
         if new is not None:
             prev = os.path.join(root, "shots", "art", "redo_%s_%s.jpg" % (target, letter))
             rm.preview(old, new, prev, points, keep, kl.get("empty", []), kl.get("allow", []), kl.get("change", []),
-                       got["marks"], "%s, version %s: %s" % (target, letter, got["verdict"]))
+                       got["marks"], "%s, version %s: %s" % (target, letter, got["verdict"]), windows=kl.get("windows", []))
             print("  preview   %s" % prev)
         if o["against_rev1"] or o["dry"]:
             print("  figures   %s" % json.dumps(got["figures"], sort_keys=True))

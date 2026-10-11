@@ -17,9 +17,11 @@ file under game/ changed.
   game's own by hand (shifted 12 px, enlarged 2%, recoloured, a thing rubbed
   out, a thing drawn in), test layouts, test pose rows, a doctored layout dump.
   REAL cases run when their files are on the machine, and say so when they
-  are not: the sixteen look-test renders in ~/ComfyUI-Shared/output, Yuji's
-  two old blink and talk renders, and Yuji's staged set in
-  ~/Desktop/JJK Game images/redo_yuji.
+  are not: the sixteen look-test renders in ~/ComfyUI-Shared/output, the
+  renders the owner chose from early in ~/Desktop/JJK Game images/ui2/early
+  (the seven corrections' own cases, and every chosen picture that was redone
+  in place or relit: none may be REFUSED), Yuji's two old blink and talk
+  renders, and Yuji's staged set in ~/Desktop/JJK Game images/redo_yuji.
 
 A line is PASS, FAIL or SKIPPED. Without ComfyUI's Python (numpy, scipy,
 Pillow) the picture tests print "SKIPPED (no ComfyUI python)": a pass for a
@@ -145,7 +147,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageDraw
 cmd, src, dst = sys.argv[1], sys.argv[2], sys.argv[3]
 args = sys.argv[4:]
 a = Image.open(src).convert("RGB"); W, H = a.size
-box = [int(v) for v in args[0].split(",")] if args and "," in args[0] else None
+box = [int(v) for v in args[0].split(",")] if args and "," in args[0] and ";" not in args[0] else None
 def look(im):          # a stand-in for the new look: the same drawing, much sharper
     return im.filter(ImageFilter.UnsharpMask(radius=2, percent=260, threshold=0))
 if cmd == "look":
@@ -200,6 +202,39 @@ elif cmd in ("cup", "plaincup"):   # a red-and-white cup with a dark rim, set do
     d.rectangle([x, y, x + w, y + h], fill=(236, 232, 226), outline=(30, 24, 24), width=t)
     d.rectangle([x + t, y + h // 3, x + w - t, y + 2 * h // 3], fill=(200, 40, 44))
     d.ellipse([x + t, y - 2 * t, x + w - t, y + 3 * t], fill=(60, 40, 36), outline=(30, 24, 24))
+elif cmd == "glass":   # a new view behind glass: each pane (x,y,w,h;x,y,w,h) shows another drawing altogether
+    out = look(a)
+    for part in args[0].split(";"):
+        x, y, w, h = [int(v) for v in part.split(",")]
+        d = ImageDraw.Draw(out); d.rectangle([x, y, x + w - 1, y + h - 1], fill=(222, 230, 240))
+        for k in range(x + 20, x + w, 34):          # a timbered house outside: dark posts and rails on a pale wall
+            d.rectangle([k, y, min(k + 6, x + w - 1), y + h - 1], fill=(44, 38, 46))
+        for k in range(y + 14, y + h, 34):
+            d.rectangle([x, k, x + w - 1, min(k + 6, y + h - 1)], fill=(44, 38, 46))
+elif cmd == "refloor":  # a floor drawn again: its polygon (x,y;x,y;...) gets boards that run the other way, and sunlight
+    out = look(a); poly = [tuple(int(v) for v in q.split(",")) for q in args[0].split(";")]
+    xs = [q[0] for q in poly]; ys = [q[1] for q in poly]
+    m = Image.new("L", (W, H), 0); ImageDraw.Draw(m).polygon(poly, fill=255)
+    px = np.asarray(a)[np.asarray(m) > 0]
+    base = tuple(int(v) for v in np.median(px, axis=0))
+    fl = Image.new("RGB", (W, H), base); d = ImageDraw.Draw(fl)
+    vx, vy = (min(xs) + max(xs)) // 2, min(ys) - 420            # the boards run toward the back wall
+    for k in range(min(xs) - 900, max(xs) + 900, 46):
+        d.line([vx + (k - vx) * 0.25, min(ys) - 4, k, H + 4], fill=tuple(max(0, v - 46) for v in base), width=3)
+    sx = min(xs) + (max(xs) - min(xs)) // 3                     # a window's light across it, with its frame's shadow
+    d.polygon([(sx, min(ys) + 12), (sx + 420, min(ys) + 12), (sx + 520, H - 14), (sx - 60, H - 14)],
+              fill=tuple(min(255, v + 70) for v in base))
+    for k in (0.33, 0.66):
+        d.line([sx + 420 * k, min(ys) + 12, sx - 60 + 580 * k, H - 14], fill=tuple(max(0, v - 20) for v in base), width=9)
+    d.line([sx - 30, (min(ys) + H) // 2, sx + 470, (min(ys) + H) // 2], fill=tuple(max(0, v - 20) for v in base), width=9)
+    out.paste(fl, (0, 0), m)
+    if len(args) > 1:                                           # and, with it, a thing of the room slid (x,y,w,h,d)
+        x, y, w, h, dd = [int(v) for v in args[1].split(",")]
+        out.paste(look(a).crop((x - 24 - dd, y - 24, x + w + 24 - dd, y + h + 24)), (x - 24, y - 24))
+elif cmd == "inside":  # a thing drawn differently inside its outline: the box, 3 px in, lighter and turned over
+    out = look(a); x, y, w, h = box
+    part = out.crop((x + 3, y + 3, x + w - 3, y + h - 3)).transpose(Image.FLIP_TOP_BOTTOM)
+    out.paste(Image.blend(part, Image.new("RGB", part.size, (236, 232, 222)), 0.45), (x + 3, y + 3))
 elif cmd == "copy":
     out = a
 out.save(dst)
@@ -569,6 +604,82 @@ def group_redo(lab):
     ok("and a bookshelf that has MOVED inside its `change` box is REFUSED: its outline is held",
        v[0] == "REFUSED" and re.search(r"the outline of the bookshelf moved \d+ px right", v[1]) is not None, out)
 
+    # ---- U0d3: the band along a traced shape's outline (5.4 step 2, D60), and the corrections the check was owed
+    # A shape traced round the back window, in a dump that says so (the dump's `shapes`, as the game's sidecar
+    # would give it). The window and the wall round it are slid 9 px.
+    frame = [[612, 222], [1045, 222], [1045, 535], [612, 535]]
+    shaped = stamp(lab.dump, root, out=os.path.join(root, "dump_shaped.json"), extra={"shapes": {"dorm_common": {"tv": [frame]}}})
+    win9 = lab.syn("slide", room, "syn_win9_a_00001_.png", "600,210,460,340", "9")
+    rc, out, v = one(win9)
+    ok("with no shape traced there, a wall slid 9 px under no registered point is only shown (LOOK)",
+       v[0] == "LOOK" and rc == 0 and "sits 9 px right" in v[1], out)
+    rc, out = run(redo + [win9, "--dry", "--root", root, "--layout-dump", shaped], py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    ok("with a shape traced there, the same render is REFUSED: the wall under the shape's outline moved 9 px, and the "
+       "shape is named (once, though its outline is held at many points)",
+       v[0] == "REFUSED" and rc == 1 and v[1].count("the outline of the shape traced for the hotspot tv moved 9 px right") == 1, out)
+    rc, out = run(redo + [good, "--dry", "--root", root, "--layout-dump", shaped], py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    m = re.search(r"(\d+) points checked", out)
+    m0 = re.search(r"(\d+) points checked", one(good)[1])
+    ok("and a good render of a shaped room still passes, with the outline's points among those checked (%s, against %s)"
+       % (m.group(1) if m else "?", m0.group(1) if m0 else "?"),
+       v[0] == "PASS" and m is not None and m0 is not None and int(m.group(1)) > int(m0.group(1)), out)
+
+    # 1. glass. The way to the garden sits on the sliding door's glass; the keep list's `windows` rows are its panes.
+    kl = json.load(open(os.path.join(TOOLS, "bgs", "keep", "dorm_common.json")))
+    panes = ";".join(",".join(str(n) for n in w["box"]) for w in kl["windows"])
+    view = lab.syn("glass", room, "syn_view_a_00001_.png", panes)
+    rc, out, v = one(view)
+    ok("a new view behind the glass of the door an exit sits on is not a moved door: with the panes in the keep "
+       "list's `windows` it is not refused, and the changed view is shown",
+       v[0] == "LOOK" and rc == 0 and "drawn differently" in v[1] and "Dormitory Garden" not in v[1] and "gone" not in v[1], out)
+    noglass = os.path.join(lab.work, "keep_noglass")
+    os.makedirs(noglass, exist_ok=True)
+    json.dump(dict((k, r) for k, r in kl.items() if k != "windows"), open(os.path.join(noglass, "dorm_common.json"), "w"))
+    rc, out, v = one(view, ["--keep", noglass])
+    ok("without the `windows` rows the same render is REFUSED for the door, which is the false alarm the rows are for",
+       v[0] == "REFUSED" and "%s no longer lines up" % spot in v[1], out)
+    # (the door itself slid 12 px, slid 30 px and painted out are refused above, with the `windows` rows in place)
+
+    # 2. a floor drawn again: other boards, a window's light across it
+    floor = ";".join("%d,%d" % tuple(q) for q in [z for z in kl["empty"] if z["name"] == "the floor"][0]["poly"])
+    rc, out, v = one(lab.syn("refloor", room, "syn_refloor_a_00001_.png", floor))
+    ok("a floor drawn again (its boards run the other way, sunlight lies on it) is not a moved floor and not a new "
+       "thing: it is shown (\"the floor is drawn again\"), not refused",
+       v[0] == "LOOK" and rc == 0 and "the floor is drawn again" in v[1] and "something new" not in v[1]
+       and "no longer lines up" not in v[1], out)
+    rc, out, v = one(lab.syn("refloor", room, "syn_refloortv_a_00001_.png", floor, "1497,380,190,322,12"))
+    ok("with the floor drawn again AND the television slid 12 px, the picture is still REFUSED for the television",
+       v[0] == "REFUSED" and rc == 1 and re.search(r"the television moved 1[0-4] px right", v[1]) is not None, out)
+    # (a cushion, a kettle, a bag and a striped bag set down on the floor that is still the same drawing are refused above)
+
+    # 3. the named addition on a hotspot's own object: the allow box wins over the automatic keep box, and over
+    # nothing else
+    card = "1350,826,100,100"
+    board = lab.syn("sign", room, "syn_cards_a_00001_.png", card)
+    rc, out, v = one(board)
+    ok("a new thing drawn over the card table's hotspot is REFUSED three ways: its spot, the thing at it, and the "
+       "cushions it covers",
+       v[0] == "REFUSED" and "the spot the hotspot card_table sits on no longer lines up" in v[1]
+       and "the thing at the hotspot card_table is gone" in v[1] and "the floor cushions by the low table are gone" in v[1], out)
+    allowed = os.path.join(lab.work, "keep_allowed")
+    os.makedirs(allowed, exist_ok=True)
+    json.dump(dict(kl, allow=[{"name": "a game board on the card table", "box": [int(n) for n in card.split(",")]}]),
+              open(os.path.join(allowed, "dorm_common.json"), "w"))
+    rc, out, v = one(board, ["--keep", allowed])
+    ok("named in `allow`, it no longer makes the hotspot's own object \"gone\" (the allow box wins over the automatic "
+       "box round the same point); the hand-written row it covers is still refused",
+       v[0] == "REFUSED" and "card_table" not in v[1].split("(also")[0] and "the floor cushions by the low table are gone" in v[1]
+       and "it has what was asked for: a game board on the card table" in v[1], out)
+
+    # 4. the rescue for a pale thing on a lighter wall needs the thing's outline: a thing washed out and turned
+    # over inside its box, outline and all, is still gone
+    rc, out, v = one(lab.syn("inside", room, "syn_inside_a_00001_.png", "1285,483,65,72"))
+    ok("a kept thing washed out and turned over inside its own box is still REFUSED as gone (\"fainter\" is said "
+       "only of a thing whose outline still agrees)",
+       v[0] == "REFUSED" and "the kettle on the counter is gone" in v[1] and "fainter" not in v[1], out)
+
     # two versions: a verdict for each; only the one the owner names goes in
     before = tree_hash(root)
     rc, out = run(redo + [good, made["erased"], "--dry"] + tail, py=True)
@@ -641,6 +752,8 @@ def group_redo(lab):
     ok("a relight: the same drawing made dark and blue is not refused, though it is no sharper; the one shifted 9 px is",
        v.get("a", ("",))[0] in ("PASS", "LOOK") and v.get("b", ("",))[0] == "REFUSED" and "moved" in v["b"][1]
        and "sharper" not in out, out)
+    ok("and its report says, where \"added\" stands for a day picture, that a relight is read by eye for added things",
+       len(re.findall(r"(?m)^\s+added\s+not judged in a relight", out)) == 2 and "by eye" in out, out)
     polys = os.path.join(root, "tools", "fg", "dorm_common.json")
     data = json.load(open(polys)); data.pop("night"); json.dump(data, open(polys, "w"))
     rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "night", night, moved, "--choose", "a"] + tail, py=True)
@@ -1352,12 +1465,127 @@ SIXTEEN = [
     ("library", "look_library_C", "PASS", []),
     ("courtyard", "look2_courtyard_gateway", "REFUSED", ["this is not the same picture"]),
     ("courtyard", "look2_courtyard_mainhall", "REFUSED", ["this is not the same picture"]),
-    ("library", "look2_library_bright", "REFUSED", ["the thing at the hotspot locked_shelf moved 1", "no longer lines up with the picture in the game"]),
+    # (until U0d3 its second sentence was "no longer lines up with the picture in the game", said of the floor
+    # where people stand; a floor that is drawn differently is shown now, and the shelf alone refuses it)
+    ("library", "look2_library_bright", "REFUSED", ["the thing at the hotspot locked_shelf moved 1", "the spot the hotspot locked_shelf sits on moved 1",
+                                                    "the floor is drawn differently where people stand"]),
     ("library", "look2_library_gallery", "REFUSED", ["this is a different picture"]),
 ]
 PAIRS = [("dorm_common", "dorm_common", "evening"), ("dorm_common", "dorm_common", "night"), ("rooftop", "rooftop", "evening"),
          ("rooftop", "rooftop", "night"), ("riverside", "riverside", "evening"), ("infirmary", "infirmary", "night"),
          ("girls_dorm", "girls_dorm", "night"), ("dorm", "your_room", "night")]
+
+
+# ---- the pictures the owner chose early (U0d3) ----------------------------------------------------------------
+EARLY = os.path.expanduser("~/Desktop/JJK Game images/ui2/early")
+EARLY_RECORD = os.path.join(TOOLS, "art", "staged", "early", "campus_for_batch3.json")
+# The seven corrections' own cases (tools/art/staged/early/art_3a_early.json, art_3b_early.json, art_4b_early.json,
+# art_6b_early.json, art_7b_early.json, art_17a_early.json): (what it shows, place, hour, render, its day picture,
+# the verdicts it may have, words its report must hold, words it must not hold). A day picture is "" for the
+# game's own (redone in place), "chosen" for the fitted copy of the chosen day picture, or a file of OUTPUT.
+EARLY_CASES = [
+    ("1. a view changed on purpose behind the glass door: the chosen Common Room is not refused for the garden door",
+     "dorm_common", "", "ui2_dorm_common_a", "", ("LOOK",), ["drawn differently"], ["Dormitory Garden", "gone", "moved"]),
+    ("2 to 4. the chosen My Room: the floor drawn again, the laptop at the computer and the calendar on a lighter "
+     "wall are each shown, and nothing is refused",
+     "your_room", "", "ui2_your_room_b", "", ("LOOK",),
+     ["the floor is drawn again", "the floor is drawn differently where people stand",
+      "the calendar by the door is fainter, or drawn differently inside its outline",
+      "it has what was asked for: a closed laptop on the desk"], ["is gone", "something new", "no longer lines up"]),
+    ("2. the Riverside redone in place, version A: still a PASS", "riverside", "", "ui2_riverside_a", "", ("PASS",), [], []),
+    ("2. the Riverside redone in place, version B: a slab of rock repainted lighter is shown, not refused",
+     "riverside", "", "ui2_riverside_b", "", ("LOOK",), ["the floor is drawn differently where people stand"], ["no longer lines up"]),
+    ("5. a relit Common Room with a blanket laid over the sofa's arm (not chosen): shown, never refused",
+     "dorm_common", "night", "ui2_dorm_common_night_a", "chosen", ("LOOK",), ["something new may be on the sofa's near arm"], []),
+    ("5. the other version of that night, which added nothing: a PASS",
+     "dorm_common", "night", "ui2_dorm_common_night_b", "chosen", ("PASS",), [], []),
+    ("7. the Cafeteria's evening, version A: the window's grid of sunlight across the floor is shown, not refused",
+     "cafeteria", "evening", "ui2_cafeteria_evening_a", "chosen", ("LOOK",), ["the floor is drawn differently where people stand"], ["no longer lines up"]),
+    ("7. the Cafeteria's evening, version B: still a PASS", "cafeteria", "evening", "ui2_cafeteria_evening_b", "chosen", ("PASS",), [], []),
+    ("7. the Cafeteria's night, version A: moonlight across the floor is shown, not refused",
+     "cafeteria", "night", "ui2_cafeteria_night_a", "chosen", ("LOOK",), ["the floor is drawn differently where people stand"], ["no longer lines up"]),
+    ("7. the Cafeteria's night, version B: the same", "cafeteria", "night", "ui2_cafeteria_night_b", "chosen", ("LOOK",),
+     ["the floor is drawn differently where people stand"], ["no longer lines up"]),
+    ("7. the infirmary's lights-off night, version B: the same false alarm, met again, is shown",
+     "infirmary", "night", "ui2_infirmary_night_off_b", "chosen", ("LOOK",), ["the floor is drawn differently where people stand"], ["no longer lines up"]),
+    ("7. the Library's night, version B: the same", "library", "night", "ui2_library_night_b", "look2_library_bright_00001_.png",
+     ("LOOK",), ["the floor is drawn differently where people stand"], ["no longer lines up"]),
+]
+# THE WIDER PROOF: every picture redone in place or relit that the owner has chosen (the `chosen` rows of
+# tools/art/staged/early/art_*_early.json), each run as its record says it was. None may be REFUSED.
+# (the sitting's file, place, hour, the chosen render, its day picture)
+EARLY_CHOSEN = [
+    ("3a", "dorm_common", "", "ui2_dorm_common_a", ""), ("3a", "your_room", "", "ui2_your_room_b", ""),
+    ("4a", "cafeteria", "", "ui2_cafeteria_a", ""), ("6a7a", "classroom", "", "ui2_classroom_b", ""),
+    ("6a7a", "infirmary", "", "ui2_infirmary_a", ""), ("8a", "rooftop", "", "ui2_rooftop_a", ""),
+    ("3b", "dorm_common", "evening", "ui2_dorm_common_evening_a", "chosen"), ("3c", "dorm_common", "night", "ui2_dorm_common_night_off_a", "chosen"),
+    ("3b", "your_room", "evening", "ui2_your_room_evening_b", "chosen"), ("3c", "your_room", "night", "ui2_your_room_night_off_a", "chosen"),
+    ("4b", "cafeteria", "evening", "ui2_cafeteria_evening_a", "chosen"), ("4b", "cafeteria", "night", "ui2_cafeteria_night_a", "chosen"),
+    ("4b", "girls_dorm", "evening", "ui2_girls_dorm_evening_a", "chosen"), ("4b", "girls_dorm", "night", "ui2_girls_dorm_night_off_a", "chosen"),
+    ("6a7a", "courtyard", "evening", "ui2_courtyard_evening_a", "chosen"), ("6a7a", "courtyard", "night", "ui2_courtyard_night_a", "chosen"),
+    ("6b", "classroom", "evening", "ui2_classroom_evening_b", "chosen"), ("6b", "classroom", "night", "ui2_classroom_night_a", "chosen"),
+    ("6b", "infirmary", "evening", "ui2_infirmary_evening_b", "chosen"), ("6b", "infirmary", "night", "ui2_infirmary_night_a", "chosen"),
+    ("7b", "school_yard", "evening", "ui2_school_yard_evening_a", "chosen"), ("7b", "school_yard", "night", "ui2_school_yard_night_a", "chosen"),
+    ("7b", "library", "evening", "ui2_library_evening_b", "look2_library_bright_00001_.png"),
+    ("7b", "library", "night", "ui2_library_night_a", "look2_library_bright_00001_.png"),
+    ("7b", "library", "night", "ui2_library_night_lamps_a", "look2_library_bright_00001_.png"),
+    ("8a", "dorm_yard", "evening", "ui2_dorm_yard_evening_b", "chosen"), ("8b", "dorm_yard", "night", "ui2_dorm_yard_night_moon_a", "chosen"),
+    ("8b", "rooftop", "evening", "ui2_rooftop_evening_a", "chosen"), ("8b", "rooftop", "night", "ui2_rooftop_night_b", "chosen"),
+    ("12d", "gojo_office", "evening", "ui2_gojo_office_evening_a", "chosen"), ("12d", "office", "evening", "ui2_office_evening_b", "chosen"),
+    ("12d", "utahime_office", "evening", "ui2_utahime_office_evening_a", "chosen"),
+    ("14p", "pool", "evening", "ui2_pool_evening_a", "chosen"), ("14p", "staff_yard", "evening", "ui2_staff_yard_evening_b", "chosen"),
+    ("14p", "trailhead", "evening", "ui2_trailhead_evening_b", "chosen"), ("14p", "trailhead", "night", "ui2_trailhead_night_b", "chosen"),
+    ("15b", "training", "evening", "ui2_training_evening_a", "chosen"), ("15b", "training", "night", "ui2_training_night_a", "chosen"),
+    ("15b", "dojo", "evening", "ui2_dojo_evening_a", "chosen"), ("15b", "dojo", "night", "ui2_dojo_night_a", "chosen"),
+    ("15c", "dojo", "night", "ui2_dojo_lit2_a", "chosen"),
+    ("15b", "storehouse", "evening", "ui2_storehouse_evening_a", "chosen"), ("15b", "storehouse", "night", "ui2_storehouse_night_a", "chosen"),
+    ("16p", "training_yard", "evening", "ui2_training_yard_evening_a", "chosen"), ("16p", "training_yard", "night", "ui2_training_yard_night_b", "chosen"),
+    ("18g", "gate", "evening", "ui2_gate_evening_a", "chosen"), ("18g", "gate", "night", "ui2_gate_night_b", "chosen"),
+    ("17b", "ridge", "evening", "ui2_ridge_evening_b", "chosen"), ("17b", "ridge", "night", "ui2_ridge_night_a", "chosen"),
+    ("17b", "riverside", "evening", "ui2_riverside_evening_a", "chosen"), ("17b", "riverside", "night", "ui2_riverside_night_a", "chosen"),
+    ("17c", "forest", "evening", "ui2_forest_evening_a", "chosen"), ("17c", "forest", "night", "ui2_forest_night_a", "chosen"),
+    ("19b", "bathhouse", "evening", "ui2_bathhouse_evening_a", "chosen"), ("19b", "bathhouse", "night", "ui2_bathhouse_night_a", "chosen"),
+]
+
+
+def early_run(place, hour, render, day, tail):
+    """One early render through install_redo.py --dry, as its record says it was run: (rc, out, verdict, words),
+    or None with the file that is not on this machine."""
+    path = os.path.join(EARLY, "renders", render + "_00001_.png")
+    base = "" if not day else (os.path.join(EARLY, "chosen", "%s_1920.png" % place) if day == "chosen" else os.path.join(OUTPUT, day))
+    for f in (path, base):
+        if f and not os.path.exists(f):
+            return None, f
+    if hour:
+        args = [tool("install_redo.py"), "--relight", place, hour, path, "--against", base, "--record", EARLY_RECORD]
+    else:
+        args = [tool("install_redo.py"), place, path]
+    rc, out = run(args + tail, py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    return (rc, out, v[0], v[1]), None
+
+
+def real_early(tail):
+    """The seven corrections on the renders that showed them, and the wider proof."""
+    for what, place, hour, render, day, want, words, never in EARLY_CASES:
+        got, absent = early_run(place, hour, render, day, tail)
+        if got is None:
+            skipped("REAL, early: %s" % what, "%s is not on this machine" % absent)
+            continue
+        rc, out, verdict, said = got
+        ok("REAL, early: %s (%s: %s)" % (what, render, verdict),
+           verdict in want and rc == 0 and all(w in said for w in words) and not any(w in said for w in never), out)
+    table = []
+    for sitting, place, hour, render, day in EARLY_CHOSEN:
+        got, absent = early_run(place, hour, render, day, tail)
+        name = "REAL, chosen in sitting %s: %s%s (%s)" % (sitting, place, " at %s" % hour if hour else ", redone in place", render)
+        if got is None:
+            skipped(name, "%s is not on this machine" % absent)
+            continue
+        rc, out, verdict, said = got
+        table.append((sitting, render, verdict))
+        ok("%s is %s, not REFUSED" % (name, verdict), verdict in ("PASS", "LOOK") and rc == 0, out)
+    return table
 
 
 def figures(out):
@@ -1420,6 +1648,7 @@ def group_real(lab, write=False):
            % (fig.get("shift"), fig.get("sharp"), fig.get("keep_weakest")),
            rc == 0 and fig.get("shift") == [0, 0] and "git, commit" in out, out)
         record["canary_shape"] = {"render": "look3_dorm_common_keep_00001_.png", "figures": fig}
+    real_early(tail)
     for place, stem, hour in PAIRS:
         day = os.path.join(REPO, "game", "images", "bg", stem + ".png")
         pic = os.path.join(REPO, "game", "images", "bg", "%s_%s.png" % (stem, hour))
