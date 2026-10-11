@@ -295,6 +295,68 @@ def group_layout(lab):
        and lay.front_ids("courtyard") == set(["spot_vend"]) and lay.front_ids("library") == set(),
        (test.shapes("courtyard"), lay.front_ids("courtyard")))
 
+    # check_layout.py: the game's own counting, the numbers it types, and its negative tests (10.2, U0d3)
+    import check_layout
+    for what, good in check_layout.shape_cases():
+        ok("check_layout.py counts with the game's own text (the block between the two hot_shape: marker lines of "
+           "game/sb_hotspots.rpy), on the three shapes of tools/smoke/hot_shape_cases.json: %s" % what, good)
+    block = check_layout.shape_block()
+    ns = {}
+    exec(compile(block.replace("return total", "return total + 1.0", 1), "a changed block", "exec"), ns)
+    cases_file = json.load(open(os.path.join(TOOLS, "smoke", "hot_shape_cases.json"), encoding="utf-8"))
+    ok("and the day that text differs the answers differ: with one line of the block changed (an area one px2 larger) "
+       "the three shapes no longer give the answers the cases file holds",
+       "return total" in block and
+       dict((k, dict(v)) for k, v in ns["hot_shape_count"](cases_file["shapes"], dict((k, tuple(v)) for k, v in cases_file["points"].items()),
+                                                           tuple(cases_file["size"]), cases_file["grid"]).items()) != cases_file["expect"])
+    bad = [what for what, good in check_layout.pinned() if not good]
+    ok("every number check_layout.py types itself (the two-line banner, a yard's exit heights, the caption's ring, the "
+       "hover label's size) still stands in the line of the game or harness it is from (%d lines)" % len(check_layout.PINNED),
+       not bad, "\n".join(bad))
+    folder = os.path.join(lab.work, "layout_cases")
+    cl = [tool("check_layout.py")]
+    for k, (name, files, rule, words, also) in enumerate(check_layout.cases()):
+        paths = check_layout.write_case(files, os.path.join(folder, "c%02d" % k))
+        rc, out = run(cl + [os.path.dirname(paths[0]), "--layout-dump", lab.dump])
+        refused = [l for l in out.splitlines() if l.startswith("REFUSED")]
+        tags = set(re.findall(r"\[([a-z-]+)\]", " ".join(l.split(":")[0] for l in refused)))
+        last = out.strip().splitlines()[-1] if out.strip() else ""
+        if rule is None:
+            ok("check_layout.py: %s (exit 0, nothing refused)" % name, rc == 0 and not refused and ": PASS (" in last, out)
+        else:
+            ok("check_layout.py refuses, by name [%s], %s" % (rule, name),
+               rc == 1 and any("[%s]" % rule in l.split(":")[0] and words in l for l in refused)
+               and tags <= set((rule,) + tuple(also)) and "REFUSED (" in last, out)
+    one = check_layout.write_case(check_layout.base_courtyard(), os.path.join(folder, "files"))
+    rc, out = run(cl + sorted(one) + ["--layout-dump", lab.dump, "--quiet"])
+    ok("it reads a layout as files named one by one, as well as a folder; it REPORTS, and does not refuse, the part "
+       "of a shape inside the toast lane; and --quiet leaves the NOTE lines out",
+       rc == 0 and "[in-lane]: shape 'go_courtyard__training_yard'" in out and "NOTE" not in out and "REFUSED" not in out, out)
+    high = check_layout.base_courtyard()
+    high["hot_courtyard"]["shapes"]["gateway"] = [[[600, 300], [690, 60], [780, 300], [790, 560], [590, 560]]]
+    high["hot_courtyard"]["shapes"].pop("straw_posts")
+    high["hot_courtyard"]["keep_tile"] = {"straw_posts": "a test: the posts are not painted on this picture"}
+    rc, out = run(cl + [os.path.dirname(check_layout.write_case(high, os.path.join(folder, "high"))[0]), "--layout-dump", lab.dump])
+    ok("it REPORTS, and does not refuse, the part of a shape above y 92 (no shape takes the pointer there), and prints "
+       "how many hotspots keep a button in the place, and why",
+       rc == 0 and "[above-hud]: shape 'gateway'" in out and "above y 92" in out
+       and "[keep-tile]: 1 hotspot keeps a button in Courtyard: straw_posts (a test: the posts are not painted on this picture)" in out, out)
+    front = check_layout.base_courtyard()
+    front["check_courtyard"] = {"front": ["straw_posts"], "objects": {"spot_vend": [1556, 616, 88, 148]}}
+    rc, out = run(cl + [os.path.dirname(check_layout.write_case(front, os.path.join(folder, "front"))[0]), "--layout-dump", lab.dump])
+    rc2, out2 = run(cl + [os.path.dirname(check_layout.write_case(check_layout.base_courtyard(), os.path.join(folder, "front2"))[0]),
+                          "--layout-dump", lab.dump, "--front", "straw_posts"])
+    ok("a PLANNED foreground object is read as front from check_<place>.json's \"front\" list, or from --front: the "
+       "planned straw posts, named front, are then asked for their object's box like any front shape",
+       rc == 1 and rc2 == 1 and all("[front-shape]: shape 'straw_posts'" in o for o in (out, out2)), out + out2)
+    rc, out = run(cl + ["--selftest", "--layout-dump", lab.dump])
+    ok("python3 tools/check_layout.py --selftest passes (the same cases, run inside the tool)",
+       rc == 0 and "check_layout selftest: PASS" in out, out)
+    stale = os.path.join(lab.work, "layout_stale.json")
+    d = json.load(open(lab.dump)); d["hash"] = "0" * 64; json.dump(d, open(stale, "w"))
+    rc, out = run(cl + [folder + "/files", "--layout-dump", stale])
+    ok("check_layout.py refuses, in one line, a dump that is out of date", rc == 2 and out.strip() == STALE, out)
+
 
 def verdicts(out):
     """{version letter: (verdict, the lines under it)} from install_redo.py's report."""
