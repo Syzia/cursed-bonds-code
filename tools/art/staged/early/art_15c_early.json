@@ -35,5 +35,16 @@
   "dojo_lit2_a": "PICK. The day picture's eight hanging lamps, four in each row, are all lit and none is added; the hall is filled with warm lamplight; outside it is night, the hall across the yard dark, no window lit, no moon in view.",
   "dojo_lit2_b": "Not offered: its eight lamps are lit too, but a ninth has been added at the top left edge of the picture.",
   "put_to_the_owner": "Version A."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with A\"",
+  "dojo_lit": {
+   "version": "a",
+   "render": "ui2_dojo_lit2_a_00001_.png",
+   "sha256": "0d54d467dd096bbb42feb83431b1b8d984529e2dea95748f79c00c501c1690d7",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/dojo_lit_1920.png",
+   "fit_sha256": "d6f104f415714ea69d3a1d8b3c4d2cac0eb7a21f297826a86a41a1e39ee1c840",
+   "installs_as": "images/bg/dojo_lit.png, once U0n has taught the tools the hour (5.7a)"
+  }
  }
 }
