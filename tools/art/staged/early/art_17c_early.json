@@ -6,7 +6,7 @@
   "THE SAME VIEW: one named change on the chosen ridge render (the tool's keep-everything prompt with the change as its own sentence): the dome darker than glass with a thin violet rim, the air close round it dimmer and violet, the grass under it grey; nothing else changes, so a person standing on the ridge stands in the same place in both pictures. If chosen it is placed by tool, as the forest's seat was. THE CLOSER LOOK: composed from words with the chosen ridge as its one reference: from the rope, looking up, the dome about a sixth of the picture wide (the owner's ruling O36: it should not feel too big).",
   "Nothing is ever shown inside the dome (plan 0: the body is never shown; every sentence here says so).",
   "The game tints bg ridge_veil for the hour today (veil_bg in sb_world.rpy). Whether it should have a painted evening and night of its own is a question for the sitting that installs it.",
-  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:31) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O57)."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -112,5 +112,30 @@
   "ridge_veil_b": "The same view: the dome darker with a violet rim and a rounder dark patch about it; the grass grey only at the top of the rise. The tidier of the two; about 6.5% differs strongly, to be placed by tool if chosen.",
   "said_to_the_owner": "The look from the rope is the stronger picture and is where both scenes that use it stand; the same view is subtle. The dome from the rope came out about a ninth of the picture wide and keeps a glossy highlight.",
   "put_to_the_owner": "The look at the veil: from the rope, version A. The Forest Trail: evening A, night A."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The picks as put: the look at the veil from the rope, version A; the Forest Trail's evening A and night A. Neither same-view veil render is used.",
+  "ridge_veil": {
+   "version": "a",
+   "render": "ui2_ridge_veil2_a_00001_.png",
+   "sha256": "eca24a44030269265e265282a3b0524a896c9662a9b856fe2e5b3b7ec30dddba",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/ridge_veil_1920.png",
+   "fit_sha256": "d514b0c60d1ea3ac47cdac4326335293cbd1cab72d679b4a7e3c2a3b7086fdd9"
+  },
+  "forest_evening": {
+   "version": "a",
+   "render": "ui2_forest_evening_a_00001_.png",
+   "sha256": "6fb84cbda71232f1f59ac2d1478048929707b0c696f6e17f09473293c03b6d4f",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/forest_evening_1920.png",
+   "fit_sha256": "3f7a8e938882b905ba8983970ea63408bb9bc44537bf66672fc0996c4079ff09"
+  },
+  "forest_night": {
+   "version": "a",
+   "render": "ui2_forest_night_a_00001_.png",
+   "sha256": "dd67f3ec83fa9c64df23b3174fc3547a9008cbc387a643b13f9c14d5715bfc37",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/forest_night_1920.png",
+   "fit_sha256": "9c0e11f12abbb30ffc8afbd65656eaa969023fb03adea4df6ec843b9a1e98829"
+  }
  }
 }
