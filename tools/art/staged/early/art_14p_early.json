@@ -1,0 +1,89 @@
+{
+ "about": [
+  "The pool's evening (sitting 16b) and the outer yards after dark (sitting 14: the Staff Building Steps and the Mountain Path; the Training Yard's two were chosen in 16p), written early by hand on 11 Oct 2026, straight after the owner chose the pool (O50), and offered unasked. Each is relit from its chosen picture, fitted, in the scratch root, by the tool's own outdoor relight prompt with the sentences below, from tools/art/staged/early/campus_for_batch3.json.",
+  "Nights by O40, O44 and 5.7a: a full moon, round and whole; nothing added; every window dark unless the plan has someone up inside. At the staff steps the teachers' house has a few upstairs windows warm, because Yaga is up at his bench on every Night; the Principal's hall and the two offices are dark. On the Mountain Path the onsen's windows are dark (nobody is up there at Night) and the dome on the hill stays a dark shape.",
+  "The pool has no Night: its gate is chained after dark. Its sentence says nobody is in the picture (K16).",
+  "The five sentences go into tools/art/batches.json after the merge checks of U0c2 have finished running, so that the art tools' tests do not run beside the game's harnesses."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "pool_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right; the still water reflects the evening sky. Everything in the picture and on the hills is still there. Nobody is in the picture. Add no new light.",
+  "staff_yard_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. Everything in the picture and on the hills is still there. Add no new light.",
+  "staff_yard_night": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. In the two-storey house on the right a few of the upstairs windows glow warm, because someone is up there; every other window in the picture is dark: the hall at the top of the steps and the two small buildings beside them. Everything in the picture and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now.",
+  "trailhead_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. Everything in the picture and on the hills is still there. Add no new light.",
+  "trailhead_night": "Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. Every window of the small house on the right is dark and no lamp is lit; its steam still rises, pale in the moonlight. The dome on top of the hill stays as it is, a dark shape against the sky. Everything in the picture and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
+ },
+ "rows": [
+  {
+   "label": "Swimming Pool, evening",
+   "kind": "relight",
+   "place": "pool",
+   "saves": [
+    "ui2_pool_evening_a",
+    "ui2_pool_evening_b"
+   ],
+   "seeds": [
+    3600,
+    3601
+   ],
+   "prompt_sha256": "a437e076671f5ddec6c2c5be55e39d3f56b2f278ae2b59b0dd336346f3f58ead"
+  },
+  {
+   "label": "Staff Building Steps, evening",
+   "kind": "relight",
+   "place": "staff_yard",
+   "saves": [
+    "ui2_staff_yard_evening_a",
+    "ui2_staff_yard_evening_b"
+   ],
+   "seeds": [
+    7068,
+    7069
+   ],
+   "prompt_sha256": "f7de262cdbf5123af845706bf453e0c25b461b8678e86c7d6fc2b430e87bd923"
+  },
+  {
+   "label": "Staff Building Steps, night, someone up in the teachers' house",
+   "kind": "relight",
+   "place": "staff_yard",
+   "saves": [
+    "ui2_staff_yard_night_a",
+    "ui2_staff_yard_night_b"
+   ],
+   "seeds": [
+    7726,
+    7727
+   ],
+   "prompt_sha256": "f8e656058c19f49bf6aac36fb5fff5122c5efef087b724e1cf9ec63447fe9590"
+  },
+  {
+   "label": "Mountain Path, evening",
+   "kind": "relight",
+   "place": "trailhead",
+   "saves": [
+    "ui2_trailhead_evening_a",
+    "ui2_trailhead_evening_b"
+   ],
+   "seeds": [
+    3036,
+    3037
+   ],
+   "prompt_sha256": "f7de262cdbf5123af845706bf453e0c25b461b8678e86c7d6fc2b430e87bd923"
+  },
+  {
+   "label": "Mountain Path, night, every window dark",
+   "kind": "relight",
+   "place": "trailhead",
+   "saves": [
+    "ui2_trailhead_night_a",
+    "ui2_trailhead_night_b"
+   ],
+   "seeds": [
+    4114,
+    4115
+   ],
+   "prompt_sha256": "3d60fd88bda34477fc1322cc2f9bfcaf486988b238202dfc12741736fdcc043e"
+  }
+ ],
+ "workflow_sha256": "c5f626e0c9fddd5f052e91b03b63eaecf925dba2f8af6e2de9b77d3ae4802833"
+}
