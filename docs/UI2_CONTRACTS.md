@@ -22,8 +22,8 @@ the exact shapes live.
   `world_lit_bg`), added by U0n, the last package of wave 0, with section J
   of `u2_contracts.rpy` (lines gained, none edited). Nothing in Part A or in
   B1 to B15 changed shape when it landed; A3, A4, B2, B3 and B6 gained rows
-  in its first sitting (the game), and B13 gains the tools' `lit` in its
-  second (the art tools).
+  in its first sitting (the game), and B13 gained the tools' `lit` in its
+  second (the art tools), with A4's two refusals in `check_content.py`.
 
 ---
 
@@ -202,9 +202,12 @@ accepted as well, and where both fit the period's own row is read first.
 it: the game reads a `view_` file's `slot_light` and `cast` and a `light_`
 file under `"lit"` while the lit picture shows. A `Night` key in a `view_`
 file would serve both of a room's Night pictures, so
-`check_content.py --layout-files` learns `"lit"` and refuses that key for a
-place of `WORLD_LIT` in U0n's second sitting (until then the checker does not
-know the key, and no file holds it).
+`check_content.py --layout-files` knows `"lit"` and refuses a `Night` key in
+the `slot_light` or `cast` of a place of `WORLD_LIT` (write `"night"` and
+`"lit"`); `"lit"` in a `light_` or `view_` file of any other place is a
+finding too. The checker reads the eight places from `world_lit_rows()` in
+`sb_world.rpy`'s own text and says so if it can no longer read them
+(`check_content.py --selftest` holds each of these).
 `for_rev` is a whole number from 1; in a `hot_` or `view_` file it is a
 finding unless `pictures.json` calls that place's picture `composed` (a room
 redone in place carries none, plan 3.2). The game ignores a file whose
@@ -717,13 +720,13 @@ rows are never frozen as a whole (O20).
 
 ```
 python3 tools/make_redo_workflow.py <place> [--add] [--from-rev1] [--print] [--again <n>]
-python3 tools/make_redo_workflow.py --relight <place> evening|night
+python3 tools/make_redo_workflow.py --relight <place> evening|night|lit
 python3 tools/make_scene_workflow.py <place | area_<key> | map_campus> [--print] [--again <n>] | --list
 tools/py_art.sh tools/install_redo.py <place> <render a> <render b> [--dry | --choose a|b]
-tools/py_art.sh tools/install_redo.py --relight <place> evening|night <a> <b> [--choose a|b]
+tools/py_art.sh tools/install_redo.py --relight <place> evening|night|lit <a> <b> [--dry | --choose a|b]
 tools/py_art.sh tools/install_redo.py --compose <place> <render> [--dry] [--layout hot_<place>.json view_<place>.json]
         options: --root <dir> --layout-dump <file> --keep <folder> --record <campus.json> --batch <n> --date <yyyy-mm-dd>
-tools/py_art.sh tools/sample_light.py <place> [evening|night] [--bg <render>] [--write] | --check
+tools/py_art.sh tools/sample_light.py <place> [evening|night|lit] [--bg <render>] [--write] | --check
 python3 tools/check_campus.py [--layout-dump <file>] [--layout <files>] [--sidecars <folder>] [--selftest]
 python3 tools/check_prompts.py <file> ... | --text "..." [--place <place>] | --selftest
 python3 tools/art_status.py [--check]
@@ -740,6 +743,33 @@ python3 tools/smoke/make_shape_overlay.py --out shots/shape_overlay/<name> [--wi
 
 `check_layout.py`, `stage_preview.py` and the new `layout_sheet.py` are U0d3's
 and join this list with that package.
+
+**U0n (B16), the hour `lit`.** `lit` is a third hour in every tool that lists
+the hours, for the eight rooms of `WORLD_LIT` only (any other place is refused
+in one line):
+
+- `install_redo.py --relight <place> lit <a> <b>` proves the pair as any
+  relight and, for the version chosen, writes `images/bg/<stem>_lit.png` with
+  the manifest row `<stem>_lit` (`kind: "relight"`, `of: <stem>`, `of_rev`),
+  the light row under `"lit"` of `light_<place>.json` (row `light_<place>_lit`)
+  and, where the room has a foreground outline, `images/fg/fg_<place>_lit.png`
+  (row `fg_<place>_lit`): the names B16 lists. The place is named by its key or
+  its picture (`dorm` or `your_room`). The room's `night` is not touched.
+- `make_redo_workflow.py --relight <place> lit`: the general indoor sentence
+  with the room's lamps on is the `lit` one; the general indoor `night`
+  sentence is the room with every light off; a yard has no `lit`. Renders are
+  saved as `ui2_<stem>_lit_a` and `_b`.
+- `game_layout.py`: `HOURS` holds `"lit"`; `lit_places()`, `lit_file(place)`
+  and `late()` read the dump's `lit_planned` and `late` (None for a dump
+  written before U0n); `where(who, day, period)` answers the late table's room
+  on a late Night (after the away table); `periods_showing(place, "lit")` is
+  `{"Night"}` for a room of the table and empty for any other place.
+- `install_pose.py` and `make_pose_workflow.py` take the variant `lit` as any
+  other (`pose_<place>__<who>__lit`, painted on `<stem>_lit.png`).
+- `stage_preview.py <place> lit` draws the Night frame on the lit picture.
+- `art_batch.py`: a relight row's `hour` may be `lit`; a row with
+  `"versions": 0` and `"made"` is a picture that exists and is never written
+  into a workflow. The table holds 72 hour pictures and a batch 47.
 
 ### B14. Budgets and the ledger
 

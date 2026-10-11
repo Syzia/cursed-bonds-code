@@ -84,6 +84,43 @@ the sheet: an evening or night picture is looked at beside its day picture
 for anything added (a lamp, a blanket), and a brand-new view (a yard, a new
 room) is read for whether it agrees with the pictures already chosen.
 
+## A room at Night: dark, or with someone up
+
+Your ruling of 11 Oct: when someone is in a room after dark, its lamps are on.
+So eight rooms have **two** Night pictures, and the game picks one each time
+you walk in:
+
+- **night**: the room with nobody up in it. Lights off, moonlight.
+- **lit**: the same room with someone up. The Library's green desk lamps,
+  Megumi's desk lamp, Yuji's television, the paper floor lamp in Panda and
+  Toge's room, Nobara's bedside lamp, Maki's desk lamp.
+
+The eight are the Library, the five friends' rooms, My Room and the dojo. My
+Room's and the dojo's lit pictures are for written scenes only; walking into
+either at Night shows it dark. Every other room has one Night picture.
+
+All eight lit pictures are already painted and chosen. Nothing is left to run
+for them, and sitting 47 (the friends' rooms dark, the dojo lit) is finished
+before it starts.
+
+For the session that installs: a lit picture goes in with the same tool as an
+evening or a night, under the hour `lit`, after the room's day picture:
+
+```
+tools/py_art.sh tools/install_redo.py --relight library lit <render a> <render b> --dry
+tools/py_art.sh tools/install_redo.py --relight library lit <render a> <render b> --choose a --batch 7b
+```
+
+It writes `<picture>_lit.png`, its row in the manifest, its light row, and the
+room's foreground cut where it has one. `dorm` (or `your_room`) is My Room.
+The game shows a lit room only when the lit picture was made for the day
+picture that is installed, and, in a room with a foreground, only once its
+own cut is there: the tool writes both in one step. Which render was chosen
+for each room is in `tools/art/staged/early/`: `art_7b_early.json`
+(`kept_for_D61`, the Library), `art_3b_early.json` (My Room: the lamp-on night,
+version A), `art_9c_early.json`, `art_10b_early.json`, `art_11b_early.json`
+(the friends) and `art_15c_early.json` (the dojo).
+
 ## Which sittings have more than one file
 
 By the plan there are forty-seven sittings. Eleven are one file. The others:

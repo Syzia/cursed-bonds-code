@@ -291,6 +291,45 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   dump's `world.homes`, `world.asleep` and `world.away`; `shapes(place)`,
   `keep_tile`, `front_ids`, `name_rects`, `tips`, `hot_shape` and `frame`
   read what D60 added.
+- **Rooms lit at Night (U0n, D61; `docs/UI2_DESIGN.md` 5.7a).** `lit` is a
+  third hour picture beside `evening` and `night`: the room at Night with
+  someone up in it (`night` is the room with nobody up). Only the eight rooms
+  of the game's `WORLD_LIT` have one (the Library, the five friends' rooms, My
+  Room, the dojo). Every tool that lists the hours knows it:
+  - `tools/py_art.sh tools/install_redo.py --relight <place> lit <a> <b>
+    [--dry | --choose a]` proves the pair as any relight is proved and writes,
+    for the version chosen, `game/images/bg/<picture>_lit.png` with its
+    manifest row (`kind` relight, `of` the day picture, `of_rev` its
+    revision), the light row under `"lit"` in `light_<place>.json`, and, where
+    the room has a foreground outline in `tools/fg/`, the cut
+    `fg_<place>_lit.png`. Any other place is refused in one line. The room's
+    `night` picture is not touched. (`dorm` and `your_room` both name My Room.)
+  - `python3 tools/make_redo_workflow.py --relight <place> lit`. The general
+    indoor sentence with the room's lamps on is the `lit` one now; the general
+    indoor `night` sentence is the room with every light off, by moonlight; a
+    yard has no `lit`.
+  - `tools/py_art.sh tools/sample_light.py <place> lit`, and `--check` reads a
+    `"lit"` row against the lit picture.
+  - `game_layout.py`: `lit_places()`, `lit_file(place)` and `late()` read the
+    dump's two new top-level keys (`lit_planned`, `late`); `where()` puts
+    someone who stays out late (`WORLD_LATE`: Megumi on Sundays, Toge on
+    Wednesdays, in the Library) in that room on that Night, so the pose
+    installer's "can show together" test knows it;
+    `periods_showing(place, "lit")` is Night. A dump written before U0n has
+    neither key and they answer None ("not known").
+  - `install_pose.py` and `make_pose_workflow.py`: a pose painted on a lit
+    picture carries the variant `lit` (`pose_library__megumi__lit`).
+  - `tools/py_art.sh tools/stage_preview.py <place> lit` draws the Night frame
+    on the lit picture (`--bg <render>` for one not installed).
+  - `art_status.py` lists a lit picture made for an old room among the
+    half-made sets, in its own words; `tools/smoke/make_shape_overlay.py`
+    keeps an installed lit picture fresh in its overlay.
+  - `art_batch.py` and `tools/art/batches.json`: a relight row's `hour` may be
+    `lit`. The table holds **72 hour pictures** (34 evenings, 30 nights, 8
+    lit) and **batch 47** (the five friends' rooms dark, the dojo lit). A row
+    with `"versions": 0` and `"made"` is a picture that exists already (the
+    Library's and My Room's lit, rows of 7b and 3b): it is counted, costs no
+    render, and no workflow is written for it. 446 renders in batches 1 to 47.
 
 ## Placeholders and the rest
 
@@ -606,7 +645,12 @@ A4 and A6). The first three are part of `--all`:
   mouth below the eyes); `pose_<district>.json` is accepted for a district of
   `WORLD_AWAY`; `light_<place>.json` may hold a `note`; `floor` is
   `{"on": [...], "off": [...]}`, `slot_light` is by hour and by slot, and
-  `spare` is for the three houses with spare doors;
+  `spare` is for the three houses with spare doors. Since U0n: `"lit"` is an
+  hour (a `light_` file's row, a key of `slot_light` and `cast`) for a place
+  of `WORLD_LIT` and a finding for any other; and a `Night` key in the
+  `slot_light` or `cast` of a place of `WORLD_LIT` is a finding, because that
+  room shows two pictures at Night and the key would serve both.
+  `check_content.py --selftest` holds these (its second line);
 - `--decency` (K16) — a word list over the text of `room_bath.rpy`,
   `room_pool.rpy` and `room_tokyo.rpy`, and over every `AMBIENT`,
   `AMBIENT_STORY`, `SPOT_LINES` and `POSES` row for the Bathhouse, the Sauna,
