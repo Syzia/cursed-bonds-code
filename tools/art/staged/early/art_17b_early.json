@@ -1,0 +1,105 @@
+{
+ "about": [
+  "The Riverside and the ridge after dark, and the Forest Trail's seat: written early by hand on 11 Oct 2026, straight after the owner chose the three places off the Mountain Path (O55), and handed over unasked. It is the Riverside's half of sitting 17b and the ridge's evening and night of 18b.",
+  "The four hour pictures are relit from the chosen day pictures (the 1920 px fits, laid into the scratch root as the installed files would be). The sun and the moon stand where the chosen Mountain Path has them (its evening has the sun setting on the left; its night has a full moon high and right of the middle): the ridge looks the same way. The Riverside's sky is a small piece at the upper left, under the place's name, so its night says the moon is not in view (O44: full, or none in view).",
+  "The ridge's night says the dome is a black shape against the stars, that no star shows through it and that nothing is seen inside it; and that no light shows in the valley, which the story calls empty. It is the picture of Gojo's night and one of the three mock-ups of the main menu (5.10).",
+  "The Forest Trail's row is ONE named change on the chosen render, the tool's keep-everything prompt with the change as its own sentence (as in art_15s.json): the sawn plank becomes a root of the tree. The owner chose that version for its trail, having been told of the plank, and did not ask for this: it is offered, to take or leave. If taken, only the seat is placed onto the chosen picture by a script (Method note 34), and the forest's evening and night are made after it; if left, they are made from the picture as chosen.",
+  "Not in this file: the forest's evening and night, and the strong veil picture (bg ridge_veil) made from the new ridge."
+ ],
+ "written": "2026-10-11",
+ "made_from": {
+  "riverside": {
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/riverside_1920.png",
+   "fit_sha256": "667f25c2640cc9c604804aa9a26f2baa8ef303490cb62f39ed03cb9cb0bed1f1"
+  },
+  "ridge": {
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/ridge_1920.png",
+   "fit_sha256": "59362b9debf9dca1c87db0f00e8465aa90bb304fa92e76117eb8f8ec41146fc5"
+  }
+ },
+ "forest_seat_made_from": {
+  "render": "ui2_forest2_a_00001_.png",
+  "sha256": "5bad433804d80f054c9c6e2cd77780784a2825a123e681b4079a4101b5c2ef92"
+ },
+ "sentences": {
+  "forest_seat": "Change one thing only: the seat at the foot of the great tree on the left. The flat sawn plank that lies between two of its roots is not there. In its place one thick root of the same tree rises out of the earth and runs along the ground where the plank was, rounded and smooth on top, low enough to sit on, with the same bark and the same colour as the tree's other roots: it is part of the living tree, not cut timber. Change nothing else in the picture: the tree, its other roots, the trail, the stone markers and every other tree stay exactly as they are.",
+  "riverside_evening": "Change the time of day to early evening: a warm orange and pink sunset sky above the mountains, and low golden sunlight from the left with long soft shadows falling to the right; the waterfall and the pool catch the warm light and the still water reflects the evening sky. Everything in the picture and on the hills is still there. Add no new light.",
+  "riverside_night": "Change the time of day to night: a deep blue night sky with stars above the mountains, and cool blue moonlight on everything, with soft shadows; the moon itself is not in view. The waterfall is pale in the moonlight and the still water of the pool reflects the night sky. Nothing here gives light of its own. Everything in the picture and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now.",
+  "ridge_evening": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. The dome on the top of the rise stays as it is, black and glossy, with nothing to be seen inside it; the sunset shows only as a warm sheen on its left side. Everything in the picture, in the valley and on the far mountains is still there. Add no new light.",
+  "ridge_night": "Change the time of day to night: a deep blue night sky full of stars and a full moon, round and whole, high in the sky to the right of the middle, and cool blue moonlight on everything, with soft shadows. The dome on the top of the rise stays as it is, a black shape against the stars with a thin rim of moonlight on its right side; no star shows through it and nothing is to be seen inside it. The white paper streamers on the rope are pale in the moonlight. No light shows anywhere in the valley or on the mountains. Everything in the picture, in the valley and on the far mountains is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
+ },
+ "rows": [
+  {
+   "label": "Forest Trail, the seat made a root",
+   "kind": "inplace",
+   "place": "forest",
+   "saves": [
+    "ui2_forest2a_seat_a",
+    "ui2_forest2a_seat_b"
+   ],
+   "seeds": [
+    5510,
+    5511
+   ],
+   "prompt_sha256": "f86cf92a50eadbf39eb3c176f3f6af64e2964afffe7a3ac4f0d15a640b570c1c"
+  },
+  {
+   "label": "Riverside, evening",
+   "kind": "relight",
+   "place": "riverside",
+   "saves": [
+    "ui2_riverside_evening_a",
+    "ui2_riverside_evening_b"
+   ],
+   "seeds": [
+    3404,
+    3405
+   ],
+   "prompt_sha256": "1dc45203aa1d0669fbad5c134060cac31cddf8f1eb20dbad6236af96f850db91"
+  },
+  {
+   "label": "Riverside, night",
+   "kind": "relight",
+   "place": "riverside",
+   "saves": [
+    "ui2_riverside_night_a",
+    "ui2_riverside_night_b"
+   ],
+   "seeds": [
+    4482,
+    4483
+   ],
+   "prompt_sha256": "c8b44e42411d0eb00ff6d4575ba1c9b825b1171b70805b49685420e6422d54b7"
+  },
+  {
+   "label": "Mountain Ridge, evening",
+   "kind": "relight",
+   "place": "ridge",
+   "saves": [
+    "ui2_ridge_evening_a",
+    "ui2_ridge_evening_b"
+   ],
+   "seeds": [
+    6170,
+    6171
+   ],
+   "prompt_sha256": "fe6b1fa284d209b928a8d9ed8e4285559d2ce2c7bf88c94f9dc12939fbb5daac"
+  },
+  {
+   "label": "Mountain Ridge, night",
+   "kind": "relight",
+   "place": "ridge",
+   "saves": [
+    "ui2_ridge_night_a",
+    "ui2_ridge_night_b"
+   ],
+   "seeds": [
+    8928,
+    8929
+   ],
+   "prompt_sha256": "a90083bfd729113804ea01b8103a55e2fec737a89f6ebe439945c8648f113590"
+  }
+ ],
+ "workflow_sha256": "93f4da6a5028bfa3e67aae8e616c97082098a927401fedd91b83249c3b2de8e5",
+ "cost": "10 renders, about $1.60"
+}
