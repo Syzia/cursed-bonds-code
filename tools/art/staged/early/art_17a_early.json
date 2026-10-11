@@ -4,7 +4,7 @@
   "The Forest Trail and the ridge each fail more than one, and are composed again from words. The Riverside passes all four, so it is made both ways for the owner to choose between: redone in place, and drawn again from today's camera with a larger waterfall and a deep pool (the two things one clicks there, which today are a waterfall about fifty pixels wide and water that is not plainly deep).",
   "References. For the forest and the ridge: one crop of the chosen Mountain Path each (the path among the cedars; the stairs and the dome), and nothing else. Today's picture of the place is not given, because the editor copies the layout of any picture of the place it is handed; the whole Mountain Path is not given, because its house, gate and standing stone would be painted as the view (Method note 34). For the Riverside drawn again: today's picture, with the tool's own sentence for a camera that is kept.",
   "The opening sentence is this file's own, not the tool's `open_yard`: that one names timber halls and tiled roofs, and nothing is built in any of the three.",
-  "NOT YET RUN. Nothing here is chosen. The scratch record's rows for the three change when the owner chooses."
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 14:55) and read the same day; see read_2026_10_11. Nothing is chosen yet."
  ],
  "written": "2026-10-11",
  "four_questions": {
@@ -160,5 +160,29 @@
  ],
  "workflow_sha256": "4d94b2ef6ec37ce522f809f937729e9584822bc75e5117048f6a8749a624924e",
  "cost": "8 renders, about $1.28",
- "if_chosen": "The Forest Trail and the ridge become composed places (the plan's count of rooms redone in place falls from nine to seven, and to six if the Riverside's drawn-again row is chosen). The ridge's `veil` icon moves onto the dome and its exit to the stairs' head at the bottom; the forest's exit to the trail at the bottom. If the Riverside is drawn again, the fishing float and the fishing spot are checked against the picture at its layout sitting, and moved by the layout if the water or the rock is not under them."
+ "if_chosen": "The Forest Trail and the ridge become composed places (the plan's count of rooms redone in place falls from nine to seven, and to six if the Riverside's drawn-again row is chosen). The ridge's `veil` icon moves onto the dome and its exit to the stairs' head at the bottom; the forest's exit to the trail at the bottom. If the Riverside is drawn again, the fishing float and the fishing spot are checked against the picture at its layout sitting, and moved by the layout if the water or the rock is not under them.",
+ "renders_sha256": {
+  "ui2_forest2_a_00001_.png": "5bad433804d80f054c9c6e2cd77780784a2825a123e681b4079a4101b5c2ef92",
+  "ui2_forest2_b_00001_.png": "eaf228cb1c12ba2b04505dcc0750446a3b07ea378954b15fd0a1d189ab794b8d",
+  "ui2_riverside_a_00001_.png": "61b23b7a39e96ed8f9223f871a0c144a30b568cd931c20b673efc0b4cd7bfb9d",
+  "ui2_riverside_b_00001_.png": "f4dcb3af4576a0fb421cc7757538c28324e28d9014a8e767934ac12a5eac209b",
+  "ui2_riverside2_a_00001_.png": "03d949803a447a2d5db51ddf4e06a6e345f8d0051e974f9a964b4a432f604982",
+  "ui2_riverside2_b_00001_.png": "da4a700b3ae409268fdb1f46be2d1fc6dcfe782a21e676d3ca5336a63f6790ae",
+  "ui2_ridge2_a_00001_.png": "39e8bd5196a2bd86de72534bfc247dd23f4ab6becd6a8c755965035adfcabdaf",
+  "ui2_ridge2_b_00001_.png": "aebe992d25a5449a5b7bdc21da3ed13effd5b2d1b8b1524eac66ff9b6934ae92"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The new renders finished if you want to have a look\"",
+  "how": "By eye, each against its row's checklist and against the chosen Mountain Path; close crops of the forest's seat and markers and of the ridge's rope, dome and rock; the game's fishing float (1100, 700) and fishing spot (1580, 905) marked on each riverside; the in-place pair through install_redo.py riverside <a> <b> --dry. No render has a black row or column at an edge. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_forest2.jpg, compare_riverside2.jpg, compare_ridge2.jpg.",
+  "forest2_b": "PICK. The greatest cedar on the left with one great rounded root that rises like a low seat, as the story has it (\"sitting on a root\"); the clearing of level earth with the trunks' shadows across it; the pair of square-cut stone markers on the right (x about 1345 to 1535 of 1920, clear of the right ninth); the trail comes in at the bottom and is lost among the trunks at the middle; deep, dark forest on every side, the colour of the cedars on the chosen Mountain Path. Nothing built.",
+  "forest2_a": "Good, and brighter: the trail runs straight on into the light and is the plainer way on. Not the pick because its seat came out as a sawn plank set between two roots, a made thing in a place where nothing is built. Its markers are plain square posts (x about 1450 to 1645).",
+  "riverside_a": "In place, PASS by the installer's check (no point off by a pixel; 3.5 times sharper). It is today's picture, sharper: the waterfall is still about 50 px wide and the glints on the water are kept.",
+  "riverside_b": "In place. REFUSED by the installer's check for the two standing rows at x 330 and x 240: the flat slab at the lower left was repainted lighter and nothing moved (the same false alarm as the installer's second correction, a floor drawn again; one more test case for it). By eye it is today's picture, sharper.",
+  "riverside2_a": "PICK. It kept today's right side to the pixel (the leaning trees, the ferns, the boulders, the flat rock at the lower right, the slab at the lower left) and drew the left again: a waterfall between great boulders about 370 px wide (x about 455 to 830, y 395 to 660 of 1920), a deep pool of open water across the middle with no rock in it, a sandy path climbing away on the left between ferns, grey pebbles across the whole bottom, the mountains kept in the upper left. The fishing float lies on the pool's deep water and the fishing spot on the same flat rock as today, so neither moves.",
+  "riverside2_b": "Good, and wholly new, in a calmer colour: a waterfall over a ledge of grey rock, a dark deep pool, a pebble bank, a path at the left. Its flat rock at the right is larger and reaches the right edge (x about 1415 to 1920), so the fishing spot at (1580, 905) lies on shallow water below it and would move onto the rock at its layout sitting; the float lies on the pool.",
+  "ridge2_a": "PICK. The top steps of the stone stairs at the bottom middle, with the same stone kerbs as the Mountain Path's stairs; a shoulder of grass with a path of bare earth; a great flat-topped rock at the right that juts out over the valley (x about 1160 to 1680 of 1920, clear of the right ninth); the straw rope with four white paper streamers between a pair of head-high posts across the path, left of the middle; beyond it the path climbs a short rocky rise to the dome on its top (about 107 px wide at (705, 210)): black, glossy, a violet sheen, nothing inside it; an empty forested valley and ranges of mountains behind; cedar tops below on both sides. No building.",
+  "ridge2_b": "Good too: a wider top and very wide stairs across the bottom (wider than the Mountain Path's), a flat rock on the grass at the right, and taller posts, with straw tassels between the streamers, that frame the rise and the dome like a gate; the dome is dead centre and a little smaller (about 91 px), its foot hidden by the crest.",
+  "said_to_the_owner": "The kept Riverside is only sharper. Riverside drawn again B would need its fishing spot moved. The dome is small in both ridges, about a hut's size and further off than it looks from the Mountain Path, which follows O36 (\"you don't want it to feel to big\").",
+  "put_to_the_owner": "Forest Trail B; Riverside drawn again A; the ridge A."
+ }
 }
