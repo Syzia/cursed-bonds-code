@@ -13,6 +13,7 @@
 ##     "courtyard":           {"rev": 2, "kind": "composed", ...},
 ##     "dorm_common":         {"rev": 3, "kind": "inplace", ...},
 ##     "dorm_common_evening": {"rev": 2, "kind": "relight", "of": "dorm_common", "of_rev": 3},
+##     "library_lit":         {"rev": 2, "kind": "relight", "of": "library", "of_rev": 2},
 ##     "fg_dorm_common":      {"of": "dorm_common", "of_rev": 3},
 ##     "light_dorm_common":   {"of": "dorm_common", "of_rev": 3},
 ##     "pose_dorm_common__nobara__evening": {"of": "dorm_common_evening", "of_rev": 2}
@@ -39,8 +40,13 @@ init -6 python:
     import json as art_json
 
     ## The hour pictures a place may have: the attribute, which is also the
-    ## end of the file's stem ("rooftop_evening").
-    ART_HOURS = ("evening", "night")
+    ## end of the file's stem ("rooftop_evening"). U0n (5.7a, D61): "lit" is
+    ## the room at Night with someone up in it ("library_lit"), a second
+    ## Night picture beside "night", the room with nobody up. It is read to
+    ## its parent as an hour's name is: fg_<place>_lit, light_<place>_lit and
+    ## pose_<place>__<who>__lit are made from <picture>_lit, and that from
+    ## the day picture.
+    ART_HOURS = ("evening", "night", "lit")
 
     ## The manifest's rows, read once: {stem: row}. Outside the store, and
     ## never reassigned: it is not saved and rollback leaves it alone. (A
@@ -98,7 +104,8 @@ init -6 python:
         name, or None for a picture that was made from no other (a day
         picture, a map, a story picture):
 
-          <picture>_evening, <picture>_night    the day picture
+          <picture>_evening, <picture>_night, <picture>_lit
+                                                 the day picture
           fg_<place>[_<hour>]                    the place's picture for that hour
           light_<place>[_<hour>]                 the same
           pose_<place>__<who>[__<variant>][__asleep]

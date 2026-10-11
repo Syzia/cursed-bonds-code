@@ -108,6 +108,12 @@
 ##   frames        also tag_edges (VIEW_TAG_EDGES: the x a name tag stays
 ##                 between), tag_gap (VIEW_TAG_GAP) and tag_w (the widest name
 ##                 tag any person can have: mission mark and NEW chip on)
+## Added by U0n (rooms lit at Night, plan 5.7a), two keys at the top level and
+## none under `world`; no key above changed shape:
+##   lit_planned   WORLD_LIT as [[place, file]]: every room that has a second
+##                 Night picture, the room lit (images/bg/<stem>_lit.png)
+##   late          WORLD_LATE as {who: {"place": place, "days": [weekday, ...]}}:
+##                 who is out late, where, on which Nights
 ##
 ## Keys the tree does not have yet are written empty and filled when U0c
 ## regenerates the file. Nothing in it depends on the day, the hour, a flag or
@@ -356,6 +362,10 @@ init 999 python:
         d["name_rects"] = rects
         ## The layout tools (U0d3): the size of each locked exit's reason.
         d["lock_labels"] = zz_dump_locks()
+        ## Rooms lit at Night (U0n): two keys here, none under `world`.
+        d["lit_planned"] = zz_dump_plain(WORLD_LIT)
+        d["late"] = builtins.dict((who, builtins.dict(place=row[0], days=builtins.list(row[1])))
+                                  for who, row in WORLD_LATE.items())
         return d
 
 
@@ -458,6 +468,22 @@ label zz_smoke:
               "U0d3: lock_labels holds the size of the lock's reason for every exit that can be locked (%d exits in %d places, the five p2_paths hovers among them), none wider than a hover label, and measuring them changed nothing; frames holds the name tags' edges, gap and widest (%d px)"
               % (sum(len(v) for v in _zz_locks.values()), len(_zz_locks), _zz_d["frames"]["tag_w"]),
               _zz_locks.get("staff_yard"))
+        ## U0n: the lit rooms and the late stays, at the top level; `world`
+        ## keeps exactly its seven keys (checked above), and every late place
+        ## and weekday is one the rest of the dump knows.
+        _zz_keys = [p["key"] for p in _zz_d["places"]]
+        check(_zz_d["lit_planned"] == [[l, f] for l, f in WORLD_LIT] and len(_zz_d["lit_planned"]) >= 1
+              and all(l in _zz_keys and f == "images/bg/%s_lit.png" % art_stem(l) for l, f in _zz_d["lit_planned"])
+              and builtins.sorted(_zz_d["late"]) == builtins.sorted(WORLD_LATE)
+              and all(builtins.sorted(v) == ["days", "place"] and v["place"] == WORLD_LATE[w][0] and v["days"] == builtins.list(WORLD_LATE[w][1])
+                      and v["days"] and all(x in _zz_d["weekdays"] for x in v["days"])
+                      and v["place"] in [l for l, f in _zz_d["lit_planned"]] and w in _zz_d["schedule"]
+                      for w, v in _zz_d["late"].items())
+              and "lit_planned" not in _zz_d["world"] and "late" not in _zz_d["world"]
+              and len(_zz_d["variants_planned"]) == len(WORLD_VARIANTS) and not any(r[2] == "lit" for r in _zz_d["variants_planned"]),
+              "U0n: lit_planned holds WORLD_LIT as [place, file] rows (%d) and late holds WORLD_LATE as {who: {place, days}} (%d), both at the top level and neither under world; "
+              "every late place has a lit row, and variants_planned is as it was" % (len(_zz_d["lit_planned"]), len(_zz_d["late"])),
+              (_zz_d["lit_planned"], _zz_d["late"]))
         _zz_path = os.path.join(zz_smoke_state.shots, "game_layout.json")
         with open(_zz_path, "w", encoding="utf-8") as _zz_f:
             _zz_f.write(_zz_text)
