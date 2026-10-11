@@ -523,12 +523,14 @@
       {
        "place": "boys_dorm",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: the ceiling lamps are on and give a warm light, and the daylight that comes in from behind me has turned to the low orange light of sunset and lies along the floor. Nothing else changes: every door is shut, as it is now. Add no new lamp, no new light and no window."
       },
       {
        "place": "boys_dorm",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every lamp in the corridor switched off. The corridor is lit only by cool blue moonlight that comes in from behind me and lies along the floor in a pale patch, reaching toward the far door; the far end is darker. The corridor is dim, but every door, the shoe rack and the notice board can still be seen clearly. No light shows round or under any door. Add no new light and no window."
       },
       {
        "place": "yuji_room",
