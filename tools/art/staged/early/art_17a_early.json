@@ -194,7 +194,8 @@
    "sha256": "5bad433804d80f054c9c6e2cd77780784a2825a123e681b4079a4101b5c2ef92",
    "fit": "~/Desktop/JJK Game images/ui2/early/chosen/forest_1920.png",
    "fit_sha256": "d25ebf760921f8c8d1484acee17899b098b8d132df59fd86e350889c7ed69e2b",
-   "note": "Chosen for its trail, which runs on straight and to the left; B's is lost among the trunks and reads as a path that stops. The owner was told A's seat is a sawn plank where the story has a root; a repaint of that one thing, placed by tool, is offered with the next file."
+   "note": "Chosen for its trail, which runs on straight and to the left; B's is lost among the trunks and reads as a path that stops. The owner was told A's seat is a sawn plank where the story has a root; a repaint of that one thing, placed by tool, is offered with the next file.",
+   "superseded": "The seat was repainted and placed by tool the same day (art_17b_early.json, O56): the Forest Trail's day picture is ui2_forest2a_root_00001_.png, and chosen/forest_1920.png was fitted again from it (fit_sha256 above is the earlier fit's)."
   },
   "riverside": {
    "version": "a",

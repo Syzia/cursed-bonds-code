@@ -5,7 +5,7 @@
   "The ridge's night says the dome is a black shape against the stars, that no star shows through it and that nothing is seen inside it; and that no light shows in the valley, which the story calls empty. It is the picture of Gojo's night and one of the three mock-ups of the main menu (5.10).",
   "The Forest Trail's row is ONE named change on the chosen render, the tool's keep-everything prompt with the change as its own sentence (as in art_15s.json): the sawn plank becomes a root of the tree. The owner chose that version for its trail, having been told of the plank, and did not ask for this: it is offered, to take or leave. If taken, only the seat is placed onto the chosen picture by a script (Method note 34), and the forest's evening and night are made after it; if left, they are made from the picture as chosen.",
   "Not in this file: the forest's evening and night, and the strong veil picture (bg ridge_veil) made from the new ridge.",
-  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:12) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O56)."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -139,5 +139,45 @@
   "forest2a_seat_b": "Good too, flatter, but its top shows rings and a split face like a half log, which reads a little as cut timber again.",
   "said_to_the_owner": "In the ridge's evening B the dome is dark with the sunset on its left side, not pure black; it can be darkened by tool, the dome alone, if wanted.",
   "put_to_the_owner": "The ridge: evening B, night A. The Riverside: evening A, night A. The Forest Trail: take the root (repaint A, placed)."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The picks as put: the ridge's evening B and night A, the Riverside's evening A and night A, and the Forest Trail with the root (repaint A, placed).",
+  "ridge_evening": {
+   "version": "b",
+   "render": "ui2_ridge_evening_b_00001_.png",
+   "sha256": "bad7ce1cdff1d997def9591b550ce3d2385123bcbd6f9e133129ef0960a54642",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/ridge_evening_1920.png",
+   "fit_sha256": "9f8e624458830b7996e6961031162395c87f97917d537946874651222a26d6bc"
+  },
+  "ridge_night": {
+   "version": "a",
+   "render": "ui2_ridge_night_a_00001_.png",
+   "sha256": "1f1a053ef6aa3fea8c69e294dce0888c0bfa9c4de0f50167eadab59e7424c6a4",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/ridge_night_1920.png",
+   "fit_sha256": "84765e5d7b8091183dc8e9382794a7e6945f1f01bb8a068bd405e08370ee7803"
+  },
+  "riverside_evening": {
+   "version": "a",
+   "render": "ui2_riverside_evening_a_00001_.png",
+   "sha256": "898ca1baa1a33e68fcee0641a64ffdb9ac2c518e7e133ad9f2ff1e6e4f7317da",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/riverside_evening_1920.png",
+   "fit_sha256": "cc7edffe446a6f9aa7f326dd6bd5f32c56adcdca3016bea13b09a9f011f067ef"
+  },
+  "riverside_night": {
+   "version": "a",
+   "render": "ui2_riverside_night_a_00001_.png",
+   "sha256": "42ec0c84350239c82fac8d4cf2c2b1853c85caa90a7623b6345c99bc750205e9",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/riverside_night_1920.png",
+   "fit_sha256": "1db907ca982074dfa10bacaab341a3161aad8b80af61336206fa342fced4e5d9"
+  },
+  "forest": {
+   "version": "the root: seat repaint A placed by tools/art/staged/early/forest_seat_17b.py",
+   "render": "ui2_forest2a_root_00001_.png",
+   "sha256": "91fd80e7c9a7d92b8a9b69e9cd473c797b1e79fed8414ac9c934fe2aaa3b59a7",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/forest_1920.png",
+   "fit_sha256": "227efdad8c50f5bcd3daf2b13757be0d2dd2ac0fc089e8faca67e5934208bc6c",
+   "note": "It takes the place of ui2_forest2_a as the Forest Trail's day picture (O55 chose that render; O56 its seat). Only the seat differs."
+  }
  }
 }
