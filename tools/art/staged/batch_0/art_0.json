@@ -49,8 +49,8 @@
     1536
    ],
    "sha256": "e11f0c0268251e0ea2e894432134cf8b62b82a148aaab0fd6ec167c83a274391",
-   "install_redo_dry": "LOOK: the whole picture 0, 0 px; 38 points checked, none off by a pixel; 20 things checked, none gone; nothing added; 3.1 times as sharp as the picture before the overhaul. Shown, not refused: the parts of the picture at (840, 368) and (1080, 368) are drawn differently (the view through the garden door's panes).",
-   "by_eye": "The LOOK is the window view, which batch 3a paints again on purpose. Until batch 3 the room's evening and night are this day picture tinted (K7)."
+   "install_redo_dry": "LOOK: the whole picture 0, 0 px; 38 points checked, none off by a pixel; 20 things checked, none gone; nothing added; 3.1 times as sharp as the picture before the overhaul. Shown, not refused: the parts of the picture at (840, 368) and (1080, 368) are drawn differently (both lie in the back window: its view shows tiled roofs where the game's picture shows trees).",
+   "by_eye": "The LOOK is the back window's view and nothing else; batch 3a paints the room's window views again on purpose. Until batch 3 the room's evening and night are this day picture tinted (K7)."
   },
   "cafeteria": {
    "kind": "inplace",
