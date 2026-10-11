@@ -2,7 +2,7 @@
 Measure the light people stand in, from the picture itself.
 
     tools/py_art.sh tools/sample_light.py dorm_common               # the day picture: prints the row
-    tools/py_art.sh tools/sample_light.py dorm_common evening
+    tools/py_art.sh tools/sample_light.py dorm_common evening       # an hour: evening, night, or lit (5.7a)
     tools/py_art.sh tools/sample_light.py dorm_common --bg <render.png>     # a render not installed yet
     tools/py_art.sh tools/sample_light.py dorm_common --write       # into game/layout/light_dorm_common.json
     tools/py_art.sh tools/sample_light.py --check                   # every light_<place>.json against its picture
@@ -48,7 +48,7 @@ import game_layout
 import redo_measure as rm
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HOURS = ("", "evening", "night")
+HOURS = ("", "evening", "night", "lit")    # lit: the room at Night with someone up in it (5.7a)
 MID_LEVEL = 120.0           # the lightness of a mid-lit room (the floor band and the wall band together), of 255
 DRIFT_BRIGHT, DRIFT_TINT = 0.12, 0.15
 
@@ -201,7 +201,7 @@ def main(argv):
         print(__doc__); raise SystemExit(1)
     place, hour = args[0], (args[1] if len(args) == 2 else "")
     if hour not in HOURS:
-        raise SystemExit("the hour is evening or night, not %r" % hour)
+        raise SystemExit("the hour is evening, night or lit, not %r" % hour)
     pic = bg or lay.bg_path(place, hour, root)
     if not os.path.exists(pic):
         raise SystemExit("no picture at %s" % pic)

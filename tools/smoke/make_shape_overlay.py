@@ -16,7 +16,8 @@ builds an asset overlay (tools/smoke.sh, 2b) in which EVERY place is shaped:
                                  not registered yet, which have no point
   game/layout/pictures.json      every place's picture at revision 2, and a
                                  row for everything made from a picture (its
-                                 hour pictures, foreground cut-out, light row
+                                 hour pictures, the lit one of 5.7a among
+                                 them, its foreground cut-out, light row
                                  and poses) that says it was made for that
                                  revision, so that nothing else goes stale:
                                  the game then differs from the tree only in
@@ -67,7 +68,7 @@ CASES = os.path.join(ROOT, "tools", "smoke", "hot_shape_cases.json")
 HOTSPOTS = os.path.join(ROOT, "game", "sb_hotspots.rpy")
 BEGIN = "## >>> hot_shape:"
 END = "## <<< hot_shape:"
-HOURS = ("evening", "night")
+HOURS = ("evening", "night", "lit")       # lit: a room's second Night picture (docs/UI2_DESIGN.md 5.7a)
 
 
 def die(text):

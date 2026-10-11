@@ -15,7 +15,8 @@ The polygons are tool input, never read by the game: tools/fg/<place>.json,
     {"": [[x, y], ...], "evening": [[x, y], ...]}
 
 one polygon a picture, keyed by the picture's variant ("" is the day picture;
-"evening" / "night" are game/images/bg/<name>_<variant>.png). Points are in
+"evening" / "night" / "lit" are game/images/bg/<name>_<variant>.png; "lit" is
+the room at Night with someone up in it, docs/UI2_DESIGN.md 5.7a). Points are in
 the 1920x1080 frame and may lie outside it. Trace the object a pixel or two
 inside its outline: a loose polygon carries a rim of floor over the person's
 legs. Look at it first with `python3 tools/layout_sheet.py view_<place>`.
