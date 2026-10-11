@@ -4,7 +4,8 @@
 #   tools/test_art_tools.sh                        everything that can run on this machine
 #   tools/test_art_tools.sh --layout-dump <file>   in a worktree: the local dump
 #                                                  (tools/smoke.sh u2_dump --out <file>)
-#   tools/test_art_tools.sh --only redo,pose       some groups: reader redo compose pose face set status real yuji
+#   tools/test_art_tools.sh --only redo,pose       some groups: fixtures reader layout redo stage compose pose
+#                                                  face set status real yuji
 #   tools/test_art_tools.sh --strict               an art sitting: a SKIPPED line is a failure
 #   tools/test_art_tools.sh --keep-work            keep the scratch folder
 #
@@ -14,6 +15,14 @@
 # and the last line is RESULT PASS or RESULT FAIL. Nothing touches the game:
 # every install goes into a scratch copy, and the last check is that no file
 # under game/ changed. No Ren'Py is started. About ten minutes in full.
+# The scratch copy is the tree as it was before the overhaul installed any
+# picture: what an install wrote is put back from git, each picture from the
+# commit its own manifest row names, so the suite reads the same before and
+# after batch 0, with the install committed (in one commit or in several) or
+# not yet. Once a picture is installed it needs a git checkout that holds
+# the project's history: in a copy with no git, or a clone without its
+# history, it says so in one line, runs nothing and ends RESULT FAIL. It
+# will not run where game/images is a symbolic link.
 #
 # Exit status 0 when nothing failed, 1 otherwise, 2 when the layout dump is
 # out of date ("run tools/smoke.sh u2_dump").

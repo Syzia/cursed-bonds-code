@@ -31,5 +31,11 @@
   {"name": "the sliding glass door on the left, where I stand, to the garden", "box": [0, 0, 190, 1010]},
   {"name": "the sliding door at the right edge", "box": [1800, 0, 120, 1010]}
  ],
+ "windows": [
+  {"name": "the sliding door's glass, the top pane", "box": [0, 96, 104, 248]},
+  {"name": "the sliding door's glass, the narrow pane", "box": [0, 366, 104, 28]},
+  {"name": "the sliding door's glass, the pane the way to the garden sits on", "box": [0, 413, 104, 225]},
+  {"name": "the sliding door's glass, the bottom pane", "box": [0, 672, 104, 226]}
+ ],
  "scale": [447, 235, 830]
 }

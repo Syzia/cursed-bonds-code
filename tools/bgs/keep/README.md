@@ -13,6 +13,7 @@ not `dorm`). `docs/UI2_DESIGN.md` 5.4 has the rules. They are data for
 | `allow` | the room's one named addition, or a window that is meant to change | an `empty` zone or tile inside it is not judged |
 | `change` | a box meant to change inside a fixed outline (5.2's fallback only) | left out of "vanished" and "added"; its outline must still agree within 3 px |
 | `doors` | the room's painted doors: `{"name", "box"}` | kept like a `keep` row ("nothing vanished": a door painted out is REFUSED and named); also read by `tools/check_layout.py` (an indoor exit sits on a door or in the bottom band) |
+| `windows` | the room's glass, pane by pane: `{"name", "box"}` or a `poly`, drawn just INSIDE the frame, so that the frame's own edge stays outside it | left out of every guard window and keep box. A point that lies on glass (an exit on a glass door) is held by the post, the handle and the frame round it, and a view changed on purpose behind it is a LOOK, not a moved door. Only where a registered point's 192 px window reaches glass does a room need them |
 | `scale` | `[x, y top, y bottom]` of one door or post, taken as 200 cm | the height in a pose's prompt, until the room's `view_` file has its own |
 
 All numbers are on the 1920x1080 picture. Besides these rows the installer
@@ -26,7 +27,9 @@ minutes a room, with `tools/layout_sheet.py`), and writes the others before
 their batches.
 
 - `dorm_common`, `cafeteria`: redone in place (batch 0's third-test renders;
-  run again in 3a and 4a). The Common Room's `scale` is the post in the left
+  run again in 3a and 4a). The Common Room's `windows` are the four panes of
+  the sliding door on the left: the way to the garden sits on its glass, and
+  the chosen render of 3a shows the boys' dormitory through it (U0d3). The Common Room's `scale` is the post in the left
   wall beside the sofa, floor to lintel: it is there so that batch 5's pose
   prompt can say how tall Nobara stands before the room's layout sitting.
 - `your_room` (My Room), `girls_dorm`: batches 3a and 4a. My Room's `allow` is

@@ -66,6 +66,10 @@ Rules (flags):
   --harness-names     Every top-level name in tools/smoke/*.rpy starts with
                       zz / ZZ (the names phase 1 left are in the baseline).
                       When no harness is among FILES, tools/smoke/ is read.
+                      A test overlay that must carry a real name says so in
+                      tools/prefixes.json: an exception that gives BOTH the
+                      name and its file lets through that one name in that
+                      one file (--selftest proves it lets nothing else by).
   --art-names         Two files under game/images/ with one base name (Ren'Py
                       names an image after it, whatever the folder).
   --action-returns    Every `Function(` inside a `screen` block or a `def`
@@ -745,6 +749,43 @@ def prefix_problem(ns, name, fk, cfg):
         if bare.startswith("mg_"):
             return None
     return "does not start with one of %s's prefixes (%s)" % (fk, ", ".join(prefixes))
+
+
+def harness_name_ok(ns, name, fk, cfg):
+    """--harness-names: a top-level name of a harness or of a test overlay
+    starts with one of the harness marks (zz, ZZ; leading underscores
+    aside), or is let through by an exception of tools/prefixes.json that
+    gives BOTH the name and its file (and, when it says so, the kind of
+    name). An exception with no file, or for another file, lets nothing
+    through: a test overlay may carry a real name only where that one file
+    stands for a line the game's own tools write."""
+    marks = tuple(cfg.get("harness", ["zz", "ZZ"]))
+    if name.lstrip("_").startswith(marks):
+        return True
+    for e in cfg.get("exceptions", []):
+        if (e.get("name") and e.get("file") and e.get("name") == name and e.get("file") == fk
+                and e.get("namespace", ns) == ns):
+            return True
+    return False
+
+
+def harness_selftest():
+    """The self-test of the --harness-names exception: [] when it holds,
+    else what is wrong, a line each. An exception lets through that one name
+    in that one file and nothing else."""
+    f = "tools/smoke/assets/zz_case/game/zz_case.rpy"
+    cfg = {"harness": ["zz", "ZZ"],
+           "exceptions": [{"name": "nade", "file": f, "namespace": "image"}, {"name": "loose"}]}
+    cases = (
+        ("the excepted name in its file", ("image", "nade", f), True),
+        ("the same name in another file", ("image", "nade", "tools/smoke/zz_other.rpy"), False),
+        ("another name in that file", ("image", "mother", f), False),
+        ("the same name as another kind of name in that file", ("store", "nade", f), False),
+        ("an exception that gives no file", ("store", "loose", f), False),
+        ("a name that carries the mark", ("store", "_zz_x", "tools/smoke/zz_other.rpy"), True),
+    )
+    return ["self-test: %s should %s" % (what, "pass" if want else "be a finding")
+            for what, args, want in cases if harness_name_ok(*(args + (cfg,))) != want]
 
 
 def rule_action_returns(path, lines, allowed):
@@ -1608,10 +1649,12 @@ def global_findings(files, chosen, cache):
 
     if "harness-names" in chosen:
         marks = tuple(cfg.get("harness", ["zz", "ZZ"]))
+        for line in harness_selftest():
+            out.append((PREFIXES, 1, "harness-names", line))
         for path in harnesses:
             fk = file_key(path)
             for ns, name, ln in defs_of(path):
-                if (ns, name, fk) in base.defs or name.lstrip("_").startswith(marks):
+                if (ns, name, fk) in base.defs or harness_name_ok(ns, name, fk, cfg):
                     continue
                 out.append((path, ln.n, "harness-names", "%s %s does not start with %s" % (
                     ns, name, " / ".join(marks))))
@@ -1738,8 +1781,18 @@ def main(argv=None):
     ap.add_argument("--i-am-p0a-or-p8", dest="really_write", action="store_true",
                     help="the second flag --write-baseline needs before it replaces "
                          "the two frozen baselines")
+    ap.add_argument("--selftest", action="store_true",
+                    help="the --harness-names exception: it lets through one name in one file, "
+                         "and nothing else (also run by --harness-names itself)")
     ap.add_argument("files", nargs="*", help=".rpy files or folders (default: game/)")
     args = ap.parse_args(argv)
+    if args.selftest:
+        bad = harness_selftest()
+        for line in bad:
+            print("check_content: " + line)
+        print("check_content selftest: %s (--harness-names: a prefixes.json exception with a name and its "
+              "file lets through that one name in that one file, and nothing else)" % ("FAIL" if bad else "PASS"))
+        return 1 if bad else 0
 
     chosen = [r for r in RULES if getattr(args, r.replace("-", "_"))]
     reports = [r for r in REPORT_RULES if getattr(args, r.replace("-", "_"))]

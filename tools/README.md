@@ -116,18 +116,181 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   Free.
 - **Layout sheets.** `layout_sheet.py <name>` draws a layout on its picture
   for approval, into `shots/layout/<name>.png`. The name is the layout's full
-  stem: `view_<place>` (where people stand, pose boxes, the foreground
-  polygon), `hot_<place>` (the room's hotspots and exits, the frame they must
-  stay in, the two lanes they must stay out of, where people stand) or
-  `area_<key>` (an area's map pins). It draws the code's numbers with the
-  sidecar `game/layout/<name>.json` laid over them. `--sidecar <file>` and
+  stem: `view_<place>` (where people stand, the floor and the scale, pose
+  boxes, the foreground polygon), `hot_<place>` (the room's hotspots and
+  exits, the side each name opens on, the frame they must stay in, the two
+  lanes they must stay out of, the spare doors, where people stand) or
+  `area_<key>` (an area's map pins). **For a shaped place** (the sidecar
+  holds `shapes`, D60) a hotspot sheet is two frames: every shape's outline
+  over the picture, then every shape lit and named, as while names are shown.
+  It draws the code's numbers with the sidecar `game/layout/<name>.json` laid
+  over them, and takes every key of UI2_DESIGN.md 3.2. `--sidecar <file>` and
   `--fg <file>` use another file; `--no-sidecar` draws the code's numbers
-  alone; `--defaults <file>` and `--out <file>` name the input and the output.
-  It stops with one line on a malformed sidecar (unknown keys, a slot key
-  outside "1" to "4", a slot list of the wrong length). **In a new worktree,
-  run `tools/smoke.sh tools/smoke/p2_contracts.rpy` first:** the code's
-  numbers come from `shots/layout/defaults.json`, which that harness writes
-  and git ignores.
+  alone; `--out <file>` names the output. **A layout that is still only
+  staged:** `--staged <folder>` reads `<name>.json` (and `check_<place>.json`)
+  from a folder such as `tools/art/staged/<stem>/`, and `--bg <picture>`
+  draws on a picture given by path (a 2752 px render is fitted). All its
+  numbers (the frame, the lanes, the stage, the points, the code's slots, the
+  pins) come from the layout dump, `tools/art/game_layout.json`; in a
+  worktree, `--layout-dump <file>`. It no longer reads
+  `shots/layout/defaults.json`.
+- **The layout check.** `check_layout.py <folder or files>` is the check a
+  layout must pass before its picture may be installed (UI2_DESIGN.md 5.6
+  step 4, 7.3, 6.3, 4.6). It reads a candidate as files (`hot_<place>.json`,
+  `view_<place>.json`, `area_<key>.json`, `map_campus.json`) before they are
+  in `game/layout/`, prints one plain line for each thing REFUSED and each
+  thing only REPORTed, and exits 0 only when nothing is refused (1 refused, 2
+  a dump out of date). Every limit comes from the layout dump; the shape
+  rules are the game's own text, run from `game/sb_hotspots.rpy`; the fixed
+  facts are `check_campus.py`'s, called. Beside the layout's files a folder
+  may hold `check_<place>.json`, read by this tool and the sheet only and
+  never installed: `front` (the PLANNED hotspots that are their room's
+  foreground object; `--front id,id` adds to it), `objects` (the box of the
+  thing a front shape is traced round), `fg` (a foreground outline not yet in
+  `tools/fg/`), `doors`, `horizon`. `--selftest` runs its negative tests (one
+  whole layout that passes, and small ones that must each be refused by
+  name); `tools/test_art_tools.sh --only layout` runs each through the
+  command line, and runs `check_campus.py --selftest` beside them (that
+  selftest failed unseen from U0c1 to U0d3's review, because nothing ran
+  it). `--layout-dump <file>` in a worktree; `--no-campus` for a
+  test layout on a picture the campus record does not speak of.
+  Two rules read numbers the dump gained with U0d3 (`lock_labels`, and
+  `tag_edges`, `tag_gap`, `tag_w` under `frames`): a door that can be locked
+  must have room for its reason (`lock-label`), and a row's name tags must
+  fit between their edges (`tag-x`). With a dump written before those keys,
+  `lock-label` is only reported, on a label at its largest, and `tag-x` is
+  not checked: both begin to refuse once `tools/smoke.sh u2_dump` has
+  rewritten the committed dump in the owner's folder.
+  When the files are named one by one (as `install_redo.py --compose
+  ... --layout hot_x.json view_x.json` names them) the `check_<place>.json`
+  lying beside them is read all the same.
+- **Batch 0, staged (U0d3).** `tools/art/staged/courtyard/` and
+  `tools/art/staged/library/` hold the first two layouts traced as shapes
+  (D60): `hot_<place>.json`, `view_<place>.json`, the tool-only
+  `check_<place>.json`, and a `README.md` saying what each shape is and why
+  people stand where they do. `tools/art/staged/batch_0/art_0.json` names
+  the four pictures of batch 0 by their 2752 px renders (name, size,
+  sha256), what the installer said of each when run dry, and the four
+  commands that install them. **A staged picture is kept as the render
+  itself, where ComfyUI wrote it; the repository holds its name and sum,
+  never a fitted copy,** because the installer fits the render itself. To
+  look at a staged layout: `python3 tools/layout_sheet.py hot_courtyard
+  --staged tools/art/staged/courtyard --bg <render>` and `tools/py_art.sh
+  tools/stage_preview.py courtyard --bg <render> --staged
+  tools/art/staged/courtyard`. Two faults a real install of the Courtyard
+  met were put right with it: `check_campus.fix_from_layout` no longer
+  renumbers the exits of a place whose exits were already fixed facts (the
+  Courtyard's are numbered among the things seen between them), and
+  `u2_dump`'s check of a test `tips` row lays its two rows over the place's
+  own.
+- **The installer's check, corrected (U0d3).** `install_redo.py` (its own
+  header has the whole proof) holds, besides every exit, hotspot, standing
+  row, pose box and foreground outline, **the wall under each traced shape's
+  outline** (D60): a render in which it moved is REFUSED and the shape is
+  named. Seven false alarms and blind spots met on the pictures run early are
+  corrected, each against the render that showed it
+  (`tools/art/staged/early/art_3a_early.json`, `art_3b_early.json`,
+  `art_4b_early.json`): a point on glass is held by the door's post and frame
+  and not by the view (the keep list's `windows` rows,
+  `tools/bgs/keep/README.md`); a floor drawn again (other boards, sunlight) or
+  crossed by a window's grid of light is a LOOK, both where people stand and
+  as "something new on the floor" (but a standing point whose own window
+  LOCKS on an offset has moved and is refused like any other point, and so
+  is one whose floor is drawn again while what stands on it slid, and one
+  that no longer lines up on a floor the keep list's floor zone shows to be
+  the same drawing: "something stands there", a flat bag or a mat that has
+  too little fine edge for "something new is on the floor"; not where the
+  room's named addition, `allow`, lies in the point's window); the named addition on a hotspot's own
+  object does not make that object "gone"; a pale thing on a wall that became
+  lighter is a LOOK ("fainter"). **A flat thing set down on a floor**
+  (review 3, 12 Oct): the standing points find it only where a point's own
+  window holds little but bare boards, so a wide floor that is still the
+  same drawing (its 160 px parts agree with the game's 0.75 or better in
+  the middle) is refused when ONE part agrees under 0.55: "something new
+  is on the floor (...): that part of it no longer agrees with the picture
+  in the game". On the chosen Cafeteria and Common Room, with a flat thing
+  set down at each of the nine places people stand, 51 of 72 are refused
+  now (22 before). What it still cannot find: a dark thing against dark
+  wood (a dark bag on the Cafeteria's wall panels, or beside the Common
+  Room's backpack), anything at the Common Room's three rows on the rug
+  (that zone is too small to be read in parts), and a thing that covers
+  so much of a floor's zone that the zone no longer reads as the same
+  drawing: its middle under 0.55 is "the floor is drawn again", a LOOK,
+  and between 0.55 and 0.75 nothing is said (a mat 400 px wide across the
+  Common Room's boards reads 0.74, and is not seen). The Cafeteria's floor zone (`tools/bgs/keep/cafeteria.json`)
+  now runs under all nine places people stand there: the rows by the wall
+  (x 250, x 330) and by the near table (x 1380) lay outside it. **A relight is read by eye beside its day
+  picture for anything added** (a lamp, a blanket, a bench): it is never
+  refused for one, and the one case that can be measured without a false
+  alarm is shown as a LOOK (a small `empty` row of the keep list that gained
+  edge: the blanket over the sofa's arm is caught, the lamp on the desk is
+  not). Two later relights were tried against that rule on 11 Oct (review
+  1) and it is left as it is: three pot plants a relight set on Yuji's
+  windowsill read 1.43 once the sill is an `empty` row (a LOOK, by 0.03),
+  and three boxes set on top of Megumi's bookshelf read 1.15, under the
+  1.24 that a bare table top reads under moonlight in a relight the owner
+  chose, so no threshold tells them apart. Neither room has a keep list, so today both
+  pass unseen: **look at every relight beside its day picture.**
+  `tools/test_art_tools.sh` runs every picture the owner chose early that
+  was redone in place or relit (76, to the records of 11 Oct): none may be
+  REFUSED. **The suite's fixtures are the tree as it was before the
+  overhaul installed anything**: whatever an install has written (a picture,
+  its foreground, its light row, a layout with `for_rev`, the manifest, the
+  place's rows of the dump) is put back from git in the scratch copy
+  (`before_overhaul()` in `tools/test_art_tools.py`), so the suite reads the
+  same before and after batch 0: every line the same, but that the six
+  lines on the two staged layouts become two saying the installed files
+  are the staged ones. Each picture is taken from the commit its own
+  manifest row names (`rev1_commit`; a relight's first `from_commit`), and
+  what goes with it from the tree as it stood just before the picture was
+  replaced, so it does not matter how the install was committed. Proved on
+  12 Oct (review 3) in clones holding batch 0 committed in one commit,
+  committed as the pictures first and the manifest after, and not
+  committed; their dump was the committed one with its hash taken again,
+  not one the game wrote. (The proof of 11 Oct was made with the install
+  not committed. Committed, five lines failed: the copy stands at the
+  picture of before, HEAD holds the new one, and the installer found no
+  commit for the picture it replaced. For a copy, `--root`, it now reads
+  the file's history as well.) A manifest row of a kind it does not
+  know how to put back (the first pose, say) is a SKIPPED line, which
+  `--strict` fails: teach `before_overhaul()` that kind then. A tree whose
+  pictures of before git cannot give (a copy with no git, a clone without
+  its history, a row that names a commit which is not there) is ONE line
+  saying which commit is missing, nothing is run, and the suite ends
+  RESULT FAIL: a commit git does not hold is never read as a picture that
+  was not there. `tools/test_art_tools.sh --only fixtures` tests all of
+  this on small git trees of its own. It will not
+  run where `game/images`, `game/layout` or `tools/fg` is a symbolic link
+  (a copy would write through it). To try an install in a scratch copy of the tree, run THIS tree's
+  tool with `--root <the copy>`; a copy that is not a git checkout keeps its
+  approved render beside itself whichever tool is run.
+- **The stage preview.** `tools/py_art.sh tools/stage_preview.py <place>
+  [hour] [--who a,b,c]` draws a place as the game would, with the people
+  standing in it: the hour's picture or the day picture under the hour's
+  tint, the ink wash, each sprite at its slot with its contact shadow under
+  the room's light, the foreground over the far people, the name tags. With
+  no hour it writes the sheet `shots/stage/<place>.jpg` (one to four people
+  by day and a frame for each hour, at half size); with an hour, one frame at
+  full size. `--bg <render>` draws on a picture that is not installed (a
+  2752 px render is fitted) and `--staged <folder>` reads `hot_`, `view_`,
+  `light_` and `check_<place>.json` from a folder such as
+  `tools/art/staged/<stem>/`: it is what a room is judged on BEFORE it goes
+  in. **For a shaped place** each shape's outline is drawn (a front one
+  dashed), and the sheet gains two frames at full size: the outlines with the
+  people, and every shape lit and named, each name where the game draws its plate
+  (so names that would meet are seen meeting). `--dialogue` is the scene case;
+  `--plain` leaves out everything the game does not draw, and `--beside
+  <screenshot>` lays the drawing beside a game screenshot. Measured against a
+  screenshot of the Common Room at evening with three people, the sprites,
+  the wall and the foreground agree to one level in 255. Not drawn, because
+  the game does not draw them yet: a slot's own light, a cast shadow, the
+  shadow's lean, a painted pose, the HUD. `--layout-dump <file>` in a
+  worktree.
+- **The dump's reader.** `python3 tools/game_layout.py` says whether the dump
+  is fresh and what it holds. `where()`, `asleep()` and `away()` read the
+  dump's `world.homes`, `world.asleep` and `world.away`; `shapes(place)`,
+  `keep_tile`, `front_ids`, `name_rects`, `tips`, `hot_shape` and `frame`
+  read what D60 added.
 
 ## Placeholders and the rest
 
@@ -310,7 +473,7 @@ The second UI overhaul's harnesses (wave 0; each later package adds its own):
 
 | harness | what it checks |
 |---|---|
-| `u2_dump.rpy` (12) | Writes `tools/art/game_layout.json`, the one file the art tools read the game's numbers from: exits and hotspots with their default and applied points, slots, frames and lanes, areas and pins, each person's canvas, the light and grade tables, the schedule, and a hash of the `.rpy` files and `game/layout/*.json` it was read from. Not pointer-dependent. `--out <file>` writes a local copy. Its header lists every key. |
+| `u2_dump.rpy` (13) | Writes `tools/art/game_layout.json`, the one file the art tools read the game's numbers from: exits and hotspots with their default and applied points, slots, frames and lanes, areas and pins, each person's canvas, the light and grade tables, the schedule, the size of each locked exit's hover label and the name tags' edges (U0d3, for `check_layout.py`), and a hash of the `.rpy` files and `game/layout/*.json` it was read from. Not pointer-dependent. `--out <file>` writes a local copy. Its header lists every key. |
 | `u2_baseline.rpy` (52 on the untouched tree) | Compares a tree with the overhaul's baselines (`baseline_u2.json`, `baseline_story_names.json`, `baseline_night_names_u0a.json`, `baseline_sprite_tree.txt`, `baseline_shots/ui2/`), one check for each part. A tool, not a member of the standing set: from U0b on, parts differ on purpose. `U2_BASELINE_WRITE=1` writes them afresh into the results folder (U0a did, once). It parks the pointer, so it takes the pointer lock. **The five pictures do not depend on the display:** before they are taken the window is set to 1280x720 pixels (half as many points on a display that draws two pixels to the point), whatever size it opened at. Should a display be unable to hold that window, ONE check fails ("pictures: the window could be made the baseline's size") and the five are not compared; that failure is about the screen, not the game. |
 | `u2_home.rpy` (220) | U0b, my room in the Boys' Dormitory: bed from every place at Night, the walk garden to corridor to my room and back with no time spent, the garden's seven exits, the door and Bond rules of the three friends' rooms, who is asleep and what that hides, three saves made and loaded across the walk; and U0c1's seven places: a save in each (M), Nobara's room as her companion and out after dark (N), the Teachers' Dormitory at Night (O). Not a pointer harness. It copies three made saves from `tools/smoke/assets/ui2_saves`. Until the baselines are retaken, `u2_baseline` shows five lines that differ by U0b's planned changes (`docs/UI2_PINS.md`). |
 | `u2_contracts.rpy` (235 with its overlay, 232 bare) | U0c2, the scaffold's contracts (`docs/UI2_CONTRACTS.md`): the manifest and the four gates that keep a stale picture, cut, pose or light row off the screen; `WORLD_VARIANTS`; `rule_layout`'s `for_rev`; the sidecar readers (the room's data, `faces.json`, pose files, hover-label sides); `path_keep_clear`; "Show names" and the held N key; `SPOT_PLANNED`; the dim state; the night, activity and Tokyo hooks with K16's test; every stub and hook of the plan's 9.3; the off-campus picture names, the board's job sites and the stand-in people; the test that settles D31; and D60, "the picture is what is clicked" (section I: the frozen names, the counting functions against `hot_shape_cases.json`, the shape rules in lint, the gates, and the shaped Courtyard: the square and the shape, the light, the layers, hidden behind a person, dimmed, names shown, faces, `hot_look.json`, pickling). **In every package's standard set, and not edited after wave 0.** It runs in two states and the acceptance is both: `tools/smoke.sh u2_contracts` (its overlay under `assets/u2_contracts/` lays test pictures and a test manifest) and `SMOKE_ASSETS=/var/empty tools/smoke.sh u2_contracts` (the tree as it ships). It sets the focus and rests the pointer on a shape, so it takes the pointer lock. The real pointer is read only when the game window is the frontmost one; otherwise the harness focuses the widget the engine picks at that point, and its NOTE "the pointer on a shape" says which of the two it did. It depends on nothing the wave is planned to add (its header lists how: the Courtyard's test sidecar and trimmed registry, the empty manifest for the gates, the stub marks). A tree that has a `game/layout/pictures.json` of its own is read with its own rows in both states: `smoke.sh` copies the overlay's test manifest over the tree's (it does not merge), so the overlay's `zz_u2c_gen.rpy` reads the tree's manifest from `SMOKE_ROOT` and lays its rows under the three test rows. It was run before the merge over a wave-1 stand-in and over a batch-0 stand-in laid in the tree's real `game/layout` (its own manifest, the Courtyard's and the Library's `hot_` and `view_` files with `for_rev` 2): both pass in both states. |
@@ -384,6 +547,13 @@ any. It can be called by absolute path from any folder.
 ```bash
 python3 tools/check_content.py --all game/*.rpy tools/smoke/*.rpy
 ```
+
+`--harness-names` lets a test overlay carry a real name only through an
+exception in `tools/prefixes.json` that gives both the name and its file (the
+one today: `image nade` in `tools/smoke/assets/u2_contracts/game/zz_u2c_gen.rpy`,
+which stands for the line `gen_sprite_defs.py` writes). `--selftest` proves
+that such an exception lets through that one name in that one file and
+nothing else; the rule runs the same test each time it is used.
 
 - `--no-mc-on-screen` — `show mc` / `hide mc` (Kaito is never on screen),
   unless tagged `## first-person exception`;

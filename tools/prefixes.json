@@ -7,6 +7,7 @@
     "A file with no row here may gain no new top-level name.",
     "`exceptions` are the contract symbols of section 6 that live in a file whose prefix they do not carry, by name and file.",
     "`harness` is what every top-level name in tools/smoke/*.rpy starts with (--harness-names).",
+    "An exception whose file is a harness or a test overlay (tools/smoke/...) is read by --harness-names: it lets through that one name in that one file, and nothing else (UI2, U0d3; `python3 tools/check_content.py --selftest`).",
     "Frozen after wave 0 of phase 2; opened once by U0a of the second UI overhaul (docs/UI2_DESIGN.md 10.2, step 5) for the rows and exceptions marked UI2, then frozen again."
   ],
   "files": {
@@ -203,6 +204,12 @@
       "name": "persistent.show_names",
       "file": "game/screens.rpy",
       "why": "UI2: the Show names setting (3.3), if its default sits beside the Preferences row"
+    },
+    {
+      "name": "nade",
+      "file": "tools/smoke/assets/u2_contracts/game/zz_u2c_gen.rpy",
+      "namespace": "image",
+      "why": "UI2 (U0d3): --harness-names. The test overlay stands for the line tools/gen_sprite_defs.py writes into jjk_sprites.rpy (8.2), so it must use the real image name; this one name, in this one file"
     }
   ],
   "harness": [
