@@ -697,19 +697,19 @@
        "place": "office",
        "kind": "relight",
        "hour": "evening",
-       "hour_words": "Change the time of day to evening: the room is lit only by its own lamps and candles, which make warm pools of light and deep soft shadows; add no new light."
+       "hour_words": "Change the time of day to evening: outside the open doors the sky is dusk blue with a last band of orange, and everything that stands outside is still there. The hall is lit by its candles, every one of them burning, which make warm pools of light and deep soft shadows. Add no new light."
       },
       {
        "place": "utahime_office",
        "kind": "relight",
        "hour": "evening",
-       "hour_words": "Change the time of day to evening: outside the windows the sky is dusk blue with a last band of orange, and the room's own lamps are switched on and fill it with warm lamplight and soft shadows."
+       "hour_words": "Change the time of day to early evening: outside the open door and the round window the sky is orange and pink and the yard lies in low warm light, and everything that stands outside is still there; the paper screens glow with the last daylight. Inside, every lamp in the room is switched on and gives a warm light over the desk. Add no new lamp and no new window."
       },
       {
        "place": "gojo_office",
        "kind": "relight",
        "hour": "evening",
-       "hour_words": "Change the time of day to evening: outside the windows the sky is dusk blue with a last band of orange, and the room's own lamps are switched on and fill it with warm lamplight and soft shadows."
+       "hour_words": "Change the time of day to early evening: outside the open door and the windows the sky is orange and pink and the yard lies in low warm light with long shadows, and everything that stands outside is still there. Inside, the hanging paper lamp is switched on and fills the room with warm light; the television stays off. Add no new lamp and no new window."
       }
      ]
     }
