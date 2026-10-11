@@ -548,6 +548,17 @@ after wave 0, so it depends on nothing the wave is planned to add):
 - section A's four gates are read on test rows laid over an empty manifest,
   whatever rows `pictures.json` holds by then, and with `light_classroom.json`
   taken as absent;
+- **a tree with a manifest of its own** is read with its own rows in both
+  states. `tools/smoke.sh` copies an overlay file over the tree's, it does not
+  merge, so the overlay's `zz_u2c_gen.rpy` reads the tree's
+  `game/layout/pictures.json` from the repository and lays its rows under the
+  overlay's three test rows (a test row wins where both name a picture): a
+  real sidecar that carries `for_rev` is as fresh in the default run as in the
+  bare one. Where the harness needs the Courtyard or the Library at a revision
+  of its own it lays its test files over the real `hot_courtyard.json` and
+  `view_courtyard.json`, counts as section A's one mismatch only files of the
+  Courtyard, and leaves the Library's row alone once it is at revision 2 or
+  later, so either place may be composed again;
 - the stub-only checks stand aside, each with a NOTE, once the stub is filled:
   an empty `TKY_LINES` (the two screens), `bath_ok()` or `pool_ok()` (the
   baths, the pool, the seven labels), a store function `light_follow` (B7);
@@ -559,9 +570,18 @@ after wave 0, so it depends on nothing the wave is planned to add):
 It was run, as it is at this merge, over a wave-1 stand-in (the 59 planned
 ids registered, the baths, the pool and Tokyo filled, the card table's dim
 function named, `light_follow` in, `path_faces` and `map_district_people`
-filled) and over a batch-0 stand-in (the Courtyard and the Library shaped in
-their real sidecars with moved points, `tips` and a `for_rev`, every picture
-at revision 2): RESULT PASS in each.
+filled) and over a batch-0 stand-in laid in the tree's REAL `game/layout`, as
+batch 0 will lay it (its own `pictures.json` with the Courtyard and the
+Library composed at revision 2, their light rows and the Common Room's day
+picture at 2; `hot_courtyard.json` and `hot_library.json` with moved points,
+`tips`, a shape for every exit, hotspot and planned id and `for_rev` 2; their
+`view_` files with `for_rev` 2; their light files), and over the two
+together: RESULT PASS in each, **in both states** (the default run and
+`SMOKE_ASSETS=/var/empty`). The batch-0 stand-in with the Courtyard, or the
+Library, composed a second time (revision 3, `for_rev` 3) passes bare as
+well. (Before review round 3 the batch-0 run was one generated overlay folder
+whose manifest already held the test rows, in the default state only; a real
+batch-0 tree failed in both states.)
 
 **Defaults that stay.** `hud_day_card`'s `n` and `weekday`, `hot_layer`'s
 `front` and `sb_map`'s `layer` and `area` keep a default (`u2_contracts`
@@ -783,10 +803,30 @@ between the two. Cells are 4 px squares counted by their centres.
 exit is never in front). The
 game stacks by layer first and by size only within a layer, so the first ten
 rows, which read "on top" by area alone, are right for the shapes of one layer
-and `hot_shape_layers` adds what the layers change. It errs one way only: a
-front shape whose point lies under a smaller BACK shape is still refused by the
-row above, though the front one would take that click (the back shape would be
-dead there, so the sidecar is wrong either way).
+and `hot_shape_layers` adds what the layers change. It errs one way only, and
+on the safe side: a front shape whose point lies under a smaller BACK shape is
+still refused by the row above ("is under the smaller shape"), though the
+game plays that layout correctly: the front shape takes the click at its own
+point, and the back shape may lie up to half under front shapes and still be
+reached on the rest of itself. Lint refuses nothing the game plays wrongly.
+**The rule for the layout sittings: keep a front hotspot's point out of every
+smaller back shape** (move the point, or trace the back shape round it).
+
+**Three things the layers' rule does not read, handed on in writing.**
+
+- **To U0d3: a hotspot that keeps its button.** The game's lint reads the
+  layers only for ids under `shapes`. A back hotspot or an exit under
+  `keep_tile` whose point lies inside a front shape gives no finding
+  (`hot_validate() == []`): its button is still drawn, and the front shape
+  takes the click at its point. `check_layout.py` refuses it: a `keep_tile`
+  id that is not front whose point lies inside a front shape.
+- **To the layout sittings and U4: a planned foreground object has no layer
+  until it is registered.** `front` comes from `HOT_SPOTS` alone, and a
+  `SPOT_PLANNED` row is (id, place, kind), so until U4 registers it lint reads
+  every planned thing as back. The layout sittings trace a planned foreground
+  object as front (`check_layout.py` takes those ids as front), and U4
+  registers it `front=True`, so that the verdict on an installed sidecar does
+  not change in wave 1 with no layout edit.
 
 **The one text for both validators.** The functions between the lines
 `## >>> hot_shape: ...` and `## <<< hot_shape: ...` of `game/sb_hotspots.rpy`

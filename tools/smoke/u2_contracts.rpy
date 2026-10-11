@@ -158,6 +158,7 @@ init 999 python:
             HOT_SPOTS[:] = [h for h in HOT_SPOTS
                             if h["place"] != "courtyard" or h["id"] in ZZC_COURT or builtins.str(h["id"]).startswith("zz")]
         zzc_layout("hot_courtyard", builtins.dict(spots=ZZC_COURT))
+        zzc_layout("view_courtyard", None)
 
     def zzc_court_back():
         """Put back the rows zzc_court(trim=True) took out. (The sidecar is
@@ -1002,7 +1003,7 @@ label zz_smoke:
               and view_slots("courtyard", 1) == [builtins.tuple(r) for r in VIEW_SLOTS["courtyard"][1]]
               and [h["x"] for h in hot_spots_for("courtyard") if h["id"] == "spot_vend"] != [1500],
               "A: a file whose for_rev does not match is ignored: the code's own numbers stand in", rule_layout("hot_courtyard"))
-        check(len([f for f in _zz_f if "hot_courtyard" in f]) == 1 and len(_zz_f) == 1 and view_validate() == [] and hot_validate() == [] and path_validate() == [],
+        check(len([f for f in _zz_f if "hot_courtyard" in f]) == 1 and all("_courtyard.json" in f for f in _zz_f) and view_validate() == [] and hot_validate() == [] and path_validate() == [],
               "A: the mismatch is no finding of view_validate, hot_validate or path_validate", (view_validate(), hot_validate(), path_validate()))
         check(rule_layout_stale("hot_courtyard") != "" and "revision 3" in rule_layout_stale("hot_courtyard")
               and rule_layout_stale("view_courtyard") != "",
@@ -1147,7 +1148,7 @@ label zz_smoke:
         zzc_court_back()
         check(path_validate() == [] and "spots" not in ZZC_HOLD
               and isinstance(path_faces("boys_dorm"), builtins.list) and zzc_owner(path_faces, "room_paths.rpy") and zzc_sig(path_faces) == "(to)",
-              "B: (tables put back); path_faces(to) lives in room_paths.rpy and returns a list (nobody, while it is the stub: section E)")
+              "B: (tables put back); path_faces(to) lives in room_paths.rpy and returns a list (section E's stub table asserts its file, signature, docstring and return shape: a list of at most three of the cast; section C asserts that the stub returns nobody)")
 
         ## -- hover-label sides: the sidecar's tips, then the table, then where the tile is
         fixture(here="courtyard", period="Noon")
@@ -1990,7 +1991,8 @@ label zz_smoke:
         _zz_b = [n for n, l in enumerate(_zz_src) if l.strip().startswith("## <<< hot_shape:")]
         _zz_blk = "\n".join(_zz_src[_zz_a[0] + 1:_zz_b[0]]) if len(_zz_a) == 1 and len(_zz_b) == 1 else ""
         check(_zz_blk and all(("def " + n + "(") in _zz_blk for n in ("hot_shape_count", "hot_shape_cells", "hot_shape_order", "hot_shape_inside",
-                                                                         "hot_shape_area", "hot_shape_crossed", "hot_shape_findings", "hot_shape_box"))
+                                                                         "hot_shape_area", "hot_shape_crossed", "hot_shape_findings", "hot_shape_box",
+                                                                         "hot_shape_layers"))
               and not any(w in _zz_blk for w in ("renpy", "store.", "config.", "HOT_", "rule_layout", "persistent")),
               "I: the counting and rule functions stand between the two hot_shape marker lines of sb_hotspots.rpy, and that text names nothing of Ren'Py and nothing else of the game (it is copied unchanged into tools/check_layout.py)")
 
@@ -2268,7 +2270,8 @@ label zz_smoke:
         ## for it, as the overlay that shapes every place shapes it
         _zz_lib_row = ART_PICTURES.get("library")
         _zz_lib_before = hot_shapes_for("library")
-        zzc_art(library={"rev": 2, "kind": "composed"})
+        if art_rev("library") < 2:
+            zzc_art(library={"rev": 2, "kind": "composed"})
         _zz_lib_real = zzc_squares("library")
         zzc_alone("library", "Night")
         zzc_unfocus()
