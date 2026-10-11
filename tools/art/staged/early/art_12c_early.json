@@ -81,5 +81,24 @@
    "prompt_sha256": "22915ad8f1774e18026991ae934d1c63e18dea26a031ec2c7b2ee45c2ab6b73b"
   }
  ],
- "workflow_sha256": "8af7add277aaff5ecfe74e7fa17e8b77d2362cdade28d510303c91a6ad974ffd"
+ "workflow_sha256": "8af7add277aaff5ecfe74e7fa17e8b77d2362cdade28d510303c91a6ad974ffd",
+ "renders_sha256": {
+  "ui2_gojo_office2_a_00001_.png": "deaef74e1bda5833e7c5da7873c06c93dfbbc49675f49e7b857f32e2972e3d31",
+  "ui2_gojo_office2_b_00001_.png": "d42349a680abd76a7998052179571d67483098af49de7b3550fa0418dd2032b1",
+  "ui2_office2_a_00001_.png": "da3eb7356ef429dba82ad0ad83be634969308995bf817cc3c6a39ee01d640baf",
+  "ui2_office2_b_00001_.png": "afd4c127b040aebbe6587d22bfe4c3e0cc65c36d65906f561b8fd75e9b95652c",
+  "ui2_utahime_office2_a_00001_.png": "b9025ba98feb005745d6f182a542015dad82b215b2f6226bc5fa071e89c7cc9b",
+  "ui2_utahime_office2_b_00001_.png": "d033adb786c2211b24127e65bf235617c3956d4fb732bdd8d7b19243ad774c22"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye, against each row's checklist and the chosen staff steps (a composed picture has no earlier picture of the same camera to measure against). Sheets: ~/Desktop/JJK Game images/ui2/early/compare_gojo_office2.jpg, compare_office2.jpg, compare_utahime_office2.jpg.",
+  "gojo_office2_b": "PICK. A wide sliding door open at the left onto the staff yard's own paving and gravel, with its stone wall and cedars; tall windows after it; the sofa, the low table of sweet boxes with shopping bags beside it, the very large television on the right, clear of the icon column; a paper lamp; a clear floor. Both versions glaze the left wall and the far wall, where the house outside shows one very large window on its front: read as one glazed corner, and said to the owner.",
+  "gojo_office2_a": "Good too; a narrower door and flatter light.",
+  "office2_b": "PICK. A tall, dim, candle-lit hall, pillars along its sides, the heavy double doors open in the left wall onto the balustrade at the top of the steps; the shelves of cloth dolls along the far wall; the low desk with the framed photograph and its cushion right of the middle; a wide clear floor. Two latticed vents flank the doors, where the words asked for no windows: small, and said to the owner.",
+  "office2_a": "Good, nearer and brighter, the dolls larger; its door is at the very left edge and its walls are bright plaster, less like the hall as the story has had it.",
+  "utahime_office2_b": "PICK. The paper door open at the left onto the yard's raked gravel and paving; the round window, then a paper-screened window; her desk facing me with its lamp and papers, shelves of files behind; the board of pinned notices on the right wall at about two thirds across, clear of the icon column, with the vase on a cabinet under it.",
+  "utahime_office2_a": "Not offered as the pick: its notice board, the room's one thing to click, hangs in the right ninth under the icon column. Otherwise good, with a larger desk.",
+  "put_to_the_owner": "Version B of all three."
+ }
 }
