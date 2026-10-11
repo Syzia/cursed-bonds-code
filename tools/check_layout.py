@@ -23,7 +23,9 @@ WHAT IT READS
                   installed sidecar gives today. pose_, light_ and faces files
                   are the installers' own and are only looked at for their
                   shape. One more file may lie beside them, for this check
-                  alone, and is never installed:
+                  alone, and is never installed (it is read from a folder,
+                  and also when it lies beside a hot_ or view_ file that is
+                  named on its own, which is how the installer names them):
   check_<place>.json   what the check needs that the game does not read:
                     "front"    [ids]: the PLANNED hotspots that are their
                                room's foreground object. The game has no
@@ -335,6 +337,16 @@ def read_candidate(paths, out):
             files.append(p)
         else:
             raise SystemExit("check_layout.py: no file or folder at %s" % p)
+    # A layout named file by file (as tools/install_redo.py --compose names it: only what goes into the game)
+    # is still judged with the check_<place>.json that lies beside it: the eye line, the object boxes and the
+    # planned front ids are part of what the sitting measured, and the installer may not hand that file on.
+    named = set(os.path.abspath(f) for f in files)
+    for path in list(files):
+        m = re.match(r"(?:hot|view)_(\w+)\.json$", os.path.basename(path))
+        beside = os.path.join(os.path.dirname(os.path.abspath(path)), "check_%s.json" % m.group(1)) if m else None
+        if beside and os.path.exists(beside) and beside not in named:
+            named.add(beside)
+            files.append(beside)
     got = {}
     for path in files:
         stem = os.path.basename(path)[:-5]

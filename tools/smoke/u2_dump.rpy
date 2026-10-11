@@ -412,7 +412,13 @@ label zz_smoke:
         _zz_side = rule_layout("hot_courtyard")
         _zz_had = "hot_courtyard" in RULE_LAYOUT
         _zz_real = RULE_LAYOUT.get("hot_courtyard")
-        _zz_side["tips"] = {"go_courtyard__gate": "left", "spot_vend": "bottom"}
+        ## The two test rows are laid over the place's own `tips` (a layout
+        ## sitting gives every id a side: batch 0's Courtyard does), and each
+        ## takes a side its own row does not already name.
+        _zz_tips0 = builtins.dict(_zz_side.get("tips") or {})
+        _zz_gs = "right" if _zz_tips0.get("go_courtyard__gate") == "left" else "left"
+        _zz_vs = "top" if _zz_tips0.get("spot_vend") == "bottom" else "bottom"
+        _zz_side["tips"] = builtins.dict(_zz_tips0, go_courtyard__gate=_zz_gs, spot_vend=_zz_vs)
         RULE_LAYOUT["hot_courtyard"] = _zz_side
         _zz_here = store.here
         _zz_t = zz_dump_build()
@@ -423,8 +429,11 @@ label zz_smoke:
         _zz_a, _zz_b = _zz_d["name_rects"]["courtyard"], _zz_t["name_rects"]["courtyard"]
         _zz_g, _zz_v = hot_place_points("courtyard")["go_courtyard__gate"], hot_place_points("courtyard")["spot_vend"]
         check(_zz_here != "courtyard" and store.here == _zz_here
-              and _zz_b["go_courtyard__gate"][0] + _zz_b["go_courtyard__gate"][2] == int(_zz_g[0]) - 36 and _zz_b["go_courtyard__gate"][1] == int(_zz_g[1]) - 36
-              and _zz_b["spot_vend"][:2] == [int(_zz_v[0]) - 36, int(_zz_v[1]) + 36]
+              and (_zz_b["go_courtyard__gate"][0] + _zz_b["go_courtyard__gate"][2] == int(_zz_g[0]) - 36 if _zz_gs == "left"
+                   else _zz_b["go_courtyard__gate"][0] == int(_zz_g[0]) + 36) and _zz_b["go_courtyard__gate"][1] == int(_zz_g[1]) - 36
+              and _zz_b["spot_vend"][0] == int(_zz_v[0]) - 36
+              and (_zz_b["spot_vend"][1] == int(_zz_v[1]) + 36 if _zz_vs == "bottom"
+                   else _zz_b["spot_vend"][1] + _zz_b["spot_vend"][3] == int(_zz_v[1]) - 36)
               and _zz_a["go_courtyard__gate"] != _zz_b["go_courtyard__gate"] and _zz_a["spot_vend"] != _zz_b["spot_vend"]
               and all(_zz_a[k] == _zz_b[k] for k in _zz_a if k not in ("go_courtyard__gate", "spot_vend"))
               and all(_zz_d["name_rects"][l] == _zz_t["name_rects"][l] for l in LOC_ORDER if l != "courtyard")

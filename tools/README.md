@@ -159,6 +159,28 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   `lock-label` is only reported, on a label at its largest, and `tag-x` is
   not checked: both begin to refuse once `tools/smoke.sh u2_dump` has
   rewritten the committed dump in the owner's folder.
+  When the files are named one by one (as `install_redo.py --compose
+  ... --layout hot_x.json view_x.json` names them) the `check_<place>.json`
+  lying beside them is read all the same.
+- **Batch 0, staged (U0d3).** `tools/art/staged/courtyard/` and
+  `tools/art/staged/library/` hold the first two layouts traced as shapes
+  (D60): `hot_<place>.json`, `view_<place>.json`, the tool-only
+  `check_<place>.json`, and a `README.md` saying what each shape is and why
+  people stand where they do. `tools/art/staged/batch_0/art_0.json` names
+  the four pictures of batch 0 by their 2752 px renders (name, size,
+  sha256), what the installer said of each when run dry, and the four
+  commands that install them. **A staged picture is kept as the render
+  itself, where ComfyUI wrote it; the repository holds its name and sum,
+  never a fitted copy,** because the installer fits the render itself. To
+  look at a staged layout: `python3 tools/layout_sheet.py hot_courtyard
+  --staged tools/art/staged/courtyard --bg <render>` and `tools/py_art.sh
+  tools/stage_preview.py courtyard --bg <render> --staged
+  tools/art/staged/courtyard`. Two faults a real install of the Courtyard
+  met were put right with it: `check_campus.fix_from_layout` no longer
+  renumbers the exits of a place whose exits were already fixed facts (the
+  Courtyard's are numbered among the things seen between them), and
+  `u2_dump`'s check of a test `tips` row lays its two rows over the place's
+  own.
 - **The installer's check, corrected (U0d3).** `install_redo.py` (its own
   header has the whole proof) holds, besides every exit, hotspot, standing
   row, pose box and foreground outline, **the wall under each traced shape's

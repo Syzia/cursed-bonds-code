@@ -839,6 +839,7 @@ def fix_from_layout(record, place, spots, rev, date=None, render=None, kind="com
     width = record.get("sheet", [1920])[0]
     apart = rec.rules.get("apart", 60)
     placed = []
+    was_fixed = set(row["id"] for row in rec.rows("exit", place=place) if rec.is_fixed(row))
     for row in rec.rows("exit", place=place):
         pt = None
         for key in [row["to"]] + list(row.get("alias", [])):
@@ -860,9 +861,16 @@ def fix_from_layout(record, place, spots, rev, date=None, render=None, kind="com
             if side != "bottom":
                 row.pop("half", None)
         fix(row)
-    # their order from left to right, as the picture has them (two within `apart` px are not ordered)
+    # their order from left to right, as the picture has them (two within `apart` px are not ordered).
+    # Where every exit placed was already a fixed fact with its order (the Courtyard and the Library, fixed at
+    # the look test), those orders stand: they are numbered among the place's `seen` rows too (the pagoda and
+    # the two lodges lie between the Courtyard's exits), and a count of the exits alone would write the gateway
+    # left of the lodge beside it. The caller has already checked that the layout agrees with them.
+    across = sorted(((row, pt) for row, pt in placed if row["side"] != "bottom"), key=lambda rp: rp[1][0])
+    stands = bool(across) and all(row["id"] in was_fixed and isinstance(row.get("order"), int) for row, pt in across) \
+        and all(a[0]["order"] <= b[0]["order"] for a, b in zip(across, across[1:]))
     rank, last = 0, None
-    for row, pt in sorted(((row, pt) for row, pt in placed if row["side"] != "bottom"), key=lambda rp: rp[1][0]):
+    for row, pt in ([] if stands else across):
         if last is None or pt[0] - last > apart:
             rank += 1
         last = pt[0]
@@ -1111,6 +1119,17 @@ def selftest(dump_path=None, check_hash=True):
        cand.texts("FAIL") + cand.texts("REPORT"))
     out = run(chosen, dump, manifest, layouts=[os.path.join(TESTS, "good", "hot_training_yard.json")])
     ok("after that, the layout the old proposals described contradicts fixed facts", out.count("FAIL") >= 1)
+
+    court = copy.deepcopy(record)
+    orders = dict((r["id"], r.get("order")) for r in Rec(court).rows("exit", place="courtyard"))
+    done = fix_from_layout(court, "courtyard", {"school_yard": (330, 700), "dorm_yard": (1078, 720),
+                                                "training_yard": (1530, 865), "gate": (1300, 985)}, 2, date="2026-10-11")
+    out = run(court, dump, manifest)
+    ok("a place whose exits were fixed before its layout sitting (the Courtyard, at the look test) keeps their order "
+       "among the things seen between them, and the record still passes with the layout's facts written in",
+       orders == dict((r["id"], r.get("order")) for r in Rec(court).rows("exit", place="courtyard"))
+       and orders.get("exit.courtyard.dorm_yard") == 4 and not done["rewritten"] and out.count("FAIL") == 0,
+       [repr(orders), repr(done)] + out.texts("FAIL"))
 
     again = copy.deepcopy(record)
     rechoose(again, "dorm_common", 3, render="ui2_dorm_common_a_00001_.png")

@@ -395,6 +395,61 @@ def group_layout(lab):
     ok("a PLANNED foreground object is read as front from check_<place>.json's \"front\" list, or from --front: the "
        "planned straw posts, named front, are then asked for their object's box like any front shape",
        rc == 1 and rc2 == 1 and all("[front-shape]: shape 'straw_posts'" in o for o in (out, out2)), out + out2)
+    beside = [f for f in check_layout.write_case(front, os.path.join(folder, "front3")) if not os.path.basename(f).startswith("check_")]
+    rc, out = run(cl + ["--layout"] + sorted(beside) + ["--layout-dump", lab.dump])
+    ok("and when only the hot_ and view_ files are named (as tools/install_redo.py --compose names them), the "
+       "check_<place>.json lying beside them is still read: the same front id is asked for its box",
+       rc == 1 and len(beside) == 2 and "[front-shape]: shape 'straw_posts'" in out, out)
+    # batch 0, as staged (tools/art/staged/): the first two shaped places, and the four pictures by their renders
+    import copy, struct as _struct
+    staged = os.path.join(TOOLS, "art", "staged")
+    record = check_campus.load_record(os.path.join(REPO, "tools", "bgs", "campus.json"))
+    for place, ids in (("courtyard", 7), ("library", 4)):
+        there = os.path.join(staged, place)
+        hot_path = os.path.join(there, "hot_%s.json" % place)
+        hot = json.load(open(hot_path, encoding="utf-8"))
+        view = json.load(open(os.path.join(there, "view_%s.json" % place), encoding="utf-8"))
+        gone_in = os.path.join(REPO, "game", "layout", "view_%s.json" % place)
+        if os.path.exists(gone_in) and "for_rev" in json.load(open(gone_in, encoding="utf-8")):
+            ok("batch 0's %s layout is installed: its staged copy is history and is no longer judged here" % place, True)
+            continue
+        rc, out = run(cl + [there, "--layout-dump", lab.dump])
+        ok("the staged %s (tools/art/staged/%s/) passes check_layout.py with nothing refused: %d shapes, one for every "
+           "exit and every hotspot registered or planned, each with its point and the side its name opens, none keeping "
+           "a button; one to four people, a floor and a scale" % (place, place, ids),
+           rc == 0 and "REFUSED" not in out and ": PASS (" in out.strip().splitlines()[-1]
+           and len(hot["shapes"]) == ids and set(hot["shapes"]) == set(hot["spots"]) == set(hot["tips"])
+           and "keep_tile" not in hot and hot.get("for_rev") == view.get("for_rev") == 2
+           and sorted(view["slots"]) == ["1", "2", "3", "4"] and view["floor"]["on"] and len(view["scale"]) == 3, out)
+        rc, out = run([tool("check_campus.py"), "--layout-dump", lab.dump, "--layout", hot_path])
+        ok("and agrees with the campus record's fixed facts for the place (check_campus.py --layout: nothing failed, "
+           "nothing reported)", rc == 0 and "FAIL" not in out and "check_campus: PASS (0 reported" in out, out)
+        trial = copy.deepcopy(record)
+        before = dict((r["id"], (r.get("side"), r.get("order"))) for r in check_campus.Rec(trial).rows("exit", place=place))
+        _kind, _key, spots = check_campus.read_layout_file(hot_path)
+        done = check_campus.fix_from_layout(trial, place, spots, 2, date="2026-10-06")
+        after = check_campus.Out()
+        check_campus.check_record(check_campus.Rec(trial), lay.d, after)
+        ok("and with its facts written into the record, as a real install writes them, the record still passes and no "
+           "exit's side or order has changed (the Courtyard's exits are numbered among the things seen between them)",
+           after.count("FAIL") == 0 and not done["rewritten"]
+           and before == dict((r["id"], (r.get("side"), r.get("order"))) for r in check_campus.Rec(trial).rows("exit", place=place)),
+           [repr(done)] + after.texts("FAIL"))
+    art0 = json.load(open(os.path.join(staged, "batch_0", "art_0.json"), encoding="utf-8"))["pictures"]
+    ok("batch 0's four pictures are staged by their 2752 x 1536 renders, the ones the campus record names, never by a "
+       "1920 px file (tools/art/staged/batch_0/art_0.json)",
+       sorted(art0) == ["cafeteria", "courtyard", "dorm_common", "library"]
+       and all(row["size"] == [2752, 1536] and row["render"] == record["pictures"][k]["render"]
+               and "1920" not in row["render"] and len(row["sha256"]) == 64 for k, row in art0.items()), art0)
+    for k, row in sorted(art0.items()):
+        path = os.path.join(OUTPUT, row["render"])
+        if not os.path.exists(path):
+            skipped("REAL: batch 0's render for %s is the file its record names" % k, "%s is not on this machine" % path)
+            continue
+        data = open(path, "rb").read()
+        ok("REAL: batch 0's render for %s is the file its record names: %s, 2752 x 1536, the same sha256" % (k, row["render"]),
+           data[:8] == b"\x89PNG\r\n\x1a\n" and list(_struct.unpack(">II", data[16:24])) == row["size"]
+           and hashlib.sha256(data).hexdigest() == row["sha256"])
     rc, out = run(cl + ["--selftest", "--layout-dump", lab.dump])
     ok("python3 tools/check_layout.py --selftest passes (the same cases, run inside the tool)",
        rc == 0 and "check_layout selftest: PASS" in out, out)
@@ -1747,6 +1802,24 @@ def group_real(lab, write=False):
         v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
         ok("REAL: the third test's Common Room with a cup set down on the rug in front of the low table is REFUSED: "
            "something new is on the rug", v[0] == "REFUSED" and "something new is on the rug in front of the low table" in v[1], out)
+        # batch 0's two composed pictures with their staged layouts, as the installer will be asked (10.2, U0d3)
+        for stem, render in (("courtyard", "look2_courtyard_gateway"), ("library", "look2_library_bright")):
+            staged = os.path.join(TOOLS, "art", "staged", stem)
+            name = ("REAL: install_redo.py --compose %s <its 2752 px render> --layout <the staged hot_ and view_ files> --dry"
+                    % stem)
+            gone_in = os.path.join(REPO, "game", "layout", "view_%s.json" % stem)
+            if os.path.exists(gone_in) and "for_rev" in json.load(open(gone_in, encoding="utf-8")):
+                ok("%s: the picture is installed, and its staged layout is no longer asked" % name, True)
+                continue
+            if not os.path.exists(os.path.join(OUTPUT, render + "_00001_.png")):
+                skipped(name, "%s_00001_.png is not in %s" % (render, OUTPUT))
+                continue
+            rc, out = run([tool("install_redo.py"), "--compose", stem, os.path.join(OUTPUT, render + "_00001_.png"), "--layout",
+                           os.path.join(staged, "hot_%s.json" % stem), os.path.join(staged, "view_%s.json" % stem)] + tail, py=True)
+            ok("%s is a PASS: the render is fitted from 2752 px, the layout passes the screen's rules with the "
+               "check_%s.json beside it read, and the campus record agrees" % (name, stem),
+               rc == 0 and "2752x1536 -> 1920x1072, 4 px down" in out and "VERDICT   PASS" in out
+               and "check_%s, hot_%s, view_%s: PASS" % (stem, stem, stem) in out and "REFUSED" not in out, out)
         # the proof that sharpness is against revision 1, on the real render
         root3 = mkroot(os.path.join(lab.work, "r_real_rev1"))
         keep_r = os.path.join(OUTPUT, "look3_dorm_common_keep_00001_.png")

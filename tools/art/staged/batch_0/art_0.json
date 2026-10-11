@@ -1,0 +1,84 @@
+{
+ "about": [
+  "Batch 0 of the second UI overhaul (docs/UI2_DESIGN.md 5.13): nothing to run. The four pictures made at the look test are installed, each from its 2752 x 1536 render.",
+  "HOW A STAGED PICTURE IS KEPT. As the render itself, untouched, where ComfyUI wrote it; this file holds its name, its size and the sha256 of its bytes, and nothing in the repository is a copy of it. The installer is given the render's path and fits it itself (2752 x 1536 becomes the room at 1920 x 1072, laid 4 px down, the first and last rows repeated), writes game/images/bg/<stem>.png, puts the render's file name in the manifest and the campus record, and keeps a copy of the render in ~/Desktop/JJK Game images/ui2/approved/. So nobody resizes or crops a picture by hand before it is installed.",
+  "NEVER install from the 1920 px files the campus record's `source` names (look_test/chosen/*_1920.png, look_test/fit3_*.png): the two in look_test/chosen/ were measured on 11 Oct and carry four black rows at the top and four at the bottom, which the installer's fit lets through as '1920x1080, as it is'.",
+  "The layouts of the two composed pictures are staged beside this folder: tools/art/staged/courtyard/ and tools/art/staged/library/ (hot_, view_ and check_<place>.json each, and a README.md)."
+ ],
+ "written": "2026-10-11",
+ "by": "U0d3, sitting 3",
+ "renders_kept_in": "~/ComfyUI-Shared/output/",
+ "pictures": {
+  "courtyard": {
+   "kind": "composed",
+   "render": "look2_courtyard_gateway_00001_.png",
+   "size": [
+    2752,
+    1536
+   ],
+   "sha256": "14fd676fe0e4e63693d533de90b7393183b9b908661398e4b976e300df068b69",
+   "also_at": "~/Desktop/JJK Game images/look_test/chosen/courtyard_gateway_2752.png (the same bytes)",
+   "layout": [
+    "tools/art/staged/courtyard/hot_courtyard.json",
+    "tools/art/staged/courtyard/view_courtyard.json"
+   ],
+   "install_redo_dry": "PASS: its layout fits the screen and the campus record (check_layout: 2 reported, nothing refused). Fit: 2752x1536 -> 1920x1072, 4 px down.",
+   "by_eye": "Every shape was traced on crops of the 2752 px render and looked at again on the sheets and in the game (a scratch copy with this batch laid over it): the schoolhouse, the gateway's roof, the way through the gateway, the training hall with its veranda steps, the vending machine, the two straw posts, and the flagstones along the bottom edge."
+  },
+  "library": {
+   "kind": "composed",
+   "render": "look2_library_bright_00001_.png",
+   "size": [
+    2752,
+    1536
+   ],
+   "sha256": "9ae8256dcf5e9de764b486ee28808cb7da76026ff2567c56cbc75ea66226c6cb",
+   "also_at": "~/Desktop/JJK Game images/look_test/chosen/library_bright_2752.png (the same bytes)",
+   "layout": [
+    "tools/art/staged/library/hot_library.json",
+    "tools/art/staged/library/view_library.json"
+   ],
+   "install_redo_dry": "PASS: its layout fits the screen and the campus record (check_layout: 4 reported, nothing refused). Fit: 2752x1536 -> 1920x1072, 4 px down.",
+   "by_eye": "The stacks (the wall of shelves with its ladder, and the two bookcases beyond), the reading table with its chairs and lamp, the locked cabinet, and a band of floor along the bottom edge for the way out, which is behind the camera."
+  },
+  "dorm_common": {
+   "kind": "inplace",
+   "render": "look3_dorm_common_keep_00001_.png",
+   "size": [
+    2752,
+    1536
+   ],
+   "sha256": "e11f0c0268251e0ea2e894432134cf8b62b82a148aaab0fd6ec167c83a274391",
+   "install_redo_dry": "LOOK: the whole picture 0, 0 px; 38 points checked, none off by a pixel; 20 things checked, none gone; nothing added; 3.1 times as sharp as the picture before the overhaul. Shown, not refused: the parts of the picture at (840, 368) and (1080, 368) are drawn differently (the view through the garden door's panes).",
+   "by_eye": "The LOOK is the window view, which batch 3a paints again on purpose. Until batch 3 the room's evening and night are this day picture tinted (K7)."
+  },
+  "cafeteria": {
+   "kind": "inplace",
+   "render": "look3_cafeteria_keep_00001_.png",
+   "size": [
+    2752,
+    1536
+   ],
+   "sha256": "fcc50ad3265d6e7af58ac92f7dbc450dde4bb704d6c142cddd068bd49bf20875",
+   "install_redo_dry": "PASS: the whole picture 0, 0 px; 19 points checked, none off by a pixel; 14 things checked, none gone; nothing added; 7.8 times as sharp as the picture before the overhaul.",
+   "by_eye": "Nothing to add."
+  }
+ },
+ "how_to_install": [
+  "In the owner's folder, with nothing uncommitted under game/images/bg, one picture at a time. After EACH install run tools/smoke.sh u2_dump (an install writes under game/layout/, and every art tool refuses a dump that is out of date).",
+  "tools/py_art.sh tools/install_redo.py --compose courtyard ~/ComfyUI-Shared/output/look2_courtyard_gateway_00001_.png --layout tools/art/staged/courtyard/hot_courtyard.json tools/art/staged/courtyard/view_courtyard.json --batch 0 --date 2026-10-06",
+  "tools/py_art.sh tools/install_redo.py --compose library ~/ComfyUI-Shared/output/look2_library_bright_00001_.png --layout tools/art/staged/library/hot_library.json tools/art/staged/library/view_library.json --batch 0 --date 2026-10-06",
+  "tools/py_art.sh tools/install_redo.py dorm_common ~/ComfyUI-Shared/output/look3_dorm_common_keep_00001_.png --choose a --batch 0 --date 2026-10-06",
+  "tools/py_art.sh tools/install_redo.py cafeteria ~/ComfyUI-Shared/output/look3_cafeteria_keep_00001_.png --choose a --batch 0 --date 2026-10-06",
+  "Only the hot_ and view_ files are named: the check_<place>.json beside them is read by tools/check_layout.py and is never installed. --date is the day the owner chose the four (6 Oct), which the campus record already holds.",
+  "Tried on 11 Oct in a scratch copy of the tree, in this order, with a fresh dump before each: all four went in, tools/smoke.sh u2_dump passed after each, and the game's own lint (hot_validate, path_validate, view_validate) said nothing."
+ ],
+ "what_the_install_wrote_in_the_trial": [
+  "game/images/bg/courtyard.png, library.png, dorm_common.png, cafeteria.png",
+  "game/images/fg/fg_dorm_common.png, fg_cafeteria.png (the two foregrounds, cut again from the new pictures)",
+  "game/layout/hot_courtyard.json, view_courtyard.json, hot_library.json, view_library.json (each with for_rev 2)",
+  "game/layout/light_courtyard.json, light_library.json, light_dorm_common.json, light_cafeteria.json (measured by the installer)",
+  "game/layout/pictures.json (ten rows: the four pictures at revision 2, the two foregrounds and the four light rows made for them)",
+  "tools/bgs/campus.json (the four pictures as chosen; no fixed fact changed)"
+ ]
+}
