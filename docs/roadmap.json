@@ -3,6 +3,7 @@
  "about": [
   "The road to the finished game, as data: the main goal, the phases that lead to it, and each phase's steps. The roadmap mod (a panel in Claude Code, /roadmap) reads this file and draws it; Claude keeps it current as steps finish.",
   "A step is done, now or planned. A step with `done` and `total` is a count (sittings chosen, packages merged) and counts for that share. `weight` is a rough share of the work, Claude's estimate and nothing measured, so every percentage drawn from this file is rough.",
+  "A picture sitting counts as done when every picture of it has been chosen: a sitting of two or three files counts once. (On 11 Oct the count had been raised once for each choice and read 27; counted so, it was 20.)",
   "A phase marked `outline` has not been planned yet: its steps are the storyboard's own list, and the real plan is written when we get there.",
   "Sources: docs/arc1_storyboard.html (the acts and the build order), docs/PHASE2_UI_OVERHAUL.md (the phase order), docs/UI2_DESIGN.md sections 10.4, 10.5 and 11 (this overhaul's steps and what comes after), tools/art/batches.json (the picture sittings)."
  ],
@@ -65,7 +66,7 @@
     {"title": "Yuji's new sprite installed, with his blink and his mouth", "state": "planned"},
     {"title": "Checkpoint A: you play", "state": "planned"},
     {"title": "The look installed on the first four places", "state": "planned"},
-    {"title": "Picture sittings run and chosen", "done": 27, "total": 50, "weight": 12},
+    {"title": "Picture sittings run and chosen", "done": 20, "total": 50, "weight": 12},
     {"title": "Pictures installed in the game", "done": 0, "total": 50, "weight": 8},
     {"title": "Wave 1 · Six packages, built side by side", "done": 0, "total": 6, "weight": 12},
     {"title": "Checkpoint B: you play", "state": "planned"},

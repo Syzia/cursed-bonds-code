@@ -4,7 +4,7 @@
   "Two files, one a room (art_11b.json: Nobara's; art_11c.json: Maki's), each the room's evening, its Night with nobody up (`night`) and its Night with her up (`lit`): by Nobara's bedside lamp, by Maki's desk lamp (O62, O48).",
   "Nobara's window faces west onto the garden: the evening sun comes straight in, and at Night the boys' dormitory across the garden has a few upstairs windows lit, as the garden's chosen night has (O43). Maki's faces east onto Gojo's office and the Principal's Hall, shut at Night and dark. What stands outside is named in every sentence; no moon is in view (O44). The night sentences name the fuller rooms' own things (the clothes on their rail, the rack of wooden weapons, the mat and the dumbbells) so that they stay.",
   "NOBODY is in any picture (K16: bedrooms); the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root.",
-  "The owner chose the fuller rooms (O65) and ran both files on 11 Oct 2026; read the same day, see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O66)."
  ],
  "written": "2026-10-11",
  "rooms": {
@@ -157,5 +157,45 @@
   "maki_room_lit_a": "PICK. The desk lamp is plainly on, with a warm glow on the desk and the wall behind it.",
   "maki_room_lit_b": "The lamp hardly shows and the room is evenly grey.",
   "put_to_the_owner": "Nobara's room: the second run's version B for all three. Maki's room: evening B, night A, lamp on A."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The picks as put: for Nobara's room the second run's version B of all three; for Maki's room the evening B, the night A and the lamp-on A.",
+  "nobara_room_evening": {
+   "render": "ui2_nobara_room_evening_b_00002_.png",
+   "sha256": "1ffb521956003fd77b4259bc17c4e1cb4eede22831279af599cb288ea15177f7",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/nobara_room_evening_1920.png",
+   "fit_sha256": "4f26242b1e937442d222d93eaa298e5c8910d9044ab79531ac847a559681254f"
+  },
+  "nobara_room_night": {
+   "render": "ui2_nobara_room_night_b_00002_.png",
+   "sha256": "2fc875a3180d35c5454bd8374b6058e1ea03ff6180f9d34ed77bca8b00418c10",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/nobara_room_night_1920.png",
+   "fit_sha256": "b7a240abee82a33f93a7d0e5d6727421e7ed65d83b1c95739159bb838aeff40e"
+  },
+  "nobara_room_lit": {
+   "render": "ui2_nobara_room_lit_b_00002_.png",
+   "sha256": "2cbf71c0f514b9abd48e7955f3c7484a99acac5c0672eaf7685d0a8eadca3b3c",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/nobara_room_lit_1920.png",
+   "fit_sha256": "b2d7951064c72f3d075e19d0b9478e9aaee2793b5b563c34c3972fccf61d2f27"
+  },
+  "maki_room_evening": {
+   "render": "ui2_maki_room_evening_b_00001_.png",
+   "sha256": "63437f839451bbe76cc040d339478d85561b846334c4c995d5c4e8c5ce4756dc",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/maki_room_evening_1920.png",
+   "fit_sha256": "768503211e13f70fbb047ec9bb4a4c2419661c2ad62c8c30f031b81a88547d84"
+  },
+  "maki_room_night": {
+   "render": "ui2_maki_room_night_a_00001_.png",
+   "sha256": "68ddd134ac93710050426a775698856e87fe152df1937d8b1072ffc8a1ff5733",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/maki_room_night_1920.png",
+   "fit_sha256": "ec4a80753e8541d3f10807af2a47235bd9566859787fb2628c901647de2ef495"
+  },
+  "maki_room_lit": {
+   "render": "ui2_maki_room_lit_a_00001_.png",
+   "sha256": "1d4007868236d2bf2e67bb5612a3fdaa5f8318dbe8f5cb029557ca63ba73021b",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/maki_room_lit_1920.png",
+   "fit_sha256": "5d8308984f79a83867173f2232c59ed0b71097288f3fbe371c79b6307a62465f"
+  }
  }
 }
