@@ -119,5 +119,34 @@
    "prompt_sha256": "55489a0910e67afa756eeaa1825446bebc61a7ad0c65b8036a79360bc87ebf53"
   }
  ],
- "workflow_sha256": "46e79a3ea06c9d68e07ad49259130f03d89e421d406c148de6a32c7588dead20"
+ "workflow_sha256": "46e79a3ea06c9d68e07ad49259130f03d89e421d406c148de6a32c7588dead20",
+ "renders_sha256": {
+  "ui2_training_evening_a_00001_.png": "4ed00887c66ddef5d6a14e15a06a8dac7333928d37f7a8d510871cccf5e6201c",
+  "ui2_training_evening_b_00001_.png": "748ed7399659ad546d56db7d96fbcf633c2fe3e32cebfe166973604013a03f06",
+  "ui2_training_night_a_00001_.png": "346a7a7b8f4f3a7b4a14f00bed4165629c4eb47cc32c81f348016a07f397aa6d",
+  "ui2_training_night_b_00001_.png": "de0e42d3b29fabf7395ceb73726b705de00de58a28c1e804cae1b45b67b1b358",
+  "ui2_dojo_evening_a_00001_.png": "45b4cffda085cec3dc2ec10f2bff48878b621239d1cd3d0195ed9d97db85e309",
+  "ui2_dojo_evening_b_00001_.png": "b1858e6fbbd30bdaf629b8ea690902a31d3baa398d028890b9458e7391c3a814",
+  "ui2_dojo_night_a_00001_.png": "7a2a1acf733a269eb1ce14ad069a0d590ec643e15c9a03dcfb2f6d223c19eed2",
+  "ui2_dojo_night_b_00001_.png": "c3634683c1f3ef5c9fe98f982aa7ce07fd9ccebfe41c514256f778d5b5e70ab4",
+  "ui2_dojo_lit_a_00001_.png": "b2cba6adefaa1c7afc2faf6727b0bf13cd4ee6a4c4948e436d53fabf9e2c5d40",
+  "ui2_dojo_lit_b_00001_.png": "65e9638ba7d5a28c0973eac27d58afdaca2970b5f32dc3d8a35bb5807782a11e",
+  "ui2_storehouse_evening_a_00001_.png": "1f406d2f04d6d4b08dd41c529905c187d97d51ccdfa23bd1547e51a1904aa476",
+  "ui2_storehouse_evening_b_00001_.png": "0cf5a66fabca41c86913f2dce29e9f964af45f7eeb9c11ddff2789a5739a7177",
+  "ui2_storehouse_night_a_00001_.png": "7cf5f7381f0b0ad8d413798f075d621f18bfbea969968f7f20150c34bff067cb",
+  "ui2_storehouse_night_b_00001_.png": "6fc2948d93f4edf6f0135e542c96388a5205573252f3bfc382e06866b75e6fe5"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "tools/py_art.sh tools/install_redo.py --relight <place> <evening|night> <a> <b> --dry --against chosen/<place>_1920.png --record tools/art/staged/early/campus_for_batch3.json (the dojo's lit pair as its night), then by eye against the day picture for anything added or gone and for what stands outside. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_training_hours.jpg, compare_dojo_hours.jpg, compare_storehouse_hours.jpg, compare_15b_evening_outside.jpg.",
+  "by_the_tool": "All fourteen PASS: the whole picture moved 0, 0 px in each; 11 points checked in the hall and the dojo and 13 in the storehouse, none off by a pixel; the storehouse's racks agree 0.99 to 1.00. None of the three rooms has a keep list, so additions are read by eye.",
+  "training_evening": "A (PICK): orange light through the high windows on the right, the west side, and down that wall; the yard, the posts, the dojo and the gate outside in dusk. B is clean and nearer the day picture's brightness.",
+  "training_night": "A (PICK): the paper lamps dark, moonlight through the screens and the high windows, the dojo outside dark with no window lit, stars, no moon in view. B is the same, a little darker.",
+  "dojo_evening": "A (PICK): low sun straight in through the band of windows, and everything outside still there. B's sunset sky has taken the place of the cedars and the hill behind the stone wall: not offered.",
+  "dojo_night": "A (PICK): lamps dark, moonlight in panels on the floor; the hall outside dark, the storehouse pale, stars, no moon in view. B is clean too.",
+  "dojo_lit": "B (PICK): exactly one hanging lamp is on, by the shrine shelf, with a warm pool on the end wall and the floor under it and moonlight still on the floor by the windows: 'the dojo lamps are down to one'. A lit two lamps: not offered.",
+  "storehouse_evening": "A (PICK): the two iron lamps on, and through the door a dusk yard with the posts' long shadows falling away from the west. B is clean, brighter, with short shadows.",
+  "storehouse_night": "A (PICK): lamps dark, a soft patch of moonlight on the floor from the door, stars over the dark yard, no window lit. B's patch is a harder, brighter blue.",
+  "put_to_the_owner": "Every A, and B for the dojo with one lamp on."
+ }
 }
