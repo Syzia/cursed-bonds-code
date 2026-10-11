@@ -1,9 +1,9 @@
 {
  "about": [
-  "Nobara's room and Maki's after dark: sitting 11b and the two rooms' share of batch 47, written early by hand on 11 Oct 2026 on reading sitting 11a, BEFORE the owner chose, on the picks put to them (Nobara's room B, Maki's room A), and handed over with those picks. If the owner chooses otherwise these files are not run and are written again.",
+  "Nobara's room and Maki's after dark: sitting 11b and the two rooms' share of batch 47, written early by hand on 11 Oct 2026. WRITTEN TWICE. The first writing (commit 60e0770) was made from the plainer rooms picked in 11a and was never run: the owner asked whether the rooms should be 'more girly' or stay 'bland', and both were drawn again with more of their owners in them (art_11d.json). This second writing is made from the fuller rooms put to the owner as picks (Nobara's B, Maki's A), BEFORE the owner chose. If the owner chooses otherwise it is written again.",
   "Two files, one a room (art_11b.json: Nobara's; art_11c.json: Maki's), each the room's evening, its Night with nobody up (`night`) and its Night with her up (`lit`): by Nobara's bedside lamp, by Maki's desk lamp (O62, O48).",
-  "Nobara's window faces west onto the garden: the evening sun comes straight in, and at Night the boys' dormitory across the garden has a few upstairs windows lit, as the garden's chosen night has (O43). Maki's faces east onto Gojo's office and the Principal's Hall, shut at Night and dark. What stands outside is named in every sentence; no moon is in view (O44).",
-  "NOBODY is in any picture (K16: bedrooms); each bed is said to be made and empty and Nobara's mirror to show only the room; the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root."
+  "Nobara's window faces west onto the garden: the evening sun comes straight in, and at Night the boys' dormitory across the garden has a few upstairs windows lit, as the garden's chosen night has (O43). Maki's faces east onto Gojo's office and the Principal's Hall, shut at Night and dark. What stands outside is named in every sentence; no moon is in view (O44). The night sentences name the fuller rooms' own things (the clothes on their rail, the rack of wooden weapons, the mat and the dumbbells) so that they stay.",
+  "NOBODY is in any picture (K16: bedrooms); the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root."
  ],
  "written": "2026-10-11",
  "rooms": {
@@ -36,7 +36,7 @@
       3544,
       3545
      ],
-     "prompt_sha256": "489515286bcd9c417f8c95d824f7e8e6fc557ff4605f5fbcc220d869660c454b"
+     "prompt_sha256": "96e7fe3012fec37b7ab357681e217945b00272e173616288464b671b3c99d451"
     },
     {
      "label": "Nobara's Room, night, the bedside lamp on",
@@ -50,16 +50,16 @@
       4610,
       4611
      ],
-     "prompt_sha256": "a667e0b36933ecbad47054b002d1dcd229a25133ff6fc881e27a7910efe27309"
+     "prompt_sha256": "1abefbf4e6c20a76c9ef22b554e1c1863738dff9c3c3f03a130992e3398e5fe3"
     }
    ],
    "sentences": {
     "evening": "Change the time of day to early evening: low warm orange sunlight slants in through the window and lies across the floor with long soft shadows; outside the window the sky is orange and pink and the garden lies in low warm light, and everything that stands outside is still there: the flowers in the window box, the pond, the house of dark timber with its gallery and stair, and the low house with glass doors on its deck. The bedside lamp is off. Add no new lamp, no new light and no new window.",
-    "night": "Change the time of day to night, with every light in the room switched off: the bedside lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the flowers in the window box, the pond, the house of dark timber with a few of its upstairs windows glowing warm, and the low house with glass doors, dark. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made and empty, the mirror, the desk and the row of bags. Add no new light.",
-    "lit": "Change the time of day to night, with the bedside lamp switched on and nothing else lit. The lamp makes a warm pool of light on the head of the bed, the wall behind it and the floor beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, the mirror, which shows only the room, the desk and the row of bags. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the flowers in the window box, the pond, the house of dark timber with a few of its upstairs windows glowing warm, and the low house with glass doors, dark. Add no other lamp and no other light."
+    "night": "Change the time of day to night, with every light in the room switched off: the bedside lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the flowers in the window box, the pond, the house of dark timber with a few of its upstairs windows glowing warm, and the low house with glass doors, dark. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed with its cushions, made and empty, the clothes on their rail and the shoes under them, the mirrors, which show only the room, the desk, the rug and the row of bags. Add no new light.",
+    "lit": "Change the time of day to night, with the bedside lamp switched on and nothing else lit. The lamp makes a warm pool of light on the head of the bed, the wall behind it and the floor beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed with its cushions, made and empty, the clothes on their rail and the shoes under them, the mirrors, which show only the room, the desk, the rug and the row of bags. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the flowers in the window box, the pond, the house of dark timber with a few of its upstairs windows glowing warm, and the low house with glass doors, dark. Add no other lamp and no other light."
    },
-   "made_from": "ui2_nobara_room_b_00001_.png",
-   "workflow_sha256": "bfd9a1aa608d608d75f245e2e786f6c5e62f9e240f50ab91b3ed26c975870374"
+   "made_from": "ui2_nobara_room2_b_00001_.png",
+   "workflow_sha256": "d2e39fc644c2e12d9539cd0584930f70f652f782b3737269f3756a8ad683a497"
   },
   "maki_room": {
    "file": "art_11c.json",
@@ -90,7 +90,7 @@
       4608,
       4609
      ],
-     "prompt_sha256": "236d828b9256ada7d5d76978850eb5c7f7cfcf5d85e1d2d53f5145657d859933"
+     "prompt_sha256": "89f19d246197f7e9732c902818b6a2310eb6d36374c4d13202920de06acd5183"
     },
     {
      "label": "Maki's Room, night, the desk lamp on",
@@ -104,16 +104,16 @@
       6510,
       6511
      ],
-     "prompt_sha256": "0afac94784f994863a82201a9470598edb65765243d8e6ab4abff3692e68f9ac"
+     "prompt_sha256": "5a78292962f4bc38846f2b76700ae7288de14b7ce55abe42b2460abaa9448c8f"
     }
    ],
    "sentences": {
     "evening": "Change the time of day to early evening: outside the window the sky is orange and pink, and the cedars, the small house with the very large window and the great tiled roof behind it are in low warm light; everything that stands outside is still there. Soft warm light comes in through the window and lies on the floor with long soft shadows. The desk lamp is off. Add no new lamp, no new light and no new window.",
-    "night": "Change the time of day to night, with every light in the room switched off: the desk lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the cedars, the small house with the very large window and the great tiled roof behind it, with no window lit. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made and empty, the weapon case, the desk and the bar over the door. Add no new light.",
-    "lit": "Change the time of day to night, with the small desk lamp switched on and nothing else lit. The lamp makes a warm pool of light on the desk, the wall behind it and the weapon case beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, and the door with the bar over it. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the cedars, the small house with the very large window and the great tiled roof behind it, with no window lit. Add no other lamp and no other light."
+    "night": "Change the time of day to night, with every light in the room switched off: the desk lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the cedars, the small house with the very large window and the great tiled roof behind it, with no window lit. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made flat, with only the folded uniform on it, the rack of wooden weapons on the wall, the weapon case, the desk, the mat and the dumbbells on the floor, and the bar over the door. Add no new light.",
+    "lit": "Change the time of day to night, with the small desk lamp switched on and nothing else lit. The lamp makes a warm pool of light on the desk, the wall behind it and the weapon case beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made flat, with only the folded uniform on it, the rack of wooden weapons on the wall, the weapon case, the desk, the mat and the dumbbells on the floor, and the bar over the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the cedars, the small house with the very large window and the great tiled roof behind it, with no window lit. Add no other lamp and no other light."
    },
-   "made_from": "ui2_maki_room_a_00001_.png",
-   "workflow_sha256": "121737e571698da9d5a1775f92e279e0bd6bfc2ffa56a468e4f15c2eadd146e9"
+   "made_from": "ui2_maki_room2_a_00001_.png",
+   "workflow_sha256": "3a1f07f16c535c48983d8a906cd2c4c7fa7c50283575c21523a45f6c23bf4a90"
   }
  },
  "cost": "12 renders in two files, about $1.92"
