@@ -6,7 +6,7 @@
   "A room says who lives in it (O65): tea things on the lounge's low table and a half-sewn cloth doll on a sofa's arm; upstairs, the doll-maker's bench under the end window. Each room has lamps of its own, off by day, for its evening and its Night (5.7a: the lounge is dark at Night; the dormitory is lamp-lit on all seven Nights).",
   "The dormitory has no painted room of the same house to be given as 'the same house inside' (the record's refs_also names the lounge, which is painted in this same file): it is given the house from outside and the same words for its plaster, timber and floor. If the two do not look like one house, the dormitory is made again with the chosen lounge as its reference.",
   "NOBODY is in either picture; NOTHING carries lettering (the duty board's tags and the six plates are said to be blank).",
-  "Run by the owner on 11 Oct 2026 (the renders are stamped 17:43) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read the same day; the lounge chosen the same day (read_2026_10_11; chosen; the plan's owner row O67)."
  ],
  "written": "2026-10-11",
  "refs": {
@@ -78,5 +78,16 @@
   "teachers_dorm_b": "NOT USABLE AS IT IS: one wide screen of four sliding panels in each side wall, with one plate each: two doorways, not six. A wide, open floor; the hearth, the lamp, the window and the bench are there.",
   "the_dolls": "In both rooms the cloth dolls came back as rag dolls with hair and dresses. The story's dolls are stuffed creatures (one of them walks about the school). The redo asks for animals and creatures by name.",
   "put_to_the_owner": "The lounge: B. The dormitory: made again for six doors (art_13c.json), with the lounge's doll made a bear in the same file."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, and ill start the new renders\"",
+  "read_as": "The lounge: version B. The dormitory: neither; it is drawn again for six doors (art_13c.json, which the owner then ran, with the lounge's doll made a bear).",
+  "teachers_lounge": {
+   "version": "b",
+   "render": "ui2_teachers_lounge_b_00001_.png",
+   "sha256": "f68d5c0dd4d4384fe03e80db66e72124c8b997458b4082c6cb5c72aa9558f319",
+   "note": "Not fitted yet: the doll on its sofa is changed first (art_13c_early.json); the picture with the change placed on it, if it is taken, is the one fitted and installed."
+  },
+  "teachers_dorm": "not chosen: neither render is used"
  }
 }

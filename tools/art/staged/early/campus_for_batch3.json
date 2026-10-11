@@ -592,6 +592,24 @@
      540
     ]
    }
+  },
+  "teachers_lounge": {
+   "place": "teachers_lounge",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "13a",
+   "chosen": "2026-10-11",
+   "render": "ui2_teachers_lounge_b_00001_.png",
+   "first_guess": {
+    "staff_yard": [
+     290,
+     700
+    ],
+    "teachers_dorm": [
+     1310,
+     520
+    ]
+   }
   }
  },
  "fixed": [
@@ -2305,6 +2323,26 @@
     "picture": "maki_room",
     "rev": 2
    }
+  },
+  {
+   "id": "place.teachers_lounge",
+   "kind": "place",
+   "key": "teachers_lounge",
+   "name": "Teachers' Lounge",
+   "stem": "teachers_lounge",
+   "area": "staff",
+   "indoor": true,
+   "building": "teachers_house",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "words": "the ground-floor sitting room of the teachers' house: sofas round a low table, a kitchenette with a kettle, a television, a duty board on the wall with no lettering, and stairs going up at the back",
+   "by": {
+    "picture": "teachers_lounge",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2591,22 +2629,6 @@
     "dorm_yard"
    ],
    "note": "its far doors are the girls' spare doors (D50)"
-  },
-  {
-   "id": "place.teachers_lounge",
-   "kind": "place",
-   "key": "teachers_lounge",
-   "name": "Teachers' Lounge",
-   "stem": "teachers_lounge",
-   "area": "staff",
-   "indoor": true,
-   "building": "teachers_house",
-   "how": "composed",
-   "batch": "13",
-   "after": [
-    "staff_yard"
-   ],
-   "words": "the ground-floor sitting room of the teachers' house: sofas round a low table, a kitchenette with a kettle, a television, a duty board on the wall with no lettering, and stairs going up at the back"
   },
   {
    "id": "place.teachers_dorm",
