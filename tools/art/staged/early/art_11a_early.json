@@ -1,0 +1,66 @@
+{
+ "about": [
+  "Sitting 11a: Nobara's room and Maki's, written early by hand on 11 Oct 2026, straight after the owner chose the last of the boys' house (O64), and handed over unasked. Both are new places, composed, as the plan has them.",
+  "THE TWO ROOMS DO NOT SHARE A VIEW. The record's proposals gave both rooms a window on the garden. The chosen corridor is seen down its middle with Nobara's door first on the left and Maki's first on the right, and a door has a room behind it (O37), so the two rooms are on opposite sides of the house. Read with the house's long side to the garden, as the chosen garden shows it, I look north along the corridor: Nobara's room is on the garden side and keeps the record's line (the garden's pond, the boys' dormitory across it, the Common Room); Maki's is on the far side, where the ground plan has Gojo's small office (1400, 470) and the Principal's Hall (1560, 400) behind it. The owner is told; the record's two window rows change when the rooms are chosen.",
+  "In each picture the door is in the left wall near me and the window in the right wall. Each room has one lamp of its own for its lit picture (O62): Nobara's bedside lamp, Maki's desk lamp.",
+  "References: the girls' house from outside (cut from the chosen garden), the chosen girls' corridor as 'the same house inside', and a third picture for the view: the garden for Nobara's, the staff steps for Maki's.",
+  "NOBODY is in either picture (K16: bedrooms); the mirror is said to show only the room. NOTHING carries lettering or a maker's mark (O60): it is said of the shopping bags above all. Maki's room was first worded 'the room of an athlete'; the prompt check's list does not hold that word, but it is somebody, so it reads 'with room to train'."
+ ],
+ "written": "2026-10-11",
+ "refs": {
+  "nobara_room": "Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of white plaster and timber, with latticed windows and flower boxes. Picture 2 is the upstairs corridor of the same house, already painted: the new room has the same pale plaster, brown timber, timber floor and the same kind of door. Picture 3 is the garden this house stands on, already painted: what is seen through the new room's window is that garden from upstairs in the house on its right. Do not copy the camera or the layout of any of the three: the new picture is taken indoors, in a bedroom.",
+  "maki_room": "Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of white plaster and timber, with latticed windows. Picture 2 is the upstairs corridor of the same house, already painted: the new room has the same pale plaster, brown timber, timber floor and the same kind of door. Picture 3 shows the buildings that stand on the far side of this house, already painted: the small detached house with one very large window, and the great hall with the largest roof at the top of the stone steps. Seen through the new room's window they are further off and seen from their side. Do not copy the camera or the layout of any of the three: the new picture is taken indoors, in a bedroom."
+ },
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge.",
+ "the_place": {
+  "nobara_room": "a bedroom upstairs in the girls' dormitory, the house of white plaster and timber of picture 1: neat and well dressed, about five metres long and four wide. I stand inside at one end and look along the room. In the left wall, near me, is the door, a brown timber door like those of picture 2, shut. Beyond the door, along the left wall, stands a bed, neatly made with a bright quilt and nothing lying on it, and a small bedside lamp, switched off, on a low table at its head. Against the far wall, right of the middle, stands a tall dressing mirror in a timber frame, its glass showing only the room; beside it stands a desk with a canvas roll of tools, rolled up and tied, lying on it. On the floor along the far wall stands a neat row of paper shopping bags in plain colours, with nothing printed on them. In the right wall, further along than the middle, is a wide window with a slim timber lattice, like the windows of picture 1: through it I see flowers in the window box just outside, the garden's pond below, the two-storey house of dark timber with its upstairs gallery across the garden, and to one side of it the low house with glass doors on its deck. The stretch of the right wall nearest me is plain plaster. The floor is timber boards, clear and open across the whole bottom of the picture. No lettering and no maker's mark anywhere in the picture: none on any bag, box, book or wall",
+  "maki_room": "a bedroom upstairs in the girls' dormitory, the house of white plaster and timber of picture 1: kept very plain, with room to train, about five metres long and four wide. I stand inside at one end and look along the room. In the left wall, near me, is the door, a brown timber door like those of picture 2, shut, with a steel pull-up bar fixed across the top of its frame. Beyond the door, along the left wall, stands a bed, made tight and flat with a plain blanket and nothing lying on it. Against the far wall, right of the middle, stands a long hard weapon case of dark leather, closed, leaning upright against the wall and taller than the desk beside it; the desk is plain, with a small desk lamp, switched off, and nothing else on it. In the right wall, further along than the middle, is a wide window with a slim timber lattice, like the windows of picture 1: through it I see a few cedars close by and, beyond them, the small detached house with one very large window of picture 3, and behind it the largest grey tiled roof of the school on its stone platform. The stretch of the right wall nearest me is plain plaster. The walls carry no pictures. The floor is timber boards, clear and open across the whole bottom of the picture. No lettering and no maker's mark anywhere in the picture: none on any bag, box, book or wall"
+ },
+ "pictures_given": {
+  "crops/girls_dorm_outside.png": "ddd92384652a0c8f99a6cc83f25391e9f2ac1ef1c4a52ef75bf573ebbd46a788",
+  "girls_dorm_1920.png": "e2bf4ba2484016ad3d8f3707b4fbebd1261c37b1419c77e0f2da122dcddfd113",
+  "dorm_yard_1920.png": "0f65262e426abe9be805f35c55f0b9c4068f5e8816ff05d3c702a863f0ec536a",
+  "staff_yard_1920.png": "a12a18f156c3745c2177e3a73dfa8c5d93fd2eef5c52cedbd22d2ea1950becd4"
+ },
+ "crop": {
+  "of": "ui2_dorm_yard_a_00001_.png",
+  "box": [
+   1990,
+   60,
+   2752,
+   1040
+  ]
+ },
+ "rows": [
+  {
+   "label": "Nobara's Room",
+   "kind": "composed",
+   "place": "nobara_room",
+   "saves": [
+    "ui2_nobara_room_a",
+    "ui2_nobara_room_b"
+   ],
+   "seeds": [
+    9102,
+    9103
+   ],
+   "prompt_sha256": "19a3fdae9a1a2680d2c630322437576204c31946396529d342933f642db7b769"
+  },
+  {
+   "label": "Maki's Room",
+   "kind": "composed",
+   "place": "maki_room",
+   "saves": [
+    "ui2_maki_room_a",
+    "ui2_maki_room_b"
+   ],
+   "seeds": [
+    4698,
+    4699
+   ],
+   "prompt_sha256": "e6ef35344616bdb0a808653846bae6a0ac62dd90fb5d889fe7c4be913eaad7d8"
+  }
+ ],
+ "workflow_sha256": "47385912a85bd86288298cdb931be97edc2c60b8790ead2cffe4556de698a594",
+ "cost": "4 renders, about $0.64"
+}
