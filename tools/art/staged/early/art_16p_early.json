@@ -83,5 +83,29 @@
   "training_yard_evening": "A (PICK): orange and pink sky, gold light from the left, everything still there. B is clean, with a cooler violet sky.",
   "training_yard_night": "B (PICK): a full moon of the size and look of the garden's and the rooftop's, every window dark, the hall's paper screens dim, the pool's water through the gate dark blue. A is clean too; its moon is smaller and plain, its screens paler and the water through the gate brighter.",
   "put_to_the_owner": "Pool B; the yard's evening A and night B."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"You picks look good, lets go with those\"",
+  "pool": {
+   "version": "b",
+   "render": "ui2_pool_b_00001_.png",
+   "sha256": "7bbc013d9510ab27a6a676778f74ed40eb2c6aa6c32b71ba279b512d7c5d2073",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/pool_1920.png",
+   "fit_sha256": "1b23a0ae7f38f74e0100198e8001ada7d2dd093fde2204dd34d290afb94fbf31"
+  },
+  "training_yard_evening": {
+   "version": "a",
+   "render": "ui2_training_yard_evening_a_00001_.png",
+   "sha256": "1edcbb1e11ccce111ab34a4826cc182aff1ef419286b77f3f8b2b1e9ec3932f5",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/training_yard_evening_1920.png",
+   "fit_sha256": "c3b017718dc765fb937e53b5dfe430066f437d51715a34419fa64709165434f2"
+  },
+  "training_yard_night": {
+   "version": "b",
+   "render": "ui2_training_yard_night_b_00001_.png",
+   "sha256": "55b4d13f1a16de85376b9fa8c9205aa06951f7da9c8101f47650ef28da043c64",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/training_yard_night_1920.png",
+   "fit_sha256": "262f9f191454e9580a0f997df975efa6378e567e5c32b4a24cc1bd6d33713a57"
+  }
  }
 }
