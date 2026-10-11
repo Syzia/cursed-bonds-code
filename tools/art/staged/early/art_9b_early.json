@@ -2,7 +2,8 @@
  "about": [
   "The boys' corridor after dark, and Yuji's posters: written early by hand on 11 Oct 2026 on reading sitting 9a, BEFORE the owner chose, on the picks put to them (corridor A, Yuji's room B), and handed over with those picks. If the owner chooses otherwise this file is not run and is written again.",
   "The corridor's evening and night are relit from corridor A (its fit laid into the scratch root only; nothing is written to chosen/ before the owner chooses). It has no window: the evening is its lamps and the sunset from the entrance behind the camera; at Night every lamp is off (O38, O39) and moonlight comes in from behind; no light shows at any door.",
-  "Yuji's posters: one named change on room B, the tool's keep-everything prompt without the record's window line (it would repaint the view), with the change as its own sentence: every poster painted again with no lettering and a made-up subject. If taken, only the posters are placed onto the chosen render by a script, and the room's evening and night are made after it (with its two Night pictures, dark and lit, 5.7a)."
+  "Yuji's posters: one named change on room B, the tool's keep-everything prompt without the record's window line (it would repaint the view), with the change as its own sentence: every poster painted again with no lettering and a made-up subject. If taken, only the posters are placed onto the chosen render by a script, and the room's evening and night are made after it (with its two Night pictures, dark and lit, 5.7a).",
+  "The owner chose corridor A and room B (O60) and ran this file on 11 Oct 2026 (the renders are stamped 16:13); read the same day, see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -65,5 +66,33 @@
   }
  ],
  "workflow_sha256": "3fbbc80f7942a4b1f5c83519c1adae166a9adec0c446b5c1b2733e16495d25e4",
- "cost": "6 renders, about $0.96"
+ "cost": "6 renders, about $0.96",
+ "renders_sha256": {
+  "ui2_boys_dorm_evening_a_00001_.png": "b6afb8c5f4ae33431806140782d3b274b87d4f0703672a951a7fc07cdad3dbaf",
+  "ui2_boys_dorm_evening_b_00001_.png": "917ef78a92cf9dc9cc4569d2cdf3b8c8c1231747be9684fabbdc9339e4669855",
+  "ui2_boys_dorm_night_a_00001_.png": "b8b75dcfba9863308d8bfad6b4d845ed5c972d1730319f09e2817a30454e113b",
+  "ui2_boys_dorm_night_b_00001_.png": "14102114873b79633ec5d3cb9ea468d9bd6abc0cffcb39af66fc476a24241894",
+  "ui2_yuji_room_b_posters_a_00001_.png": "20877107ad7f9470de8c2917b5288349d58d757595ea0a5e7ac88237aae2a39b",
+  "ui2_yuji_room_b_posters_b_00001_.png": "7271d7c67c6e5e171967275f1701a0c828af9902a48c09c3a46f54444c5644bc"
+ },
+ "placed_by_tool": {
+  "script": "tools/art/staged/early/yuji_posters_9b.py",
+  "from": "ui2_yuji_room_b_posters_b_00001_.png onto ui2_yuji_room_b_00001_.png",
+  "result": "ui2_yuji_room_b_placed_00001_.png",
+  "sha256": "1442cf050d7ac23029c0af9c368eb848e2aec4270995b703f52025e6e88d2f66",
+  "patch": "the posters in five windows, 8.72% of the picture; every pixel outside is the chosen render's own (asserted by the script)"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "The corridor's pairs through install_redo.py --relight boys_dorm <hour> <a> <b> --dry --against the chosen corridor, with the scratch record; then by eye. The posters at the render's own size, both repaints, for lettering and for known characters; then placed by the script and looked at again. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_yuji_posters.jpg, compare_boys_dorm_hours.jpg.",
+  "install_redo_dry": "Corridor evening A and B PASS; night A and B PASS.",
+  "yuji_room_b_posters_b": "PICK, placed by tool. Seven posters, none with a letter, a character, a number or small print: a silver aeroplane among clouds, a night city under a moon, a diving bell among fish, a rocket by its launch tower, a lighthouse in a storm, a flying saucer over hills, and a tall walking machine on thin legs in a desert. None is a known film's. Placed onto the chosen room: no seam shows.",
+  "yuji_room_b_posters_a": "Not used: its walking machine is a four-legged armoured walker that is a known film's design, and the poster on the left wall still shows small print.",
+  "boys_dorm_evening_b": "PICK. The lamps on; the low orange light lies along the floor from behind the camera; the walls keep their plaster colour. Seven doors, all shut; no window. Mean 136.",
+  "boys_dorm_evening_a": "The same corridor washed orange all over. Nothing added.",
+  "boys_dorm_night_b": "PICK. Every lamp off; moonlight along the floor from behind the camera toward the far door; no light at any door; every door, the shoe rack and the notice board can be seen. Mean 78.",
+  "boys_dorm_night_a": "Not offered as the pick: a pale patch of light lies on the right wall and across the floor as if through a window in the left wall, and the corridor has none.",
+  "said_to_the_owner": "The walking machine on the right wall is a made-up one on thin legs, small at game size.",
+  "put_to_the_owner": "Yuji's room with the posters of repaint B placed; the corridor's evening B and night B."
+ }
 }
