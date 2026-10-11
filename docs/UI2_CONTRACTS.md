@@ -150,6 +150,16 @@ layout has changed since the dump was written: run tools/smoke.sh u2_dump`.
 | `shaped` | the places that are shaped now (`hot_shapes_for` answers), in `LOC_ORDER` |
 | `name_rects` | `{place: {id: [x, y, w, h]}}`: for every registered hotspot and exit, where its name plate is drawn in a shaped place while names are shown (`hot_name_rect` at its applied point). **Measured standing in each place in turn** (`here` is set to the place while its rectangles are computed), so the place's own `tips` rows decide the side each plate lies on, as in the game. `check_layout.py` refuses a place where two meet |
 
+**Added by U0d3 (the layout check)**, four keys more, written by
+`tools/smoke/u2_dump.rpy` from that package on:
+
+| key | shape |
+|---|---|
+| `lock_labels` | `{place: {exit id: [w, h]}}`: for every exit the game can lock, the size of the hover label that says why it is locked, as `icon_tip_size` measures it at its largest over the five periods (no flag, no Bond); a place with no such exit is left out. `check_layout.py` refuses a layout in which that label would leave the screen or cover another exit or the arrival caption (`lock-label`) |
+| `frames.tag_edges` | `[x left, x right]`: the edges a row's name tags are kept between (179 and 1700) |
+| `frames.tag_gap` | the gap `view_tag_xs` keeps between two name tags, in px |
+| `frames.tag_w` | the widest name tag of the cast, in px. With the two above, `check_layout.py` lays out each row's tags and refuses a row that does not fit (`tag-x`) |
+
 **The committed file is regenerated in the owner's folder after U0c2 merges**
 (`tools/smoke.sh u2_dump`), never from a worktree.
 
