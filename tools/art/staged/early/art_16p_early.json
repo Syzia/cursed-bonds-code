@@ -65,5 +65,23 @@
    "prompt_sha256": "816c70ea3a87e0f4a63cd2f46fe77a2c9a084ff3768be3fc61fc366609672a1a"
   }
  ],
- "workflow_sha256": "51256f046890633c4ee5b0b51e578f494a9a86021caebb3a02c5176f0a814fb5"
+ "workflow_sha256": "51256f046890633c4ee5b0b51e578f494a9a86021caebb3a02c5176f0a814fb5",
+ "renders_sha256": {
+  "ui2_pool_a_00001_.png": "2c7e925c6d94469a1ca617eece0d890a0fdb761ccc1a7715b4d86f677ff5361a",
+  "ui2_pool_b_00001_.png": "7bbc013d9510ab27a6a676778f74ed40eb2c6aa6c32b71ba279b512d7c5d2073",
+  "ui2_training_yard_evening_a_00001_.png": "1edcbb1e11ccce111ab34a4826cc182aff1ef419286b77f3f8b2b1e9ec3932f5",
+  "ui2_training_yard_evening_b_00001_.png": "dbb897a8b17eaba4fcfd6b2d7b0b607ad6084bf9204b98a080fefb223646c671",
+  "ui2_training_yard_night_a_00001_.png": "e1131b3378cbe301eda5c8b023dfb5df98899009776fd477b60df229d61a6cc5",
+  "ui2_training_yard_night_b_00001_.png": "55b4d13f1a16de85376b9fa8c9205aa06951f7da9c8101f47650ef28da043c64"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "The pool by eye against its five-line checklist and against the chosen yard's own view of the gate and the dojo's end; the yard's two hours by tools/py_art.sh tools/install_redo.py --relight training_yard <evening|night> <a> <b> --dry --against chosen/training_yard_1920.png, then by eye, the night beside the night yards already chosen. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_pool.jpg, compare_training_yard_hours.jpg, compare_night_yards_moons.jpg.",
+  "pool_b": "PICK. All five lines yes. The dojo's gable end beyond the pool is plain white plaster on a low stone terrace, as the yard shows it; the roofed gate is on the left with the yard through it, and the training hall's roof shows beyond the wall at the far left; the same two mountains stand behind; the changing hut is at the far end of the fence and the lane board on the fence, both clear of the icon column; a broad deck for people; nobody in the picture.",
+  "pool_a": "Good, and nearer. Two things against the yard: its far gable has a band of windows, where the yard's is plain plaster; and its changing hut stands at the right edge, under the icon column.",
+  "by_the_tool": "The yard's four relights PASS: the whole picture moved 0, 0 px, 16 points checked, none off by a pixel.",
+  "training_yard_evening": "A (PICK): orange and pink sky, gold light from the left, everything still there. B is clean, with a cooler violet sky.",
+  "training_yard_night": "B (PICK): a full moon of the size and look of the garden's and the rooftop's, every window dark, the hall's paper screens dim, the pool's water through the gate dark blue. A is clean too; its moon is smaller and plain, its screens paler and the water through the gate brighter.",
+  "put_to_the_owner": "Pool B; the yard's evening A and night B."
+ }
 }
