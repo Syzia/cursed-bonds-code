@@ -618,13 +618,18 @@ label zz_smoke:
     python:
         check(_return == ("char", "nobara"), "pressing the patch returns ('char', 'nobara')", _return)
         ## No box in the sidecar: the whole picture, and only for someone alone.
+        ## (U0c2: view_pose reads pose_<place>.json before the view_ file's
+        ## "poses" key, and this harness's overlay holds its two test boxes in
+        ## both files, so "no box" empties both.)
         RULE_LAYOUT["view_dorm_common"] = {}
+        RULE_LAYOUT["pose_dorm_common"] = {}
         check(view_pose("nobara", "dorm_common") is None, "with no box and others on stage there is no pose")
         zzv_put("dorm_common", ["nobara"], "Evening")
         check(view_pose("nobara", "dorm_common") == dict(image=_zz_file, box=(0, 0, 1920, 1080)),
               "with no box the whole picture is used, and only when that person is alone on the stage",
               view_pose("nobara", "dorm_common"))
         del RULE_LAYOUT["view_dorm_common"]
+        del RULE_LAYOUT["pose_dorm_common"]
         companion = "nobara"
         check(view_stage_rows("dorm_common")[0]["pose"] is None, "whoever is tagging along never takes their pose")
         companion = None

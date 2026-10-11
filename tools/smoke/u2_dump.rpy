@@ -60,6 +60,42 @@
 ##                 or "<place> <variant>": row}), bg ({image name: row})
 ##   schedule      SCHEDULE; weekend: WEEKEND; periods; weekdays
 ##   fg_rooms      VIEW_FG_ROOMS; fg_talk: VIEW_FG_TALK
+## Added by the scaffold (U0c2); none of the keys above changed shape:
+##   variants_planned  WORLD_VARIANTS as [[place, period, attribute, file]]:
+##                 every planned new hour picture
+##   keep_clear    {place: [[x, y]]}: path_keep_clear(place), the live points
+##                 an exit keeps clear of (frames.keep_clear is the old table)
+##   tips          {place: {id: side}}: the hover-label sides a hot_ sidecar gives
+##   faces         {who: {eyes, mouth, blink_also}} as the game reads them
+##                 (faces.json first, then the tables in view_stage.rpy)
+##   world         inside, pinless, homes, asleep, away ({who: {"<weekday>
+##                 <period>": district}}), door_bond and door_owners by place
+##   standins      copies ({lender: file}), names ({image key: lender}),
+##                 if_file ({image name: file}), people (the five stand-in names)
+##   names_key     the key held to show names ("K_n")
+## Added by the scaffold's second sitting (D60, "the picture is what is
+## clicked"; game/sb_hotspots.rpy):
+##   hot_shape     HOT_SHAPE: the limits both validators read (polys, points,
+##                 area_min, area_max, buried_max, grid), the HUD's row
+##                 (top: above that y no shape takes the pointer) and the
+##                 light's default look (color, wash, edge, dim, names, blur,
+##                 line). Whether a hotspot is in the front layer, which the
+##                 layers' rule reads (hot_shape_layers), is the `front` of
+##                 its row under hotspots.
+##   hot_look      the look in force: HOT_SHAPE's, with what
+##                 game/layout/hot_look.json replaces; look_keys: the keys
+##                 that file may hold
+##   shapes        {place: {id: [polygon, ...]}}: the "shapes" each hot_
+##                 sidecar holds, as written, whatever the picture's revision
+##                 (a room redone in place waits with its shapes traced)
+##   keep_tile     {place: {id: reason}}: the few that keep a button
+##   shaped        the places that are shaped now (hot_shapes_for answers)
+##   name_rects    {place: {id: [x, y, w, h]}}: where the name plate of every
+##                 registered hotspot and exit would be drawn in a shaped
+##                 place while names are shown (hot_name_rect, at its applied
+##                 point), so that a layout tool can refuse two that meet.
+##                 Measured standing in each place in turn, so a place's own
+##                 "tips" rows decide the side its plates lie on
 ##
 ## Keys the tree does not have yet are written empty and filled when U0c
 ## regenerates the file. Nothing in it depends on the day, the hour, a flag or
@@ -222,6 +258,60 @@ init 999 python:
         d["weekdays"] = builtins.list(WEEKDAYS)
         d["fg_rooms"] = builtins.list(VIEW_FG_ROOMS)
         d["fg_talk"] = builtins.list(VIEW_FG_TALK)
+
+        ## What the scaffold (U0c2) added. New keys only: none above changed shape.
+        d["variants_planned"] = zz_dump_plain(WORLD_VARIANTS)
+        d["keep_clear"] = builtins.dict((loc, zz_dump_plain(path_keep_clear(loc))) for loc in LOC_ORDER if path_keep_clear(loc))
+        tips = builtins.dict()
+        for loc in LOC_ORDER:
+            got = rule_layout("hot_" + loc).get("tips")
+            if isinstance(got, builtins.dict) and got:
+                tips[loc] = zz_dump_plain(got)
+        d["tips"] = tips
+        d["faces"] = builtins.dict(
+            (who, builtins.dict(eyes=zz_dump_plain(view_face_box(who, "eyes")), mouth=zz_dump_plain(view_face_box(who, "mouth")),
+                                blink_also=builtins.list(view_blink_also(who))))
+            for who in builtins.sorted(CAST) if view_face_box(who, "eyes") or view_face_box(who, "mouth"))
+        d["world"] = zz_dump_plain(builtins.dict(
+            inside=WORLD_INSIDE, pinless=WORLD_PINLESS, homes=WORLD_HOMES, asleep=WORLD_ASLEEP,
+            away=builtins.dict((who, builtins.dict(("%s %s" % k, v) for k, v in cells.items())) for who, cells in WORLD_AWAY.items()),
+            door_bond=builtins.dict((loc, world_door_bond(loc)) for loc in LOC_ORDER if world_door_bond(loc) is not None),
+            door_owners=builtins.dict((loc, world_door_owners(loc)) for loc in LOC_ORDER if world_door_owners(loc))))
+        d["standins"] = zz_dump_plain(builtins.dict(
+            copies=builtins.dict((n, "images/bg/" + standin_copy(n)) for n in STANDIN_COPIES),
+            names=builtins.dict(STANDIN_NAMES), if_file=builtins.dict(STANDIN_IF_FILE),
+            people=[k for k, path, tint in STANDIN_PEOPLE]))
+        d["names_key"] = ICON_NAMES_KEY
+
+        ## The second sitting (D60): the limits, the look, each place's shapes.
+        d["hot_shape"] = zz_dump_plain(HOT_SHAPE)
+        d["hot_look"] = zz_dump_plain(hot_look())
+        d["look_keys"] = builtins.list(HOT_LOOK_KEYS)
+        shapes, keep, rects = builtins.dict(), builtins.dict(), builtins.dict()
+        ## A name plate lies on the side its hover label opens on, and that is
+        ## read from the `tips` of the sidecar of the place I stand in
+        ## (icon_tip_hot): so the dump stands in each place in turn.
+        was_here = store.here
+        for loc in LOC_ORDER:
+            store.here = loc
+            side = rule_layout("hot_" + loc)
+            if isinstance(side.get("shapes"), builtins.dict) and side["shapes"]:
+                shapes[loc] = zz_dump_plain(side["shapes"])
+            if isinstance(side.get("keep_tile"), builtins.dict) and side["keep_tile"]:
+                keep[loc] = zz_dump_plain(side["keep_tile"])
+            pts = hot_place_points(loc)
+            got = builtins.dict()
+            for h in HOT_SPOTS:
+                if h["place"] == loc and h["id"] not in got and h["id"] in pts:
+                    row = builtins.dict((k, h[k]) for k in HOT_KEYS)
+                    row["x"], row["y"] = pts[h["id"]]
+                    got[h["id"]] = [int(v) for v in hot_name_rect(row)]
+            rects[loc] = got
+        store.here = was_here
+        d["shapes"] = shapes
+        d["keep_tile"] = keep
+        d["shaped"] = [loc for loc in LOC_ORDER if hot_shapes_for(loc)]
+        d["name_rects"] = rects
         return d
 
 
@@ -252,8 +342,52 @@ label zz_smoke:
               "one to four slots for every place")
         check(len(_zz_d["people"]) >= len(ROSTER_ORDER) and all(w in _zz_d["people"] for w in ROSTER_ORDER),
               "every person's sprite canvas and feet (%d images)" % len(_zz_d["people"]))
-        check(isinstance(_zz_d["spot_planned"], builtins.list), "spot_planned is a list (%d rows; empty until the scaffold defines SPOT_PLANNED)"
-              % len(_zz_d["spot_planned"]))
+        check(isinstance(_zz_d["spot_planned"], builtins.list) and len(_zz_d["spot_planned"]) == len(SPOT_PLANNED) >= 1
+              and all(isinstance(r, builtins.list) and len(r) == 3 for r in _zz_d["spot_planned"]),
+              "spot_planned holds SPOT_PLANNED as [id, place, kind] rows (%d)" % len(_zz_d["spot_planned"]))
+        check(len(_zz_d["variants_planned"]) == len(WORLD_VARIANTS) and builtins.sorted(_zz_d["world"]) ==
+              ["asleep", "away", "door_bond", "door_owners", "homes", "inside", "pinless"]
+              and builtins.sorted(_zz_d["standins"]) == ["copies", "if_file", "names", "people"]
+              and all(k in _zz_d for k in ("keep_clear", "tips", "faces", "names_key")),
+              "the scaffold's keys are in it: variants_planned (%d), keep_clear, tips, faces (%d people), world, standins, names_key"
+              % (len(_zz_d["variants_planned"]), len(_zz_d["faces"])))
+        check(builtins.sorted(_zz_d["hot_shape"]) == builtins.sorted(HOT_SHAPE)
+              and all(k in _zz_d["hot_shape"] for k in ("polys", "points", "area_min", "area_max", "buried_max", "grid", "top"))
+              and all(isinstance(h["front"], bool) for v in _zz_d["hotspots"].values() for h in v)
+              and builtins.sorted(_zz_d["hot_look"]) == builtins.sorted(_zz_d["look_keys"]) == builtins.sorted(HOT_LOOK_KEYS)
+              and builtins.sorted(_zz_d["shapes"]) == builtins.sorted(l for l in LOC_ORDER if rule_layout("hot_" + l).get("shapes"))
+              and all(_zz_d["shapes"][l] == rule_layout("hot_" + l)["shapes"] for l in _zz_d["shapes"])
+              and _zz_d["shaped"] == [l for l in LOC_ORDER if hot_shapes_for(l)] and builtins.set(_zz_d["shaped"]) <= builtins.set(_zz_d["shapes"])
+              and builtins.sorted(_zz_d["name_rects"]) == builtins.sorted(LOCATIONS)
+              and all(len(r) == 4 for v in _zz_d["name_rects"].values() for r in v.values())
+              and sum(len(v) for v in _zz_d["name_rects"].values()) == len(builtins.set(h["id"] for h in HOT_SPOTS)),
+              "D60: the limits and the light's look (HOT_SHAPE, hot_look), each place's shapes and keep_tile rows as its sidecar holds them (%d places; %d shaped now), and a name plate's rectangle for every hotspot and exit (%d)"
+              % (len(_zz_d["shapes"]), len(_zz_d["shaped"]), sum(len(v) for v in _zz_d["name_rects"].values())))
+        ## A `tips` row of a place I do not stand in moves that place's plates
+        ## (and no other's): the dump stands in each place while it measures.
+        _zz_side = rule_layout("hot_courtyard")
+        _zz_had = "hot_courtyard" in RULE_LAYOUT
+        _zz_real = RULE_LAYOUT.get("hot_courtyard")
+        _zz_side["tips"] = {"go_courtyard__gate": "left", "spot_vend": "bottom"}
+        RULE_LAYOUT["hot_courtyard"] = _zz_side
+        _zz_here = store.here
+        _zz_t = zz_dump_build()
+        if _zz_had:
+            RULE_LAYOUT["hot_courtyard"] = _zz_real
+        else:
+            RULE_LAYOUT.pop("hot_courtyard", None)
+        _zz_a, _zz_b = _zz_d["name_rects"]["courtyard"], _zz_t["name_rects"]["courtyard"]
+        _zz_g, _zz_v = hot_place_points("courtyard")["go_courtyard__gate"], hot_place_points("courtyard")["spot_vend"]
+        check(_zz_here != "courtyard" and store.here == _zz_here
+              and _zz_b["go_courtyard__gate"][0] + _zz_b["go_courtyard__gate"][2] == int(_zz_g[0]) - 36 and _zz_b["go_courtyard__gate"][1] == int(_zz_g[1]) - 36
+              and _zz_b["spot_vend"][:2] == [int(_zz_v[0]) - 36, int(_zz_v[1]) + 36]
+              and _zz_a["go_courtyard__gate"] != _zz_b["go_courtyard__gate"] and _zz_a["spot_vend"] != _zz_b["spot_vend"]
+              and all(_zz_a[k] == _zz_b[k] for k in _zz_a if k not in ("go_courtyard__gate", "spot_vend"))
+              and all(_zz_d["name_rects"][l] == _zz_t["name_rects"][l] for l in LOC_ORDER if l != "courtyard")
+              and _zz_t["tips"].get("courtyard") == _zz_side["tips"]
+              and json.dumps(zz_dump_build(), sort_keys=True) == json.dumps(_zz_d, sort_keys=True),
+              "D60: name_rects is measured standing in each place: a test `tips` row for the Courtyard, a place I do not stand in (I am in %s), puts the gate's plate left of its square and the machine's under it, and moves no other plate" % _zz_here,
+              (_zz_a.get("go_courtyard__gate"), _zz_b.get("go_courtyard__gate"), _zz_a.get("spot_vend"), _zz_b.get("spot_vend")))
         _zz_path = os.path.join(zz_smoke_state.shots, "game_layout.json")
         with open(_zz_path, "w", encoding="utf-8") as _zz_f:
             _zz_f.write(_zz_text)

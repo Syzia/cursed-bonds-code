@@ -111,6 +111,47 @@ with the same number of checks before U0a's edits and after: 3,299 in all.
 | `p2_contracts.rpy:1118, 1131, 1239, 1324`, `p2_paths.rpy:412`, `p2_rooms.rpy:477, 499`, `u2_home.rpy:1048` | `hot_validate() == []` while the harnesses' own hotspots are registered in real places | D60's "a place is shaped all at once" would report them in a shaped place; the rule leaves out ids that begin `zz`, and a hotspot with no shape is drawn as its button | – (they pass unedited; U0c2's overlay over all 35 places proves it) |
 | any other harness line that looks at what a hotspot draws and not at its id, rectangle, action or label | a shaped place draws no ring and no icon (D60) | every shaped place, from batch 0 | found by U0c2's run of the standing set over the overlay that shapes all 35 places, and turned into its rule there |
 
+**Turned by U0c2's first sitting (7 Oct):**
+
+| harness line | was | is now | why |
+|---|---|---|---|
+| `p2_view`, "with no box and others on stage there is no pose" and the line after it | `RULE_LAYOUT["view_dorm_common"] = {}` stood for "no box in the sidecar" | it empties `RULE_LAYOUT["pose_dorm_common"]` as well (and puts both back) | `view_pose` reads `pose_<place>.json` before the `view_` file's `poses` key (3.2, K15), and the overlay U0a gave this harness holds its two test boxes in both files. Proven: `p2_view` 130 of 130 with the edit, 128 without. Nothing else in a harness older than this sitting was edited |
+
+The four D60 rows above (the lock icon's line in `p2_paths`, the unique keys of
+`p2_hud`, the `zz` hotspots, "any other line that looks at what a hotspot
+draws") are **the second sitting's**: the first built no shapes, and with no
+shaped place every one of those lines passes as it is.
+
+**Turned by U0c2's second sitting (D60; 10 Oct).** The ten harnesses the
+acceptance names (`p2_paths`, `p2_rooms`, `p2_hud`, `p2_view`, `p2_saves`,
+`p2_contracts`, `p2_cards`, `p2_night`, `u2_home`, `phase2_all`) were run over
+the generated overlay that shapes every one of the 35 places with every
+picture at revision 2 (`tools/smoke/make_shape_overlay.py`; a harness with an
+overlay of its own gets the two merged with `--with`). Seven passed unedited.
+Three lines failed, one in each of three harnesses, and each was turned into a
+rule that holds in a place with buttons and in a shaped one. Each can still
+fail where the place draws buttons: the old condition is still the one read
+there.
+
+| harness line | was | is now | why |
+|---|---|---|---|
+| `p2_paths`, "it is drawn as the lock icon (an open exit keeps its place's icon)" (the plan's `p2_paths.rpy:591-593`) | the locked exit's button draws the `lock` icon and not `place_storehouse`; the open exit's draws `place_dojo` | the same, **where the two exits have no traced shape** (`hot_shapes_for("training_yard")`). Where they have: neither square draws an icon, the shape says the lock's reason under `hotshape_<id>`, the locked exit's square and shape both do nothing, and the open exit's two both return `("act", "path_dojo")` | D60: a shaped hotspot draws no icon. It would have failed at batch 1, when the Training Yard is shaped, at an art sitting. The line after it (the alpha wrapper at 0.45 and 1.0) holds in both kinds of place and is not edited |
+| `p2_rooms`, "E: the test sidecar hot_dorm.json is the one read (the asset overlay)" | `rule_layout("hot_dorm") == {"spots": {...}}`, the whole file | `set(rule_layout("hot_dorm")) <= {"spots", "shapes", "keep_tile"}` and `rule_layout("hot_dorm").get("spots") == {...}`: the test file's points are what is read, and beside them the file holds nothing but the two keys D60 may add (review round 1 tightened it from `.get("spots")` alone, to match `p2_contracts`' sister line) | the generated overlay adds `shapes` and `keep_tile` to the harness's own test sidecar. It is the overlay's doing and not a real place's: a real `hot_dorm.json` is replaced whole by the harness's file. The rule still fails when the test file is not the one read |
+| `p2_contracts`, "rule_layout('hot_dorm_common') reads the hotspot sidecar, and only it" | `set(_zz_hot) == {"spots"}` and the points | the points, and no key that is not a `hot_` file's (`spots`, `shapes`, `keep_tile`) | the same: the overlay adds the two D60 keys to the harness's own test sidecar. "Only it" still means nothing of the `view_` file |
+
+What passed unedited, and why it could: the lines that read `hot_validate() ==
+[]` with the harnesses' own `zz` hotspots registered in real places (the rule
+leaves out ids that begin `zz`, and each is drawn as its button above the
+shapes); `p2_hud`'s "every hover label's key is unique" (the shape's key is
+`hotshape_<id>`); every line that finds a hotspot by `hot_<id>` and reads its
+rectangle, action, label or alpha wrapper (the square keeps all four); every
+line that counts the place view's buttons before and after something (the
+count is larger in a shaped place by one for each shaped hotspot, the same
+before and after). `p2_hud` failed its "hovered, no corner button's label
+meets a neighbour" line once in the first run of the ten (the hover label read
+None, the known "needs the pointer" kind) and passed 129 of 129 when run again
+alone over the same overlay.
+
 Also handed on: the Library's description is rewritten for a bright room by U1 ("the Library's and the Dormitories' words", plan 10.2); the Teachers' Dormitory stand-in was brightened in 56f0ea0 (it was nearly black at Night) and is still a borrowed picture.
 
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks

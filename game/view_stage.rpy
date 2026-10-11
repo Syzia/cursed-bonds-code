@@ -18,6 +18,15 @@
 ##   view_person_rects(loc)   where people stand now, as rectangles (hotspots
 ##                            stay out from behind them)
 ##   view_pose(who, loc)      a painted pose, images/place/pose_<loc>__<who>.png
+##   view_floor(loc), view_talk(loc), view_slot_light(...), view_cast(loc)
+##                            the room's own data (the second overhaul, U0c2:
+##                            docs/UI2_DESIGN.md 6.1), read from the sidecar
+##                            game/layout/view_<loc>.json; every key is
+##                            optional and without it the room is as before
+##   view_blink_also(who), view_face_box(who, key)
+##                            a person's blink faces and their eye and mouth
+##                            boxes: game/layout/faces.json first, then the
+##                            tables here (D57)
 ##   view_sync_light, view_before_person, view_after_scene, view_enter
 ##                            the loop's hooks: the light, and idle to talking
 ##
@@ -257,7 +266,110 @@ init -2 python:
         people standing in view_slots(loc, n) cover."""
         return [view_slot_rect(s) for s in view_slots(loc, n)]
 
+    ## The room's own data (U0c2; 6.1) -------------------------------------------------
+    ##
+    ## game/layout/view_<place>.json, written at the place's layout sitting.
+    ## Every key is optional, and a key that is missing or malformed leaves
+    ## the room exactly as it was before the key existed:
+    ##   slots       where 1 to 4 people stand (view_slots, above)
+    ##   poses       pose boxes (view_pose, below; pose_<place>.json comes first)
+    ##   floor       {"on": [polygons], "off": [polygons]}: the ground people
+    ##               may stand on, and the parts of it they may not. For the
+    ##               review tools (view_floor); nothing in the game reads it
+    ##   scale       [x, y top, y bottom] of one door or post, taken as 200 cm.
+    ##               For the tools only
+    ##   slot_light  {hour: {"<n>": [one entry a slot: null, or [tint,
+    ##               brightness]]}}: a small light of its own for a slot in a
+    ##               sun patch or in shade (view_slot_light)
+    ##   cast        {hour: [direction, length, darkness]}: a long shadow on
+    ##               the ground outdoors (view_cast)
+    ##   talk        true or false: the foreground stays up in dialogue
+    ##               (view_talk; without it, the rooms of VIEW_FG_TALK)
+    ## An hour is "" (the day picture), "evening" or "night" (the hour's own
+    ## picture); a period's name ("Evening") may be used as well and is read
+    ## first.
+
+    def view_number(v):
+        """U0c2. bool: v is a plain number (a sidecar's JSON may hold anything)."""
+        return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+    def view_polygon(v):
+        """U0c2. bool: v is a polygon: three or more [x, y] points."""
+        return (isinstance(v, (builtins.list, builtins.tuple)) and len(v) >= 3
+                and all(isinstance(q, (builtins.list, builtins.tuple)) and len(q) == 2
+                        and view_number(q[0]) and view_number(q[1]) for q in v))
+
+    def view_floor(loc, off=False):
+        """U0c2 (view_stage.rpy), final. The ground people may stand on in a
+        place: a list of polygons, each a list of (x, y), from the key
+        "floor" of game/layout/view_<loc>.json ({"on": [...], "off":
+        [...]}); with off=True the parts of it they may not stand on (the
+        pond, a table top). None when the room has no floor traced (or it
+        is malformed). For the review tools: the game stands people by
+        view_slots and does not read this."""
+        data = rule_layout("view_" + str(loc)).get("floor")
+        if not isinstance(data, builtins.dict) or not isinstance(data.get("on"), builtins.list) or not data["on"]:
+            return None
+        rows = data.get("off", []) if off else data["on"]
+        if not isinstance(rows, builtins.list) or not all(view_polygon(p) for p in rows):
+            return None
+        return [[(q[0], q[1]) for q in p] for p in rows]
+
+    def view_hour_row(table, loc, per=None):
+        """U0c2. The entry of a sidecar's {hour: value} table for the picture
+        a place shows now: under the period's own name when the table has
+        one, else under the hour ("evening" or "night" where that picture
+        is painted and fresh, "" otherwise). None when there is none."""
+        if not isinstance(table, builtins.dict):
+            return None
+        per = per or store.period
+        if per in table:
+            return table[per]
+        return table.get(bg_variant(loc, per) or "")
+
+    def view_slot_light(loc, n, i, per=None):
+        """U0c2. (tint, brightness) for the i-th of n standing slots in a
+        place at this hour, from the key "slot_light" of view_<loc>.json, or
+        None (no light of its own: the room's row alone, as before)."""
+        rows = view_hour_row(rule_layout("view_" + str(loc)).get("slot_light"), loc, per)
+        rows = rows.get(str(n)) if isinstance(rows, builtins.dict) else None
+        if not isinstance(rows, builtins.list) or len(rows) != n or not (0 <= i < n):
+            return None
+        e = rows[i]
+        if (isinstance(e, builtins.list) and len(e) == 2 and isinstance(e[0], str) and len(e[0]) == 7
+                and e[0].startswith("#") and view_number(e[1])):
+            return (e[0], e[1])
+        return None
+
+    def view_cast(loc, per=None):
+        """U0c2. (direction, length, darkness) of the long shadow people cast
+        on the ground in a place at this hour, from the key "cast" of
+        view_<loc>.json, or None (no cast shadow, as before)."""
+        e = view_hour_row(rule_layout("view_" + str(loc)).get("cast"), loc, per)
+        if isinstance(e, builtins.list) and len(e) == 3 and all(view_number(q) for q in e):
+            return (e[0], e[1], e[2])
+        return None
+
+    def view_talk(loc):
+        """U0c2. bool: the room's foreground stays over the person once we
+        talk: the key "talk" of view_<loc>.json when it is true or false,
+        else whether the room is in VIEW_FG_TALK."""
+        v = rule_layout("view_" + str(loc)).get("talk")
+        if isinstance(v, bool):
+            return v
+        return loc in VIEW_FG_TALK
+
     ## Poses (D36) -------------------------------------------------------------------
+
+    def view_pose_box(loc, key):
+        """U0c2. The box a pose's sidecar gives for `key` ("<who>" or
+        "<who>__<variant>"), whatever it holds, or None: pose_<loc>.json
+        first, then the key "poses" of view_<loc>.json."""
+        for name in ("pose_" + str(loc), "view_" + str(loc)):
+            boxes = rule_layout(name).get("poses")
+            if isinstance(boxes, builtins.dict) and key in boxes:
+                return boxes[key]
+        return None
 
     def view_pose(who, loc, per=None):
         """P5 (view_stage.rpy). dict(image, box) for a painted pose, or None
@@ -268,16 +380,21 @@ init -2 python:
         The picture is images/place/pose_<loc>__<who>__<variant>.png when
         the room has a painted picture for the hour (bg_variant), else
         pose_<loc>__<who>.png: a day pose is never laid on a night room. The
-        box comes from the sidecar game/layout/view_<loc>.json ("poses");
-        with no box the whole picture is used, and only when that person is
-        alone on the stage."""
+        box comes from game/layout/pose_<loc>.json ("poses"), the file the
+        pose installer writes (the second overhaul, K15), and then from the
+        older key "poses" of view_<loc>.json; with no box the whole picture
+        is used, and only when that person is alone on the stage. None as
+        well for a pose that is stale (art_fresh)."""
         v = bg_variant(loc, per or store.period)
         key = "%s__%s" % (who, v) if v else str(who)
         path = "images/place/pose_%s__%s.png" % (loc, key)
         if not renpy.loadable(path):
             return None
-        box = (rule_layout("view_" + str(loc)).get("poses") or {})
-        box = box.get(key) if isinstance(box, builtins.dict) else None
+        ## U0c2 (5.5, K7): a pose painted on a picture that has since been
+        ## replaced is not shown: the standing sprite.
+        if not art_fresh("pose_%s__%s" % (loc, key), art_stem(loc) + ("_" + v if v else "")):
+            return None
+        box = view_pose_box(loc, key)
         if (isinstance(box, (builtins.list, builtins.tuple)) and len(box) == 4
                 and all(isinstance(q, (int, float)) and not isinstance(q, bool) for q in box)
                 and box[2] > 0 and box[3] > 0):
@@ -403,6 +520,14 @@ init -2 python:
             edge = out[i] - half
         return out
 
+    def view_asleep(loc):
+        """U0c2 (view_stage.rpy): a stub, filled by U3. A list of (who,
+        patch) for the room's sleepers whose asleep picture is installed
+        and fresh (docs/UI2_DESIGN.md 6.2 row 12): `patch` is a pose dict
+        as view_pose gives one, dict(image, box). The stage lays each on
+        the room before the people; it takes no focus. The stub: none."""
+        return []
+
     def view_draw_key(row):
         return (0 if row["pose"] else 1, -row["far"])
 
@@ -527,10 +652,17 @@ init -2 python:
     def view_fg_path(loc, per=None):
         """P5. The foreground picture for a room at this hour, or None:
         images/fg/fg_<loc>_<variant>.png when the room has a painted picture
-        for the hour, else images/fg/fg_<loc>.png."""
+        for the hour, else images/fg/fg_<loc>.png. None as well for a cut
+        that is stale (art_fresh)."""
         v = bg_variant(loc, per or store.period)
         path = "images/fg/fg_%s_%s.png" % (loc, v) if v else "images/fg/fg_%s.png" % loc
-        return path if renpy.loadable(path) else None
+        if not renpy.loadable(path):
+            return None
+        ## U0c2 (5.5, K7): a cut made from a picture that has since been
+        ## replaced is not laid over the new one.
+        if not art_fresh("fg_%s%s" % (loc, "_" + v if v else ""), art_stem(loc) + ("_" + v if v else "")):
+            return None
+        return path
 
     def view_fg_image(path, loc, ink=0.0):
         """P5. The foreground picture, tinted like the room. A new
@@ -596,7 +728,7 @@ init -2 python:
         before we talk, with the face they look up with (or `expr`): eased
         from where the person view left them to pos_c, with the room's
         foreground over them (tag view_fg, zorder 5) in the rooms where it
-        is still in front of someone that close (VIEW_FG_TALK). In a replay it is
+        is still in front of someone that close (view_talk). In a replay it is
         what stage_person always did: the sprite at pos_c, no foreground.
         While skipping, or with motion off, the sprite goes straight to
         pos_c."""
@@ -608,7 +740,7 @@ init -2 python:
             renpy.show(name, at_list=[view_enter_ease])
         else:
             renpy.show(name, at_list=[pos_c])
-        path = view_fg_path(store.here) if store.here in VIEW_FG_TALK else None
+        path = view_fg_path(store.here) if view_talk(store.here) else None
         if path:
             renpy.show("view_fg", what=view_fg_image(path, store.here), zorder=5)
         return None
@@ -651,25 +783,58 @@ init -2 python:
             return None, None
         return who, expr
 
+    ## The second overhaul (U0c2; D57, 3.2): game/layout/faces.json, written
+    ## only by the face installer, wins over the two tables above:
+    ##   {"blink_also": {who: [faces]},
+    ##    "eyes":  {who: [x, y, w, h]},
+    ##    "mouth": {who: [x, y, w, h]}}
+    ## so a person's blink faces and boxes can change with their drawing and
+    ## no script does. A person with no row, or a malformed one, keeps the
+    ## table's.
+
+    def view_blink_also(who):
+        """U0c2. The other faces a person's blink sits on, a tuple of
+        expression names: their row of "blink_also" in faces.json when it
+        is a list of names, else VIEW_BLINK_ALSO's."""
+        rows = rule_layout("faces").get("blink_also")
+        row = rows.get(who) if isinstance(rows, builtins.dict) else None
+        if isinstance(row, builtins.list) and all(isinstance(e, str) for e in row):
+            return builtins.tuple(row)
+        return builtins.tuple(VIEW_BLINK_ALSO.get(who, ()))
+
+    def view_face_box(who, key):
+        """U0c2. A person's eye box (key "eyes") or mouth box ("mouth") on
+        the sprite canvas, (x, y, w, h) as ints, or None when they have
+        none: their row under that key in faces.json when it is four
+        numbers with a width and a height, else VIEW_FACE's."""
+        rows = rule_layout("faces").get(key)
+        box = rows.get(who) if isinstance(rows, builtins.dict) else None
+        if (isinstance(box, builtins.list) and len(box) == 4 and all(view_number(q) for q in box)
+                and box[0] >= 0 and box[1] >= 0 and box[2] > 0 and box[3] > 0):
+            return (int(box[0]), int(box[1]), int(box[2]), int(box[3]))
+        box = VIEW_FACE.get(who, {}).get(key)
+        return builtins.tuple(box) if box else None
+
     def view_face_layers(path):
         """P5. The blink and talk layers lit_sprite adds to a sprite (D39):
         the eye box cut from images/char/fx/fx_<who>_blink.png and the mouth
         box cut from fx_<who>_talk.png, each where it sits on the canvas.
-        [] unless the file exists, VIEW_FACE has the box, and the expression
-        is one the edit sits on (VIEW_BLINK_OK and the person's row in
-        VIEW_BLINK_ALSO; VIEW_TALK_OK), so without
-        the files a sprite is built exactly as before."""
+        [] unless the file exists, the person has the box (view_face_box:
+        faces.json, then VIEW_FACE), and the expression is one the edit sits
+        on (VIEW_BLINK_OK and the person's blink faces, view_blink_also:
+        faces.json, then VIEW_BLINK_ALSO; VIEW_TALK_OK), so without the
+        files a sprite is built exactly as before. The layers are the same
+        two whatever the data says (K9)."""
         who, expr = view_face_of(path)
-        face = VIEW_FACE.get(who)
-        if not face:
+        if not who:
             return []
         out = []
         for kind, key, ok, fn in (("blink", "eyes", VIEW_BLINK_OK, view_blink_fn),
                                   ("talk", "mouth", VIEW_TALK_OK, view_talk_fn)):
-            box = face.get(key)
+            box = view_face_box(who, key)
             fx = "images/char/fx/fx_%s_%s.png" % (who, kind)
             if kind == "blink":
-                ok = builtins.tuple(ok) + builtins.tuple(VIEW_BLINK_ALSO.get(who, ()))
+                ok = builtins.tuple(ok) + view_blink_also(who)
             if box and expr in ok and renpy.loadable(fx):
                 out.append(Transform(fx, crop=builtins.tuple(box), xpos=box[0], ypos=box[1],
                                      function=renpy.curry(fn)(who=who)))
@@ -711,6 +876,37 @@ init -2 python:
             for e in exprs:
                 if not renpy.loadable("images/char/%s_%s.png" % (who, e)):
                     out.append("VIEW_BLINK_ALSO %s: no sprite for the expression %r" % (who, e))
+        ## U0c2: faces.json. A row the readers would not use is a finding;
+        ## the eye box and the mouth box of one person never overlap, and
+        ## the mouth lies below the eyes.
+        faces = rule_layout("faces")
+        named = builtins.set(VIEW_FACE)
+        for key in ("blink_also", "eyes", "mouth"):
+            rows = faces.get(key, {})
+            if not isinstance(rows, builtins.dict):
+                out.append("faces.json: %r must be {who: ...}" % (key,))
+                continue
+            for who in builtins.sorted(rows):
+                row = rows[who]
+                named.add(who)
+                if who not in CAST:
+                    out.append("faces.json %s: %r is not in the cast" % (key, who))
+                elif key == "blink_also":
+                    if not (isinstance(row, builtins.list) and all(isinstance(e, str) for e in row)):
+                        out.append("faces.json blink_also: %r must be a list of faces" % (who,))
+                        continue
+                    for e in row:
+                        if not renpy.loadable("images/char/%s_%s.png" % (who, e)):
+                            out.append("faces.json blink_also %s: no sprite for the expression %r" % (who, e))
+                    if not view_face_box(who, "eyes"):
+                        out.append("faces.json blink_also: %r has no eye box" % (who,))
+                elif not (isinstance(row, builtins.list) and len(row) == 4 and all(view_number(q) for q in row)
+                          and row[0] >= 0 and row[1] >= 0 and row[2] > 0 and row[3] > 0):
+                    out.append("faces.json %s: %r must be [x, y, w, h] on the sprite canvas" % (key, who))
+        for who in builtins.sorted(named):
+            e, m = view_face_box(who, "eyes"), view_face_box(who, "mouth")
+            if e and m and m[1] < e[1] + e[3]:
+                out.append("the face of %s: the mouth box (from y %d) must lie below the eye box (to y %d)" % (who, m[1], e[1] + e[3]))
         for who, face in VIEW_FACE.items():
             if who not in CAST:
                 out.append("VIEW_FACE: %r is not in the cast" % (who,))
@@ -768,6 +964,13 @@ style view_tag_name is text:
 screen view_stage(loc):
 
     $ _view_rows = view_draw_order(view_stage_rows(loc))
+
+    ## Someone asleep is painted as part of the room, under everyone and
+    ## everything that can be clicked (the second overhaul, 6.2 row 12).
+    ## view_asleep answers nobody until U3 fills it.
+    for _view_sw, _view_sp in view_asleep(loc):
+        add view_pose_patch(_view_sp, loc):
+            pos (_view_sp["box"][0], _view_sp["box"][1])
 
     for _view_r in _view_rows:
         $ _view_who = _view_r["who"]
@@ -846,6 +1049,13 @@ screen view_focus(who):
         add person_image(who) at view_focus_in(_view_row["x"])
     else:
         add person_image(who) at char_focus(_view_row["x"], _view_row["yoff"], _view_row["zoom"])
+
+
+## The others in the room while I look at one person (the second overhaul:
+## docs/UI2_DESIGN.md 6.2 row 7, D30). sb_char uses it under view_focus. The
+## scaffold's STUB (U0c2): empty until U3 draws them, dimmed and a step back.
+screen view_others(loc, who):
+    pass
 
 
 ## The foreground (4.5): the table edge people stand behind, cut from the

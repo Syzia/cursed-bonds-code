@@ -949,6 +949,23 @@ def world_keys(cache):
     return places, areas
 
 
+def away_districts(cache):
+    """The Tokyo districts WORLD_AWAY sends someone to, read from
+    game/sb_world.rpy's own text: a painted pose there has its box in
+    pose_<district>.json (docs/UI2_DESIGN.md 7.2, 7.6)."""
+    src = os.path.join(GAME, "sb_world.rpy")
+    out = set()
+    if not os.path.isfile(src):
+        return out
+    lines = read_lines(src, cache)
+    inside = table_lines(lines, {"WORLD_AWAY"})
+    for ln in lines:
+        if ln.n in inside.get("WORLD_AWAY", ()):
+            for m in re.finditer(r"""\)\s*:\s*["'](\w+)["']""", ln.code):
+                out.add(m.group(1))
+    return out
+
+
 def lf_num(v):
     return isinstance(v, (int, float)) and not isinstance(v, bool)
 
@@ -959,6 +976,13 @@ def lf_point(v):
 
 def lf_poly(v):
     return isinstance(v, list) and len(v) >= 3 and all(lf_point(q) for q in v)
+
+
+def lf_shape(v):
+    """D60: one to three polygons, each a list of 3 to 60 [x, y] points."""
+    return (isinstance(v, list) and LF_SHAPE_POLYS[0] <= len(v) <= LF_SHAPE_POLYS[1]
+            and all(isinstance(p, list) and LF_SHAPE_POINTS[0] <= len(p) <= LF_SHAPE_POINTS[1]
+                    and all(lf_point(q) for q in p) for p in v))
 
 
 def lf_box(v):
@@ -975,11 +999,18 @@ def lf_light_row(v):
 
 
 LF_SIDES = ("top", "bottom", "left", "right")
+# D60 (game/sb_hotspots.rpy, HOT_SHAPE and HOT_LOOK_KEYS): what a shape is made
+# of, and the keys of hot_look.json (the colour first, then the strengths).
+LF_SHAPE_POLYS = (1, 3)
+LF_SHAPE_POINTS = (3, 60)
+LF_LOOK_KEYS = ("color", "wash", "edge", "dim", "names")
 LF_FACES = ("neutral", "happy", "serious", "angry", "surprised", "sad")
 LF_HOURS = ("", "evening", "night")
 LF_PERIODS = ("Morning", "Noon", "Afternoon", "Evening", "Night")
 # The houses painted with spare doors (D50): their hot_ file may hold `spare`.
-LF_SPARE_HOUSES = ("boys_dorm", "girls_dorm", "teachers_dorm", "teachers_lounge")
+LF_SPARE_HOUSES = ("boys_dorm", "girls_dorm", "teachers_dorm")
+# A person's eye and mouth boxes sit on the sprite canvas (760 x 1400; Panda's is 880 wide).
+LF_CANVAS = (880, 1400)
 LF_PICTURE_KEYS = {"rev", "kind", "batch", "render", "record", "rev1_commit", "from_commit",
                    "shift", "sharp", "of", "of_rev", "waiver"}
 LF_PICTURE_KINDS = ("composed", "inplace", "relight")
@@ -988,11 +1019,23 @@ LF_LIGHT_ROW = ("[\"#rrggbb\", brightness, saturation, shadow opacity], or the s
 
 
 def lf_floor(v):
-    """A list of polygons, or {"on": [polygons], "off": [polygons]}."""
-    if isinstance(v, dict):
-        return (set(v) <= {"on", "off"} and "on" in v
-                and all(isinstance(v[k], list) and all(lf_poly(p) for p in v[k]) for k in v))
-    return isinstance(v, list) and bool(v) and all(lf_poly(p) for p in v)
+    """{"on": [one or more polygons], "off": [polygons]}; "off" is optional."""
+    return (isinstance(v, dict) and set(v) <= {"on", "off"} and isinstance(v.get("on"), list) and bool(v["on"])
+            and all(isinstance(v[k], list) and all(lf_poly(p) for p in v[k]) for k in v))
+
+
+def lf_slot_light(v):
+    """{hour or period: {"1".."4": [one entry a slot: null, or ["#rrggbb", brightness]]}}."""
+    def entry(e):
+        return e is None or (isinstance(e, list) and len(e) == 2 and isinstance(e[0], str)
+                             and bool(re.match(r"^#[0-9a-fA-F]{6}$", e[0])) and lf_num(e[1]))
+    return lf_hour_dict(v, lambda rows: isinstance(rows, dict) and all(
+        k in ("1", "2", "3", "4") and isinstance(r, list) and len(r) == int(k) and all(entry(e) for e in r)
+        for k, r in rows.items()))
+
+
+def lf_face_box(v):
+    return lf_box(v) and v[0] >= 0 and v[1] >= 0 and v[0] + v[2] <= LF_CANVAS[0] and v[1] + v[3] <= LF_CANVAS[1]
 
 
 def lf_slots(v):
@@ -1020,6 +1063,7 @@ def layout_file_findings(folder, cache):
     if not os.path.isdir(folder):
         return out
     places, areas = world_keys(cache)
+    districts = away_districts(cache)
     data = {}
     for f in sorted(os.listdir(folder)):
         path = os.path.join(folder, f)
@@ -1054,10 +1098,11 @@ def layout_file_findings(folder, cache):
                 "" if len(extra) == 1 else "s", ", ".join(repr(k) for k in extra),
                 ", ".join(repr(k) for k in allowed)))
 
-    def place_of(path, stem, head):
+    def place_of(path, stem, head, also=()):
         key = stem[len(head):]
-        if places and key not in places:
-            bad(path, "%r is not a place (a key of LOCATIONS in game/sb_world.rpy)" % key)
+        if places and key not in places and key not in also:
+            bad(path, "%r is not a place (a key of LOCATIONS in game/sb_world.rpy)%s" % (
+                key, " or a district of WORLD_AWAY" if also else ""))
         return key
 
     def for_rev(path, got, place, need_composed=True):
@@ -1071,9 +1116,35 @@ def layout_file_findings(folder, cache):
 
     for stem in sorted(data):
         path, got = data[stem]
-        if stem.startswith("hot_"):
+        if stem == "hot_look":
+            # D60: the light of a shaped hotspot (game/sb_hotspots.rpy, HOT_SHAPE):
+            # every key optional, the code's values otherwise.
+            keys(path, got, LF_LOOK_KEYS)
+            if "color" in got and not (isinstance(got["color"], str) and re.match(r"#[0-9a-fA-F]{6}$", got["color"])):
+                bad(path, "color must be \"#rrggbb\"")
+            for k in LF_LOOK_KEYS[1:]:
+                if k in got and not (lf_num(got[k]) and 0 <= got[k] <= 1):
+                    bad(path, "%s must be a number from 0 to 1" % k)
+        elif stem.startswith("hot_"):
             place = place_of(path, stem, "hot_")
-            keys(path, got, ("spots", "tips", "spare", "for_rev"))
+            keys(path, got, ("spots", "tips", "shapes", "keep_tile", "spare", "for_rev"))
+            # D60: the shapes that are clicked in a hotspot's or an exit's
+            # place, and the few that keep a button. Only what the file is
+            # made of is read here; the rules about a shape (its area, its
+            # point, what lies over it) are the game's lint and
+            # tools/check_layout.py.
+            v = got.get("shapes", {})
+            if not (isinstance(v, dict) and all(isinstance(k, str) and lf_shape(p) for k, p in v.items())):
+                bad(path, "shapes must be {\"<hotspot or exit id>\": [polygon, ...]}: %d to %d polygons, each a list "
+                          "of %d to %d [x, y] points" % (LF_SHAPE_POLYS + LF_SHAPE_POINTS))
+            k_t = got.get("keep_tile", {})
+            if not (isinstance(k_t, dict) and all(isinstance(k, str) and isinstance(w, str) and w.strip() for k, w in k_t.items())):
+                bad(path, "keep_tile must be {\"<hotspot or exit id>\": \"<why it keeps its button>\"}")
+            elif isinstance(v, dict):
+                for k in sorted(set(k_t) & set(v)):
+                    bad(path, "%r is under keep_tile and has a shape as well (one or the other)" % k)
+                if k_t and not v:
+                    bad(path, "keep_tile means nothing in a file that holds no shapes")
             v = got.get("spots", {})
             if not (isinstance(v, dict) and all(isinstance(k, str) and lf_point(p) for k, p in v.items())):
                 bad(path, "spots must be {\"<hotspot or exit id>\": [x, y]}")
@@ -1097,13 +1168,14 @@ def layout_file_findings(folder, cache):
             if not (isinstance(v, dict) and all(isinstance(k, str) and lf_box(b) for k, b in v.items())):
                 bad(path, "poses must be {\"<who>\" or \"<who>__<variant>\": [x, y, w, h]}")
             if "floor" in got and not lf_floor(got["floor"]):
-                bad(path, "floor must be a list of polygons, or {\"on\": [polygons], \"off\": [polygons]}; "
-                          "a polygon is three or more [x, y] points")
+                bad(path, "floor must be {\"on\": [polygons], \"off\": [polygons]}: one or more polygons of floor "
+                          "people may stand on, and (optional) the ones they may not; a polygon is three or more [x, y] points")
             if "scale" in got and not (isinstance(got["scale"], list) and len(got["scale"]) == 3
                                        and all(lf_num(q) for q in got["scale"]) and got["scale"][1] < got["scale"][2]):
                 bad(path, "scale must be [x, y top, y bottom] of one door or post")
-            if "slot_light" in got and not lf_hour_dict(got["slot_light"], lambda x: isinstance(x, (dict, list))):
-                bad(path, "slot_light must be keyed by hour (\"\", \"evening\", \"night\") or period")
+            if "slot_light" in got and not lf_slot_light(got["slot_light"]):
+                bad(path, "slot_light must be {hour or period: {\"1\" to \"4\": [one entry a slot: null, or "
+                          "[\"#rrggbb\", brightness]]}}; an hour is \"\", \"evening\" or \"night\"")
             if "cast" in got and not lf_hour_dict(got["cast"], lambda x: isinstance(x, list) and len(x) == 3
                                                   and all(lf_num(q) for q in x)):
                 bad(path, "cast must be {hour or period: [direction, length, darkness]}")
@@ -1111,17 +1183,19 @@ def layout_file_findings(folder, cache):
                 bad(path, "talk must be true or false")
             for_rev(path, got, place)
         elif stem.startswith("pose_"):
-            place_of(path, stem, "pose_")
+            place_of(path, stem, "pose_", districts)     # a place, or a Tokyo district friends are painted in (7.6)
             keys(path, got, ("poses",))
             v = got.get("poses")
             if not (isinstance(v, dict) and all(isinstance(k, str) and lf_box(b) for k, b in v.items())):
                 bad(path, "it must hold {\"poses\": {\"<who>\" or \"<who>__<variant>\": [x, y, w, h]}}")
         elif stem.startswith("light_"):
             place_of(path, stem, "light_")
-            keys(path, got, LF_HOURS)
+            keys(path, got, LF_HOURS + ("note",))
             for k in sorted(got):
                 if k in LF_HOURS and not lf_light_row(got[k]):
                     bad(path, "the row %r must be %s" % (k, LF_LIGHT_ROW))
+            if "note" in got and not isinstance(got["note"], str):
+                bad(path, "note must be a string (the installer's own words; the game does not read it)")
         elif stem == "light":
             for k in sorted(got):
                 if not lf_light_row(got[k]):
@@ -1149,11 +1223,26 @@ def layout_file_findings(folder, cache):
                 if not (isinstance(b, list) and len(b) == 4 and all(lf_num(q) for q in b) and b[0] < b[2] and b[1] < b[3]):
                     bad(path, "mountain_box must be [x0, y0, x1, y1]")
         elif stem == "faces":
-            keys(path, got, ("blink_also",))
+            keys(path, got, ("blink_also", "eyes", "mouth"))
             v = got.get("blink_also", {})
             if not (isinstance(v, dict) and all(isinstance(k, str) and isinstance(fs, list)
                                                 and all(f in LF_FACES for f in fs) for k, fs in v.items())):
                 bad(path, "blink_also must be {\"<who>\": [faces]}, the faces among %s" % ", ".join(LF_FACES))
+            # D57: a person's eye box and mouth box on the sprite canvas, read by
+            # the game before VIEW_FACE (game/view_stage.rpy).
+            boxes = {}
+            for key in ("eyes", "mouth"):
+                v = got.get(key, {})
+                if not (isinstance(v, dict) and all(isinstance(k, str) and lf_face_box(b) for k, b in v.items())):
+                    bad(path, "%s must be {\"<who>\": [x, y, w, h]}, each box on the sprite canvas "
+                              "(inside %d x %d)" % (key, LF_CANVAS[0], LF_CANVAS[1]))
+                else:
+                    boxes[key] = v
+            for who in sorted(set(boxes.get("eyes", {})) & set(boxes.get("mouth", {}))):
+                e, m = boxes["eyes"][who], boxes["mouth"][who]
+                if m[1] < e[1] + e[3]:
+                    bad(path, "%s: the mouth box must lie below the eye box (the eyes end at y %s, the mouth starts at y %s)"
+                              % (who, e[1] + e[3], m[1]))
         elif stem == "pictures":
             keys(path, got, ("pictures",))
             v = got.get("pictures")
@@ -1180,7 +1269,7 @@ def layout_file_findings(folder, cache):
                     if pair in r and not lf_point(r[pair]):
                         bad(path, "pictures[%r]: %s must be two numbers" % (k, pair))
         else:
-            bad(path, "not a layout file name (hot_<place>, view_<place>, pose_<place>, light_<place>, "
+            bad(path, "not a layout file name (hot_<place>, hot_look, view_<place>, pose_<place>, light_<place>, "
                       "area_<key>, light, map_campus, faces, pictures)")
     return out
 

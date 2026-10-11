@@ -466,7 +466,12 @@ label zz_smoke:
         zz_r_stage("dorm", 0)
         _zz_reg = [_zz_h for _zz_h in HOT_SPOTS if _zz_h["id"] == "computer"][0]
         _zz_row = [_zz_h for _zz_h in hot_spots_for("dorm") if _zz_h["id"] == "computer"]
-        check(rule_layout("hot_dorm") == {"spots": {"computer": [300, 300], "bed": [1330, 720]}},
+        ## The second overhaul (D60; docs/UI2_PINS.md Part 2b): the points of the
+        ## test sidecar are what is read, and beside them the file holds nothing
+        ## but what D60 may add (the generated overlay that shapes every place
+        ## adds "shapes" and "keep_tile" to it).
+        check(builtins.set(rule_layout("hot_dorm")) <= {"spots", "shapes", "keep_tile"}
+              and rule_layout("hot_dorm").get("spots") == {"computer": [300, 300], "bed": [1330, 720]},
               "E: the test sidecar hot_dorm.json is the one read (the asset overlay)", rule_layout("hot_dorm"))
         check(_zz_row and (_zz_row[0]["x"], _zz_row[0]["y"]) == (300, 300) and (_zz_reg["x"], _zz_reg["y"]) != (300, 300),
               "E: the test sidecar moves the computer's hotspot to (300, 300); the registered point is untouched",

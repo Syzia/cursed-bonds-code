@@ -1,0 +1,5 @@
+{"pictures": {
+  "zz_test_picture": {"rev": 3, "kind": "composed"},
+  "zz_test_child": {"of": "zz_test_picture", "of_rev": 2},
+  "zz_test_fresh": {"of": "zz_test_picture", "of_rev": 3}
+}}

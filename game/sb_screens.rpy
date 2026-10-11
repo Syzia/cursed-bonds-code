@@ -795,6 +795,9 @@ screen sb_place():
                     $ _ret, _ic, _gold, _tip, _pips, _wid = _row
                     use rail_btn(_ic, Return(_ret), _tip, _wid, gold=_gold, pips=_pips, word=rail_word(_row), words=_rail_words)
 
+    ## One-time hints (the second overhaul, 7.5; ui_hints.rpy: empty until U4).
+    use hint_layer
+
     use sb_hud
 
 
@@ -818,6 +821,10 @@ screen sb_char(who):
 
     add graded_bg()
     add Solid(gui.ink) alpha 0.35
+
+    ## The others stay in the room while I look at one person (the second
+    ## overhaul, D30; view_stage.rpy: empty until U3).
+    use view_others(here, who)
 
     use view_focus(who)
 

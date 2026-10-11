@@ -377,6 +377,14 @@ init -1 python:
                     out.append(w)
         return out
 
+    def map_district_people(key):
+        """U0c2 (ui_map.rpy): a stub, filled by U2. A list of person keys,
+        three at most: the friends who are in the Tokyo district `key` this
+        hour (docs/UI2_DESIGN.md 7.6), whose faces its marker and its view
+        show. Not who a ride would find: at Noon it is empty and tky_here
+        is not. The stub: nobody."""
+        return []
+
     def map_pin_people(loc):
         """P1. Who is in a room, for its pin; nobody when the door is locked."""
         if not place_access(loc)[0]:
@@ -788,6 +796,9 @@ screen sb_map(layer="campus", area=None):
         yalign 1.0
         yoffset -30
         use icon_btn("stay", Return(("cancel",)), tip="Stay here\nWalking is free. Doing something takes time.", wid="map_stay")
+
+    ## One-time hints (the second overhaul, 7.5; ui_hints.rpy: empty until U4).
+    use hint_layer
 
     use sb_hud(on_map=True)
 

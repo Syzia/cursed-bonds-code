@@ -13,6 +13,13 @@
 ##   view_<place>.json  {"slots": {"<n>": [[xcenter, yoffset, zoom, far], ...]},
 ##                       "poses": {"<who>" or "<who>__<variant>": [x, y, w, h]}}
 ##   hot_<place>.json   {"spots": {"<hotspot id>": [x, y]}}
+##
+## The second UI overhaul (U0c2; docs/UI2_DESIGN.md 3.2, 5.5): a layout written
+## for a composed picture carries "for_rev", the revision of the picture it
+## was measured on. rule_layout() answers {} for such a file while the
+## installed picture is at another revision (art_manifest.rpy), so the code's
+## defaults stand in; lint says so (rule_validate). A file with no for_rev is
+## always read. docs/UI2_CONTRACTS.md has every file's keys.
 ################################################################################
 
 init -5 python:
@@ -41,11 +48,10 @@ init -5 python:
 
     register_event_gate(rule_hangout_gate)
 
-    def rule_layout(name):
-        """P0 (sb_rules.rpy), final. The layout sidecar game/layout/<name>.json
-        as a dict; {} when there is no such file (or it doesn't hold a JSON
-        object). `name` is the full stem: "area_school", "view_dorm_common",
-        "hot_dorm_common". Each call returns a fresh copy."""
+    def rule_layout_raw(name):
+        """U0c2. The sidecar game/layout/<name>.json as it is on disk (the
+        dict itself, read once and kept: do not change it), whatever its
+        for_rev; {} when there is no such file or it holds no JSON object."""
         if name not in RULE_LAYOUT:
             data = builtins.dict()
             path = "layout/%s.json" % name
@@ -59,7 +65,63 @@ init -5 python:
                     if config.developer:
                         raise
             RULE_LAYOUT[name] = data
-        return _rule_json.loads(_rule_json.dumps(RULE_LAYOUT[name]))
+        return RULE_LAYOUT[name]
+
+    def rule_layout_picture(name):
+        """U0c2. The file stem of the picture a layout file was measured on,
+        or None for a file that belongs to no one picture: hot_<place> and
+        view_<place> are their place's picture ("your_room" for "dorm", K1),
+        area_<key> is the area's map."""
+        name = str(name)
+        for head in ("hot_", "view_"):
+            if name.startswith(head):
+                return art_stem(name[len(head):])
+        if name.startswith("area_"):
+            return name
+        return None
+
+    def rule_layout_stale(name):
+        """U0c2. "" when the layout file may be used, else why not: it
+        carries for_rev and its picture is at another revision."""
+        data = rule_layout_raw(name)
+        if "for_rev" not in data:
+            return ""
+        stem = rule_layout_picture(name)
+        if stem is None:
+            return ""
+        rev = art_rev(stem)
+        if data["for_rev"] == rev and not isinstance(data["for_rev"], bool):
+            return ""
+        return "layout/%s.json was made for %s at revision %r, and that picture is at revision %d: the file is ignored" % (
+            name, stem, data["for_rev"], rev)
+
+    def rule_layout(name):
+        """P0 (sb_rules.rpy), final. The layout sidecar game/layout/<name>.json
+        as a dict; {} when there is no such file (or it doesn't hold a JSON
+        object). `name` is the full stem: "area_school", "view_dorm_common",
+        "hot_dorm_common". Each call returns a fresh copy.
+
+        The second overhaul (U0c2): {} as well for a file whose for_rev is
+        not the revision of its installed picture (a file with no for_rev
+        is always read)."""
+        data = rule_layout_raw(name)
+        if not data or rule_layout_stale(name):
+            return builtins.dict()
+        return _rule_json.loads(_rule_json.dumps(data))
+
+    def rule_validate():
+        """U0c2. Lint findings for the layout folder: every file whose
+        for_rev does not match its picture's revision, by name. (The game
+        ignores such a file; this is the one place it is reported.)"""
+        out = []
+        for path in builtins.sorted(renpy.list_files()):
+            if path.startswith("layout/") and path.endswith(".json") and path.count("/") == 1:
+                why = rule_layout_stale(path[len("layout/"):-len(".json")])
+                if why:
+                    out.append(why)
+        return out
+
+    register_validator(rule_validate)
 
 
 ## Walk to a room (the journal's "Go there", D6): moves only if can_enter(loc)

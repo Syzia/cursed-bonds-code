@@ -92,12 +92,49 @@ image bg home_bedroom_night = "images/bg/home_bedroom_night.png"
 ##
 ## The main cast's sprites live in jjk_sprites.rpy.
 
-## Pre-campus cast — placeholder art until the sprite set lands.
-image mother = lit(Transform("images/char/shoko.png", matrixcolor=TintMatrix("#f0e6db")))
-image father = lit(Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#ebf0ff")))
-image oda = lit(Transform("images/char/utahime.png", matrixcolor=TintMatrix("#e0e0eb")))
-image kurose = lit(Transform("images/char/ijichi.png", matrixcolor=TintMatrix("#9e9eb3")))
-image nade = lit(Transform("images/char/yaga.png", matrixcolor=TintMatrix("#b0a894")))
+## Pre-campus cast: stand-in art until each person's own sprite set lands.
+##
+## The second UI overhaul (U0c2; docs/UI2_DESIGN.md 8.2): five `image` lines
+## became this one guarded block. Each of the five names is defined as
+## today's tinted figure only when nothing else has defined it, so the day
+## tools/gen_sprite_defs.py writes `image mother = lit_sprite(...)` into
+## jjk_sprites.rpy that sprite takes over, in old saves too (a sprite on
+## screen is saved by its image name), and no scene line changes. The guard
+## is on the image, not on the file: while mother_neutral.png has landed and
+## the generator has not been run, nothing else defines `mother`, and the
+## stand-in still does.
+##
+## It runs at init 501: an `image` statement runs at init 500 (the generated
+## ones too), so this is the first moment every other definition is in.
+init 501 python:
+
+    ## key -> (the campus sprite it borrows, its tint).
+    STANDIN_PEOPLE = (
+        ("mother", "images/char/shoko.png",   "#f0e6db"),
+        ("father", "images/char/ijichi.png",  "#ebf0ff"),
+        ("oda",    "images/char/utahime.png", "#e0e0eb"),
+        ("kurose", "images/char/ijichi.png",  "#9e9eb3"),
+        ("nade",   "images/char/yaga.png",    "#b0a894"),
+    )
+
+    def standin_person(path, tint):
+        """U0c2. A stand-in person: a campus sprite under a tint, lit by
+        the scene. What `image mother = ...` built before the overhaul."""
+        return lit(Transform(path, matrixcolor=TintMatrix(tint)))
+
+    def standin_people_define():
+        """U0c2. Defines each of the five stand-in names that nothing else
+        has defined (renpy.has_image, exact). Returns the keys it defined.
+        Called once, below."""
+        out = []
+        for key, path, tint in STANDIN_PEOPLE:
+            if not renpy.has_image(key, exact=True):
+                renpy.image(key, standin_person(path, tint))
+                out.append(key)
+        return out
+
+    STANDIN_DEFINED = tuple(standin_people_define())
+
 image curse small = lit("images/char/curse_small.png")
 image curse big = lit("images/char/curse_big.png")
 

@@ -594,3 +594,12 @@ screen objective_toast(text):
                             xmaximum HUD_BANNER_W - 56
 
     timer (_od + OBJECTIVE_IN + OBJECTIVE_HOLD + OBJECTIVE_OUT) action Hide("objective_toast")
+
+
+## The card when the day turns (the second UI overhaul: docs/UI2_DESIGN.md 7.5,
+## 9.3): "Day 9 · Tuesday", for two seconds. The scaffold's STUB (U0c2),
+## appended here so that U4 fills it without a hook in any other file. Frozen
+## from this commit: its name and its two optional parameters (a save that
+## holds the screen loads, since it takes no required argument). Empty until U4.
+screen hud_day_card(n=None, weekday=None):
+    pass

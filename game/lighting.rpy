@@ -17,6 +17,7 @@
 ## (tint, brightness, saturation, shadow opacity). Gentler than the grade the
 ## background itself gets: faces have to stay readable.
 init -10 python:
+    import builtins
 
     NEUTRAL_LIGHT = ("#ffffff", 0.0, 1.0, 0.55)
 
@@ -69,10 +70,76 @@ init -10 python:
         "bg shinjuku":           ("#b8c8ea", -0.08, 0.85, 0.39),
         "bg kawasaki":           ("#f2eee6", 0.00, 0.88, 0.50),   # bleached daylight
         "bg yotsuka":            ("#fff0e0", 0.00, 1.00, 0.55),
+        ## The second overhaul (U0c2, 5.8): the off-campus names that stand
+        ## in for a scene's own picture take the light of the picture each
+        ## plays over until it is painted (bg city, bg veil; the ruined hall
+        ## has no row and neither do its three). A measured row in
+        ## game/layout/light.json replaces each with its picture.
+        "bg mall_front":         ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg warehouse":          ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg site_platform":      ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg site_karaoke":       ("#b0bbe6", -0.08, 0.85, 0.39),
+        "bg mall_atrium":        ("#c0b4dc", -0.08, 0.85, 0.39),
+        "bg site_pool":          ("#c0b4dc", -0.08, 0.85, 0.39),
     }
+
+    ## The second UI overhaul (U0c2; docs/UI2_DESIGN.md 6.1, 6.2, K7).
+    ##
+    ## A row is four values, or six: the same four and then (shadow lean in
+    ## px, shadow stretch). A four-value row means (0, 1.0). scene_light may
+    ## hold either (an old save holds four); light_matrix reads the first
+    ## three of either and _shadow_light the fourth.
+    ##
+    ## A measured row wins over the tables above:
+    ##   game/layout/light_<place>.json   {"": row, "evening": row, "night": row}
+    ##                                    for the place's day picture and its
+    ##                                    hour pictures (written by the installer)
+    ##   game/layout/light.json           {"bg alley": row}: story pictures, by
+    ##                                    image name
+    ## A place's measured row is used only while it is fresh (art_fresh: it
+    ## was measured on the picture that is installed).
+
+    ## The hours a day picture is shown close to as painted. In the Evening
+    ## and at Night a place with no picture of its own for the hour is the
+    ## day picture under a strong tint, and a row measured on the untinted
+    ## picture would leave people daylit in it: those hours keep the general
+    ## rows above.
+    LIGHT_DAY_HOURS = ("Morning", "Noon", "Afternoon")
+
+    def light_row_ok(row):
+        """U0c2. bool: `row` is a light row as a sidecar may hold it: a list
+        or tuple of four or six values, "#rrggbb" then plain numbers."""
+        if not isinstance(row, (builtins.list, builtins.tuple)) or len(row) not in (4, 6):
+            return False
+        if not (isinstance(row[0], str) and len(row[0]) == 7 and row[0].startswith("#")):
+            return False
+        try:
+            int(row[0][1:], 16)
+        except ValueError:
+            return False
+        return all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in row[1:])
+
+    def light_row(loc, variant=None):
+        """U0c2 (lighting.rpy), final. The measured light of a place's
+        picture, a tuple of four or six values, or None: the row
+        game/layout/light_<loc>.json holds under `variant` ("evening",
+        "night"; None or "" is the day picture), when it is well formed and
+        fresh (art_fresh)."""
+        key = variant or ""
+        row = rule_layout("light_" + str(loc)).get(key)
+        if not light_row_ok(row):
+            return None
+        if not art_fresh("light_%s%s" % (loc, "_" + key if key else ""), art_stem(loc) + ("_" + key if key else "")):
+            return None
+        return builtins.tuple(row)
 
     def light_for_place(loc, per):
         v = bg_variant(loc, per)
+        ## A measured row for the picture that is showing (U0c2).
+        if v or per in LIGHT_DAY_HOURS:
+            row = light_row(loc, v)
+            if row is not None:
+                return row
         if (loc, v) in PLACE_LIGHT:
             return PLACE_LIGHT[(loc, v)]
         if (loc, None) in PLACE_LIGHT:
@@ -82,7 +149,13 @@ init -10 python:
 
     def light_for_bg(name):
         """A background shown by name: a campus picture keeps its place's
-        light (the day picture is daylight), anything else is looked up."""
+        light (the day picture is daylight), anything else is looked up.
+        The second overhaul (U0c2): a measured row comes first, from
+        game/layout/light.json for a story picture and from the place's
+        own light_<place>.json for a campus picture."""
+        row = rule_layout("light").get(name)
+        if light_row_ok(row):
+            return builtins.tuple(row)
         if name in BG_LIGHT:
             return BG_LIGHT[name]
         parts = name.split()
@@ -90,11 +163,18 @@ init -10 python:
         variant = parts[2] if len(parts) > 2 else None
         for loc, info in LOCATIONS.items():
             if info["bg"] == base:
+                row = light_row(loc, variant)
+                if row is not None:
+                    return row
                 if (loc, variant) in PLACE_LIGHT:
                     return PLACE_LIGHT[(loc, variant)]
                 if (loc, None) in PLACE_LIGHT:
                     return PLACE_LIGHT[(loc, None)]
                 return NEUTRAL_LIGHT
+        ## A story picture's own variant with no row of its own (a district's
+        ## night, before its measured row is written) keeps its district's.
+        if variant and base in BG_LIGHT:
+            return BG_LIGHT[base]
         return NEUTRAL_LIGHT
 
     ## The scene and show statements go through config.show; watch for
@@ -123,9 +203,10 @@ init -10 python:
     _LIGHT_MATRIX = {}
 
     def light_matrix(light):
+        light = builtins.tuple(light)
         m = _LIGHT_MATRIX.get(light)
         if m is None:
-            tint, bright, sat, _ = light
+            tint, bright, sat = light[0], light[1], light[2]    # a row of four values, or six
             m = TintMatrix(tint) * SaturationMatrix(sat) * BrightnessMatrix(bright)
             _LIGHT_MATRIX[light] = m
         return m

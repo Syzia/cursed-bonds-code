@@ -1284,7 +1284,11 @@ label zz_smoke:
         check(set(_zz_view) == {"slots", "poses"} and _zz_view["slots"]["2"][1] == [1060, -52, 0.48, 1]
               and _zz_view["poses"]["nobara__evening"] == [300, 380, 420, 640],
               "rule_layout('view_dorm_common') reads the view sidecar (slots and pose boxes)", _zz_view)
-        check(set(_zz_hot) == {"spots"} and _zz_hot["spots"] == {"zz_tv": [1420, 520]},
+        ## The second overhaul (D60; docs/UI2_PINS.md Part 2b): the test sidecar's
+        ## points are what is read, and nothing of the view file; the file may
+        ## also hold a hot_ file's other keys (the generated overlay that
+        ## shapes every place adds "shapes" and "keep_tile" to it).
+        check(set(_zz_hot) <= {"spots", "shapes", "keep_tile"} and _zz_hot.get("spots") == {"zz_tv": [1420, 520]},
               "rule_layout('hot_dorm_common') reads the hotspot sidecar, and only it", _zz_hot)
         _zz_view["slots"]["2"] = "changed"
         check(rule_layout("view_dorm_common")["slots"]["2"] != "changed" and rule_layout("zz_no_such_file") == {}

@@ -189,9 +189,12 @@ init python:
         "sauna":          [("bathhouse", 84, 520)],         # the door
     }
 
-    ## Where each room's own hotspots sit (P6's final points, the sidecars
-    ## game/layout/hot_<place>.json): an exit keeps PATH_CLEAR px from each in
-    ## its own place.
+    ## Where each room's own hotspots sat when phase 2 ended. The second
+    ## overhaul (U0c2; 3.1): path_keep_clear(loc), below, reads the place's
+    ## live hotspot points instead (the registry, with the sidecar's points
+    ## applied), which ends the hand copies of them; this table is kept as
+    ## the fallback for the moment before anything is registered. An exit
+    ## keeps PATH_CLEAR px from each point in its own place.
     PATH_KEEP_CLEAR = {
         "courtyard":      [(1600, 690)],
         "dorm":           [(440, 590), (1330, 720)],
@@ -309,6 +312,39 @@ init python:
                                           x=int(x), y=int(y), locked_reason=path_locked(to)))
         return out
 
+    def path_keep_clear(loc):
+        """U0c2 (room_paths.rpy), final. A list of (x, y): the points an exit
+        of `loc` keeps PATH_CLEAR px from, which are the place's own
+        hotspots (every registered hotspot there that is not an exit) where
+        they sit now: the sidecar game/layout/hot_<loc>.json applied, each
+        point once. Whether a hotspot shows this hour does not matter. A
+        test harness's own hotspots (ids that begin "zz") are left out.
+        Before anything is registered, the old table's points."""
+        if not HOT_SPOTS:
+            return [(int(x), int(y)) for x, y in PATH_KEEP_CLEAR.get(loc, ())]
+        side = rule_layout("hot_" + str(loc)).get("spots")
+        if not isinstance(side, path_builtins.dict):
+            side = {}
+        out = []
+        for h in HOT_SPOTS:
+            hid = str(h["id"])
+            if h["place"] != loc or hid.startswith("go_") or hid.startswith("zz"):
+                continue
+            x, y = h["x"], h["y"]
+            p = side.get(hid)
+            if isinstance(p, (path_builtins.list, path_builtins.tuple)) and len(p) == 2 and hot_number(p[0]) and hot_number(p[1]):
+                x, y = p[0], p[1]
+            if hot_number(x) and hot_number(y) and (x, y) not in out:
+                out.append((x, y))
+        return out
+
+    def path_faces(to):
+        """U0c2 (room_paths.rpy): a stub, filled by U2. A list of person
+        keys, three at most: the people inside the house an exit leads to,
+        whose faces the exit shows (docs/UI2_DESIGN.md 7.3). [] for a place
+        that is no house, and for every place until U2 fills it."""
+        return []
+
     def path_reach(start):
         """P9. The set of places reached from `start` by exits alone."""
         seen = path_builtins.set([start])
@@ -406,9 +442,10 @@ init python:
         a room of the same area that opens onto the yard, and leads on only
         to the rooms inside it, PATH_HOUSE_EXITS at most); every exit has a
         way back; from my room every
-        place is reached; each point keeps clear of the room's own hotspots
-        (PATH_KEEP_CLEAR), of the place's other exits and of the arrival caption's panel (the
-        sidecar's point too). (Bounds and lanes are hot_validate's.)"""
+        place is reached; each exit's applied point (the sidecar's, else the
+        code's) keeps clear of the room's own hotspots where they sit now
+        (path_keep_clear), of the place's other exits and of the arrival
+        caption's panel. (Bounds and lanes are hot_validate's.)"""
         out = []
         links = {}
         for a, b in PATH_LINKS:
@@ -467,18 +504,26 @@ init python:
                     out.append("exits: no label sb_do_path_%s" % to)
                 if path_icon(to) not in ICONS:
                     out.append("exits: %r has no icon (%r)" % (to, path_icon(to)))
-                for px, py in PATH_KEEP_CLEAR.get(frm, ()):
-                    if (x - px) ** 2 + (y - py) ** 2 < PATH_CLEAR ** 2:
-                        out.append("exit %s at (%d, %d) is within %d px of the hotspot at (%d, %d)"
-                                   % (path_spot_id(frm, to), x, y, PATH_CLEAR, px, py))
-                for to2, x2, y2 in rows:
-                    if to2 > to and (x - x2) ** 2 + (y - y2) ** 2 < PATH_APART ** 2:
-                        out.append("exits %s and %s of %r are less than %d px apart"
-                                   % (path_spot_id(frm, to), path_spot_id(frm, to2), frm, PATH_APART))
+        ## The spacing rules (U0c2; 3.1) read each exit's APPLIED point, the
+        ## sidecar's where it has one, and the room's hotspots where they sit
+        ## now (path_keep_clear): a picture carries its numbers (K2), so the
+        ## code's rows are only what stands in until its sidecar exists.
         for frm in sorted(PATH_EXITS):
             if frm not in LOCATIONS:
                 continue
-            for r in path_exits(frm):
+            exits = path_exits(frm)
+            keep = path_keep_clear(frm)
+            for r in exits:
+                x, y, to = r["x"], r["y"], r["to"]
+                for px, py in keep:
+                    if (x - px) ** 2 + (y - py) ** 2 < PATH_CLEAR ** 2:
+                        out.append("exit %s at (%d, %d) is within %d px of the hotspot at (%d, %d)"
+                                   % (path_spot_id(frm, to), x, y, PATH_CLEAR, px, py))
+                for r2 in exits:
+                    if r2["to"] > to and (x - r2["x"]) ** 2 + (y - r2["y"]) ** 2 < PATH_APART ** 2:
+                        out.append("exits %s and %s of %r are less than %d px apart"
+                                   % (path_spot_id(frm, to), path_spot_id(frm, r2["to"]), frm, PATH_APART))
+            for r in exits:
                 if hot_overlap(hot_rect(r["x"], r["y"]), PATH_CAPTION_BOX):
                     out.append("exit %s at (%d, %d) lies under the arrival caption %r"
                                % (path_spot_id(frm, r["to"]), r["x"], r["y"], PATH_CAPTION_BOX))

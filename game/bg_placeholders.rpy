@@ -13,6 +13,30 @@
 ## bathhouse, sauna, pool). Their light
 ## rows are in BG_LIGHT in lighting.rpy (the hubs have none: they are outdoor
 ## places and take the outdoor light).
+##
+## The second UI overhaul, U0c2 (docs/UI2_DESIGN.md 5.8, D21, D22):
+##
+## Nothing lends any more. Five flat pictures used to lend to other names
+## through tinted crops: the city at night, the morning street, the town
+## street, the ruined hall and the veil. Each was copied, as it stood, to
+## images/bg/standin/standin_<name>.png, and every borrower below reads the
+## copy (STANDIN_COPIES, standin_copy). So each of those five can be painted
+## again at any time and only its own name changes.
+##
+## Ten more names that always exist, each with its stand-in until
+## images/bg/<name>.png is painted: the Sun Mall's three (mall_front,
+## mall_hall, mall_atrium), the warehouse, the annexe, and the five kinds of
+## board job site (site_tunnel, site_ward, site_platform, site_pool,
+## site_karaoke). Each stand-in is the picture that scene plays over today,
+## so pointing a scene at its new name changes nothing on screen.
+##
+## Three names that exist ONLY when their file does: `bg club`,
+## `bg shibuya night`, `bg shinjuku night`. night_bg and night_club_bg
+## (sb_night.rpy) ask whether the image exists, and fall back to the
+## district's own picture while it does not.
+##
+## The Black Market's ground is a file name, images/bg/market.png, and not an
+## image name: its screen draws it when the file exists.
 ################################################################################
 
 init -3 python:
@@ -26,6 +50,53 @@ init -3 python:
     def _bg_tinted(src, matrix, **kw):
         return Transform("images/bg/" + src, matrixcolor=matrix, **kw)
 
+    ## The five flat pictures other names are made from (D22), and where the
+    ## copy of each lives. (A copy has a name of its own: two files with one
+    ## base name under images/ would give Ren'Py one image name twice.)
+    STANDIN_COPIES = ("city_night", "street_morning", "town_street", "ruin_hall", "veil")
+
+    def standin_copy(name):
+        """U0c2. The path, from images/bg/, of the copy of a lending picture
+        that stand-ins are made from: "standin/standin_<name>.png"."""
+        return "standin/standin_%s.png" % name
+
+    def standin_plain(key, lender):
+        """U0c2. What `bg <key>` shows for one of the always-defined
+        off-campus names: images/bg/<key>.png when it exists, else the copy
+        of the picture that scene plays over today, as it is."""
+        return bg_placeholder("images/bg/%s.png" % key, "images/bg/" + standin_copy(lender))
+
+    ## name -> the lending picture its stand-in is (5.8). The first five are
+    ## the scenes U9 points at them (8.1); the last five are the board's
+    ## kinds of job site (sb_board.rpy, BOARD_PLACES).
+    STANDIN_NAMES = (
+        ("mall_front",    "city_night"),
+        ("mall_hall",     "ruin_hall"),
+        ("mall_atrium",   "veil"),
+        ("warehouse",     "city_night"),
+        ("annexe",        "ruin_hall"),
+        ("site_tunnel",   "ruin_hall"),
+        ("site_ward",     "ruin_hall"),
+        ("site_platform", "city_night"),
+        ("site_pool",     "veil"),
+        ("site_karaoke",  "city_night"),
+    )
+    for _standin_key, _standin_src in STANDIN_NAMES:
+        renpy.image("bg " + _standin_key, standin_plain(_standin_key, _standin_src))
+    del _standin_key, _standin_src
+
+    ## image name -> its file, for the three that are defined only when the
+    ## file is loadable.
+    STANDIN_IF_FILE = (
+        ("bg club",           "images/bg/club.png"),
+        ("bg shibuya night",  "images/bg/shibuya_night.png"),
+        ("bg shinjuku night", "images/bg/shinjuku_night.png"),
+    )
+    for _standin_name, _standin_file in STANDIN_IF_FILE:
+        if renpy.loadable(_standin_file):
+            renpy.image(_standin_name, _standin_file)
+    del _standin_name, _standin_file
+
     ## WP1's tuning (task 10): each placeholder borrows a picture that reads
     ## as the right kind of place, cropped or mirrored so it doesn't read as
     ## the place it was borrowed from.
@@ -34,19 +105,19 @@ init -3 python:
     ## the city at night (not the konbini, which is its own place).
     _ALLEY_CROP = dict(crop=(640, 300, 640, 360), xysize=(1920, 1080))
     renpy.image("bg alley", bg_placeholder("images/bg/alley.png",
-        _bg_tinted("city_night.png", TintMatrix("#b8c0dc") * SaturationMatrix(0.45) * BrightnessMatrix(-0.12), **_ALLEY_CROP)))
+        _bg_tinted(standin_copy("city_night"), TintMatrix("#b8c0dc") * SaturationMatrix(0.45) * BrightnessMatrix(-0.12), **_ALLEY_CROP)))
 
     ## The alley once the lights go out, and the sight opens: nearly every
     ## window gone, and violet.
     renpy.image("bg alley dark", bg_placeholder("images/bg/alley_dark.png",
-        _bg_tinted("city_night.png", TintMatrix("#a58fe0") * SaturationMatrix(0.35) * BrightnessMatrix(-0.42), **_ALLEY_CROP)))
+        _bg_tinted(standin_copy("city_night"), TintMatrix("#a58fe0") * SaturationMatrix(0.35) * BrightnessMatrix(-0.42), **_ALLEY_CROP)))
 
     ## The veil on the mountain ridge: a dark violet dome over the peak, the
     ## veil picture masked by a soft ellipse (the contact-shadow blob).
     def _veil_dome(cx, cy, w, h):
         mask = Fixed(Transform("images/fx/contact_shadow.png", xysize=(w, h),
                                xpos=cx - w // 2, ypos=cy - h // 2), xysize=(1920, 1080))
-        return AlphaMask(Transform("images/bg/veil.png", matrixcolor=TintMatrix("#a080ff") * BrightnessMatrix(0.05)), mask)
+        return AlphaMask(_bg_tinted(standin_copy("veil"), TintMatrix("#a080ff") * BrightnessMatrix(0.05)), mask)
 
     renpy.image("bg ridge_veil", bg_placeholder("images/bg/ridge_veil.png",
         Composite((1920, 1080),
@@ -71,7 +142,7 @@ init -3 python:
 
     ## The Tokyo map: the skyline at night, dimmed under the cards.
     renpy.image("bg map_tokyo", bg_placeholder("images/bg/map_tokyo.png",
-        _bg_tinted("city_night.png", SaturationMatrix(0.7) * BrightnessMatrix(-0.3))))
+        _bg_tinted(standin_copy("city_night"), SaturationMatrix(0.7) * BrightnessMatrix(-0.3))))
 
     ## The districts. Shibuya: the skyline, pink neon. Shinjuku: the towers
     ## close up, cold. Harajuku: a daytime street (the town street, mirrored
@@ -80,18 +151,18 @@ init -3 python:
     ## Yotsuka: home, the street my parents' house is on (street_morning, as
     ## the prologue shows it the morning I leave).
     renpy.image("bg shibuya", bg_placeholder("images/bg/shibuya.png",
-        _bg_tinted("city_night.png", TintMatrix("#ffbfe6") * BrightnessMatrix(0.02))))
+        _bg_tinted(standin_copy("city_night"), TintMatrix("#ffbfe6") * BrightnessMatrix(0.02))))
     renpy.image("bg harajuku", bg_placeholder("images/bg/harajuku.png",
-        _bg_tinted("town_street.png", TintMatrix("#ffc8e4") * SaturationMatrix(1.2) * BrightnessMatrix(0.06),
+        _bg_tinted(standin_copy("town_street"), TintMatrix("#ffc8e4") * SaturationMatrix(1.2) * BrightnessMatrix(0.06),
                    crop=(0, 120, 1280, 720), xysize=(1920, 1080), xzoom=-1.0)))
     renpy.image("bg shinjuku", bg_placeholder("images/bg/shinjuku.png",
-        _bg_tinted("city_night.png", TintMatrix("#b4ecff") * BrightnessMatrix(-0.06),
+        _bg_tinted(standin_copy("city_night"), TintMatrix("#b4ecff") * BrightnessMatrix(-0.06),
                    crop=(760, 160, 960, 540), xysize=(1920, 1080))))
     renpy.image("bg kawasaki", bg_placeholder("images/bg/kawasaki.png",
-        _bg_tinted("street_morning.png", TintMatrix("#ece6da") * SaturationMatrix(0.5) * BrightnessMatrix(0.03),
+        _bg_tinted(standin_copy("street_morning"), TintMatrix("#ece6da") * SaturationMatrix(0.5) * BrightnessMatrix(0.03),
                    crop=(1180, 130, 740, 416), xysize=(1920, 1080))))
     renpy.image("bg yotsuka", bg_placeholder("images/bg/yotsuka.png",
-        _bg_tinted("street_morning.png", TintMatrix("#ffe4c4"))))
+        _bg_tinted(standin_copy("street_morning"), TintMatrix("#ffe4c4"))))
 
 
 ## The six area pictures of the map's second level (phase 2, 4.1): the painted

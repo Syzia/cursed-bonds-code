@@ -96,8 +96,13 @@ define gui.track = 3.0
 
 ## Main and game menus #########################################################
 
-define gui.main_menu_background = "images/bg/gate.png"
-define gui.game_menu_background = "images/bg/veil.png"
+## The second UI overhaul (U0c2; docs/UI2_DESIGN.md 5.10, D24): each has a
+## file of its own under game/gui/, so that the gate and the veil can be
+## repainted at any time without the menus changing with them. The two files
+## were copied from today's gate.png and veil.png; with one missing, the old
+## picture is used. (bg_placeholder is bg_placeholders.rpy's, at init -3.)
+define gui.main_menu_background = bg_placeholder("gui/title.png", "images/bg/gate.png")
+define gui.game_menu_background = bg_placeholder("gui/menu_ground.png", "images/bg/veil.png")
 
 
 ## Dialogue ####################################################################
