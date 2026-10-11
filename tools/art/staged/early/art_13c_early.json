@@ -3,7 +3,8 @@
   "The teachers' dormitory again, and the lounge's doll: written by hand on 11 Oct 2026 on reading sitting 13a, BEFORE the owner chose, on the pick put to them (lounge B), and handed over with it. If the owner chooses lounge A this file is written again.",
   "THE DORMITORY: neither version of 13a has six bedroom doors (A four, B two wide screens). Words alone did not set out the doors, as they did not in the girls' corridor (Method note 26); the editor is given a picture whose doors are set out the wanted way, the chosen boys' corridor, for the doors' rhythm only, with the words saying that the room is three times as wide and its doors are sliding paper doors. The lounge picked is given as the same house inside, and the house from outside. Its own renders of 13a are NOT given: the editor would keep their doors.",
   "THE DOLLS: the bench's are asked for as stuffed animals and creatures by name, none with hair or a dress. On lounge B's sofa a rag doll with hair and a dress is changed to a half-sewn cloth bear: one named change, the tool's keep-everything prompt without the record's window line; if taken, only the doll is placed onto the chosen lounge by a script, and the lounge's evening and night are made after it.",
-  "NOBODY is in either picture; NOTHING carries lettering."
+  "NOBODY is in either picture; NOTHING carries lettering.",
+  "The owner chose lounge B (O67) and ran this file on 11 Oct 2026 (the renders are stamped 17:53). NONE OF ITS FOUR RENDERS IS USED: see read_2026_10_11 and the owner's word after it."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -50,5 +51,22 @@
   }
  ],
  "workflow_sha256": "73341465587bd92a5bbb6fd527fd4d7484ebc844c175485485b82233ac1f950e",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_teachers_dorm2_a_00001_.png": "53da7f092798ed0d1c3279fe294b1132d7f759393ca482f56eaa9a681a4e23c6",
+  "ui2_teachers_dorm2_b_00001_.png": "1f244142c8b93fe212818a5463367f0a23ddb9cb3c0076227797c559d1ca9ee1",
+  "ui2_teachers_lounge_b_bear_a_00001_.png": "61894a0691935e44f8e44a8672cd2b51fc0e979f4e997d29fda5c32eba70bc67",
+  "ui2_teachers_lounge_b_bear_b_00001_.png": "9780273be21f99dd194994e0b0f6128c13345cc1eca069bf7747b32123e60b6e"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye; the dormitory's doors counted; each bear repaint compared with lounge B by a difference; the first bear placed onto lounge B by tools/art/staged/early/lounge_bear_13c.py (ui2_teachers_lounge_b_placed_00001_.png: the patch is 1.72% of the picture, everything else the chosen render).",
+  "teachers_dorm2": "Both versions again have FOUR bedroom doors, two in each side wall, each a pair of sliding panels: giving the boys' corridor for how six doors are set out did not carry the count into a wide room. The creatures on the bench came back as asked (a bear, a rabbit, a bird, odd creatures). Version B matches the lounge's timber; version A's is darker. In both the stair opening lies at the foot of the left wall's near door.",
+  "teachers_lounge_b_bear": "Both repaints made a half-sewn brown bear of the doll; the first placed cleanly.",
+  "not_put_to_the_owner": "A sheet (compare_teachers_house_2.jpg) and two files for the rooms' evenings and nights (art_13d.json, art_13e.json) were made on these picks and never handed over: the owner's word came first. The two files were moved out of the owner's folder so that they cannot be run."
+ },
+ "owner_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026, before any pick was put to them: \"I think we should redo them with less cursed dolls sitting around. And the top floor does need to be redone as there is a door on top of the staircase. Also maybe a little bar or wine rack could be fitting downstaris.\"",
+  "read_as": "Both rooms are made again (art_13f.json). Fewer dolls: none in the lounge (the bear is not used either), one in the making on the dormitory's bench. No door stands at the stair opening upstairs: the stairs go behind the camera, out of the picture. A small bar with a wine rack is added to the lounge."
+ }
 }

@@ -1,0 +1,54 @@
+{
+ "about": [
+  "The teachers' house again, written by hand on 11 Oct 2026 at the owner's word of the lounge and the two tries at the dormitory: \"I think we should redo them with less cursed dolls sitting around. And the top floor does need to be redone as there is a door on top of the staircase. Also maybe a little bar or wine rack could be fitting downstaris.\"",
+  "THE LOUNGE is drawn again from the version the owner chose (B) as the camera to keep (the tool's `ref_old_camera` sentence, with 'everything picture 1 has stays where it is' and what is taken away and added: Method notes 36 and 38). Taken away: the doll and the pincushion on the sofa; no doll or toy is left in the room. Added: a small bar (a short counter with a wine rack in its front, glasses on a rail above it, a high stool) against the right wall, beyond the duty board and before the foot of the stairs, clear of the picture's right edge. Bottles and tags carry no lettering (O60).",
+  "THE DORMITORY is composed a third time. In both earlier tries the stair opening lay at the foot of the left wall's near door, the owner's 'door on top of the staircase'. The stairs are now behind the camera and out of the picture, as the way back is in the boys' corridor (5.2's rule: no door in view, so the bottom of the picture), so no door stands at them and the whole floor is clear. The bench is a sewing bench with ONE half-sewn cloth bear and no other doll. The six doors are asked for a third way: each side wall as a row of three single sliding doors, each about a metre wide in its own frame, and the count said out in the words. If it comes back with four again, the count is put to the owner as a question (three teachers live there; the bedrooms are doors, never places).",
+  "NOBODY is in either picture; NOTHING carries lettering."
+ ],
+ "written": "2026-10-11",
+ "made_from": {
+  "ui2_teachers_lounge_b_00001_.png": "f68d5c0dd4d4384fe03e80db66e72124c8b997458b4082c6cb5c72aa9558f319",
+  "crops/teachers_house_outside.png": "82ddafb26c7d3bf9d5a22fc25d11a65010a46557803f419cd62747e373a127b6"
+ },
+ "refs": {
+  "teachers_lounge": "Picture 1 is this place as it was painted before: keep its camera position and the side each thing stands on, and design the rest again.",
+  "teachers_dorm": "Picture 1 is the ground floor of the house the new room is in, already painted: the new room, upstairs, has the same white plaster, brown timber posts, timber ceiling and polished timber floor. Do not copy its camera, its layout or its furniture. Picture 2 is that house seen from outside, cut from a picture already painted."
+ },
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge.",
+ "the_place": {
+  "teachers_lounge": "the ground-floor sitting room of the teachers' house: the same room as picture 1. Everything picture 1 has stays where it is: the entrance open in the left wall under its dark red door curtain, with the bamboo fence and the paving outside and the row of slippers on the stone floor inside it; the paper windows in the left wall; the television on its cabinet; the kitchen along the far wall with its kettle, its shelves of cups and its fridge; the staircase at the right end of the far wall; the duty board on the right wall with its rows of plain wooden tags; the armchairs and the sofa round the low table with the teapot, the cups and the dish of rice crackers; the round lamps on the ceiling, switched off. Taken away: the doll and the pincushion on the sofa. The sofa is empty, and there is no doll and no toy anywhere in the room. Added to it: against the right wall, beyond the duty board and before the foot of the stairs, a small bar: a short timber counter with a wine rack built into its front, dark bottles lying on their sides in it, a row of wine glasses hanging upside down from a rail on the wall above it, and a high stool before it. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any tag, bottle, tin or wall",
+  "teachers_dorm": "the upstairs sitting room of the teachers' house, the house of picture 2: a quiet, wide room about twelve metres long and seven wide, with walls of white plaster between brown timber posts, a timber ceiling and a floor of polished timber boards. I have come up the stairs, which are behind me and out of the picture: no stairs, no stair rail and no opening in the floor are to be seen. I stand at one end and look straight along the room, down its middle. Each side wall is a row of three bedroom doors. Each door is one single sliding door of timber and white paper, about a metre wide, in its own frame between timber posts; the three of each wall stand one after another from near me to the far end, all the same size, all shut, with the same width of plain plaster between each door and the next; and on the plaster beside each door hangs a small plain wooden plate with nothing written on it. The three doors of the left wall face the three doors of the right wall. So six doors and six plates can be counted in the picture: three on the left and three on the right. There is no window in either side wall. In the middle of the floor is a square sunken hearth with white ash in it and an iron kettle hanging over it on a hook, with flat cushions laid round it; a paper lamp hangs from the ceiling over the hearth, switched off. The far end wall has a wide latticed window, and under it stands a long workbench for sewing: folded cloth, spools of thread, scissors, a pincushion and a small work lamp, switched off, and lying on it one half-sewn cloth bear. That bear is the only toy in the room: there is no other doll and no other stuffed creature anywhere. Through the window I see the tops of the trees of a small garden behind the house and a slope of cedars above them. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any plate, box or wall"
+ },
+ "rows": [
+  {
+   "label": "Teachers' Lounge, with a small bar and no doll",
+   "kind": "composed",
+   "place": "teachers_lounge",
+   "saves": [
+    "ui2_teachers_lounge2_a",
+    "ui2_teachers_lounge2_b"
+   ],
+   "seeds": [
+    6192,
+    6193
+   ],
+   "prompt_sha256": "0cd4aa93d3d411ee2b3debc9d02acf3fc203b54a9307e8f72a70590e5bfc1b64"
+  },
+  {
+   "label": "Teachers' Dormitory, third try",
+   "kind": "composed",
+   "place": "teachers_dorm",
+   "saves": [
+    "ui2_teachers_dorm3_a",
+    "ui2_teachers_dorm3_b"
+   ],
+   "seeds": [
+    7848,
+    7849
+   ],
+   "prompt_sha256": "3a648337bd250a78979f9a3f57d7806191e0e1a68fa344f8ea8bc081822b8db0"
+  }
+ ],
+ "workflow_sha256": "3156d6bbf12991d75ef94a12db34af2f7da21dcf3724262594990b289465d1ab",
+ "cost": "4 renders, about $0.64"
+}
