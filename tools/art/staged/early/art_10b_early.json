@@ -3,7 +3,8 @@
   "Megumi's room and the shared room after dark: sitting 10b and the two rooms' share of batch 47, written early by hand on 11 Oct 2026 on reading sitting 10a, BEFORE the owner chose, on the picks put to them (version A of each), and handed over with those picks. If the owner chooses otherwise these files are not run and are written again.",
   "Two files, one a room (art_10b.json: Megumi's; art_10c.json: the shared room), because twelve renders are more than one run should hold (plan 5.13). Each holds the room's evening, its Night with nobody up (`night`) and its Night with someone up (`lit`).",
   "A lit room is lit by what the room has (O62) with every lamp it has on (O48): Megumi's desk lamp; the shared room's paper floor lamp. Megumi's window faces west, so the evening sun comes straight in; the shared room's faces east onto the tower, which each sentence names so that it stays. No moon is in view in either window (O44).",
-  "NOBODY is in any picture (K16: bedrooms); the beds and futons are said to be made and empty; the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root: nothing is written to chosen/ before the owner chooses."
+  "NOBODY is in any picture (K16: bedrooms); the beds and futons are said to be made and empty; the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root: nothing is written to chosen/ before the owner chooses.",
+  "The owner chose version A of each room (O63) and ran both files on 11 Oct 2026 (the renders are stamped 16:43 to 16:45); read the same day, see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "rooms": {
@@ -116,5 +117,37 @@
    "workflow_sha256": "aa5d5f4d1e8e70e91ec1e72d458743254b5d21430f8518146f0b348d49339e6d"
   }
  },
- "cost": "12 renders in two files, about $1.92"
+ "cost": "12 renders in two files, about $1.92",
+ "renders_sha256": {
+  "ui2_megumi_room_evening_a_00001_.png": "3368dd4afa7d63db4e9ffe8fc2c02cfb00102d09a0b3bf6b0d44d6508847f195",
+  "ui2_megumi_room_evening_b_00001_.png": "a5aa26381c43fc6292aadf702632fb4f4c571d62422b6dac678ba6ce14c28306",
+  "ui2_megumi_room_night_a_00001_.png": "3ac53bbc0615210351460c01e8129db4d81d067d604752c99ffac0778ca86fb7",
+  "ui2_megumi_room_night_b_00001_.png": "64e71a0a03f95cc64ef3e624c3518ac9aaf7539c66fd7ca2ef3d416ccfe39cfb",
+  "ui2_megumi_room_lit_a_00001_.png": "68227fa4bb998d7eb83850c11e846c4dffcc92b9c8f96c641f1e96f88290bfa7",
+  "ui2_megumi_room_lit_b_00001_.png": "408943cf981cc4f4607590b7a72473feceb04a9402f40a268da072ab12ac1673",
+  "ui2_senpai_room_evening_a_00001_.png": "0d4b8ba66376f372caeab766222784589db517b229bbdb98260071f59e6d0ba0",
+  "ui2_senpai_room_evening_b_00001_.png": "1fbb56c475718f004367b02b98497f24bb99d29f5bca67fd17a7b8ebcc9e91c5",
+  "ui2_senpai_room_night_a_00001_.png": "9628c45d81d21f1e3f452c40a7e19357466bdf1c9982fdb5a88d1a2524b38138",
+  "ui2_senpai_room_night_b_00001_.png": "3b10b21434f744bb2256569351c6b6ea6a67f93f6f2a658b2f72a04b22ef7073",
+  "ui2_senpai_room_lit_a_00001_.png": "49cf2684c322057bf80acbbc3711d8dcc9ee2289d8de377ed564f3a592ae2534",
+  "ui2_senpai_room_lit_b_00001_.png": "f0025ce1cc6b105a45b6415ba3357460fb741ece897e545864e194cf7f243911"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "The six pairs through install_redo.py --relight <place> <hour> <a> <b> --dry --against the chosen room, with the scratch record (the lit pairs run as night pairs); then by eye against each day picture for added things, the bookshelf's top at the render's own size. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_megumi_hours.jpg, compare_senpai_hours.jpg.",
+  "install_redo_dry": "All twelve PASS. The check did not see the boxes added on Megumi's bookshelf in lit A: for a relight it skips 'nothing was added' (5.7). A second real case, after Yuji's pot plants, for the installer's fifth and sixth corrections.",
+  "megumi_room_evening_b": "PICK. The sunset comes straight in through the west window and lands on the wall by the bed and on the floor; the cedar trunks outside are lit orange. Nothing added. Mean 96.",
+  "megumi_room_evening_a": "Good, darker (mean 85), with a beam of light hanging in the air across the room, which the look asks not to have.",
+  "megumi_room_night_b": "PICK. Every light off; a patch of moonlight on the floor; the forest and stars outside; everything plain to see (mean 73, 6% darker than 25).",
+  "megumi_room_night_a": "Good too, darker (mean 65); the side by the door falls nearly black (10% darker than 25).",
+  "megumi_room_lit_b": "PICK. The desk lamp is the only light, a warm pool on the desk and the nearest shelves; nothing added; the forest dark outside.",
+  "megumi_room_lit_a": "Not offered: three storage boxes stand on top of the bookshelf that the day picture does not have.",
+  "senpai_room_evening_b": "PICK. Soft warm light on the mats; the tower, the roof and the rail against a pink sky. Nothing added. Mean 108.",
+  "senpai_room_evening_a": "Good, but with hard sunlight and window-frame shadows on the mats, from a window that faces east.",
+  "senpai_room_night_a": "PICK. Every light off; moonlight on the mats; the tower, the roof and the rail dark against the stars, no window lit; both futons made and empty. Mean 74.",
+  "senpai_room_night_b": "The same, brighter (mean 80), with a beam of moonlight hanging in the air.",
+  "senpai_room_lit_a": "PICK. The paper floor lamp is the only light, a soft warm pool round it; the rest in soft shadow; nothing added. Mean 74.",
+  "senpai_room_lit_b": "The same, but the whole room is lighter than one lamp would make it (mean 87).",
+  "put_to_the_owner": "Megumi's room: evening B, night B, lamp on B. The shared room: evening B, night A, lamp on A."
+ }
 }
