@@ -3,7 +3,7 @@ The tests of the art tools. Run it through tools/test_art_tools.sh.
 
     tools/test_art_tools.sh                        # everything that can run here
     tools/test_art_tools.sh --layout-dump <file>   # in a worktree: the local dump (tools/smoke.sh u2_dump --out <file>)
-    tools/test_art_tools.sh --only redo,pose       # some groups: reader redo compose pose face set status real yuji
+    tools/test_art_tools.sh --only redo,pose       # some groups: reader layout redo compose pose face set status real yuji
     tools/test_art_tools.sh --strict               # an art sitting: a SKIPPED line is a failure
     tools/test_art_tools.sh --keep-work            # leave the scratch folder, and say where it is
     tools/test_art_tools.sh --write-measures       # rewrite tools/art/redo_measures.json from the real cases (U0d only)
@@ -37,7 +37,7 @@ OUTPUT = os.path.expanduser("~/ComfyUI-Shared/output")
 YUJI = os.path.expanduser("~/Desktop/JJK Game images/redo_yuji")
 MEASURES = os.path.join(TOOLS, "art", "redo_measures.json")
 STALE = check_campus.STALE
-GROUPS = ("reader", "redo", "compose", "pose", "face", "set", "status", "real", "yuji")
+GROUPS = ("reader", "layout", "redo", "compose", "pose", "face", "set", "status", "real", "yuji")
 
 counts = {"PASS": 0, "FAIL": 0, "SKIPPED": 0}
 failed = []
@@ -123,7 +123,14 @@ def stamp(dump_path, root, out=None, extra=None):
     tests the points have not changed (an install wrote a light row or the manifest); in real use the dump is
     written again by the game (tools/smoke.sh u2_dump), never restamped."""
     d = json.load(open(dump_path, encoding="utf-8"))
-    d.update(extra or {})
+    extra = dict(extra or {})
+    if isinstance(extra.get("world"), dict):
+        # a test's world tables are laid over the dump's own, table by table; the rest of `world` stays
+        extra["world"] = dict(d.get("world") or {}, **extra["world"])
+    drop = extra.pop("__drop__", ())
+    d.update(extra)
+    for key in drop:
+        d.pop(key, None)
     d["files"] = check_campus.dump_files(root)
     d["hash"] = check_campus.dump_hash(d["files"], root)
     out = out or os.path.join(root, "dump.json")
@@ -252,6 +259,41 @@ def group_reader(lab):
     ok("make_fg.py refuses, in one line, a dump that is out of date", rc == 2 and out.strip() == STALE, out)
     rc, out = run([tool("make_fg.py"), "dorm_common", "--layout-dump", bad[:-5] + "_missing.json"], cwd=lab.work)
     ok("and says so when the file --layout-dump names is not there", rc != 0 and "no layout dump at" in out, out)
+
+
+def group_layout(lab):
+    """The layout tools (docs/UI2_DESIGN.md 10.2, U0d3): game_layout.py's readers, check_layout.py's negative
+    tests, layout_sheet.py. Plain Python: nothing here needs ComfyUI's."""
+    import game_layout
+    lay = game_layout.load(lab.dump)
+    committed = os.path.abspath(lab.dump) == os.path.abspath(check_campus.DUMP)
+    cells = (lay.where("megumi", "Mon", "Night"), lay.asleep("megumi", "Mon", "Night"), lay.asleep("megumi", "Sat", "Night"),
+             lay.asleep("megumi", "Mon", "Evening"), lay.away("nobara", "Sun", "Afternoon"), lay.away("nobara", "Sat", "Afternoon"),
+             lay.where("yuji", "Sun", "Afternoon"), lay.districts(), lay.homes().get("panda"))
+    ok("game_layout.py: where(), asleep() and away() each answer a known cell from the %s dump (world.homes, "
+       "world.asleep, world.away): Megumi is in his room and asleep on a Monday Night and not on a Saturday's; Nobara "
+       "is in Harajuku on Sunday afternoon and nowhere on Saturday's; Yuji's Sunday afternoon is Shibuya"
+       % ("committed" if committed else "local"),
+       cells == ("megumi_room", True, False, False, "harajuku", "", "shibuya", ["harajuku", "shibuya"], "senpai_room"), cells)
+    rc, out = run([tool("game_layout.py"), "--layout-dump", lab.dump])
+    ok("python3 tools/game_layout.py finds all three tables in the dump (no \"NOT in the dump\" line)",
+       rc == 0 and "NOT in the dump" not in out and out.count("in the dump,") == 3, out)
+    old = game_layout.Layout(dict(lay.d, world_asleep={"weekday": ["megumi"]}, world_away={}, world=None))
+    ok("a dump with no `world` answers None (\"not known\") from asleep(), away() and districts(), whatever "
+       "top-level keys of the old names it holds",
+       (old.asleep("megumi", "Mon", "Night"), old.away("nobara", "Sun", "Afternoon"), old.districts()) == (None, None, None))
+    test = game_layout.Layout(dict(lay.d, shapes={"courtyard": {"spot_vend": [[[1560, 640], [1640, 640], [1640, 740], [1560, 740]]]}},
+                                   keep_tile={"courtyard": {"gateway": "a test"}}, shaped=["courtyard"]))
+    got = test.shapes("courtyard")
+    got["spot_vend"][0][0][0] = -1
+    ok("game_layout.py: shapes(place) gives a place's shapes as its sidecar holds them, a fresh copy each call, and "
+       "{} for a place with none; keep_tile(), shaped() and front_ids() beside it (the vending machine is the "
+       "Courtyard's one front id today)",
+       test.shapes("courtyard") == {"spot_vend": [[[1560, 640], [1640, 640], [1640, 740], [1560, 740]]]}
+       and test.shapes("library") == {} and lay.shapes("courtyard") == dict(lay.d.get("shapes", {}).get("courtyard", {}))
+       and test.keep_tile("courtyard") == {"gateway": "a test"} and test.shaped("courtyard") and not test.shaped("gate")
+       and lay.front_ids("courtyard") == set(["spot_vend"]) and lay.front_ids("library") == set(),
+       (test.shapes("courtyard"), lay.front_ids("courtyard")))
 
 
 def verdicts(out):
@@ -607,10 +649,11 @@ POSE_PLAN = [
     {"who": "yuji", "place": "pool", "variant": "", "batch": 95, "doing": "t", "spot": "at the deck's edge"},
     {"who": "maki", "place": "dorm_common", "variant": "evening", "batch": 96, "doing": "t", "spot": "sitting on the old dusty sofa"},
 ]
-TEST_TABLES = {"world_asleep": {"weekday": ["megumi", "panda"], "weekend": ["yuji", "toge"]},
-               "world_homes": {"megumi": "megumi_room", "panda": "senpai_room", "toge": "senpai_room", "yuji": "yuji_room"},
-               "world_away": {"nobara": [["Sun", "Afternoon", "harajuku"]], "maki": [["Sun", "Afternoon", "harajuku"]],
-                              "yuji": [["Sun", "Afternoon", "shibuya"]]}}
+# The asleep, home and away tables of a test, in the shape the dump writes them (tools/smoke/u2_dump.rpy: `world`).
+TEST_TABLES = {"world": {"asleep": {"weekday": ["megumi", "panda"], "weekend": ["yuji", "toge"]},
+                         "homes": {"megumi": "megumi_room", "panda": "senpai_room", "toge": "senpai_room", "yuji": "yuji_room"},
+                         "away": {"nobara": {"Sun Afternoon": "harajuku"}, "maki": {"Sun Afternoon": "harajuku"},
+                                  "yuji": {"Sun Afternoon": "shibuya"}}}}
 
 
 def group_pose(lab):
@@ -688,7 +731,16 @@ def group_pose(lab):
     bare = stamp(lab.dump, root, out=os.path.join(root, "dump_bare.json"))
     rc, out = run(mk + ["harajuku", "nobara", "--root", root, "--layout-dump", bare, "--manifest", manifest, "--print",
                         "--plan", plan, "--keep", keep])
-    ok("with no away table in the dump (today's), a district row is refused, and it says why",
+    ok("with the dump as it is (the game's own away table, world.away, sends her there on Sunday afternoon), the "
+       "same district row is accepted", rc == 0 and "about 320 pixels tall" in out, out)
+    rc, out = run(mk + ["harajuku", "megumi", "--root", root, "--layout-dump", bare, "--manifest", manifest, "--print",
+                        "--plan", plan, "--keep", keep])
+    ok("and by the game's own table a row for someone it never sends there is refused",
+       rc != 0 and "never sends megumi to harajuku" in out, out)
+    none = stamp(lab.dump, root, out=os.path.join(root, "dump_no_world.json"), extra={"__drop__": ("world",)})
+    rc, out = run(mk + ["harajuku", "nobara", "--root", root, "--layout-dump", none, "--manifest", manifest, "--print",
+                        "--plan", plan, "--keep", keep])
+    ok("with a dump that has no away table (its `world` taken out), a district row is refused, and it says why",
        rc != 0 and "no away table" in out, out)
     rc, out = run(mk + ["--batch", "96"] + planned)
     ok("a `spot` with a banned word is refused by the prompt check", rc != 0 and "check_prompts" in out and "old" in out, out)

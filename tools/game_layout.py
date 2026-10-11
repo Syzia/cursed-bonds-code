@@ -6,6 +6,8 @@ game's numbers.
     lay = game_layout.load(game_layout.pop_dump_arg(argv))     # refuses, in one line, a dump that is out of date
     lay.bg_stem("dorm")                # "your_room"
     lay.points("dorm_common")          # every exit and hotspot of the room, with the point the game draws
+    lay.shapes("courtyard")            # the shapes its hot_ sidecar holds (D60)
+    lay.where("megumi", "Mon", "Night")  # "megumi_room"; lay.asleep(...) True; lay.away("nobara", "Sun", "Afternoon") "harajuku"
     python3 tools/game_layout.py [--layout-dump <file>]        # says whether the dump is fresh, and what it holds
 
 docs/UI2_DESIGN.md 5.4 and D47. The dump is written by a small harness
@@ -27,13 +29,25 @@ local copy and name it:
 This file replaces the regular expressions make_fg.py, install_pose.py and
 make_pose_workflow.py each used to read game/sb_world.rpy with.
 
-WHAT THE DUMP DOES NOT HOLD YET. The asleep, away and home tables
-(WORLD_ASLEEP, WORLD_AWAY, WORLD_HOMES) are read from the keys `world_asleep`
-({"weekday": [who], "weekend": [who]}), `world_away` ({who: [[weekday,
-period, district], ...]}) and `world_homes` ({who: place}) when the dump has
-them. Until u2_dump writes them, `asleep` and `away` below answer None ("not
-known"), and the pose tools take the careful side: two boxes are assumed to
-show together, and a row in a Tokyo district is refused.
+WHO IS WHERE. The asleep, away and home tables (WORLD_ASLEEP, WORLD_AWAY,
+WORLD_HOMES) are read from the keys the dump really writes, in its own shape
+(tools/smoke/u2_dump.rpy, the scaffold's keys):
+
+    world.asleep   {"weekday": [who], "weekend": [who]}
+    world.away     {who: {"<weekday> <period>": district}}      ("Sun Afternoon")
+    world.homes    {who: place}
+
+`where`, `asleep` and `away` below answer from them. A dump that has no such
+table (an old one, a test's) makes `asleep`, `away` and `districts` answer
+None ("not known"), and the pose tools then take the careful side: two boxes
+are assumed to show together, and a row in a Tokyo district is refused.
+
+THE PICTURE IS WHAT IS CLICKED (D60). `shapes(place)` gives the shapes a
+place's hot_ sidecar holds, as written ({id: [polygon, ...]}), whatever the
+picture's revision; `keep_tile(place)`, `shaped(place)`, `front_ids(place)`,
+`name_rects(place)`, `tips(place)` and `hot_shape()` (the limits) are the
+rest of what the dump carries for it, and `frame(key)` one number of
+`frames`. tools/check_layout.py reads every number it checks through these.
 
 Plain Python.
 """
@@ -175,23 +189,70 @@ class Layout(object):
     def fg_rooms(self):
         return list(self.d.get("fg_rooms", []))
 
+    # ---- the picture is what is clicked (D60)
+    def shapes(self, place):
+        """{id: [polygon, ...]}: the shapes the place's hot_ sidecar holds in the game, as written (a
+        polygon is a list of [x, y]); {} for a place that has none. A fresh copy."""
+        got = (self.d.get("shapes") or {}).get(place) or {}
+        return dict((hid, [[[p[0], p[1]] for p in poly] for poly in shape]) for hid, shape in got.items())
+
+    def keep_tile(self, place):
+        """{id: reason}: the few hotspots of a place that keep their button once it is shaped."""
+        return dict((self.d.get("keep_tile") or {}).get(place) or {})
+
+    def shaped(self, place):
+        """bool: the place is shaped in the game now (its picture at revision 2, its file not stale)."""
+        return place in (self.d.get("shaped") or [])
+
+    def front_ids(self, place):
+        """The ids registered in the place's front layer (front=True, or standalone). An exit is never one."""
+        return set(h["id"] for h in self.hotspots(place) if h.get("front"))
+
+    def name_rects(self, place):
+        """{id: (x, y, w, h)}: where each registered hotspot's and exit's name plate is drawn while names
+        are shown, at the point the game draws it today."""
+        return dict((hid, tuple(r)) for hid, r in ((self.d.get("name_rects") or {}).get(place) or {}).items())
+
+    def tips(self, place):
+        """{id: side}: the hover-label sides the place's hot_ sidecar gives in the game."""
+        return dict((self.d.get("tips") or {}).get(place) or {})
+
+    def hot_shape(self):
+        """HOT_SHAPE: the limits both validators read, the HUD's row (`top`) and the light's defaults."""
+        return dict(self.d.get("hot_shape") or {})
+
+    def frame(self, key, default=None):
+        """One entry of `frames` (hot_bounds, hot_lanes, hot_size, caption_box, path_apart, ...)."""
+        return (self.d.get("frames") or {}).get(key, default)
+
+    def screen(self):
+        return tuple(self.d.get("screen", [1920, 1080]))
+
     # ---- who is where
+    def _world(self, key):
+        """One table of the dump's `world`, or None when the dump has none."""
+        world = self.d.get("world")
+        if not isinstance(world, dict):
+            return None
+        return world.get(key)
+
+    def homes(self):
+        """{who: place} (WORLD_HOMES); {} when the dump has no such table."""
+        return dict(self._world("homes") or {})
+
     def districts(self):
         """The Tokyo districts WORLD_AWAY sends anyone to; None when the dump has no such table."""
-        away = self.d.get("world_away")
+        away = self._world("away")
         if away is None:
             return None
-        return sorted(set(cell[2] for rows in away.values() for cell in rows))
+        return sorted(set(d for cells in away.values() for d in cells.values()))
 
     def away(self, who, day, period):
         """The district a person is in at that hour, "" for none, None when the dump has no table."""
-        away = self.d.get("world_away")
+        away = self._world("away")
         if away is None:
             return None
-        for cell in away.get(who, []):
-            if cell[0] == day and cell[1] == period:
-                return cell[2]
-        return ""
+        return (away.get(who) or {}).get("%s %s" % (day, period), "")
 
     def where(self, who, day, period):
         """The place the routine puts a person at (a district when they are away); None for nowhere."""
@@ -209,12 +270,12 @@ class Layout(object):
         """True, False, or None when the dump has no asleep table."""
         if period != "Night":
             return False
-        table = self.d.get("world_asleep")
+        table = self._world("asleep")
         if table is None:
             return None
         if who not in table.get("weekend" if day in WEEKEND_DAYS else "weekday", []):
             return False
-        homes = self.d.get("world_homes") or {}
+        homes = self._world("homes") or {}
         return homes.get(who) is None or self.where(who, day, period) == homes.get(who)
 
     def cells(self):
@@ -232,10 +293,12 @@ def main(argv):
           % (len(d.get("places", [])), sum(len(v) for v in d.get("exits", {}).values()),
              sum(len(v) for v in d.get("hotspots", {}).values()), len(d.get("spot_planned", [])),
              sum(len(v) for v in d.get("poses", {}).values())))
-    for key, words in (("world_asleep", "the asleep table"), ("world_away", "the away table"),
-                       ("world_homes", "the home table")):
-        print("  %s: %s" % (words, "in the dump" if key in d else "NOT in the dump yet (see the top of this file)"))
-
+    for key, words in (("asleep", "the asleep table"), ("away", "the away table"), ("homes", "the home table")):
+        got = lay._world(key)
+        print("  %s (world.%s): %s" % (words, key, "NOT in the dump (see the top of this file)" if got is None else
+                                       "in the dump, %d row%s" % (len(got), "" if len(got) == 1 else "s")))
+    print("  %d place%s with shapes in a sidecar, %d shaped now"
+          % (len(d.get("shapes") or {}), "" if len(d.get("shapes") or {}) == 1 else "s", len(d.get("shaped") or [])))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
