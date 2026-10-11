@@ -4,7 +4,8 @@
   "THE TWO ROOMS DO NOT SHARE A VIEW. The record's proposals gave both rooms a window on the garden. The chosen corridor is seen down its middle with Nobara's door first on the left and Maki's first on the right, and a door has a room behind it (O37), so the two rooms are on opposite sides of the house. Read with the house's long side to the garden, as the chosen garden shows it, I look north along the corridor: Nobara's room is on the garden side and keeps the record's line (the garden's pond, the boys' dormitory across it, the Common Room); Maki's is on the far side, where the ground plan has Gojo's small office (1400, 470) and the Principal's Hall (1560, 400) behind it. The owner is told; the record's two window rows change when the rooms are chosen.",
   "In each picture the door is in the left wall near me and the window in the right wall. Each room has one lamp of its own for its lit picture (O62): Nobara's bedside lamp, Maki's desk lamp.",
   "References: the girls' house from outside (cut from the chosen garden), the chosen girls' corridor as 'the same house inside', and a third picture for the view: the garden for Nobara's, the staff steps for Maki's.",
-  "NOBODY is in either picture (K16: bedrooms); the mirror is said to show only the room. NOTHING carries lettering or a maker's mark (O60): it is said of the shopping bags above all. Maki's room was first worded 'the room of an athlete'; the prompt check's list does not hold that word, but it is somebody, so it reads 'with room to train'."
+  "NOBODY is in either picture (K16: bedrooms); the mirror is said to show only the room. NOTHING carries lettering or a maker's mark (O60): it is said of the shopping bags above all. Maki's room was first worded 'the room of an athlete'; the prompt check's list does not hold that word, but it is somebody, so it reads 'with room to train'.",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 16:55) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "refs": {
@@ -62,5 +63,20 @@
   }
  ],
  "workflow_sha256": "47385912a85bd86288298cdb931be97edc2c60b8790ead2cffe4556de698a594",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_nobara_room_a_00001_.png": "3b179539eee89e9075b7fc7ef41eb1b487457c61e0dd02e121aa4ce9984c401c",
+  "ui2_nobara_room_b_00001_.png": "5dd7376efdea61cd8f178ad2e6a2a56467ef516378cfe2ca6ee73f0492a3282f",
+  "ui2_maki_room_a_00001_.png": "43aec62245d0f9fb1065a7c1eb1c8148b214837c1275b621f404fb055284555d",
+  "ui2_maki_room_b_00001_.png": "f8b83a499a5908ff55fe8e9e467a497197271d24c4a603f6b51ed00904de8c23"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye, each against its checklist; the bags, the mirror, the tool roll, the weapon case and both windows at the render's own size; each render's darkest and brightest columns measured for a blank band (none). Sheet: ~/Desktop/JJK Game images/ui2/early/compare_girls_rooms.jpg.",
+  "nobara_room_b": "PICK. Nobody; the mirror shows the door and the quilt. The door in the left wall near me; a bed with a patchwork quilt and a bedside lamp at the far left; a row of plain paper bags along the far wall, nothing printed on them; the tall dressing mirror and a desk with the tool roll, rolled and tied, right of the middle; the latticed window in the right wall shows the flowers in its box, the pond, the boys' dormitory with its gallery and outside stair, and the house with glass doors on its deck: the chosen garden, from above. Cream walls and ceiling, as the girls' corridor has.",
+  "nobara_room_a": "Good too, and richer: a bright quilt, the tool roll laid open on the desk. Not the pick: its ceiling is dark timber, which the girls' house does not have (its corridor's and Maki's room's are plain), and its view is small and harder to read.",
+  "maki_room_a": "PICK. Nobody. The door in the left wall near me with a steel bar fixed across the top of its frame; a plain bed; a long leather weapon case, closed, leaning on the far wall beside a plain desk with a small lamp, right of the middle; the latticed window in the right wall shows cedars, a small house with one large window and the great tiled roof behind it. No lettering; the walls carry nothing.",
+  "maki_room_b": "The same room, emptier; its case is slimmer and reads less as a weapon's, its desk is grey metal, and its window shows the staff steps as well.",
+  "put_to_the_owner": "Nobara's room B; Maki's room A; with art_11b.json and art_11c.json, their evenings and nights, already written from those two."
+ }
 }
