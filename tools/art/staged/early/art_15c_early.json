@@ -23,5 +23,17 @@
    "prompt_sha256": "f5dd41d849b4cab84b779aea016d8b88083bcd24a5d2655d3747e742798eb446"
   }
  ],
- "workflow_sha256": "ce9fe9a53cfd8dcc2878427ad32f8966d67d9d480929aa74be48e65d489863ef"
+ "workflow_sha256": "ce9fe9a53cfd8dcc2878427ad32f8966d67d9d480929aa74be48e65d489863ef",
+ "renders_sha256": {
+  "ui2_dojo_lit2_a_00001_.png": "0d54d467dd096bbb42feb83431b1b8d984529e2dea95748f79c00c501c1690d7",
+  "ui2_dojo_lit2_b_00001_.png": "9bc747b07b925d00227df3ae1d2fa0ec098048541675c29b99901e4afd59c465"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "tools/py_art.sh tools/install_redo.py --relight dojo night <a> <b> --dry --against chosen/dojo_1920.png --record tools/art/staged/early/campus_for_batch3.json, then the lamps counted by eye against the day picture. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_dojo_lit2.jpg, compare_dojo_lit2_lamps.jpg.",
+  "by_the_tool": "Both PASS: the whole picture moved 0, 0 px; 11 points checked, the furthest off 1 px.",
+  "dojo_lit2_a": "PICK. The day picture's eight hanging lamps, four in each row, are all lit and none is added; the hall is filled with warm lamplight; outside it is night, the hall across the yard dark, no window lit, no moon in view.",
+  "dojo_lit2_b": "Not offered: its eight lamps are lit too, but a ninth has been added at the top left edge of the picture.",
+  "put_to_the_owner": "Version A."
+ }
 }
