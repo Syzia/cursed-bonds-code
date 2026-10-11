@@ -108,5 +108,37 @@
   "trailhead_evening": "B (PICK): low sun through the trunks on the left, long shadows to the right, the onsen's door and windows lit, as it is open at that hour. A is clean and nearer the day picture.",
   "trailhead_night": "B (PICK): a full moon, the onsen dark with its steam pale, the dome a dark shape. A is clean and brighter than the other nights.",
   "put_to_the_owner": "Pool evening A; staff steps evening B and night A (with the lounge's windows to be darkened); Mountain Path evening B and night B."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look. Lets go with your picks above as well. they look pretty good.\"",
+  "pool_evening": {
+   "version": "a",
+   "render": "ui2_pool_evening_a_00001_.png",
+   "sha256": "b5f285e8178c4921f0abd79bb4824ff82cee9f3ed14fc486c7f55ca6986f5bd8",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/pool_evening_1920.png",
+   "fit_sha256": "69888ef94d47869c00abbd4c8ef248a64156d98506916bdea4df075a7b6a40b8"
+  },
+  "staff_yard_evening": {
+   "version": "b",
+   "render": "ui2_staff_yard_evening_b_00001_.png",
+   "sha256": "6888dc96bb4ad508f8e6388c8a169c9beaebee27f958c26065959eb15b6d32e5",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/staff_yard_evening_1920.png",
+   "fit_sha256": "bac83789376c5b041f86b6aa941d4be1cb1f39de274f44a100abf255c9ab5a76"
+  },
+  "trailhead_evening": {
+   "version": "b",
+   "render": "ui2_trailhead_evening_b_00001_.png",
+   "sha256": "4266cb80fcb2b9cd7a9634b46f6af3321c63e48631097af7a535248c0389a3f6",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/trailhead_evening_1920.png",
+   "fit_sha256": "e542d49fb762804fa812a7c8bb1c04df734bb28a737361918370d28c58521284"
+  },
+  "trailhead_night": {
+   "version": "b",
+   "render": "ui2_trailhead_night_b_00001_.png",
+   "sha256": "380bc3585bdf81c58eb02356192c9805604356f23fad21e43696ad797e9f2877",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/trailhead_night_1920.png",
+   "fit_sha256": "51a41e0919815fb7efc006ef7c3cd516a400fd2630e3f2211cdef19236d14297"
+  },
+  "staff_yard_night": "version A, with the teachers' house dark on its ground floor: see art_14q_early.json"
  }
 }

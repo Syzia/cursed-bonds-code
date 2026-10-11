@@ -1,6 +1,7 @@
 {
  "about": [
-  "The Staff Building Steps at Night, one change: written by hand on 11 Oct 2026 after reading art_14p.json. Both versions kept the teachers' house lit on both floors, as its chosen day picture has it. By 5.7a a room is lit at Night only when someone is up in it: Yaga is up upstairs on every Night and the lounge on the ground floor is empty. One named change on version A (given at full size) by the tool's own keep-everything prompt with the change as its own sentence, as in 8b and 15s."
+  "The Staff Building Steps at Night, one change: written by hand on 11 Oct 2026 after reading art_14p.json. Both versions kept the teachers' house lit on both floors, as its chosen day picture has it. By 5.7a a room is lit at Night only when someone is up in it: Yaga is up upstairs on every Night and the lounge on the ground floor is empty. One named change on version A (given at full size) by the tool's own keep-everything prompt with the change as its own sentence, as in 8b and 15s.",
+  "Second time the editor has changed more than the one thing asked (15s widened a door; here a pavilion was lit, or a curtain taken). A repaint of the same camera is a source of pixels: the one region that had to change is placed by tool, and nothing else is taken from it."
  ],
  "written": "2026-10-11",
  "sentences": {
@@ -23,5 +24,21 @@
    "prompt_sha256": "575deb7f0083513d89bb6b1cde176d7ca78e43b4e5e416cc83647812c28af217"
   }
  ],
- "workflow_sha256": "f3e832b61db83a457288b1293ce2983de1e73afaa3591d757ce86353227394fc"
+ "workflow_sha256": "f3e832b61db83a457288b1293ce2983de1e73afaa3591d757ce86353227394fc",
+ "renders_sha256": {
+  "ui2_staff_yard_night2_a_00001_.png": "08441dbe3fa0b42cc0340f2da4a5b15d2b87c66599e24e41e073798683d2dae4",
+  "ui2_staff_yard_night2_b_00001_.png": "2d918cd7fc96e447cda86baacbd56062d78d6def824da1c5f2b1e826aadea938",
+  "ui2_staff_yard_night_lounge_00001_.png": "6b05858d6af6c6eb13de4168c6313df3872959157f09543c82e7a238466838f0"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look. Lets go with your picks above as well. they look pretty good.\"",
+  "staff_yard_night2_a": "The ground floor is dark and the door's red curtain is kept, but the office pavilion's paper screens are now lit: a light added where the plan has nobody.",
+  "staff_yard_night2_b": "The ground floor is dark and nothing else is lit, but the red curtain is gone from the house's door.",
+  "staff_yard_night_lounge": {
+   "what": "CHOSEN (the owner had chosen night A with this change owed). The night picture of 14p's version A, with ONLY the ground-floor strip of the teachers' house taken from version A of this repaint: both ground-floor windows dark, the curtain kept, no light under it. Every other pixel is the chosen night's own: the pavilion, the hall and the offices are dark, the upstairs windows lit, the same moon.",
+   "how": "tools/art/staged/early/lounge_dark_14q.py (our own tool): a rectangle over the house's ground floor, softened by 3 px. Changed pixels lie within (2230, 780)-(2752, 976) of 2752 x 1536.",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/staff_yard_night_1920.png",
+   "fit_sha256": "eb6b8079b232583c4db85da03322008b2898b0b07ba4b9b12d36d96cf7a16d3e"
+  }
+ }
 }
