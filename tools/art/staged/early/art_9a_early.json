@@ -1,0 +1,67 @@
+{
+ "about": [
+  "Sitting 9a: the Boys' Dormitory corridor and Yuji's room, written early by hand on 11 Oct 2026 after the mountain was finished (O59), and handed over unasked. Both are new places, composed, as the plan has them.",
+  "The corridor follows the owner's door rules (O37, made for the girls' corridor and said to hold for this one): six doors, three a side, evenly spaced, each facing the one opposite, and no window in a wall that has doors. Its far end holds the door of My Room, so no window is in view at all, and the record's \"window seat\" is dropped: a window beside a door is what the owner refused. It is lit by ceiling lamps and by daylight from the entrance behind the camera.",
+  "The way out to the garden is not painted: the chosen garden shows the house with an OUTSIDE stair to an upstairs gallery, so one comes in at the corridor's end, behind the camera, and the exit goes to the bottom of the picture (5.2's rule). The record's \"shoe rack at the head of the stairs\" stands by the entrance, near the camera on the left.",
+  "The corridor is given the chosen girls' corridor as the camera and the door spacing to keep, with the tool's idea of a kept camera in the file's own words; the boys' house from outside; and the chosen My Room for the same house's plaster and timber. The fifth go at the girls' corridor is why: given any corridor picture the editor keeps its doors where they are, and these are the doors wanted (Method note 26).",
+  "Yuji's room is on the garden side: its window shows the gallery's rail, the pond below and the girls' dormitory across the garden (the record's line says the garden and its pond; the house opposite is named so that the editor paints the right one).",
+  "NOBODY is in either picture (K16: a bedroom). The prompt check, run for the places by name, refused \"the room of somebody who loves films\" at the first writing; it reads \"a room given over to films\"."
+ ],
+ "written": "2026-10-11",
+ "refs": {
+  "boys_dorm": "Picture 1 is the corridor of the other dormitory of this school, already painted: keep its camera, straight down the middle of the corridor, and keep the even spacing and the equal size of its six doors, three in each side wall, each facing the one opposite. The new picture is the corridor of a different house and differs as the words below say. Picture 2 is that house, cut from a picture already painted and seen from outside: two storeys of dark timber with a gallery along the upper floor. Picture 3 is a bedroom of the same house, already painted: the new corridor has the same pale plaster, dark timber posts, timber ceiling and polished timber floor. Do not copy the furniture of picture 3.",
+  "yuji_room": "Picture 1 is the dormitory garden, already painted: the same school. This room is upstairs in the house on the left of picture 1, and what is seen through its window is that garden from above. Picture 2 is that house, cut from picture 1 and seen from outside: dark timber, with a gallery and its rail along the upper floor. Picture 3 is another bedroom of the same house, already painted: the new room has the same pale plaster, dark timber posts, timber ceiling, polished timber floor and window frames. Do not copy the camera, the layout or the furniture of any of the three pictures: the new picture is taken indoors, in a different room."
+ },
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of shelves and anything else one would walk to or use; the walls there are plain plaster and timber, fully painted.",
+ "the_place": {
+  "boys_dorm": "the upstairs corridor of the boys' dormitory, the house of dark timber of picture 2, seen straight down its middle from just inside its entrance. It is a straight, wide corridor, about three metres wide and twelve long, with walls of pale plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. It has seven doors and no window. In the left wall are three doors and in the right wall three doors: six plain sliding doors of dark timber boards, all the same size, all shut, evenly spaced along the walls, each one facing the door opposite it, with the same width of plain plaster wall between each door and the next. In the middle of the far end wall is one more door of the same kind, shut. There is no window in either side wall and none in the end wall: the corridor is lit by a row of plain round lamps on the ceiling, which are on, and by daylight that comes in from behind me and lies along the floor. Against the left wall, near me and before the first door, stands a low open shoe rack with rows of shoes. On the far end wall, beside the door, hangs a notice board with small sheets of paper pinned to it and no writing that can be read. The corridor is empty and tidy, and its floor is clear and open across the whole bottom of the picture",
+  "yuji_room": "a bedroom upstairs in the boys' dormitory, the house of dark timber of picture 2: a room given over to films. It is a tidy, cheerful room about five metres long and four wide. I stand inside at one end and look along the room. In the left wall, near me, is the door, a plain sliding door of dark timber boards, shut. Beyond the door, along the left wall, stands a low bed, neatly made, with a plain blanket and nothing lying on it. On the far wall hang film posters: bright pictures of cities, monsters and spaceships with no lettering on them. Under the posters, against the far wall and right of the middle, stands a shelf filled with rows of film cases, and beside it a small television on a low stand, switched off, with a round floor cushion on the floor in front of it. In the right wall, further along than the middle, is a wide window: through it I see the timber rail of the upstairs gallery just outside, the garden's pond below, and across the garden the white-plastered house with flower boxes under its windows. The stretch of the right wall nearest me is plain plaster. The floor is polished timber boards, clear and open across the whole bottom of the picture"
+ },
+ "pictures_given": {
+  "girls_dorm_1920.png": "e2bf4ba2484016ad3d8f3707b4fbebd1261c37b1419c77e0f2da122dcddfd113",
+  "dorm_yard_1920.png": "0f65262e426abe9be805f35c55f0b9c4068f5e8816ff05d3c702a863f0ec536a",
+  "your_room_1920.png": "7c7b090d4f7e97dbf768c42a70d96ca3a5c9b8c15911c06579e68c1a859ecc7f",
+  "crops/boys_dorm_outside.png": "730bee3af9238bf7a589fc5f6ca881779f43f763997b515ced9cb48076406e29"
+ },
+ "crop": {
+  "of": "ui2_dorm_yard_a_00001_.png",
+  "box": [
+   0,
+   200,
+   1160,
+   1300
+  ]
+ },
+ "rows": [
+  {
+   "label": "Boys' Dormitory, the corridor",
+   "kind": "composed",
+   "place": "boys_dorm",
+   "saves": [
+    "ui2_boys_dorm_a",
+    "ui2_boys_dorm_b"
+   ],
+   "seeds": [
+    4776,
+    4777
+   ],
+   "prompt_sha256": "5bc533e72daa0f1ca5431068f7594756276a301ae8cce1e475493d30c31a49d0"
+  },
+  {
+   "label": "Yuji's Room",
+   "kind": "composed",
+   "place": "yuji_room",
+   "saves": [
+    "ui2_yuji_room_a",
+    "ui2_yuji_room_b"
+   ],
+   "seeds": [
+    4796,
+    4797
+   ],
+   "prompt_sha256": "0981e49deb571e21a68b31461582536f0320ec7c6306fa246630148447261eb0"
+  }
+ ],
+ "workflow_sha256": "a66bcbac43c8a99bde89c1d3f8d7dcdac87c54445e9b9ec7e461d56702115494",
+ "cost": "4 renders, about $0.64"
+}
