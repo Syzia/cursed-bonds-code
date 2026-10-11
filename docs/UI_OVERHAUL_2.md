@@ -147,6 +147,7 @@ Eighteen pages of screenshots from a playthrough, then these notes, verbatim:
 | The picks of that sitting, put to the owner with one sheet. | In chat, 11 Oct: "Lets go with your picks" | **Chosen: the Onsen's rest hall A and the sauna B** (plan: owner row O58). Nobody is in either. Left for the mountain: the rest hall's evening and night. |
 | The next file, handed over unasked after that choice. | (nothing asked) | **The Onsen's rest hall after dark is written** (`art_19b.json`, 4 pictures, about $0.64): its evening, lit by the sunset through the open end and the entrance, and its night with every light off, lit by moonlight, since nobody is up there at Night. The sauna needs neither. Nobody is in either picture. Record: `tools/art/staged/early/art_19b_early.json`. |
 | The Onsen's rest hall after dark (`art_19b.json`); two versions of each. | In chat, 11 Oct: "The renders are in, take a look" | **Read, and picks put to the owner: evening A, night A.** Nothing moved and nothing was added in any of the four; nobody is in any, and the spring is empty. The evening A is the warmer, the night A the darker of each pair. Record: `tools/art/staged/early/art_19b_early.json`. |
+| The picks of that sitting, put to the owner with one sheet. | In chat, 11 Oct: "Lets go with your picks" | **Chosen: the Onsen's evening A and night A** (plan: owner row O59). The mountain is complete: its five places at every hour, the look at the veil, and the sauna. |
 
 ## 3b. The look test and the owner's ruling (6 Oct)
 
