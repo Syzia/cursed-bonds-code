@@ -2,7 +2,8 @@
  "about": [
   "Sitting 19b: the Onsen's rest hall in the evening and at night, written early by hand on 11 Oct 2026, straight after the owner chose the rest hall and the sauna (O58), and handed over unasked. Relit from the chosen rest hall (the 1920 px fit, laid into the scratch root). The sauna has one picture for every hour (5.7).",
   "The chosen hall shows no lamp, so the evening is lit by the sunset through the open end and the entrance, and the sentence forbids a new lamp. At Night nobody is up there (the students are at home; the soak is shut), so every light is off and the hall is lit by moonlight (O38, D61), the fridge's glass dark with the rest; the sky through the openings is a small piece, so no moon is in view (O44). What stands outside is named in both sentences, so that it stays (Method note 30).",
-  "Nobody is in either picture and the spring is empty (K16); the prompt check was run for the place by name."
+  "Nobody is in either picture and the spring is empty (K16); the prompt check was run for the place by name.",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:47) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -44,5 +45,21 @@
   }
  ],
  "workflow_sha256": "061fce9a6c4f7dfa63ad3c1791e20fec974e37bc3efe03e63507140f48612abc",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_bathhouse_evening_a_00001_.png": "3ea9d3730b818daa830fe694a09439bbe2827bbb9203617c737c11ceb33868b8",
+  "ui2_bathhouse_evening_b_00001_.png": "6d98ec13d73b8aa47210603bc8503f4b4ef79bf3f331bdb15fccc9b6245e64ba",
+  "ui2_bathhouse_night_a_00001_.png": "8e31602b6c3183cecd688e74169a30778d4f93e11306ce1bd8b7f1a420b065ed",
+  "ui2_bathhouse_night_b_00001_.png": "93d2a6c99b8b2b0e6d062920710173c1c0dbbe7b1262677ec345067177ba1267"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "Both pairs through install_redo.py --relight bathhouse <hour> <a> <b> --dry --against the chosen rest hall, with the scratch record; then by eye against the day picture for anybody, for anything added and for what stands outside. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_onsen_hours.jpg.",
+  "install_redo_dry": "Evening A and B PASS; night A and B PASS (no point off by a pixel in any of the four).",
+  "bathhouse_evening_a": "PICK. Warm golden light comes in through the entrance and the open end and lies across the floor; the sky over the spring is orange. Nobody; the spring empty; no lamp added; the stones, the fence, the cedars and the slope, and the basin, path and cedars outside the entrance, are all there. Mean 113.",
+  "bathhouse_evening_b": "The same hall, pinker and a little darker (mean 105). Nothing added.",
+  "bathhouse_night_a": "PICK. Every light off, the fridge's glass dark; moonlight through the open end and the entrance lies on the floor; stars over the slope, no moon in view; the spring pale, steaming and empty; what stands outside is there as dark shapes. Nobody. Mean 81.",
+  "bathhouse_night_b": "The same, a little brighter (mean 87).",
+  "put_to_the_owner": "Evening A, night A."
+ }
 }
