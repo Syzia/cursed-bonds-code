@@ -1,0 +1,68 @@
+{
+ "about": [
+  "Batch 0c of docs/UI2_DESIGN.md 5.13 (D57): Yuji's blink and talking mouth, bought again from his new calm face. Written on 12 Oct 2026, after wave 0 was merged, by the art-install role.",
+  "Nothing of Yuji's is in the game yet. His whole set goes in in one step, tools/install_set.py yuji, once these two pictures are back: six sprites, six side portraits, the two overlay pictures and his eye and mouth boxes.",
+  "The pictures stay where they are made, in ~/Desktop/JJK Game images/redo_yuji/ ; this file holds their names and sums."
+ ],
+ "written": "2026-10-12",
+ "staged": {
+  "made_by": "python3 tools/install_set.py --stage yuji '~/Desktop/JJK Game images/redo_yuji'",
+  "from": {
+   "calm": "redo_yuji/yuji_base.png (1536x2752, flat green; chosen on 7 Oct, O29 to O32)",
+   "five faces": "redo_yuji/composited/yuji_<face>.png (batch 0b, laid onto the calm picture on 7 Oct)"
+  },
+  "folder": "~/Desktop/JJK Game images/redo_yuji/staged",
+  "char_sha256": {
+   "neutral": "6be9e86f030b393ac5b94a7afadcff17a1450c97ff78351287662ad8e52d493a",
+   "happy": "63371199baab1cbd98b87e45fb3ceb42989993c1b8a4595f4686613952faf24e",
+   "serious": "3150378b71b4c8a523db34a60dba9bbb9843fb192a62a9de02cb5522ab29066b",
+   "angry": "e16ac9c5a268f8235691024094185057cff2ff1fffc9bf4c77a767462b13119b",
+   "surprised": "1d2a3e57e80dc193cda1a453cb4d37cf180de2cb27aad69fcf00b708af62afc6",
+   "sad": "f0ccd1033a9ed50d5ebd5e707a075930202da070cad1c7b045908ae670d697ba"
+  },
+  "side_sha256": {
+   "neutral": "fa77a15bfead5f295f2c98c95fd9b3afbebce14b38b0cc71b8c357c172440056",
+   "happy": "dfc70af3bd88d5aa4ce158bcaa1835f3e4c8a23640ac27626484ac67797d531a",
+   "serious": "a731d4324f882a921e8afedb2c77187a53960ba7d242c1ab88608eaf62343847",
+   "angry": "e1fca3004a10f109698dde6d0ce18c093056e5ef48cc2a1adc7c58565304b184",
+   "surprised": "7946ecf9bdc396aff55ceb570e2edd3cb4892bffa498db744aa2f77fabebdd1b",
+   "sad": "790d99e44f83de368312f84dfab7c366d4a9483d242ccc91cecb352feed6e3eb"
+  }
+ },
+ "read_2026_10_12": {
+  "the tool": "each of the six: 18 edge pixels still carry the backdrop's colour (0.002% of the figure)",
+  "keyedge.py --check, on a full-size cut-out of the calm picture": "0 strongly tinted px, 53 faintly, 0 pockets left solid",
+  "cutcheck.py, the same": "a piece cut off: 57 px in 2 places, at (1055, 2409) and (573, 2386) of the render; a gap left filled: 0; stray marks: 15 px in 12 places, none as large as 12 px; fainter specks: 678 px, each under a tenth solid",
+  "by eye": [
+   "The two places cutcheck names are the insides of the two shoelace loops: the backdrop shows through them in the render and they are rightly clear in the cut-out; a sliver of the lace's own shadow inside each keeps a faint green cast, a couple of pixels at the game's size.",
+   "On a light and a dark ground, whole and at three times the size (hair, a hand, the shoes): no green fringe, no hole, no piece missing. A dotted line of the fainter specks beside the trouser's edge can be made out at three times the size on a dark ground and not at the size the game draws.",
+   "The six share one body: each other face differs from the calm sprite only inside the box (330, 276) to (413, 382) of the 760x1400 canvas.",
+   "He stands as today's Yuji does: 1,146 px tall on the canvas, his head at y 220 and his soles at y 1365."
+  ],
+  "sheets": "shots/yuji/ (ignored by git): whole_old_new.jpg, heads_six.jpg, edges_3x.jpg, cutcheck_places.jpg, closeup_old_new.jpg"
+ },
+ "close_up": {
+  "made_by": "python3 tools/install_face.py --prepare yuji --sprite '<staged>/char/yuji_neutral.png' --images '~/Desktop/JJK Game images/redo_yuji'",
+  "cut": "a 309 px square of the staged calm sprite at (218, 208), on flat green, enlarged to 1024x1024 (redo_yuji/masks/yuji_fx_crop.txt)",
+  "file": "redo_yuji/yuji_fx_in.png, copied as yuji_new_fx_in.png into ~/Desktop/JJK Game images/ and ComfyUI's input folder",
+  "sha256": "7364db6c6365b09b5e75eb8f1bfd502396bc0d5076c51f4faf7717645ebfe961"
+ },
+ "workflow": {
+  "file": "~/Desktop/JJK Game images/yuji_fx.json",
+  "sha256": "8ff18ee3c049dd436ff6d48d281aaae23ba165f8afd69f1ed2bd8a5e6b8d01d6",
+  "renders": 2,
+  "cost": "about $0.32 (Nano Banana Pro, one version each: they are laid over a sprite that is already chosen)",
+  "saves": [
+   "yuji_new_blink_nanobanana",
+   "yuji_new_talk_nanobanana"
+  ],
+  "written_by_hand_because": "tools/make_edit_workflow.py reads the close-up only from ~/Desktop/JJK Game images/yuji_fx_in.png, which is still the close-up of today's Yuji (4 Oct), and saves under the names that run used (yuji_blink_nanobanana_00001_ and yuji_talk_nanobanana_00001_ are in ComfyUI's output from then). The workflow was built by the tool's own build(), its wording unchanged, with the input named yuji_new_fx_in.png and the results yuji_new_..., so that nothing of the old drawing can be taken for the new. The tool has no --images option yet: a redrawn person's close-up is written by install_face.py --prepare --images into the staging folder, where make_edit_workflow.py does not look."
+ },
+ "after_the_owner_has_run_it": [
+  "python3 tools/install_face.py ~/ComfyUI-Shared/output/yuji_new_blink_nanobanana_00001_.png yuji blink --sprite '<staged>/char/yuji_neutral.png' --images '~/Desktop/JJK Game images/redo_yuji' --stage '<staged>'",
+  "python3 tools/install_face.py ~/ComfyUI-Shared/output/yuji_new_talk_nanobanana_00001_.png yuji talk --sprite '<staged>/char/yuji_neutral.png' --images '~/Desktop/JJK Game images/redo_yuji' --stage '<staged>'",
+  "Read shots/art/fx_yuji_blink.png, fx_yuji_talk.png and fx_yuji_blink_faces.png (which faces take the blink) before going on.",
+  "python3 tools/install_set.py yuji '<staged>' --dry ; then, with the game closed and game/*.rpyc backed up, without --dry: the fourteen pictures, his faces.json rows, the uniform's cloth (cloth_match.py --apply yuji --redrawn) and game/jjk_sprites.rpy regenerated.",
+  "Afterwards (docs/UI2_CONTRACTS.md A2): tools/smoke.sh u2_baseline, and tools/smoke/baseline_sprite_tree.txt written again once its tree line has passed; tools/load_all_saves.sh; every harness that shows Yuji; tools/smoke.sh u2_dump and the art tools' suite."
+ ]
+}
