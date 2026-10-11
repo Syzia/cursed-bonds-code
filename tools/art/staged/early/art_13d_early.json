@@ -1,0 +1,90 @@
+{
+ "about": [
+  "The teachers' house after dark: sitting 13b, written early by hand on 11 Oct 2026 on reading art_13f.json, BEFORE the owner chose, on the picks put to them: the lounge made again, version B, and the dormitory's third try, version A (which has four bedroom doors: put to the owner as a question; if they want six, art_13e.json is not run and is written again). Two files, one a room.",
+  "art_13d.json, the lounge: its evening with the ceiling lamps on (the staff sit there of an evening) and its Night with every light off (nobody is up there at Night by any table: 5.7a).",
+  "art_13e.json, the dormitory: its evening and its Night, both with its lamps on (someone is up there on all seven Nights, at the bench: 5.7a), every lamp the room has (O48): the paper lamp over the hearth and the work lamp.",
+  "What stands outside is named in every sentence; no moon is in view (O44). NOBODY is in any picture. Each day picture's fit is laid only into the scratch root. (An earlier writing of these two files, from pictures the owner then had made again, was never handed over.)"
+ ],
+ "written": "2026-10-11",
+ "rooms": {
+  "teachers_lounge": {
+   "file": "art_13d.json",
+   "rows": [
+    {
+     "label": "Teachers' Lounge, evening, the lamps on",
+     "kind": "relight",
+     "place": "teachers_lounge",
+     "saves": [
+      "ui2_teachers_lounge_evening_a",
+      "ui2_teachers_lounge_evening_b"
+     ],
+     "seeds": [
+      5540,
+      5541
+     ],
+     "prompt_sha256": "9589347615c76d4b2bfa55335700ec295a67a1b92275c30da1f5ae1cf60f7013"
+    },
+    {
+     "label": "Teachers' Lounge, night, every light off",
+     "kind": "relight",
+     "place": "teachers_lounge",
+     "saves": [
+      "ui2_teachers_lounge_night_a",
+      "ui2_teachers_lounge_night_b"
+     ],
+     "seeds": [
+      4098,
+      4099
+     ],
+     "prompt_sha256": "d599f97ca2e6a88df6f90fda52fd573f43b978354d597913b8714f3cf7121a5d"
+    }
+   ],
+   "sentences": {
+    "evening": "Change the time of day to early evening: the round lamps on the ceiling are switched on and give a warm light. Outside the entrance the sky is orange and pink and the yard lies in low warm light, and everything that stands outside is still there: the bamboo fence and the paving. The paper windows glow with the last of the daylight. The television stays off. Add no new lamp, no new light and no new window.",
+    "night": "Change the time of day to night, with every light in the room switched off: the ceiling lamps are dark and the television is off. Outside the entrance it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the bamboo fence and the paving. The paper windows are dim and blue. The room is lit only by cool blue moonlight coming in through the entrance and the windows, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the sofas, the table and its tea things, the kitchen, the stairs, the board on the wall and the small bar beneath it. Add no new light."
+   },
+   "made_from": "ui2_teachers_lounge2_b_00001_.png",
+   "workflow_sha256": "9de14461436703901706b9a75c674819adff5055c22838174af9b154de6e6662"
+  },
+  "teachers_dorm": {
+   "file": "art_13e.json",
+   "rows": [
+    {
+     "label": "Teachers' Dormitory, evening, the lamps on",
+     "kind": "relight",
+     "place": "teachers_dorm",
+     "saves": [
+      "ui2_teachers_dorm_evening_a",
+      "ui2_teachers_dorm_evening_b"
+     ],
+     "seeds": [
+      3996,
+      3997
+     ],
+     "prompt_sha256": "ce578fe62a8fabe6aba96d774773a287802445c6b8ce0d4ca8b31dfdde470f6c"
+    },
+    {
+     "label": "Teachers' Dormitory, night, the lamps on",
+     "kind": "relight",
+     "place": "teachers_dorm",
+     "saves": [
+      "ui2_teachers_dorm_night_a",
+      "ui2_teachers_dorm_night_b"
+     ],
+     "seeds": [
+      3394,
+      3395
+     ],
+     "prompt_sha256": "c3285bfe81429d64773fe10998dfbeb0e02f54154cb49ace3221939bdd150a53"
+    }
+   ],
+   "sentences": {
+    "evening": "Change the time of day to early evening: the paper lamp over the hearth and the work lamp on the bench are switched on and give a warm light. Outside the end window the sky is orange and pink and the trees are in low warm light, and everything that stands outside is still there. Every door is shut, as it is now. Add no new lamp, no new light and no new window.",
+    "night": "Change the time of day to night, with the paper lamp over the hearth and the work lamp on the bench switched on: they give warm pools of light on the hearth, the cushions and the bench, and the far corners are in soft shadow, but everything in the room can still be seen clearly: the doors and their plates, the hearth and its cushions, and the bear and the sewing things on the bench. Outside the end window it is night, under a deep blue sky with stars; the moon itself is not in view; and the trees outside are still there, as dark shapes. Every door is shut and no light shows round or under any of them. Add no other lamp and no other light."
+   },
+   "made_from": "ui2_teachers_dorm3_a_00001_.png",
+   "workflow_sha256": "f07209bdb46b57c03d617a942fd662f279cb1c172c6e1d1dfab3ca7c4c71c99b"
+  }
+ },
+ "cost": "8 renders in two files, about $1.28"
+}

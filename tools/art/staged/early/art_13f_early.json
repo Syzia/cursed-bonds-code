@@ -3,7 +3,8 @@
   "The teachers' house again, written by hand on 11 Oct 2026 at the owner's word of the lounge and the two tries at the dormitory: \"I think we should redo them with less cursed dolls sitting around. And the top floor does need to be redone as there is a door on top of the staircase. Also maybe a little bar or wine rack could be fitting downstaris.\"",
   "THE LOUNGE is drawn again from the version the owner chose (B) as the camera to keep (the tool's `ref_old_camera` sentence, with 'everything picture 1 has stays where it is' and what is taken away and added: Method notes 36 and 38). Taken away: the doll and the pincushion on the sofa; no doll or toy is left in the room. Added: a small bar (a short counter with a wine rack in its front, glasses on a rail above it, a high stool) against the right wall, beyond the duty board and before the foot of the stairs, clear of the picture's right edge. Bottles and tags carry no lettering (O60).",
   "THE DORMITORY is composed a third time. In both earlier tries the stair opening lay at the foot of the left wall's near door, the owner's 'door on top of the staircase'. The stairs are now behind the camera and out of the picture, as the way back is in the boys' corridor (5.2's rule: no door in view, so the bottom of the picture), so no door stands at them and the whole floor is clear. The bench is a sewing bench with ONE half-sewn cloth bear and no other doll. The six doors are asked for a third way: each side wall as a row of three single sliding doors, each about a metre wide in its own frame, and the count said out in the words. If it comes back with four again, the count is put to the owner as a question (three teachers live there; the bedrooms are doors, never places).",
-  "NOBODY is in either picture; NOTHING carries lettering."
+  "NOBODY is in either picture; NOTHING carries lettering.",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 18:46) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -50,5 +51,21 @@
   }
  ],
  "workflow_sha256": "3156d6bbf12991d75ef94a12db34af2f7da21dcf3724262594990b289465d1ab",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_teachers_lounge2_a_00001_.png": "9b59ef970632d6d4fb1fc04ceddec8238ee2c7635b4afa38cd512ed4d30a51a0",
+  "ui2_teachers_lounge2_b_00001_.png": "d6f666dbb18dca157642fb3fbadb52ecc75d200e6d235c4f6050580d04202744",
+  "ui2_teachers_dorm3_a_00001_.png": "d9dd3e8f171baa2e729788bcc5bb901cc8eff433b0d0a112fe6c6c35aaeebcb8",
+  "ui2_teachers_dorm3_b_00001_.png": "024b293fcd104b51e0feb305f846d29f913138bf2cec6e4dcd154cce4638812f"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye, each against its checklist and the lounge against the version chosen in O67; the dormitory's doors counted; its right edge and bench and the lounge's bar at the render's own size. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_teachers_house_3.jpg.",
+  "teachers_lounge2_b": "PICK. The chosen lounge held still: the entrance and its curtain, the slippers, the paper windows, the television, the kitchen, the stairs, the duty board and the seats round the low table with its tea things are where they were. No doll and no pincushion: the sofa is empty. The bar is a small cabinet against the right wall beneath the duty board (about x 1416 to 1664 of 1920, inside the frame's right limit): a counter with wine glasses hanging under its top, a rack of dark bottles lying on their sides, and a round stool before it. No lettering.",
+  "teachers_lounge2_a": "The same room, but its bar is a large cabinet in the foreground at the right edge (from about x 1616 to the edge), with glasses on a rail high on the wall: under the icon column.",
+  "teachers_dorm3_a": "PICK, WITH A QUESTION FOR THE OWNER: FOUR bedroom doors, two in each side wall, all alike (pairs of sliding paper panels), each with a blank plate; the plan and the owner's rule for a house have six. No stairs and no opening in the floor are in view; at the right edge a plain recess in the wall reads as the landing. The hearth with its kettle and cushions, a round paper lamp over it, a wide end window with the cedar slope, and under it a sewing bench: folded cloth, spools of thread, a pincushion, scissors, a work lamp and ONE half-sewn bear. No other doll. No lettering.",
+  "teachers_dorm3_b": "Four doors too, and the two walls do not match: lattice doors on the left, plain white ones on the right. A smaller end window.",
+  "the_door_count": "Three ways of asking (words; the boys' corridor as a pattern; a counted row of three single doors) each gave four doors in a room of this width. Put to the owner: keep four (three teachers live there and one door is spare; the teachers' bedrooms are doors, never places, so nothing is walked into) or try again for six.",
+  "put_to_the_owner": "The lounge: B. The dormitory: A, if four doors will do. With art_13d.json (the lounge's evening and night) and art_13e.json (the dormitory's), written from those two."
+ }
 }
