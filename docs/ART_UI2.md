@@ -22,7 +22,10 @@ A sitting is one small batch of pictures: twelve or fewer, about $0.16 each.
 2. **You drag it into the local ComfyUI and press Run, once.** You save
    nothing and move nothing: the results land in ComfyUI's output folder. If
    it stops with a rate-limit or "high demand" error, wait a minute and press
-   Run again; a picture that already finished is not paid for twice.
+   Run again straight away: a picture that already finished is not paid for
+   twice. (That holds only until another file is run. ComfyUI remembers the
+   last file's results and no others, so a file run again later is painted
+   and paid for again.)
 3. **You say the renders are in.** Claude looks at every one, runs the check
    on it (below), and shows you a sheet for each picture: version A beside
    version B, with what the check said and which one it would pick, and why.
