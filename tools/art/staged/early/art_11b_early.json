@@ -3,7 +3,8 @@
   "Nobara's room and Maki's after dark: sitting 11b and the two rooms' share of batch 47, written early by hand on 11 Oct 2026. WRITTEN TWICE. The first writing (commit 60e0770) was made from the plainer rooms picked in 11a and was never run: the owner asked whether the rooms should be 'more girly' or stay 'bland', and both were drawn again with more of their owners in them (art_11d.json). This second writing is made from the fuller rooms put to the owner as picks (Nobara's B, Maki's A), BEFORE the owner chose. If the owner chooses otherwise it is written again.",
   "Two files, one a room (art_11b.json: Nobara's; art_11c.json: Maki's), each the room's evening, its Night with nobody up (`night`) and its Night with her up (`lit`): by Nobara's bedside lamp, by Maki's desk lamp (O62, O48).",
   "Nobara's window faces west onto the garden: the evening sun comes straight in, and at Night the boys' dormitory across the garden has a few upstairs windows lit, as the garden's chosen night has (O43). Maki's faces east onto Gojo's office and the Principal's Hall, shut at Night and dark. What stands outside is named in every sentence; no moon is in view (O44). The night sentences name the fuller rooms' own things (the clothes on their rail, the rack of wooden weapons, the mat and the dumbbells) so that they stay.",
-  "NOBODY is in any picture (K16: bedrooms); the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root."
+  "NOBODY is in any picture (K16: bedrooms); the prompt check was run for the places by name. Each day picture's fit is laid only into the scratch root.",
+  "The owner chose the fuller rooms (O65) and ran both files on 11 Oct 2026; read the same day, see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "rooms": {
@@ -116,5 +117,45 @@
    "workflow_sha256": "3a1f07f16c535c48983d8a906cd2c4c7fa7c50283575c21523a45f6c23bf4a90"
   }
  },
- "cost": "12 renders in two files, about $1.92"
+ "cost": "12 renders in two files, about $1.92",
+ "renders_sha256": {
+  "ui2_maki_room_evening_a_00001_.png": "1a4152aa3c5500dfd6fe0f341b5450e5b73042ca10ee96a860da767aaad9d5d4",
+  "ui2_maki_room_evening_b_00001_.png": "63437f839451bbe76cc040d339478d85561b846334c4c995d5c4e8c5ce4756dc",
+  "ui2_maki_room_lit_a_00001_.png": "1d4007868236d2bf2e67bb5612a3fdaa5f8318dbe8f5cb029557ca63ba73021b",
+  "ui2_maki_room_lit_b_00001_.png": "2afa537681bd5db2cb0b17059f0bd84e707f7108209cc773ff0805966507013d",
+  "ui2_maki_room_night_a_00001_.png": "68ddd134ac93710050426a775698856e87fe152df1937d8b1072ffc8a1ff5733",
+  "ui2_maki_room_night_b_00001_.png": "9a1dfb69d06aeb385d1670a2c4404c61f7fb564b531a47de1af716c4bf291cf2",
+  "ui2_nobara_room_evening_a_00001_.png": "d658c2819bccbf366ed888aa5892f22479519de529df9957a13660481830319c",
+  "ui2_nobara_room_evening_a_00002_.png": "abb49fca3d9f4a761c3f60f73f40e5b461b0955e833b9c1d06c62545e8a5e4c2",
+  "ui2_nobara_room_evening_b_00001_.png": "fbbd1862f5f06582cff021a6d0cda93e9d1c1b3571bc04c644fff660852799b8",
+  "ui2_nobara_room_evening_b_00002_.png": "1ffb521956003fd77b4259bc17c4e1cb4eede22831279af599cb288ea15177f7",
+  "ui2_nobara_room_lit_a_00001_.png": "5890e977c8d9011e2df4030e95536613ea10eed1385011272bb8dd1ec6580cf6",
+  "ui2_nobara_room_lit_a_00002_.png": "a591abbbff9bfd01c917f1dc2875d0430eea85b279162029b982afaae4b7d427",
+  "ui2_nobara_room_lit_b_00001_.png": "05f1eddeb345eb44f4d701a034733cbea7534486722938f6ebf3e414d4d8fb06",
+  "ui2_nobara_room_lit_b_00002_.png": "2cbf71c0f514b9abd48e7955f3c7484a99acac5c0672eaf7685d0a8eadca3b3c",
+  "ui2_nobara_room_night_a_00001_.png": "6f469fe87fbf2984d585e82ec3533488c7cfce6ecc81a1504f717b1f08d13c14",
+  "ui2_nobara_room_night_a_00002_.png": "2b3bdd1ba53d07b3d859c2c9e30e255a7355eb4db635c9cb70c18b9df41a1f28",
+  "ui2_nobara_room_night_b_00001_.png": "b949232c56fefc9def7a5aebccb0d2e4b6c39c7eae2563e534dc59388e3307ad",
+  "ui2_nobara_room_night_b_00002_.png": "2fc875a3180d35c5454bd8374b6058e1ea03ff6180f9d34ed77bca8b00418c10"
+ },
+ "ran_twice": "art_11b.json (Nobara's) was run twice, at 17:08 and at 17:11, with art_11c.json (Maki's) between: twelve renders of Nobara's room where six were planned, about $0.96 more. Every one of the twelve carries the rewritten file's own prompt (read from each PNG's embedded prompt), so all are from the fuller room and all are candidates: they are named by run, _00001_ and _00002_. ComfyUI keeps only the results of the last file it ran, so a file run again after another is painted and paid for again; the workflow note's sentence that a finished picture is reused holds only while no other file has run in between (a wording to correct in tools/make_scene_workflow.py's note).",
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"the new renders are in!\"",
+  "how": "All nine pairs through install_redo.py --relight <place> <hour> <a> <b> --dry --against the chosen room, with the scratch record (the lit pairs run as night pairs; Nobara's two runs each); then by eye against each day picture, the busy middle of Nobara's room at 1000 px a tile for all twelve. A measure of changed outlines against the day picture was tried and is too noisy under changed light to find added things. Sheets: ~/Desktop/JJK Game images/ui2/early/compare_nobara_hours.jpg, compare_maki_hours.jpg.",
+  "install_redo_dry": "All eighteen PASS.",
+  "nothing_added": "In none of the eighteen was anything added or taken away that I could find: the five pictures, the clothes, the shoes, the bags, the mirrors, the plant, the bottles and the tool roll in Nobara's; the rack, the uniform, the case, the desk's three things, the mat and the dumbbells in Maki's.",
+  "nobara_room_evening_b_00002": "PICK. Sunset on the rug and the floor, the garden warm outside, the boys' house and the Common Room. Mean 127.",
+  "nobara_room_evening_others": "a_00001 is brighter (130) with the sunset full on the door and the left wall; b_00001 (119) and a_00002 (120) are good too, the second with a purple sky.",
+  "nobara_room_night_b_00002": "PICK. Every light off; moonlight on the rug; outside, the boys' house with two upstairs windows lit and the Common Room dark, as the garden's chosen night has. No beam in the air. Mean 90.",
+  "nobara_room_night_others": "a_00001 (90) is as good. a_00002 lights the Common Room's glass doors, which are dark at Night, and with b_00001 (80) has a beam of moonlight hanging in the air.",
+  "nobara_room_lit_b_00002": "PICK. The bedside lamp is the only light: a warm pool on the bed's head, the wall and the clothes; the window side cool. Outside as in the night picked. Mean 91.",
+  "nobara_room_lit_others": "a_00001 (97) and a_00002 (94) are good too, a little brighter. b_00001 lights the Common Room's doors.",
+  "maki_room_evening_b": "PICK. Warm and dimmer (mean 136); it reads as evening. Both versions throw the window's pattern of sunset light onto the far wall, though her window faces east, away from the sunset: said to the owner.",
+  "maki_room_evening_a": "As bright as day (mean 148).",
+  "maki_room_night_a": "PICK. Every light off; moonlight on the mat; the small house and the great roof dark outside. Mean 97: the white walls keep the room lighter than the other dark rooms (69 to 80).",
+  "maki_room_night_b": "The same, brighter still (mean 108).",
+  "maki_room_lit_a": "PICK. The desk lamp is plainly on, with a warm glow on the desk and the wall behind it.",
+  "maki_room_lit_b": "The lamp hardly shows and the room is evenly grey.",
+  "put_to_the_owner": "Nobara's room: the second run's version B for all three. Maki's room: evening B, night A, lamp on A."
+ }
 }
