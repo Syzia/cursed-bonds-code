@@ -980,12 +980,14 @@
       {
        "place": "riverside",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: a warm orange and pink sunset sky above the mountains, and low golden sunlight from the left with long soft shadows falling to the right; the waterfall and the pool catch the warm light and the still water reflects the evening sky. Everything in the picture and on the hills is still there. Add no new light."
       },
       {
        "place": "riverside",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky with stars above the mountains, and cool blue moonlight on everything, with soft shadows; the moon itself is not in view. The waterfall is pale in the moonlight and the still water of the pool reflects the night sky. Nothing here gives light of its own. Everything in the picture and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       }
      ]
     }
@@ -1035,12 +1037,14 @@
       {
        "place": "ridge",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. The dome on the top of the rise stays as it is, black and glossy, with nothing to be seen inside it; the sunset shows only as a warm sheen on its left side. Everything in the picture, in the valley and on the far mountains is still there. Add no new light."
       },
       {
        "place": "ridge",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night: a deep blue night sky full of stars and a full moon, round and whole, high in the sky to the right of the middle, and cool blue moonlight on everything, with soft shadows. The dome on the top of the rise stays as it is, a black shape against the stars with a thin rim of moonlight on its right side; no star shows through it and nothing is to be seen inside it. The white paper streamers on the rope are pale in the moonlight. No light shows anywhere in the valley or on the mountains. Everything in the picture, in the valley and on the far mountains is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now."
       },
       {
        "kind": "veil",
