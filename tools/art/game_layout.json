@@ -1709,6 +1709,12 @@
    40,
    1700
   ],
+  "tag_edges": [
+   179,
+   1700
+  ],
+  "tag_gap": 8,
+  "tag_w": 224,
   "tag_y": 1036
  },
  "grade": {
@@ -2412,6 +2418,62 @@
     -0.03,
     0.95,
     0.45
+   ]
+  }
+ },
+ "lock_labels": {
+  "boys_dorm": {
+   "go_boys_dorm__megumi_room": [
+    457,
+    82
+   ],
+   "go_boys_dorm__senpai_room": [
+    496,
+    82
+   ],
+   "go_boys_dorm__yuji_room": [
+    493,
+    82
+   ]
+  },
+  "dorm_yard": {
+   "go_dorm_yard__girls_dorm": [
+    505,
+    115
+   ]
+  },
+  "girls_dorm": {
+   "go_girls_dorm__maki_room": [
+    450,
+    49
+   ],
+   "go_girls_dorm__nobara_room": [
+    450,
+    49
+   ]
+  },
+  "staff_yard": {
+   "go_staff_yard__gojo_office": [
+    503,
+    82
+   ],
+   "go_staff_yard__office": [
+    381,
+    49
+   ],
+   "go_staff_yard__utahime_office": [
+    510,
+    82
+   ]
+  },
+  "training_yard": {
+   "go_training_yard__pool": [
+    355,
+    49
+   ],
+   "go_training_yard__storehouse": [
+    484,
+    82
    ]
   }
  },
