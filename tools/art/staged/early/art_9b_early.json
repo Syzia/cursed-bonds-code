@@ -3,7 +3,7 @@
   "The boys' corridor after dark, and Yuji's posters: written early by hand on 11 Oct 2026 on reading sitting 9a, BEFORE the owner chose, on the picks put to them (corridor A, Yuji's room B), and handed over with those picks. If the owner chooses otherwise this file is not run and is written again.",
   "The corridor's evening and night are relit from corridor A (its fit laid into the scratch root only; nothing is written to chosen/ before the owner chooses). It has no window: the evening is its lamps and the sunset from the entrance behind the camera; at Night every lamp is off (O38, O39) and moonlight comes in from behind; no light shows at any door.",
   "Yuji's posters: one named change on room B, the tool's keep-everything prompt without the record's window line (it would repaint the view), with the change as its own sentence: every poster painted again with no lettering and a made-up subject. If taken, only the posters are placed onto the chosen render by a script, and the room's evening and night are made after it (with its two Night pictures, dark and lit, 5.7a).",
-  "The owner chose corridor A and room B (O60) and ran this file on 11 Oct 2026 (the renders are stamped 16:13); read the same day, see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O61)."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -94,5 +94,28 @@
   "boys_dorm_night_a": "Not offered as the pick: a pale patch of light lies on the right wall and across the floor as if through a window in the left wall, and the corridor has none.",
   "said_to_the_owner": "The walking machine on the right wall is a made-up one on thin legs, small at game size.",
   "put_to_the_owner": "Yuji's room with the posters of repaint B placed; the corridor's evening B and night B."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The picks as put: Yuji's room with the second repaint's posters placed; the corridor's evening B and night B.",
+  "yuji_room": {
+   "render": "ui2_yuji_room_b_placed_00001_.png",
+   "sha256": "1442cf050d7ac23029c0af9c368eb848e2aec4270995b703f52025e6e88d2f66",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/yuji_room_1920.png",
+   "fit_sha256": "669f464b73cf909ecfe31d556a3ad660b6d219f6833d1a1bb1f8a2caf6023cba",
+   "note": "The room chosen in O60 (ui2_yuji_room_b) with its posters from repaint B, placed by tools/art/staged/early/yuji_posters_9b.py: this is Yuji's room's day picture."
+  },
+  "boys_dorm_evening": {
+   "render": "ui2_boys_dorm_evening_b_00001_.png",
+   "sha256": "917ef78a92cf9dc9cc4569d2cdf3b8c8c1231747be9684fabbdc9339e4669855",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/boys_dorm_evening_1920.png",
+   "fit_sha256": "5d47a01994f2b744a2623a48a654a95e5092e5a152b4736b6a46d219268d28f1"
+  },
+  "boys_dorm_night": {
+   "render": "ui2_boys_dorm_night_b_00001_.png",
+   "sha256": "14102114873b79633ec5d3cb9ea468d9bd6abc0cffcb39af66fc476a24241894",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/boys_dorm_night_1920.png",
+   "fit_sha256": "6aef6cca1c08a460f08e2a146abb7ab4c94d4f4a5284aa3ef3d8b023f881b571"
+  }
  }
 }

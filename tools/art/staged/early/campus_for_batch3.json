@@ -517,6 +517,21 @@
      560
     ]
    }
+  },
+  "yuji_room": {
+   "place": "yuji_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "9a",
+   "chosen": "2026-10-11",
+   "render": "ui2_yuji_room_b_placed_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/yuji_room_1920.png",
+   "first_guess": {
+    "boys_dorm": [
+     270,
+     560
+    ]
+   }
   }
  },
  "fixed": [
@@ -2110,6 +2125,30 @@
     "picture": "boys_dorm",
     "rev": 2
    }
+  },
+  {
+   "id": "place.yuji_room",
+   "kind": "place",
+   "key": "yuji_room",
+   "name": "Yuji's Room",
+   "stem": "yuji_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "9",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the boys' dormitory, a house of dark timber: a low bed along one wall, film posters without lettering, a shelf of films, a floor cushion and a small television",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "yuji_room",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2365,26 +2404,6 @@
     430
    ],
    "note": "the room at the end of the boys' corridor; with a closed laptop on the desk as a named addition"
-  },
-  {
-   "id": "place.yuji_room",
-   "kind": "place",
-   "key": "yuji_room",
-   "name": "Yuji's Room",
-   "stem": "yuji_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "9",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the boys' dormitory, a house of dark timber: a low bed along one wall, film posters without lettering, a shelf of films, a floor cushion and a small television",
-   "refs_also": [
-    "dorm"
-   ],
-   "pinless": true
   },
   {
    "id": "place.megumi_room",

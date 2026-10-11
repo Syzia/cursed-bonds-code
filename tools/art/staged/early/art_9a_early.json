@@ -95,7 +95,7 @@
    "version": "b",
    "render": "ui2_yuji_room_b_00001_.png",
    "sha256": "f6f0f1b12694fd5b589c82b147c7bec01553f8e47246ec68412e3dfd3cd9f21f",
-   "note": "Not fitted yet: its posters are painted again first (art_9b_early.json), and the picture with the new posters placed on it is the one that is fitted and installed."
+   "note": "Its posters were painted again and placed by tool (art_9b_early.json, O61): the room's day picture is ui2_yuji_room_b_placed_00001_.png, fitted as chosen/yuji_room_1920.png."
   }
  },
  "whose_door": {
