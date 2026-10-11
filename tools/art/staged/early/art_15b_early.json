@@ -1,0 +1,123 @@
+{
+ "about": [
+  "Sitting 15b and the storehouse's hours, written early by hand on 11 Oct 2026, straight after the owner chose the three rooms (O46): each room in the evening and at night, relit from its chosen day picture (fitted, in the scratch root) by the tool's own relight prompt with the sentences below, from tools/art/staged/early/campus_for_batch3.json.",
+  "At Night each room has its lights off, because nobody is up in it (O38 to O42; 5.7a). The dojo is painted at Night a second way, with one hanging lamp on: its `lit` picture (5.7a), for the script's own late scene ('the dojo lamps are down to one'). It is saved as ui2_dojo_lit_a/b; the official table has no `lit` hour until U0n, so that sentence is recorded here and not in tools/art/batches.json.",
+  "The light follows the yard's compass: the hall's high windows on the right face west and take the evening sun; the dojo's band of windows faces west and takes it straight in; the storehouse's door faces south, and by evening its lamps are on, as the plan has it (5.7). Every sentence says that what stands outside is still there, names that the moon is not in view, and adds no light."
+ ],
+ "written": "2026-10-11",
+ "picks": {
+  "training": "training2a_view_a",
+  "dojo": "dojo2_a",
+  "storehouse": "storehouse2b_doorview"
+ },
+ "sentences": {
+  "training_evening": "Change the time of day to early evening: the sky seen through the high windows and beyond the open screens is orange and pink, and low warm orange sunlight slants in through the high windows on the right-hand wall and lies in long panels across the floor, with long soft shadows. Outside the open screens the yard is in soft evening light, and everything that stands outside is still there. The hanging paper lamps stay unlit. Add no new window and no new light.",
+  "training_night": "Change the time of day to night, with every light in the hall switched off: the hanging paper lamps are dark. Outside the open screens and the high windows it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight, with no window lit. The hall is lit only by cool blue moonlight coming in through the open screens, the paper screens and the high windows, which lies in pale panels on the floor. The hall is dim, but everything in it can still be seen clearly. Add no new light.",
+  "dojo_evening": "Change the time of day to early evening: the sky outside the windows and the open door is orange and pink, and low warm orange sunlight comes straight in through the band of windows and lies in long golden panels across the floor, with long soft shadows. Outside, everything that stands outside is still there, in evening light. The hanging lamps stay unlit. Add no new window and no new light.",
+  "dojo_night": "Change the time of day to night, with every light in the hall switched off: the hanging lamps are dark. Outside the windows and the open door it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight, with no window lit. The hall is lit only by cool blue moonlight coming in through the band of windows and the door, which lies in pale panels on the floor. The hall is dim, but everything in it can still be seen clearly. Add no new light.",
+  "dojo_lit": "Change the time of day to late at night: outside the windows and the open door it is dark, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes, with no window lit. Inside, one of the hanging lamps, the one nearest the end wall, is switched on and makes a warm pool of light on the floor beneath it and on the weapon racks; every other hanging lamp is dark, and the rest of the hall is dim, with a little cool moonlight on the floor under the windows. Add no new lamp.",
+  "storehouse_evening": "Change the time of day to early evening: outside the open door the sky is orange and pink and the yard lies in low warm light with long shadows, and everything that stands outside is still there. Inside, the hanging iron lamps are switched on and give warm pools of light with deep soft shadows. Add no new lamp and no new window.",
+  "storehouse_night": "Change the time of day to night, with every light in the room switched off: the hanging iron lamps are dark. Outside the open door and the barred window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight, with no window lit. The room is lit only by cool blue moonlight coming in through the open door and the barred window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly. Add no new light."
+ },
+ "rows": [
+  {
+   "label": "Training Hall, evening",
+   "kind": "relight",
+   "place": "training",
+   "saves": [
+    "ui2_training_evening_a",
+    "ui2_training_evening_b"
+   ],
+   "seeds": [
+    7804,
+    7805
+   ],
+   "prompt_sha256": "50592e3a15f9be13cf40a923f861ce358265a7c04fe08eb36129398b62beb558"
+  },
+  {
+   "label": "Training Hall, night, lights off",
+   "kind": "relight",
+   "place": "training",
+   "saves": [
+    "ui2_training_night_a",
+    "ui2_training_night_b"
+   ],
+   "seeds": [
+    9302,
+    9303
+   ],
+   "prompt_sha256": "35c4ddaac15df7bc7a5bd35f2c0936725741dd6ed15be59e76ea08d0d85e36b4"
+  },
+  {
+   "label": "Dojo, evening",
+   "kind": "relight",
+   "place": "dojo",
+   "saves": [
+    "ui2_dojo_evening_a",
+    "ui2_dojo_evening_b"
+   ],
+   "seeds": [
+    3570,
+    3571
+   ],
+   "prompt_sha256": "2a3eb296e93d7f59483a2bae76db6403dfe9d33ba29175297088586c08488629"
+  },
+  {
+   "label": "Dojo, night, lights off",
+   "kind": "relight",
+   "place": "dojo",
+   "saves": [
+    "ui2_dojo_night_a",
+    "ui2_dojo_night_b"
+   ],
+   "seeds": [
+    6748,
+    6749
+   ],
+   "prompt_sha256": "68e6dca6d0ffb141edc0be0aa7e8c1c645a9deb28c1da8fef8e9321df864f7ea"
+  },
+  {
+   "label": "Dojo, night, one lamp on",
+   "kind": "relight",
+   "place": "dojo",
+   "saves": [
+    "ui2_dojo_lit_a",
+    "ui2_dojo_lit_b"
+   ],
+   "seeds": [
+    10740,
+    10741
+   ],
+   "prompt_sha256": "2e31acd8b4ba829e39030ffdce46f619e55e161d37eb01d4be0117aadc1fc6df"
+  },
+  {
+   "label": "Storehouse, evening",
+   "kind": "relight",
+   "place": "storehouse",
+   "saves": [
+    "ui2_storehouse_evening_a",
+    "ui2_storehouse_evening_b"
+   ],
+   "seeds": [
+    7564,
+    7565
+   ],
+   "prompt_sha256": "4a64cd768a519ab51d241ee613fcf0064527e7e510ac2790a3973176beb2a86c"
+  },
+  {
+   "label": "Storehouse, night, lights off",
+   "kind": "relight",
+   "place": "storehouse",
+   "saves": [
+    "ui2_storehouse_night_a",
+    "ui2_storehouse_night_b"
+   ],
+   "seeds": [
+    8222,
+    8223
+   ],
+   "prompt_sha256": "55489a0910e67afa756eeaa1825446bebc61a7ad0c65b8036a79360bc87ebf53"
+  }
+ ],
+ "workflow_sha256": "46e79a3ea06c9d68e07ad49259130f03d89e421d406c148de6a32c7588dead20"
+}

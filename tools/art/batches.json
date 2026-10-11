@@ -852,22 +852,26 @@
       {
        "place": "training",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: the sky seen through the high windows and beyond the open screens is orange and pink, and low warm orange sunlight slants in through the high windows on the right-hand wall and lies in long panels across the floor, with long soft shadows. Outside the open screens the yard is in soft evening light, and everything that stands outside is still there. The hanging paper lamps stay unlit. Add no new window and no new light."
       },
       {
        "place": "training",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the hall switched off: the hanging paper lamps are dark. Outside the open screens and the high windows it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight, with no window lit. The hall is lit only by cool blue moonlight coming in through the open screens, the paper screens and the high windows, which lies in pale panels on the floor. The hall is dim, but everything in it can still be seen clearly. Add no new light."
       },
       {
        "place": "dojo",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: the sky outside the windows and the open door is orange and pink, and low warm orange sunlight comes straight in through the band of windows and lies in long golden panels across the floor, with long soft shadows. Outside, everything that stands outside is still there, in evening light. The hanging lamps stay unlit. Add no new window and no new light."
       },
       {
        "place": "dojo",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the hall switched off: the hanging lamps are dark. Outside the windows and the open door it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight, with no window lit. The hall is lit only by cool blue moonlight coming in through the band of windows and the door, which lies in pale panels on the floor. The hall is dim, but everything in it can still be seen clearly. Add no new light."
       }
      ]
     }
@@ -909,13 +913,13 @@
        "place": "storehouse",
        "kind": "relight",
        "hour": "evening",
-       "hour_words": "Change the time of day to evening: the room is lit only by its own lamps and candles, which make warm pools of light and deep soft shadows; add no new light."
+       "hour_words": "Change the time of day to early evening: outside the open door the sky is orange and pink and the yard lies in low warm light with long shadows, and everything that stands outside is still there. Inside, the hanging iron lamps are switched on and give warm pools of light with deep soft shadows. Add no new lamp and no new window."
       },
       {
        "place": "storehouse",
        "kind": "relight",
        "hour": "night",
-       "hour_words": "Change the time of day to night: the room is lit only by its own lamps, turned low, with deep soft shadows; add no new light."
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the hanging iron lamps are dark. Outside the open door and the barred window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight, with no window lit. The room is lit only by cool blue moonlight coming in through the open door and the barred window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly. Add no new light."
       },
       {
        "place": "pool",
