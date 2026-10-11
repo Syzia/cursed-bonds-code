@@ -86,5 +86,28 @@
    "workflow_sha256": "f07209bdb46b57c03d617a942fd662f279cb1c172c6e1d1dfab3ca7c4c71c99b"
   }
  },
- "cost": "8 renders in two files, about $1.28"
+ "cost": "8 renders in two files, about $1.28",
+ "renders_sha256": {
+  "ui2_teachers_lounge_evening_a_00001_.png": "9e97aec65f092123eeb95751e97abe754b75a9c3173acb4247ec979b7f01d667",
+  "ui2_teachers_lounge_evening_b_00001_.png": "f517484a3c10983bab0f3ecb93cfce19eaf485848133909286addbac196248d4",
+  "ui2_teachers_lounge_night_a_00001_.png": "aba4f25c3a681d7bbdbf8aa67f469d5e2f23a389d3ce5e26374b51b729d46be7",
+  "ui2_teachers_lounge_night_b_00001_.png": "5b1f27160bef08fe9d500aaae120d2fe5773d1c47f86fb5896c001f56032fa01",
+  "ui2_teachers_dorm_evening_a_00001_.png": "03db1c63bfffb799a68540e567822774de1adf041057a3701d91236c8d44b350",
+  "ui2_teachers_dorm_evening_b_00001_.png": "121538a99e24ba9d4c089c2ec45181bcc45abb3b5bb9887275d1bd3d2acffdd6",
+  "ui2_teachers_dorm_night_a_00001_.png": "06ae5640aec25be7518a922050b29d31896bf9e58e304b7054673245ee661652",
+  "ui2_teachers_dorm_night_b_00001_.png": "3ed7a005a55f199f3ce53ed83d4a7258ff056298f7ba2a6e68454e0ec9c7dc40"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, four doors is fine. And the new renders finished\"",
+  "how": "The four pairs through install_redo.py --relight ... --dry --against the chosen rooms (all eight PASS); then by eye on one small sheet, with the lounge's ceiling lamps counted by measurement and its bar looked at close up by day, evening and both nights. THE DORMITORY'S FOUR WERE READ AT SMALL SIZE ONLY: nothing added that could be seen there; look again at full size before they are installed. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_teachers_hours.jpg.",
+  "teachers_lounge_evening_a": "PICK. The room's two ceiling lamps on; dusk outside the entrance. Nothing added.",
+  "teachers_lounge_evening_b": "Not offered: three ceiling lamps are lit where the room has two (one added at the top edge).",
+  "teachers_lounge_night_b": "PICK. Every light off; moonlight through the entrance; the bar as by day.",
+  "teachers_lounge_night_a": "Not offered: a bag and a stack of books have appeared on the bar's counter. The installer's check passed it: a third real case of a thing added in a relight.",
+  "teachers_dorm_evening_a": "PICK. The paper lamp and the work lamp on, warm; sunset in the end window.",
+  "teachers_dorm_evening_b": "The same with cooler, whiter walls.",
+  "teachers_dorm_night_b": "PICK. Lamp-lit, the corners in soft shadow (mean 89).",
+  "teachers_dorm_night_a": "Good, a little brighter (mean 94).",
+  "put_to_the_owner": "The lounge: evening A, night B. The dormitory: evening A, night B."
+ }
 }
