@@ -641,28 +641,31 @@
       {
        "place": "nobara_room",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: low warm orange sunlight slants in through the window and lies across the floor with long soft shadows; outside the window the sky is orange and pink and the garden lies in low warm light, and everything that stands outside is still there: the flowers in the window box, the pond, the house of dark timber with its gallery and stair, and the low house with glass doors on its deck. The bedside lamp is off. Add no new lamp, no new light and no new window."
       },
       {
        "place": "nobara_room",
        "kind": "relight",
        "hour": "night",
-       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+       "hour_words": "Change the time of day to night, with the bedside lamp switched on and nothing else lit. The lamp makes a warm pool of light on the head of the bed, the wall behind it and the floor beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed with its cushions, made and empty, the clothes on their rail and the shoes under them, the mirrors, which show only the room, the desk, the rug and the row of bags. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the flowers in the window box, the pond, the house of dark timber with a few of its upstairs windows glowing warm, and the low house with glass doors, dark. Add no other lamp and no other light."
       },
       {
        "place": "maki_room",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: outside the window the sky is orange and pink, and the cedars, the small house with the very large window and the great tiled roof behind it are in low warm light; everything that stands outside is still there. Soft warm light comes in through the window and lies on the floor with long soft shadows. The desk lamp is off. Add no new lamp, no new light and no new window."
       },
       {
        "place": "maki_room",
        "kind": "relight",
        "hour": "night",
-       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+       "hour_words": "Change the time of day to night, with the small desk lamp switched on and nothing else lit. The lamp makes a warm pool of light on the desk, the wall behind it and the weapon case beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made flat, with only the folded uniform on it, the rack of wooden weapons on the wall, the weapon case, the desk, the mat and the dumbbells on the floor, and the bar over the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the cedars, the small house with the very large window and the great tiled roof behind it, with no window lit. Add no other lamp and no other light."
       }
      ]
     }
-   ]
+   ],
+   "note": "The two rooms are the fuller ones of art_11d.json (O65). Each room's row marked night is the room with her up (5.7a's `lit`): Nobara's by her bedside lamp, Maki's by her desk lamp. Their dark nights, batch 47's, were made early with them; those sentences are in tools/art/staged/early/art_11b_early.json."
   },
   {
    "id": "12",
