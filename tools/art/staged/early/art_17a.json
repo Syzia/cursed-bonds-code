@@ -1,0 +1,1176 @@
+{
+ "id": "9b3a1528-015b-485d-ab2a-a0de1de7b1a9",
+ "revision": 0,
+ "last_node_id": 21,
+ "last_link_id": 16,
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.35,
+   "offset": [
+    2040,
+    640
+   ]
+  },
+  "frontendVersion": "1.51.9"
+ },
+ "version": 0.4,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "MarkdownNote",
+   "pos": [
+    -640,
+    -560
+   ],
+   "size": [
+    600,
+    480
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {},
+   "title": "Start here",
+   "color": "#222",
+   "bgcolor": "#000",
+   "widgets_values": [
+    "## The Forest Trail, the Riverside and the ridge\n\n4 rows, each painted twice: the three places off the Mountain Path. The Forest Trail and the ridge are drawn again from words, as places off the Mountain Path you chose. The Riverside is made two ways: kept as it is in the new look, and drawn again from the same spot with a larger waterfall and a deep pool.\n\nRun this in the **local ComfyUI**. Press **Run** once.\n\nEach row is one picture, painted twice: **version A** on top, **version B** under it. You choose between them afterwards.\n\nThe **Load Image** boxes on the left should already show their pictures. If one shows an error, click **choose file to upload** and pick the file with the same name from `JJK Game images/ui2/early`.\n\n**Cost:** 8 pictures, about **$1.28** (Nano Banana Pro, about $0.16 a picture, charged to your Comfy account).\n\nYou don't need to save anything: the results go to ComfyUI's output folder and Claude picks them up from there.\n\nIf it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
+   ]
+  },
+  {
+   "id": 2,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1,
+      3
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_forest2_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the forest path, cut from the chosen Mountain Path"
+  },
+  {
+   "id": 3,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    0
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 1
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      2
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it. Picture 1 is cut from a picture already painted, of the place where this trail begins: a level path of packed earth going in among tall cedars. The new picture is taken a long walk further along that same path, deep in the same forest: the same trees, the same earth, the same clear light. Do not copy its camera or its layout. THE PLACE: a clearing on a trail deep in the cedar forest of the mountain, a long walk from the school, with nothing built anywhere near: very tall cedars with thick straight red-brown trunks stand all round and close their crowns high overhead. I stand on the trail and look along it, deeper into the forest. The trail is level, a path of firm packed earth wide enough for two to walk side by side; it comes in under my feet at the bottom of the picture, in the middle, and runs away from me, winding a little, until it is lost among the trunks far ahead. Here the trees stand back from the trail on both sides and leave a clearing of level ground about ten paces across, open and empty, the earth firm and clean, with green ferns and low undergrowth round its edges. Sunlight falls through the crowns and lies on the ground in bright patches, and the shadows of the trunks lie long and dark across the clearing, with clear edges. On the left side of the clearing stands the greatest cedar of all, its trunk three times as thick as the others, and one of its great roots rises out of the earth and runs along the ground like a low seat, rounded and smooth on top. On the right side of the trail, at the far end of the clearing and well clear of the picture's right edge, a pair of square-cut grey stone trail markers stand side by side, waist high, with nothing written on them. Beyond the clearing there is only forest on every side, trunk behind trunk, going back into deep green shade. Only small pieces of blue sky show, high up between the crowns: there is no open view and no mountain to be seen. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    8382,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Forest Trail, drawn again, version A"
+  },
+  {
+   "id": 4,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    0
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 2
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_forest2_a"
+   ],
+   "title": "Forest Trail, drawn again: version A"
+  },
+  {
+   "id": 5,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    600
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 3
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      4
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it. Picture 1 is cut from a picture already painted, of the place where this trail begins: a level path of packed earth going in among tall cedars. The new picture is taken a long walk further along that same path, deep in the same forest: the same trees, the same earth, the same clear light. Do not copy its camera or its layout. THE PLACE: a clearing on a trail deep in the cedar forest of the mountain, a long walk from the school, with nothing built anywhere near: very tall cedars with thick straight red-brown trunks stand all round and close their crowns high overhead. I stand on the trail and look along it, deeper into the forest. The trail is level, a path of firm packed earth wide enough for two to walk side by side; it comes in under my feet at the bottom of the picture, in the middle, and runs away from me, winding a little, until it is lost among the trunks far ahead. Here the trees stand back from the trail on both sides and leave a clearing of level ground about ten paces across, open and empty, the earth firm and clean, with green ferns and low undergrowth round its edges. Sunlight falls through the crowns and lies on the ground in bright patches, and the shadows of the trunks lie long and dark across the clearing, with clear edges. On the left side of the clearing stands the greatest cedar of all, its trunk three times as thick as the others, and one of its great roots rises out of the earth and runs along the ground like a low seat, rounded and smooth on top. On the right side of the trail, at the far end of the clearing and well clear of the picture's right edge, a pair of square-cut grey stone trail markers stand side by side, waist high, with nothing written on them. Beyond the clearing there is only forest on every side, trunk behind trunk, going back into deep green shade. Only small pieces of blue sky show, high up between the crowns: there is no open view and no mountain to be seen. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    8383,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Forest Trail, drawn again, version B"
+  },
+  {
+   "id": 6,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    600
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 4
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_forest2_b"
+   ],
+   "title": "Forest Trail, drawn again: version B"
+  },
+  {
+   "id": 7,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      5,
+      7
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_riverside_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: Riverside, as it is in the game"
+  },
+  {
+   "id": 8,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1260
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 5
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      6
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, angle and framing exactly as they are. Keep every building, roof, wall, path, step, rock and tree exactly where it is, at the same size and shape. Keep every object that is in the picture now, however small, each in its place: the benches, the posts, the signs, the stones. Do not remove, tidy away or add anything. Keep the time of day and the direction of the light. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    4572,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Riverside, kept as it is, version A"
+  },
+  {
+   "id": 9,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1260
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 6
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_riverside_a"
+   ],
+   "title": "Riverside, kept as it is: version A"
+  },
+  {
+   "id": 10,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1860
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 7
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      8
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, angle and framing exactly as they are. Keep every building, roof, wall, path, step, rock and tree exactly where it is, at the same size and shape. Keep every object that is in the picture now, however small, each in its place: the benches, the posts, the signs, the stones. Do not remove, tidy away or add anything. Keep the time of day and the direction of the light. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    4573,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Riverside, kept as it is, version B"
+  },
+  {
+   "id": 11,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1860
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 8
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_riverside_b"
+   ],
+   "title": "Riverside, kept as it is: version B"
+  },
+  {
+   "id": 12,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    2520
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      9,
+      11
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_riverside2_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the Riverside, as it is in the game"
+  },
+  {
+   "id": 13,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    2520
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 9
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      10
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it. Picture 1 is this place as it was painted before: keep its camera position and the side each thing stands on, and design the rest again. THE PLACE: a wild mountain river below a forested slope, seen from its near bank, with nothing built anywhere near: clear cold water over pale stones, a waterfall, a deep pool and a wide bank of smooth pebbles. I stand on the bank and look upstream. Across the whole bottom of the picture runs the near bank: a wide, level beach of small smooth grey and white pebbles, open and empty, with one broad flat slab of grey rock lying low on it at the lower left. On the left a sandy footpath climbs away from the bank between ferns and leaves the picture at its left edge, about two thirds of the way down: the way back up the mountain. Left of the middle, a little above half-way up the picture, the river comes down over a ledge of grey rock as a waterfall, twice as tall and twice as wide as the one in picture 1, white and clear, between big rounded boulders. From the foot of the waterfall the river runs towards me and spreads into a wide deep pool that fills the middle of the picture and reaches to its right edge: calm, clear water with no rock standing in it, dark blue-green in its deep middle and turquoise at its shallow edges, where the pale stones of its bed show through. In the lower right, at the water's edge and clear of the picture's right edge, one big flat grey rock lies half in the water, low and level. Along the far bank on the right, leafy trees lean out over the water above ferns and rounded grey boulders, and a slope of dark cedar forest rises behind them. In the upper left, beyond the waterfall, forested green mountains stand under a clear blue sky with a few white clouds. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    5572,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Riverside, drawn again, version A"
+  },
+  {
+   "id": 14,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    2520
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 10
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_riverside2_a"
+   ],
+   "title": "Riverside, drawn again: version A"
+  },
+  {
+   "id": 15,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    3120
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 15,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 11
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      12
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it. Picture 1 is this place as it was painted before: keep its camera position and the side each thing stands on, and design the rest again. THE PLACE: a wild mountain river below a forested slope, seen from its near bank, with nothing built anywhere near: clear cold water over pale stones, a waterfall, a deep pool and a wide bank of smooth pebbles. I stand on the bank and look upstream. Across the whole bottom of the picture runs the near bank: a wide, level beach of small smooth grey and white pebbles, open and empty, with one broad flat slab of grey rock lying low on it at the lower left. On the left a sandy footpath climbs away from the bank between ferns and leaves the picture at its left edge, about two thirds of the way down: the way back up the mountain. Left of the middle, a little above half-way up the picture, the river comes down over a ledge of grey rock as a waterfall, twice as tall and twice as wide as the one in picture 1, white and clear, between big rounded boulders. From the foot of the waterfall the river runs towards me and spreads into a wide deep pool that fills the middle of the picture and reaches to its right edge: calm, clear water with no rock standing in it, dark blue-green in its deep middle and turquoise at its shallow edges, where the pale stones of its bed show through. In the lower right, at the water's edge and clear of the picture's right edge, one big flat grey rock lies half in the water, low and level. Along the far bank on the right, leafy trees lean out over the water above ferns and rounded grey boulders, and a slope of dark cedar forest rises behind them. In the upper left, beyond the waterfall, forested green mountains stand under a clear blue sky with a few white clouds. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    5573,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Riverside, drawn again, version B"
+  },
+  {
+   "id": 16,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    3120
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 16,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 12
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_riverside2_b"
+   ],
+   "title": "Riverside, drawn again: version B"
+  },
+  {
+   "id": 17,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    3780
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 17,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      13,
+      15
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_ridge2_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the ridge from below, cut from the chosen Mountain Path"
+  },
+  {
+   "id": 18,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    3780
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 18,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 13
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      14
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it. Picture 1 is cut from a picture already painted, and shows this ridge from below: the long flight of stone stairs that climbs it, its grass and grey rock, and on its very top the small black dome. The new picture is taken at the top of those stairs, on the ridge itself: the same stairs, the same grass and rock and the same dome, seen from close by. Do not copy its camera or its layout. THE PLACE: the open top of a mountain ridge above the trees, at the head of a long flight of stone stairs: short green grass and grey rock under a wide sky. I have just climbed the stairs of picture 1 and I stand at their head, looking on along the ridge. At the bottom of the picture, in the middle, the top steps of the stone stairs come up onto the grass under my feet; the rest of the stairs goes down behind me, out of the picture. From the head of the stairs a footpath of bare earth runs on across a broad shoulder of short grass, nearly level, about thirty paces across, open and empty, with grey rock showing through the grass here and there. On the right side of the shoulder, well clear of the picture's right edge, one big grey rock with a flat top lies at the edge where the ground begins to fall away, low enough to sit on, looking out over the valley. At the far side of the shoulder, a little left of the middle of the picture, the footpath is closed by a thick straw rope strung between a pair of plain wooden posts, head high, with white folded paper streamers hanging from the rope. Beyond the rope the ground rises in a short steep slope of grass and grey rock to the highest point of the ridge, and on that highest point, against the sky, sits the dome of picture 1: a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen, standing on the grass, closed and perfectly still, with nothing to be seen inside it. It is close by: a short walk beyond the rope. To the left and to the right of that rise the shoulder ends and the mountainside falls away steeply; below it are the pointed tops of cedars, and beyond them a wide, empty, forested valley with no building, road or field in it, and beyond the valley range after range of blue-green mountains going back to the horizon, under a wide clear blue sky with a few white clouds. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    6682,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Mountain Ridge, drawn again, version A"
+  },
+  {
+   "id": 19,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    3780
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 19,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 14
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_ridge2_a"
+   ],
+   "title": "Mountain Ridge, drawn again: version A"
+  },
+  {
+   "id": 20,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    4380
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 20,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 15
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      16
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it. Picture 1 is cut from a picture already painted, and shows this ridge from below: the long flight of stone stairs that climbs it, its grass and grey rock, and on its very top the small black dome. The new picture is taken at the top of those stairs, on the ridge itself: the same stairs, the same grass and rock and the same dome, seen from close by. Do not copy its camera or its layout. THE PLACE: the open top of a mountain ridge above the trees, at the head of a long flight of stone stairs: short green grass and grey rock under a wide sky. I have just climbed the stairs of picture 1 and I stand at their head, looking on along the ridge. At the bottom of the picture, in the middle, the top steps of the stone stairs come up onto the grass under my feet; the rest of the stairs goes down behind me, out of the picture. From the head of the stairs a footpath of bare earth runs on across a broad shoulder of short grass, nearly level, about thirty paces across, open and empty, with grey rock showing through the grass here and there. On the right side of the shoulder, well clear of the picture's right edge, one big grey rock with a flat top lies at the edge where the ground begins to fall away, low enough to sit on, looking out over the valley. At the far side of the shoulder, a little left of the middle of the picture, the footpath is closed by a thick straw rope strung between a pair of plain wooden posts, head high, with white folded paper streamers hanging from the rope. Beyond the rope the ground rises in a short steep slope of grass and grey rock to the highest point of the ridge, and on that highest point, against the sky, sits the dome of picture 1: a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen, standing on the grass, closed and perfectly still, with nothing to be seen inside it. It is close by: a short walk beyond the rope. To the left and to the right of that rise the shoulder ends and the mountainside falls away steeply; below it are the pointed tops of cedars, and beyond them a wide, empty, forested valley with no building, road or field in it, and beyond the valley range after range of blue-green mountains going back to the horizon, under a wide clear blue sky with a few white clouds. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    6683,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Mountain Ridge, drawn again, version B"
+  },
+  {
+   "id": 21,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    4380
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 21,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 16
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_ridge2_b"
+   ],
+   "title": "Mountain Ridge, drawn again: version B"
+  }
+ ],
+ "links": [
+  [
+   1,
+   2,
+   0,
+   3,
+   0,
+   "IMAGE"
+  ],
+  [
+   2,
+   3,
+   0,
+   4,
+   0,
+   "IMAGE"
+  ],
+  [
+   3,
+   2,
+   0,
+   5,
+   0,
+   "IMAGE"
+  ],
+  [
+   4,
+   5,
+   0,
+   6,
+   0,
+   "IMAGE"
+  ],
+  [
+   5,
+   7,
+   0,
+   8,
+   0,
+   "IMAGE"
+  ],
+  [
+   6,
+   8,
+   0,
+   9,
+   0,
+   "IMAGE"
+  ],
+  [
+   7,
+   7,
+   0,
+   10,
+   0,
+   "IMAGE"
+  ],
+  [
+   8,
+   10,
+   0,
+   11,
+   0,
+   "IMAGE"
+  ],
+  [
+   9,
+   12,
+   0,
+   13,
+   0,
+   "IMAGE"
+  ],
+  [
+   10,
+   13,
+   0,
+   14,
+   0,
+   "IMAGE"
+  ],
+  [
+   11,
+   12,
+   0,
+   15,
+   0,
+   "IMAGE"
+  ],
+  [
+   12,
+   15,
+   0,
+   16,
+   0,
+   "IMAGE"
+  ],
+  [
+   13,
+   17,
+   0,
+   18,
+   0,
+   "IMAGE"
+  ],
+  [
+   14,
+   18,
+   0,
+   19,
+   0,
+   "IMAGE"
+  ],
+  [
+   15,
+   17,
+   0,
+   20,
+   0,
+   "IMAGE"
+  ],
+  [
+   16,
+   20,
+   0,
+   21,
+   0,
+   "IMAGE"
+  ]
+ ],
+ "groups": [
+  {
+   "id": 1,
+   "title": "FOREST TRAIL, DRAWN AGAIN:  A over B",
+   "bounding": [
+    -1980,
+    -50,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 2,
+   "title": "RIVERSIDE, KEPT AS IT IS:  A over B",
+   "bounding": [
+    -1980,
+    1210,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 3,
+   "title": "RIVERSIDE, DRAWN AGAIN:  A over B",
+   "bounding": [
+    -1980,
+    2470,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 4,
+   "title": "MOUNTAIN RIDGE, DRAWN AGAIN:  A over B",
+   "bounding": [
+    -1980,
+    3730,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  }
+ ]
+}

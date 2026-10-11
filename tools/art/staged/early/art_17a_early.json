@@ -1,0 +1,164 @@
+{
+ "about": [
+  "The three places off the Mountain Path: the Forest Trail, the Riverside and the ridge (the plan's sitting 17a, and the ridge of 18a), written early by hand on 11 Oct 2026 at the owner's word, \"Can we go on with the next batch of images?\". The plan had all three redone in place (the ridge with the veil as a named addition). O45 asks its four questions of every such place first; they are answered below.",
+  "The Forest Trail and the ridge each fail more than one, and are composed again from words. The Riverside passes all four, so it is made both ways for the owner to choose between: redone in place, and drawn again from today's camera with a larger waterfall and a deep pool (the two things one clicks there, which today are a waterfall about fifty pixels wide and water that is not plainly deep).",
+  "References. For the forest and the ridge: one crop of the chosen Mountain Path each (the path among the cedars; the stairs and the dome), and nothing else. Today's picture of the place is not given, because the editor copies the layout of any picture of the place it is handed; the whole Mountain Path is not given, because its house, gate and standing stone would be painted as the view (Method note 34). For the Riverside drawn again: today's picture, with the tool's own sentence for a camera that is kept.",
+  "The opening sentence is this file's own, not the tool's `open_yard`: that one names timber halls and tiled roofs, and nothing is built in any of the three.",
+  "NOT YET RUN. Nothing here is chosen. The scratch record's rows for the three change when the owner chooses."
+ ],
+ "written": "2026-10-11",
+ "four_questions": {
+  "forest": {
+   "the_map": "FAILS. The record's fixed row for the chosen Mountain Path: \"a level path leads into the cedars\", on its left; the game's own words, \"I can go level into the forest, down to the river, or up the steps to the ridge\" (sb_world.rpy:92). Today's picture climbs a flight of stone steps, and opens on its left onto a far mountain; walking in from the Mountain Path that side is the south, and the mountains stand to the north only. Its way back is a point at the left edge, on the open air.",
+   "the_place": "FAILS. Today's is a stepped path a stride wide between a drop and a bank: nowhere level to stand.",
+   "the_story": [
+    "sb_world.rpy:63 \"Forty minutes of trees. Megumi comes here to find the edge of himself.\"",
+    "events_arc1.rpy:153 (The Edge of Myself): \"forty minutes into the treeline behind the school, alone\", \"standing still with his eyes closed\"; his technique uses his own shadow; \"He picks his bag up off the ground.\"",
+    "events_arc1.rpy:624 (Tsumiki): \"sitting on a root instead of standing\""
+   ],
+   "the_people": "Megumi on weekday Afternoons, painted crouched on the trail with a hand on the white dog (pose row 40); me beside him; the stone markers to look at (sb_hotspots.rpy:127); training alone here. Wanted: level ground for two, a root to sit on, the markers clear of the right ninth, the trail under my feet as the way back (5.2's rule: no door, so the bottom of the picture).",
+   "verdict": "composed again: a clearing on the level trail, the trail running on ahead; the greatest cedar and its root on the left, the pair of stone markers on the right; forest on every side and no open view."
+  },
+  "riverside": {
+   "the_map": "PASSES. I come down from the Mountain Path's right edge to the west bank and look upstream; the mountains are at the back, the far bank's trees on the right, the sandy path back on the left, the Mountain Path's side. Nothing built is in sight from there, and nothing is painted.",
+   "the_place": "PASSES. A pebble bank the width of the picture.",
+   "the_story": [
+    "sb_world.rpy:66 \"Cold, clear, and deep enough to swim if I'm brave about it.\"",
+    "events_arc1.rpy:861 (The Scarf): sat on the bank, \"looking very hard at the river\"",
+    "sb_loop.rpy:237 and events_activities.rpy:109: \"snowmelt cold\"; \"climb out onto the warm stones, and lie there\""
+   ],
+   "the_people": "PASSES, with two weak points. Maki sits on the bank on the left (pose rows 52, 53), Toge crouches at the water's edge on the right (row 65); fishing is from the flat rock at the lower right. But the two things clicked here, the waterfall (look) and the deep pool (the swim), are a fall about 50 px wide and water that does not read as deep.",
+   "fixed_points_of_the_game": {
+    "the fishing float (room_fishing.rpy:44 FISH_FLOAT)": [
+     1100,
+     700
+    ],
+    "the fishing spot (room_spots.rpy:42, `bank`)": [
+     1580,
+     905
+    ],
+    "note": "open water must lie under the float and a rock or bank under the spot; the drawn-again row's words put a deep pool across the middle to the right edge and a flat rock at the lower right, and its checklist asks for both"
+   },
+   "verdict": "made both ways: kept in place (`ui2_riverside_*`), and drawn again from today's camera (`ui2_riverside2_*`)."
+  },
+  "ridge": {
+   "the_map": "FAILS. The record's fixed row: from the Mountain Path \"stone stairs climb straight up the mountain toward it\", and the chosen Mountain Path shows the dome at their head. Today's ridge has no stairs anywhere and its way back is a point at the left edge, on bushes (the plan's 7.3 already lists it as a stray exit). It shows tiled roofs in the valley below: if that valley is the north they are a village in what the story calls \"the empty valley\", and if it is the south the mountains behind them stand on the wrong side.",
+   "the_place": "PASSES for width. It stays wide and open.",
+   "the_story": [
+    "sb_world.rpy:69 \"Above the treeline, as far as the rope markers. Higher up, the veil.\"",
+    "ch2_tour.rpy:142 \"as far as a rope strung between two posts\"; \"Above us, where the ridge flattens out\"",
+    "sb_world.rpy:1325 (the look up): \"I look up past the rope markers. The veil sits on the top of the ridge\"",
+    "events_arc1.rpy:1391 (Twenty to Six on the Ridge): \"a spot about ten metres off\"; \"he faces the empty valley\"; \"Something in the treeline goes crashing off downhill\"; he \"sits down\"",
+    "story_arc1.rpy:274: Gojo \"sitting on a rock\"",
+    "O36: the veil is a small smooth dome like black glass on the very top of the ridge, about the size of a hut; \"when your at the top of the mountain you can look at the veil. you don't want it to feel to big\""
+   ],
+   "the_people": "Toge on the rock on weekday Mornings (pose row 62), Gojo on the same rock on his night (row 23); the look up at the veil (room_spots.rpy:49), whose icon goes onto the dome; training alone; stargazing together. Today's has no rope and no veil: the plan would have added the veil as one named thing, and it was first written as \"in the sky\", which O36 overruled.",
+   "verdict": "composed again: the head of the stone stairs at the bottom, a broad shoulder of grass, the flat rock at the right, the rope between a pair of posts across the path, the dome on the highest point beyond it, the empty valley and the far mountains behind."
+  }
+ },
+ "open": "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it.",
+ "refs": {
+  "forest": "Picture 1 is cut from a picture already painted, of the place where this trail begins: a level path of packed earth going in among tall cedars. The new picture is taken a long walk further along that same path, deep in the same forest: the same trees, the same earth, the same clear light. Do not copy its camera or its layout.",
+  "ridge": "Picture 1 is cut from a picture already painted, and shows this ridge from below: the long flight of stone stairs that climbs it, its grass and grey rock, and on its very top the small black dome. The new picture is taken at the top of those stairs, on the ridge itself: the same stairs, the same grass and rock and the same dome, seen from close by. Do not copy its camera or its layout.",
+  "riverside": "Picture 1 is this place as it was painted before: keep its camera position and the side each thing stands on, and design the rest again."
+ },
+ "stage": "The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together.",
+ "the_place": {
+  "forest": "a clearing on a trail deep in the cedar forest of the mountain, a long walk from the school, with nothing built anywhere near: very tall cedars with thick straight red-brown trunks stand all round and close their crowns high overhead. I stand on the trail and look along it, deeper into the forest. The trail is level, a path of firm packed earth wide enough for two to walk side by side; it comes in under my feet at the bottom of the picture, in the middle, and runs away from me, winding a little, until it is lost among the trunks far ahead. Here the trees stand back from the trail on both sides and leave a clearing of level ground about ten paces across, open and empty, the earth firm and clean, with green ferns and low undergrowth round its edges. Sunlight falls through the crowns and lies on the ground in bright patches, and the shadows of the trunks lie long and dark across the clearing, with clear edges. On the left side of the clearing stands the greatest cedar of all, its trunk three times as thick as the others, and one of its great roots rises out of the earth and runs along the ground like a low seat, rounded and smooth on top. On the right side of the trail, at the far end of the clearing and well clear of the picture's right edge, a pair of square-cut grey stone trail markers stand side by side, waist high, with nothing written on them. Beyond the clearing there is only forest on every side, trunk behind trunk, going back into deep green shade. Only small pieces of blue sky show, high up between the crowns: there is no open view and no mountain to be seen",
+  "riverside": "a wild mountain river below a forested slope, seen from its near bank, with nothing built anywhere near: clear cold water over pale stones, a waterfall, a deep pool and a wide bank of smooth pebbles. I stand on the bank and look upstream. Across the whole bottom of the picture runs the near bank: a wide, level beach of small smooth grey and white pebbles, open and empty, with one broad flat slab of grey rock lying low on it at the lower left. On the left a sandy footpath climbs away from the bank between ferns and leaves the picture at its left edge, about two thirds of the way down: the way back up the mountain. Left of the middle, a little above half-way up the picture, the river comes down over a ledge of grey rock as a waterfall, twice as tall and twice as wide as the one in picture 1, white and clear, between big rounded boulders. From the foot of the waterfall the river runs towards me and spreads into a wide deep pool that fills the middle of the picture and reaches to its right edge: calm, clear water with no rock standing in it, dark blue-green in its deep middle and turquoise at its shallow edges, where the pale stones of its bed show through. In the lower right, at the water's edge and clear of the picture's right edge, one big flat grey rock lies half in the water, low and level. Along the far bank on the right, leafy trees lean out over the water above ferns and rounded grey boulders, and a slope of dark cedar forest rises behind them. In the upper left, beyond the waterfall, forested green mountains stand under a clear blue sky with a few white clouds",
+  "ridge": "the open top of a mountain ridge above the trees, at the head of a long flight of stone stairs: short green grass and grey rock under a wide sky. I have just climbed the stairs of picture 1 and I stand at their head, looking on along the ridge. At the bottom of the picture, in the middle, the top steps of the stone stairs come up onto the grass under my feet; the rest of the stairs goes down behind me, out of the picture. From the head of the stairs a footpath of bare earth runs on across a broad shoulder of short grass, nearly level, about thirty paces across, open and empty, with grey rock showing through the grass here and there. On the right side of the shoulder, well clear of the picture's right edge, one big grey rock with a flat top lies at the edge where the ground begins to fall away, low enough to sit on, looking out over the valley. At the far side of the shoulder, a little left of the middle of the picture, the footpath is closed by a thick straw rope strung between a pair of plain wooden posts, head high, with white folded paper streamers hanging from the rope. Beyond the rope the ground rises in a short steep slope of grass and grey rock to the highest point of the ridge, and on that highest point, against the sky, sits the dome of picture 1: a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen, standing on the grass, closed and perfectly still, with nothing to be seen inside it. It is close by: a short walk beyond the rope. To the left and to the right of that rise the shoulder ends and the mountainside falls away steeply; below it are the pointed tops of cedars, and beyond them a wide, empty, forested valley with no building, road or field in it, and beyond the valley range after range of blue-green mountains going back to the horizon, under a wide clear blue sky with a few white clouds"
+ },
+ "riverside_in_place": "This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, angle and framing exactly as they are. Keep every building, roof, wall, path, step, rock and tree exactly where it is, at the same size and shape. Keep every object that is in the picture now, however small, each in its place: the benches, the posts, the signs, the stones. Do not remove, tidy away or add anything. Keep the time of day and the direction of the light. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+ "crops": {
+  "of": "ui2_trailhead_sa_b_00001_.png",
+  "boxes": {
+   "forest": [
+    0,
+    90,
+    850,
+    1310
+   ],
+   "ridge": [
+    900,
+    60,
+    1640,
+    740
+   ]
+  },
+  "files": {
+   "forest": {
+    "file": "~/Desktop/JJK Game images/ui2/early/crops/forest_from_the_mountain_path.png",
+    "sha256": "5928e554e0323cdce3239dcc0628a425cff8c49b1bfa1e23b695c1414f475b52"
+   },
+   "ridge": {
+    "file": "~/Desktop/JJK Game images/ui2/early/crops/ridge_from_the_mountain_path.png",
+    "sha256": "973f04358da76992231254bc16ba5aa81f0e56111f2518232008e1e94d08ffe1"
+   }
+  }
+ },
+ "riverside_today": {
+  "file": "game/images/bg/riverside.png",
+  "sha256": "8dc2f9d2c92a5b2e08b142aeb57b1f54675d99af31124a06e54be3d6455a32e9"
+ },
+ "rows": [
+  {
+   "label": "Forest Trail, drawn again",
+   "kind": "composed",
+   "place": "forest",
+   "saves": [
+    "ui2_forest2_a",
+    "ui2_forest2_b"
+   ],
+   "seeds": [
+    8382,
+    8383
+   ],
+   "prompt_sha256": "7a63aa810803c748dd8e624bbbdb0d64322e6d47406d6d7a4a5acadd09255b12"
+  },
+  {
+   "label": "Riverside, kept as it is",
+   "kind": "inplace",
+   "place": "riverside",
+   "saves": [
+    "ui2_riverside_a",
+    "ui2_riverside_b"
+   ],
+   "seeds": [
+    4572,
+    4573
+   ],
+   "prompt_sha256": "bb68d59d26c2dcd51cfc7f3d9ab0e5cbce28cbbf5be61cf5618ab615afae480a"
+  },
+  {
+   "label": "Riverside, drawn again",
+   "kind": "composed",
+   "place": "riverside",
+   "saves": [
+    "ui2_riverside2_a",
+    "ui2_riverside2_b"
+   ],
+   "seeds": [
+    5572,
+    5573
+   ],
+   "prompt_sha256": "f153d33309b44d0a762a02ad344d1d823cee69fc070e02669df9c8f3a41f7c22"
+  },
+  {
+   "label": "Mountain Ridge, drawn again",
+   "kind": "composed",
+   "place": "ridge",
+   "saves": [
+    "ui2_ridge2_a",
+    "ui2_ridge2_b"
+   ],
+   "seeds": [
+    6682,
+    6683
+   ],
+   "prompt_sha256": "618d685dedcad4ead0bcfdbbf96f0a19643f26ae9d3aeb3b1946e4fc173987fb"
+  }
+ ],
+ "workflow_sha256": "4d94b2ef6ec37ce522f809f937729e9584822bc75e5117048f6a8749a624924e",
+ "cost": "8 renders, about $1.28",
+ "if_chosen": "The Forest Trail and the ridge become composed places (the plan's count of rooms redone in place falls from nine to seven, and to six if the Riverside's drawn-again row is chosen). The ridge's `veil` icon moves onto the dome and its exit to the stairs' head at the bottom; the forest's exit to the trail at the bottom. If the Riverside is drawn again, the fishing float and the fishing spot are checked against the picture at its layout sitting, and moved by the layout if the water or the rock is not under them."
+}
