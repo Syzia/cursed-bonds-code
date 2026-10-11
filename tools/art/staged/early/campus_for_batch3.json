@@ -486,6 +486,37 @@
      450
     ]
    }
+  },
+  "boys_dorm": {
+   "place": "boys_dorm",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "9a",
+   "chosen": "2026-10-11",
+   "render": "ui2_boys_dorm_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/boys_dorm_1920.png",
+   "first_guess": {
+    "dorm_yard": [
+     960,
+     990
+    ],
+    "dorm": [
+     909,
+     552
+    ],
+    "yuji_room": [
+     1569,
+     560
+    ],
+    "senpai_room": [
+     1254,
+     540
+    ],
+    "megumi_room": [
+     351,
+     560
+    ]
+   }
   }
  },
  "fixed": [
@@ -2055,6 +2086,30 @@
     "picture": "sauna",
     "rev": 2
    }
+  },
+  {
+   "id": "place.boys_dorm",
+   "kind": "place",
+   "key": "boys_dorm",
+   "name": "Boys' Dormitory",
+   "stem": "boys_dorm",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "9",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the upstairs corridor of the boys' dormitory, a two-storey house of dark timber: a shoe rack at the head of the stairs in the near corner, three sliding doors along each side, a window seat, and one more door at the far end of the corridor; the side doors are plain and shut",
+   "refs_also": [
+    "dorm"
+   ],
+   "spare_doors": 3,
+   "by": {
+    "picture": "boys_dorm",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2290,26 +2345,6 @@
    "after": [
     "school_yard"
    ]
-  },
-  {
-   "id": "place.boys_dorm",
-   "kind": "place",
-   "key": "boys_dorm",
-   "name": "Boys' Dormitory",
-   "stem": "boys_dorm",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "9",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "the upstairs corridor of the boys' dormitory, a two-storey house of dark timber: a shoe rack at the head of the stairs in the near corner, three sliding doors along each side, a window seat, and one more door at the far end of the corridor; the side doors are plain and shut",
-   "refs_also": [
-    "dorm"
-   ],
-   "spare_doors": 3
   },
   {
    "id": "place.dorm",
