@@ -1,0 +1,64 @@
+{
+ "about": [
+  "Yuji's room after dark: the rest of sitting 9b and the room's lit picture of batch 47, written early by hand on 11 Oct 2026, straight after the owner chose the room with its new posters (O61), and handed over unasked. Relit from the chosen room (the 1920 px fit of the placed picture, laid into the scratch root).",
+  "Three pictures (5.7a): the evening; the Night with nobody up (`night`: every light and the television off, moonlight through the window); and the Night with him up (`lit`). The chosen room shows no lamp and none is added, so that the room is the same room at every hour: the lit picture is lit by its television, which is in the picture, as pose row 17 has him on weekday Nights (\"on the floor in front of a paused film\"). 5.7a says a friend who is up has \"one small lamp\" on; here the television is that lamp, and the owner is told so. The screen shows a still with no lettering and nobody on it.",
+  "What stands outside the window is named in every sentence (the gallery's rail, the pond, the girls' dormitory), and at Night that house has a few upstairs windows lit, as the garden's chosen night has (O43). The sky in the window is a small piece, so no moon is in view (O44).",
+  "NOBODY is in any picture (K16: a bedroom); the bed is said to be made and empty; the prompt check was run for the place by name."
+ ],
+ "written": "2026-10-11",
+ "made_from": {
+  "fit": "~/Desktop/JJK Game images/ui2/early/chosen/yuji_room_1920.png",
+  "fit_sha256": "669f464b73cf909ecfe31d556a3ad660b6d219f6833d1a1bb1f8a2caf6023cba"
+ },
+ "sentences": {
+  "yuji_room_evening": "Change the time of day to early evening: outside the window the sky is orange and pink and the garden lies in low warm light, and everything that stands outside is still there: the timber rail of the gallery, the pond below and the white-plastered house with its flower boxes across the garden. Soft warm light comes in through the window and lies on the floor with long soft shadows. The television is off and no lamp is lit. Add no new lamp, no new light and no new window.",
+  "yuji_room_night": "Change the time of day to night, with every light in the room switched off and the television off. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the timber rail of the gallery, the pond below and the white-plastered house across the garden, with a few of its upstairs windows glowing warm. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made and empty, the posters, the shelf, the television and the cushion. Add no new light.",
+  "yuji_room_lit": "Change the time of day to night, with the television switched on and nothing else lit. The television's screen shows a still picture of a starry sky over dark hills, with no lettering on it, and its cool light falls on the floor cushion in front of it, on the floor round it and on the shelf beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, the posters and the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the timber rail of the gallery, the pond below and the white-plastered house across the garden, with a few of its upstairs windows glowing warm. Add no lamp and no other light."
+ },
+ "rows": [
+  {
+   "label": "Yuji's Room, evening",
+   "kind": "relight",
+   "place": "yuji_room",
+   "saves": [
+    "ui2_yuji_room_evening_a",
+    "ui2_yuji_room_evening_b"
+   ],
+   "seeds": [
+    3628,
+    3629
+   ],
+   "prompt_sha256": "5746c3c5fa4e50910bf45630a639f479e10136602bee808b913f1f8c6f0bee9c"
+  },
+  {
+   "label": "Yuji's Room, night, every light off",
+   "kind": "relight",
+   "place": "yuji_room",
+   "saves": [
+    "ui2_yuji_room_night_a",
+    "ui2_yuji_room_night_b"
+   ],
+   "seeds": [
+    4706,
+    4707
+   ],
+   "prompt_sha256": "253757a0775b8e663f60cc22a1ab26a7f69ac1b5a80487abc819f21c7e1379a3"
+  },
+  {
+   "label": "Yuji's Room, night, the television on",
+   "kind": "relight",
+   "place": "yuji_room",
+   "saves": [
+    "ui2_yuji_room_lit_a",
+    "ui2_yuji_room_lit_b"
+   ],
+   "seeds": [
+    6608,
+    6609
+   ],
+   "prompt_sha256": "b1ba48a39eadbd6411a03862c2ebdd52f45dea2aff0591cb2ed7e063e3c4d342"
+  }
+ ],
+ "workflow_sha256": "6c63d288b13ed434711090a43366d2e79fa87410ac0d54409e8affdfa7057560",
+ "cost": "6 renders, about $0.96"
+}
