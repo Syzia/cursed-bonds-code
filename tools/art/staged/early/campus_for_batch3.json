@@ -532,6 +532,36 @@
      560
     ]
    }
+  },
+  "megumi_room": {
+   "place": "megumi_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "10a",
+   "chosen": "2026-10-11",
+   "render": "ui2_megumi_room_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/megumi_room_1920.png",
+   "first_guess": {
+    "boys_dorm": [
+     250,
+     520
+    ]
+   }
+  },
+  "senpai_room": {
+   "place": "senpai_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "10a",
+   "chosen": "2026-10-11",
+   "render": "ui2_senpai_room_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/senpai_room_1920.png",
+   "first_guess": {
+    "boys_dorm": [
+     60,
+     450
+    ]
+   }
   }
  },
  "fixed": [
@@ -2149,6 +2179,54 @@
     "picture": "yuji_room",
     "rev": 2
    }
+  },
+  {
+   "id": "place.megumi_room",
+   "kind": "place",
+   "key": "megumi_room",
+   "name": "Megumi's Room",
+   "stem": "megumi_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "10",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the boys' dormitory, a house of dark timber, spare and tidy: a bed made square, a full bookshelf, shoes in a line by the door",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "megumi_room",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.senpai_room",
+   "kind": "place",
+   "key": "senpai_room",
+   "name": "Panda and Toge's Room",
+   "stem": "senpai_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "10",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the big corner bedroom of the boys' dormitory, a house of dark timber, a room for two: a very large futon and a neat small one laid on the floor, and a shogi board on the floor between them",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "senpai_room",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2404,46 +2482,6 @@
     430
    ],
    "note": "the room at the end of the boys' corridor; with a closed laptop on the desk as a named addition"
-  },
-  {
-   "id": "place.megumi_room",
-   "kind": "place",
-   "key": "megumi_room",
-   "name": "Megumi's Room",
-   "stem": "megumi_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "10",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the boys' dormitory, a house of dark timber, spare and tidy: a bed made square, a full bookshelf, shoes in a line by the door",
-   "refs_also": [
-    "dorm"
-   ],
-   "pinless": true
-  },
-  {
-   "id": "place.senpai_room",
-   "kind": "place",
-   "key": "senpai_room",
-   "name": "Panda and Toge's Room",
-   "stem": "senpai_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "10",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "the big corner bedroom of the boys' dormitory, a house of dark timber, a room for two: a very large futon and a neat small one laid on the floor, and a shogi board on the floor between them",
-   "refs_also": [
-    "dorm"
-   ],
-   "pinless": true
   },
   {
    "id": "place.rooftop",
