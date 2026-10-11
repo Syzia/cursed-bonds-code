@@ -109,5 +109,34 @@
   "teachers_dorm_night_b": "PICK. Lamp-lit, the corners in soft shadow (mean 89).",
   "teachers_dorm_night_a": "Good, a little brighter (mean 94).",
   "put_to_the_owner": "The lounge: evening A, night B. The dormitory: evening A, night B."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The lounge's evening A and night B; the dormitory's evening A and night B.",
+  "looked_again": "The dormitory's two were set beside its day picture at a larger size before this was recorded: the bench's things, the cushions, the hearth, the lamp and the four doors are the same in all three; nothing added.",
+  "teachers_lounge_evening": {
+   "render": "ui2_teachers_lounge_evening_a_00001_.png",
+   "sha256": "9e97aec65f092123eeb95751e97abe754b75a9c3173acb4247ec979b7f01d667",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_lounge_evening_1920.png",
+   "fit_sha256": "2973d09877068eecb312112d3d324934ac92f1c3775150a7a98913b307692094"
+  },
+  "teachers_lounge_night": {
+   "render": "ui2_teachers_lounge_night_b_00001_.png",
+   "sha256": "5b1f27160bef08fe9d500aaae120d2fe5773d1c47f86fb5896c001f56032fa01",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_lounge_night_1920.png",
+   "fit_sha256": "049b47f15605d2688515e8edb82125bbdac8947db2425714dbcccdccbcfe84af"
+  },
+  "teachers_dorm_evening": {
+   "render": "ui2_teachers_dorm_evening_a_00001_.png",
+   "sha256": "03db1c63bfffb799a68540e567822774de1adf041057a3701d91236c8d44b350",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_dorm_evening_1920.png",
+   "fit_sha256": "98a046809e122c23bfeb7c3cdfb1e84956857ae39e7b145057684afe67008499"
+  },
+  "teachers_dorm_night": {
+   "render": "ui2_teachers_dorm_night_b_00001_.png",
+   "sha256": "3ed7a005a55f199f3ce53ed83d4a7258ff056298f7ba2a6e68454e0ec9c7dc40",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_dorm_night_1920.png",
+   "fit_sha256": "d183ad85f6da77c11b2a9dec13d770325eac5c1e32ed5cd9859cbb9a81faa619"
+  }
  }
 }
