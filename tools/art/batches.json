@@ -1091,12 +1091,14 @@
       {
        "place": "bathhouse",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: through the open end of the hall and through the entrance the sky is orange and pink, and the low warm light of the sunset comes in and lies across the floor with long soft shadows. The spring outside steams in the warm light, still and quite empty, and everything that stands outside is still there: the stones round the spring, the fence of wooden planks, the cedars and the mountain slope above it, and outside the entrance the stone basin, the path and the cedars. No lamp is lit in the hall, and the fridge is as it is by day. Add no new lamp, no new light and no new window."
       },
       {
        "place": "bathhouse",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the hall switched off; the glass front of the fridge is dark too. Outside the open end of the hall and outside the entrance it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the stones round the spring, the fence of wooden planks, the cedars and the mountain slope above it, and outside the entrance the stone basin, the path and the cedars. The spring still steams, pale in the moonlight, still and quite empty. The hall is lit only by cool blue moonlight coming in through its open end and its entrance, which lies in pale patches on the floor. The hall is dim, but everything in it can still be seen clearly. Add no new light."
       }
      ]
     }
