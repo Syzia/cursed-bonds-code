@@ -1,0 +1,876 @@
+{
+ "id": "bcfd81b1-1bc5-4711-9d1e-4302702b63dc",
+ "revision": 0,
+ "last_node_id": 16,
+ "last_link_id": 13,
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.35,
+   "offset": [
+    2040,
+    640
+   ]
+  },
+  "frontendVersion": "1.51.9"
+ },
+ "version": 0.4,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "MarkdownNote",
+   "pos": [
+    -640,
+    -560
+   ],
+   "size": [
+    600,
+    480
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {},
+   "title": "Start here",
+   "color": "#222",
+   "bgcolor": "#000",
+   "widgets_values": [
+    "## Megumi's room, and Panda and Toge's\n\n2 rows, each painted twice: the two other friends' rooms off the boys' corridor. Nobody is in either picture, and nothing in them carries lettering.\n\nRun this in the **local ComfyUI**. Press **Run** once.\n\nEach row is one picture, painted twice: **version A** on top, **version B** under it. You choose between them afterwards.\n\nThe **Load Image** boxes on the left should already show their pictures. If one shows an error, click **choose file to upload** and pick the file with the same name from `JJK Game images/ui2/early`.\n\n**Cost:** 4 pictures, about **$0.64** (Nano Banana Pro, about $0.16 a picture, charged to your Comfy account).\n\nYou don't need to save anything: the results go to ComfyUI's output folder and Claude picks them up from there.\n\nIf it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
+   ]
+  },
+  {
+   "id": 2,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_megumi_room_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the boys' dormitory from outside"
+  },
+  {
+   "id": 3,
+   "type": "LoadImage",
+   "pos": [
+    -1630,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      2
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_megumi_room_2.png",
+    "image"
+   ],
+   "title": "Load Image 2: Yuji's Room, as chosen: the same house inside"
+  },
+  {
+   "id": 4,
+   "type": "BatchImagesNode",
+   "pos": [
+    -600,
+    40
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 1
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 2
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      3,
+      5
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [],
+   "title": "The pictures, in order"
+  },
+  {
+   "id": 5,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    0
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 3
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      4
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber. Picture 2 is another bedroom of the same house, already painted: the new room has the same pale plaster, dark timber posts, timber ceiling, polished timber floor, sliding door and plain sliding window. Do not copy the camera, the layout, the furniture or the posters of picture 2: the new picture is a different room, and it has no posters. THE PLACE: a bedroom upstairs in the boys' dormitory, the house of dark timber of picture 1: spare and very tidy, the room of a reader. It is about five metres long and four wide. I stand inside at one end and look along the room. In the left wall, near me, is the door, a plain sliding door of dark timber boards, shut; on the floor beside it a short row of shoes stands in a neat line. Beyond the door, along the left wall, stands a bed made square, with a plain dark blanket folded flat and nothing lying on it. Against the far wall, right of the middle, stands a tall bookshelf, quite full, its books upright in even rows, with nothing written on any spine; beside it stands a plain desk with a small desk lamp, switched off, and a closed book. In the right wall, further along than the middle, is a wide plain sliding window like the one in picture 2: through it I see the trunks of tall cedars close by and deep green forest behind them, with no building in sight. The stretch of the right wall nearest me is plain plaster. The walls carry no pictures. The floor is polished timber boards, clear and open across the whole bottom of the picture. No lettering anywhere in the picture: no letters, characters or numbers on any book, board, box or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    9296,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Megumi's Room, version A"
+  },
+  {
+   "id": 6,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    0
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 4
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_megumi_room_a"
+   ],
+   "title": "Megumi's Room: version A"
+  },
+  {
+   "id": 7,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    600
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 5
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      6
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber. Picture 2 is another bedroom of the same house, already painted: the new room has the same pale plaster, dark timber posts, timber ceiling, polished timber floor, sliding door and plain sliding window. Do not copy the camera, the layout, the furniture or the posters of picture 2: the new picture is a different room, and it has no posters. THE PLACE: a bedroom upstairs in the boys' dormitory, the house of dark timber of picture 1: spare and very tidy, the room of a reader. It is about five metres long and four wide. I stand inside at one end and look along the room. In the left wall, near me, is the door, a plain sliding door of dark timber boards, shut; on the floor beside it a short row of shoes stands in a neat line. Beyond the door, along the left wall, stands a bed made square, with a plain dark blanket folded flat and nothing lying on it. Against the far wall, right of the middle, stands a tall bookshelf, quite full, its books upright in even rows, with nothing written on any spine; beside it stands a plain desk with a small desk lamp, switched off, and a closed book. In the right wall, further along than the middle, is a wide plain sliding window like the one in picture 2: through it I see the trunks of tall cedars close by and deep green forest behind them, with no building in sight. The stretch of the right wall nearest me is plain plaster. The walls carry no pictures. The floor is polished timber boards, clear and open across the whole bottom of the picture. No lettering anywhere in the picture: no letters, characters or numbers on any book, board, box or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    9297,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Megumi's Room, version B"
+  },
+  {
+   "id": 8,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    600
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 6
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_megumi_room_b"
+   ],
+   "title": "Megumi's Room: version B"
+  },
+  {
+   "id": 9,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      7
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_senpai_room_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the boys' dormitory from outside"
+  },
+  {
+   "id": 10,
+   "type": "LoadImage",
+   "pos": [
+    -1630,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      8
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_senpai_room_2.png",
+    "image"
+   ],
+   "title": "Load Image 2: Yuji's Room, as chosen: the same house inside"
+  },
+  {
+   "id": 11,
+   "type": "LoadImage",
+   "pos": [
+    -1300,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      9
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_senpai_room_3.png",
+    "image"
+   ],
+   "title": "Load Image 3: the Dormitory Garden, as chosen: the tower"
+  },
+  {
+   "id": 12,
+   "type": "BatchImagesNode",
+   "pos": [
+    -600,
+    1300
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 7
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 8
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 9
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      10,
+      12
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [],
+   "title": "The pictures, in order"
+  },
+  {
+   "id": 13,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1260
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 10
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      11
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber with a gallery along the upper floor. Picture 2 is another bedroom of the same house, already painted: the new room has the same pale plaster, dark timber posts, timber ceiling, sliding door and plain sliding window. Picture 3 is the garden this house stands on, already painted: the tall wooden tower at its far end is what is seen through the new room's window. Do not copy the camera, the layout, the furniture or the posters of picture 2: the new picture is a different room, and it has no posters. THE PLACE: the big corner bedroom upstairs in the boys' dormitory, the house of dark timber of picture 1: a shared room, about seven metres long and five wide, with a floor of woven straw mats. I stand inside at one end and look along the room. In the left wall, near me, is the door, a plain sliding door of dark timber boards, shut. On the mats, left of the middle, lies a very large futon, far larger than an ordinary one, neatly made with a thick quilt and nothing lying on it; right of the middle, with clear floor between them, lies a small neat futon, made just as squarely. On the mats between the futons, in the middle of the room, stands a low shogi board on short legs, with plain small wooden pieces set out on it and a flat cushion on each side. Against the far wall stands a low chest of drawers, and beside it a paper floor lamp, switched off. In the right wall, further along than the middle, is a wide plain sliding window like the one in picture 2: through it I see the timber rail of the upstairs gallery just outside, and beyond it, rising above the tiled roof of the house at the garden's far end, the tall wooden tower of picture 3 against the sky, with cedars behind it. The stretch of the right wall nearest me is plain plaster. The walls carry no pictures. The mats across the whole bottom of the picture are clear and open. No lettering anywhere in the picture: no letters, characters or numbers on any book, board, box or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    9190,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Panda and Toge's Room, version A"
+  },
+  {
+   "id": 14,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1260
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 11
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_senpai_room_a"
+   ],
+   "title": "Panda and Toge's Room: version A"
+  },
+  {
+   "id": 15,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1860
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 15,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 12
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      13
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber with a gallery along the upper floor. Picture 2 is another bedroom of the same house, already painted: the new room has the same pale plaster, dark timber posts, timber ceiling, sliding door and plain sliding window. Picture 3 is the garden this house stands on, already painted: the tall wooden tower at its far end is what is seen through the new room's window. Do not copy the camera, the layout, the furniture or the posters of picture 2: the new picture is a different room, and it has no posters. THE PLACE: the big corner bedroom upstairs in the boys' dormitory, the house of dark timber of picture 1: a shared room, about seven metres long and five wide, with a floor of woven straw mats. I stand inside at one end and look along the room. In the left wall, near me, is the door, a plain sliding door of dark timber boards, shut. On the mats, left of the middle, lies a very large futon, far larger than an ordinary one, neatly made with a thick quilt and nothing lying on it; right of the middle, with clear floor between them, lies a small neat futon, made just as squarely. On the mats between the futons, in the middle of the room, stands a low shogi board on short legs, with plain small wooden pieces set out on it and a flat cushion on each side. Against the far wall stands a low chest of drawers, and beside it a paper floor lamp, switched off. In the right wall, further along than the middle, is a wide plain sliding window like the one in picture 2: through it I see the timber rail of the upstairs gallery just outside, and beyond it, rising above the tiled roof of the house at the garden's far end, the tall wooden tower of picture 3 against the sky, with cedars behind it. The stretch of the right wall nearest me is plain plaster. The walls carry no pictures. The mats across the whole bottom of the picture are clear and open. No lettering anywhere in the picture: no letters, characters or numbers on any book, board, box or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    9191,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Panda and Toge's Room, version B"
+  },
+  {
+   "id": 16,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1860
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 16,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 13
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_senpai_room_b"
+   ],
+   "title": "Panda and Toge's Room: version B"
+  }
+ ],
+ "links": [
+  [
+   1,
+   2,
+   0,
+   4,
+   0,
+   "IMAGE"
+  ],
+  [
+   2,
+   3,
+   0,
+   4,
+   1,
+   "IMAGE"
+  ],
+  [
+   3,
+   4,
+   0,
+   5,
+   0,
+   "IMAGE"
+  ],
+  [
+   4,
+   5,
+   0,
+   6,
+   0,
+   "IMAGE"
+  ],
+  [
+   5,
+   4,
+   0,
+   7,
+   0,
+   "IMAGE"
+  ],
+  [
+   6,
+   7,
+   0,
+   8,
+   0,
+   "IMAGE"
+  ],
+  [
+   7,
+   9,
+   0,
+   12,
+   0,
+   "IMAGE"
+  ],
+  [
+   8,
+   10,
+   0,
+   12,
+   1,
+   "IMAGE"
+  ],
+  [
+   9,
+   11,
+   0,
+   12,
+   2,
+   "IMAGE"
+  ],
+  [
+   10,
+   12,
+   0,
+   13,
+   0,
+   "IMAGE"
+  ],
+  [
+   11,
+   13,
+   0,
+   14,
+   0,
+   "IMAGE"
+  ],
+  [
+   12,
+   12,
+   0,
+   15,
+   0,
+   "IMAGE"
+  ],
+  [
+   13,
+   15,
+   0,
+   16,
+   0,
+   "IMAGE"
+  ]
+ ],
+ "groups": [
+  {
+   "id": 1,
+   "title": "MEGUMI'S ROOM:  A over B",
+   "bounding": [
+    -1980,
+    -50,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 2,
+   "title": "PANDA AND TOGE'S ROOM:  A over B",
+   "bounding": [
+    -1980,
+    1210,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  }
+ ]
+}

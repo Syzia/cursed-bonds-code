@@ -1,0 +1,56 @@
+{
+ "about": [
+  "Sitting 10a: Megumi's room, and the room Panda and Toge share, written early by hand on 11 Oct 2026, straight after the owner chose the last of Yuji's room (O62), and handed over unasked. Both are new places, composed, as the plan has them.",
+  "Both are upstairs in the boys' dormitory, off the chosen corridor, where I look north (My Room's side window faces north). Megumi's is on the left, the west side: its window shows the cedar forest and no gallery (the record's line). The shared room is on the garden side: its window looks over the gallery's rail to the tall wooden tower beyond the Common Room's roof (the record's line, the tower). In each picture the door is in the left wall near me and the window in the right wall.",
+  "Megumi's desk has a small lamp and the shared room a paper floor lamp, both switched off by day: each is the light of its room's lit picture later (5.7a; O62: a lit room is lit by what the room has).",
+  "References: the boys' house from outside and Yuji's chosen room as 'the same house inside', with the garden as a third picture for the tower. Yuji's posters are named as not to be copied.",
+  "NOBODY is in either picture (K16: bedrooms); the beds are said to be made, with nothing lying on them. NOTHING carries lettering (O60): it is said of the book spines, of the shogi pieces (which carry characters on a real board) and of the whole picture. The stage sentence says the right edge is plain wall painted to the picture's edge, not that it is left free (Method note 37)."
+ ],
+ "written": "2026-10-11",
+ "refs": {
+  "megumi_room": "Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber. Picture 2 is another bedroom of the same house, already painted: the new room has the same pale plaster, dark timber posts, timber ceiling, polished timber floor, sliding door and plain sliding window. Do not copy the camera, the layout, the furniture or the posters of picture 2: the new picture is a different room, and it has no posters.",
+  "senpai_room": "Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber with a gallery along the upper floor. Picture 2 is another bedroom of the same house, already painted: the new room has the same pale plaster, dark timber posts, timber ceiling, sliding door and plain sliding window. Picture 3 is the garden this house stands on, already painted: the tall wooden tower at its far end is what is seen through the new room's window. Do not copy the camera, the layout, the furniture or the posters of picture 2: the new picture is a different room, and it has no posters."
+ },
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge.",
+ "the_place": {
+  "megumi_room": "a bedroom upstairs in the boys' dormitory, the house of dark timber of picture 1: spare and very tidy, the room of a reader. It is about five metres long and four wide. I stand inside at one end and look along the room. In the left wall, near me, is the door, a plain sliding door of dark timber boards, shut; on the floor beside it a short row of shoes stands in a neat line. Beyond the door, along the left wall, stands a bed made square, with a plain dark blanket folded flat and nothing lying on it. Against the far wall, right of the middle, stands a tall bookshelf, quite full, its books upright in even rows, with nothing written on any spine; beside it stands a plain desk with a small desk lamp, switched off, and a closed book. In the right wall, further along than the middle, is a wide plain sliding window like the one in picture 2: through it I see the trunks of tall cedars close by and deep green forest behind them, with no building in sight. The stretch of the right wall nearest me is plain plaster. The walls carry no pictures. The floor is polished timber boards, clear and open across the whole bottom of the picture. No lettering anywhere in the picture: no letters, characters or numbers on any book, board, box or wall",
+  "senpai_room": "the big corner bedroom upstairs in the boys' dormitory, the house of dark timber of picture 1: a shared room, about seven metres long and five wide, with a floor of woven straw mats. I stand inside at one end and look along the room. In the left wall, near me, is the door, a plain sliding door of dark timber boards, shut. On the mats, left of the middle, lies a very large futon, far larger than an ordinary one, neatly made with a thick quilt and nothing lying on it; right of the middle, with clear floor between them, lies a small neat futon, made just as squarely. On the mats between the futons, in the middle of the room, stands a low shogi board on short legs, with plain small wooden pieces set out on it and a flat cushion on each side. Against the far wall stands a low chest of drawers, and beside it a paper floor lamp, switched off. In the right wall, further along than the middle, is a wide plain sliding window like the one in picture 2: through it I see the timber rail of the upstairs gallery just outside, and beyond it, rising above the tiled roof of the house at the garden's far end, the tall wooden tower of picture 3 against the sky, with cedars behind it. The stretch of the right wall nearest me is plain plaster. The walls carry no pictures. The mats across the whole bottom of the picture are clear and open. No lettering anywhere in the picture: no letters, characters or numbers on any book, board, box or wall"
+ },
+ "pictures_given": {
+  "crops/boys_dorm_outside.png": "730bee3af9238bf7a589fc5f6ca881779f43f763997b515ced9cb48076406e29",
+  "yuji_room_1920.png": "669f464b73cf909ecfe31d556a3ad660b6d219f6833d1a1bb1f8a2caf6023cba",
+  "dorm_yard_1920.png": "0f65262e426abe9be805f35c55f0b9c4068f5e8816ff05d3c702a863f0ec536a"
+ },
+ "rows": [
+  {
+   "label": "Megumi's Room",
+   "kind": "composed",
+   "place": "megumi_room",
+   "saves": [
+    "ui2_megumi_room_a",
+    "ui2_megumi_room_b"
+   ],
+   "seeds": [
+    9296,
+    9297
+   ],
+   "prompt_sha256": "19d45e12b5289995d2ebfb868113cb47fc53de67ffae79f1bde9fe8d09e478c6"
+  },
+  {
+   "label": "Panda and Toge's Room",
+   "kind": "composed",
+   "place": "senpai_room",
+   "saves": [
+    "ui2_senpai_room_a",
+    "ui2_senpai_room_b"
+   ],
+   "seeds": [
+    9190,
+    9191
+   ],
+   "prompt_sha256": "e1a37eeedf2f6476f744f2c72d7e6ed4ec18d177e4a082910dae5e7ea91adc53"
+  }
+ ],
+ "workflow_sha256": "fdfa9a28b0927c4207d91b5a9f1e79326eb265c67c3c9d0cbe23575ca4c848e8",
+ "cost": "4 renders, about $0.64"
+}
