@@ -17,6 +17,13 @@ the exact shapes live.
   file, `hot_look.json`, the `hotshape_<id>` widgets), added by U0c2's second
   sitting with section I of `u2_contracts.rpy`. Nothing in Part A or in B1 to
   B14 changed shape when it landed; A3, A4, B9 and B13 gained rows.
+- **B16: rooms lit at Night** (D61, plan 5.7a: the attribute `lit`,
+  `WORLD_LIT`, `WORLD_LATE`, `WORLD_SHUT_NIGHT`, `world_night_up`,
+  `world_lit_bg`), added by U0n, the last package of wave 0, with section J
+  of `u2_contracts.rpy` (lines gained, none edited). Nothing in Part A or in
+  B1 to B15 changed shape when it landed; A3, A4, B2, B3 and B6 gained rows
+  in its first sitting (the game), and B13 gains the tools' `lit` in its
+  second (the art tools).
 
 ---
 
@@ -160,6 +167,14 @@ layout has changed since the dump was written: run tools/smoke.sh u2_dump`.
 | `frames.tag_gap` | the gap `view_tag_xs` keeps between two name tags, in px |
 | `frames.tag_w` | the widest name tag of the cast, in px. With the two above, `check_layout.py` lays out each row's tags and refuses a row that does not fit (`tag-x`) |
 
+**Added by U0n (rooms lit at Night, B16)**, two keys at the top level and
+none under `world`, whose seven keys a line pins:
+
+| key | shape |
+|---|---|
+| `lit_planned` | `WORLD_LIT`: `[[place, file]]`, 8 rows: every room that has a second Night picture, the room lit (`images/bg/<stem>_lit.png`) |
+| `late` | `WORLD_LATE`: `{who: {"place": place, "days": [weekday, ...]}}`: who is out late, in which room, on which Nights |
+
 **The committed file is regenerated in the owner's folder after U0c2 merges**
 (`tools/smoke.sh u2_dump`), never from a worktree.
 
@@ -174,7 +189,7 @@ lists, not tuples. An unknown file name or an unknown key is a finding.
 | `hot_look.json` | D60, the light of a shaped hotspot: `color` (`"#rrggbb"`), `wash`, `edge`, `dim`, `names` (each a number from 0 to 1); every key optional, `HOT_SHAPE`'s value otherwise. Written by L on the owner's word. (It is not a place's file: there is no place `look`.) |
 | `view_<place>.json` | `slots {"1".."4": [[x centre, y offset, zoom(, far)], ...]}` (key `n` holds `n` rows); `poses {key: [x, y, w, h]}` (the older home of pose boxes: still read, after `pose_<place>.json`); `floor {"on": [polygons], "off": [polygons]}` (`on`: one or more polygons people may stand on, required when the key is there; `off`: optional; a polygon is three or more `[x, y]`); `scale [x, y top, y bottom]`; `slot_light {hour: {"1".."4": [one entry a slot: null or ["#rrggbb", brightness]]}}` (key `n` holds `n` entries, in the slots' order); `cast {hour: [direction, length, darkness]}`; `talk` (true or false); `for_rev` |
 | `pose_<place>.json` | `poses {key: [x, y, w, h]}` (required). `<place>` is a place key or a Tokyo district of `WORLD_AWAY` (`harajuku`, `shibuya`). A key is `<who>`, `<who>__<variant>` or `<who>__<variant>__asleep` |
-| `light_<place>.json` | `""`, `"evening"`, `"night"`: each a row `["#rrggbb", brightness, saturation, shadow opacity]`, or the same with `[shadow lean in px, shadow stretch]` after it (the installer writes six); `note` (a string, the installer's own words; not read by the game) |
+| `light_<place>.json` | `""`, `"evening"`, `"night"`, and `"lit"` for a room with a lit picture (U0n, B16): each a row `["#rrggbb", brightness, saturation, shadow opacity]`, or the same with `[shadow lean in px, shadow stretch]` after it (the installer writes six); `note` (a string, the installer's own words; not read by the game) |
 | `light.json` | `{image name: row}` (`"bg alley"`); read by `light_for_bg` before `BG_LIGHT` |
 | `area_<key>.json` | `spots {place: [x, y]}`; `for_rev` |
 | `map_campus.json` | `anchors {area key: [x, y]}`; `mountain_box [x0, y0, x1, y1]` |
@@ -183,6 +198,13 @@ lists, not tuples. An unknown file name or an unknown key is a finding.
 
 An hour is `""` (the day picture), `"evening"` or `"night"`; a period name is
 accepted as well, and where both fit the period's own row is read first.
+**U0n (B16):** `"lit"` is an hour too, the room at Night with someone up in
+it: the game reads a `view_` file's `slot_light` and `cast` and a `light_`
+file under `"lit"` while the lit picture shows. A `Night` key in a `view_`
+file would serve both of a room's Night pictures, so
+`check_content.py --layout-files` learns `"lit"` and refuses that key for a
+place of `WORLD_LIT` in U0n's second sitting (until then the checker does not
+know the key, and no file holds it).
 `for_rev` is a whole number from 1; in a `hot_` or `view_` file it is a
 finding unless `pictures.json` calls that place's picture `composed` (a room
 redone in place carries none, plan 3.2). The game ignores a file whose
@@ -195,9 +217,14 @@ from a picture is keyed by the PLACE key and names its parent picture:
 | key | row | made from |
 |---|---|---|
 | `<stem>_evening`, `<stem>_night` | `{rev, kind: "relight", of, of_rev}` | the day picture `<stem>` |
+| `<stem>_lit` (U0n; `library_lit`, `your_room_lit`) | `{rev, kind: "relight", of, of_rev}` | the day picture `<stem>` |
 | `fg_<place>[_<hour>]` | `{of, of_rev}` | the place's picture for that hour |
 | `light_<place>[_<hour>]` | `{of, of_rev}` | the same |
 | `pose_<place>__<who>[__<variant>][__asleep]` | `{of, of_rev}` | the place's picture for the variant |
+
+In the three rows below it `<hour>` and `<variant>` may be `lit` as well
+(`fg_library_lit`, `light_library_lit`, `pose_library__megumi__lit`), made
+from `<stem>_lit` (`ART_HOURS` is `("evening", "night", "lit")`).
 
 Something with a row is fresh while its parent is at the row's `of_rev`;
 something with no row is fresh while its parent is at revision 1; and what was
@@ -309,7 +336,10 @@ until it is painted: `standin_bg(key, src, matrix, **kw)` in
 `bg_placeholders.rpy`), the label `sb_do_path_<key>` and the action
 `path_<key>`. An hour picture is `bg <key> evening` / `night`, from
 `images/bg/<key>_evening.png` / `_night.png` (B6). A key that reaches a save is
-never removed.
+never removed. **U0n (B16):** the five friends' rooms (`yuji_room`,
+`megumi_room`, `senpai_room`, `nobara_room`, `maki_room`) also have
+`bg <key> lit`, from `images/bg/<key>_lit.png`: the room with its lamp on,
+shown at Night while its owner is up in it; `bg <key> night` is the room dark.
 
 ### B3. The world's tables (`sb_world.rpy`; U0b, U0c1; final)
 
@@ -325,6 +355,10 @@ never removed.
 | `world_home_state(who, per=None)` | `"awake"`, `"asleep"` or `"out"` |
 | `world_room_state(loc)` | `{owner: one of those}`; `{}` for a place that is nobody's home |
 | `WORLD_VARIANTS` | a tuple of `(place, period, attribute, file)`: the 56 planned new hour pictures (B6) |
+| `WORLD_LIT` (U0n, B16) | a tuple of `(place, file)`: the rooms with a second Night picture, lit. `WORLD_LIT_ON` → `{place: file}` for the rows that registered; `WORLD_LIT_ATTR` → `"lit"` |
+| `WORLD_LATE` (U0n) | `{who: (place, (weekday, ...))}`. `world_late_cell(who, per=None)` → the room the table has them in tonight, or None |
+| `WORLD_SHUT_NIGHT` (U0n) | a tuple of the places `place_access` shuts at Night |
+| `world_night_up(loc, per=None)` (U0n) | bool: at Night somebody is up in this place |
 
 `place_access(loc)` keeps its signature and returns `(bool, reason, short
 tag)`. The flag `door_<place>` opens any place; a house is always open from
@@ -439,6 +473,17 @@ missing:
 over a static cell too (My Room's Evening is `night` today and becomes
 `evening` when `your_room_evening.png` lands). A row whose file is missing
 does nothing. Lint reports a `TIME_VARIANT` cell with no image.
+
+**U0n (B16):** `bg_variant` also answers `"lit"`, at Night only, for a place
+of `WORLD_LIT_ON` whose lit picture is ready (`world_lit_ready(loc)`:
+loadable, fresh against the day picture, and with its own cut
+`images/fg/fg_<loc>_lit.png` where the room has a foreground) while
+`world_night_up(loc)` is true; otherwise exactly the answer above. The other
+three gates take the attribute from it and build `fg_<loc>_lit.png`,
+`pose_<loc>__<who>__lit.png` and the light row under `"lit"` as they build an
+hour's. `WORLD_LIT`: a row whose file is loadable and fresh defines
+`bg <picture> lit` at init and is noted in `WORLD_LIT_ON`; it sets no
+`TIME_VARIANT` cell, and a row whose file is missing does nothing.
 
 `rule_layout(name)` (`sb_rules.rpy`, unchanged signature): the sidecar as a
 dict, a fresh copy each call; `{}` for a file that does not exist and for one
@@ -893,3 +938,44 @@ shape is the first thing the owner tries on the Courtyard at batch 0.
 **Not built** (plan 7.3, asked at checkpoint B): a shimmer on walking in; a
 thing staying clickable while someone stands on its point; a cut-out picture
 for each light; shapes on the maps.
+
+### B16. Rooms lit at Night (D61, plan 5.7a; `sb_world.rpy`, `art_manifest.rpy`; U0n, final)
+
+At Night a room that is shown both ways has two pictures: `bg <place> night`,
+the room with nobody up in it, and `bg <place> lit`, the room with its lamps
+on. No lit picture is installed by U0n; until one is, the game shows what it
+showed.
+
+| symbol | example | returns |
+|---|---|---|
+| `WORLD_LIT` | `(("library", "images/bg/library_lit.png"), ...)` | the eight rooms: the Library, the five friends' rooms, My Room (`your_room_lit.png`), the dojo. A table of its own: `WORLD_VARIANTS` keeps its 56 rows |
+| `WORLD_LIT_ON` | `{"library": "images/bg/library_lit.png"}` | the rows that registered at init (`world_lit_register()`, as `world_variants_register` registers). Init data, never saved |
+| `world_lit_ready(loc)` | | bool: registered, loadable, fresh, and with its own fresh cut in a room with a foreground (K7) |
+| `world_night_up(loc, per=None)` | `world_night_up("library")` | bool. False unless the hour asked (`per`, else the hour it is) is Night, and False while the store holds no hour (init: the memory tiles). In a replay: whether the memory being replayed (`_mem_label`, `_mem_args`) names a person; False when it is not found. Otherwise: whether anyone on the roster has `char_location(who, "Night") == loc` and is not asleep. It never reads `who_is_here`: I do not count, and whoever walks with me counts only in the room their own table has them in |
+| `bg_variant(loc, per)` (unchanged signature) | `bg_variant("library", "Night")` | `"lit"` at Night when `loc in WORLD_LIT_ON and world_lit_ready(loc) and world_night_up(loc, per)`; otherwise what it answered before (the hour's attribute, or None) |
+| `world_lit_bg(place)` | `scene expression world_lit_bg("dorm")` | for a written scene that needs the room lit: the image name `"bg <picture> lit"` when `world_lit_ready(place)`, else `graded_bg(place, "Night")`. It does not ask who is there. U0n re-points no scene line; U9 points My Room's five at it (plan 5.7a) |
+| `graded_bg(loc=None, per=None)` | | as before. Its cache key is `(place, hour, "lit" or None)`, so a room's two Night pictures are two rows; **`_light_key` stays `(place, hour)`**, on a tinted picture only (a painted one is lit by its own name) |
+| `WORLD_LATE` | `{"megumi": ("library", ("Sun",)), "toge": ("library", ("Wed",))}` | who is out late, where, on which Nights (the owner's yes of 11 Oct, O47). Read in `char_location`'s routine branch after `WORLD_AWAY`: a story pin and a flag schedule still win. `routine_location`, `usual_places` and `when_at` do not read it |
+| `world_late_cell(who, per=None)` | `world_late_cell("megumi")` | the room, on a Night the row names; None at any other hour or day |
+| `WORLD_SHUT_NIGHT` | `("office", "utahime_office", "gojo_office", "pool")` | the places `place_access` shuts at Night (tag `"Night"`); a harness line holds the two equal |
+| `world_lit_validate(lit=None, shut=None, on=None)`, `world_late_validate(late=None, lit=None, shut=None)` | | lint findings (both run from `_validate_world`); each takes a table to test in place of the game's |
+
+Someone out late is where `char_location` says: counted there by
+`who_is_here`, on the stage, awake (`world_asleep` is true only at home), and
+`"out"` for `world_home_state`. Their own room opens as on any other Night.
+With them: Talk and "Ask them along", by the night rule as it stands.
+
+Lint refuses a `WORLD_LATE` row whose person has no routine in `SCHEDULE` (or
+is Gojo) or is on that Night's `WORLD_ASLEEP` list, and whose place is
+outdoors, is somebody's home, has a Bond door (`WORLD_DOOR_OWNERS`), is in
+`WORLD_SHUT_NIGHT`, or has no `WORLD_LIT` row; and a `WORLD_LIT` row that is
+not `(place, images/bg/<stem>_lit.png)`, is outdoors, shut at Night, or listed
+twice.
+
+The names an art sitting writes for a lit room: the picture
+`images/bg/<stem>_lit.png` with the manifest row `<stem>_lit`
+`{rev, kind: "relight", of: <stem>, of_rev}`; the cut
+`images/fg/fg_<place>_lit.png` (row `fg_<place>_lit`, `of: <stem>_lit`); a
+pose `images/place/pose_<place>__<who>__lit.png` with its box under
+`<who>__lit` in `pose_<place>.json`; the light row under `"lit"` in
+`light_<place>.json` (row `light_<place>_lit`).

@@ -167,6 +167,15 @@ The plan's 5.7a (D61; the owner's yes of 11 Oct, O47) puts two people out late: 
 
 Lines that cross a Sunday or a Wednesday Night and hold: `u2_home.rpy:1181-1184` (the asleep lists: each stayer is awake that Night), `wp1_world.rpy:317-334` with `:351` and `:361`, `wp4_board.rpy:307-321`, `wp3_missions.rpy:412-419` and `:454-466`; `p2_hud.rpy:810-816` and `p2_contracts.rpy:237-255` sweep day 3 and hold because their roster has no Toge that day. If a later package puts Toge on that roster, these two meet him in the Library at Night.
 
+**Changed by U0n (its first sitting, 12 Oct): the two lines above, old and new.**
+
+| harness line | old | new |
+|---|---|---|
+| `u2_home.rpy`, section D's first check (the loop over days 8 to 14 and its `check`) | the test `char_location(w) != home or world_home(w) != home`; the name "D: on each of the seven Nights everyone who lives on campus is in their own home (the four boys, the two girls, Shoko, the three teachers), and the garden, the Common Room, the girls' corridor and the lounge are empty" | the test `char_location(w) != (world_late_cell(w) or home) or world_home(w) != home`; the name "D: on each of the seven Nights everyone who lives on campus is in their own home, or where WORLD_LATE puts them that Night (the four boys, ...), and the garden, the Common Room, the girls' corridor and the lounge are empty". The four empty places are tested as before |
+| `wp1_world.rpy`, the copy of the old schedule (`zz_old_location`) | after the away table: nothing | a copy of the late table, `ZZ_OLD_LATE = {("megumi", "Sun", "Night"): "library", ("toge", "Wed", "Night"): "library"}`, read after `ZZ_OLD_AWAY` (`loc = ZZ_OLD_LATE.get((who, wd, per), loc)`). The check's name and test are unchanged ("regression: days 1-14 x 5 periods, the original 9 match the pre-phase-1 schedule and Gojo's roll") |
+
+Each was seen to fail, in two scratch copies. (1) With the table wrong (Megumi's row moved to the Cafeteria on Mondays in `sb_world.rpy`): `wp1_world`'s regression line fails on days 1, 7, 8 and 14, and `u2_home` fails beside the ledger line, on its asleep lists (Megumi is no longer asleep at home on a Monday) and on lint; its ledger line follows the table, as its new wording says, and so holds. (2) With the table right and `char_location` no longer reading it: `u2_home`'s ledger line fails (`('Wed', 'toge', 'senpai_room'), ('Sun', 'megumi', 'megumi_room')`) and `wp1_world`'s on days 3, 7, 10 and 14. The third row above (`p2_view.rpy`, the pose plan's check) is still owed, to U3, with the first pose painted on a `lit` picture.
+
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 
 A scratch copy of the tree was given a crude stub of what wave 0 changes in who

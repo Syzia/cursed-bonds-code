@@ -3,7 +3,7 @@
 # overhaul looks at, made again from the repository (docs/UI2_DESIGN.md K13:
 # "nothing lives only in a scratch folder"; 10.2, U0a step 9).
 #
-#   tools/review_pack.sh <package>          U0a U0b U0c1 U0c2 U0d U1 ... U10, L
+#   tools/review_pack.sh <package>          U0a U0b U0c1 U0c2 U0d U0n U1 ... U10, L
 #   tools/review_pack.sh <package> --list   say what it would run, run nothing
 #   tools/review_pack.sh <package> --no-harness   the sheets only
 #
@@ -49,6 +49,7 @@ case "$PKG" in
     U0c1) OWN="u2_home wp1_world p2_map p2_paths p2_saves p2_night"; SHEETS="all" ;;
     U0c2|U0c) OWN="u2_home u2_baseline p2_view p2_rooms p2_hud p2_night"; SHEETS="all" ;;
     U0d|U0d1|U0d2|U0d3|U0k) OWN="u2_dump"; SHEETS="all" ;;
+    U0n)  OWN="u2_lit u2_home wp1_world u2_dump u2_baseline"; SHEETS="all" ;;
     U1)   OWN="wp1_world u2_world"; SHEETS="" ;;
     U2)   OWN="p2_map p2_paths u2_map"; SHEETS="all" ;;
     U3)   OWN="p2_view u2_blend"; SHEETS="all" ;;
@@ -60,7 +61,7 @@ case "$PKG" in
     U9)   OWN="u2_names wp10_chapters wp9_prologue wp5_memories p2_saves p2_night"; SHEETS="" ;;
     U10)  OWN="ui2_all u2_saves"; SHEETS="all" ;;
     L)    OWN="u2_dump p2_map p2_hud p2_paths p2_view p2_rooms"; SHEETS="all" ;;
-    *) echo "review_pack.sh: no package $PKG (U0a U0b U0c1 U0c2 U0d U1 to U10, L)" >&2; exit 2 ;;
+    *) echo "review_pack.sh: no package $PKG (U0a U0b U0c1 U0c2 U0d U0n U1 to U10, L)" >&2; exit 2 ;;
 esac
 
 OUT="$ROOT/shots/review/$PKG"
