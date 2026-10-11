@@ -5,7 +5,8 @@
   "The owner's door rules (O37): upstairs, three sliding bedroom doors in each side wall, evenly spaced and facing each other, and no window beside a door: the one window is in the end wall, over the workbench. D50 has three of the six with name plates and three blank; no picture carries lettering (O60), so all six plates are painted blank and the game names them.",
   "A room says who lives in it (O65): tea things on the lounge's low table and a half-sewn cloth doll on a sofa's arm; upstairs, the doll-maker's bench under the end window. Each room has lamps of its own, off by day, for its evening and its Night (5.7a: the lounge is dark at Night; the dormitory is lamp-lit on all seven Nights).",
   "The dormitory has no painted room of the same house to be given as 'the same house inside' (the record's refs_also names the lounge, which is painted in this same file): it is given the house from outside and the same words for its plaster, timber and floor. If the two do not look like one house, the dormitory is made again with the chosen lounge as its reference.",
-  "NOBODY is in either picture; NOTHING carries lettering (the duty board's tags and the six plates are said to be blank)."
+  "NOBODY is in either picture; NOTHING carries lettering (the duty board's tags and the six plates are said to be blank).",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 17:43) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "refs": {
@@ -61,5 +62,21 @@
   }
  ],
  "workflow_sha256": "c0c20062297c167a9ecba6bb708d4fa292ffcf55a6c8665cb5eedcd5f25a5362",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_teachers_lounge_a_00001_.png": "51719b67c808124374b4c3d2c6cc454a6a3ad820a1739147d7483b465e29859f",
+  "ui2_teachers_lounge_b_00001_.png": "f68d5c0dd4d4384fe03e80db66e72124c8b997458b4082c6cb5c72aa9558f319",
+  "ui2_teachers_dorm_a_00001_.png": "6eb383ff22cd6a8d75c736946eccc2d8ba7cd84daf1cb7c7a0bd17f8145d0170",
+  "ui2_teachers_dorm_b_00001_.png": "2c55398adaba658b416a081595facfe306bef4bc691ced4491c3b3232abdefe7"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "By eye, each against its checklist; the dormitory's side walls, the bench and the duty board at the render's own size; each render's darkest and brightest columns measured for a blank band (none). Sheet: ~/Desktop/JJK Game images/ui2/early/compare_teachers_house.jpg.",
+  "teachers_lounge_b": "PICK. Nobody. The entrance open at the left under the dark red curtain, with the bamboo fence and the paving outside and a stone entry floor with a row of slippers; two latticed paper windows after it, glowing warm; a television on a cabinet at the left wall; a kitchen along the far wall (a hood, a kettle on the stove, shelves of cups, a microwave, a fridge); the stairs at the right end of the far wall (about x 1216 to 1408 of 1920); the duty board on the right wall with rows of blank tags on hooks (about x 1488 to 1656, inside the frame's right limit); armchairs and a sofa round a low table with tea things; an open timber floor at the right and across most of the bottom. No lettering. A rag doll with hair and a dress sits on the sofa with a pincushion beside it: the words asked for a half-sewn cloth doll.",
+  "teachers_lounge_a": "Good, cosier: the entrance shows a flight of stone steps outside. Not the pick: a sofa with its back to the camera fills the bottom middle of the picture, where the floor was to be clear.",
+  "teachers_dorm_a": "NOT USABLE AS IT IS, for one fault: FOUR bedroom doors, two in each side wall (each a pair of sliding paper panels), each with a blank plate, where the owner's rule and D50 have six, three a side. Otherwise the room asked for: the stair head and its railing near left, the sunken hearth with its kettle on a hook and cushions, a round paper lamp over it, the end window with the workbench under it. The things on the bench are dolls with hair and dresses.",
+  "teachers_dorm_b": "NOT USABLE AS IT IS: one wide screen of four sliding panels in each side wall, with one plate each: two doorways, not six. A wide, open floor; the hearth, the lamp, the window and the bench are there.",
+  "the_dolls": "In both rooms the cloth dolls came back as rag dolls with hair and dresses. The story's dolls are stuffed creatures (one of them walks about the school). The redo asks for animals and creatures by name.",
+  "put_to_the_owner": "The lounge: B. The dormitory: made again for six doors (art_13c.json), with the lounge's doll made a bear in the same file."
+ }
 }

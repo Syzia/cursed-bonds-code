@@ -1,0 +1,54 @@
+{
+ "about": [
+  "The teachers' dormitory again, and the lounge's doll: written by hand on 11 Oct 2026 on reading sitting 13a, BEFORE the owner chose, on the pick put to them (lounge B), and handed over with it. If the owner chooses lounge A this file is written again.",
+  "THE DORMITORY: neither version of 13a has six bedroom doors (A four, B two wide screens). Words alone did not set out the doors, as they did not in the girls' corridor (Method note 26); the editor is given a picture whose doors are set out the wanted way, the chosen boys' corridor, for the doors' rhythm only, with the words saying that the room is three times as wide and its doors are sliding paper doors. The lounge picked is given as the same house inside, and the house from outside. Its own renders of 13a are NOT given: the editor would keep their doors.",
+  "THE DOLLS: the bench's are asked for as stuffed animals and creatures by name, none with hair or a dress. On lounge B's sofa a rag doll with hair and a dress is changed to a half-sewn cloth bear: one named change, the tool's keep-everything prompt without the record's window line; if taken, only the doll is placed onto the chosen lounge by a script, and the lounge's evening and night are made after it.",
+  "NOBODY is in either picture; NOTHING carries lettering."
+ ],
+ "written": "2026-10-11",
+ "made_from": {
+  "boys_dorm_1920.png": "f9bbcd3da64f3294ede06f4cab7c69ada6b711a23765e1b32e616675006467e7",
+  "ui2_teachers_lounge_b_00001_.png": "f68d5c0dd4d4384fe03e80db66e72124c8b997458b4082c6cb5c72aa9558f319",
+  "crops/teachers_house_outside.png": "82ddafb26c7d3bf9d5a22fc25d11a65010a46557803f419cd62747e373a127b6"
+ },
+ "refs": "Picture 1 is a corridor of another house of this school, already painted. The new room has six doors set out in the same way: three in each side wall, evenly spaced, all the same size, each one facing the door opposite it, and it is seen from the same place, straight down its middle. But the new room is three times as wide as that corridor, a sitting room and not a corridor, and its doors are sliding doors of timber and white paper, not the doors of picture 1. Picture 2 is the ground floor of the house the new room is in, already painted: the new room, upstairs, has the same white plaster, dark timber posts, timber ceiling and polished timber floor. Do not copy the furniture of picture 2. Picture 3 is that house seen from outside, cut from a picture already painted.",
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge.",
+ "the_place": {
+  "teachers_dorm": "the upstairs sitting room of the teachers' house, the house of picture 3: a quiet, wide room about ten metres long and seven wide, with walls of white plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. I stand at one end and look straight along the room, down its middle. The room has six bedroom doors and one window. In the left wall are three doors and in the right wall three doors, set out as the doors of picture 1 are: six sliding doors of timber and white paper, each a single door, all the same size, all shut, evenly spaced along the walls with the same width of plain plaster between each door and the next, each one facing the door opposite it. Beside each of the six doors hangs a small plain wooden plate with nothing written on it. There is no window in either side wall. In the near left corner, before the first door, the stairs come up through the floor, with a low timber railing round the opening: this is the way down. In the middle of the floor is a square sunken hearth with white ash in it and an iron kettle hanging over it on a hook, with flat cushions laid round it; a paper lamp hangs from the ceiling over the hearth, switched off. The far end wall has a wide latticed window, and under it stands a long workbench with stuffed cloth creatures in the making: a brown bear, a white rabbit, a round yellow bird and odd creatures with long arms, some finished and some half sewn, with folded cloth, spools of thread, scissors and a small work lamp, switched off. Every one of them is an animal or a creature; none has hair or a dress. Through the window I see the tops of the trees of a small garden behind the house and a slope of cedars above them. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any plate, box or wall"
+ },
+ "change": {
+  "teachers_lounge": "Change one thing only: the doll on the sofa at the right. The rag doll with hair and a dress is gone. In its place, on the same seat, lies a half-sewn cloth bear, plump and brown, with one arm not yet sewn on lying beside it and a threaded needle stuck in its side. The red pincushion on the sofa's arm stays where it is. Change nothing else in the picture: the sofas, the table and its tea things, the kitchen, the stairs, the board on the wall, the entrance and the windows stay exactly as they are."
+ },
+ "rows": [
+  {
+   "label": "Teachers' Dormitory, with six doors",
+   "kind": "composed",
+   "place": "teachers_dorm",
+   "saves": [
+    "ui2_teachers_dorm2_a",
+    "ui2_teachers_dorm2_b"
+   ],
+   "seeds": [
+    7820,
+    7821
+   ],
+   "prompt_sha256": "330710c6ef3124aab6c43d1e30b684afd14c2ea2c4fd9173554213242fa2fe3c"
+  },
+  {
+   "label": "Teachers' Lounge B, the doll made a bear",
+   "kind": "inplace",
+   "place": "teachers_lounge",
+   "saves": [
+    "ui2_teachers_lounge_b_bear_a",
+    "ui2_teachers_lounge_b_bear_b"
+   ],
+   "seeds": [
+    7238,
+    7239
+   ],
+   "prompt_sha256": "ef558f9dd1ac4b438a1ca6f6c7278f04d944219f6ec34a7ea18c669023d62ccd"
+  }
+ ],
+ "workflow_sha256": "73341465587bd92a5bbb6fd527fd4d7484ebc844c175485485b82233ac1f950e",
+ "cost": "4 renders, about $0.64"
+}
