@@ -812,7 +812,7 @@ reached on the rest of itself. Lint refuses nothing the game plays wrongly.
 **The rule for the layout sittings: keep a front hotspot's point out of every
 smaller back shape** (move the point, or trace the back shape round it).
 
-**Three things the layers' rule does not read, handed on in writing.**
+**Two things the layers' rule does not read, handed on in writing.**
 
 - **To U0d3: a hotspot that keeps its button.** The game's lint reads the
   layers only for ids under `shapes`. A back hotspot or an exit under

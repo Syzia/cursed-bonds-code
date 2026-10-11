@@ -154,6 +154,18 @@ alone over the same overlay.
 
 Also handed on: the Library's description is rewritten for a bright room by U1 ("the Library's and the Dormitories' words", plan 10.2); the Teachers' Dormitory stand-in was brightened in 56f0ea0 (it was nearly black at Night) and is still a borrowed picture.
 
+## Part 2c. Owed to U0n, rooms lit at Night (written 11 Oct, before the package starts: D43, K13)
+
+The plan's 5.7a (D61; the owner's yes of 11 Oct, O47) puts two people out late: Megumi in the Library on Sunday Nights and Toge on Wednesday Nights (`WORLD_LATE`). A second reader traced every harness line that crosses a Night: these are the only ones that change. Every line that fixes a Tuesday, a Friday or a Saturday Night holds as written, the frozen `u2_contracts.rpy` among them (its Nights are days 2 and 6).
+
+| harness line | pins | changed by | fixed by |
+|---|---|---|---|
+| `u2_home.rpy:1163-1180`, "D: on each of the seven Nights everyone who lives on campus is in their own home ... and the garden, the Common Room, the girls' corridor and the lounge are empty" | where all ten are on each of the seven Nights | U0n: on day 10 (a Wednesday) Toge, and on day 14 (a Sunday) Megumi, are in the Library | U0n: "in their own home, or where `WORLD_LATE` puts them that Night"; the four empty places stay empty |
+| `wp1_world.rpy`, the copy of the old schedule and the line that compares `char_location` with it (about `:282-299`; the copy is `:52-81` and `zz_old_location`, `:87-103`) | where each of the original nine is on days 1 to 14 at all five periods | U0n: days 3 and 10 (Toge), 7 and 14 (Megumi), at Night | U0n: the copy learns the late table, as it learned the away table (`ZZ_OLD_AWAY`) |
+| `p2_view.rpy:714-740`, the pose plan's check | every `POSES` row's picture is in `TIME_VARIANT` at an hour the routine has the person there; exactly one row comes another way (the Gojo night's) | the first pose painted on a `lit` picture (7.2 rows 16 to 21, and the three of 5.7a): a lit picture is in `WORLD_LIT`, and the routine never has a late stayer in the Library. **With the poses, not before** | U3: a row's picture is read from `TIME_VARIANT` or `WORLD_LIT`, and a `lit` row's hours from the Night cells of the schedule and the late table |
+
+Lines that cross a Sunday or a Wednesday Night and hold: `u2_home.rpy:1181-1184` (the asleep lists: each stayer is awake that Night), `wp1_world.rpy:317-334` with `:351` and `:361`, `wp4_board.rpy:307-321`, `wp3_missions.rpy:412-419` and `:454-466`; `p2_hud.rpy:810-816` and `p2_contracts.rpy:237-255` sweep day 3 and hold because their roster has no Toge that day. If a later package puts Toge on that roster, these two meet him in the Library at Night.
+
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 
 A scratch copy of the tree was given a crude stub of what wave 0 changes in who

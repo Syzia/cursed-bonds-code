@@ -131,6 +131,10 @@ u2-room                  SAME                   game/sb_loop.rpy:37             
 u2-roster-menu           SAME                   game/story_arc1.rpy:353            game/story_arc1.rpy:353            none
 u2-warehouse-fight       SAME                   game/sb_combat.rpy:256             game/sb_combat.rpy:256             none
 
+(After U0c2 was merged, 11 Oct: sb_night.rpy's rows read 17 lines later, for the lines U0c2 added above them
+ (u2-after-club 599, u2-carry-garden 475, u2-night-arrival 557); nothing else differs. The thirty slots loaded
+ again in the owner's folder after the merge: SAME 27, MOVED 3, RAISED 0, the same three as in this table.)
+
 Per slot: version, technique, grade, arc, day, roster size, merit, story step
 (story_point, or legacy_story_point() for a save without one, then the story row
 the objective points at), the objective, keepsakes, and where it landed.
