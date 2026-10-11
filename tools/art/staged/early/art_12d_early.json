@@ -54,5 +54,22 @@
    "prompt_sha256": "e8a98bf7119eb0935555d64465bc6b8ebb7945ff85f3a36d690e9cfc3ac09547"
   }
  ],
- "workflow_sha256": "0812aaea302379b0d8b404d05dfa22846809588c0734bfd76100a911933720d4"
+ "workflow_sha256": "0812aaea302379b0d8b404d05dfa22846809588c0734bfd76100a911933720d4",
+ "renders_sha256": {
+  "ui2_gojo_office_evening_a_00001_.png": "43338f9df74cffca43405e9c9b7c7ef9d8a999eadf28588abddc45bb5a50639a",
+  "ui2_gojo_office_evening_b_00001_.png": "fd9f4ca1fe810e2eb58d68b76804dfed5dc3ad1f112293f4e18e5c5fae9238c5",
+  "ui2_office_evening_a_00001_.png": "9b712c6da350c5d89cd485b78470f4cfc524e5d3f22f84abf3944abb0a990b11",
+  "ui2_office_evening_b_00001_.png": "85ecb8bb705157914421adce91d11885d46e3aeb2450be4d222f34a5562ddd80",
+  "ui2_utahime_office_evening_a_00001_.png": "2dd2f767dd6bdd53c3198e1f5496e5186e7eb6eca6b7d0896dc90e409fbf2e15",
+  "ui2_utahime_office_evening_b_00001_.png": "56d1ae106d26b465e3c07984b479b47b6f1e67bc9a9b9614967d87beab7c7950"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "tools/py_art.sh tools/install_redo.py --relight <place> evening <a> <b> --dry --against chosen/<place>_1920.png, then by eye. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_offices_evening.jpg.",
+  "by_the_tool": "All six PASS: nothing moved (10, 11 and 37 points checked, none off by more than a pixel).",
+  "gojo_office_evening": "A (PICK): an orange and pink sky over the yard, like the staff steps' own evening; the paper lamp on, the television off. B is clean, with a later, bluer dusk.",
+  "office_evening": "B (PICK): every candle burning, dusk blue through the doors with a last band of pink. A is the same but for a plain blue sky.",
+  "utahime_office_evening": "A (PICK): dusk through the door and the round window, the screens glowing, her desk lamp on, which is the room's only lamp. B has added a ceiling light at the top of the picture: not offered.",
+  "put_to_the_owner": "Gojo's A, the Principal's B, Utahime's A."
+ }
 }
