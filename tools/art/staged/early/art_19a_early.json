@@ -1,0 +1,67 @@
+{
+ "about": [
+  "Sitting 19a: the Onsen's rest hall and its sauna, the two rooms inside the hot-spring house of the chosen Mountain Path. Written early by hand on 11 Oct 2026, straight after the owner chose the last of the mountain's wild places (O57), and handed over unasked. Both are new places, composed, as the plan has them.",
+  "Each is written from the record's words as the inside of its own building (Method note 34), by O45's four questions; the answers are below. The rest hall is given the chosen Mountain Path and a crop of the house; the sauna only the crop, since nothing of the outside is seen from it.",
+  "NOBODY IS IN EITHER PICTURE, and the spring and the cold-plunge tub hold nobody (K16). The prompt check was run for the two places by name, where it is strictest; the stage sentence is the file's own, because the tool's names \"a visitor\".",
+  "The sauna has no window and one picture for every hour, lit by its stove (5.7). The rest hall's evening and night are sitting 19b, made from the version chosen."
+ ],
+ "written": "2026-10-11",
+ "four_questions": {
+  "the_map": "The record's fixed row for the chosen Mountain Path: the hot-spring house \"stands in the middle distance, among the trees\", on its right. The picture shows its front to the path: an entrance under a small canopy with a dark-blue door curtain, a stone basin beside the door, and at its right-hand end a tall plank fence with steam rising behind it. So the spring lies at the house's right-hand end. I stand inside at the other end and look along the hall toward it: the front wall with the entrance is on my right, the spring through the open screens at the far end, and the back of the house, where the sauna is, on my left.",
+  "the_room": "A rest hall about ten metres by six with a clear floor, for the people who are there in the evening. The sauna is small, about three metres by four, as a sauna is: nobody but me is ever in it.",
+  "the_story": "New places with no scene yet. Plan 4.1: \"the rest hall of a timber mountain onsen at the edge of the trees: benches, a fan, a fridge of cold milk, a cedar door to the sauna, and through open screens the stone hot spring, steaming and empty, with the forest behind it\"; \"a cedar box, a stove, a bucket and a bench, and beside the door a stone cold-plunge tub fed by a bamboo spout; no window\". Plan 4.7: a soak and a sitting-out are told in the first person, nobody shown.",
+  "the_people": "In the hall, four things to click, each on its own wall and clear of the right ninth: the entrance (the way out to the Mountain Path), the open screens (the soak), the milk fridge (a look) and the cedar door (the sauna). In the sauna: the door (the way out), the bucket (a look) and the bench (the sitting-out). Maki and Nobara are in the rest hall on weekend Evenings, dressed; no pose is painted in either room (K16)."
+ },
+ "refs": {
+  "bathhouse": "Picture 1 is the mountain path this room's building stands on, already painted: the same school. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the timber house with the grey tiled roof, its entrance under a small canopy with a dark-blue door curtain, and beside it the fence of wooden planks with steam rising behind. The new picture is the inside of that house. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building.",
+  "sauna": "Picture 1 is the house this room is inside, cut from a picture already painted and seen from outside: the same school, the same timber. The new picture is taken indoors, in a small room at the back of that house that has no window, and it shows nothing of the outside. Do not copy its camera or its layout."
+ },
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. Leave the right ninth of the picture and the top-left corner free of doors, shelves and anything else one would walk to or use.",
+ "the_place": {
+  "bathhouse": "the inside of the hot-spring house of picture 2: its rest hall. It is a calm, airy hall of pale timber and white plaster, about ten metres long and six wide, with a floor of smooth timber boards and a ceiling of dark beams. I stand inside at one end and look along the hall. The right wall is the front of the house seen from inside: halfway along it the entrance, a wide sliding timber door, stands open under the short dark-blue door curtain of picture 2, and through it I see the stone basin that stands by the door, the grass and earth of the mountain path, and tall cedars beyond; the stretch of the right wall nearest me is plain plaster. The far end of the hall has no wall: its paper screens are slid wide open onto the hot spring outside, a pool edged with rounded grey stones, its water still and steaming and quite empty, closed round by the tall fence of wooden planks of picture 2, with the tops of cedars and a green mountain slope above the fence. On the left wall, a little way along, stands a small glass-fronted fridge with rows of small milk bottles in it; further along the left wall is a plain door of cedar boards, shut, with no window in it. A standing electric fan stands in the far left corner, and low timber benches run along the walls. The hall is empty and tidy. The floor is clear and open across the whole bottom of the picture",
+  "sauna": "the inside of the sauna of the hot-spring house of picture 1: a small room with no window, lined from floor to ceiling with pale cedar boards, about three metres wide and four long, lit only by the warm orange light of its own stove. I stand at the back of the room and look toward its door. In the far wall, left of the middle, is the door, of plain cedar boards, shut, with no window in it. Beside the door, to its right, stands a round tub of grey stone, knee high, filled with clear still water and quite empty, with a bamboo spout above it from which a thin stream of water falls into the tub. Along the left wall runs a bench of cedar boards in a lower and an upper step, plain and empty. Against the right wall, halfway along and well clear of the picture's right edge, stands the stove: a low black iron stove with a heap of dark round stones on top, its fire showing orange through a small grate; on the floor beside it stand a wooden bucket of water and a long wooden ladle. The floor is cedar boards, clear and empty. The stove's fire is the only light: it lies warm on the boards near it and leaves the far corners dim, but everything in the room can still be seen clearly"
+ },
+ "crop": {
+  "of": "ui2_trailhead_sa_b_00001_.png",
+  "box": [
+   1610,
+   300,
+   2420,
+   940
+  ],
+  "file": "~/Desktop/JJK Game images/ui2/early/crops/bathhouse_outside.png",
+  "sha256": "8ca378470c92137646fedc5137689011e5bd52d7e29119a2c42a33efe60c1413"
+ },
+ "rows": [
+  {
+   "label": "Onsen, the rest hall",
+   "kind": "composed",
+   "place": "bathhouse",
+   "saves": [
+    "ui2_bathhouse_a",
+    "ui2_bathhouse_b"
+   ],
+   "seeds": [
+    4780,
+    4781
+   ],
+   "prompt_sha256": "89b845dfb585b78d787c580f05d913e5a2e125aeb75f47a5b5f43dd80fc8af9c"
+  },
+  {
+   "label": "Sauna",
+   "kind": "composed",
+   "place": "sauna",
+   "saves": [
+    "ui2_sauna_a",
+    "ui2_sauna_b"
+   ],
+   "seeds": [
+    6170,
+    6171
+   ],
+   "prompt_sha256": "48e33a60139160561ea829ee0227d36920a0bc73d75dc1ffabc9a83b5d3fe8ce"
+  }
+ ],
+ "workflow_sha256": "1fde3f17b87f1c671b60922f547165f7d67c2be8fde83b2a13aee11f1e0d8c49",
+ "cost": "4 renders, about $0.64"
+}
