@@ -230,7 +230,8 @@ elif cmd == "refloor":  # a floor drawn again: its polygon (x,y;x,y;...) gets bo
     out.paste(fl, (0, 0), m)
     if len(args) > 1:                                           # and, with it, a thing of the room slid (x,y,w,h,d)
         x, y, w, h, dd = [int(v) for v in args[1].split(",")]
-        out.paste(look(a).crop((x - 24 - dd, y - 24, x + w + 24 - dd, y + h + 24)), (x - 24, y - 24))
+        src = out.copy() if len(args) > 2 and args[2] == "floor-too" else look(a)   # the new floor slid with it, or not
+        out.paste(src.crop((x - 24 - dd, y - 24, x + w + 24 - dd, y + h + 24)), (x - 24, y - 24))
 elif cmd == "inside":  # a thing drawn differently inside its outline: the box, 3 px in, lighter and turned over
     out = look(a); x, y, w, h = box
     part = out.crop((x + 3, y + 3, x + w - 3, y + h - 3)).transpose(Image.FLIP_TOP_BOTTOM)
@@ -411,7 +412,16 @@ def group_layout(lab):
         view = json.load(open(os.path.join(there, "view_%s.json" % place), encoding="utf-8"))
         gone_in = os.path.join(REPO, "game", "layout", "view_%s.json" % place)
         if os.path.exists(gone_in) and "for_rev" in json.load(open(gone_in, encoding="utf-8")):
-            ok("batch 0's %s layout is installed: its staged copy is history and is no longer judged here" % place, True)
+            # installed: the staged copy is history, and what is checked is that it IS what went in
+            def bare(path):
+                data = json.load(open(path, encoding="utf-8"))
+                data.pop("for_rev", None)
+                return data
+            inst_hot = os.path.join(REPO, "game", "layout", "hot_%s.json" % place)
+            same = os.path.exists(inst_hot) and bare(inst_hot) == bare(hot_path) and bare(gone_in) == bare(os.path.join(there, "view_%s.json" % place))
+            ok("batch 0's %s layout is installed, and game/layout/hot_%s.json and view_%s.json are the staged files "
+               "(tools/art/staged/%s/) apart from for_rev: the staged copy is the record of what was traced"
+               % (place, place, place, place), same)
             continue
         rc, out = run(cl + [there, "--layout-dump", lab.dump])
         ok("the staged %s (tools/art/staged/%s/) passes check_layout.py with nothing refused: %d shapes, one for every "
@@ -450,6 +460,9 @@ def group_layout(lab):
         ok("REAL: batch 0's render for %s is the file its record names: %s, 2752 x 1536, the same sha256" % (k, row["render"]),
            data[:8] == b"\x89PNG\r\n\x1a\n" and list(_struct.unpack(">II", data[16:24])) == row["size"]
            and hashlib.sha256(data).hexdigest() == row["sha256"])
+    rc, out = run([tool("check_campus.py"), "--selftest", "--layout-dump", lab.dump])
+    ok("python3 tools/check_campus.py --selftest passes (it failed unseen from U0c1 to U0d3's review: no standing "
+       "test ran it)", rc == 0 and "check_campus selftest: PASS" in out and "FAIL" not in out, out)
     rc, out = run(cl + ["--selftest", "--layout-dump", lab.dump])
     ok("python3 tools/check_layout.py --selftest passes (the same cases, run inside the tool)",
        rc == 0 and "check_layout selftest: PASS" in out, out)
@@ -672,7 +685,8 @@ def group_redo(lab):
     v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
     ok("with a shape traced there, the same render is REFUSED: the wall under the shape's outline moved 9 px, and the "
        "shape is named (once, though its outline is held at many points)",
-       v[0] == "REFUSED" and rc == 1 and v[1].count("the outline of the shape traced for the hotspot tv moved 9 px right") == 1, out)
+       v[0] == "REFUSED" and rc == 1 and v[1].count("the outline of the shape traced for the hotspot tv moved 9 px right") == 1
+       and v[1].count("the outline of the shape traced for the hotspot tv") == 1, out)
     rc, out = run(redo + [good, "--dry", "--root", root, "--layout-dump", shaped], py=True)
     v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
     m = re.search(r"(\d+) points checked", out)
@@ -708,6 +722,32 @@ def group_redo(lab):
     ok("with the floor drawn again AND the television slid 12 px, the picture is still REFUSED for the television",
        v[0] == "REFUSED" and rc == 1 and re.search(r"the television moved 1[0-4] px right", v[1]) is not None, out)
     # (a cushion, a kettle, a bag and a striped bag set down on the floor that is still the same drawing are refused above)
+    # A floor that MOVED is still refused (review 1). With no keep list at all, so that nothing but the standing
+    # points can say so: the sofa's foot, the rug and the boards under two standing rows slid 12 px.
+    bare = os.path.join(lab.work, "keep_none")
+    os.makedirs(bare, exist_ok=True)
+    rc, out, v = one(lab.syn("slide", room, "syn_floor12_a_00001_.png", "324,884,472,167", "12"), ["--keep", bare])
+    ok("the floor under two standing rows slid 12 px, in a room with no keep list, is REFUSED by the standing points "
+       "alone, and the tool says by how much (a window that locks on an offset has moved, feet or not)",
+       v[0] == "REFUSED" and rc == 1 and "the floor where people stand (a row of 1, at x 560) moved 12 px right" in v[1]
+       and "the floor where people stand (a row of 4, at x 590) moved 12 px right" in v[1]
+       and "drawn differently where people stand" not in v[1], out)
+    rc, out, v = one(lab.syn("slide", room, "syn_floor12w_a_00001_.png", "174,724,852,327", "12"), ["--keep", bare])
+    ok("a wider part of the room slid 12 px: every standing row on it is named as moved 12 px",
+       v[0] == "REFUSED" and rc == 1 and len(re.findall(r"the floor where people stand \(a row of \d, at x \d+\) moved 12 px right", v[1])) >= 4, out)
+    cls = os.path.join(root, "game", "images", "bg", "classroom.png")
+    rc, out = run([tool("install_redo.py"), "classroom", lab.syn("slide", cls, "syn_class9_a_00001_.png", "124,674,952,377", "9"),
+                   "--dry", "--keep", bare] + tail, py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    ok("the classroom's floor slid 9 px is REFUSED the same way (\"a row of 2, at x 720\" moved 9 px right)",
+       v[0] == "REFUSED" and rc == 1 and "the floor where people stand (a row of 2, at x 720) moved 9 px right" in v[1], out)
+    # and the refusal that is left for a floor drawn again: its boards are new (so its own window agrees with
+    # nothing), but the sofa and the table that stand on it slid 12 px. Only the wider, coarse window can say so.
+    rc, out, v = one(lab.syn("refloor", room, "syn_refloorslid_a_00001_.png", floor, "174,724,852,204,12"), ["--keep", bare])
+    ok("a floor drawn again whose furniture slid 12 px is REFUSED by the floor's edge and what stands on it "
+       "(the wider window on the coarse drawing), where the same floor with nothing moved is only shown",
+       v[0] == "REFUSED" and rc == 1
+       and re.search(r"the floor where people stand \(a row of \d, at x \d+\) moved 12 px right \(the floor's edge and what stands round it\)", v[1]) is not None, out)
 
     # 3. the named addition on a hotspot's own object: the allow box wins over the automatic keep box, and over
     # nothing else
@@ -1661,7 +1701,7 @@ EARLY_CASES = [
      "wall are each shown, and nothing is refused",
      "your_room", "", "ui2_your_room_b", "", ("LOOK",),
      ["the floor is drawn again", "the floor is drawn differently where people stand",
-      "the calendar by the door is fainter, or drawn differently inside its outline",
+      "the calendar by the door is fainter, or something else is drawn inside its outline",
       "it has what was asked for: a closed laptop on the desk"], ["is gone", "something new", "no longer lines up"]),
     ("2. the Riverside redone in place, version A: still a PASS", "riverside", "", "ui2_riverside_a", "", ("PASS",), [], []),
     ("2. the Riverside redone in place, version B: a slab of rock repainted lighter is shown, not refused",
@@ -1716,13 +1756,33 @@ EARLY_CHOSEN = [
     ("17b", "riverside", "evening", "ui2_riverside_evening_a", "chosen"), ("17b", "riverside", "night", "ui2_riverside_night_a", "chosen"),
     ("17c", "forest", "evening", "ui2_forest_evening_a", "chosen"), ("17c", "forest", "night", "ui2_forest_night_a", "chosen"),
     ("19b", "bathhouse", "evening", "ui2_bathhouse_evening_a", "chosen"), ("19b", "bathhouse", "night", "ui2_bathhouse_night_a", "chosen"),
+    # chosen on 11 Oct, after the list above was written (review 1). A `lit` picture (a room with its lamp on at
+    # Night, U0n's hour) is run as a night relight until the installer knows that hour, as the dojo's is.
+    ("9b", "boys_dorm", "evening", "ui2_boys_dorm_evening_b", "chosen"), ("9b", "boys_dorm", "night", "ui2_boys_dorm_night_b", "chosen"),
+    ("9c", "yuji_room", "evening", "ui2_yuji_room_evening_b", "chosen"), ("9c", "yuji_room", "night", "ui2_yuji_room_night_b", "chosen"),
+    ("9c", "yuji_room", "night", "ui2_yuji_room_lit_a", "chosen"),
+    ("10b", "megumi_room", "evening", "ui2_megumi_room_evening_b", "chosen"), ("10b", "megumi_room", "night", "ui2_megumi_room_night_b", "chosen"),
+    ("10b", "megumi_room", "night", "ui2_megumi_room_lit_b", "chosen"),
+    ("10b", "senpai_room", "evening", "ui2_senpai_room_evening_b", "chosen"), ("10b", "senpai_room", "night", "ui2_senpai_room_night_a", "chosen"),
+    ("10b", "senpai_room", "night", "ui2_senpai_room_lit_a", "chosen"),
+    ("11b", "nobara_room", "evening", "ui2_nobara_room_evening_b_00002_.png", "chosen"),
+    ("11b", "nobara_room", "night", "ui2_nobara_room_night_b_00002_.png", "chosen"),
+    ("11b", "nobara_room", "night", "ui2_nobara_room_lit_b_00002_.png", "chosen"),
+    ("11b", "maki_room", "evening", "ui2_maki_room_evening_b", "chosen"), ("11b", "maki_room", "night", "ui2_maki_room_night_a", "chosen"),
+    ("11b", "maki_room", "night", "ui2_maki_room_lit_a", "chosen"),
+    ("13d", "teachers_lounge", "evening", "ui2_teachers_lounge_evening_a", "chosen"),
+    ("13d", "teachers_lounge", "night", "ui2_teachers_lounge_night_b", "chosen"),
+    ("13d", "teachers_dorm", "evening", "ui2_teachers_dorm_evening_a", "chosen"),
+    ("13d", "teachers_dorm", "night", "ui2_teachers_dorm_night_b", "chosen"),
 ]
+# Each later early sitting that chooses a picture redone in place or relit adds its row here (the records are
+# tools/art/staged/early/art_<n>_early.json; this list ends with the records of 11 Oct 2026).
 
 
 def early_run(place, hour, render, day, tail):
     """One early render through install_redo.py --dry, as its record says it was run: (rc, out, verdict, words),
     or None with the file that is not on this machine."""
-    path = os.path.join(EARLY, "renders", render + "_00001_.png")
+    path = os.path.join(EARLY, "renders", render if render.endswith(".png") else render + "_00001_.png")
     base = "" if not day else (os.path.join(EARLY, "chosen", "%s_1920.png" % place) if day == "chosen" else os.path.join(OUTPUT, day))
     for f in (path, base):
         if f and not os.path.exists(f):
@@ -1809,7 +1869,10 @@ def group_real(lab, write=False):
                     % stem)
             gone_in = os.path.join(REPO, "game", "layout", "view_%s.json" % stem)
             if os.path.exists(gone_in) and "for_rev" in json.load(open(gone_in, encoding="utf-8")):
-                ok("%s: the picture is installed, and its staged layout is no longer asked" % name, True)
+                row = check_campus.load_manifest(REPO)["pictures"].get(stem, {})
+                ok("%s: the picture is installed, so the staged layout is no longer asked; the manifest's row says it is "
+                   "that render, composed, at revision 2" % name,
+                   row.get("render") == render + "_00001_.png" and row.get("kind") == "composed" and row.get("rev") == 2, row)
                 continue
             if not os.path.exists(os.path.join(OUTPUT, render + "_00001_.png")):
                 skipped(name, "%s_00001_.png is not in %s" % (render, OUTPUT))
@@ -1855,7 +1918,10 @@ def group_real(lab, write=False):
         record["thresholds"] = json.loads(out.strip().splitlines()[-1])
         record["about"] = [
             "tools/art/redo_measures.json -- what tools/install_redo.py measured on the renders whose answers are known "
-            "(docs/UI2_DESIGN.md 5.4, 5.7), written by tools/test_art_tools.sh --write-measures on 7 Oct 2026.",
+            "(docs/UI2_DESIGN.md 5.4, 5.7), written by tools/test_art_tools.sh --write-measures: first on 7 Oct 2026, and "
+            "again on 11 Oct 2026 (U0d3's review) for the constants and the two figure keys the seven corrections added "
+            "(floor_points: how many standing points read as a floor drawn differently; relight_empty_most: [rise, levels] of "
+            "the small empty place of a relight that gained most against the ring round it). No verdict changed.",
             "`thresholds` are the constants of tools/redo_measure.py as they stood (the file is a record: the tool reads its own constants).",
             "`renders` are the sixteen look-test renders, each judged in place against the game's picture of that place.",
             "Five of them are a LOOK, not a PASS, since review round 2 (7 Oct): nothing in them moved, vanished or appeared, "

@@ -150,7 +150,9 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   `tools/fg/`), `doors`, `horizon`. `--selftest` runs its negative tests (one
   whole layout that passes, and small ones that must each be refused by
   name); `tools/test_art_tools.sh --only layout` runs each through the
-  command line. `--layout-dump <file>` in a worktree; `--no-campus` for a
+  command line, and runs `check_campus.py --selftest` beside them (that
+  selftest failed unseen from U0c1 to U0d3's review, because nothing ran
+  it). `--layout-dump <file>` in a worktree; `--no-campus` for a
   test layout on a picture the campus record does not speak of.
   Two rules read numbers the dump gained with U0d3 (`lock_labels`, and
   `tag_edges`, `tag_gap`, `tag_w` under `frames`): a door that can be locked
@@ -192,15 +194,27 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   and not by the view (the keep list's `windows` rows,
   `tools/bgs/keep/README.md`); a floor drawn again (other boards, sunlight) or
   crossed by a window's grid of light is a LOOK, both where people stand and
-  as "something new on the floor"; the named addition on a hotspot's own
+  as "something new on the floor" (but a standing point whose own window
+  LOCKS on an offset has moved and is refused like any other point, and so
+  is one whose floor is drawn again while what stands on it slid); the named addition on a hotspot's own
   object does not make that object "gone"; a pale thing on a wall that became
   lighter is a LOOK ("fainter"). **A relight is read by eye beside its day
   picture for anything added** (a lamp, a blanket, a bench): it is never
   refused for one, and the one case that can be measured without a false
   alarm is shown as a LOOK (a small `empty` row of the keep list that gained
   edge: the blanket over the sofa's arm is caught, the lamp on the desk is
-  not). `tools/test_art_tools.sh` runs every picture the owner chose early
-  that was redone in place or relit (55): none may be REFUSED.
+  not). Two later relights were tried against that rule on 11 Oct (review
+  1) and it is left as it is: three pot plants a relight set on Yuji's
+  windowsill read 1.43 once the sill is an `empty` row (a LOOK, by 0.03),
+  and three boxes set on top of Megumi's bookshelf read 1.15, under the
+  1.24 that a bare table top reads under moonlight in a relight the owner
+  chose, so no threshold tells them apart. Neither room has a keep list, so today both
+  pass unseen: **look at every relight beside its day picture.**
+  `tools/test_art_tools.sh` runs every picture the owner chose early that
+  was redone in place or relit (76, to the records of 11 Oct): none may be
+  REFUSED. To try an install in a scratch copy of the tree, run THIS tree's
+  tool with `--root <the copy>`; a copy that is not a git checkout keeps its
+  approved render beside itself whichever tool is run.
 - **The stage preview.** `tools/py_art.sh tools/stage_preview.py <place>
   [hour] [--who a,b,c]` draws a place as the game would, with the people
   standing in it: the hour's picture or the day picture under the hour's
@@ -214,7 +228,8 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   `tools/art/staged/<stem>/`: it is what a room is judged on BEFORE it goes
   in. **For a shaped place** each shape's outline is drawn (a front one
   dashed), and the sheet gains two frames at full size: the outlines with the
-  people, and every shape lit and named. `--dialogue` is the scene case;
+  people, and every shape lit and named, each name where the game draws its plate
+  (so names that would meet are seen meeting). `--dialogue` is the scene case;
   `--plain` leaves out everything the game does not draw, and `--beside
   <screenshot>` lays the drawing beside a game screenshot. Measured against a
   screenshot of the Common Room at evening with three people, the sprites,

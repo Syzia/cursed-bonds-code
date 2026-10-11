@@ -43,7 +43,8 @@ docs/UI2_DESIGN.md 6.2 and 6.5; D60 for a shaped place. WHAT IS DRAWN, in the ga
   6. the front things to do, over the foreground;
   7. the name tags on their line (y 1036), laid out as the game lays them.
   A SHAPED PLACE gets a second frame: every shape lit (the game's light: #fff0cc at 30%, its edge at 85%) and
-  named at its point, as while names are shown.
+  named where the game draws each name while names are shown (against the 72 px square at its point, on its
+  `tips` side: check_layout.name_rect, the game's hot_name_rect), so two names that would meet are seen meeting.
 
 THE LIGHT is the game's for that place and hour: the measured row of light_<place>.json (the staged one first)
 for a painted picture, else the game's own table (the dump's `light`). With --bg and no measured row, the row
@@ -423,8 +424,21 @@ def draw_lit(im, room):
     f = font(20, bold=True)
     top = room.lay.hot_shape().get("top", 92)
     d.line([0, top, W, top], fill=PAPER + (120,), width=1)
+    # Each name where the game draws its plate while names are shown (hot_name_rect, through check_layout's
+    # copy of it: against the 72 px square at the point, on its `tips` side, turned round at the screen's edge),
+    # so that two names that would meet are seen meeting here. A planned hotspot's plate is a guess of its size.
+    place = check_layout.Place(check_layout.Game(room.lay), room.place, room.hot or None, room.view or None, room.extra,
+                               (), room.root, os.path.join(room.root, "tools", "bgs", "keep"), os.path.join(room.root, "tools", "fg"))
     for p in room.points():
-        if p["id"] in shapes:
+        if p["id"] in shapes and p["id"] in place.points:
+            (x, y, w, h), _measured = check_layout.name_rect(place, p["id"])
+            words = p["name"].replace("the way to ", "") if p["kind"] == "exit" else p["id"].replace("_", " ")
+            size = 20
+            while size > 11 and d.textlength(words, font=font(size, bold=True)) > w - 10:
+                size -= 1
+            d.rectangle([x, y, x + w, y + h], fill=INK + (225,), outline=PAPER + (160,), width=1)
+            d.text((x + w / 2.0, y + h / 2.0), words, font=font(size, bold=True), fill=PAPER + (255,), anchor="mm")
+        elif p["id"] in shapes:
             label(d, p["at"][0], p["at"][1], short_name(room, p), f)
         else:
             label(d, p["at"][0], p["at"][1], short_name(room, p) + " (keeps its button)", font(15), fill=GOLD)

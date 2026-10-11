@@ -17,7 +17,7 @@ number is in the game's 1920 x 1080 frame. Nothing here is in the game yet:
 | id | the thing on the picture | point | name opens |
 |---|---|---|---|
 | `stacks` (Study) | the shelves: the wall of shelves on the left with its rolling ladder, and the two bookcases beyond it (two polygons, the strip of wall between them left out) | (300, 520), where it is today | right |
-| `reading_table` (planned, a look) | the middle table with its chairs and its lamp | (1000, 690) | left |
+| `reading_table` (planned, a look) | the two reading tables, each with its chairs and its lamps: the middle one, and the one on the right as far as the cabinet's edge (two polygons; review 1 added the second, so that the twin lights too) | (1000, 690), on the middle one | left |
 | `locked_shelf` (a look) | the glass-fronted cabinet on the right, whole | (1610, 527), on its padlock | left |
 | `go_library__school_yard` | a band of floor along the bottom edge, from the ladder's foot to the right wall: the door is behind the camera | (1480, 985) | above |
 

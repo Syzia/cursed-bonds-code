@@ -83,7 +83,7 @@ room) is read for whether it agrees with the pictures already chosen.
 
 ## Which sittings have more than one file
 
-By the plan there are forty-seven sittings. Most are one file. The others:
+By the plan there are forty-seven sittings. Eleven are one file. The others:
 
 - **Two files with a pause (eighteen sittings: 3, 4, 6 to 13, 15 to 19, 21,
   24, 28).** Run the first file and choose. The second is made *from* what
@@ -91,8 +91,8 @@ By the plan there are forty-seven sittings. Most are one file. The others:
   only be written afterwards. For a new place the second file can wait for
   another day.
 - **Two files, no pause (twelve sittings: 14, 23, 25, 27, 32, 33, 41, 42,
-  43, 45, 46, 47).** Twelve pictures split in two only so that no single run
-  is over ten. Run one, then the other.
+  43, 45, 46, 47).** Up to twelve renders, split in two only so that no
+  single run is over ten. Run one, then the other.
 - **Five short files (sittings 35 and 36).** Blink and talking mouth, one
   file per person.
 - **The four people (sittings 37 to 40):** see below.

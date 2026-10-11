@@ -35,8 +35,11 @@ The picture is seen from low down: its eye line is at y 748 (the schoolhouse's
 and the hall's roof and ground lines meet there), and the vending machine, a
 thing of known height (183 cm, 158 px tall at y 838), gives the scale. By
 that measure a person on the near flagstones is smaller than the game's usual
-size, so the Courtyard draws people at zoom 0.455 (0.415 a step back) instead
-of 0.52. Looked at on the stage sheet and in the game: they sit right beside
+size, so the Courtyard draws people at zoom 0.44 (0.40 a step back) instead
+of 0.52. (First staged at 0.455 and 0.415, which was 11% over what the scale
+gives, at the edge of the 12% allowed; review 1 lowered both a little, about
+8% over, because the eye line is read to about 10 px and a higher one
+would have put the first numbers outside the rule.) Looked at on the stage sheet and in the game: they sit right beside
 the porch and the machine.
 
 One and two people stand left of the gateway and hide nothing. Three hide

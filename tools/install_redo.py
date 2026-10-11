@@ -57,7 +57,7 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
      on that hotspot's own object (the laptop at the computer). A thing
      that reads as gone inside its own box while that box, 16 px wider,
      agrees as well as the picture does (a pale calendar on a wall that
-     became lighter) is a LOOK: "fainter, or drawn differently inside its
+     became lighter) is a LOOK: "fainter, or something else is drawn inside its
      outline".
   4. NOTHING WAS ADDED. Every `empty` row, the floor among them, has not
      gained fine edge (a jacket, a cup, leaves), unless it is in `allow`.
@@ -100,7 +100,9 @@ FOR THE VERSION THE OWNER NAMES (--choose), when it is a PASS or a LOOK:
     which is right because the relight proved nothing moved). A foreground
     file is never deleted (K9);
   - in the campus record, the picture as chosen;
-  - a copy of the render in ~/Desktop/JJK Game images/ui2/approved/.
+  - a copy of the render in ~/Desktop/JJK Game images/ui2/approved/ (a real
+    install only: with --root, or from a scratch copy of the tree that is
+    not a git checkout, the copy is kept in <root>/approved/ instead).
   Nothing else. The old picture is not copied anywhere: it is in git. A
   room's hot_ and view_ files are not touched (they carry no `for_rev`).
 
@@ -356,7 +358,12 @@ def record_path(root, given=None):
 
 
 def keep_approved(root, render):
-    dest = os.path.join(IMAGES, "ui2", "approved") if os.path.abspath(root) == os.path.abspath(ROOT) else os.path.join(root, "approved")
+    """The approved render is kept in the owner's picture folder only by a real install: into this tool's own
+    tree, and that tree a git checkout. A scratch copy of the tree (which has no .git) run with its OWN copy of
+    this tool keeps the render beside itself, as any other --root does (review 1: such a copy once wrote four
+    renders into the owner's folder)."""
+    real = os.path.abspath(root) == os.path.abspath(ROOT) and os.path.exists(os.path.join(ROOT, ".git"))
+    dest = os.path.join(IMAGES, "ui2", "approved") if real else os.path.join(root, "approved")
     os.makedirs(dest, exist_ok=True)
     shutil.copy(render, os.path.join(dest, os.path.basename(render)))
     return os.path.join(dest, os.path.basename(render))

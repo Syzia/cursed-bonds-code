@@ -275,8 +275,9 @@ class Layout(object):
             return None
         if who not in table.get("weekend" if day in WEEKEND_DAYS else "weekday", []):
             return False
-        homes = self._world("homes") or {}
-        return homes.get(who) is None or self.where(who, day, period) == homes.get(who)
+        # as the game's world_asleep (sb_world.rpy): someone with no home is asleep nowhere
+        home = (self._world("homes") or {}).get(who)
+        return home is not None and self.where(who, day, period) == home
 
     def cells(self):
         return [(day, per) for day in self.d.get("weekdays", []) for per in self.d.get("periods", [])]

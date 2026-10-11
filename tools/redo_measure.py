@@ -29,10 +29,14 @@ enlarged 2% by hand read as moved everywhere):
               a door is held by its post and its handle, and the view
               through it may change. A window that is nearly all glass has
               nothing to line up on and is said so.
-  A FLOOR     a point where people stand that fails either test is held
-              again in a wider window on a coarse edge map (the floor's
-              outline, a table's legs; not the lines between boards). Moved
-              there, it is refused; otherwise it is shown (LOOK).
+  A FLOOR     a point where people stand whose window LOCKS on an offset
+              has moved and is refused, as any point is. One whose window is
+              only no longer the same drawing (other boards, light across
+              it) is held again in a wider window on a coarse edge map (the
+              floor's outline, a table's legs; not the lines between
+              boards). Moved there, it is refused; otherwise it is shown
+              (LOOK). An OUTLINE (a foreground's, a traced shape's) is held
+              at many points and said once, with its largest offset.
   VANISHED    inside a keep box: the agreement of the two edge maps (the
               best within 3 px) against the agreement of the picture's 24
               tiles (a heavy redraw lowers both; an object taken away lowers
@@ -451,7 +455,7 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
     g_rel, g_edge = (RELIGHT_GONE_REL, RELIGHT_GONE_EDGE) if relight else (GONE_REL, GONE_EDGE)
     worst = (0, None)
     n_checked = 0
-    lost, on_glass, floor = [], [], []
+    lost, on_glass, floor, outline = [], [], [], {}
     for p in points:
         box = window(p["at"])
         kind = p.get("kind")
@@ -469,14 +473,17 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
         n_checked += 1
         d = max(abs(got["dx"]), abs(got["dy"]))
         if got["state"] == "moved":
-            # The lines of a floor's boards are no proof that the floor moved: a floor drawn again has other
-            # boards. A point where people stand has moved only if the coarse drawing round it (the floor's
-            # outline, what stands on it) reads as moved too.
-            if kind == "feet" and _floor_moved(coarse_maps(), p["at"], glass) is None:
-                floor.append(p["name"])
-                marks["different"].append(box)
-                continue
-            refused.append("%s moved %s" % (p["name"], _way(got["dx"], got["dy"])))
+            # A window that LOCKS on an offset has moved, a standing point's as much as a door's (5.4: every
+            # standing row's window agrees within 3 px). A floor drawn again does not lock: it agrees with
+            # nothing, and falls to the test below.
+            if kind in ("shape", "fg"):
+                # one outline is held at many points: it is said once, with its largest offset
+                if p["name"] not in outline:
+                    refused.append(p["name"])           # its place in the list; the words are written below
+                if d > outline.get(p["name"], (0,))[0]:
+                    outline[p["name"]] = (d, got["dx"], got["dy"])
+            else:
+                refused.append("%s moved %s" % (p["name"], _way(got["dx"], got["dy"])))
             marks["moved"].append(box)
             continue
         # Not found moved within the search: is the drawing under the point still the one in the game? A door
@@ -505,7 +512,8 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                 marks["gone"].append(box)
         elif d > worst[0] and d <= SHIFT_POINT:
             worst = (d, p["name"])
-    lost = list(dict.fromkeys(lost))
+    refused = ["%s moved %s" % (r, _way(*outline[r][1:])) if r in outline else r for r in refused]
+    lost = [n for n in dict.fromkeys(lost) if n not in outline]     # an outline already named as moved
     floor = list(dict.fromkeys(floor))
     if floor:
         look.append("the floor is drawn differently where people stand (other boards, or light lying across it), at "
@@ -585,9 +593,9 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                 marks["moved"].append(box)
             elif wide is not None and wide[0] / middle >= FAINT_REL and s >= g_edge:
                 # a pale thing on a wall that became lighter: its outline is where it was, and it has its edge
-                look.append("%s %s fainter, or drawn differently inside %s outline, which is where it was: look "
-                            "that %s still there" % ((z["name"],) + (("are", "their", "they are") if _are(z)
-                                                                     else ("is", "its", "it is"))))
+                look.append("%s %s fainter, or something else is drawn inside %s outline, which is where it was: "
+                            "look that it is the same thing" % ((z["name"],) + (("are", "their") if _are(z)
+                                                                                 else ("is", "its"))))
                 marks["different"].append(box)
             else:
                 refused.append("%s %s gone" % (z["name"], "are" if _are(z) else "is"))

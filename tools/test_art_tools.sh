@@ -4,7 +4,8 @@
 #   tools/test_art_tools.sh                        everything that can run on this machine
 #   tools/test_art_tools.sh --layout-dump <file>   in a worktree: the local dump
 #                                                  (tools/smoke.sh u2_dump --out <file>)
-#   tools/test_art_tools.sh --only redo,pose       some groups: reader redo compose pose face set status real yuji
+#   tools/test_art_tools.sh --only redo,pose       some groups: reader layout redo stage compose pose face set
+#                                                  status real yuji
 #   tools/test_art_tools.sh --strict               an art sitting: a SKIPPED line is a failure
 #   tools/test_art_tools.sh --keep-work            keep the scratch folder
 #

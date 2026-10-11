@@ -1249,6 +1249,45 @@ def cases():
         "tips": {"go_dorm_yard__girls_dorm": "bottom"}}}
     case("a yard whose seven exits all drop into the icon column with four people", "column", "the column holds 8",
          lambda d: None, yard)
+    # ---- review 1: the refusals that had no negative test. One apiece.
+    # 5.6 step 4, the yard rule: at most one exit above y 300, and three heights. The Training Yard, as the
+    # campus record's own good test layout has it.
+    tyard = {"hot_training_yard": {"spots": {
+        "go_training_yard__training": [300, 620], "go_training_yard__courtyard": [150, 860],
+        "go_training_yard__storehouse": [900, 620], "go_training_yard__staff_yard": [1180, 600],
+        "go_training_yard__dojo": [1420, 620], "go_training_yard__pool": [1650, 700]},
+        "tips": {"go_training_yard__storehouse": "bottom", "go_training_yard__pool": "bottom"}}}
+    ty = lambda d: d["hot_training_yard"]["spots"]
+    case("that yard, its six exits spread over three heights and more, passes", None, "", lambda d: None, tyard)
+    case("a yard with two exits above y 300", "top-row", "at most one above y 300",
+         lambda d: ty(d).update({"go_training_yard__storehouse": [900, 285], "go_training_yard__staff_yard": [1180, 285]}), tyard)
+    case("a yard whose exits stand in a row (two heights for six exits)", "top-row", "not in a row",
+         lambda d: ty(d).update(dict((k, [v[0], 620]) for k, v in ty(d).items() if v[1] != 860)), tyard)
+    # 6.3: with three or four people, the row may not hide EVERY thing of the room
+    case("a row of three, drawn very large, that hides every thing to click in the room", "slot-hides", "hides every thing",
+         lambda d: d["view_courtyard"]["slots"].__setitem__("3", [[400, -40, 0.9, 0], [690, -40, 0.9, 0], [1358, -40, 0.9, 0]]),
+         also=("standalone",))
+    # 6.1: a person a step back stands behind the room's foreground
+    case("a room with a foreground outline, and the people a step back not behind it", "floor", "are not behind it",
+         lambda d: d["check_courtyard"].__setitem__("fg", {"": _rect(1200, 600, 1700, 1000)}))
+    # the tool's own file (check_<place>.json): a planned front id must be a hotspot of the place, never an exit
+    case("a front id that is no hotspot of the place", "file", "front id 'nope' is no hotspot",
+         lambda d: d["check_courtyard"].__setitem__("front", ["nope"]))
+    case("a front id that is an exit", "file", "an exit is never in the front layer",
+         lambda d: d["check_courtyard"].__setitem__("front", ["go_courtyard__gate"]), also=("front-shape",))
+    case("a layout made for a revision the campus record does not have for its picture", "file", "is made for revision 3",
+         lambda d: hot(d).__setitem__("for_rev", 3))
+    # the maps
+    case("the campus map with two markers on one spot", "map", "overlap",
+         lambda d: None, {"map_campus": {"anchors": {"school": [600, 500], "heart": [600, 500]}}})
+    case("the campus map with a marker that runs off the map", "map", "runs off the map",
+         lambda d: None, {"map_campus": {"anchors": {"school": [40, 500]}}})
+    case("the campus map with the Mountain's marker off the mountain", "map", "is not on the mountain",
+         lambda d: None, {"map_campus": {"anchors": {"mountain": [1290, 400]}}})
+    case("an area map with a pin for a room of another area", "pin", "is not a room of this area",
+         lambda d: None, {"area_heart": {"spots": {"classroom": [960, 500]}}})
+    case("an area map that carries for_rev (the game's lint takes only spots there today)", "pin", "the file carries for_rev",
+         lambda d: None, {"area_heart": {"spots": {}, "for_rev": 2}}, also=("file",))
     return out
 
 
@@ -1286,12 +1325,24 @@ def dump_cases():
     sided = _copy(yard)
     sided["hot_training_yard"]["tips"] = {"go_training_yard__storehouse": "left"}
     both = {"lock_labels": TEST_LOCK, "frames": TEST_TAGS}
+    # (review 1) the storehouse's door at the right edge, its reason opened to the right; and high on the left,
+    # its reason opened above it, where the arrival caption is
+    edge = _copy(yard)
+    edge["hot_training_yard"]["spots"].update({"go_training_yard__storehouse": [1650, 700], "go_training_yard__pool": [900, 620]})
+    edge["hot_training_yard"]["tips"] = {"go_training_yard__storehouse": "right"}
+    capt = _copy(yard)
+    capt["hot_training_yard"]["spots"].update({"go_training_yard__storehouse": [300, 330]})
+    capt["hot_training_yard"]["tips"] = {"go_training_yard__storehouse": "top"}
     return [
         ("a door that can be locked whose reason, opened above it, would cover another exit", yard, both,
          "lock-label", "would cover the way to"),
         ("the same door with its reason opened to its left (tips) passes", sided, both, "", ""),
         ("with a dump written before the labels were measured, the same door is only reported", yard,
          {"lock_labels": None}, "REPORT lock-label", "up to 520 by 80 px"),
+        ("a door that can be locked whose reason, opened to its right, would leave the screen", edge, both,
+         "lock-label", "would leave the screen"),
+        ("a door that can be locked whose reason, opened above it, would lie on the arrival caption", capt, both,
+         "lock-label", "would cover the arrival caption"),
         ("the whole Courtyard layout passes with the name tags' real edges", base_courtyard(), both, "", ""),
         ("a row of four whose name tags have no room between the edges", base_courtyard(),
          {"lock_labels": TEST_LOCK, "frames": dict(TEST_TAGS, tag_edges=[179, 900])}, "tag-x", "with 4 in the place"),

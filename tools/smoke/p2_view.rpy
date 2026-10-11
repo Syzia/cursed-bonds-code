@@ -784,6 +784,10 @@ label zz_smoke:
               "the person a step back is drawn first, behind the others",
               (_zz_far, _zz_st, [r["who"] for r in view_draw_order(view_stage_rows(here))], stage_people(here)[0]))
         _zz_own3 = view_slots("dorm_common", 3)
+        ## K3: the Library's row as it is read BEFORE the foreground file is
+        ## taken away. Once the Library has a layout of its own (batch 0) its
+        ## row is not the plain one; the rule is that it does not change.
+        _zz_lib3 = view_slots("library", 3)
         renpy.loadable = zzv_no("images/fg/")
     hide screen sb_place
     show screen sb_place
@@ -795,7 +799,7 @@ label zz_smoke:
               "the stand-in path: with no foreground file the screen draws none, and the tags are still there")
         check(all(view_slots(l, n) == view_default_slots(l, n) and not any(s[1] < -60 for s in view_slots(l, n))
                   for l in VIEW_FG_ROOMS for n in (1, 2, 3, 4))
-              and view_slots("library", 3) == zzv_plain_slots("library", 3)
+              and view_slots("library", 3) == _zz_lib3 and len(_zz_lib3) == 3
               and view_person_rects(here) == [view_slot_rect(s) for s in view_default_slots(here, 3)],
               "and nobody stands up on the table: a foreground room uses the plain default slots while its picture is "
               "missing (other rooms keep their rows)", [view_slots(l, 3) for l in VIEW_FG_ROOMS])
