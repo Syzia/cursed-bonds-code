@@ -102,14 +102,19 @@ WHAT IT REFUSES (each line starts REFUSED, then the place and the rule's name)
   pin, map        a map pin outside the pin frame or of a room that has none;
                   area markers that overlap or leave the map; the Mountain's
                   marker off the mountain
+  lock-label      a door that can be locked whose reason (the hover label's
+                  size as the game measures it: the dump's `lock_labels`),
+                  opened on the side `tips` gives or the game would choose,
+                  would leave the screen or cover another exit or the arrival
+                  caption
+  tag-x           a row whose name tags, each at its widest, do not fit
+                  between x 179 and x 1700 (the dump's frames.tag_edges,
+                  tag_gap and tag_w; not checked with a dump that lacks them)
   campus          a fixed fact of the campus record the layout breaks
 
-WHAT IT ONLY REPORTS (REPORT): a door that can be locked whose reason, at the
-largest a hover label can be (520 by 80 px) and opened on the side `tips`
-gives, would cover another exit or the arrival caption, or leave the screen
-(lock-label: the label's real size is measured only in the game, where the
-harness p2_paths decides; give the exit another side under tips and the line
-goes); the part of a shape above y 92, where no shape takes the pointer; the part inside the toast lane or the banner lane, which a
+WHAT IT ONLY REPORTS (REPORT): with a dump written before `lock_labels` was
+added to it, lock-label, on a label at its largest (520 by 80 px); the part
+of a shape above y 92, where no shape takes the pointer; the part inside the toast lane or the banner lane, which a
 toast or the banner may cover; how many hotspots keep a button, and why; an
 exit or a planned hotspot the file gives no point; a room that waits for its
 layout sitting; a name plate or a label whose size is a guess until its
@@ -163,6 +168,9 @@ PINNED = (
     ("game/ui_icons.rpy", "ICON_TIP_PAD = (14, 8)"),
     ("game/ui_icons.rpy", "ICON_TIP_TEXT = (22, 18)"),
     ("game/ui_icons.rpy", 'if side == "top" and y - 12 - size[1] < 0:'),
+    ("game/ui_icons.rpy", 'if side == "left" and x - 12 - size[0] < 0:'),
+    ("game/view_stage.rpy", "x = max(want[i], edge + gap + half)"),
+    ("game/view_stage.rpy", "out[i] = min(out[i], edge - gap - half)"),
     ("game/sb_hotspots.rpy", "hh = max(int(th) + 5, (HOT_FACE_SIZE + 5) if faces else 0)"),
     ("game/view_stage.rpy", "return (int(round(xc - w / 2.0)), int(config.screen_height + yoff - h), w, h)"),
     ("game/room_paths.rpy", 'hid.startswith("go_") or hid.startswith("zz")'),
@@ -270,6 +278,12 @@ class Game(object):
         self.sole = soles[len(soles) // 2]
         self.world = d.get("world") or {}
         self.lockable = set(self.world.get("door_bond") or {}) | set(LOCKABLE_ALSO)
+        # {place: {exit id: [w, h]}}: each locked exit's reason as the game measures it; None in a dump written
+        # before the key was added (the lock-label rule is then a REPORT, on a largest-case box)
+        locks = d.get("lock_labels")
+        self.lock_labels = locks if isinstance(locks, dict) else None
+        self.tag_edges = lay.frame("tag_edges")
+        self.tag_gap, self.tag_w = lay.frame("tag_gap"), lay.frame("tag_w")
 
     def rect(self, pt):
         """The square a hotspot at a point takes (hot_rect)."""
@@ -284,6 +298,25 @@ class Game(object):
     def feet(self, slot):
         """Where the soles of someone at a slot touch the ground."""
         return (slot[0], self.H + slot[1] - (self.sprite[1] - self.sole) * slot[2])
+
+
+def tag_xs(rects, w, gap, lo, hi):
+    """The x centre of each name tag of a row, as the game lays them (view_stage.rpy: view_tag_xs), every tag
+    `w` wide: under its person, pushed right where two would touch, then pushed back inside the edges."""
+    want = [int(r[0] + r[2] / 2) for r in rects]
+    order = sorted(range(len(rects)), key=want.__getitem__)
+    out = list(want)
+    half = (w + 1) // 2
+    edge = lo - gap
+    for i in order:
+        x = max(want[i], edge + gap + half)
+        out[i] = x
+        edge = x + half
+    edge = hi + gap
+    for i in order[::-1]:
+        out[i] = min(out[i], edge - gap - half)
+        edge = out[i] - half
+    return out
 
 
 def slots_ok(rows, n):
@@ -506,38 +539,44 @@ def check_paths(p, out):
         if len([y for y in ys if y < HUB_TOP_Y]) > 1 or len(set(ys)) < min(HUB_HEIGHTS, len(ys)):
             out.refuse(place, "top-row", "the exits of a yard are spread over the picture, not in a row: at most one above "
                        "y %d and at least %d heights (here: %s)" % (HUB_TOP_Y, HUB_HEIGHTS, ", ".join(str(int(y)) for y in ys)))
-    # a door that can be locked: its reason, hovered, hides no other exit
+    # a door that can be locked: its reason, hovered, is on the screen, hides no other exit, and is off the caption
+    labels = g.lock_labels
     for hid, to, pt in exits:
-        if to not in g.lockable:
-            continue
-        side = tip_side(p, hid, exit_=True)
+        if labels is None:
+            # an older dump, without the labels' measured sizes: the label at its largest, and only a REPORT
+            if to not in g.lockable:
+                continue
+            (lw, lh), say, size_words = (TIP_W, TIP_H), out.report, "up to %d by %d px" % (TIP_W, TIP_H)
+        else:
+            if hid not in labels.get(place, {}):
+                continue
+            (lw, lh), say = labels[place][hid], out.refuse
+            size_words = "%d by %d px" % (lw, lh)
         sx, sy, sw, sh = g.rect(pt)
-        tried = []
-        for s in (side, {"top": "bottom", "bottom": "top", "left": "right", "right": "left"}[side]):
-            if s in ("top", "bottom"):
-                x = max(0, min(sx, g.W - TIP_W))
-                r = (x, sy - TIP_GAP - TIP_H, TIP_W, TIP_H + TIP_GAP) if s == "top" else (x, sy + sh, TIP_W, TIP_H + TIP_GAP)
-            else:
-                r = (sx - TIP_GAP - TIP_W, sy, TIP_W + TIP_GAP, TIP_H) if s == "left" else (sx + sw, sy, TIP_W + TIP_GAP, TIP_H)
-            tried.append((s, r))
-            if r[0] >= 0 and r[1] >= 0 and r[0] + r[2] <= g.W and r[1] + r[3] <= g.H:
-                break
-        s, r = tried[-1]
-        # REPORTED, not refused: the reason's real size is measured only in the game (it is not in the dump),
-        # so this box is the label at its largest. The harness p2_paths hovers each lockable exit and decides.
-        say = out.report
+        tips = (p.hot or {}).get("tips")
+        own = isinstance(tips, dict) and tips.get(hid) in SIDES
+        side = tip_side(p, hid, exit_=True)
+        if not own:
+            # the game's own answer (icon_tip_where): above, or to the left; the other side where that leaves the screen
+            if side == "top" and sy - TIP_GAP - lh < 0:
+                side = "bottom"
+            elif side == "left" and sx - TIP_GAP - lw < 0:
+                side = "right"
+        if side in ("top", "bottom"):
+            r = (max(0, min(sx, g.W - lw)), sy - lh if side == "top" else sy + sh, lw, lh)
+        else:
+            r = (sx - lw if side == "left" else sx + sw, max(0, min(sy, g.H - lh)), lw, lh)
+        where = {"top": "above it", "bottom": "below it", "left": "to its left", "right": "to its right"}[side]
         if not (r[0] >= 0 and r[1] >= 0 and r[0] + r[2] <= g.W and r[1] + r[3] <= g.H):
-            say(place, "lock-label", "%s can be locked, and its reason (up to %d by %d px) would leave the screen on "
-                       "either side: give it another side under tips" % (p.words(hid), TIP_W, TIP_H))
+            say(place, "lock-label", "%s can be locked, and its reason (%s), opened %s, would leave the screen: give it "
+                "another side under tips, or move it" % (p.words(hid), size_words, where))
             continue
         hit = [p.words(h2) for h2, _t2, pt2 in exits if h2 != hid and overlap(r, g.rect(pt2))]
         if overlap(r, g.caption):
             hit.append("the arrival caption")
         if hit:
-            say(place, "lock-label", "%s can be locked, and its reason, opened %s (up to %d by %d px), would cover %s: "
-                       "give it another side under tips, or move it"
-                       % (p.words(hid), {"top": "above it", "bottom": "below it", "left": "to its left", "right": "to its right"}[s],
-                          TIP_W, TIP_H, " and ".join(hit)))
+            say(place, "lock-label", "%s can be locked, and its reason (%s), opened %s, would cover %s: give it another "
+                "side under tips, or move it" % (p.words(hid), size_words, where, " and ".join(hit)))
 
 
 def check_doors(p, out, band):
@@ -598,6 +637,20 @@ def check_stage(p, out, ns):
             if x < lo or x + w > hi:
                 out.refuse(place, "stage-x", "with %d in the place, the slot at x %s leaves the stage (x %d to %d): the person's "
                            "picture runs from x %d to %d" % (n, s[0], lo, hi, x, x + w))
+    # 6.3: name tags stay between the Review tools link and the icon column. The game moves the tags itself
+    # (view_tag_xs: under each person, pushed apart by their widths, pushed back inside the edges); what a layout
+    # can still break is the room for them, so each row is laid out here with every tag at its widest.
+    if g.tag_edges and g.tag_w:
+        t_lo, t_hi = g.tag_edges
+        for n in (1, 2, 3, 4):
+            xs = tag_xs([g.slot_rect(s) for s in p.slots[n]], g.tag_w, g.tag_gap or 0, t_lo, t_hi)
+            half = (g.tag_w + 1) // 2
+            ends = sorted((x - half, x + half) for x in xs)
+            if ends and (ends[0][0] < t_lo or ends[-1][1] > t_hi
+                         or any(b[0] - a[1] < (g.tag_gap or 0) - 1 for a, b in zip(ends, ends[1:]))):
+                out.refuse(place, "tag-x", "with %d in the place, the name tags (each up to %d px wide, %d px apart) do not fit "
+                           "between x %d and x %d under the people: they would run from x %d to x %d"
+                           % (n, g.tag_w, g.tag_gap or 0, t_lo, t_hi, ends[0][0], ends[-1][1]))
     if p.view is None:
         return
     composed = "for_rev" in p.view
@@ -1067,7 +1120,9 @@ def cases():
     case("a slot row for one person over a hotspot", "slot-hides", "straw_posts",
          lambda d: d["view_courtyard"]["slots"].__setitem__("1", [[1620, -40, 0.2, 0]]))
     # D50: the spare doors of a house
-    dorm = {"hot_boys_dorm": {"spare": [[640, 620], [1030, 640], [1320, 760]]}}
+    # (the stand-in corridor's own points: Yuji's door is given a side, so that its lock's reason, once the dump
+    # measures it, opens clear of the door to My Room)
+    dorm = {"hot_boys_dorm": {"spare": [[640, 620], [1030, 640], [1320, 760]], "tips": {"go_boys_dorm__yuji_room": "bottom"}}}
     case("a house with its three spare doors measured passes", None, "", lambda d: None, dorm)
     case("a house whose spare list is shorter than the record's count of its spare doors", "spare", "holds 2 points",
          lambda d: d["hot_boys_dorm"]["spare"].pop(), dorm)
@@ -1185,6 +1240,62 @@ def cases():
     return out
 
 
+# The numbers the dump gained with U0d3 (tools/smoke/u2_dump.rpy: lock_labels, frames.tag_*), as a test lays
+# them over whatever dump it runs with: the cases below then read the same on a dump written before and after.
+TEST_LOCK = {"training_yard": {"go_training_yard__storehouse": [484, 82]}}
+TEST_TAGS = {"tag_edges": [179, 1700], "tag_gap": 8, "tag_w": 224}
+
+
+def patched(dump, patch):
+    """TEST ONLY: a copy of a dump's dict with a case's keys laid in: `frames` key by key; `lock_labels` whole,
+    or taken out when the patch gives None."""
+    d = dict(dump)
+    d["frames"] = dict(d.get("frames") or {}, **patch.get("frames", {}))
+    if "lock_labels" in patch:
+        if patch["lock_labels"] is None:
+            d.pop("lock_labels", None)
+            for k in list(TEST_TAGS):
+                d["frames"].pop(k, None)
+        else:
+            d["lock_labels"] = patch["lock_labels"]
+    return d
+
+
+def dump_cases():
+    """[(name, files, patch for the dump, want, words)]: the two rules that read numbers the dump gained with
+    U0d3. `want` is a rule that must refuse (and nothing else may), "" for a layout that passes, or
+    "REPORT <rule>" for one that passes with that line reported."""
+    # the yard as the campus record's own good test layout has it (tools/bgs/tests/good), the storehouse's door
+    # moved 60 px down: its reason, above it, then reaches the steps to the Staff Building
+    yard = {"hot_training_yard": {"spots": {
+        "go_training_yard__training": [300, 620], "go_training_yard__courtyard": [150, 860],
+        "go_training_yard__storehouse": [900, 620], "go_training_yard__staff_yard": [1180, 600],
+        "go_training_yard__dojo": [1420, 620], "go_training_yard__pool": [1650, 700]}}}
+    sided = _copy(yard)
+    sided["hot_training_yard"]["tips"] = {"go_training_yard__storehouse": "left"}
+    both = {"lock_labels": TEST_LOCK, "frames": TEST_TAGS}
+    return [
+        ("a door that can be locked whose reason, opened above it, would cover another exit", yard, both,
+         "lock-label", "would cover the way to"),
+        ("the same door with its reason opened to its left (tips) passes", sided, both, "", ""),
+        ("with a dump written before the labels were measured, the same door is only reported", yard,
+         {"lock_labels": None}, "REPORT lock-label", "up to 520 by 80 px"),
+        ("the whole Courtyard layout passes with the name tags' real edges", base_courtyard(), both, "", ""),
+        ("a row of four whose name tags have no room between the edges", base_courtyard(),
+         {"lock_labels": TEST_LOCK, "frames": dict(TEST_TAGS, tag_edges=[179, 900])}, "tag-x", "with 4 in the place"),
+    ]
+
+
+def dump_case_ok(want, words, out_lines, rc):
+    """One dump case's verdict from the tool's printed lines and exit status."""
+    refused = [l for l in out_lines if l.startswith("REFUSED")]
+    if want.startswith("REPORT "):
+        return rc == 0 and not refused and any(l.startswith("REPORT") and "[%s]" % want[7:] in l and words in l for l in out_lines)
+    if not want:
+        return rc == 0 and not refused
+    return rc == 1 and bool(refused) and all("[%s]" % want in l for l in refused) and any(words in l for l in refused)
+
+
 def write_case(files, folder):
     os.makedirs(folder, exist_ok=True)
     paths = []
@@ -1259,6 +1370,12 @@ def selftest(lay, root=None):
                 hit = [t for t in out.texts() if "[%s]" % rule in t and words in t]
                 line("REFUSED by name [%s]: %s" % (rule, name), bool(hit) and set(got) <= set((rule,) + tuple(also)),
                      "refused: " + ("; ".join(out.texts()) or "nothing"))
+        for k, (name, files, patch, want, words) in enumerate(dump_cases()):
+            out = check(read_candidate(write_case(files, os.path.join(work, "d%02d" % k)), Out()),
+                        game_layout.Layout(patched(lay.d, patch), lay.path), root=root)
+            lines = ["REFUSED " + t for t in out.texts()] + ["REPORT " + t for t in out.texts("REPORT")]
+            line(("REFUSED by name [%s]: %s" % (want, name)) if want and not want.startswith("REPORT") else name,
+                 dump_case_ok(want, words, lines, 1 if out.rules() else 0), "; ".join(lines))
     finally:
         shutil.rmtree(work, ignore_errors=True)
     print("check_layout selftest: %s (%d checks%s)" % ("FAIL" if bad else "PASS", n, ", %d failed" % bad if bad else ""))

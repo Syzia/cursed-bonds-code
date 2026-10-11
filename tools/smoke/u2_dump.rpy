@@ -96,6 +96,18 @@
 ##                 point), so that a layout tool can refuse two that meet.
 ##                 Measured standing in each place in turn, so a place's own
 ##                 "tips" rows decide the side its plates lie on
+## Added by the layout tools (U0d3), for tools/check_layout.py; no key above
+## changed shape:
+##   lock_labels   {place: {exit id: [w, h]}}: for every exit whose
+##                 destination the game can lock while I stand in that place,
+##                 the size of the hover label that says why (the lock's
+##                 reason, as icon_tip_size measures it), at its widest and
+##                 its tallest over the five periods. Measured with no flag,
+##                 no Bond and nobody walking with me, so every door that can
+##                 be locked is; what was there is put back.
+##   frames        also tag_edges (VIEW_TAG_EDGES: the x a name tag stays
+##                 between), tag_gap (VIEW_TAG_GAP) and tag_w (the widest name
+##                 tag any person can have: mission mark and NEW chip on)
 ##
 ## Keys the tree does not have yet are written empty and filled when U0c
 ## regenerates the file. Nothing in it depends on the day, the hour, a flag or
@@ -135,6 +147,34 @@ init 999 python:
         if isinstance(v, (builtins.list, builtins.tuple, list, tuple)):
             return [zz_dump_plain(x) for x in v]
         return v
+
+    def zz_dump_locks():
+        """U0d3. {place: {exit id: [w, h]}}: the hover label of each exit
+        that can be locked, at its largest (see the header)."""
+        was = (store.here, store.period, store.companion, store.explore_mode, store.flags, store.bonds)
+        out = builtins.dict()
+        try:
+            store.companion, store.explore_mode = None, False
+            store.flags, store.bonds = set(), {}
+            for loc in LOC_ORDER:
+                store.here = loc
+                got = builtins.dict()
+                for to in path_neighbours(loc):
+                    w = h = 0
+                    for per in PERIODS:
+                        store.period = per
+                        why = path_locked(to)
+                        if why:
+                            ## a key no hotspot has: the text alone, without a shaped exit's faces
+                            size = icon_tip_size((why, "zz_u2d_lock"))
+                            w, h = max(w, int(size[0])), max(h, int(size[1]))
+                    if w:
+                        got[path_spot_id(loc, to)] = [w, h]
+                if got:
+                    out[loc] = got
+        finally:
+            store.here, store.period, store.companion, store.explore_mode, store.flags, store.bonds = was
+        return out
 
     def zz_dump_people():
         out = builtins.dict()
@@ -243,6 +283,8 @@ init 999 python:
             map_pin_frame=MAP_PIN_FRAME, map_mountain_box=MAP_MOUNTAIN_BOX,
             map_pin=MAP_PIN_W, map_area=[MAP_AREA_W, MAP_AREA_H],
             stage_x=[40, 1700], sprite=VIEW_SPRITE, tag_y=VIEW_TAG_Y,
+            tag_edges=VIEW_TAG_EDGES, tag_gap=VIEW_TAG_GAP,
+            tag_w=max(view_tag_w(CAST[w]["short"], True, True) for w in CAST),
             rail=builtins.dict(tile=RAIL_TILE, gap=RAIL_GAP, bottom=RAIL_BOTTOM, top=RAIL_TOP,
                                top_inner=RAIL_TOP_INNER, max=RAIL_MAX, columns=RAIL_COLUMNS)))
 
@@ -312,6 +354,8 @@ init 999 python:
         d["keep_tile"] = keep
         d["shaped"] = [loc for loc in LOC_ORDER if hot_shapes_for(loc)]
         d["name_rects"] = rects
+        ## The layout tools (U0d3): the size of each locked exit's reason.
+        d["lock_labels"] = zz_dump_locks()
         return d
 
 
@@ -388,6 +432,23 @@ label zz_smoke:
               and json.dumps(zz_dump_build(), sort_keys=True) == json.dumps(_zz_d, sort_keys=True),
               "D60: name_rects is measured standing in each place: a test `tips` row for the Courtyard, a place I do not stand in (I am in %s), puts the gate's plate left of its square and the machine's under it, and moves no other plate" % _zz_here,
               (_zz_a.get("go_courtyard__gate"), _zz_b.get("go_courtyard__gate"), _zz_a.get("spot_vend"), _zz_b.get("spot_vend")))
+        ## U0d3: the five exits the harness p2_paths hovers while locked are all
+        ## measured, no label is wider than a hover label can be, and measuring
+        ## left the day as it was.
+        _zz_was = (store.here, store.period, store.companion, store.flags, store.bonds)
+        _zz_locks = zz_dump_locks()
+        _zz_five = [("dorm_yard", "girls_dorm"), ("training_yard", "storehouse"), ("staff_yard", "office"),
+                    ("staff_yard", "utahime_office"), ("staff_yard", "gojo_office")]
+        check(_zz_locks == _zz_d["lock_labels"]
+              and all(path_spot_id(a, b) in _zz_locks.get(a, {}) for a, b in _zz_five)
+              and all(k.startswith("go_%s__" % l) and 2 * ICON_TIP_PAD[0] < r[0] <= ICON_TIP_W and r[1] > 2 * ICON_TIP_PAD[1]
+                      for l, v in _zz_locks.items() for k, r in v.items())
+              and all(a is b for a, b in zip(_zz_was, (store.here, store.period, store.companion, store.flags, store.bonds)))
+              and _zz_d["frames"]["tag_edges"] == builtins.list(VIEW_TAG_EDGES) and _zz_d["frames"]["tag_gap"] == VIEW_TAG_GAP
+              and 0 < _zz_d["frames"]["tag_w"] < VIEW_TAG_EDGES[1] - VIEW_TAG_EDGES[0],
+              "U0d3: lock_labels holds the size of the lock's reason for every exit that can be locked (%d exits in %d places, the five p2_paths hovers among them), none wider than a hover label, and measuring them changed nothing; frames holds the name tags' edges, gap and widest (%d px)"
+              % (sum(len(v) for v in _zz_locks.values()), len(_zz_locks), _zz_d["frames"]["tag_w"]),
+              _zz_locks.get("staff_yard"))
         _zz_path = os.path.join(zz_smoke_state.shots, "game_layout.json")
         with open(_zz_path, "w", encoding="utf-8") as _zz_f:
             _zz_f.write(_zz_text)

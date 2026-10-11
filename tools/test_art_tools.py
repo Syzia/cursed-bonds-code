@@ -327,6 +327,17 @@ def group_layout(lab):
             ok("check_layout.py refuses, by name [%s], %s" % (rule, name),
                rc == 1 and any("[%s]" % rule in l.split(":")[0] and words in l for l in refused)
                and tags <= set((rule,) + tuple(also)) and "REFUSED (" in last, out)
+    # the two rules that read what the dump gained with U0d3 (lock_labels, frames.tag_*): each case lays its own
+    # test numbers over the dump, so the lines read the same on a dump written before and after
+    os.makedirs(os.path.join(lab.work, "layout_dumps"))
+    for k, (name, files, patch, want, words) in enumerate(check_layout.dump_cases()):
+        paths = check_layout.write_case(files, os.path.join(folder, "d%02d" % k))
+        dp = os.path.join(lab.work, "layout_dumps", "d%02d.json" % k)
+        json.dump(check_layout.patched(json.load(open(lab.dump, encoding="utf-8")), patch), open(dp, "w"))
+        rc, out = run(cl + [os.path.dirname(paths[0]), "--layout-dump", dp])
+        what = ("refuses, by name [%s], %s" % (want, name) if want and not want.startswith("REPORT")
+                else "%s (exit 0, nothing refused%s)" % (name, ", [%s] reported" % want[7:] if want else ""))
+        ok("check_layout.py %s" % what, check_layout.dump_case_ok(want, words, out.splitlines(), rc), out)
     one = check_layout.write_case(check_layout.base_courtyard(), os.path.join(folder, "files"))
     rc, out = run(cl + sorted(one) + ["--layout-dump", lab.dump, "--quiet"])
     ok("it reads a layout as files named one by one, as well as a folder; it REPORTS, and does not refuse, the part "
