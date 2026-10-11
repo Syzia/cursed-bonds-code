@@ -357,6 +357,72 @@ def group_layout(lab):
     rc, out = run(cl + [folder + "/files", "--layout-dump", stale])
     ok("check_layout.py refuses, in one line, a dump that is out of date", rc == 2 and out.strip() == STALE, out)
 
+    # layout_sheet.py: the new keys, its numbers from the dump, a shaped place, a layout that is only staged
+    import struct
+    import layout_sheet
+
+    def png_size(path):
+        with open(path, "rb") as f:
+            head = f.read(24)
+        return struct.unpack(">II", head[16:24]) if head[:8] == b"\x89PNG\r\n\x1a\n" else None
+
+    layout_sheet.use_dump(lay)
+    lanes = lay.frame("hot_lanes")
+    moved = game_layout.Layout(dict(lay.d, frames=dict(lay.d["frames"], hot_lanes=[[1000, 100, 200, 300], [400, 96, 900, 74]])))
+    was = (layout_sheet.TOAST_LANE, layout_sheet.BANNER_LANE, layout_sheet.HOT_FRAME, layout_sheet.PIN_FRAME)
+    layout_sheet.use_dump(moved)
+    ok("layout_sheet.py draws the toast lane, the banner lane and the two frames from the layout dump (the toast lane "
+       "runs to y %d, as the game's does; its own copy stopped at 350), and a dump with another lane moves the sheet's"
+       % (lanes[0][1] + lanes[0][3]),
+       was == ((lanes[0][0], lanes[0][1], lanes[0][0] + lanes[0][2], lanes[0][1] + lanes[0][3]),
+               (lanes[1][0], lanes[1][1], lanes[1][0] + lanes[1][2], lanes[1][1] + lanes[1][3]),
+               tuple(lay.frame("hot_bounds")), tuple(lay.frame("map_pin_frame")))
+       and was[0][3] == 422 and layout_sheet.TOAST_LANE == (1000, 100, 1200, 400), was)
+    layout_sheet.use_dump(lay)
+    staged = os.path.join(folder, "staged")
+    files = check_layout.base_courtyard()
+    files["view_courtyard"].update({"scale": [1750, 340, 1030], "talk": False, "cast": {"evening": [1, 0.5, 0.3]}})
+    check_layout.write_case(files, staged)
+    picture = os.path.join(REPO, "game", "images", "bg", "courtyard.png")
+    ls = [tool("layout_sheet.py")]
+    sheet = os.path.join(folder, "hot_courtyard.png")
+    rc, out = run(ls + ["hot_courtyard", "--staged", staged, "--bg", picture, "--out", sheet, "--layout-dump", lab.dump])
+    ok("layout_sheet.py draws a layout that is still only staged (its files in a folder, its picture given by path), and "
+       "for a shaped place two frames: the outlines over the picture, and every shape lit and named (1920 x 2212)",
+       rc == 0 and png_size(sheet) == (1920, 2212) and "picture courtyard.png (--bg)" in out and "staged" in out, out)
+    if rc == 0:
+        from pngread import load as png_load
+        im = png_load(sheet)
+
+        def px(x, y):
+            i = (y * im.w + x) * im.ch
+            return tuple(im.buf[i:i + 3])
+        top, low = px(1200, 44 + 1000), px(1200, 44 + 1080 + 8 + 1000)     # inside the gate's band of flagstones
+        out_top, out_low = px(1000, 44 + 880), px(1000, 44 + 1080 + 8 + 880)     # flagstones outside every shape
+        ok("in the second frame a shape is lit against a dimmed picture: inside the gate's band the pixel is lighter than "
+           "the same flagstones outside it, and outside every shape the second frame is darker than the first",
+           sum(low) > sum(out_low) + 40 and sum(out_low) < sum(out_top), (top, low, out_top, out_low))
+    plain = dict(files["hot_courtyard"]); plain.pop("shapes")
+    check_layout.write_case({"hot_courtyard": plain}, os.path.join(folder, "plain"))
+    sheet2 = os.path.join(folder, "hot_plain.png")
+    rc, out = run(ls + ["hot_courtyard", "--staged", os.path.join(folder, "plain"), "--out", sheet2, "--layout-dump", lab.dump])
+    ok("a place with no shapes is one frame, as before (1920 x 1124), with the keys tips and spots read",
+       rc == 0 and png_size(sheet2) == (1920, 1124), out)
+    sheet3 = os.path.join(folder, "view_courtyard.png")
+    rc, out = run(ls + ["view_courtyard", "--staged", staged, "--out", sheet3, "--layout-dump", lab.dump])
+    ok("a view sheet takes the new keys (floor, scale, cast, talk) and draws the floor and the scale on a full-size "
+       "panel (1920 x 2212)", rc == 0 and png_size(sheet3) == (1920, 2212), out)
+    check_layout.write_case({"hot_boys_dorm": {"spare": [[640, 620], [1030, 640], [1320, 760]], "for_rev": 2,
+                                               "keep_tile": {}, "tips": {"go_boys_dorm__dorm": "right"}}}, os.path.join(folder, "house"))
+    rc, out = run(ls + ["hot_boys_dorm", "--staged", os.path.join(folder, "house"), "--out", os.path.join(folder, "house.png"),
+                        "--layout-dump", lab.dump])
+    ok("a hotspot sheet takes spare, tips, keep_tile and for_rev (a house's spare doors are drawn)", rc == 0, out)
+    check_layout.write_case({"hot_boys_dorm": {"spots": {}, "doors": []}}, os.path.join(folder, "wrong"))
+    rc, out = run(ls + ["hot_boys_dorm", "--staged", os.path.join(folder, "wrong"), "--out", os.path.join(folder, "wrong.png"),
+                        "--layout-dump", lab.dump])
+    ok("and still stops, in one plain line, at a key no sidecar holds",
+       rc != 0 and "unknown key 'doors'" in out and len(out.strip().splitlines()) == 1, out)
+
 
 def verdicts(out):
     """{version letter: (verdict, the lines under it)} from install_redo.py's report."""

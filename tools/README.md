@@ -116,18 +116,47 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   Free.
 - **Layout sheets.** `layout_sheet.py <name>` draws a layout on its picture
   for approval, into `shots/layout/<name>.png`. The name is the layout's full
-  stem: `view_<place>` (where people stand, pose boxes, the foreground
-  polygon), `hot_<place>` (the room's hotspots and exits, the frame they must
-  stay in, the two lanes they must stay out of, where people stand) or
-  `area_<key>` (an area's map pins). It draws the code's numbers with the
-  sidecar `game/layout/<name>.json` laid over them. `--sidecar <file>` and
+  stem: `view_<place>` (where people stand, the floor and the scale, pose
+  boxes, the foreground polygon), `hot_<place>` (the room's hotspots and
+  exits, the side each name opens on, the frame they must stay in, the two
+  lanes they must stay out of, the spare doors, where people stand) or
+  `area_<key>` (an area's map pins). **For a shaped place** (the sidecar
+  holds `shapes`, D60) a hotspot sheet is two frames: every shape's outline
+  over the picture, then every shape lit and named, as while names are shown.
+  It draws the code's numbers with the sidecar `game/layout/<name>.json` laid
+  over them, and takes every key of UI2_DESIGN.md 3.2. `--sidecar <file>` and
   `--fg <file>` use another file; `--no-sidecar` draws the code's numbers
-  alone; `--defaults <file>` and `--out <file>` name the input and the output.
-  It stops with one line on a malformed sidecar (unknown keys, a slot key
-  outside "1" to "4", a slot list of the wrong length). **In a new worktree,
-  run `tools/smoke.sh tools/smoke/p2_contracts.rpy` first:** the code's
-  numbers come from `shots/layout/defaults.json`, which that harness writes
-  and git ignores.
+  alone; `--out <file>` names the output. **A layout that is still only
+  staged:** `--staged <folder>` reads `<name>.json` (and `check_<place>.json`)
+  from a folder such as `tools/art/staged/<stem>/`, and `--bg <picture>`
+  draws on a picture given by path (a 2752 px render is fitted). All its
+  numbers (the frame, the lanes, the stage, the points, the code's slots, the
+  pins) come from the layout dump, `tools/art/game_layout.json`; in a
+  worktree, `--layout-dump <file>`. It no longer reads
+  `shots/layout/defaults.json`.
+- **The layout check.** `check_layout.py <folder or files>` is the check a
+  layout must pass before its picture may be installed (UI2_DESIGN.md 5.6
+  step 4, 7.3, 6.3, 4.6). It reads a candidate as files (`hot_<place>.json`,
+  `view_<place>.json`, `area_<key>.json`, `map_campus.json`) before they are
+  in `game/layout/`, prints one plain line for each thing REFUSED and each
+  thing only REPORTed, and exits 0 only when nothing is refused (1 refused, 2
+  a dump out of date). Every limit comes from the layout dump; the shape
+  rules are the game's own text, run from `game/sb_hotspots.rpy`; the fixed
+  facts are `check_campus.py`'s, called. Beside the layout's files a folder
+  may hold `check_<place>.json`, read by this tool and the sheet only and
+  never installed: `front` (the PLANNED hotspots that are their room's
+  foreground object; `--front id,id` adds to it), `objects` (the box of the
+  thing a front shape is traced round), `fg` (a foreground outline not yet in
+  `tools/fg/`), `doors`, `horizon`. `--selftest` runs its negative tests (one
+  whole layout that passes, and small ones that must each be refused by
+  name); `tools/test_art_tools.sh --only layout` runs each through the
+  command line. `--layout-dump <file>` in a worktree; `--no-campus` for a
+  test layout on a picture the campus record does not speak of.
+- **The dump's reader.** `python3 tools/game_layout.py` says whether the dump
+  is fresh and what it holds. `where()`, `asleep()` and `away()` read the
+  dump's `world.homes`, `world.asleep` and `world.away`; `shapes(place)`,
+  `keep_tile`, `front_ids`, `name_rects`, `tips`, `hot_shape` and `frame`
+  read what D60 added.
 
 ## Placeholders and the rest
 
@@ -384,6 +413,13 @@ any. It can be called by absolute path from any folder.
 ```bash
 python3 tools/check_content.py --all game/*.rpy tools/smoke/*.rpy
 ```
+
+`--harness-names` lets a test overlay carry a real name only through an
+exception in `tools/prefixes.json` that gives both the name and its file (the
+one today: `image nade` in `tools/smoke/assets/u2_contracts/game/zz_u2c_gen.rpy`,
+which stands for the line `gen_sprite_defs.py` writes). `--selftest` proves
+that such an exception lets through that one name in that one file and
+nothing else; the rule runs the same test each time it is used.
 
 - `--no-mc-on-screen` — `show mc` / `hide mc` (Kaito is never on screen),
   unless tagged `## first-person exception`;

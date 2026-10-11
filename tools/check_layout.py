@@ -72,9 +72,6 @@ WHAT IT REFUSES (each line starts REFUSED, then the place and the rule's name)
   top-row         an exit under the banner that starts above a two-line
                   banner; in a yard, more than one exit above y 300 or exits
                   at fewer than three heights
-  lock-label      a door that can be locked whose reason, opened on the side
-                  `tips` gives, would cover another exit, the arrival caption
-                  or leave the screen
   exit-on-door    indoors, an exit the layout places that is neither inside a
                   painted door's box nor in the bottom band (never on a window)
   placed          a planned hotspot with no point, in a layout that is shaped
@@ -107,12 +104,22 @@ WHAT IT REFUSES (each line starts REFUSED, then the place and the rule's name)
                   marker off the mountain
   campus          a fixed fact of the campus record the layout breaks
 
-WHAT IT ONLY REPORTS (REPORT): the part of a shape above y 92, where no shape
-takes the pointer; the part inside the toast lane or the banner lane, which a
+WHAT IT ONLY REPORTS (REPORT): a door that can be locked whose reason, at the
+largest a hover label can be (520 by 80 px) and opened on the side `tips`
+gives, would cover another exit or the arrival caption, or leave the screen
+(lock-label: the label's real size is measured only in the game, where the
+harness p2_paths decides; give the exit another side under tips and the line
+goes); the part of a shape above y 92, where no shape takes the pointer; the part inside the toast lane or the banner lane, which a
 toast or the banner may cover; how many hotspots keep a button, and why; an
 exit or a planned hotspot the file gives no point; a room that waits for its
 layout sitting; a name plate or a label whose size is a guess until its
 hotspot is registered; what check_campus only reports.
+
+tools/install_redo.py --compose calls it as `check_layout.py --layout <files>
+[--layout-dump <file>]`. --layout says the installer is asking: the files
+follow it, the dump is taken as the installer has just checked it (against
+the tree it installs into, which may be a scratch copy), and the campus
+record is left to the installer, which reads it with the owner's waivers.
 
 Options: --layout-dump <file>, --root <tree> (the tree whose dump, record,
 keep lists and outlines are read), --keep <dir>, --fg <dir>, --record <file>,
@@ -137,7 +144,7 @@ HUB_TOP_Y = 300             # in a yard at most one exit above y 300 ...
 HUB_HEIGHTS = 3             # ... and the exits at three heights or more (p2_paths.rpy)
 CAPTION_RING = 96           # an exit's ring is kept clear of the arrival caption (p2_paths.rpy)
 TIP_W = 520                 # the hover label's widest (ui_icons.rpy: ICON_TIP_W)
-TIP_H = 80                  # a lock's reason is up to two lines of 22 px and one of 18, padded 8: at most this
+TIP_H = 80                  # a lock's reason is up to two lines of 22 px and one of 18, padded 8: at most this (a guess)
 TIP_GAP = 12                # the gap between a tile and its label (ui_icons.rpy: icon_tip_where)
 RAIL_ALWAYS = 2             # "Hold the hour" and "Wait" are always in the column (4.6)
 PERSON_PX, PERSON_CM, NEAR_ZOOM = 596.0, 173.0, 0.52    # 6.3: the near line draws a 173 cm person 596 px tall
@@ -516,7 +523,9 @@ def check_paths(p, out):
             if r[0] >= 0 and r[1] >= 0 and r[0] + r[2] <= g.W and r[1] + r[3] <= g.H:
                 break
         s, r = tried[-1]
-        say = out.refuse if hid in p.from_file else out.report      # a point the layout does not place is the code's
+        # REPORTED, not refused: the reason's real size is measured only in the game (it is not in the dump),
+        # so this box is the label at its largest. The harness p2_paths hovers each lockable exit and decides.
+        say = out.report
         if not (r[0] >= 0 and r[1] >= 0 and r[0] + r[2] <= g.W and r[1] + r[3] <= g.H):
             say(place, "lock-label", "%s can be locked, and its reason (up to %d by %d px) would leave the screen on "
                        "either side: give it another side under tips" % (p.words(hid), TIP_W, TIP_H))
@@ -1271,10 +1280,14 @@ def main(argv):
     root, record, keep_dir, fg_dir, front = opt("--root"), opt("--record"), opt("--keep"), opt("--fg"), opt("--front")
     flags = [a for a in argv if a.startswith("--")]
     paths = [a for a in argv if not a.startswith("--")]
-    if [f for f in flags if f not in ("--selftest", "--no-campus", "--quiet")] or (not paths and "--selftest" not in flags):
+    # --layout is how tools/install_redo.py --compose names the files it hands over: the files follow it
+    if [f for f in flags if f not in ("--selftest", "--no-campus", "--quiet", "--layout")] or (not paths and "--selftest" not in flags):
         print(__doc__)
         raise SystemExit(2)
-    lay = game_layout.load(dump, root)
+    # Called by the installer (--layout): it has just read this dump against the tree it installs into, which
+    # need not be this one (a scratch copy), and it checks the campus record itself, with the owner's waivers.
+    by_installer = "--layout" in flags
+    lay = game_layout.load(dump, root, check_hash=not by_installer)
     if "--selftest" in flags:
         raise SystemExit(selftest(lay, root))
     out = Out()
@@ -1282,7 +1295,7 @@ def main(argv):
     if not cand and not out.lines:
         raise SystemExit("check_layout.py: no .json file in %s" % ", ".join(paths))
     check(cand, lay, root=root, record=record, keep_dir=keep_dir, fg_dir=fg_dir,
-          front=[f for f in (front or "").split(",") if f], campus="--no-campus" not in flags, out=out)
+          front=[f for f in (front or "").split(",") if f], campus="--no-campus" not in flags and not by_installer, out=out)
     title = ", ".join(sorted(cand)) or ", ".join(paths)
     raise SystemExit(show(out, title, quiet="--quiet" in flags))
 
