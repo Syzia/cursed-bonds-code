@@ -582,28 +582,31 @@
       {
        "place": "megumi_room",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: low warm orange sunlight slants in through the window and lies across the floor and the desk with long soft shadows; outside the window the cedar trunks are lit orange on one side and the forest behind them is in warm shade, and everything that stands outside is still there. The desk lamp is off. Add no new lamp, no new light and no new window."
       },
       {
        "place": "megumi_room",
        "kind": "relight",
        "hour": "night",
-       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+       "hour_words": "Change the time of day to night, with the small desk lamp switched on and nothing else lit. The lamp makes a warm pool of light on the desk, the closed book and the nearest shelves; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, the bookshelf and the door. Outside the window it is night: the cedar trunks and the forest are still there, as dark shapes, with pieces of deep blue sky and stars between them; the moon itself is not in view. Add no other lamp and no other light."
       },
       {
        "place": "senpai_room",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: outside the window the sky is orange and pink, and the tall wooden tower, the tiled roof and the gallery's rail are in low warm light; everything that stands outside is still there. Soft warm light comes in through the window and lies on the mats with long soft shadows. The paper floor lamp is off. Add no new lamp, no new light and no new window."
       },
       {
        "place": "senpai_room",
        "kind": "relight",
        "hour": "night",
-       "hour_words": "Change the time of day to night: outside the window it is dark, under a deep blue night sky. A small lamp is switched on and makes a warm pool of light; the rest of the room is dim."
+       "hour_words": "Change the time of day to night, with the paper floor lamp switched on and nothing else lit. The lamp glows warm and makes a soft pool of light on the mats, on the chest beside it and on the head of the large futon; the rest of the room is in soft shadow, but everything in it can still be seen clearly: both futons, made and empty, the shogi board and its cushions, and the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the gallery's rail, the tiled roof and the tall wooden tower, with no window lit. Add no other lamp and no other light."
       }
      ]
     }
-   ]
+   ],
+   "note": "Each room's row marked night is the room with someone up (5.7a's `lit`): Megumi's by its desk lamp, the shared room's by its paper floor lamp. Their dark nights, batch 47's, were made early with them; those sentences are in tools/art/staged/early/art_10b_early.json."
   },
   {
    "id": "11",
