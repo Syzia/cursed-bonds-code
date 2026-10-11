@@ -1,0 +1,1002 @@
+{
+ "id": "1194445f-e526-4e20-9295-7c996b9d4334",
+ "revision": 0,
+ "last_node_id": 18,
+ "last_link_id": 14,
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.35,
+   "offset": [
+    2040,
+    640
+   ]
+  },
+  "frontendVersion": "1.51.9"
+ },
+ "version": 0.4,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "MarkdownNote",
+   "pos": [
+    -640,
+    -560
+   ],
+   "size": [
+    600,
+    480
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {},
+   "title": "Start here",
+   "color": "#222",
+   "bgcolor": "#000",
+   "widgets_values": [
+    "## The swimming pool, and the Training Yard after dark\n\n3 rows, each painted twice: the pool behind the dojo, drawn from words as part of the yard you chose; and the Training Yard in the evening and at night.\n\nRun this in the **local ComfyUI**. Press **Run** once.\n\nEach row is one picture, painted twice: **version A** on top, **version B** under it. You choose between them afterwards.\n\nThe **Load Image** boxes on the left should already show their pictures. If one shows an error, click **choose file to upload** and pick the file with the same name from `JJK Game images/ui2/early`.\n\n**Cost:** 6 pictures, about **$0.96** (Nano Banana Pro, about $0.16 a picture, charged to your Comfy account).\n\nYou don't need to save anything: the results go to ComfyUI's output folder and Claude picks them up from there.\n\nIf it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
+   ]
+  },
+  {
+   "id": 2,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_pool_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the Training Yard, as chosen"
+  },
+  {
+   "id": 3,
+   "type": "LoadImage",
+   "pos": [
+    -1630,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      2
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_pool_2.png",
+    "image"
+   ],
+   "title": "Load Image 2: the dojo's end and the pool's gate, cut from the chosen yard"
+  },
+  {
+   "id": 4,
+   "type": "BatchImagesNode",
+   "pos": [
+    -600,
+    40
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 1
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 2
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      3,
+      5
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [],
+   "title": "The pictures, in order"
+  },
+  {
+   "id": 5,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    0
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 3
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      4
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one part of a traditional Japanese mountain school, with timber halls, grey tiled roofs, cedar forest and green mountains behind. Picture 1 is the training yard, already painted: the new picture shows the same school. Picture 2 is cut from the right side of picture 1: the long low hall with its band of windows and its white plastered gable end, and beside it the roofed timber gate, with the pool's water and paving seen through it. The new picture is taken on the far side of that gate, at the pool, looking back towards the school: the hall's gable end and the gate are the same ones, seen from the pool's side. Do not copy the camera or the layout of either picture. THE PLACE: the school's open-air swimming pool, seen from its timber deck: a pool of twenty-five metres set into a stone terrace on the slope behind a long low hall, edged in the same grey stone as the school's yards, with a low wooden fence, a small changing hut under a grey tiled roof, a lane board on the fence with no lettering, cedars close round it and mountains beyond; the water is still. I stand on the deck at the pool's near end and look along its length towards the school. Across the whole bottom of the picture is the timber deck, level, clear and empty. In the middle, running away from me, is the pool: a long rectangle of clear still water with lane lines painted on its floor, its edges of fitted grey stone. Beyond the pool's far end the stone terrace rises a little, and above it stands the white plastered gable end of the long low hall of picture 2, under its grey tiled roof. On the left, a wide walk of grey stone paving runs beside the pool, with a white plastered wall behind it; in that wall, in the left third of the picture and well short of the far end, stands the roofed timber gate of picture 2, open: this is the way out, and through it I see the sunlit earth of the training yard. On the right, a narrower stone walk and the low wooden fence run beside the pool, the lane board fixed to the fence about halfway along; at the far end of the fence, right of the hall's gable, is the small changing hut. Cedars stand close behind the fence and the hut, and above the hall's roof are more cedars and green mountains under a clear sky. It looks as if it was built with the school, in the same stone, timber and tile, and not added to it. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    5198,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Swimming Pool, version A"
+  },
+  {
+   "id": 6,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    0
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 4
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_pool_a"
+   ],
+   "title": "Swimming Pool: version A"
+  },
+  {
+   "id": 7,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    600
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 5
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      6
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one part of a traditional Japanese mountain school, with timber halls, grey tiled roofs, cedar forest and green mountains behind. Picture 1 is the training yard, already painted: the new picture shows the same school. Picture 2 is cut from the right side of picture 1: the long low hall with its band of windows and its white plastered gable end, and beside it the roofed timber gate, with the pool's water and paving seen through it. The new picture is taken on the far side of that gate, at the pool, looking back towards the school: the hall's gable end and the gate are the same ones, seen from the pool's side. Do not copy the camera or the layout of either picture. THE PLACE: the school's open-air swimming pool, seen from its timber deck: a pool of twenty-five metres set into a stone terrace on the slope behind a long low hall, edged in the same grey stone as the school's yards, with a low wooden fence, a small changing hut under a grey tiled roof, a lane board on the fence with no lettering, cedars close round it and mountains beyond; the water is still. I stand on the deck at the pool's near end and look along its length towards the school. Across the whole bottom of the picture is the timber deck, level, clear and empty. In the middle, running away from me, is the pool: a long rectangle of clear still water with lane lines painted on its floor, its edges of fitted grey stone. Beyond the pool's far end the stone terrace rises a little, and above it stands the white plastered gable end of the long low hall of picture 2, under its grey tiled roof. On the left, a wide walk of grey stone paving runs beside the pool, with a white plastered wall behind it; in that wall, in the left third of the picture and well short of the far end, stands the roofed timber gate of picture 2, open: this is the way out, and through it I see the sunlit earth of the training yard. On the right, a narrower stone walk and the low wooden fence run beside the pool, the lane board fixed to the fence about halfway along; at the far end of the fence, right of the hall's gable, is the small changing hut. Cedars stand close behind the fence and the hut, and above the hall's roof are more cedars and green mountains under a clear sky. It looks as if it was built with the school, in the same stone, timber and tile, and not added to it. The picture is seen from a standing person's eye height, the horizon a little above the middle. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of doors, steps, signs and machines: put nothing there that a visitor would walk to or use. Every door, flight of steps and path named above is clearly visible, and no two of them are close together. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    5199,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Swimming Pool, version B"
+  },
+  {
+   "id": 8,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    600
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 6
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_pool_b"
+   ],
+   "title": "Swimming Pool: version B"
+  },
+  {
+   "id": 9,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      7,
+      9
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_training_yard_evening_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: Training Yard by day, as installed"
+  },
+  {
+   "id": 10,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1260
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 7
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      8
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, angle and framing exactly as they are. Keep every building, roof, wall, path, step, rock and tree exactly where it is, at the same size and shape. Keep every object that is in the picture now, however small, each in its place: the benches, the posts, the signs, the stones. Do not remove, tidy away or add anything. Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. Everything in the yard and on the hills is still there. Add no new light. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    3834,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Training Yard, evening, version A"
+  },
+  {
+   "id": 11,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1260
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 8
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_training_yard_evening_a"
+   ],
+   "title": "Training Yard, evening: version A"
+  },
+  {
+   "id": 12,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1860
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 9
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      10
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, angle and framing exactly as they are. Keep every building, roof, wall, path, step, rock and tree exactly where it is, at the same size and shape. Keep every object that is in the picture now, however small, each in its place: the benches, the posts, the signs, the stones. Do not remove, tidy away or add anything. Change the time of day to early evening: a warm orange and pink sunset sky, and low golden sunlight from the left with long soft shadows falling to the right. Everything in the yard and on the hills is still there. Add no new light. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    3835,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Training Yard, evening, version B"
+  },
+  {
+   "id": 13,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1860
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 10
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_training_yard_evening_b"
+   ],
+   "title": "Training Yard, evening: version B"
+  },
+  {
+   "id": 14,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    2520
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      11,
+      13
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_training_yard_night_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: Training Yard by day, as installed"
+  },
+  {
+   "id": 15,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    2520
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 15,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 11
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      12
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, angle and framing exactly as they are. Keep every building, roof, wall, path, step, rock and tree exactly where it is, at the same size and shape. Keep every object that is in the picture now, however small, each in its place: the benches, the posts, the signs, the stones. Do not remove, tidy away or add anything. Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. Every window of the buildings is dark and no lamp is lit; the water seen through the gate on the right is dark. Everything in the yard and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    3232,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Training Yard, night, every window dark, version A"
+  },
+  {
+   "id": 16,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    2520
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 16,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 12
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_training_yard_night_a"
+   ],
+   "title": "Training Yard, night, every window dark: version A"
+  },
+  {
+   "id": 17,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    3120
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 17,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 13
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      14
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel. Redraw this exact scene. Keep the camera position, angle and framing exactly as they are. Keep every building, roof, wall, path, step, rock and tree exactly where it is, at the same size and shape. Keep every object that is in the picture now, however small, each in its place: the benches, the posts, the signs, the stones. Do not remove, tidy away or add anything. Change the time of day to night: a deep blue night sky with stars and a full moon, round and whole, and cool blue moonlight on everything, with soft shadows. Every window of the buildings is dark and no lamp is lit; the water seen through the gate on the right is dark. Everything in the yard and on the hills is still there, as dark shapes against the sky. Add no bench, sign, lamp or light that is not in the picture now. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    3233,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Training Yard, night, every window dark, version B"
+  },
+  {
+   "id": 18,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    3120
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 18,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 14
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_training_yard_night_b"
+   ],
+   "title": "Training Yard, night, every window dark: version B"
+  }
+ ],
+ "links": [
+  [
+   1,
+   2,
+   0,
+   4,
+   0,
+   "IMAGE"
+  ],
+  [
+   2,
+   3,
+   0,
+   4,
+   1,
+   "IMAGE"
+  ],
+  [
+   3,
+   4,
+   0,
+   5,
+   0,
+   "IMAGE"
+  ],
+  [
+   4,
+   5,
+   0,
+   6,
+   0,
+   "IMAGE"
+  ],
+  [
+   5,
+   4,
+   0,
+   7,
+   0,
+   "IMAGE"
+  ],
+  [
+   6,
+   7,
+   0,
+   8,
+   0,
+   "IMAGE"
+  ],
+  [
+   7,
+   9,
+   0,
+   10,
+   0,
+   "IMAGE"
+  ],
+  [
+   8,
+   10,
+   0,
+   11,
+   0,
+   "IMAGE"
+  ],
+  [
+   9,
+   9,
+   0,
+   12,
+   0,
+   "IMAGE"
+  ],
+  [
+   10,
+   12,
+   0,
+   13,
+   0,
+   "IMAGE"
+  ],
+  [
+   11,
+   14,
+   0,
+   15,
+   0,
+   "IMAGE"
+  ],
+  [
+   12,
+   15,
+   0,
+   16,
+   0,
+   "IMAGE"
+  ],
+  [
+   13,
+   14,
+   0,
+   17,
+   0,
+   "IMAGE"
+  ],
+  [
+   14,
+   17,
+   0,
+   18,
+   0,
+   "IMAGE"
+  ]
+ ],
+ "groups": [
+  {
+   "id": 1,
+   "title": "SWIMMING POOL:  A over B",
+   "bounding": [
+    -1980,
+    -50,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 2,
+   "title": "TRAINING YARD, EVENING:  A over B",
+   "bounding": [
+    -1980,
+    1210,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 3,
+   "title": "TRAINING YARD, NIGHT, EVERY WINDOW DARK:  A over B",
+   "bounding": [
+    -1980,
+    2470,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  }
+ ]
+}
