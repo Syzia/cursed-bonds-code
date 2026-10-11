@@ -1,0 +1,69 @@
+{
+ "about": [
+  "The boys' corridor after dark, and Yuji's posters: written early by hand on 11 Oct 2026 on reading sitting 9a, BEFORE the owner chose, on the picks put to them (corridor A, Yuji's room B), and handed over with those picks. If the owner chooses otherwise this file is not run and is written again.",
+  "The corridor's evening and night are relit from corridor A (its fit laid into the scratch root only; nothing is written to chosen/ before the owner chooses). It has no window: the evening is its lamps and the sunset from the entrance behind the camera; at Night every lamp is off (O38, O39) and moonlight comes in from behind; no light shows at any door.",
+  "Yuji's posters: one named change on room B, the tool's keep-everything prompt without the record's window line (it would repaint the view), with the change as its own sentence: every poster painted again with no lettering and a made-up subject. If taken, only the posters are placed onto the chosen render by a script, and the room's evening and night are made after it (with its two Night pictures, dark and lit, 5.7a)."
+ ],
+ "written": "2026-10-11",
+ "made_from": {
+  "boys_dorm": {
+   "render": "ui2_boys_dorm_a_00001_.png",
+   "sha256": "f65f85e0752e4dc5ee8c946619a4060f15a0f7446c058f765ddcf6188a371a16"
+  },
+  "yuji_room": {
+   "render": "ui2_yuji_room_b_00001_.png",
+   "sha256": "f6f0f1b12694fd5b589c82b147c7bec01553f8e47246ec68412e3dfd3cd9f21f"
+  }
+ },
+ "sentences": {
+  "boys_dorm_evening": "Change the time of day to early evening: the ceiling lamps are on and give a warm light, and the daylight that comes in from behind me has turned to the low orange light of sunset and lies along the floor. Nothing else changes: every door is shut, as it is now. Add no new lamp, no new light and no window.",
+  "boys_dorm_night": "Change the time of day to night, with every lamp in the corridor switched off. The corridor is lit only by cool blue moonlight that comes in from behind me and lies along the floor in a pale patch, reaching toward the far door; the far end is darker. The corridor is dim, but every door, the shoe rack and the notice board can still be seen clearly. No light shows round or under any door. Add no new light and no window.",
+  "yuji_room_posters": "Change one thing only: the posters on the walls. Every poster stays where it is, the same size and shape, but its picture is painted again with no lettering at all: no letters, no characters, no numbers, no title and no small print anywhere on it. Each shows a made-up thing that belongs to no known film, each poster a different one: a night city of tall towers under a big moon; a silver rocket rising beside its launch tower; a flying saucer over green hills; a diving bell among fish in the deep sea; a red biplane among clouds; a lighthouse in a storm; a walking machine on long legs crossing a desert. Change nothing else in the picture: the walls, the door, the bed, the shelf of films, the television, the cushion, the window and what is seen through it stay exactly as they are."
+ },
+ "rows": [
+  {
+   "label": "Boys' Dormitory, evening",
+   "kind": "relight",
+   "place": "boys_dorm",
+   "saves": [
+    "ui2_boys_dorm_evening_a",
+    "ui2_boys_dorm_evening_b"
+   ],
+   "seeds": [
+    3608,
+    3609
+   ],
+   "prompt_sha256": "6a88c4e5923a3ab9563a038a31929b10c666ae6c6cb54455343d88a904195a72"
+  },
+  {
+   "label": "Boys' Dormitory, night, every lamp off",
+   "kind": "relight",
+   "place": "boys_dorm",
+   "saves": [
+    "ui2_boys_dorm_night_a",
+    "ui2_boys_dorm_night_b"
+   ],
+   "seeds": [
+    4686,
+    4687
+   ],
+   "prompt_sha256": "7c74ebc7d113c681c2758c19bad5e00a8dd1d6592f89c9d01d72e20b024b9989"
+  },
+  {
+   "label": "Yuji's Room B, the posters painted again",
+   "kind": "inplace",
+   "place": "yuji_room",
+   "saves": [
+    "ui2_yuji_room_b_posters_a",
+    "ui2_yuji_room_b_posters_b"
+   ],
+   "seeds": [
+    4222,
+    4223
+   ],
+   "prompt_sha256": "1f2f3c8c98e5dbd7d0d8556675cd738fc6b602e1172ee34d58880bb652eb6db0"
+  }
+ ],
+ "workflow_sha256": "3fbbc80f7942a4b1f5c83519c1adae166a9adec0c446b5c1b2733e16495d25e4",
+ "cost": "6 renders, about $0.96"
+}

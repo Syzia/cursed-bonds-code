@@ -5,7 +5,8 @@
   "The way out to the garden is not painted: the chosen garden shows the house with an OUTSIDE stair to an upstairs gallery, so one comes in at the corridor's end, behind the camera, and the exit goes to the bottom of the picture (5.2's rule). The record's \"shoe rack at the head of the stairs\" stands by the entrance, near the camera on the left.",
   "The corridor is given the chosen girls' corridor as the camera and the door spacing to keep, with the tool's idea of a kept camera in the file's own words; the boys' house from outside; and the chosen My Room for the same house's plaster and timber. The fifth go at the girls' corridor is why: given any corridor picture the editor keeps its doors where they are, and these are the doors wanted (Method note 26).",
   "Yuji's room is on the garden side: its window shows the gallery's rail, the pond below and the girls' dormitory across the garden (the record's line says the garden and its pond; the house opposite is named so that the editor paints the right one).",
-  "NOBODY is in either picture (K16: a bedroom). The prompt check, run for the places by name, refused \"the room of somebody who loves films\" at the first writing; it reads \"a room given over to films\"."
+  "NOBODY is in either picture (K16: a bedroom). The prompt check, run for the places by name, refused \"the room of somebody who loves films\" at the first writing; it reads \"a room given over to films\".",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:57) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "refs": {
@@ -63,5 +64,21 @@
   }
  ],
  "workflow_sha256": "a66bcbac43c8a99bde89c1d3f8d7dcdac87c54445e9b9ec7e461d56702115494",
- "cost": "4 renders, about $0.64"
+ "cost": "4 renders, about $0.64",
+ "renders_sha256": {
+  "ui2_boys_dorm_a_00001_.png": "f65f85e0752e4dc5ee8c946619a4060f15a0f7446c058f765ddcf6188a371a16",
+  "ui2_boys_dorm_b_00001_.png": "26985b4dbc7a216888a49e2c417aeda66c536c1d74153accf3d36622104e5cd2",
+  "ui2_yuji_room_a_00001_.png": "3de647620e87841f4d01f4d1509f5a6e7a1cedb6a00452c609bc71db0bb86297",
+  "ui2_yuji_room_b_00001_.png": "f6f0f1b12694fd5b589c82b147c7bec01553f8e47246ec68412e3dfd3cd9f21f"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"the renders are in if you want to have a look\"",
+  "how": "By eye, each against its checklist: the doors counted and their spacing looked at; the posters zoomed; each render's darkest row and column measured for a blank band. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_boys_dorm.jpg.",
+  "boys_dorm_a": "PICK. Seen straight down its middle: three doors in each side wall, evenly spaced and facing each other, and one in the middle of the far end; no window; three round ceiling lamps, on; the shoe rack on the left between the first and second doors; a notice board beside the end door, its sheets carrying specks, nothing legible. Nobody. The doors came back as dark panelled doors with handles, cousins of the girls' corridor's, not as sliding doors of boards; the walls are pale plaster between dark posts.",
+  "boys_dorm_b": "Not offered: its doors are wide double sliding doors and there are only two in each side wall; and the picture is framed as if seen through a doorway, with a blank pale band down each edge (about 5% of the width each) and a step across the bottom.",
+  "yuji_room_b": "PICK, once its posters are painted again. Nobody. The door in the left wall near me; a low made bed against the far wall; the film shelf, a small television on a stand and a straw floor cushion right of the middle (the shelf at about x 882 to 1080 of 1920, the television to 1254); a plain sliding window in the right wall, like My Room's, with the gallery's rail, the pond below and the white dormitory with its flower boxes across the garden; the widest clear floor of the two.",
+  "yuji_room_a": "Good too: the door on the left, the bed along the left wall beyond it, the shelf, television and cushion right of the middle, the window with the gallery's rail and the dormitory opposite. The pond does not show, and the window has paper lattice screens where My Room's is plain.",
+  "the_posters": "BOTH versions' posters carry lettering, against \"no lettering\" in the words and \"no text\" in the look: A has a title in Latin letters and one in katakana; B has the same katakana title in large red characters with columns of small print. That title is the name of a famous film monster, whose likeness is on the poster. The game ships neither lettering nor another owner's character. art_9b.json repaints the posters of room B, one named change; if it is taken, only the posters are placed onto the chosen render by a script.",
+  "put_to_the_owner": "The corridor: A. Yuji's room: B, with its posters painted again (art_9b.json)."
+ }
 }
