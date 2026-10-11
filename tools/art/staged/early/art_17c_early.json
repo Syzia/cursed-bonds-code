@@ -1,0 +1,90 @@
+{
+ "about": [
+  "The Forest Trail after dark, and the look at the veil: written early by hand on 11 Oct 2026, straight after the owner chose the Riverside's and the ridge's hours and the forest's root seat (O56), and handed over unasked. It is the forest's half of sitting 17b and the veil picture of 18b; with it the mountain's places are complete but for the Onsen and its sauna.",
+  "The forest's evening and night are relit from the chosen day picture with the root (the 1920 px fit, laid into the scratch root). The camera looks west along the trail, so the evening's low sun is ahead, between the trunks, and the shadows fall toward me: the chosen Mountain Path's evening shows that same forest glowing on its left. The night's sky is small pieces between the crowns, so the moon is not in view (O44).",
+  "bg ridge_veil is what the game shows when I look up at the veil with a sorcerer's sight: the tour (ch2_tour.rpy:144, \"Above us, where the ridge flattens out, the air is wrong\"), the daily look (sb_world.rpy, sb_do_veil: \"I look up past the rope markers\") and the memory \"The Veil on the Ridge\". Today it is the old ridge under a violet ellipse 1,100 px wide (bg_placeholders.rpy). The plan (5.3, batch 18b) made it \"from the new ridge by the same edit, stronger\", written when the veil was to be added to a picture that had none. The chosen ridge has the dome in it, so the picture is made two ways for the owner to choose between.",
+  "THE SAME VIEW: one named change on the chosen ridge render (the tool's keep-everything prompt with the change as its own sentence): the dome darker than glass with a thin violet rim, the air close round it dimmer and violet, the grass under it grey; nothing else changes, so a person standing on the ridge stands in the same place in both pictures. If chosen it is placed by tool, as the forest's seat was. THE CLOSER LOOK: composed from words with the chosen ridge as its one reference: from the rope, looking up, the dome about a sixth of the picture wide (the owner's ruling O36: it should not feel too big).",
+  "Nothing is ever shown inside the dome (plan 0: the body is never shown; every sentence here says so).",
+  "The game tints bg ridge_veil for the hour today (veil_bg in sb_world.rpy). Whether it should have a painted evening and night of its own is a question for the sitting that installs it."
+ ],
+ "written": "2026-10-11",
+ "made_from": {
+  "forest": {
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/forest_1920.png",
+   "fit_sha256": "227efdad8c50f5bcd3daf2b13757be0d2dd2ac0fc089e8faca67e5934208bc6c"
+  },
+  "ridge": {
+   "render": "ui2_ridge2_a_00001_.png",
+   "sha256": "39e8bd5196a2bd86de72534bfc247dd23f4ab6becd6a8c755965035adfcabdaf"
+  }
+ },
+ "sentences": {
+  "forest_evening": "Change the time of day to early evening: low golden sunlight comes from straight ahead, between the trunks at the far end of the trail, and the long shadows of the trunks fall toward me across the clearing; the sun itself is hidden behind the trunks, and the small pieces of sky high between the crowns are warm orange and pink. Everything in the picture is still there: every tree, the root at the foot of the great tree, the stone markers and the trail. Add no new light.",
+  "forest_night": "Change the time of day to night: the small pieces of sky high between the crowns are deep blue with stars; the moon itself is not in view. Cool blue moonlight falls through the crowns and lies on the ground in pale patches where the sunlight lay by day; between them the forest is dark, but every trunk, the root at the foot of the great tree, the stone markers and the trail can still be seen clearly. Nothing here gives light of its own. Everything in the picture is still there. Add no bench, sign, lamp or light that is not in the picture now.",
+  "veil_same_view": "Change one thing only: how the dome on the top of the rise, and the air close round it, are seen. The dome stays where it is, the same size and the same shape, but it is darker than black glass now: a deep violet-black that gives back no light, with no bright reflection on it and a thin rim of dark violet along its edge. The air close round the dome is wrong: the sky just round it is dimmer and tinged with dark violet, as though the daylight were being drawn into the dome, and the grass on the top of the rise beneath it is grey. Nothing is to be seen inside the dome. Change nothing else in the picture: the rope, the posts, the rock, the stairs, the valley and the mountains stay exactly as they are, in the same daylight.",
+  "veil_from_the_rope": "the top of a mountain ridge seen from the rope that closes its path, looking up at the dome of picture 1 from close by. I stand on the footpath of bare earth at the rope and look up the short steep rise beyond it. Across the picture, at about chest height, hangs the thick straw rope of picture 1 with its white folded paper streamers, strung between the same pair of plain wooden posts, one near the left of the picture and one right of the middle, well clear of the picture's right edge. Beyond the rope the footpath climbs the rise of grass and grey rock, and on its top, in the upper middle of the picture, sits the dome: the same small smooth dome, no bigger than a hut, about a sixth of the picture wide from here. It is darker than black glass: a deep violet-black that gives back no light, with no bright reflection on it, a thin rim of dark violet along its edge, and nothing to be seen inside it. The air close round the dome is wrong: the sky just round it is dimmer and tinged with dark violet, as though the daylight were being drawn into it, and the grass at its foot is grey. To the left and the right of the rise the far mountains of picture 1 show low, under the same wide blue sky with a few white clouds. The ground at the bottom of the picture is level earth and short grass, open and empty"
+ },
+ "open": "This is a background picture for a visual novel: a new picture of a place on the wild, forested mountain above a traditional Japanese mountain school. No building stands there and none can be seen from it.",
+ "refs": "Picture 1 is this ridge, already painted, seen from the head of its stairs. The new picture is taken further on, at the rope that closes the path, looking up at the same dome from close by: the same rope and posts, the same rise of grass and grey rock, the same dome, the same far mountains. Do not copy its camera or its layout.",
+ "stage": "The picture is seen from a standing person's eye height, looking a little upward. Level open ground runs across the whole bottom of the picture, with nothing tall standing on it. Leave the right ninth of the picture and the top-left corner free of posts and signs.",
+ "rows": [
+  {
+   "label": "Forest Trail, evening",
+   "kind": "relight",
+   "place": "forest",
+   "saves": [
+    "ui2_forest_evening_a",
+    "ui2_forest_evening_b"
+   ],
+   "seeds": [
+    9456,
+    9457
+   ],
+   "prompt_sha256": "52cc9dcee1a683d06e38633fb5ca1673280c29fec6a7f698d1b5d4c743b246d6"
+  },
+  {
+   "label": "Forest Trail, night",
+   "kind": "relight",
+   "place": "forest",
+   "saves": [
+    "ui2_forest_night_a",
+    "ui2_forest_night_b"
+   ],
+   "seeds": [
+    3794,
+    3795
+   ],
+   "prompt_sha256": "26dd9b48dd5b375110662d13ecb6c34a16a40f65c191dafa2780b729c0edeb1b"
+  },
+  {
+   "label": "The look at the veil, from where I stand",
+   "kind": "inplace",
+   "place": "ridge",
+   "saves": [
+    "ui2_ridge_veil_a",
+    "ui2_ridge_veil_b"
+   ],
+   "seeds": [
+    6540,
+    6541
+   ],
+   "prompt_sha256": "83c7a28c995239250d6447c750defa1f51cef308b610b24a965b1240b509e8eb"
+  },
+  {
+   "label": "The look at the veil, from the rope",
+   "kind": "composed",
+   "place": "ridge",
+   "saves": [
+    "ui2_ridge_veil2_a",
+    "ui2_ridge_veil2_b"
+   ],
+   "seeds": [
+    7640,
+    7641
+   ],
+   "prompt_sha256": "21411c66d588f416f9a9387435d35afab442526a00039c55870751d923ec9667"
+  }
+ ],
+ "workflow_sha256": "b68bafb74e1665a582eebc4650553d4f5b1846e417598f96d029d628bf3a5e21",
+ "cost": "8 renders, about $1.28"
+}
