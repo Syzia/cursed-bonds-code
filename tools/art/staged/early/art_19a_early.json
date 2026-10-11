@@ -4,7 +4,7 @@
   "Each is written from the record's words as the inside of its own building (Method note 34), by O45's four questions; the answers are below. The rest hall is given the chosen Mountain Path and a crop of the house; the sauna only the crop, since nothing of the outside is seen from it.",
   "NOBODY IS IN EITHER PICTURE, and the spring and the cold-plunge tub hold nobody (K16). The prompt check was run for the two places by name, where it is strictest; the stage sentence is the file's own, because the tool's names \"a visitor\".",
   "The sauna has no window and one picture for every hour, lit by its stove (5.7). The rest hall's evening and night are sitting 19b, made from the version chosen.",
-  "Run by the owner on 11 Oct 2026 (the renders are stamped 15:41) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O58)."
  ],
  "written": "2026-10-11",
  "four_questions": {
@@ -80,5 +80,23 @@
   "sauna_a": "Not offered as the pick, for two faults: the right eighth of the picture is a black band (columns 2408 to 2751 of 2752, 12.5%: the stage sentence's \"leave the right ninth free\" painted literally), and the room is lit evenly and brightly, not by its stove (mean 117 against B's 85).",
   "said_to_the_owner": "The specks on the milk bottles' labels; they can be painted plain by tool if wanted.",
   "put_to_the_owner": "The Onsen's rest hall: A. The sauna: B."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "read_as": "The picks as put: the Onsen's rest hall version A, the sauna version B.",
+  "bathhouse": {
+   "version": "a",
+   "render": "ui2_bathhouse_a_00001_.png",
+   "sha256": "b85a7e3313e2e6c9286e83f32173ad11100c4488ce450132c8fd22f0c9a78b37",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/bathhouse_1920.png",
+   "fit_sha256": "a4214d36c123565cabc873edb3826ffdfb6510e2fd22aa326489adaab1962e0e"
+  },
+  "sauna": {
+   "version": "b",
+   "render": "ui2_sauna_b_00001_.png",
+   "sha256": "ec2234ce895d24da39e15a350492cf4bd0964f003489036b95528bb89cda113e",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/sauna_1920.png",
+   "fit_sha256": "b953040a4ca577a4ecea5bc5088ce0b20132e6711860bea576f1bf3943e7b082"
+  }
  }
 }

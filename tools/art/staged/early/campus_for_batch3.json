@@ -452,6 +452,40 @@
      960
     ]
    }
+  },
+  "bathhouse": {
+   "place": "bathhouse",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "19a",
+   "chosen": "2026-10-11",
+   "render": "ui2_bathhouse_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/bathhouse_1920.png",
+   "first_guess": {
+    "trailhead": [
+     1480,
+     520
+    ],
+    "sauna": [
+     330,
+     470
+    ]
+   }
+  },
+  "sauna": {
+   "place": "sauna",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "19a",
+   "chosen": "2026-10-11",
+   "render": "ui2_sauna_b_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/sauna_1920.png",
+   "first_guess": {
+    "bathhouse": [
+     700,
+     450
+    ]
+   }
   }
  },
  "fixed": [
@@ -1970,6 +2004,57 @@
     "picture": "ridge",
     "rev": 2
    }
+  },
+  {
+   "id": "place.bathhouse",
+   "kind": "place",
+   "key": "bathhouse",
+   "name": "Onsen",
+   "stem": "bathhouse",
+   "area": "mountain",
+   "indoor": true,
+   "building": "bathhouse",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "words": "the rest hall of a timber mountain hot-spring house at the edge of the trees: benches, a standing fan, a small glass-fronted fridge of milk bottles, a cedar door in one wall, and through open screens the stone-edged hot spring outside, its water steaming and still, with the forest behind it",
+   "check": [
+    "nobody is in the picture, and the spring has nobody in it"
+   ],
+   "by": {
+    "picture": "bathhouse",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.sauna",
+   "kind": "place",
+   "key": "sauna",
+   "name": "Sauna",
+   "stem": "sauna",
+   "area": "mountain",
+   "indoor": true,
+   "building": "bathhouse",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "words": "a small windowless room lined with cedar boards, lit only by its own stove: the stove with its stones, a wooden bucket and ladle, a bench along the wall, and beside the door a stone cold-plunge tub fed by a bamboo spout, its water still",
+   "refs_also": [
+    "bathhouse"
+   ],
+   "pinless": true,
+   "check": [
+    "nobody is in the picture",
+    "the room has no window"
+   ],
+   "by": {
+    "picture": "sauna",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2413,49 +2498,6 @@
    ],
    "pinless": true,
    "spare_doors": 3
-  },
-  {
-   "id": "place.bathhouse",
-   "kind": "place",
-   "key": "bathhouse",
-   "name": "Onsen",
-   "stem": "bathhouse",
-   "area": "mountain",
-   "indoor": true,
-   "building": "bathhouse",
-   "how": "composed",
-   "batch": "19",
-   "after": [
-    "trailhead"
-   ],
-   "words": "the rest hall of a timber mountain hot-spring house at the edge of the trees: benches, a standing fan, a small glass-fronted fridge of milk bottles, a cedar door in one wall, and through open screens the stone-edged hot spring outside, its water steaming and still, with the forest behind it",
-   "check": [
-    "nobody is in the picture, and the spring has nobody in it"
-   ]
-  },
-  {
-   "id": "place.sauna",
-   "kind": "place",
-   "key": "sauna",
-   "name": "Sauna",
-   "stem": "sauna",
-   "area": "mountain",
-   "indoor": true,
-   "building": "bathhouse",
-   "how": "composed",
-   "batch": "19",
-   "after": [
-    "trailhead"
-   ],
-   "words": "a small windowless room lined with cedar boards, lit only by its own stove: the stove with its stones, a wooden bucket and ladle, a bench along the wall, and beside the door a stone cold-plunge tub fed by a bamboo spout, its water still",
-   "refs_also": [
-    "bathhouse"
-   ],
-   "pinless": true,
-   "check": [
-    "nobody is in the picture",
-    "the room has no window"
-   ]
   },
   {
    "id": "path.dorm_yard.staff_yard",
