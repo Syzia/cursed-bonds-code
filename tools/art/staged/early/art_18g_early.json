@@ -53,5 +53,22 @@
   "gate_evening": "A (PICK): an orange and pink sky and gold light from the left, like the other evening yards; the stone lamps unlit; everything still there. B is clean, with a cooler violet sky.",
   "gate_night": "B (PICK): a full moon like the other yards', every window dark, the four stone lamps glowing small, the water holding the sky; as bright as the other night yards. A is clean and darker than they are.",
   "put_to_the_owner": "Evening A, night B."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "gate_evening": {
+   "version": "a",
+   "render": "ui2_gate_evening_a_00001_.png",
+   "sha256": "6f94a013c4ee93a3373a837db6fc0e687213fa46c7024ce0be2892df1ba0290f",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/gate_evening_1920.png",
+   "fit_sha256": "18abc20e6093bdb0b9901025b59558a61f82e89b2f13ff580db05dce591c469a"
+  },
+  "gate_night": {
+   "version": "b",
+   "render": "ui2_gate_night_b_00001_.png",
+   "sha256": "da1f2409534579279d72ec5146f9aeda08ced4ee269d90417a3d9285050b559d",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/gate_night_1920.png",
+   "fit_sha256": "fe7599cd676e8c3b3758395e426367e803e4c4ceb1ddc3118178dd5ce39a939c"
+  }
  }
 }
