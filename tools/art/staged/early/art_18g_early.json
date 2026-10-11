@@ -39,5 +39,19 @@
    "prompt_sha256": "6d7a35b80b5a0c8bf46ca9b6dac4c513b5a56edbbe2f6fefaead83aa18ab884e"
   }
  ],
- "workflow_sha256": "85ba600960304be40471f8448ba2dcb1a5b86f5b0014912c7ec578f391213d9b"
+ "workflow_sha256": "85ba600960304be40471f8448ba2dcb1a5b86f5b0014912c7ec578f391213d9b",
+ "renders_sha256": {
+  "ui2_gate_evening_a_00001_.png": "6f94a013c4ee93a3373a837db6fc0e687213fa46c7024ce0be2892df1ba0290f",
+  "ui2_gate_evening_b_00001_.png": "b1e5b7865eede9542cad0aa6809ea993db1d9f5e6b84eae7d31132cb6f3e9a85",
+  "ui2_gate_night_a_00001_.png": "4ef6af13a031ae51a114757cdc0dd6b7971ef5b448b470742f5a1df406619b76",
+  "ui2_gate_night_b_00001_.png": "da1f2409534579279d72ec5146f9aeda08ced4ee269d90417a3d9285050b559d"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "tools/py_art.sh tools/install_redo.py --relight gate <evening|night> <a> <b> --dry --against chosen/gate_1920.png, then by eye. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_gate_hours.jpg.",
+  "by_the_tool": "All four PASS: the whole picture moved 0, 0 px, 11 points checked, none off by a pixel.",
+  "gate_evening": "A (PICK): an orange and pink sky and gold light from the left, like the other evening yards; the stone lamps unlit; everything still there. B is clean, with a cooler violet sky.",
+  "gate_night": "B (PICK): a full moon like the other yards', every window dark, the four stone lamps glowing small, the water holding the sky; as bright as the other night yards. A is clean and darker than they are.",
+  "put_to_the_owner": "Evening A, night B."
+ }
 }
