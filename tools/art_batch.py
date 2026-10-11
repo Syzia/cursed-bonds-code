@@ -35,10 +35,20 @@ refused. --preview skips only the table's rule, never a maker's, and must be
 given a folder of its own: it is for reading a batch's prompts early.
 
 WHAT IT WRITES ITSELF: pictures composed again (a yard, the gate, a new
-place), rooms redone in place, evenings and nights, the maps
-(tools/make_scene_workflow.py, tools/make_redo_workflow.py). A pose, the icon
+place), rooms redone in place, evenings, nights and rooms lit at Night, the
+maps (tools/make_scene_workflow.py, tools/make_redo_workflow.py). A pose, the icon
 sheet, a face, a person and the pictures off campus are made by other tools or
 do not have their words yet; for those it says which, and writes nothing.
+
+ROOMS LIT AT NIGHT (D61, docs/UI2_DESIGN.md 5.7a). A relight's hour is
+evening, night or lit. `night` is the room at Night with nobody up in it;
+`lit` is the same room with someone up, and only the eight rooms of the
+game's WORLD_LIT have one. The friends' `lit` rows are in batches 9 to 11,
+their dark `night` rows and the dojo's `lit` in batch 47, and the Library's
+and My Room's `lit` rows, which exist already, stand in 7b and 3b with
+`versions` 0 and `made`: such a row is counted as a picture, costs no
+render, and no workflow is written for it. The table holds 72 hour pictures
+(the 64 of the hour table and the eight lit ones).
 
 Plain Python.
 """
@@ -87,8 +97,20 @@ def find(data, n):
     return None
 
 
+LIT_ROOMS = redo.LIT_ROOMS      # 5.7a: the rooms of the game's WORLD_LIT; one tuple, in make_redo_workflow.py
+
+
+# The first words of the owner's page for a batch marked "painted_early": true in the table.
+EARLY_LINE = "Every picture of this sitting is already painted and chosen: there is nothing to run."
+
+
 def versions(pic):
     return int(pic.get("versions", 2))
+
+
+def made_already(pic):
+    """A picture that exists (a render of an earlier sitting, named in `made`): `versions` 0. Nothing is run for it."""
+    return versions(pic) == 0 and bool(pic.get("made"))
 
 
 def file_renders(f):
@@ -155,7 +177,8 @@ def what_of(pic, rec=None):
     name = (rec.name(pic["place"]) if rec and pic.get("place") else None) or pic.get("stem") or pic.get("what") or ""
     kind = pic["kind"]
     if kind == "relight":
-        return "%s, %s" % (name, pic["hour"])
+        return "%s, %s%s" % (name, "lit at night" if pic["hour"] == redo.LIT else pic["hour"],
+                             " (made already)" if made_already(pic) else "")
     if kind == "pose":
         return "pose, row %s%s" % (pic["row"], ": " + pic["what"] if pic.get("what") else "")
     if kind == "inplace":
@@ -169,6 +192,8 @@ def file_jobs(f, record, manifest, again=0, root=None, work_dir=None, keep_dir=N
     jobs, refused = [], []
     rec = check_campus.Rec(record)
     for pic in f["pictures"]:
+        if made_already(pic):
+            continue            # it exists (its `made` says where): counted as a picture, never run again
         try:
             j = picture_job(pic, record, manifest, again, root, work_dir, keep_dir, dump)
             bad = check_prompts.check(j["prompt"], record, place=j.get("place"))
@@ -186,12 +211,25 @@ def page(b, written, waiting, record, cost):
     rec = check_campus.Rec(record)
     L = ["# Art sitting %s: %s" % (b["id"], b["title"]), ""]
     total = sum(len(j["seeds"]) for _, jobs in written for j in jobs)
-    L.append("**%d picture%s to run, about $%.2f.** Each picture is painted twice, so you choose between a "
-             "version A and a version B." % (total, "" if total == 1 else "s", total * cost))
+    early = bool(b.get("painted_early"))
+    if early:
+        # every picture of the sitting exists and is chosen (the batch's note says where): the page must not
+        # send the owner to ComfyUI for them. The workflows are still written, for a picture the owner wants once more.
+        L.append("**%s** The workflow file%s written beside this page %s only for a picture you want painted once "
+                 "more: running %s would paint, and charge for, %d picture%s that exist (about $%.2f)." % (
+                     EARLY_LINE, "" if len(written) == 1 else "s", "is" if len(written) == 1 else "are",
+                     "it" if len(written) == 1 else "them", total, "" if total == 1 else "s", total * cost))
+    else:
+        L.append("**%d picture%s to run, about $%.2f.** Each picture is painted twice, so you choose between a "
+                 "version A and a version B." % (total, "" if total == 1 else "s", total * cost))
     L.append("")
     L += ["## What to do", ""]
     n = 1
-    for i, (f, jobs) in enumerate(written):
+    if early:
+        L.append("1. Nothing in ComfyUI. Tell Claude this sitting can be installed: the versions you chose are on "
+                 "record, and Claude checks each again as it goes in.")
+        n = 2
+    for i, (f, jobs) in enumerate([] if early else written):
         r = sum(len(j["seeds"]) for j in jobs)
         L.append("%d. Open the **local ComfyUI**. Drag `%s.json` from `JJK Game images/ui2` onto the canvas." % (n, f["name"])); n += 1
         L.append("%d. Press **Run** once. It paints %d pictures (about $%.2f): %s." % (
@@ -201,7 +239,7 @@ def page(b, written, waiting, record, cost):
         if f.get("part") and i == len(written) - 1 and waiting:
             L.append("%d. Tell Claude it has finished, and which version of each picture you like better. Claude "
                      "checks both versions of each and installs the ones you choose." % n); n += 1
-    if not (written and written[-1][0].get("part") and waiting):
+    if not early and not (written and written[-1][0].get("part") and waiting):
         L.append("%d. Tell Claude it has finished, and which version of each picture you like better. You don't "
                  "need to save or move anything: Claude picks the results up from ComfyUI's output folder." % n); n += 1
     for f, why in waiting:
@@ -308,7 +346,7 @@ def listing(data):
         for f in b["files"]:
             if len(b["files"]) > 1 and f.get("name"):
                 print("       %-10s %2d  %s" % (f["name"], file_renders(f), "; ".join(what_of(p, rec) for p in f["pictures"])[:150]))
-    print("\n%d renders in batches 1 to 46 (the four people are extra), about $%.2f"
+    print("\n%d renders in batches 1 to 47 (the four people are extra), about $%.2f"
           % (total, total * data.get("cost_per_render", 0.16)))
 
 
@@ -356,12 +394,45 @@ def selftest():
             return sum(batch_renders(b) for b in data["batches"] if b["id"].isdigit() and lo <= int(b["id"]) <= hi)
 
         curses = sum(versions(p) for b in data["batches"] for f in b["files"] for p in f["pictures"] if p["kind"] == "curse")
-        ok("the table's counts are the plan's: 40, 178, 140 and six curse renders, 70",
-           (renders(1, 5), renders(6, 22), renders(23, 36) - curses, curses, renders(41, 46)) == (40, 178, 140, 6, 70),
-           [(renders(1, 5), renders(6, 22), renders(23, 36) - curses, curses, renders(41, 46))])
+        ok("the table's counts are the plan's: 40, 178, 140 and six curse renders, 70, and 12 in batch 47",
+           (renders(1, 5), renders(6, 22), renders(23, 36) - curses, curses, renders(41, 46), renders(47, 47)) == (40, 178, 140, 6, 70, 12),
+           [(renders(1, 5), renders(6, 22), renders(23, 36) - curses, curses, renders(41, 46), renders(47, 47))])
         pics = [(b, f, p) for b in data["batches"] for f in b["files"] for p in f["pictures"]]
-        ok("64 hour pictures and 67 poses", (sum(1 for _, _, p in pics if p["kind"] == "relight"),
-                                             sum(1 for _, _, p in pics if p["kind"] == "pose")) == (64, 67))
+        relights = [(b, f, p) for b, f, p in pics if p["kind"] == "relight"]
+        hours = dict((h, sum(1 for _, _, p in relights if p["hour"] == h)) for h in redo.HOUR_NAMES)
+        ok("72 hour pictures (the 64 of the hour table: 34 evenings and 30 nights; and the eight lit ones of 5.7a) and 67 poses",
+           (len(relights), hours, sum(1 for _, _, p in pics if p["kind"] == "pose")) == (72, {"evening": 34, "night": 30, "lit": 8}, 67),
+           [len(relights), hours])
+        lit = [(b["id"], f["name"], p["place"]) for b, f, p in relights if p["hour"] == redo.LIT]
+        ok("the lit rows are the eight rooms of 5.7a, once each, every one indoors: the friends' in 9b, 10b and 11b, the "
+           "dojo's in 47, the Library's in 7b and My Room's in 3b",
+           sorted(p for _, _, p in lit) == sorted(LIT_ROOMS) and all(rec.places[p]["indoor"] for _, _, p in lit)
+           and sorted((f, p) for _, f, p in lit) == sorted([
+               ("art_9b", "yuji_room"), ("art_10b", "megumi_room"), ("art_10b", "senpai_room"), ("art_11b", "nobara_room"),
+               ("art_11b", "maki_room"), ("art_47_2", "dojo"), ("art_7b", "library"), ("art_3b", "dorm")]), lit)
+        nights = dict(((p["place"]), (b["id"], p)) for b, _, p in relights if p["hour"] == "night")
+        ok("every room with a lit row has a night row too (the room with nobody up), the five friends' in batch 47",
+           all(p in nights for p in LIT_ROOMS)
+           and sorted(p for p, (bid, _) in nights.items() if bid == "47") == sorted(
+               ["yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room"]),
+           [(p, nights.get(p, ("-",))[0]) for p in LIT_ROOMS])
+        ok("every indoor night row has words of its own, and every one but the infirmary's and the Teachers' Dormitory's "
+           "says its lights are off: the tool's general indoor sentence with the lamps on is the lit one",
+           all(p.get("hour_words") for _, (_, p) in nights.items() if rec.places[p["place"]]["indoor"])
+           and sorted(pl for pl, (_, p) in nights.items() if rec.places[pl]["indoor"]
+                      and not re.search(r"switched off", p.get("hour_words") or "")) == ["infirmary", "teachers_dorm"],
+           sorted(pl for pl, (_, p) in nights.items() if rec.places[pl]["indoor"]
+                  and not re.search(r"switched off", p.get("hour_words") or "")))
+        ok("no lit row's sentence switches the room's lights off, and no two rows of one room and hour",
+           not any(re.search(r"every (light|lamp)[^.:]* switched off", p.get("hour_words") or "")
+                   for _, _, p in relights if p["hour"] == redo.LIT)
+           and len(set((p["place"], p["hour"]) for _, _, p in relights)) == len(relights))
+        free = [(f["name"], p["place"], p["hour"]) for _, f, p in pics if made_already(p)]
+        ok("the two pictures that exist already (`versions` 0, with `made`) are the Library's and My Room's lit, and "
+           "cost no render: 3b and 7b are still eight renders each",
+           sorted(free) == [("art_3b", "dorm", "lit"), ("art_7b", "library", "lit")]
+           and not any(versions(p) == 0 and p["kind"] == "relight" and not p.get("made") for _, _, p in pics)
+           and [file_renders(f) for b in data["batches"] for f in b["files"] if f.get("name") in ("art_3b", "art_7b")] == [8, 8], free)
         ok("no sitting is over twelve renders and no file over ten",
            all(batch_renders(b) <= 12 for b in data["batches"]) and all(file_renders(f) <= 10 for _, f, _ in pics))
         ok("every picture the table composes, redoes or relights is a place of the record, made the way the record says",
@@ -487,7 +558,7 @@ def selftest():
                [jobs[1]["inputs"], jobs[1]["prompt"]])
             state["done"] = ["0", "1", "2", "3a"]
             written, _ = write_batch(state, "3b", later, man, os.path.join(tmp, "batch3b"), keep_dir=keep, quiet=True)
-            ok("batch 3b is four hour pictures, each from the installed day picture",
+            ok("batch 3b is four hour pictures, each from the installed day picture (My Room's lit, made already, is not run again)",
                [j["stem"] for j in written[0][1]] == ["dorm_common_evening", "dorm_common_night", "your_room_evening", "your_room_night"]
                and all(os.path.basename(j["inputs"][0][1]) in ("dorm_common.png", "your_room.png") for j in written[0][1])
                and two_each(written[0][2]) and two_each(os.path.join(out3, "art_3a.json")))
@@ -546,7 +617,7 @@ def selftest():
                     bad.append("%s: the prompt does not say 'No people'" % p["place"])
         ok("all %d relight, %d in-place, %d composed and 7 map prompts pass the prompt check; no relight says 'Keep "
            "the time of day'; no map carries the stage text; nobody is in the baths, the pool or a bedroom"
-           % (relit, redone, composed), not bad and (relit, redone, composed) == (64, 16, 17)
+           % (relit, redone, composed), not bad and (relit, redone, composed) == (72, 16, 17)
            and k16_places == set(["bathhouse", "sauna", "pool", "yuji_room", "megumi_room", "senpai_room",
                                   "nobara_room", "maki_room"]), bad + sorted(k16_places))
 
@@ -565,6 +636,68 @@ def selftest():
         except SystemExit as e:
             said = str(e)
         ok("a prompt that puts somebody in the sauna is refused before a workflow is written", "K16" in said, [said])
+
+        # rooms lit at Night (5.7a): the hour's sentences, and where there is no such picture
+        lit_text = redo.prompt_for(record, "dorm", hour="lit")
+        night_text = redo.prompt_for(record, "dorm", hour="night")
+        ok("a lit relight with no words of its own says the room's own lamps are switched on; a night with none says "
+           "every light is switched off; neither says the other",
+           "lamps and ceiling lights are switched on" in lit_text and "switched off" not in lit_text
+           and "every light in the room switched off" in night_text and "switched on" not in night_text
+           and not check_prompts.check(lit_text, record, place="dorm") and not check_prompts.check(night_text, record, place="dorm"),
+           [lit_text, night_text])
+        ok("a yard has no lit picture: the prompt is refused",
+           "has one Night picture and no lit one" in (refused(lambda: redo.prompt_for(record, "school_yard", hour="lit")) or ""))
+        said = refused(lambda: redo.prompt_for(record, "classroom", hour="lit")) or ""
+        man_c = copy.deepcopy(man)
+        man_c["pictures"]["classroom"] = {"rev": 2, "kind": "inplace"}
+        said_job = refused(lambda: redo.redo_job(record, man_c, "classroom", "lit")) or ""
+        said_old = refused(lambda: redo.redo_job(record, man, "classroom", "lit")) or ""
+        ok("an indoor room that is not in the game's lit table has no lit picture: its prompt and its job are refused in one "
+           "line that names WORLD_LIT (also once its day picture is in the new look, and before that without promising one), "
+           "while its night is not refused for that and a lit room's lit prompt is written",
+           all("has no lit picture" in x and "WORLD_LIT" in x for x in (said, said_job, said_old))
+           and "cannot be made yet" not in said_old
+           and "every light in the room switched off" in redo.prompt_for(record, "classroom", hour="night")
+           and all(redo.prompt_for(record, r, hour="lit") for r in LIT_ROOMS), [said, said_job, said_old])
+        ok("an hour that is not evening, night or lit is refused",
+           "evening, night or lit" in (refused(lambda: redo.prompt_for(record, "dorm", hour="dusk")) or ""))
+        if all(os.path.exists(x) for x in need_files) and have_git:
+            state["done"] = ["0", "1", "2", "3", "9a", "9", "10", "11", "15"]
+            man47 = copy.deepcopy(man)
+            for stem in ("yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room", "dojo"):
+                man47["pictures"][stem] = {"rev": 2, "kind": "composed"}
+            root47 = os.path.join(tmp, "root47")
+            os.makedirs(os.path.join(root47, "game", "images", "bg"))
+            for stem in ("yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room", "dojo"):
+                shutil.copy(os.path.join(game, "your_room.png"), os.path.join(root47, "game", "images", "bg", stem + ".png"))
+            written, _ = write_batch(state, "47", later, man47, os.path.join(tmp, "batch47"), root=root47, quiet=True)
+            stems = [[j["stem"] for j in jobs] for _, jobs, _ in written]
+            ok("batch 47 is two files: the five friends' rooms dark, then the dojo lit, saved as ui2_dojo_lit_a and _b",
+               stems == [["yuji_room_night", "megumi_room_night", "senpai_room_night", "nobara_room_night", "maki_room_night"],
+                         ["dojo_lit"]] and written[1][1][0]["save"] == ["ui2_dojo_lit_a", "ui2_dojo_lit_b"]
+               and all(two_each(path) for _, _, path in written)
+               and "every one of the hanging lamps is switched on" in written[1][1][0]["prompt"], stems)
+            note47 = open(os.path.join(tmp, "batch47", "art_47.md"), encoding="utf-8").read()
+            top47 = note47.split("## For the session that installs")[0]
+            b47 = find(data, "47")
+            page_plain = page(dict(b47, painted_early=False), [(f, jobs) for f, jobs, _ in written], [], later, 0.16)
+            ok("batch 47 is marked painted early, and its page tells the owner so before anything else: nothing to run, "
+               "no \"Press Run\", no \"Drag\" and no \"pictures to run\" above the installer's part (the same batch "
+               "without the mark has all three)",
+               b47.get("painted_early") is True and EARLY_LINE in top47.split("## What to do")[0]
+               and not any(w in top47 for w in ("Press **Run**", "Drag `", "to run, about"))
+               and "Nothing in ComfyUI" in top47
+               and all(w in page_plain.split("## For the session that installs")[0]
+                       for w in ("Press **Run**", "Drag `art_47_1.json`", "12 pictures to run, about"))
+               and EARLY_LINE not in page_plain.split("## For the session that installs")[0],
+               [top47[:600]])
+            ok("no other batch is marked painted early (a sitting with a picture still to paint keeps its numbered steps)",
+               [b["id"] for b in data["batches"] if b.get("painted_early")] == ["47"])
+            none = {"name": "art_x", "pictures": [{"place": "dorm", "kind": "relight", "hour": "lit", "versions": 0, "made": "a test"}]}
+            ok("a picture made already (`versions` 0) gives no job, and the same row without it does",
+               file_jobs(none, later, man)[0] == [] and len(file_jobs(
+                   {"name": "art_x", "pictures": [dict(none["pictures"][0], versions=2)]}, later, man)[0]) == 1)
 
         # the marks
         d2 = copy.deepcopy(data)

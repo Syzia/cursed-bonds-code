@@ -66,6 +66,16 @@
 ##      and a save made on the shaped place view, loaded in the same run.
 ##      The test sidecar and the manifest row are laid in place, so this
 ##      section is the same in both states.
+##   J  rooms lit at Night (U0n, the last package of wave 0; plan 5.7a, D61;
+##      docs/UI2_CONTRACTS.md B16): `lit` in ART_HOURS and in the names read
+##      to their parent; WORLD_LIT, WORLD_LIT_ON, WORLD_LATE and
+##      WORLD_SHUT_NIGHT with their shapes; the functions with their
+##      signatures; bg_variant's choice between a room's two Night pictures
+##      and what it answers otherwise; the cache key and _light_key;
+##      world_lit_bg; a late stay in char_location. Lines gained: no line
+##      above it was edited. It asks nothing of the overlay (it lays a place
+##      in WORLD_LIT_ON and answers world_lit_ready and world_night_up itself
+##      for the length of a check), so it is the same in both states.
 ##
 ## It changes init data in place to test a gate (ART_PICTURES, RULE_LAYOUT,
 ## TIME_VARIANT) and puts every table back before the next section.
@@ -2548,5 +2558,111 @@ label zz_smoke:
               and len(HOT_SPOTS) == ZZC_HOLD["n_spots"] and "spots" not in ZZC_HOLD,
               "I: (every table put back: the Courtyard's shapes, the dim table and the hotspots are what they were before the section)",
               (hot_validate(), HOT_DIM, len(HOT_SPOTS), ZZC_HOLD["n_spots"]))
+
+    ## --- J. rooms lit at Night (U0n; 5.7a, D61; docs/UI2_CONTRACTS.md B16) ---------
+    python:
+        _zz_j = builtins.dict(on=builtins.dict(WORLD_LIT_ON), ready=store.world_lit_ready, up=store.world_night_up,
+                              day=store.day, per=store.period, comp=store.companion, over=store.schedule_overrides,
+                              roster=store.roster)
+        check(ART_HOURS == ("evening", "night", "lit") and WORLD_LIT_ATTR == "lit"
+              and art_parent("library_lit") == "library" and art_parent("your_room_lit") == "your_room"
+              and art_parent("fg_library_lit") == "library_lit" and art_parent("light_dorm_lit") == "your_room_lit"
+              and art_parent("pose_library__megumi__lit") == "library_lit"
+              and art_parent("pose_senpai_room__panda__lit__asleep") == "senpai_room_lit",
+              "J: `lit` is the third hour attribute (ART_HOURS), and a lit name is read to its parent as an hour's is: "
+              "the picture to its day picture, a cut, a light row and a pose to the lit picture", ART_HOURS)
+        check(isinstance(WORLD_LIT, builtins.tuple) and len(WORLD_LIT) >= 8
+              and all(isinstance(r, builtins.tuple) and len(r) == 2 and r[0] in LOCATIONS and r[1] == "images/bg/%s_lit.png" % art_stem(r[0])
+                      for r in WORLD_LIT)
+              and builtins.set(r[0] for r in WORLD_LIT) >= builtins.set(("library", "yuji_room", "megumi_room", "senpai_room", "nobara_room",
+                                                                          "maki_room", "dorm", "dojo"))
+              and isinstance(WORLD_LIT_ON, (builtins.dict, dict)) and builtins.set(WORLD_LIT_ON) <= builtins.set(r[0] for r in WORLD_LIT)
+              and all(WORLD_LIT_ON[l] == builtins.dict(WORLD_LIT)[l]
+                      and renpy.has_image(builtins.tuple(LOCATIONS[l]["bg"].split()) + ("lit",), exact=True) for l in WORLD_LIT_ON)
+              and len(WORLD_VARIANTS) == 56 and not any(r[2] == "lit" for r in WORLD_VARIANTS),
+              "J: WORLD_LIT is a tuple of (place, images/bg/<stem>_lit.png) holding the eight rooms of 5.7a; WORLD_LIT_ON is {place: file} for the rows "
+              "that registered, each with its image `bg <picture> lit`; WORLD_VARIANTS keeps its 56 rows", (WORLD_LIT, builtins.dict(WORLD_LIT_ON)))
+        check(isinstance(WORLD_LATE, (builtins.dict, dict)) and len(WORLD_LATE) >= 1
+              and all(w in SCHEDULE and isinstance(r, builtins.tuple) and len(r) == 2 and r[0] in builtins.dict(WORLD_LIT)
+                      and isinstance(r[1], builtins.tuple) and r[1] and all(d in WEEKDAYS for d in r[1]) for w, r in WORLD_LATE.items())
+              and isinstance(WORLD_SHUT_NIGHT, builtins.tuple) and all(l in LOCATIONS for l in WORLD_SHUT_NIGHT)
+              and not any(r[0] in WORLD_SHUT_NIGHT for r in WORLD_LIT) and not any(r[0] in WORLD_SHUT_NIGHT for r in WORLD_LATE.values())
+              and world_lit_validate() == [] and world_late_validate() == [],
+              "J: WORLD_LATE is {who: (place, (weekday, ...))}, each place a room of WORLD_LIT; WORLD_SHUT_NIGHT is a tuple of places, none of them lit or stayed late in; "
+              "both tables lint clean", (builtins.dict(WORLD_LATE), WORLD_SHUT_NIGHT, world_lit_validate() + world_late_validate()))
+        _zz_sigs = [("world_night_up", "(loc, per=None)"), ("world_lit_bg", "(place)"), ("world_lit_ready", "(loc)"), ("world_lit_register", "()"),
+                    ("world_late_cell", "(who, per=None)"), ("world_lit_validate", "(lit=None, shut=None, on=None)"),
+                    ("world_late_validate", "(late=None, lit=None, shut=None)"), ("bg_variant", "(loc, per)"), ("bg_name", "(loc=None, per=None)"),
+                    ("graded_bg", "(loc=None, per=None)"), ("char_location", "(who, per=None)")]
+        _zz_bad = [(n, zzc_sig(getattr(store, n))) for n, sg in _zz_sigs
+                   if not (zzc_owner(getattr(store, n, None), "sb_world.rpy") and zzc_sig(getattr(store, n)) == sg)]
+        check(not _zz_bad, "J: their functions live in sb_world.rpy with their signatures (%d)" % len(_zz_sigs), _zz_bad)
+
+        ## -- the reader's choice. A place is laid in WORLD_LIT_ON and the two
+        ## questions are answered by the test: is its lit picture ready, is
+        ## somebody up in it.
+        _zz_place = WORLD_LIT[0][0]
+        _zz_base = builtins.dict((p, bg_variant(_zz_place, p)) for p in PERIODS)
+        WORLD_LIT_ON.clear()
+        _BG_CACHE.clear()
+        _zz_none = builtins.dict((p, bg_variant(_zz_place, p)) for p in PERIODS)
+        WORLD_LIT_ON[_zz_place] = builtins.dict(WORLD_LIT)[_zz_place]
+        _zz_got = builtins.dict()
+        for _zz_r in (True, False):
+            for _zz_u in (True, False):
+                store.world_lit_ready = (lambda loc, _r=_zz_r: _r)
+                store.world_night_up = (lambda loc, per=None, _u=_zz_u: _u)
+                _BG_CACHE.clear()
+                _zz_got[(_zz_r, _zz_u)] = (builtins.dict((p, bg_variant(_zz_place, p)) for p in PERIODS), bg_name(_zz_place, "Night"),
+                                           graded_bg(_zz_place, "Night"), builtins.sorted(k for k in _BG_CACHE if k[0] == _zz_place),
+                                           getattr(graded_bg(_zz_place, "Night"), "_light_key", None), world_lit_bg(_zz_place),
+                                           [(l, p) for l in LOC_ORDER for p in PERIODS if l != _zz_place and bg_variant(l, p) == "lit"])
+        store.world_lit_ready, store.world_night_up = _zz_j["ready"], _zz_j["up"]
+        _zz_lit = _zz_got[(True, True)]
+        _zz_name = "%s lit" % LOCATIONS[_zz_place]["bg"]
+        check(_zz_lit[0] == builtins.dict(_zz_none, Night="lit") and _zz_lit[1] == _zz_name and _zz_lit[2] == _zz_name
+              and _zz_lit[3] == [(_zz_place, "Night", "lit")] and _zz_lit[4] is None and not _zz_lit[6],
+              "J: at Night bg_variant answers `lit` for a place of WORLD_LIT_ON whose lit picture is ready while somebody is up in it, and at no other hour and for no other place; "
+              "bg_name is `bg <picture> lit`, graded_bg the picture untinted under the cache key (place, hour, `lit`), with no _light_key", _zz_lit)
+        check(all(_zz_got[k][0] == _zz_none and _zz_got[k][1] == LOCATIONS[_zz_place]["bg"] + (" " + _zz_none["Night"] if _zz_none["Night"] else "")
+                  and _zz_got[k][3] == [(_zz_place, "Night", None)] and _zz_got[k][4] in (None, (_zz_place, "Night"))
+                  and (_zz_got[k][4] == (_zz_place, "Night")) == isinstance(_zz_got[k][2], Transform) and not _zz_got[k][6]
+                  for k in ((True, False), (False, True), (False, False))),
+              "J: with nobody up, or the lit picture not ready, it answers exactly what it answers with no lit picture registered (K7's fallback), "
+              "under the cache key (place, hour, None); a tinted picture's _light_key stays (place, hour)",
+              [(k, v[0], v[1], v[3], v[4]) for k, v in _zz_got.items()])
+        check(_zz_got[(True, True)][5] == _zz_name and _zz_got[(True, False)][5] == _zz_name
+              and _zz_got[(False, True)][5] is _zz_got[(False, True)][2] and _zz_got[(False, False)][5] is _zz_got[(False, False)][2],
+              "J: world_lit_bg(place) is the lit picture by name whenever it is ready, whoever is there, and graded_bg(place, \"Night\") when it is not")
+        WORLD_LIT_ON.clear()
+        WORLD_LIT_ON.update(_zz_j["on"])
+        _BG_CACHE.clear()
+        check(builtins.dict((p, bg_variant(_zz_place, p)) for p in PERIODS) == _zz_base and store.world_lit_ready is _zz_j["ready"]
+              and store.world_night_up is _zz_j["up"], "J: (the lit table and the two functions put back)")
+
+        ## -- world_night_up, and a late stay in char_location
+        store.companion, store.schedule_overrides, store.roster = None, {}, builtins.list(ROSTER_ORDER)
+        _zz_who = builtins.sorted(WORLD_LATE)[0]
+        _zz_room, _zz_days = WORLD_LATE[_zz_who]
+        store.day, store.period = 8 + WEEKDAYS.index(_zz_days[0]), "Night"
+        roll_gojo()
+        _zz_a = (char_location(_zz_who), world_late_cell(_zz_who), world_asleep(_zz_who), world_home_state(_zz_who), world_night_up(_zz_room),
+                 world_night_up(_zz_room, "Evening"), world_late_cell(_zz_who, "Evening"), _zz_who in who_is_here(_zz_room))
+        pin(_zz_who, "courtyard")
+        _zz_b = (char_location(_zz_who), world_night_up(_zz_room) == any(char_location(w) == _zz_room and not world_asleep(w) for w in ROSTER_ORDER))
+        store.schedule_overrides = {}
+        store.period = "Evening"
+        _zz_c = (world_night_up(_zz_room), world_night_up(_zz_room, "Night"), world_late_cell(_zz_who))
+        store.period = None
+        _zz_d = (world_night_up(_zz_room, "Night"), bg_variant(_zz_room, "Night") == "lit")
+        store.day, store.period, store.companion, store.schedule_overrides, store.roster = (
+            _zz_j["day"], _zz_j["per"], _zz_j["comp"], _zz_j["over"], _zz_j["roster"])
+        roll_gojo()
+        check(_zz_a == (_zz_room, _zz_room, False, "out", True, False, None, True),
+              "J: on a Night WORLD_LATE names, char_location puts the person in that room: awake, \"out\" of their home, counted there, and world_night_up(room) is True; "
+              "the table speaks of the Night only", _zz_a)
+        check(_zz_b == ("courtyard", True) and _zz_c == (False, True, None) and _zz_d == (False, False),
+              "J: a story pin beats the table, and the room is then up only if somebody else is awake in it; world_night_up is False at any hour but Night (asked about tonight from the Evening, it answers for tonight) "
+              "and False while the store holds no hour", (_zz_b, _zz_c, _zz_d))
 
     $ finish()

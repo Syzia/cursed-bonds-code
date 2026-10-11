@@ -1163,7 +1163,9 @@ label zz_smoke:
         for _zz_d in range(8, 15):
             zzh_at(_zz_d, "Night")
             for _zz_w, _zz_l in _zz_want.items():
-                if char_location(_zz_w) != _zz_l or world_home(_zz_w) != _zz_l:
+                ## U0n (plan 5.7a; docs/UI2_PINS.md Part 2c): at home, or in
+                ## the room WORLD_LATE has them out late in that Night.
+                if char_location(_zz_w) != (world_late_cell(_zz_w) or _zz_l) or world_home(_zz_w) != _zz_l:
                     _zz_bad.append((weekday(), _zz_w, char_location(_zz_w)))
             if who_is_here("dorm_yard") or who_is_here("dorm_common") or who_is_here("girls_dorm") or who_is_here("teachers_lounge"):
                 _zz_bad.append((weekday(), "garden or common room", who_is_here("dorm_yard"), who_is_here("dorm_common")))
@@ -1176,8 +1178,8 @@ label zz_smoke:
                 if _zz_p != "Night":
                     _zz_never += [(weekday(), _zz_p, w) for w in ROSTER_ORDER if world_asleep(w) or world_asleep(w, _zz_p)]
         check(not _zz_bad and len(_zz_want) == 10,
-              "D: on each of the seven Nights everyone who lives on campus is in their own home (the four boys, the two girls, Shoko, "
-              "the three teachers), and the garden, the Common Room, the girls' corridor and the lounge are empty", _zz_bad[:6])
+              "D: on each of the seven Nights everyone who lives on campus is in their own home, or where WORLD_LATE puts them that Night "
+              "(the four boys, the two girls, Shoko, the three teachers), and the garden, the Common Room, the girls' corridor and the lounge are empty", _zz_bad[:6])
         check(all(_zz_sleep[d] == ["ijichi", "maki", "megumi", "panda", "utahime"] for d in ("Mon", "Tue", "Wed", "Thu", "Fri"))
               and all(_zz_sleep[d] == ["ijichi", "nobara", "toge", "utahime", "yuji"] for d in ("Sat", "Sun")) and len(_zz_sleep) == 7,
               "D: on weekday Nights Megumi, Maki and Panda are asleep, at weekends Yuji, Nobara and Toge: each can be found both ways; "

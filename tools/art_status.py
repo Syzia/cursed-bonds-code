@@ -14,11 +14,14 @@ It is the first thing in every checkpoint note.
   IN THE NEW LOOK        every picture at revision 2 or later, with how it was
                          made and from which render.
   HALF-MADE ROOM SETS    a room whose day picture is in the new look while an
-                         evening or night picture of it is still the old
+                         evening, night or lit picture of it is still the old
                          one. The game tints the new day picture at that hour
                          (K7); but a scene or a memory that names the old
                          hour picture itself still shows it. The five that
-                         are named so are marked.
+                         are named so are marked. A LIT picture (5.7a: the
+                         room at Night with someone up in it) that was made
+                         for the old room is not shown either: until it is
+                         remade the room is dark at Night whoever is up.
   STALE                  a foreground, a pose, an hour picture or a light row
                          made for an older revision of its room. The game
                          does not use it; it is remade in its batch.
@@ -43,7 +46,8 @@ sys.path.insert(0, TOOLS)
 import check_campus
 
 ROOT = os.path.dirname(TOOLS)
-HOURS = ("evening", "night")
+HOURS = ("evening", "night", "lit")       # lit: a room's second Night picture, someone up in it (5.7a)
+HALF_WORDS = {"lit": "until it is remade the room shows its dark Night picture even with someone up in it"}
 BASE = "d2eb9db"            # the commit the second UI overhaul's baselines were written from (docs/UI2_CONTRACTS.md A2)
 # K7: the hour pictures a written scene or a memory row shows by name, whatever the gates say.
 NAMED = {"your_room_night": "scenes show `bg your_room night` five times",
@@ -131,8 +135,10 @@ def status(root, record_path=None):
     lines.append("")
     lines.append("HALF-MADE ROOM SETS (%d)" % len(half))
     for h, stem, named in half:
-        lines.append("   %-26s is still the picture made for the old %s; until it is remade that hour shows the new day "
-                     "picture tinted%s" % (h, stem, "" if not named else ". BUT %s: those still show the old picture" % named))
+        hour = h[len(stem) + 1:]
+        lines.append("   %-26s is still the picture made for the old %s; %s%s" % (
+            h, stem, HALF_WORDS.get(hour, "until it is remade that hour shows the new day picture tinted"),
+            "" if not named else ". BUT %s: those still show the old picture" % named))
 
     stale = []
     for stem, r in sorted(pics.items()):

@@ -81,6 +81,9 @@ init 999 python:
     }
     ## In Tokyo (U0c1, WORLD_AWAY): off campus on a Sunday Afternoon.
     ZZ_OLD_AWAY = {("nobara", "Sun", "Afternoon"), ("maki", "Sun", "Afternoon"), ("yuji", "Sun", "Afternoon")}
+    ## Out late (U0n, WORLD_LATE; plan 5.7a, docs/UI2_PINS.md Part 2c): in
+    ## the Library on that Night instead of at home.
+    ZZ_OLD_LATE = {("megumi", "Sun", "Night"): "library", ("toge", "Wed", "Night"): "library"}
     ZZ_OLD_GOJO_SPOTS = ["-", "-", "-", "rooftop", "courtyard", "office", "cafeteria", "training"]
     ZZ_OLD_PERIODS = ["Morning", "Noon", "Afternoon", "Evening", "Night"]
 
@@ -98,6 +101,7 @@ init 999 python:
                 loc = ZZ_OLD_WEEKEND.get(who, {}).get(per, loc)
             if (who, wd, per) in ZZ_OLD_AWAY:
                 loc = "-"
+            loc = ZZ_OLD_LATE.get((who, wd, per), loc)
         if loc == "-" or who not in roster:
             return None
         return loc

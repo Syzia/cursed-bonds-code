@@ -1,12 +1,14 @@
 """
 Build the ComfyUI workflow for a picture REDONE IN PLACE: the same camera,
 the same walls and things, in the settled look. Also a place's evening and
-night, relit from its new day picture.
+night, relit from its new day picture, and a room's second Night picture,
+`lit`: the room with someone up in it (D61, docs/UI2_DESIGN.md 5.7a).
 
     python3 tools/make_redo_workflow.py classroom                    # a room, by day
     python3 tools/make_redo_workflow.py dorm --add                   # with its one named addition (the laptop)
     python3 tools/make_redo_workflow.py dorm_common --from-rev1      # from the picture it had before the overhaul
-    python3 tools/make_redo_workflow.py --relight dorm_common evening      # an hour picture; evening or night
+    python3 tools/make_redo_workflow.py --relight dorm_common evening      # an hour picture: evening, night or lit
+    python3 tools/make_redo_workflow.py --relight library lit              # the room at Night with someone up in it
     python3 tools/make_redo_workflow.py forest --print               # the prompt and its input; writes nothing
     python3 tools/make_redo_workflow.py classroom --again 1          # one more pair, from two other seeds
     options: --out <folder>   --manifest <pictures.json>   --record <campus.json>   --keep <folder of keep lists>
@@ -22,7 +24,17 @@ docs/UI2_DESIGN.md 5.1, 5.4, 5.7, K5, K8. The prompt is, in this order:
   2. by day, tools/bgs/keep_light.txt ("Keep the time of day and the
      direction of the light."). A relight leaves it out and says its hour
      instead: one sentence from HOURS below, or the batch's own for a room
-     that needs one (a windowless room by lamplight).
+     that needs one (a windowless room by lamplight). AT NIGHT A ROOM IS DARK
+     UNLESS IT IS `lit` (5.7a): the general indoor `night` sentence is the
+     room with every light off, by moonlight (the words the owner chose for
+     the Common Room and My Room, O38), and the general `lit` sentence is the
+     room with its own lamps on, which was the night sentence before D61. In
+     the batch table every indoor night row has words of its own (lights
+     off; for the infirmary and the Teachers' Dormitory, their lamps), so
+     the general night sentence is only for a relight made by hand. A yard
+     has one Night picture and no `lit`, and neither has a room the game's
+     table WORLD_LIT does not name (LIT_ROOMS below): `lit` is refused for
+     both, as the installer would refuse the render.
   3. by day, where the campus record has one for the room, the window line:
      "Through the windows: ...". It is written by the tool from the record,
      never by hand, and a line that names a neighbour is left out until that
@@ -78,13 +90,25 @@ HOURS = {
     ("evening", False): "Change the time of day to early evening: a warm orange and pink sunset sky, and low "
                         "golden sunlight with long soft shadows. Windows already in the picture catch the light or "
                         "begin to glow warm; add no new light.",
-    ("night", True): "Change the time of day to night: outside the windows it is dark, under a deep blue night "
-                     "sky. The room's own lamps and ceiling lights are switched on and fill it with warm light and "
-                     "soft shadows.",
+    # the room with nobody up in it (5.7a): the words chosen for the Common Room and My Room (art_3c, O38)
+    ("night", True): "Change the time of day to night, with every light in the room switched off: the ceiling "
+                     "light and every lamp are dark. Outside the windows it is night, under a deep blue sky with "
+                     "stars. The room is lit only by cool blue moonlight coming in through the windows, which lies "
+                     "in pale patches on the floor and the furniture. The room is dim, but everything in it can "
+                     "still be seen clearly.",
+    # the room with someone up in it (5.7a): until D61 this was the indoor night sentence
+    ("lit", True): "Change the time of day to night: outside the windows it is dark, under a deep blue night "
+                   "sky. The room's own lamps and ceiling lights are switched on and fill it with warm light and "
+                   "soft shadows.",
     ("night", False): "Change the time of day to night: a deep blue night sky with a few stars and a faint moon, "
                       "and cool blue moonlight on everything, with soft shadows. Windows and lamps already in the "
                       "picture glow warm yellow; add no new light.",
 }
+HOUR_NAMES = ("evening", "night", "lit")
+LIT = "lit"
+# The rooms that have a lit picture: the game's table WORLD_LIT (sb_world.rpy; 5.7a), by place key. The installer reads
+# the same list from the layout dump (game_layout.lit_places()); tools/test_art_tools.py holds the two together.
+LIT_ROOMS = ("library", "yuji_room", "megumi_room", "senpai_room", "nobara_room", "maki_room", "dorm", "dojo")
 
 
 def place_of(rec, name):
@@ -117,8 +141,20 @@ def named(rec, place, key, keep_dir=None):
     return "; ".join(rows)
 
 
+def lit_asked(p, place, hour):
+    """Refused when the hour is lit and the place has no lit picture: a yard, or a room the game's table does not
+    name. The installer would refuse the render (install_redo.py), so nothing is written for it."""
+    if hour != LIT:
+        return
+    if not p["indoor"]:
+        raise Refused("%s is outdoors: a yard has one Night picture and no lit one (5.7a)" % p["name"])
+    if place not in LIT_ROOMS:
+        raise Refused("%s has no lit picture: only a room of the game's WORLD_LIT has one (5.7a). Its Night picture "
+                      "is --relight %s night" % (p["name"], place))
+
+
 def prompt_for(record, place, hour=None, add=None, change=None, window=True, ignore_needs=False, hour_words=None):
-    """The prompt of a redo in place (hour None) or of a relight ("evening", "night").
+    """The prompt of a redo in place (hour None) or of a relight ("evening", "night", "lit").
     add / change: the words of the keep list's `allow` / `change` line."""
     rec = check_campus.Rec(record)
     p = rec.places[place]
@@ -140,8 +176,9 @@ def prompt_for(record, place, hour=None, add=None, change=None, window=True, ign
             if line:
                 out.append(line)
     else:
-        if hour not in ("evening", "night"):
-            raise Refused("the hour is evening or night, not %r" % hour)
+        if hour not in HOUR_NAMES:
+            raise Refused("the hour is evening, night or lit, not %r" % hour)
+        lit_asked(p, place, hour)
         out.append(hour_words or HOURS[(hour, bool(p["indoor"]))])
     out.append(check_prompts.text_of("look.txt"))
     return " ".join(out)
@@ -194,6 +231,7 @@ def redo_job(record, manifest, name, hour=None, from_rev1=False, add=False, chan
         if "Through the windows:" in prompt:
             checklist.append("the windows show what the record says: yes / no")
         return kit.job(stem, label, prompt, [(title, src)], again, checklist, kind="inplace", place=place)
+    lit_asked(p, place, hour)          # before "its day picture is not installed": that would promise a picture
     if check_campus.rev_of(manifest, stem) < 2:
         raise Refused("%s's %s cannot be made yet: its day picture is not installed in the new look (batch %s). An "
                       "hour picture is relit from the day picture the owner chose." % (p["name"], hour, p.get("batch", "?")))
@@ -201,8 +239,13 @@ def redo_job(record, manifest, name, hour=None, from_rev1=False, add=False, chan
         raise Refused("no picture at %s" % game)
     prompt = prompt_for(record, place, hour=hour, hour_words=hour_words)
     checklist = ["nothing has moved: yes / no", "everything that was in the day picture is still there: yes / no",
-                 "it is plainly %s, in the windows and the sky too: yes / no" % hour]
-    return kit.job("%s_%s" % (stem, hour), "%s, %s" % (p["name"], hour), prompt,
+                 "it is plainly %s, in the windows and the sky too: yes / no" % ("night" if hour == LIT else hour)]
+    if hour == LIT:
+        checklist.append("the room's own light is on, as its sentence says, and no lamp has been added: yes / no")
+    elif hour == "night" and p["indoor"] and not hour_words:
+        checklist.append("every light in the room is off: yes / no")
+    label = "%s, %s" % (p["name"], "lit at night" if hour == LIT else hour)
+    return kit.job("%s_%s" % (stem, hour), label, prompt,
                    [("%s by day, as installed" % p["name"], game)], again, checklist, kind="relight", place=place)
 
 
@@ -230,8 +273,8 @@ def main(argv):
     if "--relight" in argv:
         i = argv.index("--relight")
         rest = argv[i + 1:i + 3]
-        if len(rest) != 2 or rest[1] not in ("evening", "night"):
-            raise SystemExit("--relight needs a place and an hour: --relight dorm_common evening|night")
+        if len(rest) != 2 or rest[1] not in HOUR_NAMES:
+            raise SystemExit("--relight needs a place and an hour: --relight dorm_common evening|night|lit")
         name, hour = rest
         del argv[i:i + 3]
         argv.append(name)

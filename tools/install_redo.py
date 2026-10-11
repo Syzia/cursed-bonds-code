@@ -6,6 +6,8 @@ Put a background into the game, and prove first that it may go in.
     tools/py_art.sh tools/install_redo.py dorm_common <render a> <render b> --choose a  # installs that one only
   ITS EVENING OR NIGHT, relit from the day picture:
     tools/py_art.sh tools/install_redo.py --relight dorm_common evening <a> <b> [--choose a]
+  A ROOM LIT AT NIGHT (5.7a: the second Night picture of a room that is shown both dark and with someone up):
+    tools/py_art.sh tools/install_redo.py --relight library lit <a> <b> [--choose a]
     tools/py_art.sh tools/install_redo.py dorm_common <hour picture> --dry --against <day picture>   # measure a pair
   THE CANARY (5.2): measure a render against the place's picture from before the overhaul; installs nothing:
     tools/py_art.sh tools/install_redo.py dorm_common <render> --dry --against-rev1
@@ -91,7 +93,17 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
   night picture loses edge in its dark corners and gains pools of light, and
   neither is a fault. It is NOT judged for added things (5.7), and never
   refused for one: A RELIGHT IS READ BY EYE BESIDE ITS DAY PICTURE for a lamp,
-  a blanket, a bench. One case is shown as a LOOK, because it can be measured
+  a blanket, a bench.
+  THE HOURS are evening, night and lit. `lit` (D61, 5.7a) is the room at Night
+  with someone up in it; `night` is the room with nobody up. It is proved and
+  installed as any relight is, under its own names: the picture
+  game/images/bg/<picture>_lit.png with the manifest row <picture>_lit (kind
+  relight, `of` its day picture, `of_rev` that picture's revision), its light
+  row under the key "lit" of light_<place>.json (manifest row
+  light_<place>_lit), and, where the room has a foreground, the cut
+  fg_<place>_lit.png (manifest row fg_<place>_lit): the game shows a lit room
+  only with its own cut. Only a room of the game's lit table (WORLD_LIT, the
+  dump's `lit_planned`) has one: any other place is refused. One case is shown as a LOOK, because it can be measured
   without a false alarm: a small `empty` row of the keep list (not a floor)
   that gained fine edge against what is round it ("something new may be on
   the sofa's near arm").
@@ -159,7 +171,7 @@ import sample_light
 ROOT = os.path.dirname(TOOLS)
 IMAGES = os.path.expanduser("~/Desktop/JJK Game images")
 KEEP_DIR = os.path.join(ROOT, "tools", "bgs", "keep")
-HOURS = ("evening", "night")
+HOURS = ("evening", "night", "lit")
 AUTO_BOX = rm.AUTO_BOX
 
 
@@ -445,6 +457,14 @@ def run_inplace(o):
     place, stem = resolve(lay, o["picture"])
     hour = o["hour"] or ""
     relight = bool(hour) or bool(o["against"])
+    if hour == game_layout.LIT:
+        rooms = lay.lit_places()
+        if rooms is None:
+            print("  note      this layout dump was written before the game had its table of lit rooms (WORLD_LIT): "
+                  "whether %s has a lit picture is not checked" % lay.name(place))
+        elif place not in rooms:
+            raise SystemExit("%s has no lit picture: the game shows one only for a room of its table WORLD_LIT (%s). "
+                             "Its Night picture is --relight %s night" % (lay.name(place), ", ".join(rooms), place))
     day_path = os.path.join(root, "game", "images", "bg", stem + ".png")
     target = stem + ("_" + hour if hour else "")
     manifest = load_manifest(root)
@@ -827,7 +847,8 @@ def main(argv):
     o["hour"] = None
     if relight:
         if relight[1] not in HOURS:
-            raise SystemExit("--relight needs a place and an hour: --relight dorm_common evening|night")
+            raise SystemExit("--relight needs a place and an hour: --relight dorm_common evening|night, or "
+                             "--relight library lit (a room lit at Night, 5.7a)")
         o["hour"] = relight[1]
         argv.insert(0, relight[0])
     if [a for a in argv if a.startswith("--")] or len(argv) < 2:

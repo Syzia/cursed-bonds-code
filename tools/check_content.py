@@ -95,6 +95,13 @@ Rules (flags):
                       pictures), only that kind's keys, and each key's shape.
                       `for_rev` in a hot_ or view_ file is a finding unless
                       pictures.json calls that place's picture "composed".
+                      An hour is "", "evening", "night" or "lit" (U0n, 5.7a:
+                      the room at Night with someone up in it). In a view_
+                      file a `Night` key in `slot_light` or `cast` is a
+                      finding for a place of WORLD_LIT: that period shows
+                      two pictures there, and the key would serve both
+                      (write "night" and "lit"). And "lit" is a finding in
+                      a light_ or view_ file of any other place.
                       --layout-dir <dir> reads another folder.
   --decency           (K16) A word list (towel, naked, undress, strip,
                       swimsuit, bikini, skin, bare, changing) over the text of
@@ -788,6 +795,57 @@ def harness_selftest():
             for what, args, want in cases if harness_name_ok(*(args + (cfg,))) != want]
 
 
+def layout_selftest():
+    """The self-test of --layout-files' lit rules (U0n, 5.7a): [] when they
+    hold, else what is wrong, a line each. Test files are written to a
+    scratch folder and read by the rule itself; the lit rooms are given, so
+    the answer does not rest on today's table. A last line reads the game's
+    own table: the Library is in it and the Classroom is not."""
+    import tempfile, shutil
+    row = ["#ffe0b0", -0.05, 0.9, 0.5]
+    lit = {"library"}
+    cases = (
+        ("a light_ file's \"lit\" row, in a room that has a lit picture",
+         "light_library", {"": row, "night": row, "lit": row}, None),
+        ("a \"lit\" row that is not a light row", "light_library", {"lit": ["warm", 0]}, "the row 'lit' must be"),
+        ("an hour the game does not know in a light_ file", "light_library", {"dusk": row}, "unknown key"),
+        ("a \"lit\" row in a room that has no lit picture", "light_classroom", {"lit": row}, "not a place of WORLD_LIT"),
+        ("\"night\" and \"lit\" keys in a lit room's slot_light and cast",
+         "view_library", {"slot_light": {"night": {"1": [None]}, "lit": {"1": [["#ffd0a0", -0.02]]}},
+                          "cast": {"night": [1, 0.5, 0.3], "lit": [1, 0.2, 0.1]}}, None),
+        ("a `Night` key in a lit room's slot_light", "view_library", {"slot_light": {"Night": {"1": [None]}}},
+         "slot_light holds a `Night` key"),
+        ("a `Night` key in a lit room's cast", "view_library", {"cast": {"Night": [1, 0.5, 0.3]}}, "cast holds a `Night` key"),
+        ("a `Night` key in the cast of a room with one Night picture", "view_classroom", {"cast": {"Night": [1, 0.5, 0.3]}}, None),
+        ("an `Evening` key in a lit room's cast", "view_library", {"cast": {"Evening": [1, 0.5, 0.3]}}, None),
+        ("a \"lit\" key in the cast of a room that has no lit picture", "view_classroom", {"cast": {"lit": [1, 0.5, 0.3]}},
+         "has no lit picture"),
+    )
+    out = []
+    tmp = tempfile.mkdtemp(prefix="check_content_lf_")
+    try:
+        for what, stem, data, want in cases:
+            for f in os.listdir(tmp):
+                os.remove(os.path.join(tmp, f))
+            with open(os.path.join(tmp, stem + ".json"), "w", encoding="utf-8") as f:
+                json.dump(data, f)
+            got = [text for _p, text in layout_file_findings(tmp, {}, lit)]
+            if want is None and got:
+                out.append("self-test: %s should pass, and --layout-files says: %s" % (what, got[0][:160]))
+            elif want is not None and not any(want in t for t in got):
+                out.append("self-test: %s should be a finding (%r), and --layout-files says: %s"
+                           % (what, want, got[0][:160] if got else "nothing"))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    real = lit_places()
+    if os.path.isfile(os.path.join(GAME, "sb_world.rpy")) and (real is None or "library" not in real or "classroom" in real):
+        out.append("self-test: the game's own WORLD_LIT should be read from game/sb_world.rpy with the Library in it and "
+                   "the Classroom not (read: %s)" % (sorted(real) if real is not None else "nothing"))
+    if lit_places(text="    WORLD_LIT = (('library', 'images/bg/library_lit.png'),)\n") is not None:
+        out.append("self-test: a WORLD_LIT written another way should be reported as unreadable, not read as empty")
+    return out
+
+
 def rule_action_returns(path, lines, allowed):
     """[(Line, the function named)] for each `Function(` in a screen or a def
     that names neither ui_do nor a tools/none_ok.txt function."""
@@ -1007,6 +1065,27 @@ def away_districts(cache):
     return out
 
 
+def lit_places(cache=None, text=None):
+    """The places that have a lit picture (WORLD_LIT, U0n; docs/UI2_DESIGN.md
+    5.7a), read from game/sb_world.rpy's own text: the table is built by
+    world_lit_rows() from one tuple of place keys. Returns a set, or None
+    when the file names WORLD_LIT and its places cannot be read (the table
+    was written another way: this reader must be taught it, and
+    --layout-files says so rather than let a `Night` key by)."""
+    if text is None:
+        src = os.path.join(GAME, "sb_world.rpy")
+        if not os.path.isfile(src):
+            return set()
+        with open(src, encoding="utf-8") as f:
+            text = f.read()
+    if not re.search(r"(?m)^\s*WORLD_LIT\s*=", text):
+        return set()
+    m = re.search(r"def world_lit_rows\(\):(.*?)^\s*WORLD_LIT\s*=\s*world_lit_rows\(\)", text, re.S | re.M)
+    got = re.search(r"for\s+loc\s+in\s*\(([^)]*)\)", m.group(1), re.S) if m else None
+    keys = re.findall(r"[\"'](\w+)[\"']", got.group(1)) if got else []
+    return set(keys) if keys else None
+
+
 def lf_num(v):
     return isinstance(v, (int, float)) and not isinstance(v, bool)
 
@@ -1046,7 +1125,8 @@ LF_SHAPE_POLYS = (1, 3)
 LF_SHAPE_POINTS = (3, 60)
 LF_LOOK_KEYS = ("color", "wash", "edge", "dim", "names")
 LF_FACES = ("neutral", "happy", "serious", "angry", "surprised", "sad")
-LF_HOURS = ("", "evening", "night")
+LF_HOURS = ("", "evening", "night", "lit")       # lit: U0n, the room at Night with someone up in it (5.7a)
+LF_LIT = "lit"
 LF_PERIODS = ("Morning", "Noon", "Afternoon", "Evening", "Night")
 # The houses painted with spare doors (D50): their hot_ file may hold `spare`.
 LF_SPARE_HOUSES = ("boys_dorm", "girls_dorm", "teachers_dorm")
@@ -1098,12 +1178,21 @@ def lf_hour_dict(v, test):
     return isinstance(v, dict) and all(k in LF_HOURS + LF_PERIODS and test(x) for k, x in v.items())
 
 
-def layout_file_findings(folder, cache):
-    """--layout-files: [(path, text)] for every file under game/layout/."""
+def layout_file_findings(folder, cache, lit=False):
+    """--layout-files: [(path, text)] for every file under game/layout/.
+    lit: the places that have a lit picture (default: read from the game)."""
     out = []
     if not os.path.isdir(folder):
         return out
     places, areas = world_keys(cache)
+    if lit is False:
+        lit = lit_places(cache)
+    if lit is None:
+        out.append((os.path.join(GAME, "sb_world.rpy"),
+                    "WORLD_LIT's places cannot be read (it is no longer built by world_lit_rows() from one tuple of "
+                    "place keys): teach tools/check_content.py lit_places() its new form, or a `Night` key in a "
+                    "lit room's view_ file would pass unseen"))
+        lit = set()
     districts = away_districts(cache)
     data = {}
     for f in sorted(os.listdir(folder)):
@@ -1216,12 +1305,24 @@ def layout_file_findings(folder, cache):
                 bad(path, "scale must be [x, y top, y bottom] of one door or post")
             if "slot_light" in got and not lf_slot_light(got["slot_light"]):
                 bad(path, "slot_light must be {hour or period: {\"1\" to \"4\": [one entry a slot: null, or "
-                          "[\"#rrggbb\", brightness]]}}; an hour is \"\", \"evening\" or \"night\"")
+                          "[\"#rrggbb\", brightness]]}}; an hour is \"\", \"evening\", \"night\" or \"lit\"")
             if "cast" in got and not lf_hour_dict(got["cast"], lambda x: isinstance(x, list) and len(x) == 3
                                                   and all(lf_num(q) for q in x)):
                 bad(path, "cast must be {hour or period: [direction, length, darkness]}")
             if "talk" in got and not isinstance(got["talk"], bool):
                 bad(path, "talk must be true or false")
+            # U0n (5.7a): a room of WORLD_LIT shows two pictures at Night, so a row
+            # keyed by the period would serve both of them.
+            for k in ("slot_light", "cast"):
+                v = got.get(k)
+                if not isinstance(v, dict):
+                    continue
+                if place in lit and "Night" in v:
+                    bad(path, "%s holds a `Night` key, and %r has a lit picture (WORLD_LIT): at Night it shows one of "
+                              "two pictures, and that key would serve both. Key the row by the picture: \"night\" (nobody "
+                              "up) and \"lit\" (someone up)" % (k, place))
+                if LF_LIT in v and place not in lit:
+                    bad(path, "%s holds a \"lit\" key, and %r has no lit picture (it is not a place of WORLD_LIT)" % (k, place))
             for_rev(path, got, place)
         elif stem.startswith("pose_"):
             place_of(path, stem, "pose_", districts)     # a place, or a Tokyo district friends are painted in (7.6)
@@ -1230,8 +1331,10 @@ def layout_file_findings(folder, cache):
             if not (isinstance(v, dict) and all(isinstance(k, str) and lf_box(b) for k, b in v.items())):
                 bad(path, "it must hold {\"poses\": {\"<who>\" or \"<who>__<variant>\": [x, y, w, h]}}")
         elif stem.startswith("light_"):
-            place_of(path, stem, "light_")
+            place = place_of(path, stem, "light_")
             keys(path, got, LF_HOURS + ("note",))
+            if LF_LIT in got and place not in lit:
+                bad(path, "the row \"lit\" is for a room with a lit picture, and %r is not a place of WORLD_LIT" % place)
             for k in sorted(got):
                 if k in LF_HOURS and not lf_light_row(got[k]):
                     bad(path, "the row %r must be %s" % (k, LF_LIGHT_ROW))
@@ -1783,7 +1886,8 @@ def main(argv=None):
                          "the two frozen baselines")
     ap.add_argument("--selftest", action="store_true",
                     help="the --harness-names exception: it lets through one name in one file, "
-                         "and nothing else (also run by --harness-names itself)")
+                         "and nothing else (also run by --harness-names itself); and --layout-files' "
+                         "rules for the hour \"lit\" (U0n)")
     ap.add_argument("files", nargs="*", help=".rpy files or folders (default: game/)")
     args = ap.parse_args(argv)
     if args.selftest:
@@ -1792,7 +1896,12 @@ def main(argv=None):
             print("check_content: " + line)
         print("check_content selftest: %s (--harness-names: a prefixes.json exception with a name and its "
               "file lets through that one name in that one file, and nothing else)" % ("FAIL" if bad else "PASS"))
-        return 1 if bad else 0
+        bad2 = layout_selftest()
+        for line in bad2:
+            print("check_content: " + line)
+        print("check_content selftest: %s (--layout-files: \"lit\" is an hour, for a room of WORLD_LIT only; a `Night` "
+              "key in a lit room's slot_light or cast is a finding, and nowhere else)" % ("FAIL" if bad2 else "PASS"))
+        return 1 if (bad or bad2) else 0
 
     chosen = [r for r in RULES if getattr(args, r.replace("-", "_"))]
     reports = [r for r in REPORT_RULES if getattr(args, r.replace("-", "_"))]

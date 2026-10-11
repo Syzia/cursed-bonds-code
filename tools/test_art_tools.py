@@ -793,6 +793,46 @@ def group_layout(lab):
        "gojo" not in (world.get("homes") or {}) and nohome.asleep("gojo", "Mon", "Night") is False
        and nohome.asleep("megumi", "Mon", "Night") is True,
        (nohome.asleep("gojo", "Mon", "Night"), nohome.asleep("megumi", "Mon", "Night")))
+    # rooms lit at Night (U0n, 5.7a): the dump's two top-level keys and their readers
+    late_cells = (lay.where("megumi", "Sun", "Night"), lay.asleep("megumi", "Sun", "Night"), lay.where("megumi", "Sat", "Night"),
+                  lay.asleep("megumi", "Mon", "Night"),
+                  lay.where("toge", "Wed", "Night"), lay.where("toge", "Thu", "Night"), lay.where("panda", "Wed", "Night"))
+    ok("game_layout.py: where() knows the game's late table (the dump's `late`, WORLD_LATE): Megumi is in the Library "
+       "on a Sunday Night, awake, and in his own room on a Saturday's (and asleep there on a Monday's, as before); Toge is there on a Wednesday Night and at home on "
+       "a Thursday's, and Panda is at home on both",
+       late_cells == ("library", False, "megumi_room", True, "library", "senpai_room", "senpai_room"), late_cells)
+    lit_rooms = lay.lit_places()
+    ok("lit_places() and lit_file() read the game's lit table (the dump's `lit_planned`, WORLD_LIT): the Library and "
+       "My Room are in it (My Room's file is your_room_lit.png), every one is indoors, and a yard is not",
+       lit_rooms is not None and "library" in lit_rooms and "dorm" in lit_rooms and lay.lit_file("dorm") == "images/bg/your_room_lit.png"
+       and all(lay.indoor(p) for p in lit_rooms) and "courtyard" not in lit_rooms and lay.lit_file("courtyard") is None
+       and all(lay.lit_file(p) == "images/bg/%s_lit.png" % lay.bg_stem(p) for p in lit_rooms), lit_rooms)
+    import make_redo_workflow
+    ok("the workflow maker's own list of lit rooms (make_redo_workflow.LIT_ROOMS, which art_batch.py shares) is the game's "
+       "table as the dump holds it: a room added to WORLD_LIT, or taken out, is seen here",
+       lit_rooms is not None and sorted(make_redo_workflow.LIT_ROOMS) == sorted(lit_rooms),
+       [make_redo_workflow.LIT_ROOMS, lit_rooms])
+    not_lit = [p["key"] for p in lay.d["places"] if p["key"] not in (lit_rooms or [])][0]
+    ok("periods_showing(place, \"lit\") is Night and nothing else for a room of the lit table, and no hour at all for a "
+       "place that is not in it (%s); a room's night and evening pictures show when they did" % not_lit,
+       lay.periods_showing("library", "lit") == {"Night"} and lay.periods_showing(not_lit, "lit") == set()
+       and "Night" in lay.periods_showing("library", "night") and lay.periods_showing("library", "evening") == {"Evening"}
+       and "lit" in game_layout.HOURS, (lay.periods_showing("library", "lit"), lay.periods_showing(not_lit, "lit")))
+    before_n = game_layout.Layout(dict((k, v) for k, v in lay.d.items() if k not in ("lit_planned", "late")))
+    ok("a dump written before U0n (neither key) answers None (\"not known\") from lit_places() and late(); where() then "
+       "answers from the routine alone (Megumi at home on a Sunday Night) and a lit picture is counted for Night in any room",
+       (before_n.lit_places(), before_n.late(), before_n.where("megumi", "Sun", "Night"), before_n.lit_file("library"),
+        before_n.periods_showing(not_lit, "lit")) == (None, None, "megumi_room", None, {"Night"}))
+    swapped = game_layout.Layout(dict(lay.d, late={"megumi": {"place": "library", "days": ["Sat"]}}))
+    ok("where() follows the dump's table, not a list of its own: with Megumi's late Night moved to Saturday he is in the "
+       "Library then and at home on Sunday; and the away table still wins over a late stay",
+       (swapped.where("megumi", "Sat", "Night"), swapped.where("megumi", "Sun", "Night")) == ("library", "megumi_room")
+       and game_layout.Layout(dict(lay.d, late={"nobara": {"place": "library", "days": ["Sun"]}},
+                                   world=dict(world, away={"nobara": {"Sun Night": "harajuku"}}))).where("nobara", "Sun", "Night") == "harajuku")
+    rc, out = run([tool("game_layout.py"), "--layout-dump", lab.dump])
+    ok("python3 tools/game_layout.py says how many rows of each of the two tables the dump holds",
+       rc == 0 and re.search(r"lit picture \(lit_planned\): %d rows" % len(lit_rooms or []), out) is not None
+       and re.search(r"\(late\): %d rows" % len(lay.late() or {}), out) is not None, out)
     test = game_layout.Layout(dict(lay.d, shapes={"courtyard": {"spot_vend": [[[1560, 640], [1640, 640], [1640, 740], [1560, 740]]]}},
                                    keep_tile={"courtyard": {"gateway": "a test"}}, shaped=["courtyard"]))
     got = test.shapes("courtyard")
@@ -1394,6 +1434,80 @@ def group_redo(lab):
                    "--layout-dump", stamp(lab.dump, root2)], py=True)
     ok("a relight is not installed before its day picture is in the new look (K8)", rc != 0 and "not installed in the new look" in out, out)
 
+    # a room lit at Night (U0n, 5.7a): `lit` is a third hour, for a room of the game's lit table only
+    lamp = lab.syn("night", os.path.join(root, "game", "images", "bg", "dorm_common.png"), "syn_lit_a_00001_.png")
+    plain = stamp(lab.dump, root)
+    before = tree_hash(root)
+    rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "lit", lamp, "--choose", "a", "--root", root,
+                   "--layout-dump", plain], py=True)
+    ok("--relight <place> lit is refused in one line for a room the game's lit table (WORLD_LIT) does not name, and "
+       "nothing is written", rc != 0 and "has no lit picture" in out and "WORLD_LIT" in out and len(out.strip().splitlines()) == 1
+       and tree_hash(root) == before, out)
+    rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "dusk", lamp, "--dry", "--root", root,
+                   "--layout-dump", plain], py=True)
+    ok("an hour that is not evening, night or lit is refused in one line", rc != 0 and "evening|night" in out and "lit" in out
+       and len(out.strip().splitlines()) <= 2, out)
+    lit_table = {"lit_planned": [["dorm_common", "images/bg/dorm_common_lit.png"]]}        # TEST ONLY: the Common Room has none
+    ltail = ["--root", root, "--layout-dump", stamp(lab.dump, root, out=os.path.join(root, "dump_lit.json"), extra=lit_table)]
+    rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "lit", lamp, moved, "--dry"] + ltail, py=True)
+    v = verdicts(out)
+    ok("a lit picture is proved as any relight is: the same drawing with the lamps on is not refused, the one shifted "
+       "9 px is, and --dry writes nothing but the previews (redo_dorm_common_lit_a.jpg)",
+       v.get("a", ("",))[0] in ("PASS", "LOOK") and v.get("b", ("",))[0] == "REFUSED" and "(dorm_common_lit.png), a relight" in out
+       and tree_hash(root) == before and os.path.exists(os.path.join(root, "shots", "art", "redo_dorm_common_lit_a.jpg")), out)
+    night_bytes = open(os.path.join(root, "game", "images", "bg", "dorm_common_night.png"), "rb").read()
+    night_row = dict(check_campus.load_manifest(root)["pictures"]["dorm_common_night"])
+    fg_before = sorted(os.listdir(os.path.join(root, "game", "images", "fg")))
+    rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "lit", lamp, moved, "--choose", "a", "--batch", "47"] + ltail, py=True)
+    man = check_campus.load_manifest(root)["pictures"]
+    row = man.get("dorm_common_lit", {})
+    ok("the chosen lit picture is installed as <picture>_lit.png with its manifest row: kind relight, of its day picture, "
+       "at that picture's revision",
+       rc == 0 and os.path.exists(os.path.join(root, "game", "images", "bg", "dorm_common_lit.png"))
+       and row.get("kind") == "relight" and row.get("of") == "dorm_common" and row.get("of_rev") == man["dorm_common"]["rev"] == 2
+       and row.get("rev") == 2 and row.get("batch") == 47 and row.get("render") == os.path.basename(lamp)
+       and "rev1_commit" not in row, out + json.dumps(row))
+    ldata = json.load(open(light))
+    ok("its light row is written under the key \"lit\" of light_<place>.json (six numbers, measured), with the manifest row "
+       "light_<place>_lit; the day's and the night's rows are still there",
+       len(ldata.get("lit", [])) == 6 and "night" in ldata and "" in ldata
+       and man.get("light_dorm_common_lit") == {"of": "dorm_common_lit", "of_rev": 2}, json.dumps(ldata))
+    fg_lit = os.path.join(root, "game", "images", "fg", "fg_dorm_common_lit.png")
+    ok("its foreground is cut from the lit picture as fg_<place>_lit.png, by the day outline copied to the key \"lit\" of "
+       "tools/fg/<place>.json, with the manifest row fg_<place>_lit; no foreground file was deleted",
+       os.path.exists(fg_lit) and man.get("fg_dorm_common_lit") == {"of": "dorm_common_lit", "of_rev": 2}
+       and json.load(open(polys)).get("lit") == json.load(open(polys)).get("")
+       and sorted(os.listdir(os.path.join(root, "game", "images", "fg"))) == sorted(fg_before + ["fg_dorm_common_lit.png"]), out)
+    ok("the room's dark night is not touched by it: the picture, its row, and the campus record's chosen picture are "
+       "what they were",
+       open(os.path.join(root, "game", "images", "bg", "dorm_common_night.png"), "rb").read() == night_bytes
+       and man.get("dorm_common_night") == night_row and man.get("fg_dorm_common_night") == {"of": "dorm_common_night", "of_rev": 2}
+       and json.load(open(os.path.join(root, "tools", "bgs", "campus.json")))["pictures"]["dorm_common"]["rev"] == 2)
+    import check_content
+    found = check_content.layout_file_findings(os.path.join(root, "game", "layout"), {}, {"dorm_common"})
+    found_real = check_content.layout_file_findings(os.path.join(root, "game", "layout"), {})
+    ok("what it wrote passes check_content.py --layout-files for a room that has a lit picture, and the same file is a "
+       "finding for the Common Room by the game's own table, which does not name it",
+       not found and any("not a place of WORLD_LIT" in t for _p, t in found_real), found + found_real)
+    ltail = ["--root", root, "--layout-dump", stamp(lab.dump, root, out=os.path.join(root, "dump_lit.json"), extra=lit_table)]
+    rc, out = run([tool("sample_light.py"), "--check"] + ltail, py=True)
+    rc2, out2 = run([tool("sample_light.py"), "dorm_common", "lit"] + ltail, py=True)
+    ok("sample_light.py knows the hour: --check reads the lit row against the lit picture and finds it right (the "
+       "day row, edited by hand above, is still its one failure), and `sample_light.py <place> lit` prints the row "
+       "from <picture>_lit.png",
+       "ok    light_dorm_common.json, lit: " in out and out.count("FAIL  light_dorm_common.json") == 1
+       and "FAIL  light_dorm_common.json, day" in out and rc2 == 0 and "dorm_common lit: [" in out2
+       and "dorm_common_lit.png" in out2, out + out2)
+    rc, out = run([tool("art_status.py"), "--root", root])
+    ok("art_status.py lists the lit picture in the new look, and nothing of it as stale or half made",
+       re.search(r"dorm_common_lit\s+revision 2\s+relight", out) is not None
+       and not re.search(r"(?m)^   (fg_|light_)?dorm_common_lit\s+(is still|made for)", out), out)
+    rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "lit", lamp, "--choose", "a", "--root", root2,
+                   "--layout-dump", stamp(lab.dump, root2, extra=lit_table)], py=True)
+    ok("a lit picture is not installed before its day picture is in the new look either (K8)",
+       rc != 0 and "not installed in the new look" in out and "lit" in out
+       and not os.path.exists(os.path.join(root2, "game", "images", "bg", "dorm_common_lit.png")), out)
+
     # review 3. A copy of the tree may stand at an OLDER revision than HEAD holds: these fixtures do, once a
     # picture of the overhaul is committed (the copy is the tree as it was before). The row must still name the
     # commit that holds the picture the install replaced, or its proof cannot be rerun. Made here with a small
@@ -1676,12 +1790,23 @@ POSE_PLAN = [
     {"who": "megumi", "place": "harajuku", "variant": "", "batch": 94, "doing": "t", "spot": "on the pavement"},
     {"who": "yuji", "place": "pool", "variant": "", "batch": 95, "doing": "t", "spot": "at the deck's edge"},
     {"who": "maki", "place": "dorm_common", "variant": "evening", "batch": 96, "doing": "t", "spot": "sitting on the old dusty sofa"},
+    # rooms lit at Night (U0n, 5.7a): a pose on a lit picture carries the variant `lit`
+    {"who": "megumi", "place": "library", "variant": "lit", "batch": 97, "doing": "t", "spot": "sitting at a reading table"},
+    {"who": "toge", "place": "library", "variant": "lit", "batch": 97, "doing": "t", "spot": "sitting at a reading table"},
+    {"who": "toge", "place": "senpai_room", "variant": "lit", "batch": 98, "doing": "t", "spot": "sitting at the board"},
+    {"who": "panda", "place": "senpai_room", "variant": "lit", "batch": 98, "state": "asleep", "doing": "asleep"},
 ]
 # The asleep, home and away tables of a test, in the shape the dump writes them (tools/smoke/u2_dump.rpy: `world`).
 TEST_TABLES = {"world": {"asleep": {"weekday": ["megumi", "panda"], "weekend": ["yuji", "toge"]},
                          "homes": {"megumi": "megumi_room", "panda": "senpai_room", "toge": "senpai_room", "yuji": "yuji_room"},
                          "away": {"nobara": {"Sun Afternoon": "harajuku"}, "maki": {"Sun Afternoon": "harajuku"},
-                                  "yuji": {"Sun Afternoon": "shibuya"}}}}
+                                  "yuji": {"Sun Afternoon": "shibuya"}}},
+               # the lit and late tables (U0n), at the dump's top level, in its shape
+               "lit_planned": [["library", "images/bg/library_lit.png"], ["megumi_room", "images/bg/megumi_room_lit.png"],
+                               ["senpai_room", "images/bg/senpai_room_lit.png"]],
+               "late": {"megumi": {"place": "library", "days": ["Sun"]}, "toge": {"place": "library", "days": ["Wed"]}}}
+# The same, with both of them out late on the same Night: then their two poses in the lit Library can show together.
+SAME_NIGHT = dict(TEST_TABLES, late={"megumi": {"place": "library", "days": ["Sun"]}, "toge": {"place": "library", "days": ["Sun"]}})
 
 
 def group_pose(lab):
@@ -1751,6 +1876,19 @@ def group_pose(lab):
     rc, out = run(mk + ["senpai_room", "panda", "night", "--asleep"] + asleep)
     ok("and for Panda, \"a very large mound under a blanket\"", rc == 0 and "a very large mound under a blanket" in out
        and "sleeper" not in out, out)
+    lit_man = os.path.join(lab.work, "pose_manifest_lit.json")
+    json.dump({"pictures": {"library": {"rev": 2, "kind": "inplace"},
+                            "library_lit": {"rev": 2, "kind": "relight", "of": "library", "of_rev": 2}}}, open(lit_man, "w"))
+    shutil.copyfile(os.path.join(bg, "your_room_night.png"), os.path.join(bg, "library_lit.png"))
+    shutil.copyfile(os.path.join(bg, "your_room_night.png"), os.path.join(bg, "senpai_room_lit.png"))
+    on_lit = ["--root", root, "--layout-dump", dump, "--manifest", lit_man, "--print", "--plan", plan]
+    rc, out = run(mk + ["library", "megumi", "lit"] + on_lit)
+    ok("a row on a lit picture (variant lit, U0n) is written as pose_<place>__<who>__lit and painted on <picture>_lit.png",
+       rc == 0 and "pose_library__megumi__lit" in out and re.search(r"picture 1:.*library_lit\.png", out) is not None, out)
+    json.dump({"pictures": {"library": {"rev": 2, "kind": "inplace"}}}, open(lit_man, "w"))
+    rc, out = run(mk + ["library", "megumi", "lit"] + on_lit)
+    ok("K8: and it is refused in one line while the room's lit picture is not installed in the new look",
+       rc != 0 and len(out.strip().splitlines()) == 1 and "library_lit" in out and "not installed in the new look" in out, out)
     rc, out = run(mk + ["harajuku", "nobara"] + planned)
     ok("it accepts a test row whose place is a district WORLD_AWAY sends that person to (the height from the "
        "district picture's keep list: 320 px)", rc == 0 and "about 320 pixels tall" in out, out)
@@ -1836,6 +1974,41 @@ def group_pose(lab):
         rc2, out2 = run(ip + [render("pose_senpai_room__toge__night_a_00001_.png", "1000,500,300,360", room2)] + tail)
         ok("but Toge awake at the board and Panda asleep beside it do show together (weekday Nights) and may not overlap",
            rc == 0 and rc2 != 0 and "can show together" in out2, out + out2)
+
+        # rooms lit at Night (U0n, 5.7a): poses on a lit picture, and the late table in "can show together"
+        lib = os.path.join(bg, "library_lit.png")
+
+        def restamp(tables=TEST_TABLES):
+            return ["--root", root, "--layout-dump", stamp(lab.dump, root, extra=tables), "--plan", plan]
+
+        rc, out = run(ip + [render("pose_library__megumi__lit_a_00001_.png", "1000,520,300,360", lib)] + restamp())
+        lman = check_campus.load_manifest(root)["pictures"]
+        ok("install_pose.py installs a pose on a lit picture: its box under <who>__lit in pose_<place>.json, and its "
+           "manifest row names <picture>_lit",
+           rc == 0 and "megumi__lit" in json.load(open(os.path.join(root, "game", "layout", "pose_library.json")))["poses"]
+           and lman.get("pose_library__megumi__lit") == {"of": "library_lit", "of_rev": 1}
+           and os.path.exists(os.path.join(root, "game", "images", "place", "pose_library__megumi__lit.png")), out)
+        clash = render("pose_library__toge__lit_a_00001_.png", "1100,540,300,360", lib)
+        rc, out = run(ip + [clash, "--dry"] + restamp(SAME_NIGHT))
+        ok("two overlapping poses in the lit Library are refused when the late table has both there on the same Night, "
+           "and the Night is named (Sun, Night)",
+           rc != 0 and "overlaps the box of pose_library__megumi__lit" in out and "can show together (Sun, Night)" in out, out)
+        rc, out = run(ip + [clash] + restamp())
+        ok("and accepted by the game's own table, where Megumi stays late on Sundays and Toge on Wednesdays: the two "
+           "never show together",
+           rc == 0 and "never show together" in out
+           and sorted(json.load(open(os.path.join(root, "game", "layout", "pose_library.json")))["poses"]) == ["megumi__lit", "toge__lit"], out)
+        room3 = os.path.join(bg, "senpai_room_lit.png")
+        rc, out = run(ip + [render("pose_senpai_room__panda__lit__asleep_a_00001_.png", "900,600,500,240", room3, "90,80,120")] + restamp())
+        rc2, out2 = run(ip + [render("pose_senpai_room__toge__lit_a_00001_.png", "1000,500,300,360", room3)] + restamp())
+        ok("on the shared room's lit picture Toge awake and Panda asleep can show together (a weekday Night) and may not "
+           "overlap; the Night Toge is out late is not the one named",
+           rc == 0 and rc2 != 0 and "overlaps the box of pose_senpai_room__panda__lit__asleep" in out2
+           and "can show together" in out2 and "(Wed, Night)" not in out2, out + out2)
+        no_wed = dict(TEST_TABLES, world=dict(TEST_TABLES["world"], asleep={"weekday": ["megumi"], "weekend": ["yuji", "toge", "panda"]}))
+        rc3, out3 = run(ip + [render("pose_senpai_room__toge__lit_a_00002_.png", "1000,500,300,360", room3), "--dry"] + restamp(no_wed))
+        ok("and with Panda asleep there on no Night Toge is at home awake, the same two boxes never show together",
+           rc3 == 0 and "never show together" in out3, out3)
 
         rc, out = run([tool("check_content.py"), "--layout-files", "--layout-dir", os.path.join(root, "game", "layout")])
         ok("what install_pose.py wrote for the campus rooms passes check_content.py --layout-files", rc == 0, out)
@@ -2219,6 +2392,18 @@ def group_status(lab):
     ok("a stale foreground of an hour picture names the picture whose revision moved (the day picture, not the hour's)",
        re.search(r"fg_dorm_common_evening\s+made for revision 1 of dorm_common, which is now at revision 2", out) is not None
        and "dorm_common_evening, which is now at revision" not in out, out)
+    bgdir = os.path.join(root, "game", "images", "bg")
+    shutil.copyfile(os.path.join(bgdir, "dorm_common_night.png"), os.path.join(bgdir, "dorm_common_lit.png"))
+    shutil.copyfile(os.path.join(root, "game", "images", "fg", "fg_dorm_common_night.png"),
+                    os.path.join(root, "game", "images", "fg", "fg_dorm_common_lit.png"))
+    rc, out = run([tool("art_status.py"), "--root", root])
+    ok("a lit picture (5.7a) made for the old room is listed as half made in its own words (the room stays dark at "
+       "Night whoever is up), and its foreground as stale against the day picture",
+       re.search(r"dorm_common_lit\s+is still the picture made for the old dorm_common; until it is remade the room "
+                 r"shows its dark Night picture even with someone up in it", out) is not None
+       and re.search(r"fg_dorm_common_lit\s+made for revision 1 of dorm_common, which is now at revision 2", out) is not None
+       and re.search(r"dorm_common_night\s+is still the picture made for the old dorm_common; until it is remade that hour "
+                     r"shows the new day picture tinted", out) is not None, out)
 
 
 # the sixteen look-test renders: (picture, render, verdict, what its words must hold). Five that nothing moved,
@@ -2296,6 +2481,8 @@ EARLY_CHOSEN = [
     ("6a7a", "infirmary", "", "ui2_infirmary_a", ""), ("8a", "rooftop", "", "ui2_rooftop_a", ""),
     ("3b", "dorm_common", "evening", "ui2_dorm_common_evening_a", "chosen"), ("3c", "dorm_common", "night", "ui2_dorm_common_night_off_a", "chosen"),
     ("3b", "your_room", "evening", "ui2_your_room_evening_b", "chosen"), ("3c", "your_room", "night", "ui2_your_room_night_off_a", "chosen"),
+    # My Room lit (5.7a): the lamp-on night of sitting 3b, version A, which the owner passed over as the room's night (O38)
+    ("3b", "your_room", "lit", "ui2_your_room_night_a", "chosen"),
     ("4b", "cafeteria", "evening", "ui2_cafeteria_evening_a", "chosen"), ("4b", "cafeteria", "night", "ui2_cafeteria_night_a", "chosen"),
     ("4b", "girls_dorm", "evening", "ui2_girls_dorm_evening_a", "chosen"), ("4b", "girls_dorm", "night", "ui2_girls_dorm_night_off_a", "chosen"),
     ("6a7a", "courtyard", "evening", "ui2_courtyard_evening_a", "chosen"), ("6a7a", "courtyard", "night", "ui2_courtyard_night_a", "chosen"),
@@ -2304,7 +2491,7 @@ EARLY_CHOSEN = [
     ("7b", "school_yard", "evening", "ui2_school_yard_evening_a", "chosen"), ("7b", "school_yard", "night", "ui2_school_yard_night_a", "chosen"),
     ("7b", "library", "evening", "ui2_library_evening_b", "look2_library_bright_00001_.png"),
     ("7b", "library", "night", "ui2_library_night_a", "look2_library_bright_00001_.png"),
-    ("7b", "library", "night", "ui2_library_night_lamps_a", "look2_library_bright_00001_.png"),
+    ("7b", "library", "lit", "ui2_library_night_lamps_a", "look2_library_bright_00001_.png"),
     ("8a", "dorm_yard", "evening", "ui2_dorm_yard_evening_b", "chosen"), ("8b", "dorm_yard", "night", "ui2_dorm_yard_night_moon_a", "chosen"),
     ("8b", "rooftop", "evening", "ui2_rooftop_evening_a", "chosen"), ("8b", "rooftop", "night", "ui2_rooftop_night_b", "chosen"),
     ("12d", "gojo_office", "evening", "ui2_gojo_office_evening_a", "chosen"), ("12d", "office", "evening", "ui2_office_evening_b", "chosen"),
@@ -2313,7 +2500,7 @@ EARLY_CHOSEN = [
     ("14p", "trailhead", "evening", "ui2_trailhead_evening_b", "chosen"), ("14p", "trailhead", "night", "ui2_trailhead_night_b", "chosen"),
     ("15b", "training", "evening", "ui2_training_evening_a", "chosen"), ("15b", "training", "night", "ui2_training_night_a", "chosen"),
     ("15b", "dojo", "evening", "ui2_dojo_evening_a", "chosen"), ("15b", "dojo", "night", "ui2_dojo_night_a", "chosen"),
-    ("15c", "dojo", "night", "ui2_dojo_lit2_a", "chosen"),
+    ("15c", "dojo", "lit", "ui2_dojo_lit2_a", "chosen"),
     ("15b", "storehouse", "evening", "ui2_storehouse_evening_a", "chosen"), ("15b", "storehouse", "night", "ui2_storehouse_night_a", "chosen"),
     ("16p", "training_yard", "evening", "ui2_training_yard_evening_a", "chosen"), ("16p", "training_yard", "night", "ui2_training_yard_night_b", "chosen"),
     ("18g", "gate", "evening", "ui2_gate_evening_a", "chosen"), ("18g", "gate", "night", "ui2_gate_night_b", "chosen"),
@@ -2322,19 +2509,20 @@ EARLY_CHOSEN = [
     ("17c", "forest", "evening", "ui2_forest_evening_a", "chosen"), ("17c", "forest", "night", "ui2_forest_night_a", "chosen"),
     ("19b", "bathhouse", "evening", "ui2_bathhouse_evening_a", "chosen"), ("19b", "bathhouse", "night", "ui2_bathhouse_night_a", "chosen"),
     # chosen on 11 Oct, after the list above was written (review 1). A `lit` picture (a room with its lamp on at
-    # Night, U0n's hour) is run as a night relight until the installer knows that hour, as the dojo's is.
+    # Night, 5.7a) is run under its own hour, `lit`, since U0n taught the installer that hour; all eight of the
+    # game's lit rooms are in this list (the Library's, My Room's and the dojo's above, the five friends' below).
     ("9b", "boys_dorm", "evening", "ui2_boys_dorm_evening_b", "chosen"), ("9b", "boys_dorm", "night", "ui2_boys_dorm_night_b", "chosen"),
     ("9c", "yuji_room", "evening", "ui2_yuji_room_evening_b", "chosen"), ("9c", "yuji_room", "night", "ui2_yuji_room_night_b", "chosen"),
-    ("9c", "yuji_room", "night", "ui2_yuji_room_lit_a", "chosen"),
+    ("9c", "yuji_room", "lit", "ui2_yuji_room_lit_a", "chosen"),
     ("10b", "megumi_room", "evening", "ui2_megumi_room_evening_b", "chosen"), ("10b", "megumi_room", "night", "ui2_megumi_room_night_b", "chosen"),
-    ("10b", "megumi_room", "night", "ui2_megumi_room_lit_b", "chosen"),
+    ("10b", "megumi_room", "lit", "ui2_megumi_room_lit_b", "chosen"),
     ("10b", "senpai_room", "evening", "ui2_senpai_room_evening_b", "chosen"), ("10b", "senpai_room", "night", "ui2_senpai_room_night_a", "chosen"),
-    ("10b", "senpai_room", "night", "ui2_senpai_room_lit_a", "chosen"),
+    ("10b", "senpai_room", "lit", "ui2_senpai_room_lit_a", "chosen"),
     ("11b", "nobara_room", "evening", "ui2_nobara_room_evening_b_00002_.png", "chosen"),
     ("11b", "nobara_room", "night", "ui2_nobara_room_night_b_00002_.png", "chosen"),
-    ("11b", "nobara_room", "night", "ui2_nobara_room_lit_b_00002_.png", "chosen"),
+    ("11b", "nobara_room", "lit", "ui2_nobara_room_lit_b_00002_.png", "chosen"),
     ("11b", "maki_room", "evening", "ui2_maki_room_evening_b", "chosen"), ("11b", "maki_room", "night", "ui2_maki_room_night_a", "chosen"),
-    ("11b", "maki_room", "night", "ui2_maki_room_lit_a", "chosen"),
+    ("11b", "maki_room", "lit", "ui2_maki_room_lit_a", "chosen"),
     ("13d", "teachers_lounge", "evening", "ui2_teachers_lounge_evening_a", "chosen"),
     ("13d", "teachers_lounge", "night", "ui2_teachers_lounge_night_b", "chosen"),
     ("13d", "teachers_dorm", "evening", "ui2_teachers_dorm_evening_a", "chosen"),

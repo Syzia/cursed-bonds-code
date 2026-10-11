@@ -8,6 +8,7 @@ game's numbers.
     lay.points("dorm_common")          # every exit and hotspot of the room, with the point the game draws
     lay.shapes("courtyard")            # the shapes its hot_ sidecar holds (D60)
     lay.where("megumi", "Mon", "Night")  # "megumi_room"; lay.asleep(...) True; lay.away("nobara", "Sun", "Afternoon") "harajuku"
+    lay.where("megumi", "Sun", "Night")  # "library": the late table (WORLD_LATE); lay.lit_places() the rooms with a lit picture
     python3 tools/game_layout.py [--layout-dump <file>]        # says whether the dump is fresh, and what it holds
 
 docs/UI2_DESIGN.md 5.4 and D47. The dump is written by a small harness
@@ -42,6 +43,22 @@ table (an old one, a test's) makes `asleep`, `away` and `districts` answer
 None ("not known"), and the pose tools then take the careful side: two boxes
 are assumed to show together, and a row in a Tokyo district is refused.
 
+ROOMS LIT AT NIGHT (D61, docs/UI2_DESIGN.md 5.7a; U0n). "lit" is a third hour
+picture: the room at Night with someone up in it (game/images/bg/<stem>_lit.png).
+The dump carries the game's two tables for it at its TOP level, beside
+`variants_planned`:
+
+    lit_planned    [[place, "images/bg/<stem>_lit.png"], ...]     (WORLD_LIT)
+    late           {who: {"place": place, "days": [weekday, ...]}} (WORLD_LATE: who stays out late at Night)
+
+`lit_places()`, `lit_file(place)` and `late()` read them, `where()` puts
+someone out late in the room the late table names (after the away table, as
+the game's char_location does), and so `asleep()` is False for them that
+Night. `periods_showing(place, "lit")` is Night. A dump written before U0n
+has neither key: `lit_places()` and `late()` then answer None ("not known"),
+`where()` answers from the routine alone, and a lit picture is counted for
+Night in any room.
+
 THE PICTURE IS WHAT IS CLICKED (D60). `shapes(place)` gives the shapes a
 place's hot_ sidecar holds, as written ({id: [polygon, ...]}), whatever the
 picture's revision; `keep_tile(place)`, `shaped(place)`, `front_ids(place)`,
@@ -60,7 +77,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DUMP = check_campus.DUMP
 STALE = check_campus.STALE
 WEEKEND_DAYS = ("Sat", "Sun")
-HOURS = ("", "evening", "night")
+HOURS = ("", "evening", "night", "lit")
+LIT = "lit"                 # the game's WORLD_LIT_ATTR: the room at Night with someone up in it (5.7a)
 # K16: nobody is painted here, ever.
 NO_POSE_PLACES = ("bathhouse", "sauna", "pool")
 
@@ -121,14 +139,45 @@ class Layout(object):
 
     def periods_showing(self, key, variant):
         """The periods at which the picture `variant` of a place is the one on screen, as far as the dump
-        knows, on the wide side: an hour picture that is not made yet is counted for its own hour too."""
+        knows, on the wide side: an hour picture that is not made yet is counted for its own hour too.
+        The lit picture of a room (5.7a) shows at Night and at no other hour; a room the game's lit table
+        does not name has none, so it shows never (with no such table in the dump: Night, the wide side)."""
         variants = self.place(key).get("variants") or {}
         out = set(p for p in self.d.get("periods", []) if (variants.get(p) or "") == variant)
         if variant == "evening":
             out.add("Evening")
         if variant == "night":
             out.add("Night")
+        if variant == LIT:
+            rooms = self.lit_places()
+            if rooms is None or key in rooms:
+                out.add("Night")
         return out
+
+    # ---- rooms lit at Night (5.7a)
+    def lit_places(self):
+        """The places that have a lit picture in the game's table (WORLD_LIT), in its order; None when
+        the dump has no such table (one written before U0n)."""
+        rows = self.d.get("lit_planned")
+        if not isinstance(rows, list):
+            return None
+        return [row[0] for row in rows if isinstance(row, list) and len(row) == 2]
+
+    def lit_file(self, key):
+        """"images/bg/<stem>_lit.png" as the game's table names it for a place, or None."""
+        for row in self.d.get("lit_planned") or []:
+            if isinstance(row, list) and len(row) == 2 and row[0] == key:
+                return row[1]
+        return None
+
+    def late(self):
+        """{who: (place, (weekday, ...))}: who stays out late at Night, and where (WORLD_LATE); None when
+        the dump has no such table."""
+        table = self.d.get("late")
+        if not isinstance(table, dict):
+            return None
+        return dict((who, (row.get("place"), tuple(row.get("days") or ()))) for who, row in table.items()
+                    if isinstance(row, dict))
 
     # ---- the points of a room
     def exits(self, place):
@@ -255,10 +304,15 @@ class Layout(object):
         return (away.get(who) or {}).get("%s %s" % (day, period), "")
 
     def where(self, who, day, period):
-        """The place the routine puts a person at (a district when they are away); None for nowhere."""
+        """The place the routine puts a person at (a district when they are away; the room the late
+        table names on a Night they stay out late); None for nowhere."""
         d = self.away(who, day, period)
         if d:
             return d
+        if period == "Night":
+            place, days = (self.late() or {}).get(who) or (None, ())
+            if place and day in days:
+                return place
         cell = None
         if day in WEEKEND_DAYS:
             cell = (self.d.get("weekend", {}).get(who) or {}).get(period)
@@ -298,6 +352,10 @@ def main(argv):
         got = lay._world(key)
         print("  %s (world.%s): %s" % (words, key, "NOT in the dump (see the top of this file)" if got is None else
                                        "in the dump, %d row%s" % (len(got), "" if len(got) == 1 else "s")))
+    lit, late = lay.lit_places(), lay.late()
+    old = "not known: this dump was written before U0n (run tools/smoke.sh u2_dump)"
+    print("  the rooms with a lit picture (lit_planned): %s" % (old if lit is None else "%d row%s" % (len(lit), "" if len(lit) == 1 else "s")))
+    print("  who stays out late at Night (late): %s" % (old if late is None else "%d row%s" % (len(late), "" if len(late) == 1 else "s")))
     print("  %d place%s with shapes in a sidecar, %d shaped now"
           % (len(d.get("shapes") or {}), "" if len(d.get("shapes") or {}) == 1 else "s", len(d.get("shaped") or [])))
 

@@ -10,7 +10,8 @@ judged on BEFORE its picture or its layout is installed.
             --beside shots/stage_ref/common_evening_3.png                    # laid beside a game screenshot
 
   <place>      a place's key, or its picture's name
-  [hour]       day (the afternoon), morning, noon, afternoon, evening, night. With an hour, ONE frame is drawn at
+  [hour]       day (the afternoon), morning, noon, afternoon, evening, night, lit (5.7a: Night, on the room's lit
+               picture, <stem>_lit.png, under its light row "lit"). With an hour, ONE frame is drawn at
                full size (shots/stage/<place>_<hour>.jpg); with none, the SHEET: one to four people by day and a
                frame for each hour, at half size, and for a shaped place two frames more, at full size
   --who a,b,c  who stands there, in stage order (one to four; "yuji:happy" names an expression; `none` for the
@@ -89,7 +90,8 @@ FAR_BLUR, FAR_DIM = 0.8, 0.02       # view_stage.rpy: VIEW_FAR_BLUR, VIEW_FAR_DI
 SOLE = 1365                         # the sole row of every sprite canvas (the dump's people[].feet[1])
 DAY_HOURS = ("Morning", "Noon", "Afternoon")        # lighting.rpy: LIGHT_DAY_HOURS
 HOUR_WORDS = {"day": "Afternoon", "morning": "Morning", "noon": "Noon", "afternoon": "Afternoon",
-              "evening": "Evening", "night": "Night"}
+              "evening": "Evening", "night": "Night", "lit": "Night"}
+LIT = game_layout.LIT               # the room at Night with someone up in it (5.7a): asked for by the hour `lit`
 # jjk_defs.rpy: pos_c, pos_l and pos_r, pos_cl and pos_cr with the outer two (xalign, zoom)
 DIALOGUE = {1: [(0.50, 0.64)], 2: [(0.17, 0.62), (0.83, 0.62)], 3: [(0.17, 0.62), (0.50, 0.64), (0.83, 0.62)],
             4: [(0.17, 0.62), (0.35, 0.62), (0.65, 0.62), (0.83, 0.62)]}
@@ -158,6 +160,7 @@ class Room(object):
         self.extra = self.extra or {}
         self.sprite = tuple(lay.frame("sprite", [760, 1400]))
         self._sampled = {}
+        self.lit = False            # the hour asked for is `lit`: at Night the room's lit picture, not its night
 
     def _file(self, kind):
         name = "%s_%s.json" % (kind, self.place)
@@ -168,6 +171,8 @@ class Room(object):
 
     # -- the picture
     def variant(self, period):
+        if self.lit and period == "Night":
+            return LIT
         return (self.lay.place(self.place).get("variants") or {}).get(period) or ""
 
     def picture(self, period):
@@ -175,9 +180,12 @@ class Room(object):
         v = self.variant(period)
         if self.bg:
             own = "evening" if period == "Evening" else ("night" if period == "Night" else "")
+            own = LIT if (self.lit and period == "Night") else own
             a = rm.load(self.bg)[0] / 255.0
             return a, own, "%s, taken as the %s picture" % (os.path.basename(self.bg), own or "day")
         path = self.lay.bg_path(self.place, v, self.root)
+        if v == LIT and not os.path.exists(path):
+            raise SystemExit("no lit picture at %s: give one with --bg" % path)
         if v and not os.path.exists(path):
             v, path = "", self.lay.bg_path(self.place, "", self.root)
         if not os.path.exists(path):
@@ -579,6 +587,7 @@ def main(argv):
     if staged and not os.path.isdir(staged):
         raise SystemExit("no folder at %s" % staged)
     room = Room(lay, place, root, staged, os.path.expanduser(bg) if bg else None)
+    room.lit = hour == LIT
     title = "%s (%s)" % (lay.name(place), place)
     out_dir = os.path.join(root, "shots", "stage")
 

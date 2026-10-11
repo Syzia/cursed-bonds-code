@@ -441,7 +441,8 @@ init -2 python:
     WORLD_DOOR_BOND = {None: 15}
 
     ## Who is asleep at Night, by the kind of day. world_asleep() is the
-    ## only reader.
+    ## only reader (and world_late_validate, lint: nobody on a night's list
+    ## is out late that night).
     WORLD_ASLEEP = {
         "weekday": ("megumi", "maki", "panda", "utahime", "ijichi"),
         "weekend": ("yuji", "nobara", "toge", "utahime", "ijichi"),
@@ -456,6 +457,32 @@ init -2 python:
         "maki":   {("Sun", "Afternoon"): "harajuku"},
         "yuji":   {("Sun", "Afternoon"): "shibuya"},
     }
+
+    ## Some nights someone stays out late (U0n; docs/UI2_DESIGN.md 5.7a, D61;
+    ## the owner's yes of 11 Oct, O47): who -> (place, the weekdays). On the
+    ## Night of each of those weekdays the person is in that room instead of
+    ## at home, awake. char_location reads it in its routine branch, after
+    ## WORLD_AWAY, so a story pin or a flag schedule still wins. Init data:
+    ## nothing is saved. world_late_validate (lint) holds what a row may be.
+    WORLD_LATE = {
+        "megumi": ("library", ("Sun",)),
+        "toge":   ("library", ("Wed",)),
+    }
+
+    ## The places shut at Night (place_access refuses them then, with the
+    ## tag "Night"): nobody stays late in one, and none has a lit picture.
+    WORLD_SHUT_NIGHT = ("office", "utahime_office", "gojo_office", "pool")
+
+    def world_late_cell(who, per=None):
+        """U0n. The place WORLD_LATE has this person in tonight, or None:
+        the table alone (the hour asked is Night and today is one of the
+        row's weekdays), whoever they are with."""
+        if (per or store.period) != "Night":
+            return None
+        row = WORLD_LATE.get(who)
+        if row and weekday() in row[1]:
+            return row[0]
+        return None
 
     def world_inside(loc):
         """U0b (sb_world.rpy). The key of the house a place opens off
@@ -664,6 +691,49 @@ init -2 python:
 
     world_variants_register()
 
+    ## Rooms lit at Night (U0n; docs/UI2_DESIGN.md 5.7a, D61). A room that is
+    ## shown both ways at Night has two pictures: `bg <place> night`, the
+    ## room with nobody up in it, and `bg <place> lit`, the room with its
+    ## lamps on. One row a room: (place, file). A row does nothing until its
+    ## file exists; a table of its own, so WORLD_VARIANTS keeps its 56 rows.
+    ## The Library (someone studies late: WORLD_LATE), the five friends'
+    ## rooms (up, or asleep or out), and My Room and the dojo, whose lit
+    ## pictures only written scenes ask for (world_lit_bg).
+    WORLD_LIT_ATTR = "lit"
+
+    def world_lit_rows():
+        """U0n. The rows of WORLD_LIT, built from the list of rooms."""
+        return tuple((loc, "images/bg/%s_%s.png" % (LOCATIONS[loc]["bg"].split()[1], WORLD_LIT_ATTR))
+                     for loc in ("library", "yuji_room", "megumi_room", "senpai_room",
+                                 "nobara_room", "maki_room", "dorm", "dojo"))
+
+    WORLD_LIT = world_lit_rows()
+
+    ## place -> file, for the rows that registered. Init data, filled once
+    ## at init and never saved. (A harness may change it in place to test
+    ## the reader, as it does TIME_VARIANT.)
+    WORLD_LIT_ON = {}
+
+    def world_lit_register():
+        """U0n. For each row of WORLD_LIT whose file is loadable and fresh
+        (art_fresh: made for the day picture that is installed), define its
+        image ("bg <picture> lit") and note the place in WORLD_LIT_ON.
+        Returns the rows it used. Called once, at init, as
+        world_variants_register is."""
+        used = []
+        for loc, path in WORLD_LIT:
+            if loc not in LOCATIONS or not renpy.loadable(path):
+                continue
+            stem = LOCATIONS[loc]["bg"].split()[1]
+            if not art_fresh("%s_%s" % (stem, WORLD_LIT_ATTR), stem):
+                continue
+            renpy.image("%s %s" % (LOCATIONS[loc]["bg"], WORLD_LIT_ATTR), path)
+            WORLD_LIT_ON[loc] = path
+            used.append((loc, path))
+        return used
+
+    world_lit_register()
+
     def world_fg_room(loc):
         """U0c2. bool: the room has a foreground cut for its day picture
         (images/fg/fg_<loc>.png), so an hour picture of it needs a cut of
@@ -672,7 +742,9 @@ init -2 python:
 
     def bg_variant(loc, per):
         """The attribute of the painted picture a place shows at this hour
-        ("evening", "night"), or None when the day picture is tinted.
+        ("evening", "night"; "lit" at Night in a room with a lit picture
+        while somebody is up in it, U0n), or None when the day picture is
+        tinted.
 
         The second overhaul (U0c2; 5.5, K7: nothing stale is shown): None as
         well for an hour picture made for a day picture that has since been
@@ -680,6 +752,10 @@ init -2 python:
         whose own foreground cut does not exist yet or is stale. The game
         then does what it does with no hour picture: the day picture,
         tinted."""
+        ## U0n (5.7a, D61): at Night, the lit picture of a room somebody is
+        ## up in. With no lit picture registered this is never taken.
+        if per == "Night" and loc in WORLD_LIT_ON and world_lit_ready(loc) and world_night_up(loc, per):
+            return WORLD_LIT_ATTR
         v = TIME_VARIANT.get(loc, {}).get(per)
         if not v or loc not in LOCATIONS:
             return v
@@ -692,6 +768,66 @@ init -2 python:
                 return None
         return v
 
+    def world_lit_ready(loc):
+        """U0n (K7). bool: the place has a lit picture that can be shown:
+        registered (WORLD_LIT_ON), its file loadable, fresh against the day
+        picture that is installed, and, in a room with a foreground, with
+        its own cut (images/fg/fg_<loc>_lit.png) there and fresh. Who is in
+        the room is not asked here (world_night_up)."""
+        path = WORLD_LIT_ON.get(loc)
+        if not path or loc not in LOCATIONS or not renpy.loadable(path):
+            return False
+        stem = LOCATIONS[loc]["bg"].split()[1]
+        lit = "%s_%s" % (stem, WORLD_LIT_ATTR)
+        if not art_fresh(lit, stem):
+            return False
+        if world_fg_room(loc):
+            if (not renpy.loadable("images/fg/fg_%s_%s.png" % (loc, WORLD_LIT_ATTR))
+                    or not art_fresh("fg_%s_%s" % (loc, WORLD_LIT_ATTR), lit)):
+                return False
+        return True
+
+    def world_night_up(loc, per=None):
+        """U0n (5.7a, D61). bool: at Night, somebody is up in this place.
+
+        False whenever there is no Night to ask about: the hour asked (per,
+        else the hour it is) is not Night, or the store holds no hour yet
+        (init, where the memory tiles are built; lint).
+        In a replay: whether the memory being replayed names a person, read
+        from what the replay holds (_mem_label, _mem_args); False when the
+        memory is not found. A memory's room is lit by its own cast, never
+        by the weekday the journal happens to be opened on.
+        Otherwise: whether anyone on the roster has this place as their own
+        that hour (char_location: the routine, a late stay, a story pin) and
+        is not asleep (world_asleep). I do not count, and whoever walks with
+        me counts only in the room their own table has them in: who_is_here,
+        which adds a companion to the place I stand in, is not read."""
+        now = getattr(store, "period", None)
+        if now is None or (per or now) != "Night":
+            return False
+        if getattr(store, "_in_replay", None):
+            label = getattr(store, "_mem_label", None)
+            args = tuple(getattr(store, "_mem_args", None) or ())
+            for m in getattr(store, "MEMORIES", ()):
+                if m["label"] == label and tuple(m["args"]) == args:
+                    return bool(m["who"])
+            return False
+        for who in getattr(store, "roster", ()):
+            if char_location(who, "Night") == loc and not world_asleep(who, "Night"):
+                return True
+        return False
+
+    def world_lit_bg(place):
+        """U0n (5.7a). What a written scene shows when it needs a room lit at
+        Night (`scene expression world_lit_bg("dorm")`): the room's lit
+        picture, by name, when it is installed and fresh with its cut
+        (world_lit_ready); else graded_bg(place, "Night"), what the scene
+        would have shown without it. It does not ask who is there: the
+        scene says so."""
+        if world_lit_ready(place):
+            return "%s %s" % (LOCATIONS[place]["bg"], WORLD_LIT_ATTR)
+        return graded_bg(place, "Night")
+
     def bg_name(loc=None, per=None):
         loc = loc or store.here
         per = per or store.period
@@ -703,15 +839,22 @@ init -2 python:
             base += " " + v
         return base
 
-    ## Built once per (place, period) and held outside the store, so screens
-    ## don't churn a new Transform every interaction and saves stay small.
+    ## Built once per (place, period, attribute) and held outside the store,
+    ## so screens don't churn a new Transform every interaction and saves
+    ## stay small. The attribute (U0n) is "lit" for a room shown lit at
+    ## Night and None otherwise, so the two pictures of one place's Night
+    ## are two rows. (veil_bg, below, keeps its own two-part keys.)
     _BG_CACHE = {}
 
     def graded_bg(loc=None, per=None):
         """The location background, lit for the current period."""
         loc = loc or store.here
         per = per or store.period
-        key = (loc, per)
+        ## U0n: which of a room's two Night pictures is asked each time (it
+        ## turns on who is up there); nothing is asked for a place with no
+        ## lit picture registered, or at another hour.
+        lit = per == "Night" and loc in WORLD_LIT_ON and bg_variant(loc, per) == WORLD_LIT_ATTR
+        key = (loc, per, WORLD_LIT_ATTR if lit else None)
         if key in _BG_CACHE:
             return _BG_CACHE[key]
         img = bg_name(loc, per)
@@ -730,7 +873,7 @@ init -2 python:
             _BG_CACHE[key] = img
             return img
         d = Transform(img, matrixcolor=TintMatrix(tint) * BrightnessMatrix(bright))
-        d._light_key = key          # lets lighting.rpy light the characters to match
+        d._light_key = (loc, per)   # lets lighting.rpy light the characters to match
         _BG_CACHE[key] = d
         return d
 
@@ -900,7 +1043,8 @@ init -2 python:
     def char_location(who, per=None):
         """Where a character is during a given period, or None if off campus.
         (WP1: a FLAG_SCHEDULES entry replaces the routine, and Gojo keeps
-        office hours on his in-days; story pins still win.)"""
+        office hours on his in-days; story pins still win. U0n: on a Night
+        WORLD_LATE names, the room it names, by routine.)"""
         per = per or store.period
         found, table = flag_schedule(who)
         if found:
@@ -917,6 +1061,8 @@ init -2 python:
             ## In Tokyo this hour (WORLD_AWAY): off campus, by routine.
             if world_away_cell(who, per):
                 loc = "-"
+            ## Out late tonight (WORLD_LATE, U0n): that room, by routine.
+            loc = world_late_cell(who, per) or loc
         loc = store.schedule_overrides.get((who, store.day, per), loc)
         if loc == "-" or who not in store.roster:
             return None
@@ -1176,6 +1322,83 @@ init -2 python:
 
     register_migration(15, _migrate_15, "Gojo's roll, a missing place")
 
+    ## Validators (U0n): the lit rooms and the late stays ---------------------------
+    ## Each takes its tables as arguments, so a harness can hand it a wrong
+    ## one; lint calls them with none (_validate_world).
+
+    def world_lit_validate(lit=None, shut=None, on=None):
+        """U0n. Lint findings for WORLD_LIT (and for WORLD_SHUT_NIGHT and the
+        rows that registered): a row is (place, images/bg/<stem>_lit.png)
+        for a room indoors that is not shut at Night, listed once; a
+        registered row has its image."""
+        lit = WORLD_LIT if lit is None else lit
+        shut = WORLD_SHUT_NIGHT if shut is None else shut
+        on = WORLD_LIT_ON if on is None else on
+        out = []
+        for l in shut:
+            if l not in LOCATIONS:
+                out.append("WORLD_SHUT_NIGHT has unknown place %r" % (l,))
+        seen = set()
+        for row in lit:
+            if not (isinstance(row, tuple) and len(row) == 2 and row[0] in LOCATIONS):
+                out.append("WORLD_LIT: %r must be (place, file)" % (row,))
+                continue
+            loc, path = row
+            if path != "images/bg/%s_%s.png" % (LOCATIONS[loc]["bg"].split()[1], WORLD_LIT_ATTR):
+                out.append("WORLD_LIT[%s]: the file must be images/bg/%s_%s.png, not %r"
+                           % (loc, LOCATIONS[loc]["bg"].split()[1], WORLD_LIT_ATTR, path))
+            if not LOCATIONS[loc]["indoor"]:
+                out.append("WORLD_LIT: %r is outdoors (a yard has one Night picture)" % (loc,))
+            if loc in shut:
+                out.append("WORLD_LIT: %r is shut at Night (WORLD_SHUT_NIGHT)" % (loc,))
+            if loc in seen:
+                out.append("WORLD_LIT: %r is listed twice" % (loc,))
+            seen.add(loc)
+        for loc in sorted(on):
+            if loc not in seen:
+                out.append("WORLD_LIT_ON: %r has no WORLD_LIT row" % (loc,))
+            elif not renpy.has_image(tuple(LOCATIONS[loc]["bg"].split()) + (WORLD_LIT_ATTR,), exact=True):
+                out.append("WORLD_LIT_ON[%s]: no image %r" % (loc, "%s %s" % (LOCATIONS[loc]["bg"], WORLD_LIT_ATTR)))
+        return out
+
+    def world_late_validate(late=None, lit=None, shut=None):
+        """U0n (5.7a). Lint findings for WORLD_LATE: a row is who ->
+        (place, weekdays); the person has a routine of their own and is
+        awake on each of those Nights (not on that night's WORLD_ASLEEP
+        list); the place is indoors, is nobody's home, has no Bond door, is
+        not shut at Night, and has a WORLD_LIT row."""
+        late = WORLD_LATE if late is None else late
+        lit = WORLD_LIT if lit is None else lit
+        shut = WORLD_SHUT_NIGHT if shut is None else shut
+        out = []
+        lit_places = set(r[0] for r in lit if isinstance(r, tuple) and r)
+        for who in sorted(late):
+            row = late[who]
+            if who not in CAST or who not in SCHEDULE or who == "gojo":
+                out.append("WORLD_LATE has %r, who has no routine of their own in SCHEDULE" % (who,))
+            if not (isinstance(row, tuple) and len(row) == 2 and isinstance(row[1], tuple) and row[1]
+                    and all(d in WEEKDAYS for d in row[1])):
+                out.append("WORLD_LATE[%s]: %r is not (place, (weekday, ...))" % (who, row))
+                continue
+            loc, days = row
+            if loc not in LOCATIONS:
+                out.append("WORLD_LATE[%s]: unknown place %r" % (who, loc))
+                continue
+            for d in days:
+                if who in WORLD_ASLEEP.get("weekend" if d in ("Sat", "Sun") else "weekday", ()):
+                    out.append("WORLD_LATE[%s]: asleep on a %s Night (WORLD_ASLEEP), so cannot be out late then" % (who, d))
+            if not LOCATIONS[loc]["indoor"]:
+                out.append("WORLD_LATE[%s]: %r is outdoors (a yard has one Night picture and is lit by nobody)" % (who, loc))
+            if loc in WORLD_HOMES.values():
+                out.append("WORLD_LATE[%s]: %r is somebody's home" % (who, loc))
+            if loc in WORLD_DOOR_OWNERS:
+                out.append("WORLD_LATE[%s]: %r has a Bond door (WORLD_DOOR_OWNERS)" % (who, loc))
+            if loc in shut:
+                out.append("WORLD_LATE[%s]: %r is shut at Night (WORLD_SHUT_NIGHT)" % (who, loc))
+            if loc not in lit_places:
+                out.append("WORLD_LATE[%s]: %r has no WORLD_LIT row (the room would stay dark with someone up in it)" % (who, loc))
+        return out
+
     ## Validator (WP1) ---------------------------------------------------------------
 
     def _validate_world():
@@ -1289,6 +1512,8 @@ init -2 python:
             if (loc, per) in seen_rows:
                 out.append("WORLD_VARIANTS: %s at %s is listed twice" % (loc, per))
             seen_rows.add((loc, per))
+        out += world_lit_validate()
+        out += world_late_validate()
         for k in DISTRICT_ORDER:
             if k not in DISTRICTS:
                 out.append("DISTRICT_ORDER lists unknown district %r" % k)

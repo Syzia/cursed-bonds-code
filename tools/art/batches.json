@@ -2,11 +2,12 @@
  "format": 1,
  "about": [
   "tools/art/batches.json -- the batch table of docs/UI2_DESIGN.md 5.13, as data. tools/art_batch.py <n> reads it and writes that sitting's workflows and its page of numbered steps.",
-  "Every picture is made in two versions unless its row says `versions`. No batch is over twelve renders and no file over ten.",
+  "Every picture is made in two versions unless its row says `versions`. No batch is over twelve renders and no file over ten. `versions` 0 with `made` is a picture that exists already (a render of an earlier sitting, which `made` names): it is counted as a picture, costs no render, and art_batch.py writes nothing for it.",
   "`needs` are markers that must be in `done` before a batch (or a file of it) is written: \"1\" is all of batch 1, \"7a\" its first file. `needs_words` is the plan's own wording, for a person.",
   "`done` is the art-install role's: `tools/art_batch.py --done 3a` adds a marker when that file's pictures are installed (or, for a test of a wording, judged).",
   "Picture kinds art_batch.py writes itself: composed (a yard, the gate, a new place), inplace, relight, map. The others name the tool or the sitting that makes them.",
-  "`hour_words` is a relight's own hour sentence, for a room the general one would not fit (a windowless room by lamplight; a friend's room at Night with one small lamp on).",
+  "`hour_words` is a relight's own hour sentence, for a room the general one would not fit (a windowless room by lamplight; a friend's room at Night with one small lamp on). A relight's `hour` is evening, night or lit: `night` is the room at Night with nobody up in it, `lit` the same room with someone up (D61, 5.7a; the eight rooms of the game's WORLD_LIT). Every indoor night row has words of its own (lights off; for the infirmary and the Teachers' Dormitory, their lamps), because the tool's general indoor sentence with the lamps on is the `lit` one.",
+  "`painted_early`: true on a batch says every picture of it was painted and chosen at an earlier sitting (its `note` says where the records are). Its renders are still counted, as the plan prices them, and its workflows can still be written for a picture wanted once more, but its page of steps opens by telling the owner there is nothing to run.",
   "`canary` and install figures are added beside a batch by the installer (5.2); nothing here is read by the game."
  ],
  "cost_per_render": 0.16,
@@ -181,7 +182,7 @@
    ],
    "needs_words": "1 (the garden chosen: the Common Room's windows show the Boys' Dormitory and the tower as the garden has them)",
    "unlocks": "two rooms whole, by day, in the evening and at night, foregrounds recut",
-   "note": "The first test of three wordings: the look on a room redone in place, a named addition (the laptop, in a) and an indoor relight (b). a's Common Room render is the canary's baseline, measured against revision 1 (5.2).",
+   "note": "The first test of three wordings: the look on a room redone in place, a named addition (the laptop, in a) and an indoor relight (b). a's Common Room render is the canary's baseline, measured against revision 1 (5.2). My Room's `lit` row costs no render: it is the lamp-on night b painted first (5.7a); the place view never shows it, only the written scenes that ask for it.",
    "files": [
     {
      "name": "art_3a",
@@ -227,6 +228,13 @@
        "kind": "relight",
        "hour": "night",
        "hour_words": "Change the time of day to night, with every light in the room switched off: the ceiling light and every lamp are dark. Outside the windows it is night, under a deep blue sky with stars. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly."
+      },
+      {
+       "place": "dorm",
+       "kind": "relight",
+       "hour": "lit",
+       "versions": 0,
+       "made": "The lamp-on night of sitting 3b, version A (ui2_your_room_night_a): it was painted as the room's night with the tool's indoor night sentence of then, which is the general `lit` sentence now, before the owner had the night painted again with the lights off (O38). 5.7a makes it My Room's `lit` (tools/art/staged/early/art_3b_early.json)."
       }
      ]
     }
@@ -381,7 +389,7 @@
     "1"
    ],
    "unlocks": "lit windows and a real sky where I walk every evening",
-   "note": "a is the first outdoor relight; b is written only when a is judged to hold.",
+   "note": "a is the first outdoor relight; b is written only when a is judged to hold. The Library's `lit` row costs no render: its lamps-on night was painted with b and kept (O42, 5.7a).",
    "files": [
     {
      "name": "art_7a",
@@ -429,6 +437,14 @@
        "kind": "relight",
        "hour": "night",
        "hour_words": "Change the time of day to night, with every light in the room switched off: the ceiling lights and the desk lamps are dark. Outside the windows it is night, under a deep blue sky with stars, and everything that stands outside the windows is still there, as dark shapes against the sky. The room is lit only by cool blue moonlight coming in through the windows, which lies in pale patches on the floor and the furniture. The room is dim, but everything in it can still be seen clearly."
+      },
+      {
+       "place": "library",
+       "kind": "relight",
+       "hour": "lit",
+       "hour_words": "Change the time of day to night: outside the windows it is dark, under a deep blue sky with stars, and everything that stands outside the windows is still there, as dark shapes against the sky. The ceiling lights are off. The green desk lamps on the reading tables are switched on and make small warm pools of light on the tables; the rest of the room is dim, in cool blue moonlight from the windows, but everything in it can still be seen clearly. Add no new lamp.",
+       "versions": 0,
+       "made": "The lamps-on night painted with sitting 7b and kept for D61, version A (ui2_library_night_lamps_a; its fit is library_night_lit_1920.png in the early folder's chosen/): tools/art/staged/early/art_7b_early.json, `kept_for_D61`."
       }
      ]
     }
@@ -541,13 +557,13 @@
       {
        "place": "yuji_room",
        "kind": "relight",
-       "hour": "night",
+       "hour": "lit",
        "hour_words": "Change the time of day to night, with the television switched on and nothing else lit. The television's screen shows a still picture of a starry sky over dark hills, with no lettering on it, and its cool light falls on the floor cushion in front of it, on the floor round it and on the shelf beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, the posters and the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the timber rail of the gallery, the pond below and the white-plastered house across the garden, with a few of its upstairs windows glowing warm. Add no lamp and no other light."
       }
      ]
     }
    ],
-   "note": "Yuji's room: the row marked night is the room with him up (5.7a's `lit`): the room has no lamp, so it is lit by its television. Its dark night, batch 47's, was made early with it; that sentence is in tools/art/staged/early/art_9c_early.json."
+   "note": "Yuji's room: its `lit` row is the room with him up (5.7a): the room has no lamp, so it is lit by its television. Its dark `night`, nobody up, is batch 47's. Both were painted early with its evening and chosen on 11 Oct (tools/art/staged/early/art_9c_early.json)."
   },
   {
    "id": "10",
@@ -588,7 +604,7 @@
       {
        "place": "megumi_room",
        "kind": "relight",
-       "hour": "night",
+       "hour": "lit",
        "hour_words": "Change the time of day to night, with the small desk lamp switched on and nothing else lit. The lamp makes a warm pool of light on the desk, the closed book and the nearest shelves; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made and empty, the bookshelf and the door. Outside the window it is night: the cedar trunks and the forest are still there, as dark shapes, with pieces of deep blue sky and stars between them; the moon itself is not in view. Add no other lamp and no other light."
       },
       {
@@ -600,13 +616,13 @@
       {
        "place": "senpai_room",
        "kind": "relight",
-       "hour": "night",
+       "hour": "lit",
        "hour_words": "Change the time of day to night, with the paper floor lamp switched on and nothing else lit. The lamp glows warm and makes a soft pool of light on the mats, on the chest beside it and on the head of the large futon; the rest of the room is in soft shadow, but everything in it can still be seen clearly: both futons, made and empty, the shogi board and its cushions, and the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the gallery's rail, the tiled roof and the tall wooden tower, with no window lit. Add no other lamp and no other light."
       }
      ]
     }
    ],
-   "note": "Each room's row marked night is the room with someone up (5.7a's `lit`): Megumi's by its desk lamp, the shared room's by its paper floor lamp. Their dark nights, batch 47's, were made early with them; those sentences are in tools/art/staged/early/art_10b_early.json."
+   "note": "Each room's `lit` row is the room with someone up (5.7a): Megumi's by its desk lamp, the shared room's by its paper floor lamp. Their dark `night` rows, nobody up, are batch 47's. All were painted early with the evenings and chosen on 11 Oct (tools/art/staged/early/art_10b_early.json)."
   },
   {
    "id": "11",
@@ -647,7 +663,7 @@
       {
        "place": "nobara_room",
        "kind": "relight",
-       "hour": "night",
+       "hour": "lit",
        "hour_words": "Change the time of day to night, with the bedside lamp switched on and nothing else lit. The lamp makes a warm pool of light on the head of the bed, the wall behind it and the floor beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed with its cushions, made and empty, the clothes on their rail and the shoes under them, the mirrors, which show only the room, the desk, the rug and the row of bags. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the flowers in the window box, the pond, the house of dark timber with a few of its upstairs windows glowing warm, and the low house with glass doors, dark. Add no other lamp and no other light."
       },
       {
@@ -659,13 +675,13 @@
       {
        "place": "maki_room",
        "kind": "relight",
-       "hour": "night",
+       "hour": "lit",
        "hour_words": "Change the time of day to night, with the small desk lamp switched on and nothing else lit. The lamp makes a warm pool of light on the desk, the wall behind it and the weapon case beside it; the rest of the room is in soft shadow, but everything in it can still be seen clearly: the bed, made flat, with only the folded uniform on it, the rack of wooden weapons on the wall, the weapon case, the desk, the mat and the dumbbells on the floor, and the bar over the door. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the cedars, the small house with the very large window and the great tiled roof behind it, with no window lit. Add no other lamp and no other light."
       }
      ]
     }
    ],
-   "note": "The two rooms are the fuller ones of art_11d.json (O65). Each room's row marked night is the room with her up (5.7a's `lit`): Nobara's by her bedside lamp, Maki's by her desk lamp. Their dark nights, batch 47's, were made early with them; those sentences are in tools/art/staged/early/art_11b_early.json."
+   "note": "The two rooms are the fuller ones of art_11d.json (O65). Each room's `lit` row is the room with her up (5.7a): Nobara's by her bedside lamp, Maki's by her desk lamp. Their dark `night` rows, nobody up, are batch 47's. All were painted early with the evenings and chosen on 11 Oct (tools/art/staged/early/art_11b_early.json)."
   },
   {
    "id": "12",
@@ -1421,9 +1437,10 @@
    "id": "27",
    "title": "poses: asleep (rows 27 to 32)",
    "needs": [
-    "25"
+    "25",
+    "47"
    ],
-   "needs_words": "25 installed (each shape is kept clear of the pose that shows beside it)",
+   "needs_words": "25 installed (each shape is kept clear of the pose that shows beside it); 47 (the dark `night` pictures the four single rooms' shapes are painted on; Panda's and Toge's are painted on their room's `lit`: 5.7a)",
    "note": "A shape under a blanket in each friend's bed, turned to the wall (K16).",
    "files": [
     {
@@ -2252,6 +2269,69 @@
       {
        "kind": "pose",
        "row": 67
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "47",
+   "heading": "Rooms lit at Night (D61, docs/UI2_DESIGN.md 5.7a)",
+   "title": "the friends' rooms dark, and the dojo lit",
+   "painted_early": true,
+   "needs": [
+    "9",
+    "10",
+    "11",
+    "15"
+   ],
+   "needs_words": "9, 10, 11 (the five rooms chosen by day); 15 (the dojo); U0n, which lands before any lit file is installed (5.7a)",
+   "unlocks": "a friend's room is dark while its owner is asleep or out and lamp-lit while they are up; the dojo's late scene has its picture ready for the story phase (5.7a)",
+   "note": "A sitting of its own because 9, 10, 11 and 15 are each at twelve renders already. EVERY PICTURE OF IT WAS PAINTED EARLY AND CHOSEN ON 11 OCT, so there is nothing left to run: the five dark nights with their rooms' other hours (tools/art/staged/early/art_9c_early.json, art_10b_early.json, art_11b_early.json), and the dojo's lit picture, every lamp on, as art_15c.json (art_15c_early.json: ui2_dojo_lit2_a; the first, with one lamp, the owner refused: O48). They are installed with tools/install_redo.py --relight <place> night, and --relight dojo lit. The friends' own `lit` rows are in batches 9, 10 and 11; the Library's and My Room's, which cost no render, in 7b and 3b.",
+   "files": [
+    {
+     "name": "art_47_1",
+     "pictures": [
+      {
+       "place": "yuji_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off and the television off. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the timber rail of the gallery, the pond below and the white-plastered house across the garden, with a few of its upstairs windows glowing warm. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made and empty, the posters, the shelf, the television and the cushion. Add no new light."
+      },
+      {
+       "place": "megumi_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the desk lamp is dark. Outside the window it is night: the cedar trunks and the forest are still there, as dark shapes, with pieces of deep blue sky and stars between them; the moon itself is not in view. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made and empty, the bookshelf, the desk and the shoes by the door. Add no new light."
+      },
+      {
+       "place": "senpai_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the paper floor lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the gallery's rail, the tiled roof and the tall wooden tower, with no window lit. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the mats. The room is dim, but everything in it can still be seen clearly: both futons, made and empty, the shogi board and its cushions, the chest and the door. Add no new light."
+      },
+      {
+       "place": "nobara_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the bedside lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the flowers in the window box, the pond, the house of dark timber with a few of its upstairs windows glowing warm, and the low house with glass doors, dark. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed with its cushions, made and empty, the clothes on their rail and the shoes under them, the mirrors, which show only the room, the desk, the rug and the row of bags. Add no new light."
+      },
+      {
+       "place": "maki_room",
+       "kind": "relight",
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the desk lamp is dark. Outside the window it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the cedars, the small house with the very large window and the great tiled roof behind it, with no window lit. The room is lit only by cool blue moonlight coming in through the window, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the bed, made flat, with only the folded uniform on it, the rack of wooden weapons on the wall, the weapon case, the desk, the mat and the dumbbells on the floor, and the bar over the door. Add no new light."
+      }
+     ]
+    },
+    {
+     "name": "art_47_2",
+     "pictures": [
+      {
+       "place": "dojo",
+       "kind": "relight",
+       "hour": "lit",
+       "hour_words": "Change the time of day to late at night: outside the windows and the open door it is dark, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes, with no window lit. Inside, every one of the hanging lamps is switched on, all of them alike, and together they fill the whole hall with warm, even lamplight and soft shadows; the floor shines warm under them. Add no new lamp, and leave no lamp dark."
       }
      ]
     }
