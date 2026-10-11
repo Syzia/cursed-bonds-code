@@ -1,0 +1,27 @@
+{
+ "about": [
+  "The dojo lit at Night, painted again: written by hand on 11 Oct 2026 at the owner's word of 15b's one-lamp version (\"Lets go with your picks, they all look good except for the lit dojo only having 1 light.\"). One row, relit from the chosen day picture by the tool's own relight prompt with the sentence below, from tools/art/staged/early/campus_for_batch3.json: every hanging lamp on. A lit room has all its lamps on (plan: owner row O48).",
+  "For the story phase: the scene this picture is for says 'the dojo lamps are down to one' (events_arc1.rpy:917). The picture is the owner's choice; whoever re-points the scene decides whether the line stays."
+ ],
+ "written": "2026-10-11",
+ "sentences": {
+  "dojo_lit": "Change the time of day to late at night: outside the windows and the open door it is dark, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes, with no window lit. Inside, every one of the hanging lamps is switched on, all of them alike, and together they fill the whole hall with warm, even lamplight and soft shadows; the floor shines warm under them. Add no new lamp, and leave no lamp dark."
+ },
+ "rows": [
+  {
+   "label": "Dojo, night, every lamp on",
+   "kind": "relight",
+   "place": "dojo",
+   "saves": [
+    "ui2_dojo_lit2_a",
+    "ui2_dojo_lit2_b"
+   ],
+   "seeds": [
+    3640,
+    3641
+   ],
+   "prompt_sha256": "f5dd41d849b4cab84b779aea016d8b88083bcd24a5d2655d3747e742798eb446"
+  }
+ ],
+ "workflow_sha256": "ce9fe9a53cfd8dcc2878427ad32f8966d67d9d480929aa74be48e65d489863ef"
+}

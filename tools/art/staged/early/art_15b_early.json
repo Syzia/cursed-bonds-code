@@ -148,5 +148,51 @@
   "storehouse_evening": "A (PICK): the two iron lamps on, and through the door a dusk yard with the posts' long shadows falling away from the west. B is clean, brighter, with short shadows.",
   "storehouse_night": "A (PICK): lamps dark, a soft patch of moonlight on the floor from the door, stars over the dark yard, no window lit. B's patch is a harder, brighter blue.",
   "put_to_the_owner": "Every A, and B for the dojo with one lamp on."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, they all look good except for the lit dojo only having 1 light.\"",
+  "training_evening": {
+   "version": "a",
+   "render": "ui2_training_evening_a_00001_.png",
+   "sha256": "4ed00887c66ddef5d6a14e15a06a8dac7333928d37f7a8d510871cccf5e6201c",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/training_evening_1920.png",
+   "fit_sha256": "3a8a6da0f9e0c739055e03945f3a97a492f8ce3fc30075dbbde015c0a93b2d0a"
+  },
+  "training_night": {
+   "version": "a",
+   "render": "ui2_training_night_a_00001_.png",
+   "sha256": "346a7a7b8f4f3a7b4a14f00bed4165629c4eb47cc32c81f348016a07f397aa6d",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/training_night_1920.png",
+   "fit_sha256": "622edcf8763a00b9c06c4e41fb6b076b88367fe88c4517de1f9de872ca19356c"
+  },
+  "dojo_evening": {
+   "version": "a",
+   "render": "ui2_dojo_evening_a_00001_.png",
+   "sha256": "45b4cffda085cec3dc2ec10f2bff48878b621239d1cd3d0195ed9d97db85e309",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/dojo_evening_1920.png",
+   "fit_sha256": "7f83e48a9692f5ddc64fa10f03f5dd990f919c08865d6c7435bf09b6be576b66"
+  },
+  "dojo_night": {
+   "version": "a",
+   "render": "ui2_dojo_night_a_00001_.png",
+   "sha256": "7a2a1acf733a269eb1ce14ad069a0d590ec643e15c9a03dcfb2f6d223c19eed2",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/dojo_night_1920.png",
+   "fit_sha256": "55b0bd67f9f231aeba44bc2cc1ec12639a631bda2a7f7992dc71637fae3b6c69"
+  },
+  "storehouse_evening": {
+   "version": "a",
+   "render": "ui2_storehouse_evening_a_00001_.png",
+   "sha256": "1f406d2f04d6d4b08dd41c529905c187d97d51ccdfa23bd1547e51a1904aa476",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/storehouse_evening_1920.png",
+   "fit_sha256": "2caa6a5f8fa96a0ac962c83b21569fa0ba2293c5c282bd2c3a2947353a39c799"
+  },
+  "storehouse_night": {
+   "version": "a",
+   "render": "ui2_storehouse_night_a_00001_.png",
+   "sha256": "7cf5f7381f0b0ad8d413798f075d621f18bfbea969968f7f20150c34bff067cb",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/storehouse_night_1920.png",
+   "fit_sha256": "aafe8a1c39dbbfd9c50998288d22639ee067c24921304ff20da5c024898fabc7"
+  },
+  "dojo_lit": "REFUSED as painted, in both versions: 'the lit dojo only having 1 light'. Painted again with every hanging lamp on: art_15c.json (plan: owner row O48)."
  }
 }
