@@ -1,0 +1,65 @@
+{
+ "about": [
+  "Sitting 13a: the teachers' house, its ground-floor lounge and the dormitory upstairs, written early by hand on 11 Oct 2026, straight after the owner chose the last of the dormitories (O66), and handed over unasked. Both are new places, composed, as the plan has them, each as the inside of its own building (Method note 34).",
+  "The house is the two-storey house of dark timber and white plaster at the right edge of the chosen staff steps, its entrance (a dark red door curtain, a bamboo fence before it) toward the steps. In the lounge the front wall, with the entrance and the latticed windows, is on the left, and what is seen through them (the fence, the gravel, the stone steps) is named in words. Upstairs the camera is at the head of the stairs, looking along the room to its end window.",
+  "The owner's door rules (O37): upstairs, three sliding bedroom doors in each side wall, evenly spaced and facing each other, and no window beside a door: the one window is in the end wall, over the workbench. D50 has three of the six with name plates and three blank; no picture carries lettering (O60), so all six plates are painted blank and the game names them.",
+  "A room says who lives in it (O65): tea things on the lounge's low table and a half-sewn cloth doll on a sofa's arm; upstairs, the doll-maker's bench under the end window. Each room has lamps of its own, off by day, for its evening and its Night (5.7a: the lounge is dark at Night; the dormitory is lamp-lit on all seven Nights).",
+  "The dormitory has no painted room of the same house to be given as 'the same house inside' (the record's refs_also names the lounge, which is painted in this same file): it is given the house from outside and the same words for its plaster, timber and floor. If the two do not look like one house, the dormitory is made again with the chosen lounge as its reference.",
+  "NOBODY is in either picture; NOTHING carries lettering (the duty board's tags and the six plates are said to be blank)."
+ ],
+ "written": "2026-10-11",
+ "refs": {
+  "teachers_lounge": "Picture 1 is the yard this room's building stands on, already painted: the same school. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the two-storey house of dark timber and white plaster with latticed windows, a dark red door curtain at its entrance and a bamboo fence before it. The new picture is the inside of that house, on its ground floor, and its front wall is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building.",
+  "teachers_dorm": "Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber and white plaster with latticed windows. The new picture is taken indoors, on its upper floor, and it shows the room, not the outside of the building. Do not copy its camera or its layout."
+ },
+ "stage": "The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge.",
+ "the_place": {
+  "teachers_lounge": "the ground-floor sitting room of the teachers' house, the house of picture 2: a comfortable common room, about nine metres long and six wide, with walls of white plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. I stand inside at one end and look along the room. The left wall is the front of the house seen from inside. Near me in it the entrance, a wide sliding door, stands open under the short dark-red door curtain of picture 2: this is the way out, and through it I see the bamboo fence just outside and, beyond it, the pale gravel and the wide stone steps of the yard. Beyond the entrance the left wall has latticed windows like those of picture 2, with the same gravel and steps seen through them. In the middle of the room, left of its centre line, sofas stand round a low table; on the table is a tray with a teapot, cups and a dish of rice crackers, and on the arm of a sofa lies a half-sewn cloth doll beside a pincushion. In the far left corner a television stands on a low cabinet, switched off. Along the far wall runs a small kitchen: a timber counter with a sink, a kettle on a small stove, a shelf of cups and a small fridge. At the right end of the far wall, well clear of the picture's right edge, a timber staircase climbs to the floor above. On the right wall, further along than the middle, hangs a duty board: a timber board with rows of small wooden tags on hooks, nothing written on any of them. The stretch of the right wall nearest me is plain plaster. Plain round lamps on the ceiling are switched off, and daylight comes in through the entrance and the windows. A neat row of indoor slippers stands by the entrance. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any tag, plate, board, box, tin or wall",
+  "teachers_dorm": "the upstairs sitting room of the teachers' house, the house of picture 1: a quiet room about ten metres long and six wide, with walls of white plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. I stand at one end and look along the room. At the near left corner the stairs come up through the floor, with a timber railing round the opening: this is the way down. The room has six bedroom doors and one window. In the left wall are three doors and in the right wall three doors: sliding doors of timber and white paper, all the same size, all shut, evenly spaced along the further two thirds of each wall, each one facing the door opposite it; beside each door hangs a small plain wooden plate with nothing written on it. The stretch of each side wall nearest me is plain plaster, and there is no window in either side wall. In the middle of the floor is a square sunken hearth with white ash in it and an iron kettle hanging over it on a hook, with flat cushions laid round it. The far end wall has a wide latticed window, and under it stands a long workbench with cloth dolls in the making: finished and half-sewn dolls of many shapes, folded cloth, spools of thread, scissors and a small work lamp, switched off. Through the window I see the tops of the trees of a small garden behind the house and a slope of cedars above them. A paper lamp hangs from the ceiling over the hearth, switched off. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any tag, plate, board, box, tin or wall"
+ },
+ "pictures_given": {
+  "staff_yard_1920.png": "a12a18f156c3745c2177e3a73dfa8c5d93fd2eef5c52cedbd22d2ea1950becd4",
+  "crops/teachers_house_outside.png": "82ddafb26c7d3bf9d5a22fc25d11a65010a46557803f419cd62747e373a127b6"
+ },
+ "crop": {
+  "of": "ui2_staff_yard_b_00001_.png",
+  "box": [
+   2090,
+   330,
+   2752,
+   1100
+  ]
+ },
+ "rows": [
+  {
+   "label": "Teachers' Lounge",
+   "kind": "composed",
+   "place": "teachers_lounge",
+   "saves": [
+    "ui2_teachers_lounge_a",
+    "ui2_teachers_lounge_b"
+   ],
+   "seeds": [
+    4592,
+    4593
+   ],
+   "prompt_sha256": "0ceafb8e3bc3d837433232874cb30f4c5e7463ae8416458b3a9f3e9ba4463251"
+  },
+  {
+   "label": "Teachers' Dormitory",
+   "kind": "composed",
+   "place": "teachers_dorm",
+   "saves": [
+    "ui2_teachers_dorm_a",
+    "ui2_teachers_dorm_b"
+   ],
+   "seeds": [
+    6420,
+    6421
+   ],
+   "prompt_sha256": "4311ff5b579faaa535db2f07e25da10570bd5378392e9b2742d7d42f149494fa"
+  }
+ ],
+ "workflow_sha256": "c0c20062297c167a9ecba6bb708d4fa292ffcf55a6c8665cb5eedcd5f25a5362",
+ "cost": "4 renders, about $0.64"
+}

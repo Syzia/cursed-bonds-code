@@ -1,0 +1,720 @@
+{
+ "id": "6abb1116-0714-4170-bebc-a94b3ec54b94",
+ "revision": 0,
+ "last_node_id": 13,
+ "last_link_id": 10,
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.35,
+   "offset": [
+    2040,
+    640
+   ]
+  },
+  "frontendVersion": "1.51.9"
+ },
+ "version": 0.4,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "MarkdownNote",
+   "pos": [
+    -640,
+    -560
+   ],
+   "size": [
+    600,
+    480
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {},
+   "title": "Start here",
+   "color": "#222",
+   "bgcolor": "#000",
+   "widgets_values": [
+    "## The teachers' house: the lounge and the dormitory\n\n2 rows, each painted twice: the two rooms inside the teachers' house on your staff steps, its ground-floor lounge and the dormitory upstairs. Nobody is in either picture, and nothing in them carries lettering.\n\nRun this in the **local ComfyUI**. Press **Run** once.\n\nEach row is one picture, painted twice: **version A** on top, **version B** under it. You choose between them afterwards.\n\nThe **Load Image** boxes on the left should already show their pictures. If one shows an error, click **choose file to upload** and pick the file with the same name from `JJK Game images/ui2/early`.\n\n**Cost:** 4 pictures, about **$0.64** (Nano Banana Pro, about $0.16 a picture, charged to your Comfy account).\n\nYou don't need to save anything: the results go to ComfyUI's output folder and Claude picks them up from there.\n\nIf it stops with a rate-limit or \"high demand\" error, wait a minute and press **Run** again: a finished picture is reused, not paid for twice (as long as ComfyUI hasn't been restarted)."
+   ]
+  },
+  {
+   "id": 2,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_teachers_lounge_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the Staff Building Steps, as chosen"
+  },
+  {
+   "id": 3,
+   "type": "LoadImage",
+   "pos": [
+    -1630,
+    0
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      2
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_teachers_lounge_2.png",
+    "image"
+   ],
+   "title": "Load Image 2: the teachers' house from outside"
+  },
+  {
+   "id": 4,
+   "type": "BatchImagesNode",
+   "pos": [
+    -600,
+    40
+   ],
+   "size": [
+    225,
+    120
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "label": "image0",
+     "name": "images.image0",
+     "type": "IMAGE",
+     "link": 1
+    },
+    {
+     "label": "image1",
+     "name": "images.image1",
+     "type": "IMAGE",
+     "link": 2
+    },
+    {
+     "label": "image2",
+     "name": "images.image2",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      3,
+      5
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BatchImagesNode",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [],
+   "title": "The pictures, in order"
+  },
+  {
+   "id": 5,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    0
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 3
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      4
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the yard this room's building stands on, already painted: the same school. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the two-storey house of dark timber and white plaster with latticed windows, a dark red door curtain at its entrance and a bamboo fence before it. The new picture is the inside of that house, on its ground floor, and its front wall is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the ground-floor sitting room of the teachers' house, the house of picture 2: a comfortable common room, about nine metres long and six wide, with walls of white plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. I stand inside at one end and look along the room. The left wall is the front of the house seen from inside. Near me in it the entrance, a wide sliding door, stands open under the short dark-red door curtain of picture 2: this is the way out, and through it I see the bamboo fence just outside and, beyond it, the pale gravel and the wide stone steps of the yard. Beyond the entrance the left wall has latticed windows like those of picture 2, with the same gravel and steps seen through them. In the middle of the room, left of its centre line, sofas stand round a low table; on the table is a tray with a teapot, cups and a dish of rice crackers, and on the arm of a sofa lies a half-sewn cloth doll beside a pincushion. In the far left corner a television stands on a low cabinet, switched off. Along the far wall runs a small kitchen: a timber counter with a sink, a kettle on a small stove, a shelf of cups and a small fridge. At the right end of the far wall, well clear of the picture's right edge, a timber staircase climbs to the floor above. On the right wall, further along than the middle, hangs a duty board: a timber board with rows of small wooden tags on hooks, nothing written on any of them. The stretch of the right wall nearest me is plain plaster. Plain round lamps on the ceiling are switched off, and daylight comes in through the entrance and the windows. A neat row of indoor slippers stands by the entrance. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any tag, plate, board, box, tin or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    4592,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Teachers' Lounge, version A"
+  },
+  {
+   "id": 6,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    0
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 4
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_teachers_lounge_a"
+   ],
+   "title": "Teachers' Lounge: version A"
+  },
+  {
+   "id": 7,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    600
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 5
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      6
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the yard this room's building stands on, already painted: the same school. Picture 2 is this room's own building, cut from picture 1 and seen from outside: the two-storey house of dark timber and white plaster with latticed windows, a dark red door curtain at its entrance and a bamboo fence before it. The new picture is the inside of that house, on its ground floor, and its front wall is the same wall seen from inside. Do not copy the camera or the layout of either picture: the new picture is taken indoors, and it shows the room, not the outside of the building. THE PLACE: the ground-floor sitting room of the teachers' house, the house of picture 2: a comfortable common room, about nine metres long and six wide, with walls of white plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. I stand inside at one end and look along the room. The left wall is the front of the house seen from inside. Near me in it the entrance, a wide sliding door, stands open under the short dark-red door curtain of picture 2: this is the way out, and through it I see the bamboo fence just outside and, beyond it, the pale gravel and the wide stone steps of the yard. Beyond the entrance the left wall has latticed windows like those of picture 2, with the same gravel and steps seen through them. In the middle of the room, left of its centre line, sofas stand round a low table; on the table is a tray with a teapot, cups and a dish of rice crackers, and on the arm of a sofa lies a half-sewn cloth doll beside a pincushion. In the far left corner a television stands on a low cabinet, switched off. Along the far wall runs a small kitchen: a timber counter with a sink, a kettle on a small stove, a shelf of cups and a small fridge. At the right end of the far wall, well clear of the picture's right edge, a timber staircase climbs to the floor above. On the right wall, further along than the middle, hangs a duty board: a timber board with rows of small wooden tags on hooks, nothing written on any of them. The stretch of the right wall nearest me is plain plaster. Plain round lamps on the ceiling are switched off, and daylight comes in through the entrance and the windows. A neat row of indoor slippers stands by the entrance. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any tag, plate, board, box, tin or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    4593,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Teachers' Lounge, version B"
+  },
+  {
+   "id": 8,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    600
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 6
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_teachers_lounge_b"
+   ],
+   "title": "Teachers' Lounge: version B"
+  },
+  {
+   "id": 9,
+   "type": "LoadImage",
+   "pos": [
+    -1960,
+    1260
+   ],
+   "size": [
+    310,
+    340
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      7,
+      9
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.34.0",
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "ui2_in_teachers_dorm_1.png",
+    "image"
+   ],
+   "title": "Load Image 1: the teachers' house from outside"
+  },
+  {
+   "id": 10,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1260
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 7
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      8
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber and white plaster with latticed windows. The new picture is taken indoors, on its upper floor, and it shows the room, not the outside of the building. Do not copy its camera or its layout. THE PLACE: the upstairs sitting room of the teachers' house, the house of picture 1: a quiet room about ten metres long and six wide, with walls of white plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. I stand at one end and look along the room. At the near left corner the stairs come up through the floor, with a timber railing round the opening: this is the way down. The room has six bedroom doors and one window. In the left wall are three doors and in the right wall three doors: sliding doors of timber and white paper, all the same size, all shut, evenly spaced along the further two thirds of each wall, each one facing the door opposite it; beside each door hangs a small plain wooden plate with nothing written on it. The stretch of each side wall nearest me is plain plaster, and there is no window in either side wall. In the middle of the floor is a square sunken hearth with white ash in it and an iron kettle hanging over it on a hook, with flat cushions laid round it. The far end wall has a wide latticed window, and under it stands a long workbench with cloth dolls in the making: finished and half-sewn dolls of many shapes, folded cloth, spools of thread, scissors and a small work lamp, switched off. Through the window I see the tops of the trees of a small garden behind the house and a slope of cedars above them. A paper lamp hangs from the ceiling over the hearth, switched off. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any tag, plate, board, box, tin or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    6420,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Teachers' Dormitory, version A"
+  },
+  {
+   "id": 11,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1260
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 8
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_teachers_dorm_a"
+   ],
+   "title": "Teachers' Dormitory: version A"
+  },
+  {
+   "id": 12,
+   "type": "GeminiImage2Node",
+   "pos": [
+    0,
+    1860
+   ],
+   "size": [
+    420,
+    540
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 9
+    },
+    {
+     "name": "files",
+     "shape": 7,
+     "type": "GEMINI_INPUT_FILES",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      10
+     ]
+    },
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "GeminiImage2Node",
+    "cnr_id": "comfy-core",
+    "ver": "0.14.1"
+   },
+   "widgets_values": [
+    "This is a background picture for a visual novel: a new picture of one room of a traditional Japanese mountain school, built of timber and white plaster. Picture 1 is the house this room is in, cut from a picture already painted and seen from outside: two storeys of dark timber and white plaster with latticed windows. The new picture is taken indoors, on its upper floor, and it shows the room, not the outside of the building. Do not copy its camera or its layout. THE PLACE: the upstairs sitting room of the teachers' house, the house of picture 1: a quiet room about ten metres long and six wide, with walls of white plaster between dark timber posts, a timber ceiling and a floor of polished timber boards. I stand at one end and look along the room. At the near left corner the stairs come up through the floor, with a timber railing round the opening: this is the way down. The room has six bedroom doors and one window. In the left wall are three doors and in the right wall three doors: sliding doors of timber and white paper, all the same size, all shut, evenly spaced along the further two thirds of each wall, each one facing the door opposite it; beside each door hangs a small plain wooden plate with nothing written on it. The stretch of each side wall nearest me is plain plaster, and there is no window in either side wall. In the middle of the floor is a square sunken hearth with white ash in it and an iron kettle hanging over it on a hook, with flat cushions laid round it. The far end wall has a wide latticed window, and under it stands a long workbench with cloth dolls in the making: finished and half-sewn dolls of many shapes, folded cloth, spools of thread, scissors and a small work lamp, switched off. Through the window I see the tops of the trees of a small garden behind the house and a slope of cedars above them. A paper lamp hangs from the ceiling over the hearth, switched off. The room is empty and tidy, and the floor across the whole bottom of the picture is clear and open. No lettering anywhere in the picture: nothing is written on any tag, plate, board, box, tin or wall. The picture is seen from standing eye height, the horizon a little above the middle. The right ninth of the picture and its top-left corner hold nothing one would walk to or use: there the walls are plain plaster and timber, painted fully, to the picture's very edge. THE LOOK: a real place you could walk into, drawn as a clean modern anime background. Believable materials (wood grain, glass with soft reflections, stone, plaster, fabric), physically believable light with soft shadows and bounced light, real depth. Clean and well kept: walls are fresh and even, with no stains, cracks, peeling, damp patches or dirt, and there is no dust, litter or fallen leaves on the floor or the ground; everything that belongs to the place is still there. Crisp precise edges, clean clear colour, no film grain, no noise, no canvas texture, no visible brush strokes, no haze or glow washing out detail. Through every window a clear, in-focus view. No people, no animals, no text, no logos. Output a 16:9 picture.",
+    "gemini-3-pro-image-preview",
+    6421,
+    "fixed",
+    "16:9",
+    "2K",
+    "IMAGE",
+    "You are an expert image-generation engine. You must ALWAYS produce an image.\nInterpret all user input\u2014regardless of format, intent, or abstraction\u2014as literal visual directives for image composition.\nIf a prompt is conversational or lacks specific visual details, you must creatively invent a concrete visual scenario that depicts the concept.\nPrioritize generating the visual representation above any text, formatting, or conversational requests."
+   ],
+   "color": "#432",
+   "bgcolor": "#653",
+   "title": "Nano Banana Pro: Teachers' Dormitory, version B"
+  },
+  {
+   "id": 13,
+   "type": "SaveImage",
+   "pos": [
+    440,
+    1860
+   ],
+   "size": [
+    620,
+    540
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 10
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage",
+    "cnr_id": "comfy-core",
+    "ver": "0.3.56",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.1",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "ui2_teachers_dorm_b"
+   ],
+   "title": "Teachers' Dormitory: version B"
+  }
+ ],
+ "links": [
+  [
+   1,
+   2,
+   0,
+   4,
+   0,
+   "IMAGE"
+  ],
+  [
+   2,
+   3,
+   0,
+   4,
+   1,
+   "IMAGE"
+  ],
+  [
+   3,
+   4,
+   0,
+   5,
+   0,
+   "IMAGE"
+  ],
+  [
+   4,
+   5,
+   0,
+   6,
+   0,
+   "IMAGE"
+  ],
+  [
+   5,
+   4,
+   0,
+   7,
+   0,
+   "IMAGE"
+  ],
+  [
+   6,
+   7,
+   0,
+   8,
+   0,
+   "IMAGE"
+  ],
+  [
+   7,
+   9,
+   0,
+   10,
+   0,
+   "IMAGE"
+  ],
+  [
+   8,
+   10,
+   0,
+   11,
+   0,
+   "IMAGE"
+  ],
+  [
+   9,
+   9,
+   0,
+   12,
+   0,
+   "IMAGE"
+  ],
+  [
+   10,
+   12,
+   0,
+   13,
+   0,
+   "IMAGE"
+  ]
+ ],
+ "groups": [
+  {
+   "id": 1,
+   "title": "TEACHERS' LOUNGE:  A over B",
+   "bounding": [
+    -1980,
+    -50,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 2,
+   "title": "TEACHERS' DORMITORY:  A over B",
+   "bounding": [
+    -1980,
+    1210,
+    3060,
+    1200
+   ],
+   "color": "#3f4f5a",
+   "font_size": 24,
+   "flags": {}
+  }
+ ]
+}
