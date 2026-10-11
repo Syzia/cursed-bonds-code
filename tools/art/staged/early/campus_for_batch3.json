@@ -599,7 +599,7 @@
    "kind": "composed",
    "batch": "13a",
    "chosen": "2026-10-11",
-   "render": "ui2_teachers_lounge_b_00001_.png",
+   "render": "ui2_teachers_lounge2_b_00001_.png",
    "first_guess": {
     "staff_yard": [
      290,
@@ -608,6 +608,22 @@
     "teachers_dorm": [
      1310,
      520
+    ]
+   },
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_lounge_1920.png"
+  },
+  "teachers_dorm": {
+   "place": "teachers_dorm",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "13f",
+   "chosen": "2026-10-11",
+   "render": "ui2_teachers_dorm3_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_dorm_1920.png",
+   "first_guess": {
+    "teachers_lounge": [
+     960,
+     990
     ]
    }
   }
@@ -2343,6 +2359,32 @@
     "picture": "teachers_lounge",
     "rev": 2
    }
+  },
+  {
+   "id": "place.teachers_dorm",
+   "kind": "place",
+   "key": "teachers_dorm",
+   "name": "Teachers' Dormitory",
+   "stem": "teachers_dorm",
+   "area": "staff",
+   "indoor": true,
+   "building": "teachers_house",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "words": "the upstairs sitting room of the teachers' house: cushions round a sunken hearth, a workbench under the end window, and four sliding bedroom doors, each with a small blank wooden plate beside it",
+   "refs_also": [
+    "teachers_lounge"
+   ],
+   "pinless": true,
+   "spare_doors": 1,
+   "note": "four bedroom doors, three named and one spare, by the owner's word of 11 Oct 2026 (O69); the plan had six",
+   "by": {
+    "picture": "teachers_dorm",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2629,27 +2671,6 @@
     "dorm_yard"
    ],
    "note": "its far doors are the girls' spare doors (D50)"
-  },
-  {
-   "id": "place.teachers_dorm",
-   "kind": "place",
-   "key": "teachers_dorm",
-   "name": "Teachers' Dormitory",
-   "stem": "teachers_dorm",
-   "area": "staff",
-   "indoor": true,
-   "building": "teachers_house",
-   "how": "composed",
-   "batch": "13",
-   "after": [
-    "staff_yard"
-   ],
-   "words": "the upstairs sitting room of the teachers' house: cushions round a sunken hearth, a workbench under the end window, and six sliding bedroom doors, each with a small blank wooden plate beside it",
-   "refs_also": [
-    "teachers_lounge"
-   ],
-   "pinless": true,
-   "spare_doors": 3
   },
   {
    "id": "path.dorm_yard.staff_yard",

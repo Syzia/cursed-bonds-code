@@ -67,5 +67,21 @@
   "teachers_dorm3_b": "Four doors too, and the two walls do not match: lattice doors on the left, plain white ones on the right. A smaller end window.",
   "the_door_count": "Three ways of asking (words; the boys' corridor as a pattern; a counted row of three single doors) each gave four doors in a room of this width. Put to the owner: keep four (three teachers live there and one door is spare; the teachers' bedrooms are doors, never places, so nothing is walked into) or try again for six.",
   "put_to_the_owner": "The lounge: B. The dormitory: A, if four doors will do. With art_13d.json (the lounge's evening and night) and art_13e.json (the dormitory's), written from those two."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, four doors is fine. And the new renders finished\"",
+  "read_as": "The lounge made again, version B; the dormitory's third try, version A, with four bedroom doors.",
+  "teachers_lounge": {
+   "render": "ui2_teachers_lounge2_b_00001_.png",
+   "sha256": "d6f666dbb18dca157642fb3fbadb52ecc75d200e6d235c4f6050580d04202744",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_lounge_1920.png",
+   "fit_sha256": "67576bc12c913307a96207ab5f7bd204abd5c1b1c575fa55486f2bf6a694ae6e"
+  },
+  "teachers_dorm": {
+   "render": "ui2_teachers_dorm3_a_00001_.png",
+   "sha256": "d9dd3e8f171baa2e729788bcc5bb901cc8eff433b0d0a112fe6c6c35aaeebcb8",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/teachers_dorm_1920.png",
+   "fit_sha256": "4a22fdc5ff95d81516f9af53048ad3c6794df669d32c361dc5aa8b9d527509b3"
+  }
  }
 }
