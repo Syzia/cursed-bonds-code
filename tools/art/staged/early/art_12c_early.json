@@ -100,5 +100,29 @@
   "utahime_office2_b": "PICK. The paper door open at the left onto the yard's raked gravel and paving; the round window, then a paper-screened window; her desk facing me with its lamp and papers, shelves of files behind; the board of pinned notices on the right wall at about two thirds across, clear of the icon column, with the vase on a cabinet under it.",
   "utahime_office2_a": "Not offered as the pick: its notice board, the room's one thing to click, hangs in the right ninth under the icon column. Otherwise good, with a larger desk.",
   "put_to_the_owner": "Version B of all three."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "gojo_office": {
+   "version": "b",
+   "render": "ui2_gojo_office2_b_00001_.png",
+   "sha256": "d42349a680abd76a7998052179571d67483098af49de7b3550fa0418dd2032b1",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/gojo_office_1920.png",
+   "fit_sha256": "40e3febac916fc783f3041b444b0a27e28efc86dfe6b2cb6473872249dbed1f9"
+  },
+  "office": {
+   "version": "b",
+   "render": "ui2_office2_b_00001_.png",
+   "sha256": "afd4c127b040aebbe6587d22bfe4c3e0cc65c36d65906f561b8fd75e9b95652c",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/office_1920.png",
+   "fit_sha256": "d7ab37f38abaf2d6a73dbf0208c025ccf5a9db42f54e67b22ad699887910b431"
+  },
+  "utahime_office": {
+   "version": "b",
+   "render": "ui2_utahime_office2_b_00001_.png",
+   "sha256": "d033adb786c2211b24127e65bf235617c3956d4fb732bdd8d7b19243ad774c22",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/utahime_office_1920.png",
+   "fit_sha256": "1c7741b0274eaa6d9c43240627d7f55b80b7e503ae6f50dbe2ce669aa0d7b09e"
+  }
  }
 }

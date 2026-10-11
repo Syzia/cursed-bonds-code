@@ -14,7 +14,8 @@
   "Reworded again on 7 Oct, in this copy, at the owner's word: the gate is seen in the first person from a Japanese garden with water, with nothing standing in front of the gatehouse ('A would be good if there wasnt that little stone arch infront. Take and make it from a first person veiw. Add some water and Japanese garden vibes instead of the concrete paths generic trees and stone walls.'); the veil is a SMALL dome on the very top of the mountain ('We should also make the veil smaller since its on the hill. And its only holding 1 person body. Make the veil feel like its on top of the mountain. Not covering mountain.').",
   "The second ring fixed, in this copy, on 11 Oct 2026 (campus_for_batch3.json, made from campus_for_batch2_third.json; how: campus_for_batch3_how.json): the Staff Building Steps, the Main Gate and the Mountain Path the owner chose on 7 Oct (O36) are fixed from a first-guess layout read off each chosen picture by eye, as the first ring was, so that the places that stand off them can be written early (K8). The real rows are written by install_redo.py --compose at each place's layout sitting. Two of the gate's rows had words the chosen picture contradicts and were corrected by hand.",
   "11 Oct 2026: the training hall, the dojo and the storehouse, composed again and chosen (O46), are fixed in this copy from a first-guess point for each room's way out, read off the chosen pictures (the hall's open screens, the dojo's sliding door, the storehouse's double door), so that their hours and their neighbours can be written from it. Their `place` rows still say how: inplace; the real record takes how: composed and their words when they are installed.",
-  "11 Oct 2026: the swimming pool, composed and chosen (O50), is fixed in this copy from a first-guess point for its way out, the roofed gate on the left (read off the chosen picture). The record has no exit row for the pool yet; the real one is written at its layout sitting."
+  "11 Oct 2026: the swimming pool, composed and chosen (O50), is fixed in this copy from a first-guess point for its way out, the roofed gate on the left (read off the chosen picture). The record has no exit row for the pool yet; the real one is written at its layout sitting.",
+  "11 Oct 2026: the Principal's Office and the two offices, composed again and chosen (O53), are fixed in this copy from a first-guess point for each room's door on the left."
  ],
  "sheet": [
   1920,
@@ -358,6 +359,51 @@
    "first_guess": {
     "training_yard": [
      400,
+     600
+    ]
+   }
+  },
+  "gojo_office": {
+   "place": "gojo_office",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "12c",
+   "chosen": "2026-10-11",
+   "render": "ui2_gojo_office2_b_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/gojo_office_1920.png",
+   "first_guess": {
+    "staff_yard": [
+     230,
+     600
+    ]
+   }
+  },
+  "office": {
+   "place": "office",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "12c",
+   "chosen": "2026-10-11",
+   "render": "ui2_office2_b_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/office_1920.png",
+   "first_guess": {
+    "staff_yard": [
+     450,
+     600
+    ]
+   }
+  },
+  "utahime_office": {
+   "place": "utahime_office",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "12c",
+   "chosen": "2026-10-11",
+   "render": "ui2_utahime_office2_b_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/utahime_office_1920.png",
+   "first_guess": {
+    "staff_yard": [
+     275,
      600
     ]
    }
@@ -1702,6 +1748,64 @@
     "picture": "pool",
     "rev": 2
    }
+  },
+  {
+   "id": "place.gojo_office",
+   "kind": "place",
+   "key": "gojo_office",
+   "name": "Gojo's Office",
+   "stem": "gojo_office",
+   "area": "staff",
+   "indoor": true,
+   "building": "gojo_office",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "by": {
+    "picture": "gojo_office",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.office",
+   "kind": "place",
+   "key": "office",
+   "name": "Principal's Office",
+   "stem": "office",
+   "area": "staff",
+   "indoor": true,
+   "building": "principal_hall",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "note": "with a low writing desk and a framed photograph on it as a named addition",
+   "by": {
+    "picture": "office",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.utahime_office",
+   "kind": "place",
+   "key": "utahime_office",
+   "name": "Utahime's Office",
+   "stem": "utahime_office",
+   "area": "staff",
+   "indoor": true,
+   "building": "utahime_office",
+   "how": "inplace",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "by": {
+    "picture": "utahime_office",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2157,52 +2261,6 @@
     "girls_dorm"
    ],
    "pinless": true
-  },
-  {
-   "id": "place.office",
-   "kind": "place",
-   "key": "office",
-   "name": "Principal's Office",
-   "stem": "office",
-   "area": "staff",
-   "indoor": true,
-   "building": "principal_hall",
-   "how": "inplace",
-   "batch": "12",
-   "after": [
-    "staff_yard"
-   ],
-   "note": "with a low writing desk and a framed photograph on it as a named addition"
-  },
-  {
-   "id": "place.gojo_office",
-   "kind": "place",
-   "key": "gojo_office",
-   "name": "Gojo's Office",
-   "stem": "gojo_office",
-   "area": "staff",
-   "indoor": true,
-   "building": "gojo_office",
-   "how": "inplace",
-   "batch": "12",
-   "after": [
-    "staff_yard"
-   ]
-  },
-  {
-   "id": "place.utahime_office",
-   "kind": "place",
-   "key": "utahime_office",
-   "name": "Utahime's Office",
-   "stem": "utahime_office",
-   "area": "staff",
-   "indoor": true,
-   "building": "utahime_office",
-   "how": "inplace",
-   "batch": "12",
-   "after": [
-    "staff_yard"
-   ]
   },
   {
    "id": "place.teachers_lounge",
