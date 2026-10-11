@@ -71,5 +71,29 @@
   "office_evening": "B (PICK): every candle burning, dusk blue through the doors with a last band of pink. A is the same but for a plain blue sky.",
   "utahime_office_evening": "A (PICK): dusk through the door and the round window, the screens glowing, her desk lamp on, which is the room's only lamp. B has added a ceiling light at the top of the picture: not offered.",
   "put_to_the_owner": "Gojo's A, the Principal's B, Utahime's A."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks\"",
+  "gojo_office_evening": {
+   "version": "a",
+   "render": "ui2_gojo_office_evening_a_00001_.png",
+   "sha256": "43338f9df74cffca43405e9c9b7c7ef9d8a999eadf28588abddc45bb5a50639a",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/gojo_office_evening_1920.png",
+   "fit_sha256": "f56bf9e974b55bdd5bb9daecab7ab4615eebb7bfd9deea2f29bcb0824182083c"
+  },
+  "office_evening": {
+   "version": "b",
+   "render": "ui2_office_evening_b_00001_.png",
+   "sha256": "85ecb8bb705157914421adce91d11885d46e3aeb2450be4d222f34a5562ddd80",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/office_evening_1920.png",
+   "fit_sha256": "270b47737174ed5850fece823edee7f6179b59cfa99233cc81ecd19917434b51"
+  },
+  "utahime_office_evening": {
+   "version": "a",
+   "render": "ui2_utahime_office_evening_a_00001_.png",
+   "sha256": "2dd2f767dd6bdd53c3198e1f5496e5186e7eb6eca6b7d0896dc90e409fbf2e15",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/utahime_office_evening_1920.png",
+   "fit_sha256": "182a48ee599de21cb5b7970058a5eeb3ba2a1ce45630ea5a0c99eaf71e5422c7"
+  }
  }
 }
