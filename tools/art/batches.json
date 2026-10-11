@@ -757,26 +757,31 @@
       {
        "place": "teachers_lounge",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: the round lamps on the ceiling are switched on and give a warm light. Outside the entrance the sky is orange and pink and the yard lies in low warm light, and everything that stands outside is still there: the bamboo fence and the paving. The paper windows glow with the last of the daylight. The television stays off. Add no new lamp, no new light and no new window."
       },
       {
        "place": "teachers_lounge",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with every light in the room switched off: the ceiling lamps are dark and the television is off. Outside the entrance it is night, under a deep blue sky with stars; the moon itself is not in view; and everything that stands outside is still there, as dark shapes in the moonlight: the bamboo fence and the paving. The paper windows are dim and blue. The room is lit only by cool blue moonlight coming in through the entrance and the windows, which lies in a pale patch on the floor. The room is dim, but everything in it can still be seen clearly: the sofas, the table and its tea things, the kitchen, the stairs, the board on the wall and the small bar beneath it. Add no new light."
       },
       {
        "place": "teachers_dorm",
        "kind": "relight",
-       "hour": "evening"
+       "hour": "evening",
+       "hour_words": "Change the time of day to early evening: the paper lamp over the hearth and the work lamp on the bench are switched on and give a warm light. Outside the end window the sky is orange and pink and the trees are in low warm light, and everything that stands outside is still there. Every door is shut, as it is now. Add no new lamp, no new light and no new window."
       },
       {
        "place": "teachers_dorm",
        "kind": "relight",
-       "hour": "night"
+       "hour": "night",
+       "hour_words": "Change the time of day to night, with the paper lamp over the hearth and the work lamp on the bench switched on: they give warm pools of light on the hearth, the cushions and the bench, and the far corners are in soft shadow, but everything in the room can still be seen clearly: the doors and their plates, the hearth and its cushions, and the bear and the sewing things on the bench. Outside the end window it is night, under a deep blue sky with stars; the moon itself is not in view; and the trees outside are still there, as dark shapes. Every door is shut and no light shows round or under any of them. Add no other lamp and no other light."
       }
      ]
     }
-   ]
+   ],
+   "note": "The dormitory has four bedroom doors by the owner's word (O69). The lounge's night is with every light off; the dormitory's evening and night are with its lamps on (5.7a)."
   },
   {
    "id": "14",
