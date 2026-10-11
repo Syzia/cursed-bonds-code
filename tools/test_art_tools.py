@@ -3,7 +3,7 @@ The tests of the art tools. Run it through tools/test_art_tools.sh.
 
     tools/test_art_tools.sh                        # everything that can run here
     tools/test_art_tools.sh --layout-dump <file>   # in a worktree: the local dump (tools/smoke.sh u2_dump --out <file>)
-    tools/test_art_tools.sh --only redo,pose       # some groups: reader layout redo stage compose pose face set status real yuji
+    tools/test_art_tools.sh --only redo,pose       # some groups: fixtures reader layout redo stage compose pose face set status real yuji
     tools/test_art_tools.sh --strict               # an art sitting: a SKIPPED line is a failure
     tools/test_art_tools.sh --keep-work            # leave the scratch folder, and say where it is
     tools/test_art_tools.sh --write-measures       # rewrite tools/art/redo_measures.json from the real cases (U0d only)
@@ -14,9 +14,12 @@ its layout files and its pictures; no .rpyc), and the last check is that no
 file under game/ changed. The scratch copy is the tree as it was BEFORE the
 overhaul installed anything: whatever a real install has written (a picture,
 its foreground, its light row, a layout with for_rev, the manifest) is put
-back from git (before_overhaul), so the fixtures stand at revision 1 and the
-suite reads the same before and after batch 0. Where git cannot give a file,
-or a manifest row is of a kind the suite does not know, a line is SKIPPED.
+back from git (before_overhaul: each picture from the commit its own manifest
+row names), so the fixtures stand at revision 1 and the suite reads the same
+before and after batch 0, with the install committed or not. A manifest row
+of a kind the suite does not know is a SKIPPED line. A tree whose pictures
+of before git cannot give (no git, a clone without its history, a row that
+names a commit which is not here) is one FAIL line, and nothing is run.
 
   SYNTHETIC cases run anywhere the repository is: pictures made from the
   game's own by hand (shifted 12 px, enlarged 2%, recoloured, a thing rubbed
@@ -44,7 +47,7 @@ OUTPUT = os.path.expanduser("~/ComfyUI-Shared/output")
 YUJI = os.path.expanduser("~/Desktop/JJK Game images/redo_yuji")
 MEASURES = os.path.join(TOOLS, "art", "redo_measures.json")
 STALE = check_campus.STALE
-GROUPS = ("reader", "layout", "redo", "stage", "compose", "pose", "face", "set", "status", "real", "yuji")
+GROUPS = ("fixtures", "reader", "layout", "redo", "stage", "compose", "pose", "face", "set", "status", "real", "yuji")
 
 counts = {"PASS": 0, "FAIL": 0, "SKIPPED": 0}
 failed = []
@@ -104,128 +107,264 @@ def game_status():
     return p.stdout.decode().strip()
 
 
-def _git(*args):
-    p = subprocess.run(["git", "-C", REPO] + list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return p.returncode, p.stdout
-
-
 _BEFORE = {}
+_COMMIT = re.compile(r"^[0-9a-f]{7,64}$")
 
 
-def before_overhaul():
+class _NoCommit(Exception):
+    """A commit the fixtures must be read from is not in this checkout: (the commit or None, what it is)."""
+
+
+def before_overhaul(repo=None):
     """The suite's fixtures stand in the tree as it was BEFORE any picture of the overhaul was installed,
     whatever is installed today: a test that installs the Common Room at revision 2, or expects a relight to be
     refused because its day picture is not in the new look, must not change its answer on the day batch 0 goes
-    in. This says what to put back in a scratch copy:
+    in. This says what to put back in a scratch copy of `repo` (this tree):
 
         {"files": {path under the tree: its bytes then, or None for a file that was not there},
          "pictures": {stem: its `pictures` row of the campus record then, or None},
          "places": {place: the committed layout dump of then (tools/art/game_layout.json), whose rows for that
                     place stamp() lays into a test's dump: its points and slots as they were on the old picture},
-         "problems": [what could not be put back, in words]}
+         "problems": [a thing that could not be put back, in words: a SKIPPED line, and the rest is right],
+         "fatal": [why the tree of before cannot be made at all, in words: nothing is put back, nothing is run]}
 
-    Read from git, never from the working files. A picture, a foreground and a light row are taken from the
-    parent of the commit in which the manifest (game/layout/pictures.json) first held their row, or from HEAD
-    when no commit holds it yet (an install not committed). A layout file that carries for_rev is taken from
-    its newest commit without for_rev. The manifest itself is taken away. With no manifest and no such file
-    (the tree today) nothing is put back and git is not asked."""
-    if _BEFORE:
-        return _BEFORE
-    out = {"files": {}, "pictures": {}, "places": {}, "problems": []}
-    _BEFORE.update(out)
-    lay_dir = os.path.join(REPO, "game", "layout")
-    man = check_campus.load_manifest(REPO).get("pictures") or {}
+    Read from git, never from the working files, and never from where a commit "ought" to be:
+
+      A PICTURE is the file its own manifest row names: `rev1_commit` (the commit that holds the place's picture
+      of before the overhaul, which every later install carries on), and for a relight, whose row has none, the
+      `from_commit` of the row as the manifest FIRST held it. A row that names no commit is a picture that was
+      not there (a new place, a new hour). However the install was committed (in one commit, or the pictures
+      in one and the manifest in a later one: review 3), the row says the same.
+      WHAT GOES WITH IT (its foreground, its light rows, its row of the campus record, the place's rows of the
+      layout dump) is read from the tree as it stood just before the picture was replaced: the parent of the
+      commit in which the picture file stopped being what it was (or first appeared), found in that file's own
+      history; HEAD while the install is not committed.
+      A LAYOUT FILE that carries for_rev is its newest commit without for_rev.
+      The manifest itself is taken away.
+
+    A commit git does not hold is NOT a file that was not there: a checkout without its history (a shallow
+    clone) or a row naming a commit of another clone is `fatal`, in one line (review 3: such a clone took the
+    pictures away and the first test fell over with a traceback). With no manifest and no such file (the tree
+    before batch 0) nothing is put back and git is not asked."""
+    repo = os.path.abspath(repo or REPO)
+    if repo in _BEFORE:
+        return _BEFORE[repo]
+    out = _BEFORE[repo] = {"files": {}, "pictures": {}, "places": {}, "problems": [], "fatal": []}
+    lay_dir = os.path.join(repo, "game", "layout")
+    man = check_campus.load_manifest(repo).get("pictures") or {}
+    names = sorted(os.listdir(lay_dir)) if os.path.isdir(lay_dir) else []
     stamped = []
-    for n in sorted(os.listdir(lay_dir)):
+    for n in names:
         if re.match(r"(hot|view|area|map)_\w+\.json$", n):
             try:
                 if "for_rev" in json.load(open(os.path.join(lay_dir, n), encoding="utf-8")):
                     stamped.append(n)
             except ValueError:
                 pass
-    lights = [n for n in sorted(os.listdir(lay_dir)) if re.match(r"light_\w+\.json$", n)]
+    lights = [n for n in names if re.match(r"light_\w+\.json$", n)]
     if not man and not stamped and not lights and not os.path.exists(os.path.join(lay_dir, "pictures.json")):
         return out
-    if _git("rev-parse", "HEAD")[0] != 0:
-        out["problems"].append("pictures of the overhaul are installed in this tree and it is not a git checkout: the "
-                               "fixtures cannot be taken from before the overhaul")
-        return out
 
-    def show(commit, rel):
-        code, blob = _git("show", "%s:%s" % (commit, rel))
+    def git(*args):
+        p = subprocess.run(["git", "-C", repo] + list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return p.returncode, p.stdout
+
+    if git("rev-parse", "HEAD")[0] != 0:
+        out["fatal"].append("pictures of the overhaul are installed in this tree and it is not a git checkout")
+        return out
+    shallow = git("rev-parse", "--is-shallow-repository")[1].decode().strip() == "true"
+    held = {}
+
+    def need(commit, what):
+        if commit not in held:
+            held[commit] = git("cat-file", "-e", commit + "^{commit}")[0] == 0
+        if not held[commit]:
+            raise _NoCommit(commit, what)
+
+    def show(commit, rel, what):
+        """The file at a commit, or None when that commit holds no such file. The commit must be here."""
+        need(commit, what)
+        code, blob = git("show", "%s:%s" % (commit, rel))
         return blob if code == 0 else None
 
-    # the commit before each row arrived
+    def blob_id(commit, rel):
+        code, got = git("rev-parse", "--verify", "-q", "%s:%s" % (commit, rel))
+        return got.decode().strip() if code == 0 else None
+
+    def fatal(e):
+        commit, what = e.args
+        words = what if commit is None else "git does not hold %s (%s): %s" % (
+            "the parent of commit %s" % commit[:-1][:12] if commit.endswith("^") else "commit %s" % commit[:12], what,
+            "this checkout's history is shallow (git fetch --unshallow brings the rest)" if shallow
+            else "it is not in this checkout (was the picture installed in another clone?)")
+        if words not in out["fatal"]:
+            out["fatal"].append(words)
+
     mrel = "game/layout/pictures.json"
-    first = {}
-    code, log = _git("log", "--reverse", "--format=%H", "--", mrel)
-    for c in log.decode().split():
-        try:
-            rows = json.loads(show(c, mrel) or b"{}").get("pictures") or {}
-        except ValueError:
-            rows = {}
-        for k in rows:
-            first.setdefault(k, c + "^")
-    out["files"][mrel] = None
-    for n in lights:
-        out["files"]["game/layout/" + n] = show(first.get(n[:-5], "HEAD"), "game/layout/" + n)
-    record = {}
-    for k in sorted(man):
-        base = first.get(k, "HEAD")
-        if k.startswith("fg_"):
-            rel = "game/images/fg/%s.png" % k
-        elif k.startswith("light_"):
-            rel = "game/layout/%s.json" % k
-        elif isinstance(man[k], dict) and "kind" in man[k]:
-            rel = "game/images/bg/%s.png" % k
-            if base not in record:
+    firsts = {}
+
+    def first_row(key):
+        """A row as the manifest first held it: the manifest's history, oldest first, then the file on disk."""
+        if not firsts:
+            code, log = git("log", "--reverse", "--format=%H", "--", mrel)
+            for c in log.decode().split():
                 try:
-                    record[base] = json.loads(show(base, "tools/bgs/campus.json") or b"{}").get("pictures") or {}
+                    rows = json.loads(git("show", "%s:%s" % (c, mrel))[1] or b"{}").get("pictures") or {}
                 except ValueError:
-                    record[base] = {}
-            out["pictures"][k] = record[base].get(k)
+                    rows = {}
+                for k, r in rows.items():
+                    firsts.setdefault(k, r)
+            for k, r in man.items():
+                firsts.setdefault(k, r)
+        return firsts.get(key)
+
+    def base_of(rel, then_id, what):
+        """The tree as it stood just before the overhaul reached this file: the parent of the commit in which
+        the file stopped being what it was then (`then_id`: git's name for those bytes; None: it was not
+        there), read from the file's own history; "HEAD" while that is not committed."""
+        commits = git("log", "--format=%H", "--", rel)[1].decode().split()      # the newest first
+        if then_id is None:
+            if not commits:
+                return "HEAD"
+            replaced = commits[-1]
         else:
-            out["problems"].append("the manifest row %r is of a kind the suite's fixtures do not know how to put back "
-                                   "(tools/test_art_tools.py, before_overhaul)" % k)
+            ids = [blob_id(c, rel) for c in commits]
+            if then_id not in ids:
+                raise _NoCommit(None, "the history of %s in this checkout does not hold %s" % (rel, what))
+            if ids.index(then_id) == 0:
+                return "HEAD"
+            replaced = commits[ids.index(then_id) - 1]
+        need(replaced + "^", "the tree as it stood just before the overhaul reached %s" % rel)
+        return replaced + "^"
+
+    # the pictures, each from the commit its own row names
+    bases = {}
+    for k in sorted(man):
+        row = man[k]
+        if not (isinstance(row, dict) and "kind" in row):
             continue
-        out["files"][rel] = show(base, rel)
-    dumps = {}
+        rel = "game/images/bg/%s.png" % k
+        try:
+            if row.get("kind") == "relight":
+                first = first_row(k) or row
+                if first.get("rev", 2) != 2:
+                    raise _NoCommit(None, "the manifest's history in this checkout does not reach the first install of "
+                                          "%s (the oldest row it holds is revision %s)" % (k, first.get("rev")))
+                commit, field, named = first.get("from_commit"), "from_commit", "the from_commit of its first row"
+            else:
+                commit, field, named = row.get("rev1_commit"), "rev1_commit", "its rev1_commit"
+            if commit is not None and not _COMMIT.match(str(commit)):
+                raise _NoCommit(None, "the manifest's row for %s names no commit for its picture of before the overhaul "
+                                      "(its %s is %r)" % (k, field, commit))
+            what = "%s's picture of before the overhaul, which the manifest names: %s" % (k, named)
+            blob = show(commit, rel, what) if commit else None
+            if commit and blob is None:
+                raise _NoCommit(None, "commit %s holds no %s, though the manifest names it (%s)" % (commit[:12], rel, named))
+            bases[k] = base_of(rel, blob_id(commit, rel) if commit else None, what)
+            out["files"][rel] = blob
+        except _NoCommit as e:
+            fatal(e)
 
-    def dump_then(place):
-        base = first.get(place, "HEAD")
-        if base not in dumps:
-            try:
-                dumps[base] = json.loads(show(base, "tools/art/game_layout.json") or b"null")
-            except ValueError:
-                dumps[base] = None
-        if dumps[base] is None:
-            out["problems"].append("git has no layout dump at %s to give %s's points as they were" % (base[:10], place))
-        else:
-            out["places"][place] = dumps[base]
-
-    for place in sorted(set([k for k in man if isinstance(man[k], dict) and "kind" in man[k]]
-                            + [re.match(r"(hot|view)_(\w+)\.json$", n).group(2) for n in stamped if re.match(r"(hot|view)_", n)])):
-        dump_then(place)
-    for n in stamped:
-        rel = "game/layout/" + n
-        code, log = _git("log", "--format=%H", "--", rel)
-        found = None
-        for c in ["HEAD"] + log.decode().split():
-            blob = show(c, rel)
-            try:
-                if blob is not None and "for_rev" not in json.loads(blob):
-                    found = blob
-                    break
-            except ValueError:
+    # what goes with each picture, from the tree as it stood just before the picture was replaced
+    records, dumps = {}, {}
+    try:
+        for k in sorted(bases):
+            base = bases[k]
+            if base not in records:
+                try:
+                    records[base] = json.loads(show(base, "tools/bgs/campus.json", "the campus record of then") or b"{}").get("pictures") or {}
+                except ValueError:
+                    records[base] = {}
+            out["pictures"][k] = records[base].get(k)
+        for k in sorted(man):
+            row = man[k]
+            if isinstance(row, dict) and "kind" in row:
                 continue
-        out["files"][rel] = found
+            if k.startswith("light_"):
+                continue        # a place's light rows are one file, put back below
+            if not k.startswith("fg_"):
+                out["problems"].append("the manifest row %r is of a kind the suite's fixtures do not know how to put back "
+                                       "(tools/test_art_tools.py, before_overhaul)" % k)
+                continue
+            of = row.get("of") if isinstance(row, dict) else None
+            if of in man and of not in bases:
+                continue        # its picture could not be found: said above
+            rel = "game/images/fg/%s.png" % k
+            out["files"][rel] = show(bases.get(of, "HEAD"), rel, "the foreground of then")
+        out["files"][mrel] = None
+        for n in lights:
+            # light_<place>.json holds a row for each hour: it is as it was before the place's FIRST picture went in
+            key = n[:-5]
+            rows = [key] if key in man else [k for k in sorted(man) if k in (key + "_evening", key + "_night")]
+            ofs = [man[k].get("of") for k in rows if isinstance(man[k], dict)]
+            if ofs and all(o in man and o not in bases for o in ofs):
+                continue
+            base = next((bases[o] for o in ofs if o in bases), "HEAD")
+            out["files"]["game/layout/" + n] = show(base, "game/layout/" + n, "the light rows of then")
+        where = dict((k, bases[k]) for k in bases)
+        for n in stamped:
+            rel = "game/layout/" + n
+            found, newer = None, None       # newer: the oldest commit seen in which the file carries for_rev
+            for c in ["HEAD"] + git("log", "--format=%H", "--", rel)[1].decode().split():
+                code, blob = git("show", "%s:%s" % (c, rel))
+                try:
+                    if code == 0 and "for_rev" not in json.loads(blob):
+                        found = blob
+                        break
+                except ValueError:
+                    continue
+                if code == 0:
+                    newer = c
+            if found is None and shallow:
+                raise _NoCommit(None, "this checkout's history is shallow (git fetch --unshallow brings the rest): it cannot "
+                                      "say what %s was before the overhaul" % rel)
+            out["files"][rel] = found
+            m = re.match(r"(hot|view)_(\w+)\.json$", n)
+            if m and m.group(2) not in where:
+                base = "HEAD" if newer in (None, "HEAD") else newer + "^"
+                if base != "HEAD":
+                    need(base, "the tree as it was before %s was installed" % rel)
+                where.setdefault(m.group(2), base)
+        for key in sorted(where):
+            base = where[key]
+            if base not in dumps:
+                try:
+                    dumps[base] = json.loads(show(base, "tools/art/game_layout.json", "the layout dump of then") or b"null")
+                except ValueError:
+                    dumps[base] = None
+            if not isinstance(dumps[base], dict):
+                out["problems"].append("git has no layout dump at %s to give %s's points as they were" % (base[:10], key))
+                continue
+            # the dump's tables are keyed by the place, the manifest by its picture: My Room is `dorm`, your_room.png
+            place = next((p.get("key") for p in dumps[base].get("places") or [] if isinstance(p, dict)
+                          and p.get("file") == "images/bg/%s.png" % key), key)
+            out["places"][place] = dumps[base]
+    except _NoCommit as e:
+        fatal(e)
+    if out["fatal"]:
+        for part in ("files", "pictures", "places"):
+            out[part].clear()       # a tree that cannot be made is not made in part
     return out
+
+
+def fixtures_line(then):
+    """One plain line for a tree whose fixtures cannot be made (before_overhaul()'s `fatal`), or None."""
+    fatal = then.get("fatal") or []
+    if not fatal:
+        return None
+    return ("the tree as it was before the overhaul cannot be made here: %s%s. Nothing was run: run the tests in a git "
+            "checkout that holds the project's whole history"
+            % (fatal[0], "; and %d more of the kind" % (len(fatal) - 1) if len(fatal) > 1 else ""))
 
 
 def mkroot(path):
     """A scratch copy of the tree: the .rpy files, the layout files, the pictures (cloned, not copied, where the
     disk can), the foreground outlines and the campus record. Never a .rpyc. What the overhaul has installed
-    is put back to what it was before (before_overhaul): the fixtures stand at revision 1."""
+    is put back to what it was before (before_overhaul): the fixtures stand at revision 1. Where that tree
+    cannot be made (before_overhaul's `fatal`) no copy is made at all."""
+    then = before_overhaul()
+    if then["fatal"]:
+        raise SystemExit("mkroot: " + fixtures_line(then))
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(os.path.join(path, "game"))
@@ -242,7 +381,6 @@ def mkroot(path):
             shutil.copytree(src, dst)
     shutil.copytree(os.path.join(REPO, "tools", "fg"), os.path.join(path, "tools", "fg"))
     shutil.copyfile(os.path.join(REPO, "tools", "bgs", "campus.json"), os.path.join(path, "tools", "bgs", "campus.json"))
-    then = before_overhaul()
     for rel, blob in then["files"].items():
         dst = os.path.join(path, *rel.split("/"))
         if os.path.lexists(dst):
@@ -398,6 +536,9 @@ elif cmd == "inside":  # a thing drawn differently inside its outline: the box, 
 elif cmd == "bag":     # a flat dark thing set down (a bag, a mat): an ellipse with no pattern and no rim
     out = look(a); x, y, w, h = box
     ImageDraw.Draw(out).ellipse([x, y, x + w, y + h], fill=(34, 30, 36))
+elif cmd == "mat":     # a flat pale thing laid down (a mat, a sheet of card): one colour, no pattern and no rim
+    out = look(a); x, y, w, h = box
+    ImageDraw.Draw(out).rectangle([x, y, x + w, y + h], fill=(214, 204, 180))
 elif cmd == "copy":
     out = a
 out.save(dst)
@@ -419,6 +560,157 @@ class Lab(object):
 
 
 # ---- the groups ---------------------------------------------------------------------------------------------
+def group_fixtures(lab):
+    """before_overhaul() itself, on small git trees made here: what the suite's own fixtures are built from once
+    a picture of the overhaul is installed. Plain Python and git; no picture is read."""
+    if subprocess.run(["git", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+        skipped("the fixtures: before_overhaul() on small git trees", "no git")
+        return
+
+    def git(repo, *args):
+        p = subprocess.run(["git", "-C", repo, "-c", "user.name=test_art_tools", "-c", "user.email=test@example.invalid",
+                            "-c", "commit.gpgsign=false", "-c", "protocol.file.allow=always"] + list(args),
+                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        return p.stdout.decode("utf-8", "replace").strip()
+
+    def put(repo, rel, data):
+        path = os.path.join(repo, *rel.split("/"))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as f:
+            f.write(data if isinstance(data, bytes) else (json.dumps(data, sort_keys=True) + "\n").encode())
+
+    hot_then = {"spots": {"zz_door": [100, 200]}}
+    record_then = {"chosen": None, "source": "the picture of before"}
+
+    def tree(name):
+        """A tree before the overhaul: a room (the place zzplace, the picture zzroom.png) with an evening picture,
+        a foreground cut AGAIN in a later commit than the picture's own, a layout, a record and a dump."""
+        repo = os.path.join(lab.work, "fx_" + name)
+        os.makedirs(repo)
+        git(repo, "init", "-q")
+        put(repo, "game/images/bg/zzroom.png", b"the room, before the overhaul")
+        put(repo, "game/images/bg/zzroom_evening.png", b"its evening, before the overhaul")
+        put(repo, "game/images/fg/fg_zzplace.png", b"the foreground, first cut")
+        put(repo, "game/layout/hot_zzplace.json", hot_then)
+        put(repo, "tools/bgs/campus.json", {"pictures": {"zzroom": record_then}})
+        put(repo, "tools/art/game_layout.json", {"hash": "then", "exits": {"zzplace": ["as it was"]},
+                                                 "places": [{"key": "zzplace", "file": "images/bg/zzroom.png"}]})
+        git(repo, "add", "-A")
+        git(repo, "commit", "-q", "-m", "the room")
+        first = git(repo, "rev-parse", "HEAD")
+        put(repo, "game/images/fg/fg_zzplace.png", b"the foreground, cut again before the overhaul")
+        put(repo, "tools/art/game_layout.json", {"hash": "then, the last dump before the overhaul", "exits": {"zzplace": ["as it was"]},
+                                                 "places": [{"key": "zzplace", "file": "images/bg/zzroom.png"}]})
+        git(repo, "add", "-A")
+        git(repo, "commit", "-q", "-m", "the foreground cut again, and a new dump")
+        return repo, first
+
+    def install(repo, first, rev1="given"):
+        """What an install writes (install_redo.py), by hand: the room composed again, its evening relit, and a
+        place that had no picture."""
+        put(repo, "game/images/bg/zzroom.png", b"the room, in the new look")
+        put(repo, "game/images/bg/zzroom_evening.png", b"its evening, relit")
+        put(repo, "game/images/bg/zznew.png", b"a place that had no picture")
+        put(repo, "game/images/fg/fg_zzplace.png", b"the foreground, cut from the new picture")
+        put(repo, "game/layout/hot_zzplace.json", dict(hot_then, for_rev=2))
+        put(repo, "game/layout/view_zzplace.json", {"slots": {}, "for_rev": 2})
+        put(repo, "game/layout/light_zzplace.json", {"": ["#ffffff", 0, 1, 0.5], "evening": ["#ffd0a0", 0, 1, 0.5]})
+        put(repo, "game/layout/pictures.json", {"pictures": {
+            "zzroom": {"rev": 2, "kind": "composed", "rev1_commit": first if rev1 == "given" else rev1, "from_commit": first},
+            "zzroom_evening": {"rev": 2, "kind": "relight", "of": "zzroom", "of_rev": 2, "from_commit": first},
+            "zznew": {"rev": 2, "kind": "composed"},
+            "fg_zzplace": {"of": "zzroom", "of_rev": 2}, "light_zzplace": {"of": "zzroom", "of_rev": 2},
+            "light_zzplace_evening": {"of": "zzroom_evening", "of_rev": 2}}})
+        put(repo, "tools/bgs/campus.json", {"pictures": {"zzroom": {"chosen": "the new render"}, "zznew": {"chosen": "a render"}}})
+        put(repo, "tools/art/game_layout.json", {"hash": "now", "exits": {"zzplace": ["as the new layout has it"]},
+                                                 "places": [{"key": "zzplace", "file": "images/bg/zzroom.png"}]})
+
+    want = {"game/images/bg/zzroom.png": b"the room, before the overhaul",
+            "game/images/bg/zzroom_evening.png": b"its evening, before the overhaul",
+            "game/images/bg/zznew.png": None,
+            "game/images/fg/fg_zzplace.png": b"the foreground, cut again before the overhaul",
+            "game/layout/hot_zzplace.json": (json.dumps(hot_then, sort_keys=True) + "\n").encode(),
+            "game/layout/view_zzplace.json": None, "game/layout/light_zzplace.json": None, "game/layout/pictures.json": None}
+
+    def wrong(then):
+        """What is not as it was before the overhaul, in words; [] when all of it is."""
+        bad = ["%s: %r" % (rel, (then["files"].get(rel, "not named") or b"")[:48]) for rel in sorted(want)
+               if rel not in then["files"] or then["files"][rel] != want[rel]]
+        bad += ["%s is named and should not be" % rel for rel in sorted(then["files"]) if rel not in want]
+        if then["pictures"] != {"zzroom": record_then, "zzroom_evening": None, "zznew": None}:
+            bad.append("the record's rows: %r" % then["pictures"])
+        if (then["places"].get("zzplace") or {}).get("hash") != "then, the last dump before the overhaul":
+            bad.append("the dump for zzplace: %r" % (then["places"].get("zzplace") or {}).get("hash"))
+        return bad + ["problem: " + w for w in then["problems"]] + ["fatal: " + w for w in then["fatal"]]
+
+    repo, first = tree("one")
+    install(repo, first)
+    git(repo, "add", "-A")
+    git(repo, "commit", "-q", "-m", "the install, in one commit")
+    got = wrong(before_overhaul(repo))
+    ok("the fixtures, an install committed in ONE commit: each picture is the one its manifest row names (rev1_commit; "
+       "a relight's first from_commit), a place that had no picture has none, and what goes with a picture (its "
+       "foreground as last cut, its light rows, its layout without for_rev, its row of the record, the dump) is as it "
+       "stood just before the picture was replaced", not got, "\n".join(got))
+
+    repo2, first2 = tree("two")
+    install(repo2, first2)
+    git(repo2, "add", "game/images")
+    git(repo2, "commit", "-q", "-m", "the install: the pictures")
+    git(repo2, "add", "-A")
+    git(repo2, "commit", "-q", "-m", "the install: the manifest and the rest")
+    got = wrong(before_overhaul(repo2))
+    ok("the fixtures, the same install committed as the PICTURES FIRST and the manifest after: the same tree of before "
+       "(review 3: read from the parent of the manifest's first commit, these were the NEW pictures, and nothing said so)",
+       not got and len(git(repo2, "log", "--format=%H").split()) == 4, "\n".join(got))
+
+    repo3, first3 = tree("open")
+    install(repo3, first3)
+    got = wrong(before_overhaul(repo3))
+    ok("the fixtures, the same install NOT committed yet: the same tree of before, read from HEAD", not got, "\n".join(got))
+
+    shallow = os.path.join(lab.work, "fx_shallow")
+    git(lab.work, "clone", "-q", "--depth", "1", "file://" + repo, shallow)
+    then = before_overhaul(shallow)
+    line = fixtures_line(then) or ""
+    ok("the fixtures, in a clone WITHOUT ITS HISTORY (depth 1): a commit git does not hold is not a file that was not "
+       "there. Nothing is put back or taken away, and one plain line names the commit and says the history is shallow",
+       os.path.exists(os.path.join(shallow, "game", "layout", "pictures.json")) and bool(then["fatal"])
+       and then["files"] == {} and then["pictures"] == {} and then["places"] == {}
+       and any("git does not hold commit %s (zzroom's picture of before the overhaul" % first[:12] in w for w in then["fatal"])
+       and "git does not hold" in line and "history is shallow" in line and "\n" not in line
+       and line.startswith("the tree as it was before the overhaul cannot be made here"), line + "\n" + json.dumps(then["fatal"]))
+
+    bare = os.path.join(lab.work, "fx_nogit")
+    shutil.copytree(repo, bare, ignore=shutil.ignore_patterns(".git"))
+    then = before_overhaul(bare)
+    ok("the fixtures, in a copy that is no git checkout: one plain line, and nothing put back or taken away",
+       then["files"] == {} and len(then["fatal"]) == 1 and "it is not a git checkout" in (fixtures_line(then) or ""), fixtures_line(then))
+
+    repo4, first4 = tree("copyrow")
+    install(repo4, first4, rev1="not committed (a copy)")
+    git(repo4, "add", "-A")
+    git(repo4, "commit", "-q", "-m", "an install whose row names no commit")
+    then = before_overhaul(repo4)
+    ok("the fixtures, a manifest row whose rev1_commit is no commit (\"not committed (a copy)\"): its picture of before "
+       "cannot be taken from git, and the line says which row", then["files"] == {}
+       and "the manifest's row for zzroom names no commit" in (fixtures_line(then) or ""), fixtures_line(then))
+
+    repo5, first5 = tree("pose")
+    install(repo5, first5)
+    rows = json.load(open(os.path.join(repo5, "game", "layout", "pictures.json")))
+    rows["pictures"]["pose_zz_megumi"] = {"of": "zzroom", "of_rev": 2}
+    put(repo5, "game/layout/pictures.json", rows)
+    then = before_overhaul(repo5)
+    ok("the fixtures, a manifest row of a kind they do not know (a pose's): a SKIPPED line names it, and the rest is "
+       "still put back", len(then["problems"]) == 1 and "pose_zz_megumi" in then["problems"][0] and not then["fatal"]
+       and then["files"].get("game/images/bg/zzroom.png") == want["game/images/bg/zzroom.png"], json.dumps(then["problems"] + then["fatal"]))
+    ok("the fixtures of this tree itself: %s" % ("nothing of the overhaul is installed here, and git is not asked"
+                                                  if not before_overhaul()["files"] else
+                                                  "%d files are put back or taken away, from git" % len(before_overhaul()["files"])),
+       not before_overhaul()["fatal"], fixtures_line(before_overhaul()))
+
+
 def group_reader(lab):
     """Every tool refuses, in one line, a dump whose hash is out of date, and reads --layout-dump."""
     root = mkroot(os.path.join(lab.work, "r_reader"))
@@ -465,6 +757,20 @@ def group_layout(lab):
     import game_layout
     lay = game_layout.load(lab.dump)
     committed = os.path.abspath(lab.dump) == os.path.abspath(check_campus.DUMP)
+
+    def within(poly, x, y):
+        hit = False
+        for (x0, y0), (x1, y1) in zip(poly, poly[1:] + poly[:1]):
+            if (y0 > y) != (y1 > y) and x < x0 + (x1 - x0) * (y - y0) / float(y1 - y0):
+                hit = not hit
+        return hit
+
+    floor = [z for z in json.load(open(os.path.join(TOOLS, "bgs", "keep", "cafeteria.json"), encoding="utf-8"))["empty"]
+             if z["name"] == "the floor"][0]["poly"]
+    feet = sorted(set((x, y) for _n, x, y in lay.slot_feet("cafeteria")))
+    out_of = [pt for pt in feet if not within(floor, pt[0], pt[1])]
+    ok("the Cafeteria's keep list: its floor zone holds every place people stand (%d of %d; a thing set down where a "
+       "row stands is refused only inside it)" % (len(feet) - len(out_of), len(feet)), len(feet) == 9 and not out_of, out_of)
     cells = (lay.where("megumi", "Mon", "Night"), lay.asleep("megumi", "Mon", "Night"), lay.asleep("megumi", "Sat", "Night"),
              lay.asleep("megumi", "Mon", "Evening"), lay.away("nobara", "Sun", "Afternoon"), lay.away("nobara", "Sat", "Afternoon"),
              lay.where("yuji", "Sun", "Afternoon"), lay.districts(), lay.homes().get("panda"))
@@ -939,6 +1245,39 @@ def group_redo(lab):
     ok("with no keep list (no floor zone to say the floor is the same drawing) the bag is only shown: nothing is "
        "known of that floor",
        v[0] == "LOOK" and rc == 0 and "drawn differently where people stand" in v[1], out)
+    # review 3. The same bag, named: where the room's named addition (`allow`) lies inside a standing point's
+    # window, what stands there is what was asked for. Step 4 leaves that floor unjudged; so do the points.
+    asked = os.path.join(lab.work, "keep_asked")
+    os.makedirs(asked, exist_ok=True)
+    ckl = json.load(open(os.path.join(TOOLS, "bgs", "keep", "cafeteria.json"), encoding="utf-8"))
+    json.dump(dict(ckl, allow=[{"name": "a bag left by the tables", "box": [690, 890, 110, 80]}]),
+              open(os.path.join(asked, "cafeteria.json"), "w"))
+    rc, out = run(credo + [os.path.join(lab.work, "syn_cafbag_a_00001_.png"), "--dry", "--keep", asked] + tail, py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    ok("named in `allow`, the same bag is what was asked for: the standing points whose windows it lies in are shown, "
+       "not refused (\"something stands there\" is not said of the room's own named addition)",
+       v[0] == "LOOK" and rc == 0 and "something stands there" not in v[1] and "something new" not in v[1]
+       and "drawn differently where people stand" in v[1] and "it has what was asked for: a bag left by the tables" in v[1], out)
+    # review 3. The Cafeteria's floor zone holds all nine places people stand: the rows by the wall (x 250, x 330)
+    # and by the near table (x 1380) lay outside it, and a thing set down there was only shown.
+    rc, out = run(credo + [lab.syn("mat", caf, "syn_cafmat_a_00001_.png", "1300,985,160,70"), "--dry"] + tail, py=True)
+    v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+    ok("a flat pale mat laid where the row of two stands by the near table (x 1380), which lay outside the keep "
+       "list's floor zone until review 3, is REFUSED by the standing point and by the floor",
+       v[0] == "REFUSED" and rc == 1
+       and "the floor where people stand (a row of 2, at x 1380) no longer lines up with the picture in the game, on a "
+           "floor that is otherwise the same drawing: something stands there" in v[1]
+       and "something new is on the floor (at its right end" in v[1] and "moved" not in v[1] and "gone" not in v[1], out)
+    # review 3. A flat dark thing where the standing point's OWN window still lines up (the Common Room's holds
+    # the foot of the wall and the cabinet as well as the boards, so a bag in it changes too little): the floor
+    # says it. It is the same drawing everywhere else, and the part the bag lies on no longer agrees.
+    rc, out, v = one(lab.syn("bag", room, "syn_combag_a_00001_.png", "1335,945,130,78"))
+    ok("a flat dark bag set down on the Common Room's boards where the row of three stands (x 1400) is REFUSED by "
+       "the floor (\"that part of it no longer agrees with the picture in the game\"), though the standing point's own "
+       "window still lines up and the bag has too little fine edge for \"something new\" (unseen until review 3)",
+       v[0] == "REFUSED" and rc == 1 and "something new is on the floor (at its right end" in v[1]
+       and "that part of it no longer agrees with the picture in the game" in v[1] and "and the rest of it does" in v[1]
+       and "something stands there" not in v[1] and "moved" not in v[1] and "gone" not in v[1], out)
 
     # 3. the named addition on a hotspot's own object: the allow box wins over the automatic keep box, and over
     # nothing else
@@ -1054,6 +1393,41 @@ def group_redo(lab):
     rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "night", night, "--choose", "a", "--root", root2,
                    "--layout-dump", stamp(lab.dump, root2)], py=True)
     ok("a relight is not installed before its day picture is in the new look (K8)", rc != 0 and "not installed in the new look" in out, out)
+
+    # review 3. A copy of the tree may stand at an OLDER revision than HEAD holds: these fixtures do, once a
+    # picture of the overhaul is committed (the copy is the tree as it was before). The row must still name the
+    # commit that holds the picture the install replaced, or its proof cannot be rerun. Made here with a small
+    # git history of its own: the copy's picture is committed, then another over it, then the first put back.
+    rh = mkroot(os.path.join(lab.work, "r_hist"))
+    rel = "game/images/bg/dorm_common.png"
+    pic = os.path.join(rh, *rel.split("/"))
+
+    def g(*args):
+        p = subprocess.run(["git", "-C", rh, "-c", "user.name=test_art_tools", "-c", "user.email=test@example.invalid",
+                            "-c", "commit.gpgsign=false"] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        return p.stdout.decode("utf-8", "replace").strip()
+
+    older = lab.syn("plainrecolour", pic, "syn_hist_older_a_00001_.png")        # the same drawing, other bytes
+    g("init", "-q")
+    shutil.copyfile(older, pic)
+    g("add", "-f", rel)
+    g("commit", "-q", "-m", "the picture this copy stands at")
+    held = g("rev-parse", "HEAD")
+    shutil.copyfile(made["recolour"], pic)
+    g("add", "-f", rel)
+    g("commit", "-q", "-m", "a later picture: the one HEAD holds")
+    head = g("rev-parse", "HEAD")
+    shutil.copyfile(older, pic)
+    rc, out = run(redo + [good, "--choose", "a", "--batch", "3", "--root", rh, "--layout-dump", stamp(lab.dump, rh)], py=True)
+    row = check_campus.load_manifest(rh)["pictures"].get("dorm_common", {})
+    ok("a copy that stands at an older picture than its HEAD holds: the row's from_commit and rev1_commit are the commit "
+       "of the file's history that holds the picture on disk, not \"not committed (a copy)\" (review 3: so the suite's "
+       "own rows read once batch 0 was committed)",
+       rc == 0 and re.match(r"^[0-9a-f]{40}$", held) is not None and held != head
+       and row.get("from_commit") == held and row.get("rev1_commit") == held, out + json.dumps(row))
+    rc, out = run(redo + [good, "--dry", "--against-rev1", "--root", rh, "--layout-dump", stamp(lab.dump, rh)], py=True)
+    ok("and its proof can be rerun from git: --against-rev1 measures against that commit's picture",
+       rc == 0 and "before the overhaul (git, commit %s)" % held[:10] in out, out)
     return root
 
 
@@ -2113,7 +2487,10 @@ def group_real(lab, write=False):
             "(docs/UI2_DESIGN.md 5.4, 5.7), written by tools/test_art_tools.sh --write-measures: first on 7 Oct 2026, and "
             "again on 11 Oct 2026 (U0d3's review) for the constants and the two figure keys the seven corrections added "
             "(floor_points: how many standing points read as a floor drawn differently; relight_empty_most: [rise, levels] of "
-            "the small empty place of a relight that gained most against the ring round it). No verdict changed.",
+            "the small empty place of a relight that gained most against the ring round it). No verdict changed. And on "
+            "12 Oct 2026 (review 3) for SAME_FLOOR and SAME_CELL (a flat thing set down on a floor that is the same "
+            "drawing) and the figure key empty_cell_least, with the Cafeteria's floor zone widened to hold all nine "
+            "places people stand. No verdict changed.",
             "`thresholds` are the constants of tools/redo_measure.py as they stood (the file is a record: the tool reads its own constants).",
             "`renders` are the sixteen look-test renders, each judged in place against the game's picture of that place.",
             "Five of them are a LOOK, not a PASS, since review round 2 (7 Oct): nothing in them moved, vanished or appeared, "
@@ -2126,7 +2503,9 @@ def group_real(lab, write=False):
             "In `figures`: shift is the whole picture's, in px; keep_weakest is [agreement against the picture's own, share "
             "of its edge] of the weakest kept thing; empty_most is [rise, levels] of the empty place that gained most; sharp "
             "is [revision 1, this render]; empty_cell_most is the same as empty_most for the 160 px part of a wide empty place "
-            "(a floor) that gained most; cells_different is how many 120 px cells step 6 shows."]
+            "(a floor) that gained most; cells_different is how many 120 px cells step 6 shows; empty_cell_least is [the "
+            "agreement with the game's picture of the 160 px part of a wide empty place that agrees least, the middle "
+            "agreement of that place's parts]: a thing set down reads under SAME_CELL where the middle is SAME_FLOOR or more."]
         with open(MEASURES, "w", encoding="utf-8") as f:
             json.dump(record, f, indent=1, sort_keys=True)
             f.write("\n")
@@ -2232,8 +2611,13 @@ def main(argv):
     lab = Lab(work, dump, art)
     t0 = time.time()
     print("# test_art_tools: %s; ComfyUI's Python %s; scratch %s" % (", ".join(groups), "found" if art else "NOT found", work))
-    for why in before_overhaul()["problems"]:
+    then = before_overhaul()
+    for why in then["problems"]:
         skipped("the fixtures stand in the tree as it was before the overhaul", why)
+    if then["fatal"]:
+        # one plain line, and nothing is run: all but one of the groups install into a copy of that tree
+        ok("the fixtures: %s" % fixtures_line(then), False)
+        groups = []
     try:
         for g in groups:
             print("## %s" % g)

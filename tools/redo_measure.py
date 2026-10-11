@@ -57,7 +57,11 @@ enlarged 2% by hand read as moved everywhere):
               AND in overlapping 160 px cells: one bag on a wide floor is
               lost in the floor's mean and plain in its own cell. A floor
               whose cells no longer agree with the game's (drawn again) is
-              shown, not refused. A relight is not judged; its small empty
+              shown, not refused. A FLAT thing (a dark bag, a mat) adds
+              little fine edge and hides the boards under it: on a floor
+              whose cells agree with the game's in the middle (SAME_FLOOR)
+              one cell that no longer does (SAME_CELL) is refused as well.
+              A relight is not judged; its small empty
               zones are read against the ring round each, for a LOOK only.
   LOOK        whatever else changed is shown, not refused: a 320 px tile,
               or a 120 px cell, whose edge map no longer agrees with the
@@ -131,6 +135,25 @@ REDRAWN_CELLS = 8           # with the game's picture (and has at least this man
                             # boards, light across it. Measured: My Room's chosen render 0.32, the first test's
                             # Common Room B 0.22; every floor that is the same drawing 0.84 or more, with a
                             # cushion, a kettle, a bag or two cups set down on it as well
+SAME_FLOOR = 0.75           # (review 3) a wide empty zone whose cells agree, in the middle, at least this well with
+SAME_CELL = 0.55            # the game's is the same drawing all over: there, ONE cell that agrees less than
+                            # SAME_CELL is a thing set down (a flat dark bag, a mat: too little fine edge for
+                            # CELL_RISE, and it hides the boards under it). Measured on 12 Oct 2026, as the
+                            # tool prints them (cut to two places, never rounded up). The lowest cell of a floor
+                            # with nothing on it: the chosen Cafeteria 0.93 (middle 0.96), the chosen Common
+                            # Room 0.72 (middle 0.83); the other renders whose floor is the same drawing 0.78 to
+                            # 0.94; the emptied second-test room 0.64 (refused for what is gone). With the
+                            # tests' flat dark bag (90 x 60) set down at each of the 15 standing points that lie
+                            # in such a zone of those two chosen renders: 0.09 to 0.48 at ten of them, and 0.67
+                            # to 0.75 at five, which no measure here finds (dark on the Cafeteria's dark wall
+                            # panels, and beside the Common Room's dark backpack). A bag 130 x 80: 0.12 to 0.50
+                            # at thirteen. So 0.55 stands 0.07 over the weakest fault it finds and 0.09 under
+                            # the lowest clean floor (0.17 under the lowest chosen one). The middle with a bag
+                            # on it is 0.77 or more (0.02 over SAME_FLOOR). A floor whose middle lies between
+                            # REDRAWN and SAME_FLOOR is neither read this way nor "drawn again": the corridor
+                            # redone in place and not chosen, 0.62 with a cell at 0.31, and a thing that covers
+                            # enough of a floor to pull its middle under 0.75 (a mat 400 px wide across the
+                            # Common Room's boards: 0.74 with a cell at 0.39, not seen)
 RELIGHT_ADD_RISE = 1.40     # a relight is never refused for an added thing (5.7), but a SMALL empty place of the
 RELIGHT_ADD_MIN = 1.5       # keep list (not a floor: light falls across floors) whose fine edge rose this many
 RELIGHT_RING = 60           # times more than the ring this wide round it did, and by this many levels, is shown.
@@ -509,10 +532,14 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                 if far is not None:
                     refused.append("%s moved %s (the floor's edge and what stands round it)" % (p["name"], _way(*far)))
                     marks["moved"].append(box)
-                elif not relight and _floor_same(eo, en, empty, p["at"], same_cache):
+                elif (not relight and not any(q and overlaps(box, q) for q in allow_boxes)
+                      and _floor_same(eo, en, empty, p["at"], same_cache)):
                     # The floor round the point is still the SAME drawing (the keep list's floor zone agrees
                     # with the game's, cell by cell), and yet the point's own window agrees with nothing: a
                     # thing was set down there. A flat bag or a mat has too little fine edge for step 4.
+                    # Not where the room's named addition (`allow`) lies inside the point's window: what
+                    # stands there is what was asked for, and step 4 leaves that floor unjudged for the same
+                    # reason; the point is shown.
                     refused.append("%s no longer lines up with the picture in the game, on a floor that is otherwise "
                                    "the same drawing: something stands there" % p["name"])
                     marks["added"].append(box)
@@ -659,7 +686,7 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
         # step 4: nothing was added
         fo, fn = edges(old, 1.0), edges(new, 1.0)
         fgain = gain_of(fo, fn)
-        most, cell_most, n_empty = None, None, 0
+        most, cell_most, cell_least, n_empty = None, None, None, 0
         redrawn = []
         for z in empty:
             mask, box = zone_mask(z)
@@ -674,7 +701,11 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                     hit.append(cbox)
                 if cell_most is None or cr > cell_most[0]:
                     cell_most = (cr, cby, z["name"])
-            same = _same_cells(eo, en, mask, box)
+            parts = _same_cells(eo, en, mask, box, where=True)
+            same = [a for a, _b in parts]
+            middle_same = float(np.median(same)) if same else 0.0
+            if len(same) >= REDRAWN_CELLS and (cell_least is None or min(same) < cell_least[0]):
+                cell_least = (min(same), middle_same, z["name"])
             # A floor DRAWN AGAIN (its boards run another way, sunlight lies on it) gains and loses fine edge
             # everywhere: "something new" cannot be read from its lines. It is shown, not refused; a thing set
             # down on a floor that is still the same drawing leaves the rest of it agreeing, and is refused.
@@ -692,19 +723,35 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
             elif r >= ADDED_RISE and by >= ADDED_MIN:
                 refused.append("something new is on %s" % z["name"])
                 marks["added"].append(box)
+            elif len(same) >= REDRAWN_CELLS and middle_same >= SAME_FLOOR and min(same) < SAME_CELL:
+                # A FLAT thing (a dark bag, a mat, a rug) adds too little fine edge for the two tests above,
+                # and it hides the boards under it: on a floor that is the same drawing everywhere else, the
+                # part it lies on no longer agrees with the game's. (Review 3: such a thing went through
+                # unseen wherever the standing point's own window held more than bare boards.)
+                low = [b for a, b in parts if a < SAME_CELL]
+                refused.append("something new is on %s (%s): that part of it no longer agrees with the picture in the "
+                               "game (%.2f; a thing set down from under %.2f), and the rest of it does (%.2f)"
+                               % (z["name"], _where(min(b[0] for b in low), max(b[2] for b in low), box), _down(min(same)),
+                                  SAME_CELL, _down(middle_same)))
+                marks["added"] += low
             n_empty += 1
             if most is None or r > most[0]:
                 most = (r, by, z["name"])
         fig["empty_most"] = list(most[:2]) if most else None
         fig["empty_cell_most"] = list(cell_most[:2]) if cell_most else None
+        fig["empty_cell_least"] = [_down(cell_least[0]), _down(cell_least[1])] if cell_least else None
         if redrawn:
             fig["redrawn"] = redrawn
-        lines.append(("added", "%d place%s checked%s%s" % (n_empty, "" if n_empty == 1 else "s",
+        lines.append(("added", "%d place%s checked%s%s%s" % (n_empty, "" if n_empty == 1 else "s",
                       "; the largest rise is %.2f times, on %s (new from %.2f times)" % (most[0], most[2], ADDED_RISE)
                       if most else "",
                       "; the largest in any %d px part of a wide one is %.2f times, on %s (new from %.2f)"
                       % (CELL, cell_most[0], cell_most[2], CELL_RISE)
-                      if cell_most else "")))
+                      if cell_most else "",
+                      "; the part of a wide one that agrees least with the game's reads %.2f, on %s, whose middle is "
+                      "%.2f (a thing set down: under %.2f where the middle is %.2f or more)"
+                      % (_down(cell_least[0]), cell_least[2], _down(cell_least[1]), SAME_CELL, SAME_FLOOR)
+                      if cell_least else "")))
         # step 5: sharper than revision 1
         if rev1 is not None:
             base, now = lapvar(rev1), lapvar(new)
@@ -756,14 +803,23 @@ def _auto_box(pt):
     return (pt[0] - h, pt[1] - h, pt[0] - h + AUTO_BOX, pt[1] - h + AUTO_BOX)
 
 
-def _same_cells(eo, en, mask, box):
+def _down(v):
+    """An agreement as it is printed beside SAME_CELL and SAME_FLOOR: cut to two places, never rounded up, so that
+    a number printed as 0.75 is 0.75 or more and one that is under 0.55 never prints as 0.55."""
+    return int(np.floor(float(v) * 100.0 + 1e-9)) / 100.0
+
+
+def _same_cells(eo, en, mask, box, where=False):
     """How well each 160 px cell of a wide empty zone agrees with the game's picture: the measure by which a
-    floor is "drawn again" (few agree) or "the same drawing" (most do). [] for a zone judged whole only."""
+    floor is "drawn again" (few agree) or "the same drawing" (most do), and by which one part of a floor that is
+    the same drawing no longer is (a flat thing set down on it). [] for a zone judged whole only. With `where`,
+    each is (agreement, the cell's box)."""
     same = []
     for _cmask, cbox in cells(mask, box):
         ca, cb = eo[cbox[1]:cbox[3], cbox[0]:cbox[2]], en[cbox[1]:cbox[3], cbox[0]:cbox[2]]
         if ca.std() >= FLAT * 0.5:
-            same.append(shift(ca, cb, search=SHIFT_POINT)[2])
+            got = shift(ca, cb, search=SHIFT_POINT)[2]
+            same.append((got, cbox) if where else got)
     return same
 
 

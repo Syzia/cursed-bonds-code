@@ -1,16 +1,20 @@
 {
  "about": [
-  "tools/art/redo_measures.json -- what tools/install_redo.py measured on the renders whose answers are known (docs/UI2_DESIGN.md 5.4, 5.7), written by tools/test_art_tools.sh --write-measures: first on 7 Oct 2026, and again on 11 Oct 2026 (U0d3's review) for the constants and the two figure keys the seven corrections added (floor_points: how many standing points read as a floor drawn differently; relight_empty_most: [rise, levels] of the small empty place of a relight that gained most against the ring round it). No verdict changed.",
+  "tools/art/redo_measures.json -- what tools/install_redo.py measured on the renders whose answers are known (docs/UI2_DESIGN.md 5.4, 5.7), written by tools/test_art_tools.sh --write-measures: first on 7 Oct 2026, and again on 11 Oct 2026 (U0d3's review) for the constants and the two figure keys the seven corrections added (floor_points: how many standing points read as a floor drawn differently; relight_empty_most: [rise, levels] of the small empty place of a relight that gained most against the ring round it). No verdict changed. And on 12 Oct 2026 (review 3) for SAME_FLOOR and SAME_CELL (a flat thing set down on a floor that is the same drawing) and the figure key empty_cell_least, with the Cafeteria's floor zone widened to hold all nine places people stand. No verdict changed.",
   "`thresholds` are the constants of tools/redo_measure.py as they stood (the file is a record: the tool reads its own constants).",
   "`renders` are the sixteen look-test renders, each judged in place against the game's picture of that place.",
   "Five of them are a LOOK, not a PASS, since review round 2 (7 Oct): nothing in them moved, vanished or appeared, and each has a new view through a window or a doorway, which step 6 shows in 120 px cells and does not refuse.",
   "`relight_pairs` are the eight day and hour pairs the game has; all eight line up with their day picture to 0 px, so all eight were made as relights and none is left out. The relight's own \"vanished\" rule (gone only when a thing agrees under RELIGHT_GONE_REL of what the picture does AND keeps under RELIGHT_GONE_EDGE of its edge) was set so that every one of them passes: the window at the end of the girls' corridor, lit at night, keeps 0.39 of its agreement and 43% of its edge, and is the weakest kept thing of the eight.",
-  "In `figures`: shift is the whole picture's, in px; keep_weakest is [agreement against the picture's own, share of its edge] of the weakest kept thing; empty_most is [rise, levels] of the empty place that gained most; sharp is [revision 1, this render]; empty_cell_most is the same as empty_most for the 160 px part of a wide empty place (a floor) that gained most; cells_different is how many 120 px cells step 6 shows."
+  "In `figures`: shift is the whole picture's, in px; keep_weakest is [agreement against the picture's own, share of its edge] of the weakest kept thing; empty_most is [rise, levels] of the empty place that gained most; sharp is [revision 1, this render]; empty_cell_most is the same as empty_most for the 160 px part of a wide empty place (a floor) that gained most; cells_different is how many 120 px cells step 6 shows; empty_cell_least is [the agreement with the game's picture of the 160 px part of a wide empty place that agrees least, the middle agreement of that place's parts]: a thing set down reads under SAME_CELL where the middle is SAME_FLOOR or more."
  ],
  "canary_shape": {
   "figures": {
    "agree": 0.955,
    "cells_different": 2,
+   "empty_cell_least": [
+    0.86,
+    0.96
+   ],
    "empty_cell_most": [
     1.014,
     0.13
@@ -222,6 +226,10 @@
    "figures": {
     "agree": 0.955,
     "cells_different": 2,
+    "empty_cell_least": [
+     0.86,
+     0.96
+    ],
     "empty_cell_most": [
      1.014,
      0.13
@@ -256,9 +264,13 @@
    "figures": {
     "agree": 0.943,
     "cells_different": 0,
+    "empty_cell_least": [
+     0.91,
+     0.94
+    ],
     "empty_cell_most": [
-     1.048,
-     0.24
+     1.106,
+     0.78
     ],
     "empty_most": [
      1.016,
@@ -290,6 +302,10 @@
    "figures": {
     "agree": 0.887,
     "cells_different": 2,
+    "empty_cell_least": [
+     0.78,
+     0.95
+    ],
     "empty_cell_most": [
      1.029,
      0.16
@@ -324,6 +340,7 @@
    "figures": {
     "agree": 0.958,
     "cells_different": 1,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -352,6 +369,7 @@
    "figures": {
     "agree": 0.81,
     "cells_different": 1,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -380,6 +398,10 @@
    "figures": {
     "agree": 0.621,
     "cells_different": 8,
+    "empty_cell_least": [
+     0.05,
+     0.21
+    ],
     "empty_cell_most": [
      1.54,
      2.66
@@ -417,6 +439,10 @@
    "figures": {
     "agree": 0.854,
     "cells_different": 2,
+    "empty_cell_least": [
+     0.64,
+     0.98
+    ],
     "empty_cell_most": [
      1.142,
      1.01
@@ -451,6 +477,10 @@
    "figures": {
     "agree": 0.987,
     "cells_different": 0,
+    "empty_cell_least": [
+     0.94,
+     0.97
+    ],
     "empty_cell_most": [
      1.063,
      0.51
@@ -485,6 +515,7 @@
    "figures": {
     "agree": 0.831,
     "cells_different": 0,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -513,6 +544,7 @@
    "figures": {
     "agree": 0.955,
     "cells_different": 0,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -541,6 +573,7 @@
    "figures": {
     "agree": 0.819,
     "cells_different": 2,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -569,6 +602,7 @@
    "figures": {
     "agree": 0.983,
     "cells_different": 0,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -596,6 +630,7 @@
   {
    "figures": {
     "agree": 0.453,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -623,6 +658,7 @@
   {
    "figures": {
     "agree": 0.392,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 0,
@@ -651,6 +687,7 @@
    "figures": {
     "agree": 0.585,
     "cells_different": 18,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 2,
@@ -678,6 +715,7 @@
   {
    "figures": {
     "agree": 0.024,
+    "empty_cell_least": null,
     "empty_cell_most": null,
     "empty_most": null,
     "floor_points": 8,
@@ -742,6 +780,8 @@
   "RELIGHT_GONE_REL": 0.3,
   "RELIGHT_RING": 60,
   "REL_FLOOR": 0.5,
+  "SAME_CELL": 0.55,
+  "SAME_FLOOR": 0.75,
   "SEARCH": 24,
   "SHARP_LOOK": 1.3,
   "SHARP_PASS": 2.0,

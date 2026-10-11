@@ -199,9 +199,27 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   is one whose floor is drawn again while what stands on it slid, and one
   that no longer lines up on a floor the keep list's floor zone shows to be
   the same drawing: "something stands there", a flat bag or a mat that has
-  too little fine edge for "something new is on the floor"); the named addition on a hotspot's own
+  too little fine edge for "something new is on the floor"; not where the
+  room's named addition, `allow`, lies in the point's window); the named addition on a hotspot's own
   object does not make that object "gone"; a pale thing on a wall that became
-  lighter is a LOOK ("fainter"). **A relight is read by eye beside its day
+  lighter is a LOOK ("fainter"). **A flat thing set down on a floor**
+  (review 3, 12 Oct): the standing points find it only where a point's own
+  window holds little but bare boards, so a wide floor that is still the
+  same drawing (its 160 px parts agree with the game's 0.75 or better in
+  the middle) is refused when ONE part agrees under 0.55: "something new
+  is on the floor (...): that part of it no longer agrees with the picture
+  in the game". On the chosen Cafeteria and Common Room, with a flat thing
+  set down at each of the nine places people stand, 51 of 72 are refused
+  now (22 before). What it still cannot find: a dark thing against dark
+  wood (a dark bag on the Cafeteria's wall panels, or beside the Common
+  Room's backpack), anything at the Common Room's three rows on the rug
+  (that zone is too small to be read in parts), and a thing that covers
+  so much of a floor's zone that the zone no longer reads as the same
+  drawing: its middle under 0.55 is "the floor is drawn again", a LOOK,
+  and between 0.55 and 0.75 nothing is said (a mat 400 px wide across the
+  Common Room's boards reads 0.74, and is not seen). The Cafeteria's floor zone (`tools/bgs/keep/cafeteria.json`)
+  now runs under all nine places people stand there: the rows by the wall
+  (x 250, x 330) and by the near table (x 1380) lay outside it. **A relight is read by eye beside its day
   picture for anything added** (a lamp, a blanket, a bench): it is never
   refused for one, and the one case that can be measured without a false
   alarm is shown as a LOOK (a small `empty` row of the keep list that gained
@@ -220,11 +238,28 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   its foreground, its light row, a layout with `for_rev`, the manifest, the
   place's rows of the dump) is put back from git in the scratch copy
   (`before_overhaul()` in `tools/test_art_tools.py`), so the suite reads the
-  same before and after batch 0 (proved in a clone holding batch 0: every
-  line the same, but that the six lines on the two staged layouts become
-  two saying the installed files are the staged ones). A manifest row of a kind it does not
+  same before and after batch 0: every line the same, but that the six
+  lines on the two staged layouts become two saying the installed files
+  are the staged ones. Each picture is taken from the commit its own
+  manifest row names (`rev1_commit`; a relight's first `from_commit`), and
+  what goes with it from the tree as it stood just before the picture was
+  replaced, so it does not matter how the install was committed. Proved on
+  12 Oct (review 3) in clones holding batch 0 committed in one commit,
+  committed as the pictures first and the manifest after, and not
+  committed; their dump was the committed one with its hash taken again,
+  not one the game wrote. (The proof of 11 Oct was made with the install
+  not committed. Committed, five lines failed: the copy stands at the
+  picture of before, HEAD holds the new one, and the installer found no
+  commit for the picture it replaced. For a copy, `--root`, it now reads
+  the file's history as well.) A manifest row of a kind it does not
   know how to put back (the first pose, say) is a SKIPPED line, which
-  `--strict` fails: teach `before_overhaul()` that kind then. It will not
+  `--strict` fails: teach `before_overhaul()` that kind then. A tree whose
+  pictures of before git cannot give (a copy with no git, a clone without
+  its history, a row that names a commit which is not there) is ONE line
+  saying which commit is missing, nothing is run, and the suite ends
+  RESULT FAIL: a commit git does not hold is never read as a picture that
+  was not there. `tools/test_art_tools.sh --only fixtures` tests all of
+  this on small git trees of its own. It will not
   run where `game/images`, `game/layout` or `tools/fg` is a symbolic link
   (a copy would write through it). To try an install in a scratch copy of the tree, run THIS tree's
   tool with `--root <the copy>`; a copy that is not a git checkout keeps its

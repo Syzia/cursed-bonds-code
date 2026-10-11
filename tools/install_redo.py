@@ -47,9 +47,10 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
        a window's grid of light across it. Such a point is refused only when
        the floor's outline and what stands on it moved (a wider window, on a
        coarse edge map), or when the keep list's floor zone round it is
-       still the same drawing as the game's (then something stands there);
-       otherwise it is a LOOK ("the floor is drawn differently where people
-       stand").
+       still the same drawing as the game's (then something stands there;
+       not where the room's named addition, `allow`, lies in the point's
+       window: that is what was asked for); otherwise it is a LOOK ("the
+       floor is drawn differently where people stand").
   3. NOTHING VANISHED. Every `keep` and `doors` row of the room's keep list
      (tools/bgs/keep/<picture>.json), a 110 px box round every hotspot and
      the box round every foreground object must still be there. A thing
@@ -67,7 +68,13 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
      parts, so one bag set on a wide floor is found and its part named. A
      floor that is DRAWN AGAIN (its parts no longer agree with the game's:
      other boards, sunlight on it) cannot be read that way, and is a LOOK
-     ("the floor is drawn again: look that nothing new stands on it").
+     ("the floor is drawn again: look that nothing new stands on it"). On a
+     floor that is the SAME drawing, one part that no longer agrees with the
+     game's is a flat thing set down (a dark bag, a mat: too little fine
+     edge to be found by its lines) and is refused: "something new is on
+     the floor (...): that part of it no longer agrees with the picture in
+     the game". What it cannot find: a dark thing against dark wood, and a
+     thing that covers most of a floor (that reads as a floor drawn again).
   5. SHARPER, against the picture the place had BEFORE the overhaul
      (revision 1, from git by the manifest's `rev1_commit`), never against
      the installed one: twice as sharp passes, 1.3 to 2 is a LOOK, under 1.3
@@ -287,16 +294,38 @@ def _git(root, *args):
     return p.returncode, p.stdout
 
 
+def _blob_id(repo, data):
+    """The name git gives these bytes as a file, or None where `repo` is no git checkout."""
+    p = subprocess.run(["git", "-C", repo, "hash-object", "--stdin"], input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return p.stdout.decode().strip() if p.returncode == 0 and p.stdout.strip() else None
+
+
 def committed(root, rel):
-    """(the commit that holds this file as it is on disk, or None; why not)."""
+    """(the commit that holds this file as it is on disk, or None; why not).
+
+    At HEAD first: the file on disk is the committed one, and the commit is the last that touched it. A COPY of
+    the tree (--root) may stand at an older revision than HEAD does: the tests install into the tree as it was
+    before the overhaul, from a checkout whose HEAD already holds the new picture (review 3: with batch 0
+    committed, such a copy's row said "not committed (a copy)" and its proof could not be rerun). For a copy the
+    file's history is read as well: the newest commit that left the file as it is on disk. A real install, into
+    this tool's own tree, is held to HEAD as before ("commit it first")."""
     path = os.path.join(root, rel)
     disk = open(path, "rb").read()
-    for repo in dict.fromkeys([root, ROOT]):
+    repos = list(dict.fromkeys([root, ROOT]))
+    for repo in repos:
         code, blob = _git(repo, "show", "HEAD:" + rel)
         if code == 0 and blob == disk:
             code, out = _git(repo, "log", "-1", "--format=%H", "--", rel)
             if code == 0 and out.strip():
                 return out.decode().strip(), None
+    if os.path.abspath(root) != os.path.abspath(ROOT):
+        for repo in repos:
+            want = _blob_id(repo, disk)
+            code, out = _git(repo, "log", "--format=%H", "--", rel)
+            for commit in (out.decode().split() if want and code == 0 else []):
+                code, got = _git(repo, "rev-parse", "--verify", "-q", "%s:%s" % (commit, rel))
+                if code == 0 and got.decode().strip() == want:
+                    return commit, None
     return None, "%s is not committed as it stands" % rel
 
 
