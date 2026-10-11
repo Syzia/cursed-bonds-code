@@ -3,7 +3,8 @@
   "Yuji's room after dark: the rest of sitting 9b and the room's lit picture of batch 47, written early by hand on 11 Oct 2026, straight after the owner chose the room with its new posters (O61), and handed over unasked. Relit from the chosen room (the 1920 px fit of the placed picture, laid into the scratch root).",
   "Three pictures (5.7a): the evening; the Night with nobody up (`night`: every light and the television off, moonlight through the window); and the Night with him up (`lit`). The chosen room shows no lamp and none is added, so that the room is the same room at every hour: the lit picture is lit by its television, which is in the picture, as pose row 17 has him on weekday Nights (\"on the floor in front of a paused film\"). 5.7a says a friend who is up has \"one small lamp\" on; here the television is that lamp, and the owner is told so. The screen shows a still with no lettering and nobody on it.",
   "What stands outside the window is named in every sentence (the gallery's rail, the pond, the girls' dormitory), and at Night that house has a few upstairs windows lit, as the garden's chosen night has (O43). The sky in the window is a small piece, so no moon is in view (O44).",
-  "NOBODY is in any picture (K16: a bedroom); the bed is said to be made and empty; the prompt check was run for the place by name."
+  "NOBODY is in any picture (K16: a bedroom); the bed is said to be made and empty; the prompt check was run for the place by name.",
+  "Run by the owner on 11 Oct 2026 (the renders are stamped 16:24) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
  ],
  "written": "2026-10-11",
  "made_from": {
@@ -60,5 +61,25 @@
   }
  ],
  "workflow_sha256": "6c63d288b13ed434711090a43366d2e79fa87410ac0d54409e8affdfa7057560",
- "cost": "6 renders, about $0.96"
+ "cost": "6 renders, about $0.96",
+ "renders_sha256": {
+  "ui2_yuji_room_evening_a_00001_.png": "a60f77852cde779a8740855675da87ba60b47dbee0857804d7bfd818dd245c38",
+  "ui2_yuji_room_evening_b_00001_.png": "d5223c471db6e4d1df56d53c903d8e38283724c4eac04bb040610888ccde934f",
+  "ui2_yuji_room_night_a_00001_.png": "c0dd264ced2c4c32e336f3c79fa3531de993d2fdb664f30d2e20b76b523e14ef",
+  "ui2_yuji_room_night_b_00001_.png": "e0e937fb509082771524fd751d42c9734a7e8edd7f63e9e6652c94fb920d68d1",
+  "ui2_yuji_room_lit_a_00001_.png": "1f8f4568a0b8f29e32efa8fd41c5bc9aa7459d07d3a1891ae6252ae9557871ed",
+  "ui2_yuji_room_lit_b_00001_.png": "8a335da4efd8e14fb38a1c0ee546409b636a351fb248ef56c6222cb6e0791e00"
+ },
+ "read_2026_10_11": {
+  "said": "the owner, in chat, 11 Oct 2026: \"The renders are in, take a look\"",
+  "how": "The three pairs through install_redo.py --relight yuji_room <hour> <a> <b> --dry --against the chosen room, with the scratch record (the lit pair run as a night pair); then by eye against the day picture, the window and the television at the render's own size. Sheet: ~/Desktop/JJK Game images/ui2/early/compare_yuji_hours.jpg.",
+  "install_redo_dry": "All six PASS. The check did not see the three pot plants added in evening A: for a relight it skips 'nothing was added' by design (5.7), so a relight is read by eye for added things (Method note 27). One more real case for the installer's fifth and sixth corrections.",
+  "yuji_room_evening_b": "PICK. Sunset through the window, the white house across the garden in warm light, the rail and the pond; a warm patch on the floor; the television off, no lamp. Nothing added. Nobody; the posters without lettering.",
+  "yuji_room_evening_a": "Not offered: three pot plants stand on the windowsill that the day picture does not have.",
+  "yuji_room_night_b": "PICK. Every light off, the television off; a clear patch of moonlight on the floor; outside the rail, the pond and the white house with one upstairs window lit; no moon in view. Nobody; the bed made and empty. Mean 69, as the other dark rooms.",
+  "yuji_room_night_a": "Good too, a little brighter (mean 77), with two upstairs windows lit across the garden.",
+  "yuji_room_lit_a": "PICK. The television is the only light: its screen shows a starry sky over dark hills with no lettering, and its cool light lies on the cushion and the floor before it; the rest in soft shadow, everything still plain. No lamp added. Outside as at night. Nobody; the bed made and empty.",
+  "yuji_room_lit_b": "The same, but the whole room is lighter and warmer than one screen would make it (mean 76 against A's 70).",
+  "put_to_the_owner": "Evening B; night with the lights off, B; night with the television on, A."
+ }
 }
