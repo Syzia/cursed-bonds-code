@@ -4,7 +4,7 @@
   "The answer put to the owner with this file: neither 'girly' nor bland. A room says who lives in it, as the boys' rooms now do (Yuji's films, Megumi's books, the shared room's futons and shogi board), and a room painted now is the room of every arc: its evening and both its nights are made from it, so it is settled first. Nobara's becomes plainly hers (clothes, shoes, a dressing table, colour); Maki's stays spare, which is hers too, with her training things in it so that the plainness reads as chosen.",
   "Each is drawn again from the version picked in 11a as the camera to keep (the tool's `ref_old_camera` sentence; Method note 36): the door, the bed, the window and its view stay; what is added is listed. art_11b.json and art_11c.json, the rooms' hours, were written from the plainer rooms and are NOT to be run until the owner has chosen between the two kinds; they are written again from whichever is chosen.",
   "NOBODY is in either picture (K16: bedrooms) and NOTHING carries lettering or a maker's mark (O60). The prompt check refused 'the things of someone who trains every day' (somebody, in a bedroom); it reads 'the gear of daily training'.",
-  "Run by the owner on 11 Oct 2026 (the renders are stamped 17:01) and read the same day; see read_2026_10_11. Nothing of it is chosen yet."
+  "Run by the owner on 11 Oct 2026, read and chosen the same day (read_2026_10_11; chosen; the plan's owner row O65)."
  ],
  "written": "2026-10-11",
  "asked": "Do you think they should be more girly? or should we keep them bland for arc 1?",
@@ -65,5 +65,21 @@
   "maki_room2_a": "PICK. Nobody. Still spare: a timber rack on the far wall with a long staff, a wooden sword and a short spear hung level; a dark training uniform folded flat on the bed; the weapon case; on the desk the lamp, a glasses case and a steel bottle; on the floor at the right a training mat part unrolled with a pair of dumbbells set down squarely. No pictures on the walls, no lettering. The spear's head is painted as steel.",
   "maki_room2_b": "Not offered as the pick: the uniform lies thrown open across the bed, not folded, and a dark smudge lies on the floor at the lower left; its mat and one dumbbell are by the far wall.",
   "put_to_the_owner": "The fuller rooms: Nobara's B and Maki's A; with art_11b.json and art_11c.json, their evenings and nights, written again from those two."
+ },
+ "chosen": {
+  "said": "the owner, in chat, 11 Oct 2026: \"Lets go with your picks, and ill start the new renders\"",
+  "read_as": "The picks as put: the fuller rooms, Nobara's version B and Maki's version A. The owner then ran art_11b.json and art_11c.json, written again from those two.",
+  "nobara_room": {
+   "render": "ui2_nobara_room2_b_00001_.png",
+   "sha256": "aa93fa9822a4312cc39a223347157d3b9562c8b0c790171e348357155c8ad36b",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/nobara_room_1920.png",
+   "fit_sha256": "2ea6da213eeff7b9245713f59e0bec3cc912c433c9737071ef19fa68e67cc723"
+  },
+  "maki_room": {
+   "render": "ui2_maki_room2_a_00001_.png",
+   "sha256": "b992087f1af75afd35e83649e18702d743e67f0f335bc0a9ad7b812065dc4c5d",
+   "fit": "~/Desktop/JJK Game images/ui2/early/chosen/maki_room_1920.png",
+   "fit_sha256": "cf70ef17ca3dd688fdd8fc9e54e79002b19879984cdcfd45d04104ad78e01c9f"
+  }
  }
 }

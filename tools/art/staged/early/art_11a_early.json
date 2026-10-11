@@ -78,5 +78,6 @@
   "maki_room_a": "PICK. Nobody. The door in the left wall near me with a steel bar fixed across the top of its frame; a plain bed; a long leather weapon case, closed, leaning on the far wall beside a plain desk with a small lamp, right of the middle; the latticed window in the right wall shows cedars, a small house with one large window and the great tiled roof behind it. No lettering; the walls carry nothing.",
   "maki_room_b": "The same room, emptier; its case is slimmer and reads less as a weapon's, its desk is grey metal, and its window shows the staff steps as well.",
   "put_to_the_owner": "Nobara's room B; Maki's room A; with art_11b.json and art_11c.json, their evenings and nights, already written from those two."
- }
+ },
+ "not_chosen": "None of the four renders of this sitting is used. The owner asked whether the rooms should be 'more girly' or stay 'bland'; both were drawn again from the picks of this sitting (Nobara's B, Maki's A) as the camera to keep, with more of their owners in them, and the fuller room of each was chosen (art_11d_early.json, O65)."
 }

@@ -562,6 +562,36 @@
      450
     ]
    }
+  },
+  "nobara_room": {
+   "place": "nobara_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "11d",
+   "chosen": "2026-10-11",
+   "render": "ui2_nobara_room2_b_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/nobara_room_1920.png",
+   "first_guess": {
+    "girls_dorm": [
+     190,
+     560
+    ]
+   }
+  },
+  "maki_room": {
+   "place": "maki_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "11d",
+   "chosen": "2026-10-11",
+   "render": "ui2_maki_room2_a_00001_.png",
+   "source": "~/Desktop/JJK Game images/ui2/early/chosen/maki_room_1920.png",
+   "first_guess": {
+    "girls_dorm": [
+     250,
+     540
+    ]
+   }
   }
  },
  "fixed": [
@@ -2227,6 +2257,54 @@
     "picture": "senpai_room",
     "rev": 2
    }
+  },
+  {
+   "id": "place.nobara_room",
+   "kind": "place",
+   "key": "nobara_room",
+   "name": "Nobara's Room",
+   "stem": "nobara_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "composed",
+   "batch": "11",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber: a bed, a tall dressing mirror, shopping bags in a row, a roll of tools on the desk",
+   "refs_also": [
+    "girls_dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "nobara_room",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.maki_room",
+   "kind": "place",
+   "key": "maki_room",
+   "name": "Maki's Room",
+   "stem": "maki_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "composed",
+   "batch": "11",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber, kept plain: a bed, a long weapon case against the wall, a pull-up bar fixed in the door frame",
+   "refs_also": [
+    "girls_dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "maki_room",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2515,46 +2593,6 @@
    "note": "its far doors are the girls' spare doors (D50)"
   },
   {
-   "id": "place.nobara_room",
-   "kind": "place",
-   "key": "nobara_room",
-   "name": "Nobara's Room",
-   "stem": "nobara_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "girls_dorm",
-   "how": "composed",
-   "batch": "11",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber: a bed, a tall dressing mirror, shopping bags in a row, a roll of tools on the desk",
-   "refs_also": [
-    "girls_dorm"
-   ],
-   "pinless": true
-  },
-  {
-   "id": "place.maki_room",
-   "kind": "place",
-   "key": "maki_room",
-   "name": "Maki's Room",
-   "stem": "maki_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "girls_dorm",
-   "how": "composed",
-   "batch": "11",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber, kept plain: a bed, a long weapon case against the wall, a pull-up bar fixed in the door frame",
-   "refs_also": [
-    "girls_dorm"
-   ],
-   "pinless": true
-  },
-  {
    "id": "place.teachers_lounge",
    "kind": "place",
    "key": "teachers_lounge",
@@ -2837,20 +2875,21 @@
    "kind": "window",
    "room": "maki_room",
    "wall": "side",
-   "faces": "west"
+   "faces": "east",
+   "note": "by the chosen corridor and garden (O37, O65): her door faces Nobara's across the corridor, so her room is on the far side of the house from the garden"
   },
   {
    "id": "line.maki_room.side",
    "kind": "line",
    "room": "maki_room",
    "wall": "side",
-   "shows": "the dormitory garden and the common room's roof",
+   "shows": "a few cedars, the small detached office with one very large window, and the roof of the principal's hall behind it",
    "names": [
-    "dorm_yard",
-    "common_room"
+    "gojo_office",
+    "principal_hall"
    ],
    "needs": [
-    "dorm_yard"
+    "staff_yard"
    ]
   },
   {
