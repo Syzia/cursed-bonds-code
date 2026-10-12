@@ -1436,7 +1436,10 @@
    "by": {
     "picture": "staff_yard",
     "rev": 2
-   }
+   },
+   "facts": [
+    "The tower and the pagodas of the other pictures are out of sight from here, behind the buildings on the left: no tower and no pagoda stands in this picture."
+   ]
   },
   {
    "id": "building.staff_yard",
@@ -1554,7 +1557,10 @@
    "by": {
     "picture": "trailhead",
     "rev": 2
-   }
+   },
+   "facts": [
+    "The tower and the pagoda of the dormitory garden's picture are behind the camera here: no tower and no pagoda stands in this picture."
+   ]
   },
   {
    "id": "building.trailhead",
@@ -1585,7 +1591,7 @@
    "order": 1,
    "on": "building",
    "thing": "courtyard",
-   "words": "it is reached through the torii, up the steps",
+   "words": "it is reached over the plank bridge, up the steps and through the open gate",
    "by": {
     "picture": "gate",
     "rev": 2
@@ -1605,17 +1611,21 @@
    "after": [
     "courtyard"
    ],
-   "words": "the main gate of the school, seen from the footpath south of the torii, looking north and uphill",
+   "words": "the main gate of the school, seen as I walk up to it: from the garden path in front of the gatehouse, close enough that the gatehouse towers over me, looking north",
    "camera": [
     960,
     1040
    ],
    "facing": "north",
    "facts": [
-    "At the top of the steps is the open court of the central courtyard's picture, seen from below: no hall stands there."
+    "The gatehouse stands in the middle and is the largest thing in the picture: a great two-storey timber gatehouse with a railed upper floor and a heavy grey tiled roof, its tall doors standing open.",
+    "Through the open gate is the open flagstone court of the central courtyard's picture: no hall stands there.",
+    "The pagoda of the central courtyard's picture may show above the garden wall, on the left; no tower and no pagoda stands in the middle or on the right."
    ],
    "check": [
-    "beyond the torii is the open Courtyard, with no hall"
+    "the gatehouse is the one already painted, with nothing standing in front of it",
+    "there is water and a garden before the gate, and no paved road",
+    "through the gate is the open Courtyard, with no hall"
    ],
    "by": {
     "picture": "gate",
@@ -1636,7 +1646,7 @@
     985
    ],
    "ground": true,
-   "look": "a stone torii across a flagstone footpath between cedars and stone lanterns, with no road; beyond the torii a flight of stone steps climbs to an open flagstone court, and nothing is built at the top of the steps",
+   "look": "a Japanese garden before the gate: still, clear water on either side of the way, crossed by a low flat bridge of timber planks; stepping stones and raked pale gravel; shaped black pines and red maples; stone lanterns standing among low clipped green shrubs; low white plaster garden walls with grey tiled copings, standing on a base of large fitted stones; a short broad flight of stone steps up to the gatehouse; nothing stands in the way before the gatehouse, and there is no paved road and no concrete",
    "by": {
     "picture": "gate",
     "rev": 2
@@ -2317,7 +2327,7 @@
     110
    ],
    "ground": true,
-   "look": "grass and rock above the trees; a faint dark curtain standing in the sky beyond the far mountains",
+   "look": "grass and rock above the trees; on its very top sits the veil, a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen",
    "note": "straight up the stone stairs from the Mountain Path"
   },
   {
@@ -2350,7 +2360,7 @@
    "after": [
     "trailhead"
    ],
-   "note": "with the veil in the sky as a named addition"
+   "note": "composed again from words (art_17a.json, O45's four questions) and chosen on 11 Oct 2026 (O55): the veil is the small dome on the rise beyond the rope, never in the sky (O36)"
   },
   {
    "id": "place.riverside",
@@ -2395,7 +2405,7 @@
    "thing": "school_building",
    "side": "left",
    "order": 1,
-   "words": "the schoolhouse's timber shows at the top of the steps, on the left"
+   "words": "the schoolhouse's roof and upper windows show above the garden wall, on the left"
   },
   {
    "id": "seen.gate.training_hall",
@@ -2404,7 +2414,7 @@
    "thing": "training_hall",
    "side": "right",
    "order": 3,
-   "words": "the training hall's veranda shows at the top of the steps, on the right"
+   "words": "the training hall's roof shows above the garden wall, on the right"
   },
   {
    "id": "line.dorm_common.far",
@@ -2613,20 +2623,21 @@
    "kind": "window",
    "room": "maki_room",
    "wall": "side",
-   "faces": "west"
+   "faces": "east",
+   "note": "by the chosen corridor and garden (O37, O65): her door faces Nobara's across the corridor, so her room is on the far side of the house from the garden"
   },
   {
    "id": "line.maki_room.side",
    "kind": "line",
    "room": "maki_room",
    "wall": "side",
-   "shows": "the dormitory garden and the common room's roof",
+   "shows": "a few cedars, the small detached office with one very large window, and the roof of the principal's hall behind it",
    "names": [
-    "dorm_yard",
-    "common_room"
+    "gojo_office",
+    "principal_hall"
    ],
    "needs": [
-    "dorm_yard"
+    "staff_yard"
    ]
   },
   {
