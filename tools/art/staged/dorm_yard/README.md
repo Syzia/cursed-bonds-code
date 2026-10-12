@@ -94,3 +94,7 @@ lantern's base. Nothing else was moved; both checks pass as before. The
 reading of the way to the staff building (the bottom-right flight, not the
 stepping stones, which lead to the girls' door) was looked at again and kept:
 it is the owner's to confirm.
+
+
+**At the install (12 Oct):** the tower's point moved from (945, 300) to (1010, 300) and the Common Room's from (1040, 535) to (990, 535), each still on its own building. The campus record's ground plan does not let the tower stand left of the Common Room as seen from the garden, and the installer refused the first points for it.
+The name of the way to the Mountain Path opens to the right, not the left: opened left it covered the Boys' Dormitory's square (found by p2_paths in the game).

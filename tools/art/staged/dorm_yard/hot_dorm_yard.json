@@ -3,8 +3,8 @@
  "spots": {
   "go_dorm_yard__boys_dorm": [345, 575],
   "go_dorm_yard__trailhead": [600, 638],
-  "go_dorm_yard__rooftop": [945, 300],
-  "go_dorm_yard__dorm_common": [1040, 535],
+  "go_dorm_yard__rooftop": [1010, 300],
+  "go_dorm_yard__dorm_common": [990, 535],
   "go_dorm_yard__girls_dorm": [1700, 640],
   "go_dorm_yard__courtyard": [215, 925],
   "go_dorm_yard__staff_yard": [1640, 990],
@@ -13,7 +13,7 @@
  },
  "tips": {
   "go_dorm_yard__boys_dorm": "top",
-  "go_dorm_yard__trailhead": "left",
+  "go_dorm_yard__trailhead": "right",
   "go_dorm_yard__rooftop": "top",
   "go_dorm_yard__dorm_common": "top",
   "go_dorm_yard__girls_dorm": "left",

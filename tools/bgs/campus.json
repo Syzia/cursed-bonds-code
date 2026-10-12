@@ -147,6 +147,46 @@
    "batch": "1",
    "chosen": "2026-10-07",
    "render": "ui2_school_yard_b_fit.png"
+  },
+  "dorm_yard": {
+   "place": "dorm_yard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "1",
+   "chosen": "2026-10-07",
+   "render": "ui2_dorm_yard_a_00001_.png"
+  },
+  "training_yard": {
+   "place": "training_yard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "1",
+   "chosen": "2026-10-07",
+   "render": "ui2_training_yard_b_00001_.png"
+  },
+  "staff_yard": {
+   "place": "staff_yard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "2",
+   "chosen": "2026-10-07",
+   "render": "ui2_staff_yard_b_00001_.png"
+  },
+  "trailhead": {
+   "place": "trailhead",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "2",
+   "chosen": "2026-10-07",
+   "render": "ui2_trailhead_sa_b_00001_.png"
+  },
+  "gate": {
+   "place": "gate",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "2",
+   "chosen": "2026-10-07",
+   "render": "ui2_gate3_b_00001_.png"
   }
  },
  "fixed": [
@@ -556,7 +596,7 @@
    "place": "training_yard",
    "to": "training",
    "side": "left",
-   "order": 1,
+   "order": 2,
    "on": "building",
    "thing": "training_hall",
    "words": "its doors onto this yard",
@@ -858,9 +898,586 @@
     "picture": "school_yard",
     "rev": 2
    }
-  }
- ],
- "proposed": [
+  },
+  {
+   "id": "exit.dorm_yard.boys_dorm",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "boys_dorm",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "boys_dorm",
+   "words": "its door, under the blue door curtain",
+   "alias": [
+    "dorm"
+   ],
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.trailhead",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "trailhead",
+   "side": "left",
+   "order": 2,
+   "on": "path",
+   "words": "the dirt path that goes up behind the boys' dormitory",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.dorm_common",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "dorm_common",
+   "side": "ahead",
+   "order": 3,
+   "on": "building",
+   "thing": "common_room",
+   "words": "its glass doors open onto the deck",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.rooftop",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "rooftop",
+   "side": "ahead",
+   "order": 3,
+   "on": "building",
+   "thing": "tower",
+   "words": "it rises behind and above the common room",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.girls_dorm",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "girls_dorm",
+   "side": "right",
+   "order": 4,
+   "on": "building",
+   "thing": "girls_dorm",
+   "words": "its door, under the red door curtain, beyond the pond",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.courtyard",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "courtyard",
+   "side": "bottom",
+   "half": "left",
+   "on": "path",
+   "words": "the steps down to the central courtyard",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.dorm_yard.staff_yard",
+   "kind": "exit",
+   "place": "dorm_yard",
+   "to": "staff_yard",
+   "side": "bottom",
+   "half": "right",
+   "on": "path",
+   "words": "the stepping stones east, to the staff building steps",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.dorm_yard",
+   "kind": "place",
+   "key": "dorm_yard",
+   "name": "Dormitory Garden",
+   "stem": "dorm_yard",
+   "area": "dorms",
+   "indoor": false,
+   "building": "dorm_yard",
+   "how": "composed",
+   "batch": "1",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the dormitory garden, the kept garden up the gateway steps that the dormitories stand round, seen from its south edge, looking north",
+   "camera": [
+    960,
+    610
+   ],
+   "facing": "north",
+   "old_picture": "camera",
+   "clear": 1,
+   "facts": [
+    "The two timber lodges at the foot of the gateway steps in the central courtyard's picture are gate lodges, not the dormitories: the dormitories stand up here, round the garden, and each looks different from the lodges and from the other."
+   ],
+   "check": [
+    "the two dormitories can be told apart, and neither is one of the gate lodges"
+   ],
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.dorm_yard",
+   "kind": "building",
+   "key": "dorm_yard",
+   "name": "Dormitory Garden",
+   "as": "the dormitory garden",
+   "holds": [
+    "dorm_yard"
+   ],
+   "at": [
+    960,
+    540
+   ],
+   "ground": true,
+   "look": "a stone path through a kept garden, a pond with two stone lanterns",
+   "by": {
+    "picture": "dorm_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.courtyard",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "courtyard",
+   "side": "left",
+   "order": 1,
+   "on": "path",
+   "words": "the passage at the bottom left, back to the central courtyard",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.storehouse",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "storehouse",
+   "side": "ahead",
+   "order": 3,
+   "on": "building",
+   "thing": "storehouse",
+   "words": "it stands beyond the striking posts",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.staff_yard",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "staff_yard",
+   "side": "ahead",
+   "order": 4,
+   "on": "path",
+   "words": "the walled path and its steps, right of the storehouse",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.dojo",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "dojo",
+   "side": "right",
+   "order": 5,
+   "on": "building",
+   "thing": "dojo",
+   "words": "its door faces the yard",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.training_yard.pool",
+   "kind": "exit",
+   "place": "training_yard",
+   "to": "pool",
+   "side": "right",
+   "order": 6,
+   "on": "path",
+   "words": "a roofed timber gate at the edge, beside the dojo: the way to the swimming pool",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.training_yard",
+   "kind": "place",
+   "key": "training_yard",
+   "name": "Training Yard",
+   "stem": "training_yard",
+   "area": "grounds",
+   "indoor": false,
+   "building": "training_yard",
+   "how": "composed",
+   "batch": "1",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the training yard, the yard east of the training hall, seen from its south edge, looking north",
+   "camera": [
+    1470,
+    890
+   ],
+   "facing": "north",
+   "old_picture": "school",
+   "clear": 1,
+   "check": [
+    "no vending machine and no shoe lockers in this yard"
+   ],
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.training_yard",
+   "kind": "building",
+   "key": "training_yard",
+   "name": "Training Yard",
+   "as": "the training yard",
+   "holds": [
+    "training_yard"
+   ],
+   "at": [
+    1470,
+    780
+   ],
+   "ground": true,
+   "look": "bare earth, a row of striking posts",
+   "by": {
+    "picture": "training_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.staff_yard.gojo_office",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "gojo_office",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "gojo_office",
+   "words": "its door faces the steps",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.staff_yard.office",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "office",
+   "side": "ahead",
+   "order": 2,
+   "on": "building",
+   "thing": "principal_hall",
+   "words": "it stands at the top of the steps",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.staff_yard.utahime_office",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "utahime_office",
+   "side": "right",
+   "order": 3,
+   "on": "building",
+   "thing": "utahime_office",
+   "words": "its door faces the steps",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.staff_yard.teachers_lounge",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "teachers_lounge",
+   "side": "right",
+   "order": 4,
+   "on": "building",
+   "thing": "teachers_house",
+   "words": "it stands beyond the office pavilion, at the edge",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.staff_yard.dorm_yard",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "dorm_yard",
+   "side": "bottom",
+   "half": "left",
+   "on": "path",
+   "words": "the path back to the dormitory garden",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.staff_yard.training_yard",
+   "kind": "exit",
+   "place": "staff_yard",
+   "to": "training_yard",
+   "side": "bottom",
+   "half": "right",
+   "on": "path",
+   "words": "the walled path down to the training yard",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.staff_yard",
+   "kind": "place",
+   "key": "staff_yard",
+   "name": "Staff Building Steps",
+   "stem": "staff_yard",
+   "area": "staff",
+   "indoor": false,
+   "building": "staff_yard",
+   "how": "composed",
+   "batch": "2",
+   "after": [
+    "dorm_yard",
+    "training_yard"
+   ],
+   "words": "the staff building steps, the wide stone steps below the principal's hall that the teachers' buildings stand round, seen from the foot of the steps, looking north",
+   "camera": [
+    1560,
+    610
+   ],
+   "facing": "north",
+   "old_picture": "camera",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.staff_yard",
+   "kind": "building",
+   "key": "staff_yard",
+   "name": "Staff Building Steps",
+   "as": "the staff building steps",
+   "holds": [
+    "staff_yard"
+   ],
+   "at": [
+    1560,
+    520
+   ],
+   "ground": true,
+   "look": "wide stone steps, gravel either side",
+   "by": {
+    "picture": "staff_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.trailhead.forest",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "forest",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "forest",
+   "words": "a level path leads into the cedars",
+   "by": {
+    "picture": "trailhead",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.trailhead.ridge",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "ridge",
+   "side": "ahead",
+   "order": 2,
+   "on": "building",
+   "thing": "ridge",
+   "words": "stone stairs climb straight up the mountain toward it",
+   "by": {
+    "picture": "trailhead",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.trailhead.bathhouse",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "bathhouse",
+   "side": "right",
+   "order": 3,
+   "on": "building",
+   "thing": "bathhouse",
+   "words": "it stands in the middle distance, among the trees",
+   "by": {
+    "picture": "trailhead",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.trailhead.riverside",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "riverside",
+   "side": "right",
+   "order": 4,
+   "on": "path",
+   "words": "the path that goes down at the edge, toward the river",
+   "by": {
+    "picture": "trailhead",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.trailhead.dorm_yard",
+   "kind": "exit",
+   "place": "trailhead",
+   "to": "dorm_yard",
+   "side": "bottom",
+   "on": "path",
+   "words": "the stone slabs back down to the dormitory garden",
+   "by": {
+    "picture": "trailhead",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.trailhead",
+   "kind": "place",
+   "key": "trailhead",
+   "name": "Mountain Path",
+   "stem": "trailhead",
+   "area": "mountain",
+   "indoor": false,
+   "building": "trailhead",
+   "how": "composed",
+   "batch": "2",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the mountain path, the top edge of the school where the stone path gives out and the mountain starts, seen looking north and uphill",
+   "camera": [
+    900,
+    340
+   ],
+   "facing": "north",
+   "old_picture": "camera",
+   "by": {
+    "picture": "trailhead",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.trailhead",
+   "kind": "building",
+   "key": "trailhead",
+   "name": "Mountain Path",
+   "as": "the mountain path",
+   "holds": [
+    "trailhead"
+   ],
+   "at": [
+    900,
+    300
+   ],
+   "ground": true,
+   "look": "where the stone gives out: a standing stone and a low gate",
+   "by": {
+    "picture": "trailhead",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.gate.courtyard",
+   "kind": "exit",
+   "place": "gate",
+   "to": "courtyard",
+   "side": "ahead",
+   "order": 1,
+   "on": "building",
+   "thing": "courtyard",
+   "words": "it is reached through the torii, up the steps",
+   "by": {
+    "picture": "gate",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.gate",
+   "kind": "place",
+   "key": "gate",
+   "name": "Main Gate",
+   "stem": "gate",
+   "area": "heart",
+   "indoor": false,
+   "building": "gate",
+   "how": "composed",
+   "batch": "2",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the main gate of the school, seen from the footpath south of the torii, looking north and uphill",
+   "camera": [
+    960,
+    1040
+   ],
+   "facing": "north",
+   "facts": [
+    "At the top of the steps is the open court of the central courtyard's picture, seen from below: no hall stands there."
+   ],
+   "check": [
+    "beyond the torii is the open Courtyard, with no hall"
+   ],
+   "by": {
+    "picture": "gate",
+    "rev": 2
+   }
+  },
   {
    "id": "building.gate",
    "kind": "building",
@@ -875,8 +1492,14 @@
     985
    ],
    "ground": true,
-   "look": "a stone torii across a flagstone footpath between cedars and stone lanterns, with no road; beyond the torii a flight of stone steps climbs to an open flagstone court, and nothing is built at the top of the steps"
-  },
+   "look": "a stone torii across a flagstone footpath between cedars and stone lanterns, with no road; beyond the torii a flight of stone steps climbs to an open flagstone court, and nothing is built at the top of the steps",
+   "by": {
+    "picture": "gate",
+    "rev": 2
+   }
+  }
+ ],
+ "proposed": [
   {
    "id": "building.infirmary",
    "kind": "building",
@@ -906,22 +1529,6 @@
     890
    ],
    "look": "a low wide hall with a grey tiled roof, a wall of glass sliding doors, a metal kitchen chimney, benches outside"
-  },
-  {
-   "id": "building.training_yard",
-   "kind": "building",
-   "key": "training_yard",
-   "name": "Training Yard",
-   "as": "the training yard",
-   "holds": [
-    "training_yard"
-   ],
-   "at": [
-    1470,
-    780
-   ],
-   "ground": true,
-   "look": "bare earth, a row of striking posts"
   },
   {
    "id": "building.storehouse",
@@ -969,22 +1576,6 @@
    "ground": true,
    "look": "an open-air pool set into a stone terrace behind the dojo, edged in the yards' grey stone, a timber deck and a low wooden fence, a small changing hut under the school's grey tiled roof",
    "note": "built with the school, not added to it (the owner's ruling, O17)"
-  },
-  {
-   "id": "building.dorm_yard",
-   "kind": "building",
-   "key": "dorm_yard",
-   "name": "Dormitory Garden",
-   "as": "the dormitory garden",
-   "holds": [
-    "dorm_yard"
-   ],
-   "at": [
-    960,
-    540
-   ],
-   "ground": true,
-   "look": "a stone path through a kept garden, a pond with two stone lanterns"
   },
   {
    "id": "building.boys_dorm",
@@ -1053,22 +1644,6 @@
    "look": "two storeys of white plaster and timber, latticed windows, a plain red door curtain, flower boxes"
   },
   {
-   "id": "building.staff_yard",
-   "kind": "building",
-   "key": "staff_yard",
-   "name": "Staff Building Steps",
-   "as": "the staff building steps",
-   "holds": [
-    "staff_yard"
-   ],
-   "at": [
-    1560,
-    520
-   ],
-   "ground": true,
-   "look": "wide stone steps, gravel either side"
-  },
-  {
    "id": "building.principal_hall",
    "kind": "building",
    "key": "principal_hall",
@@ -1128,22 +1703,6 @@
     400
    ],
    "look": "a two-storey house with a veranda all round, warm windows, a bamboo fence"
-  },
-  {
-   "id": "building.trailhead",
-   "kind": "building",
-   "key": "trailhead",
-   "name": "Mountain Path",
-   "as": "the mountain path",
-   "holds": [
-    "trailhead"
-   ],
-   "at": [
-    900,
-    300
-   ],
-   "ground": true,
-   "look": "where the stone gives out: a standing stone and a low gate"
   },
   {
    "id": "building.bathhouse",
@@ -1209,62 +1768,6 @@
    "ground": true,
    "look": "grass and rock above the trees; a faint dark curtain standing in the sky beyond the far mountains",
    "note": "straight up the stone stairs from the Mountain Path"
-  },
-  {
-   "id": "place.gate",
-   "kind": "place",
-   "key": "gate",
-   "name": "Main Gate",
-   "stem": "gate",
-   "area": "heart",
-   "indoor": false,
-   "building": "gate",
-   "how": "composed",
-   "batch": "2",
-   "after": [
-    "courtyard"
-   ],
-   "words": "the main gate of the school, seen from the footpath south of the torii, looking north and uphill",
-   "camera": [
-    960,
-    1040
-   ],
-   "facing": "north",
-   "facts": [
-    "At the top of the steps is the open court of the central courtyard's picture, seen from below: no hall stands there."
-   ],
-   "check": [
-    "beyond the torii is the open Courtyard, with no hall"
-   ]
-  },
-  {
-   "id": "place.dorm_yard",
-   "kind": "place",
-   "key": "dorm_yard",
-   "name": "Dormitory Garden",
-   "stem": "dorm_yard",
-   "area": "dorms",
-   "indoor": false,
-   "building": "dorm_yard",
-   "how": "composed",
-   "batch": "1",
-   "after": [
-    "courtyard"
-   ],
-   "words": "the dormitory garden, the kept garden up the gateway steps that the dormitories stand round, seen from its south edge, looking north",
-   "camera": [
-    960,
-    610
-   ],
-   "facing": "north",
-   "old_picture": "camera",
-   "clear": 1,
-   "facts": [
-    "The two timber lodges at the foot of the gateway steps in the central courtyard's picture are gate lodges, not the dormitories: the dormitories stand up here, round the garden, and each looks different from the lodges and from the other."
-   ],
-   "check": [
-    "the two dormitories can be told apart, and neither is one of the gate lodges"
-   ]
   },
   {
    "id": "place.boys_dorm",
@@ -1403,29 +1906,6 @@
    "pinless": true
   },
   {
-   "id": "place.staff_yard",
-   "kind": "place",
-   "key": "staff_yard",
-   "name": "Staff Building Steps",
-   "stem": "staff_yard",
-   "area": "staff",
-   "indoor": false,
-   "building": "staff_yard",
-   "how": "composed",
-   "batch": "2",
-   "after": [
-    "dorm_yard",
-    "training_yard"
-   ],
-   "words": "the staff building steps, the wide stone steps below the principal's hall that the teachers' buildings stand round, seen from the foot of the steps, looking north",
-   "camera": [
-    1560,
-    610
-   ],
-   "facing": "north",
-   "old_picture": "camera"
-  },
-  {
    "id": "place.office",
    "kind": "place",
    "key": "office",
@@ -1509,32 +1989,6 @@
    "spare_doors": 3
   },
   {
-   "id": "place.training_yard",
-   "kind": "place",
-   "key": "training_yard",
-   "name": "Training Yard",
-   "stem": "training_yard",
-   "area": "grounds",
-   "indoor": false,
-   "building": "training_yard",
-   "how": "composed",
-   "batch": "1",
-   "after": [
-    "courtyard"
-   ],
-   "words": "the training yard, the yard east of the training hall, seen from its south edge, looking north",
-   "camera": [
-    1470,
-    890
-   ],
-   "facing": "north",
-   "old_picture": "school",
-   "clear": 1,
-   "check": [
-    "no vending machine and no shoe lockers in this yard"
-   ]
-  },
-  {
    "id": "place.training",
    "kind": "place",
    "key": "training",
@@ -1598,28 +2052,6 @@
     "the pool looks as if it was built with the school, not added to it",
     "nobody is in the picture"
    ]
-  },
-  {
-   "id": "place.trailhead",
-   "kind": "place",
-   "key": "trailhead",
-   "name": "Mountain Path",
-   "stem": "trailhead",
-   "area": "mountain",
-   "indoor": false,
-   "building": "trailhead",
-   "how": "composed",
-   "batch": "2",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "the mountain path, the top edge of the school where the stone path gives out and the mountain starts, seen looking north and uphill",
-   "camera": [
-    900,
-    340
-   ],
-   "facing": "north",
-   "old_picture": "camera"
   },
   {
    "id": "place.forest",
@@ -1730,262 +2162,6 @@
    "a": "staff_yard",
    "b": "training_yard",
    "words": "south, down a walled path"
-  },
-  {
-   "id": "exit.dorm_yard.boys_dorm",
-   "kind": "exit",
-   "place": "dorm_yard",
-   "to": "boys_dorm",
-   "side": "left",
-   "order": 1,
-   "on": "building",
-   "thing": "boys_dorm",
-   "words": "its door, under the blue door curtain",
-   "alias": [
-    "dorm"
-   ]
-  },
-  {
-   "id": "exit.dorm_yard.trailhead",
-   "kind": "exit",
-   "place": "dorm_yard",
-   "to": "trailhead",
-   "side": "left",
-   "order": 1,
-   "on": "path",
-   "words": "the dirt path that goes up behind the boys' dormitory"
-  },
-  {
-   "id": "exit.dorm_yard.dorm_common",
-   "kind": "exit",
-   "place": "dorm_yard",
-   "to": "dorm_common",
-   "side": "ahead",
-   "order": 2,
-   "on": "building",
-   "thing": "common_room",
-   "words": "its glass doors open onto the deck"
-  },
-  {
-   "id": "exit.dorm_yard.rooftop",
-   "kind": "exit",
-   "place": "dorm_yard",
-   "to": "rooftop",
-   "side": "ahead",
-   "order": 2,
-   "on": "building",
-   "thing": "tower",
-   "words": "it rises behind and above the common room"
-  },
-  {
-   "id": "exit.dorm_yard.girls_dorm",
-   "kind": "exit",
-   "place": "dorm_yard",
-   "to": "girls_dorm",
-   "side": "right",
-   "order": 3,
-   "on": "building",
-   "thing": "girls_dorm",
-   "words": "its door, under the red door curtain, beyond the pond"
-  },
-  {
-   "id": "exit.dorm_yard.courtyard",
-   "kind": "exit",
-   "place": "dorm_yard",
-   "to": "courtyard",
-   "side": "bottom",
-   "half": "left",
-   "on": "path",
-   "words": "the steps down to the central courtyard"
-  },
-  {
-   "id": "exit.dorm_yard.staff_yard",
-   "kind": "exit",
-   "place": "dorm_yard",
-   "to": "staff_yard",
-   "side": "bottom",
-   "half": "right",
-   "on": "path",
-   "words": "the stepping stones east, to the staff building steps"
-  },
-  {
-   "id": "exit.staff_yard.gojo_office",
-   "kind": "exit",
-   "place": "staff_yard",
-   "to": "gojo_office",
-   "side": "left",
-   "order": 1,
-   "on": "building",
-   "thing": "gojo_office",
-   "words": "its door faces the steps"
-  },
-  {
-   "id": "exit.staff_yard.office",
-   "kind": "exit",
-   "place": "staff_yard",
-   "to": "office",
-   "side": "ahead",
-   "order": 2,
-   "on": "building",
-   "thing": "principal_hall",
-   "words": "it stands at the top of the steps"
-  },
-  {
-   "id": "exit.staff_yard.utahime_office",
-   "kind": "exit",
-   "place": "staff_yard",
-   "to": "utahime_office",
-   "side": "right",
-   "order": 3,
-   "on": "building",
-   "thing": "utahime_office",
-   "words": "its door faces the steps"
-  },
-  {
-   "id": "exit.staff_yard.teachers_lounge",
-   "kind": "exit",
-   "place": "staff_yard",
-   "to": "teachers_lounge",
-   "side": "right",
-   "order": 4,
-   "on": "building",
-   "thing": "teachers_house",
-   "words": "it stands beyond the office pavilion, at the edge"
-  },
-  {
-   "id": "exit.staff_yard.dorm_yard",
-   "kind": "exit",
-   "place": "staff_yard",
-   "to": "dorm_yard",
-   "side": "bottom",
-   "half": "left",
-   "on": "path",
-   "words": "the path back to the dormitory garden"
-  },
-  {
-   "id": "exit.staff_yard.training_yard",
-   "kind": "exit",
-   "place": "staff_yard",
-   "to": "training_yard",
-   "side": "bottom",
-   "half": "right",
-   "on": "path",
-   "words": "the walled path down to the training yard"
-  },
-  {
-   "id": "exit.training_yard.courtyard",
-   "kind": "exit",
-   "place": "training_yard",
-   "to": "courtyard",
-   "side": "left",
-   "order": 1,
-   "on": "path",
-   "words": "the passage at the bottom left, back to the central courtyard"
-  },
-  {
-   "id": "exit.training_yard.storehouse",
-   "kind": "exit",
-   "place": "training_yard",
-   "to": "storehouse",
-   "side": "ahead",
-   "order": 2,
-   "on": "building",
-   "thing": "storehouse",
-   "words": "it stands beyond the striking posts"
-  },
-  {
-   "id": "exit.training_yard.staff_yard",
-   "kind": "exit",
-   "place": "training_yard",
-   "to": "staff_yard",
-   "side": "ahead",
-   "order": 3,
-   "on": "path",
-   "words": "the walled path and its steps, right of the storehouse"
-  },
-  {
-   "id": "exit.training_yard.dojo",
-   "kind": "exit",
-   "place": "training_yard",
-   "to": "dojo",
-   "side": "right",
-   "order": 4,
-   "on": "building",
-   "thing": "dojo",
-   "words": "its door faces the yard"
-  },
-  {
-   "id": "exit.training_yard.pool",
-   "kind": "exit",
-   "place": "training_yard",
-   "to": "pool",
-   "side": "right",
-   "order": 5,
-   "on": "path",
-   "words": "a roofed timber gate at the edge, beside the dojo: the way to the swimming pool"
-  },
-  {
-   "id": "exit.trailhead.forest",
-   "kind": "exit",
-   "place": "trailhead",
-   "to": "forest",
-   "side": "left",
-   "order": 1,
-   "on": "building",
-   "thing": "forest",
-   "words": "a level path leads into the cedars"
-  },
-  {
-   "id": "exit.trailhead.ridge",
-   "kind": "exit",
-   "place": "trailhead",
-   "to": "ridge",
-   "side": "ahead",
-   "order": 2,
-   "on": "building",
-   "thing": "ridge",
-   "words": "stone stairs climb straight up the mountain toward it"
-  },
-  {
-   "id": "exit.trailhead.bathhouse",
-   "kind": "exit",
-   "place": "trailhead",
-   "to": "bathhouse",
-   "side": "right",
-   "order": 3,
-   "on": "building",
-   "thing": "bathhouse",
-   "words": "it stands in the middle distance, among the trees"
-  },
-  {
-   "id": "exit.trailhead.riverside",
-   "kind": "exit",
-   "place": "trailhead",
-   "to": "riverside",
-   "side": "right",
-   "order": 4,
-   "on": "path",
-   "words": "the path that goes down at the edge, toward the river"
-  },
-  {
-   "id": "exit.trailhead.dorm_yard",
-   "kind": "exit",
-   "place": "trailhead",
-   "to": "dorm_yard",
-   "side": "bottom",
-   "on": "path",
-   "words": "the stone slabs back down to the dormitory garden"
-  },
-  {
-   "id": "exit.gate.courtyard",
-   "kind": "exit",
-   "place": "gate",
-   "to": "courtyard",
-   "side": "ahead",
-   "order": 2,
-   "on": "building",
-   "thing": "courtyard",
-   "words": "it is reached through the torii, up the steps"
   },
   {
    "id": "seen.gate.school_building",

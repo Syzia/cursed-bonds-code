@@ -155,6 +155,15 @@
         0
       ]
     },
+    "dorm_yard": {
+      "batch": 1,
+      "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
+      "kind": "composed",
+      "record": "5acb49470543f9a6fcbc1e9ad338141f4a091eb7065a52fdfff507f6a3b7d30f",
+      "render": "ui2_dorm_yard_a_00001_.png",
+      "rev": 2,
+      "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
+    },
     "fg_cafeteria": {
       "of": "cafeteria",
       "of_rev": 3
@@ -178,6 +187,15 @@
     "fg_dorm_common_night": {
       "of": "dorm_common_night",
       "of_rev": 2
+    },
+    "gate": {
+      "batch": 2,
+      "from_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8",
+      "kind": "composed",
+      "record": "9f5947af0b949475b9f25e6b3c4c9d161166726fd7a82192fcd6a45e422dcb3a",
+      "render": "ui2_gate3_b_00001_.png",
+      "rev": 2,
+      "rev1_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8"
     },
     "infirmary": {
       "batch": "6a",
@@ -329,6 +347,14 @@
       "of": "your_room_night",
       "of_rev": 2
     },
+    "light_dorm_yard": {
+      "of": "dorm_yard",
+      "of_rev": 2
+    },
+    "light_gate": {
+      "of": "gate",
+      "of_rev": 2
+    },
     "light_infirmary": {
       "of": "infirmary",
       "of_rev": 2
@@ -371,6 +397,18 @@
     },
     "light_school_yard": {
       "of": "school_yard",
+      "of_rev": 2
+    },
+    "light_staff_yard": {
+      "of": "staff_yard",
+      "of_rev": 2
+    },
+    "light_trailhead": {
+      "of": "trailhead",
+      "of_rev": 2
+    },
+    "light_training_yard": {
+      "of": "training_yard",
       "of_rev": 2
     },
     "rooftop": {
@@ -421,6 +459,33 @@
       "kind": "composed",
       "record": "469ee9ae79a9c2533482ab08802f67c40943672c4e7c4f819418d939627e0ac1",
       "render": "ui2_school_yard_b_fit.png",
+      "rev": 2,
+      "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
+    },
+    "staff_yard": {
+      "batch": 2,
+      "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
+      "kind": "composed",
+      "record": "6b1c8708d11d1b777a5cf783fe1d2e05025db0b8ce0703e59dae7518154cb2e9",
+      "render": "ui2_staff_yard_b_00001_.png",
+      "rev": 2,
+      "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
+    },
+    "trailhead": {
+      "batch": 2,
+      "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
+      "kind": "composed",
+      "record": "b01552cdac5d2462cc4f5ed260c252010faa217f513b4ab6142f71bad1f92837",
+      "render": "ui2_trailhead_sa_b_00001_.png",
+      "rev": 2,
+      "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
+    },
+    "training_yard": {
+      "batch": 1,
+      "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
+      "kind": "composed",
+      "record": "db7908d98bed433186b926fc1904db262f64fafe2ccf64a1759d33a65bfbba9e",
+      "render": "ui2_training_yard_b_00001_.png",
       "rev": 2,
       "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
     },
