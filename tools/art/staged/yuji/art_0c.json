@@ -64,5 +64,49 @@
   "Read shots/art/fx_yuji_blink.png, fx_yuji_talk.png and fx_yuji_blink_faces.png (which faces take the blink) before going on.",
   "python3 tools/install_set.py yuji '<staged>' --dry ; then, with the game closed and game/*.rpyc backed up, without --dry: the fourteen pictures, his faces.json rows, the uniform's cloth (cloth_match.py --apply yuji --redrawn) and game/jjk_sprites.rpy regenerated.",
   "Afterwards (docs/UI2_CONTRACTS.md A2): tools/smoke.sh u2_baseline, and tools/smoke/baseline_sprite_tree.txt written again once its tree line has passed; tools/load_all_saves.sh; every harness that shows Yuji; tools/smoke.sh u2_dump and the art tools' suite."
- ]
+ ],
+ "renders": {
+  "blink": {
+   "file": "yuji_new_blink_nanobanana_00001_.png",
+   "sha256": "d5da7e20be082d4facd3538d5932145b60bf9ea3af918b68b5b72c5914b608a2"
+  },
+  "talk": {
+   "file": "yuji_new_talk_nanobanana_00001_.png",
+   "sha256": "4193a8c28e2838455c5e7fe379798cffd9e4edc01faeb4493cdd1a9acdc2e07e"
+  },
+  "made": "run by the owner on 12 Oct 2026 at 11:37; each PNG's own record names yuji_new_fx_in.png as the picture it was made from"
+ },
+ "read_renders_2026_10_12": {
+  "staged_by": "tools/install_face.py <render> yuji blink|talk --sprite <staged>/char/yuji_neutral.png --images <redo_yuji> --stage <staged>",
+  "blink": "eyes box [326, 300, 92, 40], measured on the new sprite; the staged overlay differs from the calm sprite only inside it. The eyes close to two soft curved lines; the brows inside the box are drawn a little lighter, as in the blink today's Yuji has. It sits on no other face: happy, serious, angry, surprised and sad each keep their own eyes (their rims differ by 8.1 to 19.0 on average, 4.9% to 13.1% strongly). Today's Yuji blinks on four other faces (happy, sad, serious, surprised); the new one on the calm face only.",
+  "talk": "mouth box [346, 344, 52, 36]; lined up at scale 1.0000 with no shift; the rim differs from the sprite by 4.1 on average. The mouth opens in a small oval with the upper teeth showing, the same shape and size as today's; its inside is greyer than today's pink.",
+  "the whole set, dry": "python3 tools/install_set.py yuji <staged> --dry : all fourteen pictures are here, on the 760x1400 canvas; the six share one body; the two overlay pictures differ from the calm sprite only inside their boxes (nothing written)",
+  "staged_fx_sha256": {
+   "fx_yuji_blink.png": "13f0f7aae30135e1980a31077b26588d0fc3fff452fd1a6ddb1662e0e5e9b99e",
+   "fx_yuji_talk.png": "5c2a0a6c928952a973707d1ddeb77c0a456d98a8f837b1d1837e6ee3253f05d6"
+  },
+  "faces_json": {
+   "blink_also": {
+    "yuji": []
+   },
+   "eyes": {
+    "yuji": [
+     326,
+     300,
+     92,
+     40
+    ]
+   },
+   "mouth": {
+    "yuji": [
+     346,
+     344,
+     52,
+     36
+    ]
+   }
+  },
+  "sheets": "shots/art/fx_yuji_blink.png, fx_yuji_talk.png, fx_yuji_blink_faces.png; shots/yuji/old_new_blink_talk.jpg (today's calm, blink and talk above the new ones), blink_talk_staged.jpg",
+  "put_to_the_owner": "both fit and can go in; not installed: the owner's game was open, and the set goes in only on their word"
+ }
 }
