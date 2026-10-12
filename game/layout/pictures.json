@@ -7,6 +7,30 @@
       "render": "ui2_boys_dorm_a_00001_.png",
       "rev": 2
     },
+    "boys_dorm_evening": {
+      "batch": "9b",
+      "kind": "relight",
+      "of": "boys_dorm",
+      "of_rev": 2,
+      "render": "ui2_boys_dorm_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "boys_dorm_night": {
+      "batch": "9b",
+      "kind": "relight",
+      "of": "boys_dorm",
+      "of_rev": 2,
+      "render": "ui2_boys_dorm_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "cafeteria": {
       "batch": "4a",
       "from_commit": "e26c67b200a7ec4b374973a2d13730c4ef8b4381",
@@ -128,6 +152,42 @@
       "render": "ui2_dojo2_a_00001_.png",
       "rev": 2,
       "rev1_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8"
+    },
+    "dojo_evening": {
+      "batch": "15b",
+      "kind": "relight",
+      "of": "dojo",
+      "of_rev": 2,
+      "render": "ui2_dojo_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "dojo_lit": {
+      "batch": 47,
+      "kind": "relight",
+      "of": "dojo",
+      "of_rev": 2,
+      "render": "ui2_dojo_lit2_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "dojo_night": {
+      "batch": "15b",
+      "kind": "relight",
+      "of": "dojo",
+      "of_rev": 2,
+      "render": "ui2_dojo_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "dorm_common": {
       "batch": "3a",
@@ -351,6 +411,14 @@
       "of": "boys_dorm",
       "of_rev": 2
     },
+    "light_boys_dorm_evening": {
+      "of": "boys_dorm_evening",
+      "of_rev": 2
+    },
+    "light_boys_dorm_night": {
+      "of": "boys_dorm_night",
+      "of_rev": 2
+    },
     "light_cafeteria": {
       "of": "cafeteria",
       "of_rev": 3
@@ -389,6 +457,18 @@
     },
     "light_dojo": {
       "of": "dojo",
+      "of_rev": 2
+    },
+    "light_dojo_evening": {
+      "of": "dojo_evening",
+      "of_rev": 2
+    },
+    "light_dojo_lit": {
+      "of": "dojo_lit",
+      "of_rev": 2
+    },
+    "light_dojo_night": {
+      "of": "dojo_night",
       "of_rev": 2
     },
     "light_dorm": {
@@ -515,6 +595,14 @@
       "of": "storehouse",
       "of_rev": 2
     },
+    "light_storehouse_evening": {
+      "of": "storehouse_evening",
+      "of_rev": 2
+    },
+    "light_storehouse_night": {
+      "of": "storehouse_night",
+      "of_rev": 2
+    },
     "light_trailhead": {
       "of": "trailhead",
       "of_rev": 2
@@ -525,6 +613,14 @@
     },
     "light_training": {
       "of": "training",
+      "of_rev": 2
+    },
+    "light_training_evening": {
+      "of": "training_evening",
+      "of_rev": 2
+    },
+    "light_training_night": {
+      "of": "training_night",
       "of_rev": 2
     },
     "light_training_yard": {
@@ -660,6 +756,30 @@
       "rev": 2,
       "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
     },
+    "storehouse_evening": {
+      "batch": "16b",
+      "kind": "relight",
+      "of": "storehouse",
+      "of_rev": 2,
+      "render": "ui2_storehouse_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "storehouse_night": {
+      "batch": "16b",
+      "kind": "relight",
+      "of": "storehouse",
+      "of_rev": 2,
+      "render": "ui2_storehouse_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "trailhead": {
       "batch": 2,
       "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
@@ -689,6 +809,30 @@
       "render": "ui2_training2a_view_a_00001_.png",
       "rev": 2,
       "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
+    },
+    "training_evening": {
+      "batch": "15b",
+      "kind": "relight",
+      "of": "training",
+      "of_rev": 2,
+      "render": "ui2_training_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "training_night": {
+      "batch": "15b",
+      "kind": "relight",
+      "of": "training",
+      "of_rev": 2,
+      "render": "ui2_training_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "training_yard": {
       "batch": 1,
