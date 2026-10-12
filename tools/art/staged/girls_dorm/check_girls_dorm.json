@@ -1,0 +1,11 @@
+{
+ "horizon": 552,
+ "doors": [
+  {"name": "the first door on the left (Nobara's Room)", "box": [272, 6, 168, 1070]},
+  {"name": "the second door on the left (spare)", "box": [638, 288, 54, 504]},
+  {"name": "the third door on the left (spare)", "box": [748, 376, 30, 336]},
+  {"name": "the third door on the right (spare)", "box": [1142, 376, 30, 336]},
+  {"name": "the second door on the right (spare)", "box": [1228, 288, 54, 504]},
+  {"name": "the first door on the right (Maki's Room)", "box": [1480, 6, 168, 1070]}
+ ]
+}
