@@ -61,10 +61,10 @@ tags lie below them. They stand on the open boards on the left:
 - three: the third stands a step back at x 1350, **behind the near table**
   (zoom 0.52, feet at y 1055, hidden); the table is drawn over the legs from
   the thigh down. The person covers the chair that stands behind the table;
-- four: three on the boards (x 510, 730, 950) and the fourth behind the
-  table at x 1262 (no further right: at x 1350 the row would cover the
-  counter's point too, and a row may not hide everything). The cooler's point and the way out are then hidden (the way
-  out is in the icon column; the look waits). The counter is never hidden.
+- four: all four on the boards (x 470, 660, 850, 1040), since the install
+  (see "At the install", below). The cooler's point and the way out are
+  then hidden (the way out is in the icon column; the look waits). The
+  counter is never hidden.
 
 The floor is two polygons: the open boards, from the wall's foot to the
 counter's foot and the tables' legs, and the strip of the aisle behind the
@@ -139,3 +139,23 @@ knows the step-back place is floor).
 - The keep list's `empty` row "the floor" is loose on this picture: its
   lower part runs from x 170 (inside the window wall's wainscot) to x 1480
   (over the near table's legs and top). Every other row fits.
+
+
+## At the install (12 Oct 2026)
+
+- **The row of four is all on the boards: x 470, 660, 850, 1040** (it was
+  510, 730, 950 and a fourth behind the near table at x 1262). The Cafeteria
+  at Noon is the one place and hour where five people stand together, and
+  the game lists the fifth in a small "+1" chip whose corner is at x 1400
+  on the bottom line (`RAIL_MORE_POS`). The fourth person's rectangle
+  reached x 1460 behind the table, so the chip stood on it, and
+  `p2_hud`'s line "the +N chip's names stand on no sprite" failed. The row
+  now ends at x 1222. (The layout check does not know that chip: a rule for
+  it is owed, for the place where five can stand.)
+- **The keep list names the boards the windows light as ground**
+  (`tools/bgs/keep/cafeteria.json`, one polygon, the second reader's): with
+  it the installed evening and night pass against these outlines. Measured
+  with a damage sweep on both pictures (48 damaged pictures): the near
+  table, the counter, the cooler and the ground's surroundings slid or
+  painted out are all still refused; the one refusal lost is the way out's
+  own band of floor painted out, at night.

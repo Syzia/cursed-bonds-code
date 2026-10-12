@@ -278,9 +278,17 @@ init 999 python:
             RULE_LAYOUT[name] = keep
 
     def zzh_traced(loc):
-        """bool: the place's hot_ file carries for_rev: its layout was traced
-        on a new picture, so its exits need not be where the code has them."""
-        return "for_rev" in rule_layout_raw("hot_" + loc)
+        """bool: the place has had its layout sitting, so its exits need not
+        be where the code has them. Its hot_ file carries for_rev (a layout
+        traced on a new picture), or, for a room redone in place, which
+        carries none (3.2), the file itself places one of the room's exits:
+        the in-place layout sitting moves an exit onto its painted door
+        (plan 10.2, "L · the in-place layout sittings"; docs/UI2_PINS.md,
+        Part 2j)."""
+        raw = rule_layout_raw("hot_" + loc)
+        spots = raw.get("spots")
+        return "for_rev" in raw or (isinstance(spots, builtins.dict)
+                                    and any(builtins.str(k).startswith("go_%s__" % loc) for k in spots))
 
     def zzh_exit_table():
         """A copy of PATH_EXITS, each row list its own."""
@@ -1014,10 +1022,11 @@ label zz_smoke:
         ## K3, K12 (docs/UI2_PINS.md, Part 2e). The points of before the
         ## overhaul are the points on the pictures of before it, and those are
         ## the code's own (zzh_code_points: the place read with its hot_ file
-        ## taken as absent). A place keeps them on screen for as long as no
-        ## layout traced on a new picture is installed for it (zzh_traced);
-        ## once one is, the game draws its exits where that layout has them,
-        ## and nothing is asked of that here.
+        ## taken as absent). A place keeps them on screen until its layout
+        ## sitting (zzh_traced: a layout traced on a new picture, or, in a
+        ## room redone in place, a hot_ file that places the exit itself);
+        ## after it the game draws its exits where that layout has them, and
+        ## nothing is asked of that here.
         _zz_code = builtins.dict((l, zzh_code_points(l)) for l in ("dorm_yard", "dorm"))
         _zz_drawn = [l for l in ("dorm_yard", "dorm") if not zzh_traced(l) and zzh_exit_points(l) != _zz_code[l]]
         check(_zz_old["dorm_yard"][0][0] == "dorm" and [r[0] for r in _zz_old["dorm"]] == ["dorm_yard"]

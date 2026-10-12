@@ -524,12 +524,17 @@ label zz_smoke:
         check(set(VIEW_SLOTS) == {"dorm_common", "cafeteria", "classroom", "courtyard", "training", "infirmary",
                                   "library", "utahime_office"} and view_validate() == [],
               "VIEW_SLOTS has rows for the eight rooms, and they validate", (sorted(VIEW_SLOTS), view_validate()))
-        _zz_d = view_slots("dorm", 3)
+        ## K3 (docs/UI2_PINS.md, Part 2j): My Room is the example of a room
+        ## with no row in the code's table. It has had a layout of its own
+        ## since its layout sitting, so it is read as view_slots reads a room
+        ## whose sidecar has nothing to say (zzv_plain_slots).
+        _zz_d = zzv_plain_slots("dorm", 3)
         _zz_z = PLACE_STAGING["dorm"]["zoom"]
-        check([s[3] for s in _zz_d] == [0, 1, 0] and _zz_d[1][1] == _zz_d[0][1] - 10 and abs(_zz_d[1][2] - _zz_z * 0.96) < 1e-6
+        check("dorm" not in VIEW_SLOTS and [s[3] for s in _zz_d] == [0, 1, 0] and _zz_d[1][1] == _zz_d[0][1] - 10
+              and abs(_zz_d[1][2] - _zz_z * 0.96) < 1e-6
               and [s[0] for s in _zz_d] == STAGE_CENTRES[3] and _zz_d[0][2] == _zz_z,
               "a room with no row: the phase-1 centres, the middle person 4% smaller, 10 px higher, far 1", _zz_d)
-        check([s[3] for s in view_slots("dorm", 4)] == [0, 1, 1, 0] and [s[3] for s in view_slots("dorm", 2)] == [0, 0],
+        check([s[3] for s in zzv_plain_slots("dorm", 4)] == [0, 1, 1, 0] and [s[3] for s in zzv_plain_slots("dorm", 2)] == [0, 0],
               "with four the two in the middle step back; with two nobody does")
         RULE_LAYOUT["view_library"] = {"slots": {"1": [[900, -44, 0.5, 2]], "2": [[1, 2, 3]], "3": "nonsense"}}
         check(view_slots("library", 1) == [(900, -44, 0.5, 2)], "a sidecar's slots win over VIEW_SLOTS", view_slots("library", 1))
@@ -819,12 +824,20 @@ label zz_smoke:
         check(view_fg_path(here) is None and not [d for d in _zz_o if builtins.str(getattr(d, "filename", "")).startswith("images/fg/")]
               and all(zzv_wid("sb_place", "tag_" + w) is not None for w in stage_people(here)[0]),
               "the stand-in path: with no foreground file the screen draws none, and the tags are still there")
-        check(all(view_slots(l, n) == view_default_slots(l, n) and not any(s[1] < -60 for s in view_slots(l, n))
+        ## K3 (docs/UI2_PINS.md, Part 2j): the game's rule is for a room
+        ## whose TABLE rows stand people behind its foreground (view_slots'
+        ## own words). A foreground room that has had its layout sitting
+        ## carries its rows in view_<room>.json, which view_slots reads
+        ## first and does not put aside when the foreground is missing. So
+        ## each foreground room is read as it is when its sidecar has nothing
+        ## to say (zzv_plain_slots); what a sidecar's own rows do with no
+        ## foreground is handed to the package that owns view_stage.rpy.
+        check(all(zzv_plain_slots(l, n) == view_default_slots(l, n) and not any(s[1] < -60 for s in zzv_plain_slots(l, n))
                   for l in VIEW_FG_ROOMS for n in (1, 2, 3, 4))
               and view_slots("library", 3) == _zz_lib3 and len(_zz_lib3) == 3
               and view_person_rects(here) == [view_slot_rect(s) for s in view_default_slots(here, 3)],
               "and nobody stands up on the table: a foreground room uses the plain default slots while its picture is "
-              "missing (other rooms keep their rows)", [view_slots(l, 3) for l in VIEW_FG_ROOMS])
+              "missing (other rooms keep their rows)", [zzv_plain_slots(l, 3) for l in VIEW_FG_ROOMS])
         shot("standin_no_foreground", wait=0.2)
         renpy.loadable = ZZV_LOADABLE[0]
         check(view_slots("dorm_common", 3) == _zz_own3 and _zz_own3 != view_default_slots("dorm_common", 3),

@@ -2848,10 +2848,21 @@ def early_run(place, hour, render, day, tail):
     return (rc, out, v[0], v[1]), None
 
 
-def real_early(tail):
+def real_early(tail, lab):
     """The seven corrections on the renders that showed them, and the wider proof."""
+    # A correction is shown on its render as the proof read it when the correction was made. A keep list's `ground`
+    # row names an exception made later (open ground whose light changes with the hour: docs/UI2_PINS.md, Parts 2i
+    # and 2j), and with it the Cafeteria's evening no longer needs correction 7 to get in. So the seven are run on
+    # the tree's keep lists with their `ground` rows taken out; the wider proof below reads the keep lists as they are.
+    then = os.path.join(lab.work, "keep_then")
+    os.makedirs(then, exist_ok=True)
+    for name in sorted(os.listdir(os.path.join(TOOLS, "bgs", "keep"))):
+        if name.endswith(".json"):
+            rows = json.load(open(os.path.join(TOOLS, "bgs", "keep", name), encoding="utf-8"))
+            with open(os.path.join(then, name), "w", encoding="utf-8") as f:
+                json.dump(dict((k, v) for k, v in rows.items() if k != "ground"), f)
     for what, place, hour, render, day, want, words, never in EARLY_CASES:
-        got, absent = early_run(place, hour, render, day, tail)
+        got, absent = early_run(place, hour, render, day, tail + ["--keep", then])
         if got is None:
             skipped("REAL, early: %s" % what, "%s is not on this machine" % absent)
             continue
@@ -3055,7 +3066,7 @@ def group_real(lab, write=False):
            % (fig.get("shift"), fig.get("sharp"), fig.get("keep_weakest")),
            rc == 0 and fig.get("shift") == [0, 0] and "git, commit" in out, out)
         record["canary_shape"] = {"render": "look3_dorm_common_keep_00001_.png", "figures": fig}
-    real_early(tail)
+    real_early(tail, lab)
     real_traced(lab)
     for place, stem, hour in PAIRS:
         # the pairs the game had before the overhaul: read from the scratch copy, which stands there (mkroot)
