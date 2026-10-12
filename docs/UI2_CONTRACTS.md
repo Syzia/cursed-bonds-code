@@ -100,7 +100,13 @@ stays meaningful and must still pass. **L**, in the commit that installs the
 set: first see that tree line pass, then rewrite the file with
 `U2_BASELINE_WRITE=1 tools/smoke.sh u2_baseline` and commit only
 `tools/smoke/baseline_sprite_tree.txt` from what that run wrote (the other
-baselines are not rewritten). **U3**: a pickle difference before L's install
+baselines are not rewritten). **As it went on 12 Oct (the ledger's Part 2d):** the tree
+line differs too, in its first line alone, which holds his feet numbers; what
+is seen before rewriting is that only that line and the two pickle sums
+differ. And one picture had to be written again with it,
+`baseline_shots/ui2/map_campus.png` with its sum in `shots.json`: the map's
+first level shows his face on the Training marker (272 pixels in a 20 px
+square). **U3**: a pickle difference before L's install
 is a finding; after it, compare with the rewritten file.
 
 ### A3. `tools/art/game_layout.json` (the one file the art tools read the game through)

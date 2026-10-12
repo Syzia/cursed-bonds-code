@@ -2089,6 +2089,35 @@ out.save(sys.argv[3])
 '''
 
 
+YUJI_BEFORE = "f966a99"     # the last commit that holds Yuji as he was drawn until his redraw went in on 12 Oct 2026
+                            # (D57): the sprite his first blink render (4 Oct) was cut from. The REAL lines on that
+                            # render stand on these six pictures, from git, whatever Yuji the tree holds now.
+
+
+def yuji_before(root):
+    """Lay Yuji's six sprites of before his redraw under root/game/images/char, from git. None, or why it could not."""
+    dest = os.path.join(root, "game", "images", "char")
+    os.makedirs(dest, exist_ok=True)
+    for e in ("neutral", "happy", "serious", "angry", "surprised", "sad"):
+        rel = "game/images/char/yuji_%s.png" % e
+        got = subprocess.run(["git", "-C", REPO, "show", "%s:%s" % (YUJI_BEFORE, rel)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if got.returncode != 0 or not got.stdout:
+            return "git does not hold %s at %s (a checkout without its history?)" % (rel, YUJI_BEFORE)
+        with open(os.path.join(dest, "yuji_%s.png" % e), "wb") as f:
+            f.write(got.stdout)
+    return None
+
+
+def no_face_row(root, who):
+    """Does root/game/layout/faces.json hold no row for this person? The file itself may be there: a redrawn
+    person's set writes it (D57), and the tree hash beside this test says that nothing in it changed."""
+    path = os.path.join(root, "game", "layout", "faces.json")
+    if not os.path.exists(path):
+        return True
+    rows = json.load(open(path, encoding="utf-8"))
+    return not any(isinstance(v, dict) and who in v for v in rows.values())
+
+
 def group_face(lab):
     """install_face.py: the close-up from a staged sprite, the measured boxes, faces.json."""
     work = os.path.join(lab.work, "face")
@@ -2190,8 +2219,7 @@ def group_face(lab):
                    "--root", root_game])
     ok("with --sprite naming a staged sprite and no --stage it stops in one line and the tree is unchanged (D57)",
        rc != 0 and out.strip() == "a staged sprite's blink and mouth go in only with the whole set: add --stage <staged "
-       "folder>, then tools/install_set.py" and tree_hash(root_game) == tb
-       and not os.path.exists(os.path.join(root_game, "game", "layout", "faces.json")), out)
+       "folder>, then tools/install_set.py" and tree_hash(root_game) == tb and no_face_row(root_game, "megumi"), out)
     # ... and not after --prepare --sprite either: the close-up's record says which sprite it was cut from
     other = os.path.join(work, "stage_other", "char")
     os.makedirs(other)
@@ -2203,7 +2231,7 @@ def group_face(lab):
        "close-up was cut from another sprite; the tree is unchanged (D57)",
        rc != 0 and len(out.strip().splitlines()) == 1 and out.startswith("this close-up was cut from another sprite (")
        and os.path.join("stage_other", "char", "megumi_neutral.png") in out and "run --prepare again" in out
-       and tree_hash(root_game) == tb and not os.path.exists(os.path.join(root_game, "game", "layout", "faces.json")), out)
+       and tree_hash(root_game) == tb and no_face_row(root_game, "megumi"), out)
     rc, out = run([tool("install_face.py"), edits["blink"], "megumi", "blink", "--sprite", sprite, "--images", images_o,
                    "--stage", os.path.join(work, "stage_o2"), "--root", os.path.join(work, "root")])
     ok("and so does the same close-up laid on a different staged sprite, with nothing staged",
@@ -2223,7 +2251,11 @@ def group_face(lab):
     root = os.path.join(work, "root2")
     blink = os.path.join(OUTPUT, "yuji_blink_nanobanana_00001_.png")
     rec = os.path.expanduser("~/Desktop/JJK Game images/masks/yuji_fx_crop.txt")
-    if os.path.exists(blink) and os.path.exists(rec):
+    # that render was cut from Yuji as he was drawn then: his six sprites of before the redraw are laid under the
+    # scratch root, where the tool looks for "the game's own" before it looks in the tree
+    why_not = yuji_before(root) if os.path.exists(blink) and os.path.exists(rec) else None
+    yuji_then = os.path.join(root, "game", "images", "char", "yuji_neutral.png")
+    if os.path.exists(blink) and os.path.exists(rec) and why_not is None:
         im2 = os.path.join(work, "images2"); os.makedirs(os.path.join(im2, "masks"))
         shutil.copyfile(rec, os.path.join(im2, "masks", "yuji_fx_crop.txt"))
         rc, out = run([tool("install_face.py"), blink, "yuji", "blink", "--images", im2, "--root", root])
@@ -2233,22 +2265,20 @@ def group_face(lab):
            rc == 0 and sorted(rows.get("blink_also", {}).get("yuji", [])) == ["happy", "sad", "serious", "surprised"]
            and "eyes" not in rows, out)
         st2 = os.path.join(work, "stage2")
-        rc, out = run([tool("install_face.py"), blink, "yuji", "blink", "--sprite",
-                       os.path.join(REPO, "game", "images", "char", "yuji_neutral.png"), "--images", im2, "--stage", st2, "--root", root])
+        rc, out = run([tool("install_face.py"), blink, "yuji", "blink", "--sprite", yuji_then, "--images", im2, "--stage", st2, "--root", root])
         got = json.load(open(os.path.join(st2, "faces.json"))).get("eyes", {}).get("yuji") if rc == 0 else None
         ok("REAL: measured on his sprite, the eye box lands on the hand-set one (336,296 88x44) within 4 px: %s" % got,
            near(got, [336, 296, 88, 44], 4), out)
         nudged = os.path.join(work, "yuji_blink_nudged.png")
         run(["-c", NUDGE, TOOLS, blink, nudged, 1.01, 3, -2])
         st3 = os.path.join(work, "stage3")
-        rc, out = run([tool("install_face.py"), nudged, "yuji", "blink", "--sprite",
-                       os.path.join(REPO, "game", "images", "char", "yuji_neutral.png"), "--images", im2, "--stage", st3, "--root", root])
+        rc, out = run([tool("install_face.py"), nudged, "yuji", "blink", "--sprite", yuji_then, "--images", im2, "--stage", st3, "--root", root])
         rows3 = json.load(open(os.path.join(st3, "faces.json"))) if rc == 0 else {}
         got3 = rows3.get("eyes", {}).get("yuji")
         ok("REAL: the same render enlarged 1%% and slid 3 px gives the same eye box within 10 px (%s) and the same four faces" % got3,
            near(got3, got or [0, 0, 0, 0]) and sorted(rows3.get("blink_also", {}).get("yuji", [])) == ["happy", "sad", "serious", "surprised"], out)
     else:
-        skipped("REAL: Yuji's first blink render through install_face.py", "%s or its crop record is absent" % blink)
+        skipped("REAL: Yuji's first blink render through install_face.py", why_not or "%s or its crop record is absent" % blink)
 
 
 def staged_from_game(lab, who, name):

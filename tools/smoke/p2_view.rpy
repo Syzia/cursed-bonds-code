@@ -116,6 +116,17 @@ init 999 python:
             for k, v in old.items():
                 setattr(store, k, v)
 
+    def zzv_no_faces(fn):
+        """K3 (12 Oct 2026, the ledger's Part 2d). Run fn() as with no
+        game/layout/faces.json: a person's boxes and blink faces are then the
+        code's own (VIEW_FACE, VIEW_BLINK_ALSO). The art install writes that
+        file when a person is redrawn (D57), so a line that tests the
+        mechanism on the code's tables builds its sprites through this."""
+        real = store.rule_layout
+        def none(name, *args, **kwargs):
+            return {} if name == "faces" else real(name, *args, **kwargs)
+        return zzv_with(builtins.dict(rule_layout=none), fn)
+
     def zzv_plain_slots(loc, n):
         """K3. What view_slots(loc, n) answers when the room's sidecar has
         no slots of its own: the code's row, or the default."""
@@ -828,16 +839,21 @@ label zz_smoke:
     ## --- 8. lit_sprite: blink and talk -------------------------------------------------------
     python:
         _zz_args = ((760, 1400), (380, 1365, 300))
-        _zz_n = lit_sprite("images/char/yuji_neutral.png", *_zz_args)
-        _zz_h = lit_sprite("images/char/yuji_happy.png", *_zz_args)
+        ## Which of Yuji's faces take the blink, and where his eyes and mouth
+        ## are, is data the art install writes (game/layout/faces.json, D57).
+        ## These lines test the mechanism on the code's own tables, so their
+        ## sprites are built as with no faces.json (zzv_no_faces); the line
+        ## after them holds the mechanism to whatever file is installed.
+        _zz_n = zzv_no_faces(lambda: lit_sprite("images/char/yuji_neutral.png", *_zz_args))
+        _zz_h = zzv_no_faces(lambda: lit_sprite("images/char/yuji_happy.png", *_zz_args))
         _zz_o = lit_sprite("images/char/megumi_neutral.png", *_zz_args)
         check(renpy.loadable("images/char/fx/fx_yuji_blink.png") and renpy.loadable("images/char/fx/fx_yuji_talk.png")
               and len(_zz_n.child.children) == 4 and len(_zz_h.child.children) == 3 and len(_zz_o.child.children) == 2,
               "with the overlay's fx_yuji_blink.png / fx_yuji_talk.png, lit_sprite adds the two layers on a compatible "
-              "expression (neutral), only the blink on Yuji's happy face (VIEW_BLINK_ALSO: integration), and none for "
-              "someone with no files", (len(_zz_n.child.children), len(_zz_h.child.children), len(_zz_o.child.children)))
-        _zz_a = lit_sprite("images/char/yuji_angry.png", *_zz_args)
-        _zz_also = zzv_with(dict(VIEW_BLINK_ALSO={}), lambda: lit_sprite("images/char/yuji_happy.png", *_zz_args))
+              "expression (neutral), only the blink on Yuji's happy face (VIEW_BLINK_ALSO: integration; built with no "
+              "faces.json, the code's tables), and none for someone with no files", (len(_zz_n.child.children), len(_zz_h.child.children), len(_zz_o.child.children)))
+        _zz_a = zzv_no_faces(lambda: lit_sprite("images/char/yuji_angry.png", *_zz_args))
+        _zz_also = zzv_no_faces(lambda: zzv_with(dict(VIEW_BLINK_ALSO={}), lambda: lit_sprite("images/char/yuji_happy.png", *_zz_args)))
         check(len(_zz_a.child.children) == 2 and len(_zz_also.child.children) == 2
               and tuple(_zz_h.child.children[2].state.crop) == VIEW_FACE["yuji"]["eyes"]
               and "happy" in VIEW_BLINK_ALSO["yuji"] and "angry" not in VIEW_BLINK_ALSO["yuji"] and VIEW_TALK_OK == ("neutral",)
@@ -848,6 +864,20 @@ label zz_smoke:
         check([tuple(d.state.crop) for d in _zz_l] == [VIEW_FACE["yuji"]["eyes"], VIEW_FACE["yuji"]["mouth"]]
               and [(d.state.xpos, d.state.ypos) for d in _zz_l] == [VIEW_FACE["yuji"]["eyes"][:2], VIEW_FACE["yuji"]["mouth"][:2]],
               "the layers are the eye box and the mouth box, each where it sits on the canvas")
+        ## the rule, on the tree as it is (K3): with the installed faces.json, or with none
+        _zz_e3 = ("neutral", "happy", "angry")
+        _zz_r3 = [lit_sprite("images/char/yuji_%s.png" % _zz_e, *_zz_args) for _zz_e in _zz_e3]
+        _zz_want = [2 + (1 if _zz_e in builtins.tuple(VIEW_BLINK_OK) + view_blink_also("yuji") else 0) + (1 if _zz_e in VIEW_TALK_OK else 0)
+                    for _zz_e in _zz_e3]
+        check([len(_zz_d.child.children) for _zz_d in _zz_r3] == _zz_want
+              and [tuple(_zz_d.state.crop) for _zz_d in _zz_r3[0].child.children[2:]]
+                  == [tuple(view_face_box("yuji", "eyes")), tuple(view_face_box("yuji", "mouth"))]
+              and all(zzv_dumps(_zz_d) for _zz_d in _zz_r3),
+              "on the tree as it is (its faces.json, or none): the blink sits on exactly the faces VIEW_BLINK_OK and "
+              "view_blink_also name, the mouth on VIEW_TALK_OK's, the two layers are the boxes view_face_box answers, "
+              "and each sprite pickles",
+              ([len(_zz_d.child.children) for _zz_d in _zz_r3], _zz_want, view_blink_also("yuji"),
+               view_face_box("yuji", "eyes"), view_face_box("yuji", "mouth")))
         renpy.loadable = zzv_no("images/char/fx/")
         _zz_plain = lit_sprite("images/char/yuji_neutral.png", *_zz_args)
         renpy.loadable = ZZV_LOADABLE[0]
