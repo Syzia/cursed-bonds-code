@@ -17,11 +17,13 @@
 # under game/ changed. No Ren'Py is started. About ten minutes in full.
 # The scratch copy is the tree as it was before the overhaul installed any
 # picture: what an install wrote is put back from git, each picture from the
-# commit its own manifest row names, so the suite reads the same before and
-# after batch 0, with the install committed (in one commit or in several) or
-# not yet. Once a picture is installed it needs a git checkout that holds
-# the project's history: in a copy with no git, or a clone without its
-# history, it says so in one line, runs nothing and ends RESULT FAIL. It
+# commit its own manifest row names, and with it the place's own layout files
+# as they stood just before that picture went in (a room redone in place is
+# traced at a later sitting, with no manifest row), so the suite reads the
+# same before and after batch 0, with the install committed (in one commit or
+# in several) or not yet. Once a picture is installed it needs a git checkout
+# that holds the project's history: in a copy with no git, or a clone without
+# its history, it says so in one line, runs nothing and ends RESULT FAIL. It
 # will not run where game/images is a symbolic link.
 #
 # Exit status 0 when nothing failed, 1 otherwise, 2 when the layout dump is

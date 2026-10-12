@@ -14,7 +14,9 @@ its layout files and its pictures; no .rpyc), and the last check is that no
 file under game/ changed. The scratch copy is the tree as it was BEFORE the
 overhaul installed anything: whatever a real install has written (a picture,
 its foreground and the outline it is cut by, its light row, a layout with
-for_rev, the manifest, the facts the picture fixed in the campus record) is
+for_rev, the manifest, the facts the picture fixed in the campus record), and
+the layout a room redone in place was given at its later layout sitting (no
+for_rev, no manifest row), is
 put back from git (before_overhaul: each picture from the commit its own
 manifest row names; record_before for the record), so the fixtures stand at
 revision 1 and the suite reads the same before and after an install, with
@@ -161,6 +163,22 @@ def before_overhaul(repo=None):
       installed (the day outline, copied to that hour): it is as it was before the place's first picture went
       in, so the copy holds no outline for an hour it has no picture of.
       A LAYOUT FILE that carries for_rev is its newest commit without for_rev.
+      THE LAYOUT FILES OF A ROOM REDONE IN PLACE carry no for_rev and have no manifest row. Such a room keeps its
+      camera, so its picture goes in without a layout and its layout sitting comes later, as one ordinary edit of
+      hot_<place>.json and view_<place>.json: exits moved onto the painted doors, shapes traced, the standing
+      places, a floor and a scale (the Classroom, the Cafeteria, the Infirmary, the Common Room, My Room and the
+      Rooftop, 12 Oct: twelve lines that took those rooms as "a room with no shape", "no scale of its own" or
+      "no point under that wall" failed, because the copies held the traced files beside the pictures and the
+      dump rows of before). The rule: for every place whose day picture the overhaul has installed, its hot_
+      and view_ files go with that picture, as its rows of the dump do. They are read from the tree as it stood
+      just before the picture was FIRST replaced, the very commit the place's rows of the dump are read from, so
+      the file and the dump say the same of the place; a file that was not there then is taken away. Nothing is
+      asked of the file itself (no marker in it, no "its newest commit that differs from today's"), only where
+      the picture's own manifest row puts "before". So it reads the same before the room's layout sitting (the
+      file is put back as it is), after it, and after any later sitting or point moved by hand: none of those
+      moves the commit in which the picture was first replaced. The place is found from the picture by the dump
+      of then (My Room's files are hot_dorm.json and view_dorm.json, its picture your_room.png); where git has
+      no dump of then for a place, its files are left as they are with its rows, and a SKIPPED line says so.
       The manifest itself is taken away.
 
     A commit git does not hold is NOT a file that was not there: a checkout without its history (a shallow
@@ -397,8 +415,18 @@ def before_overhaul(repo=None):
                 continue
             # the dump's tables are keyed by the place, the manifest by its picture: My Room is `dorm`, your_room.png
             place = next((p.get("key") for p in dumps[base].get("places") or [] if isinstance(p, dict)
-                          and p.get("file") == "images/bg/%s.png" % key), key)
+                          and p.get("file") == "images/bg/%s.png" % key), None)
+            day_of, place = place, place or key
             out["places"][place] = dumps[base]
+            if key not in bases or day_of is None:
+                continue        # not the day picture of a place: an hour picture, or a place found by for_rev alone
+            # the place's own layout files go with its day picture, from the same tree as its rows of the dump
+            # (a room redone in place: no for_rev, no manifest row; the docstring's rule). One that carries
+            # for_rev is put back above.
+            for kind in ("hot", "view"):
+                rel = "game/layout/%s_%s.json" % (kind, place)
+                if rel not in out["files"]:
+                    out["files"][rel] = show(base, rel, "the layout of then")
     except _NoCommit as e:
         fatal(e)
     if out["fatal"]:
@@ -537,6 +565,59 @@ def stamp(dump_path, root, out=None, extra=None):
     out = out or os.path.join(root, "dump.json")
     json.dump(d, open(out, "w"))
     return out
+
+
+def layout_and_dump(read, dump):
+    """Where a tree's layout files and a dump say different things of a place, in words; [] when they agree.
+    `read(rel)` is a file of the tree as JSON, or None for one that is not there.
+
+    The art tools read a place from both: its points, shapes and standing rows from the dump, and from the
+    files themselves a planned hotspot's point (game_layout.points), a room's `scale` (make_pose_workflow.py)
+    and, in stage_preview.py, the file's slots and shapes laid over the dump's. So a copy whose files say one
+    thing and whose dump another is no tree the game ever had. What the game writes into a dump from a file,
+    row for row (so it read on the real tree at e26c67b, at 891d5b2 and at fe4cecc, 35 places each):
+
+      each exit and each registered hotspot is drawn (`applied`) where the hot_ file's `spots` puts it, and at
+      the code's own point (`default`) where the file names none or there is no file;
+      the place's `shapes` are the hot_ file's, and none without one;
+      its standing rows (`slots`) are the view_ file's `slots`, and the code's (`slots_code`) where the file
+      gives none and the code has rows for the place;
+      its pose boxes (`poses`) are the view_ file's.
+
+    A file that carries for_rev is in force only while its picture is at that revision, which the manifest
+    says and this does not ask: every such file is taken as in force (on those three trees each was; the
+    fixtures hold none, before_overhaul puts each back without it)."""
+    bad = []
+
+    def table(key, place, default):
+        got = (dump.get(key) or {}).get(place)
+        return default if got is None else got
+
+    for row in dump.get("places") or []:
+        place = row.get("key") if isinstance(row, dict) else None
+        if not place:
+            continue
+        hot, view = read("game/layout/hot_%s.json" % place), read("game/layout/view_%s.json" % place)
+        hot = hot if isinstance(hot, dict) else {}
+        view = view if isinstance(view, dict) else {}
+        spots = hot.get("spots") or {}
+        for key in ("exits", "hotspots"):
+            for r in table(key, place, []):
+                want = spots.get(r.get("id"), r.get("default"))
+                if list(r.get("applied") or []) != list(want or []):
+                    bad.append("%s: %s is drawn at %s in the dump; hot_%s.json and the code put it at %s"
+                               % (place, r.get("id"), r.get("applied"), place, want))
+        if table("shapes", place, {}) != (hot.get("shapes") or {}):
+            bad.append("%s: the dump has shapes for %s; hot_%s.json has them for %s"
+                       % (place, sorted(table("shapes", place, {})) or "nothing", place, sorted(hot.get("shapes") or {}) or "nothing"))
+        code = (dump.get("slots_code") or {}).get(place)
+        rows = view.get("slots") or code
+        if rows is not None and table("slots", place, None) != rows:
+            bad.append("%s: the dump's standing rows are not %s" % (place, "view_%s.json's" % place if view.get("slots") else "the code's"))
+        if read("game/layout/pose_%s.json" % place) is None and table("poses", place, {}) != (view.get("poses") or {}):
+            bad.append("%s: the dump has pose boxes for %s; view_%s.json has them for %s"
+                       % (place, sorted(table("poses", place, {})) or "nobody", place, sorted(view.get("poses") or {}) or "nobody"))
+    return bad
 
 
 # ---- pictures made by hand (ComfyUI's Python) --------------------------------------------------------------
@@ -868,6 +949,88 @@ def group_fixtures(lab):
     ok("the fixtures, a manifest row of a kind they do not know (a pose's): a SKIPPED line names it, and the rest is "
        "still put back", len(then["problems"]) == 1 and "pose_zz_megumi" in then["problems"][0] and not then["fatal"]
        and then["files"].get("game/images/bg/zzroom.png") == want["game/images/bg/zzroom.png"], json.dumps(then["problems"] + then["fatal"]))
+    # A room REDONE IN PLACE, and its layout sitting afterwards: no for_rev and no manifest row (the six rooms of
+    # 12 Oct). The place is zzmy and its picture zzmine.png, as My Room is `dorm` and your_room.png; zzelse is a
+    # place whose picture nobody installed. The same tree of before is asked for at every step of its history.
+    my_hot = {"spots": {"zz_bed": [300, 400]}}
+    my_rows = {"zzmy": [{"id": "zz_bed", "applied": [300, 400], "default": [10, 10]},
+                        {"id": "zz_desk", "applied": [20, 20], "default": [20, 20]}]}
+    my_places = [{"key": "zzmy", "file": "images/bg/zzmine.png"}, {"key": "zzelse", "file": "images/bg/zzelse.png"}]
+    mine = os.path.join(lab.work, "fx_inplace")
+    os.makedirs(mine)
+    git(mine, "init", "-q")
+    put(mine, "game/images/bg/zzmine.png", b"my room, before the overhaul")
+    put(mine, "game/images/bg/zzelse.png", b"another place, never redone")
+    put(mine, "game/layout/hot_zzmy.json", my_hot)
+    put(mine, "game/layout/hot_zzelse.json", {"spots": {"zz_else": [1, 2]}})
+    put(mine, "tools/bgs/campus.json", {"pictures": {}})
+    put(mine, "tools/art/game_layout.json", {"hash": "then", "places": my_places, "hotspots": my_rows, "shapes": {}})
+    git(mine, "add", "-A")
+    git(mine, "commit", "-q", "-m", "my room")
+    mine_first = git(mine, "rev-parse", "HEAD")
+    put(mine, "tools/art/game_layout.json", {"hash": "then, the last dump before the overhaul", "places": my_places,
+                                             "hotspots": my_rows, "shapes": {}})
+    git(mine, "add", "-A")
+    git(mine, "commit", "-q", "-m", "a new dump")
+
+    def my_before(step):
+        """What is not as it was before the overhaul in fx_inplace, in words, each with the step it was asked at."""
+        _BEFORE.pop(os.path.abspath(mine), None)        # the tree has changed since it was last asked
+        then = before_overhaul(mine)
+        files, bad = then["files"], []
+        if files.get("game/images/bg/zzmine.png") != b"my room, before the overhaul":
+            bad.append("the picture: %r" % files.get("game/images/bg/zzmine.png", "not named"))
+        if files.get("game/layout/hot_zzmy.json", "not named") != (json.dumps(my_hot, sort_keys=True) + "\n").encode():
+            bad.append("hot_zzmy.json: %r" % (files.get("game/layout/hot_zzmy.json", "not named") or b"taken away")[:60])
+        if files.get("game/layout/view_zzmy.json", "not named") is not None:
+            bad.append("view_zzmy.json, which was not there then: %r" % files.get("game/layout/view_zzmy.json", "not named")[:60])
+        bad += ["%s is named and should not be" % rel for rel in sorted(files) if "zzelse" in rel]
+        dump_then = then["places"].get("zzmy") or {}
+        if dump_then.get("hash") != "then, the last dump before the overhaul":
+            bad.append("the dump for zzmy: %r" % dump_then.get("hash"))
+        held = dict((rel, json.loads(blob)) for rel, blob in files.items() if blob is not None and rel.endswith(".json"))
+        bad += layout_and_dump(held.get, dump_then)
+        bad += ["problem: " + w for w in then["problems"]] + ["fatal: " + w for w in then["fatal"]]
+        return ["%s: %s" % (step, w) for w in bad]
+
+    def my_install(rev, was):
+        put(mine, "game/images/bg/zzmine.png", ("my room, in the new look, revision %d" % rev).encode())
+        put(mine, "game/layout/pictures.json", {"pictures": {
+            "zzmine": {"rev": rev, "kind": "inplace", "rev1_commit": mine_first, "from_commit": was}}})
+
+    def my_sitting(bed):
+        put(mine, "game/layout/hot_zzmy.json", {"spots": {"zz_bed": bed, "zz_window": [700, 300]}, "tips": {"zz_bed": "top"},
+                                                "shapes": {"zz_bed": [[[800, 600], [1000, 600], [1000, 800], [800, 800]]]}})
+        put(mine, "game/layout/view_zzmy.json", {"slots": {"1": [[640, -60, 0.6, 0]]}, "floor": {"on": True}, "scale": [200, 300, 700]})
+        put(mine, "game/layout/hot_zzelse.json", {"spots": {"zz_else": [3, 4]}})
+        put(mine, "tools/art/game_layout.json", {
+            "hash": "now", "places": my_places, "slots": {"zzmy": {"1": [[640, -60, 0.6, 0]]}},
+            "hotspots": {"zzmy": [dict(my_rows["zzmy"][0], applied=bed), my_rows["zzmy"][1]]},
+            "shapes": {"zzmy": {"zz_bed": [[[800, 600], [1000, 600], [1000, 800], [800, 800]]]}}})
+
+    my_install(2, mine_first)
+    got = my_before("the picture installed, not committed")
+    git(mine, "add", "-A")
+    git(mine, "commit", "-q", "-m", "my room redone in place")
+    mine_in = git(mine, "rev-parse", "HEAD")
+    got += my_before("the picture installed, before its layout sitting")
+    my_sitting([900, 700])
+    got += my_before("its layout sitting, not committed")
+    git(mine, "add", "-A")
+    git(mine, "commit", "-q", "-m", "my room's layout sitting")
+    got += my_before("its layout sitting, committed")
+    my_sitting([880, 690])
+    my_install(3, mine_in)
+    git(mine, "add", "-A")
+    git(mine, "commit", "-q", "-m", "a point moved by hand, and the room redone again")
+    got += my_before("a point moved by hand afterwards, and the picture installed again at revision 3")
+    ok("the fixtures, a room REDONE IN PLACE whose layout sitting came after its picture (no for_rev, no manifest row; "
+       "its files are named by the place, its manifest row by the picture): its hot_ file is the one of just before "
+       "its picture was first replaced, the view_ file it did not have then is taken away, both agree with the place's "
+       "rows of the dump of then, and the layout of a place nobody installed is not touched. The same at five steps: "
+       "the picture not committed, committed, the sitting not committed, committed, and after a point was moved by "
+       "hand and the room redone again (12 Oct: the copies held six rooms' traced layouts beside their old pictures)",
+       not got and len(git(mine, "log", "--format=%H").split()) == 5, "\n".join(got))
     ok("the fixtures of this tree itself: %s" % ("nothing of the overhaul is installed here, and git is not asked"
                                                   if not before_overhaul()["files"] else
                                                   "%d files are put back or taken away, from git" % len(before_overhaul()["files"])),
@@ -884,6 +1047,25 @@ def group_fixtures(lab):
            "no proposal names one" % (len(mine.get("pictures") or {}), len(before_overhaul()["facts"]),
                                       len([w for w in before_overhaul()["facts"].values() if w and w["status"] == "proposed"])),
            found.count("FAIL") == 0, "\n".join(found.texts("FAIL")))
+
+        def held(rel):
+            """A file as every scratch copy holds it (mkroot): put back, taken away, or the tree's own."""
+            files = before_overhaul()["files"]
+            if rel in files:
+                blob = files[rel]
+            else:
+                path = os.path.join(REPO, *rel.split("/"))
+                blob = open(path, "rb").read() if os.path.exists(path) else None
+            return None if blob is None else json.loads(blob)
+
+        copy_dump = json.load(open(stamp(lab.dump, REPO, out=os.path.join(lab.work, "fixtures_dump.json")), encoding="utf-8"))
+        differ = layout_and_dump(held, copy_dump)
+        ok("the fixtures of this tree itself: in every scratch copy a place's hot_ and view_ files and the place's "
+           "rows of the copy's dump say the same of it (%d places): each exit and hotspot is drawn where the file "
+           "puts it, or where the code does; the shapes, the standing rows and the pose boxes are the file's. (The "
+           "tools read a place from both: 12 Oct, six rooms' traced files lay beside rows of before, and twelve "
+           "lines of four groups failed with no line saying why)" % len(copy_dump.get("places") or []),
+           not differ and bool(copy_dump.get("places")), "\n".join(differ))
 
 
 def group_reader(lab):
@@ -942,10 +1124,27 @@ def group_layout(lab):
 
     floor = [z for z in json.load(open(os.path.join(TOOLS, "bgs", "keep", "cafeteria.json"), encoding="utf-8"))["empty"]
              if z["name"] == "the floor"][0]["poly"]
-    feet = sorted(set((x, y) for _n, x, y in lay.slot_feet("cafeteria")))
-    out_of = [pt for pt in feet if not within(floor, pt[0], pt[1])]
-    ok("the Cafeteria's keep list: its floor zone holds every place people stand (%d of %d; a thing set down where a "
-       "row stands is refused only inside it)" % (len(feet) - len(out_of), len(feet)), len(feet) == 9 and not out_of, out_of)
+
+    def stood(layout):
+        """(the rows the Cafeteria stands people in, the places their feet touch, those outside the floor zone)."""
+        feet = layout.slot_feet("cafeteria")
+        places = sorted(set((x, y) for _n, x, y in feet))
+        return sorted(set(n for n, _x, _y in feet)), places, [pt for pt in places if not within(floor, pt[0], pt[1])]
+
+    # The rule is "every place", whatever their number. It was pinned at nine, the number of places the code's rows
+    # stood people in before the room's layout sitting (12 Oct: the traced rows stand them in seven, all inside
+    # the zone, and the line failed on the count alone). It is asked of the game as it is, which is what a
+    # picture redone in place is proved against, and of the tree of before the overhaul, where the lines of `redo`
+    # set a bag and a mat down under the rows at x 760 and x 1380 and expect the standing points to say so.
+    # "Every" is true of no rows at all: each layout must stand one, two, three and four people there.
+    lay_then = game_layout.Layout(json.load(open(stamp(lab.dump, REPO, out=os.path.join(lab.work, "layout_before.json")), encoding="utf-8")))
+    (rows, feet, out_of), (rows_then, feet_then, out_then) = stood(lay), stood(lay_then)
+    ok("the Cafeteria's keep list: its floor zone holds every place people stand (%d of %d in the game as it is, and "
+       "%d of %d as the rows stood before the overhaul, where the lines of `redo` set things down; a thing set down "
+       "where a row stands is refused only inside it)"
+       % (len(feet) - len(out_of), len(feet), len(feet_then) - len(out_then), len(feet_then)),
+       rows == rows_then == [1, 2, 3, 4] and not out_of and not out_then,
+       "outside the zone today: %s; before the overhaul: %s; rows %s and %s" % (out_of, out_then, rows, rows_then))
     cells = (lay.where("megumi", "Mon", "Night"), lay.asleep("megumi", "Mon", "Night"), lay.asleep("megumi", "Sat", "Night"),
              lay.asleep("megumi", "Mon", "Evening"), lay.away("nobara", "Sun", "Afternoon"), lay.away("nobara", "Sat", "Afternoon"),
              lay.where("yuji", "Sun", "Afternoon"), lay.districts(), lay.homes().get("panda"))
@@ -1492,7 +1691,8 @@ def group_redo(lab):
        "not refused (\"something stands there\" is not said of the room's own named addition)",
        v[0] == "LOOK" and rc == 0 and "something stands there" not in v[1] and "something new" not in v[1]
        and "drawn differently where people stand" in v[1] and "it has what was asked for: a bag left by the tables" in v[1], out)
-    # review 3. The Cafeteria's floor zone holds all nine places people stand: the rows by the wall (x 250, x 330)
+    # review 3. The Cafeteria's floor zone holds all nine places people stand in this copy, the tree of before the
+    # overhaul (the `layout` group asks it of these rows and of the game's own): the rows by the wall (x 250, x 330)
     # and by the near table (x 1380) lay outside it, and a thing set down there was only shown.
     rc, out = run(credo + [lab.syn("mat", caf, "syn_cafmat_a_00001_.png", "1300,985,160,70"), "--dry"] + tail, py=True)
     v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
