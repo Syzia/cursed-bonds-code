@@ -29,6 +29,18 @@ enlarged 2% by hand read as moved everywhere):
               a door is held by its post and its handle, and the view
               through it may change. A window that is nearly all glass has
               nothing to line up on and is said so.
+  GROUND      in a RELIGHT only, the keep list's `ground` rows are left out
+              of every point's window in the same way. They name open
+              ground or open water whose light and shadow change with the
+              hour: the earth of a path under trees, a lawn, a river's
+              surface. A relight is made to change that light, so a point
+              that lies on such ground is held by what stands round it:
+              the path's banks, a stone, a trunk. A window that is nearly
+              all ground has nothing to line up on and is said so, as one
+              that is nearly all glass is. The rows are read where a
+              point or a floor is held (step 2), and by nothing else: keep
+              boxes (VANISHED) and the tiles are measured whole. In a
+              picture redone in place they do nothing.
   A FLOOR     a point where people stand whose window LOCKS on an offset
               has moved and is refused, as any point is. One whose window is
               only no longer the same drawing (other boards, light across
@@ -437,12 +449,13 @@ def lapvar(a):
 
 
 # ---- the whole judgement ----------------------------------------------------------------------------------
-def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None, relight=False, windows=()):
+def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None, relight=False, windows=(), ground=()):
     """Steps 2 to 6 for one version.
 
     old, new: fitted pictures. points: [{"name", "at", "kind"}] (exits, hotspots, feet, outline samples;
     kind "feet" is a point where people stand, "hotspot" a hotspot's own point).
-    keep / empty / allow / change / windows: keep-list rows. rev1: the revision-1 picture (step 5); None skips it.
+    keep / empty / allow / change / windows / ground: keep-list rows (`ground` is read in a relight only, and
+    only by step 2). rev1: the revision-1 picture (step 5); None skips it.
     Returns {"verdict": PASS / LOOK / REFUSED, "refused": [words], "look": [words], "lines": [report lines],
              "figures": {...}, "marks": what the preview draws}."""
     eo, en = edges(old), edges(new)
@@ -451,6 +464,12 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
     allow_boxes = [box_of(z) if z.get("box") else zone_mask(z)[1] for z in allow]
     change_boxes = [box_of(z) for z in change if z.get("box")]
     glass = glass_mask(windows)
+    # Open ground whose light changes with the hour (the keep list's `ground` rows: the earth of a path under
+    # trees, a lawn, a river's surface). A relight is made to change the light, so in a relight, and only in
+    # step 2, such ground is left out of every registered point's window as glass is: a point that lies on it
+    # is held by what stands round it (the path's banks, a stone, a trunk). In a picture redone in place the
+    # rows do nothing, and steps 3 and 4 never read them.
+    hold = glass_mask(list(windows) + list(ground)) if relight and ground else glass
     coarse = []                 # the coarse edge maps, made when first needed
     same_cache = {}             # an empty zone's cells against the game's, measured once (_same_cells)
 
@@ -490,12 +509,13 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
         if any(c[0] <= p["at"][0] < c[2] and c[1] <= p["at"][1] < c[3] for c in change_boxes):
             continue        # what is inside a change box is meant to change; its outline is held below
         # A point that lies on glass is held by what is round the glass (the door's post, its handle, the
-        # window's frame): the view through it may be changed on purpose (5.2's window line).
-        a, b, _share = pair(eo, en, box, glass)
+        # window's frame): the view through it may be changed on purpose (5.2's window line). In a relight
+        # the keep list's open ground is left out the same way (`hold`, above).
+        a, b, _share = pair(eo, en, box, hold)
         if a is None:
             on_glass.append(p["name"])
             continue
-        got = moved(eo, en, box, glass=glass)
+        got = moved(eo, en, box, glass=hold)
         if got["state"] == "flat":
             continue
         n_checked += 1
@@ -528,7 +548,7 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
                 # A floor drawn again (other boards, sunlight on it), or a relight whose window throws a grid
                 # of light across it: the floor cannot move on its own. It is refused only when the floor's
                 # outline and what stands on it moved; otherwise it is shown.
-                far = _floor_moved(coarse_maps(), p["at"], glass)
+                far = _floor_moved(coarse_maps(), p["at"], hold)
                 if far is not None:
                     refused.append("%s moved %s (the floor's edge and what stands round it)" % (p["name"], _way(*far)))
                     marks["moved"].append(box)
@@ -569,8 +589,9 @@ def judge(old, new, points=(), keep=(), empty=(), allow=(), change=(), rev1=None
     lines.append(("moved", "the whole picture %d, %d px; %d point%s checked%s%s"
                   % (dx, dy, n_checked, "" if n_checked == 1 else "s",
                      ", the furthest off %d px (%s)" % worst if worst[1] else ", none off by a pixel",
-                     "; %d lie%s wholly on glass and cannot be held (%s)" % (len(on_glass), "s" if len(on_glass) == 1 else "",
-                                                                          "; ".join(on_glass[:3])) if on_glass else "")))
+                     "; %d lie%s wholly on %s and cannot be held (%s)"
+                     % (len(on_glass), "s" if len(on_glass) == 1 else "", "glass" if hold is glass else "glass or on open ground",
+                        "; ".join(on_glass[:3])) if on_glass else "")))
     fig["floor_points"] = len(floor)
     fig["tiles_moved"] = len(tile_moved); fig["tiles_different"] = len(tile_diff)
     fig["tiles_agree"] = round(middle, 3)
