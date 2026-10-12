@@ -1788,7 +1788,7 @@
    ]
   }
  },
- "hash": "2e0466b615f8c677b12e50bbfab0fb225c5ed3b9187cad4933766f3c31d300bc",
+ "hash": "7ec55f94b17a729258b0ba01e8c11aecbad78b8f7703fc9a31a105e2fd7edce3",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -3314,7 +3314,10 @@
    "indoor": false,
    "key": "gate",
    "name": "Main Gate",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.5
   },
@@ -3570,7 +3573,10 @@
    "indoor": false,
    "key": "school_yard",
    "name": "School Courtyard",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3582,7 +3588,10 @@
    "indoor": false,
    "key": "dorm_yard",
    "name": "Dormitory Garden",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3594,7 +3603,9 @@
    "indoor": false,
    "key": "staff_yard",
    "name": "Staff Building Steps",
-   "variants": {},
+   "variants": {
+    "Evening": "evening"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3606,7 +3617,10 @@
    "indoor": false,
    "key": "training_yard",
    "name": "Training Yard",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3618,7 +3632,9 @@
    "indoor": false,
    "key": "trailhead",
    "name": "Mountain Path",
-   "variants": {},
+   "variants": {
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },

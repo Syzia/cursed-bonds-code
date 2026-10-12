@@ -164,6 +164,30 @@
       "rev": 2,
       "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
     },
+    "dorm_yard_evening": {
+      "batch": "8a",
+      "kind": "relight",
+      "of": "dorm_yard",
+      "of_rev": 2,
+      "render": "ui2_dorm_yard_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "dorm_yard_night": {
+      "batch": "8a",
+      "kind": "relight",
+      "of": "dorm_yard",
+      "of_rev": 2,
+      "render": "ui2_dorm_yard_night_moon_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "fg_cafeteria": {
       "of": "cafeteria",
       "of_rev": 3
@@ -196,6 +220,30 @@
       "render": "ui2_gate3_b_00001_.png",
       "rev": 2,
       "rev1_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8"
+    },
+    "gate_evening": {
+      "batch": "18a",
+      "kind": "relight",
+      "of": "gate",
+      "of_rev": 2,
+      "render": "ui2_gate_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "gate_night": {
+      "batch": "18a",
+      "kind": "relight",
+      "of": "gate",
+      "of_rev": 2,
+      "render": "ui2_gate_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "infirmary": {
       "batch": "6a",
@@ -351,8 +399,24 @@
       "of": "dorm_yard",
       "of_rev": 2
     },
+    "light_dorm_yard_evening": {
+      "of": "dorm_yard_evening",
+      "of_rev": 2
+    },
+    "light_dorm_yard_night": {
+      "of": "dorm_yard_night",
+      "of_rev": 2
+    },
     "light_gate": {
       "of": "gate",
+      "of_rev": 2
+    },
+    "light_gate_evening": {
+      "of": "gate_evening",
+      "of_rev": 2
+    },
+    "light_gate_night": {
+      "of": "gate_night",
       "of_rev": 2
     },
     "light_infirmary": {
@@ -399,16 +463,40 @@
       "of": "school_yard",
       "of_rev": 2
     },
+    "light_school_yard_evening": {
+      "of": "school_yard_evening",
+      "of_rev": 2
+    },
+    "light_school_yard_night": {
+      "of": "school_yard_night",
+      "of_rev": 2
+    },
     "light_staff_yard": {
       "of": "staff_yard",
+      "of_rev": 2
+    },
+    "light_staff_yard_evening": {
+      "of": "staff_yard_evening",
       "of_rev": 2
     },
     "light_trailhead": {
       "of": "trailhead",
       "of_rev": 2
     },
+    "light_trailhead_night": {
+      "of": "trailhead_night",
+      "of_rev": 2
+    },
     "light_training_yard": {
       "of": "training_yard",
+      "of_rev": 2
+    },
+    "light_training_yard_evening": {
+      "of": "training_yard_evening",
+      "of_rev": 2
+    },
+    "light_training_yard_night": {
+      "of": "training_yard_night",
       "of_rev": 2
     },
     "rooftop": {
@@ -462,6 +550,30 @@
       "rev": 2,
       "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
     },
+    "school_yard_evening": {
+      "batch": "7b",
+      "kind": "relight",
+      "of": "school_yard",
+      "of_rev": 2,
+      "render": "ui2_school_yard_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "school_yard_night": {
+      "batch": "7b",
+      "kind": "relight",
+      "of": "school_yard",
+      "of_rev": 2,
+      "render": "ui2_school_yard_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "staff_yard": {
       "batch": 2,
       "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
@@ -470,6 +582,18 @@
       "render": "ui2_staff_yard_b_00001_.png",
       "rev": 2,
       "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
+    },
+    "staff_yard_evening": {
+      "batch": 14,
+      "kind": "relight",
+      "of": "staff_yard",
+      "of_rev": 2,
+      "render": "ui2_staff_yard_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "trailhead": {
       "batch": 2,
@@ -480,6 +604,18 @@
       "rev": 2,
       "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
     },
+    "trailhead_night": {
+      "batch": 14,
+      "kind": "relight",
+      "of": "trailhead",
+      "of_rev": 2,
+      "render": "ui2_trailhead_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "training_yard": {
       "batch": 1,
       "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
@@ -488,6 +624,30 @@
       "render": "ui2_training_yard_b_00001_.png",
       "rev": 2,
       "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
+    },
+    "training_yard_evening": {
+      "batch": 14,
+      "kind": "relight",
+      "of": "training_yard",
+      "of_rev": 2,
+      "render": "ui2_training_yard_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "training_yard_night": {
+      "batch": 14,
+      "kind": "relight",
+      "of": "training_yard",
+      "of_rev": 2,
+      "render": "ui2_training_yard_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "your_room": {
       "batch": "3a",
