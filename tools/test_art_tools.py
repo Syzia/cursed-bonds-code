@@ -13,10 +13,15 @@ the game: every install goes into a scratch copy of the tree (its .rpy files,
 its layout files and its pictures; no .rpyc), and the last check is that no
 file under game/ changed. The scratch copy is the tree as it was BEFORE the
 overhaul installed anything: whatever a real install has written (a picture,
-its foreground, its light row, a layout with for_rev, the manifest) is put
-back from git (before_overhaul: each picture from the commit its own manifest
-row names), so the fixtures stand at revision 1 and the suite reads the same
-before and after batch 0, with the install committed or not. A manifest row
+its foreground and the outline it is cut by, its light row, a layout with
+for_rev, the manifest, the facts the picture fixed in the campus record) is
+put back from git (before_overhaul: each picture from the commit its own
+manifest row names; record_before for the record), so the fixtures stand at
+revision 1 and the suite reads the same before and after an install, with
+the install committed or not, however many times a room was installed and
+whichever hours of it. A line that asks what an install into a copy left
+alone compares the copy with itself as it stood before that install, not
+with the real tree of today, which holds what was installed since. A manifest row
 of a kind the suite does not know is a SKIPPED line. A tree whose pictures
 of before git cannot give (no git, a clone without its history, a row that
 names a commit which is not here) is one FAIL line, and nothing is run.
@@ -123,6 +128,10 @@ def before_overhaul(repo=None):
 
         {"files": {path under the tree: its bytes then, or None for a file that was not there},
          "pictures": {stem: its `pictures` row of the campus record then, or None},
+         "facts": {row id: {"status": "fixed" or "proposed", "row": the row, "before": [the ids that followed it]}
+                   as the campus record held it then, or None for a row it did not hold: one entry for every row
+                   TODAY's record has as fixed by a picture the overhaul has installed},
+         "waived": {stem: the record's `waived` rows of then that name that picture},
          "places": {place: the committed layout dump of then (tools/art/game_layout.json), whose rows for that
                     place stamp() lays into a test's dump: its points and slots as they were on the old picture},
          "problems": [a thing that could not be put back, in words: a SKIPPED line, and the rest is right],
@@ -135,10 +144,22 @@ def before_overhaul(repo=None):
       `from_commit` of the row as the manifest FIRST held it. A row that names no commit is a picture that was
       not there (a new place, a new hour). However the install was committed (in one commit, or the pictures
       in one and the manifest in a later one: review 3), the row says the same.
-      WHAT GOES WITH IT (its foreground, its light rows, its row of the campus record, the place's rows of the
-      layout dump) is read from the tree as it stood just before the picture was replaced: the parent of the
-      commit in which the picture file stopped being what it was (or first appeared), found in that file's own
-      history; HEAD while the install is not committed.
+      WHAT GOES WITH IT (its foreground and the outline it is cut by, its light rows, its row of the campus
+      record with the facts it fixes there, the place's rows of the layout dump) is read from the tree as it
+      stood just before the picture was replaced: the parent of the commit in which the picture file stopped
+      being what it was (or first appeared), found in that file's own history; HEAD while the install is not
+      committed. A picture installed twice (the Common Room at revision 3) is still read from before its
+      FIRST install: its manifest row carries the same rev1_commit on.
+      THE FACTS A PICTURE FIXES. An install moves the place's own row of the campus record (and, for a composed
+      picture, its exits and its ground) from `proposed` to `fixed` and stamps each `by` the picture at its
+      revision; a second install stamps them again (check_campus.fix_from_layout, rechoose). With the picture's
+      own row put back and those left, the copy's record no longer passed check_campus.py (found on 12 Oct,
+      when four rooms were installed that the record had not chosen before, and two went to revision 3): so
+      every row today's record has as fixed by an installed picture is put back as the record of then held it,
+      a proposal again where it was one, and so are the waivers that name the picture.
+      THE OUTLINE a place's foregrounds are cut by (tools/fg/<place>.json) gains a key with each hour picture
+      installed (the day outline, copied to that hour): it is as it was before the place's first picture went
+      in, so the copy holds no outline for an hour it has no picture of.
       A LAYOUT FILE that carries for_rev is its newest commit without for_rev.
       The manifest itself is taken away.
 
@@ -149,7 +170,7 @@ def before_overhaul(repo=None):
     repo = os.path.abspath(repo or REPO)
     if repo in _BEFORE:
         return _BEFORE[repo]
-    out = _BEFORE[repo] = {"files": {}, "pictures": {}, "places": {}, "problems": [], "fatal": []}
+    out = _BEFORE[repo] = {"files": {}, "pictures": {}, "facts": {}, "waived": {}, "places": {}, "problems": [], "fatal": []}
     lay_dir = os.path.join(repo, "game", "layout")
     man = check_campus.load_manifest(repo).get("pictures") or {}
     names = sorted(os.listdir(lay_dir)) if os.path.isdir(lay_dir) else []
@@ -272,10 +293,37 @@ def before_overhaul(repo=None):
             base = bases[k]
             if base not in records:
                 try:
-                    records[base] = json.loads(show(base, "tools/bgs/campus.json", "the campus record of then") or b"{}").get("pictures") or {}
+                    records[base] = json.loads(show(base, "tools/bgs/campus.json", "the campus record of then") or b"{}")
                 except ValueError:
                     records[base] = {}
-            out["pictures"][k] = records[base].get(k)
+                if not isinstance(records[base], dict):
+                    records[base] = {}
+            out["pictures"][k] = (records[base].get("pictures") or {}).get(k)
+        # the facts each installed picture fixes in the campus record, and its waivers, as the record of then
+        # held them (today's record is the working file: it is what mkroot copies)
+        try:
+            with open(os.path.join(repo, "tools", "bgs", "campus.json"), encoding="utf-8") as f:
+                today = json.load(f)
+        except (OSError, ValueError):
+            today = {}
+        today = today if isinstance(today, dict) else {}
+        for row in today.get("fixed") or []:
+            k = (row.get("by") or {}).get("picture") if isinstance(row, dict) else None
+            if k not in bases or "id" not in row:
+                continue
+            was = None
+            for status in ("fixed", "proposed"):
+                rows = [r for r in records[bases[k]].get(status) or [] if isinstance(r, dict)]
+                ids = [r.get("id") for r in rows]
+                if row["id"] in ids:
+                    at = ids.index(row["id"])
+                    was = {"status": status, "row": rows[at], "before": ids[at + 1:]}
+                    break
+            out["facts"][row["id"]] = was
+        for k in sorted(bases):
+            then_w = [w for w in records[bases[k]].get("waived") or [] if isinstance(w, dict) and w.get("picture") == k]
+            if then_w or any(isinstance(w, dict) and w.get("picture") == k for w in today.get("waived") or []):
+                out["waived"][k] = then_w
         for k in sorted(man):
             row = man[k]
             if isinstance(row, dict) and "kind" in row:
@@ -292,6 +340,18 @@ def before_overhaul(repo=None):
             rel = "game/images/fg/%s.png" % k
             out["files"][rel] = show(bases.get(of, "HEAD"), rel, "the foreground of then")
         out["files"][mrel] = None
+        fg_dir = os.path.join(repo, "tools", "fg")
+        for n in sorted(os.listdir(fg_dir)) if os.path.isdir(fg_dir) else []:
+            # tools/fg/<place>.json holds an outline for each hour: as it was before the place's FIRST picture went in
+            if not n.endswith(".json"):
+                continue
+            key = "fg_" + n[:-5]
+            rows = [key] if key in man else [k for k in sorted(man) if k in (key + "_evening", key + "_night", key + "_lit")]
+            ofs = [man[k].get("of") for k in rows if isinstance(man[k], dict)]
+            if not ofs or all(o in man and o not in bases for o in ofs):
+                continue        # no foreground of the place is installed; or its picture could not be found: said above
+            base = next((bases[o] for o in ofs if o in bases), "HEAD")
+            out["files"]["tools/fg/" + n] = show(base, "tools/fg/" + n, "the foreground outlines of then")
         for n in lights:
             # light_<place>.json holds a row for each hour: it is as it was before the place's FIRST picture went in
             key = n[:-5]
@@ -342,9 +402,56 @@ def before_overhaul(repo=None):
     except _NoCommit as e:
         fatal(e)
     if out["fatal"]:
-        for part in ("files", "pictures", "places"):
+        for part in ("files", "pictures", "facts", "waived", "places"):
             out[part].clear()       # a tree that cannot be made is not made in part
     return out
+
+
+def record_before(rec, then):
+    """The campus record `rec` (today's, read into memory) turned into the record of before the overhaul
+    installed anything, in place: before_overhaul()'s `pictures`, `facts` and `waived` laid into it.
+
+    A picture's own row is the row of then, or none. A fact an installed picture fixes today is the row of then,
+    in the list it stood in then (a proposal goes back before the row that followed it, so a record that
+    differs from the old one by installs alone comes out row for row the old one). A fact the record of then
+    did not hold at all (written since, `by` a picture that was installed) follows that picture's row of then:
+    it names the revision that row names, or, where the picture was not chosen yet, is a proposal with no
+    `by`. A picture's waivers are those of then. So the record passes tools/check_campus.py's own rules (a
+    fixed row names a chosen picture at the record's revision; a proposal names none) whatever was installed
+    since. Returns rec."""
+    import copy
+    for stem, row in then["pictures"].items():
+        if row is None:
+            rec.get("pictures", {}).pop(stem, None)
+        else:
+            rec.setdefault("pictures", {})[stem] = copy.deepcopy(row)
+    for rid, was in then["facts"].items():
+        cur = [(status, i) for status in ("fixed", "proposed") for i, row in enumerate(rec.get(status) or [])
+               if isinstance(row, dict) and row.get("id") == rid]
+        if not cur:
+            continue
+        status, i = cur[0]
+        row = rec[status][i]
+        if was is None:
+            pic = rec.get("pictures", {}).get((row.get("by") or {}).get("picture"))
+            if pic is not None:
+                if status == "fixed":
+                    row["by"] = dict(row["by"], rev=pic.get("rev"))
+                continue
+            was = {"status": "proposed", "row": dict((k, v) for k, v in row.items() if k != "by"), "before": []}
+        if was["status"] == status:
+            rec[status][i] = copy.deepcopy(was["row"])
+            continue
+        del rec[status][i]
+        dest = rec.setdefault(was["status"], [])
+        where = dict((r.get("id"), n) for n, r in enumerate(dest) if isinstance(r, dict))
+        at = next((where[n] for n in was["before"] if n in where), len(dest))
+        dest.insert(at, copy.deepcopy(was["row"]))
+    for stem, rows in then["waived"].items():
+        kept = [w for w in rec.get("waived") or [] if not (isinstance(w, dict) and w.get("picture") == stem)]
+        if rows or "waived" in rec:
+            rec["waived"] = kept + copy.deepcopy(rows)
+    return rec
 
 
 def fixtures_line(then):
@@ -360,8 +467,8 @@ def fixtures_line(then):
 def mkroot(path):
     """A scratch copy of the tree: the .rpy files, the layout files, the pictures (cloned, not copied, where the
     disk can), the foreground outlines and the campus record. Never a .rpyc. What the overhaul has installed
-    is put back to what it was before (before_overhaul): the fixtures stand at revision 1. Where that tree
-    cannot be made (before_overhaul's `fatal`) no copy is made at all."""
+    is put back to what it was before (before_overhaul; the campus record by record_before): the fixtures
+    stand at revision 1. Where that tree cannot be made (before_overhaul's `fatal`) no copy is made at all."""
     then = before_overhaul()
     if then["fatal"]:
         raise SystemExit("mkroot: " + fixtures_line(then))
@@ -388,15 +495,10 @@ def mkroot(path):
         if blob is not None:
             with open(dst, "wb") as f:
                 f.write(blob)
-    if then["pictures"]:
+    if then["pictures"] or then["facts"] or then["waived"]:
         rp = os.path.join(path, "tools", "bgs", "campus.json")
         text = open(rp, encoding="utf-8").read()
-        rec = json.loads(text)
-        for stem, row in then["pictures"].items():
-            if row is None:
-                rec.get("pictures", {}).pop(stem, None)
-            else:
-                rec.setdefault("pictures", {})[stem] = row
+        rec = record_before(json.loads(text), then)
         if rec != json.loads(text):     # a record that is the same is left byte for byte as it was
             with open(rp, "w", encoding="utf-8") as f:
                 json.dump(rec, f, indent=1, ensure_ascii=False)
@@ -580,7 +682,28 @@ def group_fixtures(lab):
             f.write(data if isinstance(data, bytes) else (json.dumps(data, sort_keys=True) + "\n").encode())
 
     hot_then = {"spots": {"zz_door": [100, 200]}}
-    record_then = {"chosen": None, "source": "the picture of before"}
+    record_then = {"chosen": None, "source": "the picture of before", "rev": 2}
+    outline_then = {"": [[0, 900], [400, 900], [400, 1080], [0, 1080]]}
+    # the campus record of then: a fact the room's picture had fixed already (as the look test's pictures had,
+    # before batch 0), three proposals, and no waiver
+    facts_then = {"fixed": [{"id": "zz.fact", "side": "left", "by": {"picture": "zzroom", "rev": 2}}],
+                  "proposed": [{"id": "zz.place.new", "kind": "place"}, {"id": "zz.exit", "side": "left"}, {"id": "zz.other"}]}
+    # ... and of today, after the install below: the room's fact stamped with its new revision, a proposal of the
+    # room's fixed (and rewritten) by it, the new place's row fixed by a picture that was not chosen then, two
+    # facts written since (one by each picture), and a waiver that names the room's picture
+    facts_now = {"fixed": [{"id": "zz.fact", "side": "left", "by": {"picture": "zzroom", "rev": 3}},
+                           {"id": "zz.since.room", "by": {"picture": "zzroom", "rev": 3}},
+                           {"id": "zz.exit", "side": "right", "by": {"picture": "zzroom", "rev": 3}},
+                           {"id": "zz.place.new", "kind": "place", "by": {"picture": "zznew", "rev": 2}},
+                           {"id": "zz.since.new", "by": {"picture": "zznew", "rev": 2}}],
+                 "proposed": [{"id": "zz.other"}],
+                 "waived": [{"fact": "zz.fact", "picture": "zzroom", "rev": 3, "date": "2026-10-12", "words": "a test"}]}
+    record_want = {"pictures": {"zzroom": record_then},
+                   "fixed": [{"id": "zz.fact", "side": "left", "by": {"picture": "zzroom", "rev": 2}},
+                             {"id": "zz.since.room", "by": {"picture": "zzroom", "rev": 2}}],
+                   "proposed": [{"id": "zz.place.new", "kind": "place"}, {"id": "zz.exit", "side": "left"}, {"id": "zz.other"},
+                                {"id": "zz.since.new"}],
+                   "waived": []}
 
     def tree(name):
         """A tree before the overhaul: a room (the place zzplace, the picture zzroom.png) with an evening picture,
@@ -592,7 +715,9 @@ def group_fixtures(lab):
         put(repo, "game/images/bg/zzroom_evening.png", b"its evening, before the overhaul")
         put(repo, "game/images/fg/fg_zzplace.png", b"the foreground, first cut")
         put(repo, "game/layout/hot_zzplace.json", hot_then)
-        put(repo, "tools/bgs/campus.json", {"pictures": {"zzroom": record_then}})
+        put(repo, "tools/fg/zzplace.json", outline_then)
+        put(repo, "tools/fg/zzother.json", outline_then)
+        put(repo, "tools/bgs/campus.json", dict(facts_then, pictures={"zzroom": record_then}))
         put(repo, "tools/art/game_layout.json", {"hash": "then", "exits": {"zzplace": ["as it was"]},
                                                  "places": [{"key": "zzplace", "file": "images/bg/zzroom.png"}]})
         git(repo, "add", "-A")
@@ -621,7 +746,9 @@ def group_fixtures(lab):
             "zznew": {"rev": 2, "kind": "composed"},
             "fg_zzplace": {"of": "zzroom", "of_rev": 2}, "light_zzplace": {"of": "zzroom", "of_rev": 2},
             "light_zzplace_evening": {"of": "zzroom_evening", "of_rev": 2}}})
-        put(repo, "tools/bgs/campus.json", {"pictures": {"zzroom": {"chosen": "the new render"}, "zznew": {"chosen": "a render"}}})
+        put(repo, "tools/fg/zzplace.json", dict(outline_then, evening=outline_then[""]))
+        put(repo, "tools/bgs/campus.json", dict(facts_now, pictures={"zzroom": {"chosen": "the new render", "rev": 3},
+                                                                      "zznew": {"chosen": "a render", "rev": 2}}))
         put(repo, "tools/art/game_layout.json", {"hash": "now", "exits": {"zzplace": ["as the new layout has it"]},
                                                  "places": [{"key": "zzplace", "file": "images/bg/zzroom.png"}]})
 
@@ -630,7 +757,8 @@ def group_fixtures(lab):
             "game/images/bg/zznew.png": None,
             "game/images/fg/fg_zzplace.png": b"the foreground, cut again before the overhaul",
             "game/layout/hot_zzplace.json": (json.dumps(hot_then, sort_keys=True) + "\n").encode(),
-            "game/layout/view_zzplace.json": None, "game/layout/light_zzplace.json": None, "game/layout/pictures.json": None}
+            "game/layout/view_zzplace.json": None, "game/layout/light_zzplace.json": None, "game/layout/pictures.json": None,
+            "tools/fg/zzplace.json": (json.dumps(outline_then, sort_keys=True) + "\n").encode()}
 
     def wrong(then):
         """What is not as it was before the overhaul, in words; [] when all of it is."""
@@ -668,6 +796,25 @@ def group_fixtures(lab):
     install(repo3, first3)
     got = wrong(before_overhaul(repo3))
     ok("the fixtures, the same install NOT committed yet: the same tree of before, read from HEAD", not got, "\n".join(got))
+
+    def record_of(r):
+        return record_before(json.load(open(os.path.join(r, "tools", "bgs", "campus.json"), encoding="utf-8")), before_overhaul(r))
+
+    got = [record_of(r) for r in (repo, repo2, repo3)]
+    ok("the fixtures, the campus record (committed in one commit, in two, or not yet): every fact an installed picture "
+       "fixes is put back as the record of then held it. A fact stamped with the picture's new revision names the old "
+       "one; a proposal the install fixed (and rewrote) is a proposal again, as it read, in its old place in the list; "
+       "a fact written since follows its picture's row of then (the old revision, or a proposal with no `by` where the "
+       "picture was not chosen yet); and a waiver the install wrote is gone. (12 Oct: with the pictures' rows put "
+       "back and the facts left, the copy's record failed check_campus.py and --compose refused to install into it)",
+       all(g == record_want for g in got)
+       and before_overhaul(repo)["facts"]["zz.since.new"] is None and before_overhaul(repo)["waived"] == {"zzroom": []},
+       json.dumps(got[0], sort_keys=True) + "\n" + json.dumps(record_want, sort_keys=True))
+    ok("the fixtures, the outline a place's foregrounds are cut by (tools/fg/<place>.json, which gains a key with each "
+       "hour picture installed): as it was before the place's first picture went in, and the outline of a place none "
+       "of whose foregrounds is installed is not touched",
+       all(before_overhaul(r)["files"].get("tools/fg/zzplace.json") == want["tools/fg/zzplace.json"]
+           and "tools/fg/zzother.json" not in before_overhaul(r)["files"] for r in (repo, repo2, repo3)))
 
     shallow = os.path.join(lab.work, "fx_shallow")
     git(lab.work, "clone", "-q", "--depth", "1", "file://" + repo, shallow)
@@ -709,6 +856,18 @@ def group_fixtures(lab):
                                                   if not before_overhaul()["files"] else
                                                   "%d files are put back or taken away, from git" % len(before_overhaul()["files"])),
        not before_overhaul()["fatal"], fixtures_line(before_overhaul()))
+    if not before_overhaul()["fatal"]:
+        import game_layout
+        with open(os.path.join(REPO, "tools", "bgs", "campus.json"), encoding="utf-8") as f:
+            mine = record_before(json.load(f), before_overhaul())
+        found = check_campus.Out()
+        check_campus.check_record(check_campus.Rec(mine), game_layout.load(lab.dump).d, found)
+        ok("the fixtures of this tree itself: the campus record as every scratch copy holds it (%d chosen pictures, %d "
+           "facts put back as they were before their picture was installed, %d of them proposals again) passes "
+           "check_campus.py's rules for a record: each fixed row names a chosen picture at the record's revision, and "
+           "no proposal names one" % (len(mine.get("pictures") or {}), len(before_overhaul()["facts"]),
+                                      len([w for w in before_overhaul()["facts"].values() if w and w["status"] == "proposed"])),
+           found.count("FAIL") == 0, "\n".join(found.texts("FAIL")))
 
 
 def group_reader(lab):
@@ -866,9 +1025,22 @@ def group_layout(lab):
        not bad, "\n".join(bad))
     folder = os.path.join(lab.work, "layout_cases")
     cl = [tool("check_layout.py")]
+    # The cases of check_layout.py and of the two tools' --selftest lay test layouts for real places (the Training
+    # Yard, the Dormitory Garden) and expect ONE rule to speak. They are written against the tree as it was before
+    # the overhaul installed anything: once such a yard is installed, its exits are fixed facts of the record and
+    # its people stand where its traced layout has them, so a test layout is refused by [campus] too and "seven
+    # exits drop into the icon column" no longer counts seven (found when the six yards went in, 12 Oct). So
+    # these cases are read against the record of before (record_before) and a dump whose rows for the installed
+    # places are those of before (stamp: its hash is taken over this tree, which the tools read everything else
+    # from). On a tree with nothing installed both are the tree's own.
+    then_rec = os.path.join(lab.work, "campus_then.json")
+    with open(os.path.join(REPO, "tools", "bgs", "campus.json"), encoding="utf-8") as f:
+        json.dump(record_before(json.load(f), before_overhaul()), open(then_rec, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+    then_dump = stamp(lab.dump, REPO, out=os.path.join(lab.work, "layout_then.json"))
+    then = ["--layout-dump", then_dump, "--record", then_rec]
     for k, (name, files, rule, words, also) in enumerate(check_layout.cases()):
         paths = check_layout.write_case(files, os.path.join(folder, "c%02d" % k))
-        rc, out = run(cl + [os.path.dirname(paths[0]), "--layout-dump", lab.dump])
+        rc, out = run(cl + [os.path.dirname(paths[0])] + then)
         refused = [l for l in out.splitlines() if l.startswith("REFUSED")]
         tags = set(re.findall(r"\[([a-z-]+)\]", " ".join(l.split(":")[0] for l in refused)))
         last = out.strip().splitlines()[-1] if out.strip() else ""
@@ -884,8 +1056,8 @@ def group_layout(lab):
     for k, (name, files, patch, want, words) in enumerate(check_layout.dump_cases()):
         paths = check_layout.write_case(files, os.path.join(folder, "d%02d" % k))
         dp = os.path.join(lab.work, "layout_dumps", "d%02d.json" % k)
-        json.dump(check_layout.patched(json.load(open(lab.dump, encoding="utf-8")), patch), open(dp, "w"))
-        rc, out = run(cl + [os.path.dirname(paths[0]), "--layout-dump", dp])
+        json.dump(check_layout.patched(json.load(open(then_dump, encoding="utf-8")), patch), open(dp, "w"))
+        rc, out = run(cl + [os.path.dirname(paths[0]), "--layout-dump", dp, "--record", then_rec])
         what = ("refuses, by name [%s], %s" % (want, name) if want and not want.startswith("REPORT")
                 else "%s (exit 0, nothing refused%s)" % (name, ", [%s] reported" % want[7:] if want else ""))
         ok("check_layout.py %s" % what, check_layout.dump_case_ok(want, words, out.splitlines(), rc), out)
@@ -961,11 +1133,17 @@ def group_layout(lab):
            and before == dict((r["id"], (r.get("side"), r.get("order"))) for r in check_campus.Rec(trial).rows("exit", place=place)),
            [repr(done)] + after.texts("FAIL"))
     art0 = json.load(open(os.path.join(staged, "batch_0", "art_0.json"), encoding="utf-8"))["pictures"]
-    ok("batch 0's four pictures are staged by their 2752 x 1536 renders, the ones the campus record names, never by a "
-       "1920 px file (tools/art/staged/batch_0/art_0.json)",
+    # the staged file is the record of what batch 0 put in. A room redone since (the Common Room and the Cafeteria
+    # went to revision 3 on 12 Oct) has another render in today's record: what is compared is the record's row as
+    # it stood before the room's first install (before_overhaul), and today's row where nothing is installed yet
+    chosen_then = before_overhaul()["pictures"]
+    ok("batch 0's four pictures are staged by their 2752 x 1536 renders, the ones the campus record named when they "
+       "were chosen (its row of before the first install, whatever revision the room is at since), never by a 1920 px "
+       "file (tools/art/staged/batch_0/art_0.json)",
        sorted(art0) == ["cafeteria", "courtyard", "dorm_common", "library"]
-       and all(row["size"] == [2752, 1536] and row["render"] == record["pictures"][k]["render"]
-               and "1920" not in row["render"] and len(row["sha256"]) == 64 for k, row in art0.items()), art0)
+       and all(row["size"] == [2752, 1536] and row["render"] == (chosen_then.get(k) or record["pictures"][k])["render"]
+               and "1920" not in row["render"] and len(row["sha256"]) == 64 for k, row in art0.items()),
+       json.dumps([art0, dict((k, chosen_then.get(k) or record["pictures"].get(k)) for k in art0)]))
     for k, row in sorted(art0.items()):
         path = os.path.join(OUTPUT, row["render"])
         if not os.path.exists(path):
@@ -975,10 +1153,10 @@ def group_layout(lab):
         ok("REAL: batch 0's render for %s is the file its record names: %s, 2752 x 1536, the same sha256" % (k, row["render"]),
            data[:8] == b"\x89PNG\r\n\x1a\n" and list(_struct.unpack(">II", data[16:24])) == row["size"]
            and hashlib.sha256(data).hexdigest() == row["sha256"])
-    rc, out = run([tool("check_campus.py"), "--selftest", "--layout-dump", lab.dump])
+    rc, out = run([tool("check_campus.py"), "--selftest"] + then)
     ok("python3 tools/check_campus.py --selftest passes (it failed unseen from U0c1 to U0d3's review: no standing "
        "test ran it)", rc == 0 and "check_campus selftest: PASS" in out and "FAIL" not in out, out)
-    rc, out = run(cl + ["--selftest", "--layout-dump", lab.dump])
+    rc, out = run(cl + ["--selftest"] + then)
     ok("python3 tools/check_layout.py --selftest passes (the same cases, run inside the tool)",
        rc == 0 and "check_layout selftest: PASS" in out, out)
     stale = os.path.join(lab.work, "layout_stale.json")
@@ -1361,6 +1539,11 @@ def group_redo(lab):
     rc, out = run(redo + [good, "--choose", "a", "--batch", "three"] + tail, py=True)
     ok("--batch three is refused in one line and nothing is written", rc != 0 and out.strip().startswith("--batch three: a batch is")
        and len(out.strip().splitlines()) == 1 and tree_hash(root) == before, out)
+    # what the install must leave alone, read from the copy itself just before it (the copy is the tree of before
+    # the overhaul: the real tree may hold foregrounds for hours the copy has no picture of, as the Cafeteria's
+    # evening and night since 12 Oct, and a layout that carries for_rev)
+    fg_then = sorted(os.listdir(os.path.join(root, "game", "images", "fg")))
+    lay_then = dict((n, open(os.path.join(root, "game", "layout", n), "rb").read()) for n in ("hot_dorm_common.json", "view_dorm_common.json"))
     rc, out = run(redo + [good, made["erased"], "--choose", "a", "--batch", "3", "--date", "2026-10-07"] + tail, py=True)
     man = check_campus.load_manifest(root)["pictures"]
     row = man.get("dorm_common", {})
@@ -1377,9 +1560,9 @@ def group_redo(lab):
        os.path.exists(light) and len(json.load(open(light))[""]) == 6 and man.get("fg_dorm_common") == {"of": "dorm_common", "of_rev": 2}
        and man.get("light_dorm_common") == {"of": "dorm_common", "of_rev": 2}, out)
     ok("no foreground file was deleted, and the room's hot_ and view_ files are byte for byte what they were",
-       sorted(os.listdir(os.path.join(root, "game", "images", "fg"))) == sorted(os.listdir(os.path.join(REPO, "game", "images", "fg")))
-       and all(open(os.path.join(root, "game", "layout", n), "rb").read() == open(os.path.join(REPO, "game", "layout", n), "rb").read()
-               for n in ("hot_dorm_common.json", "view_dorm_common.json")))
+       sorted(os.listdir(os.path.join(root, "game", "images", "fg"))) == fg_then and "fg_dorm_common.png" in fg_then
+       and all(open(os.path.join(root, "game", "layout", n), "rb").read() == lay_then[n] for n in lay_then),
+       json.dumps([fg_then, sorted(os.listdir(os.path.join(root, "game", "images", "fg")))]))
     ok("the approved render is kept (in a scratch copy: beside it)", os.path.exists(os.path.join(root, "approved", os.path.basename(good))))
     rec = json.load(open(os.path.join(root, "tools", "bgs", "campus.json")))
     ok("the campus record has the picture as chosen at that revision", rec["pictures"]["dorm_common"]["rev"] == 2
@@ -2405,9 +2588,26 @@ def group_set(lab):
 
 def group_status(lab):
     root = mkroot(os.path.join(lab.work, "r_status"))
+    # Which foreground files a save may hold the path of (K9) art_status.py asks git: the tree's own history,
+    # and for a copy that has none, THIS repository's HEAD. The copy is the tree of before the overhaul: read
+    # against today's HEAD it "misses" every foreground installed since (the Cafeteria's evening and night
+    # cuts, from 12 Oct). So the copy is given what a tree of its own has, a history: its foreground folder,
+    # committed once (as r_hist is, in the redo group). The tool then counts the copy's own files.
+    def g(*args):
+        p = subprocess.run(["git", "-C", root, "-c", "user.name=test_art_tools", "-c", "user.email=test@example.invalid",
+                            "-c", "commit.gpgsign=false"] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        return p.stdout.decode("utf-8", "replace").strip()
+
+    g("init", "-q")
+    g("add", "-f", "game/images/fg")
+    g("commit", "-q", "-m", "the foregrounds this tree holds")
+    held = sorted(n for n in g("ls-tree", "-r", "--name-only", "HEAD", "--", "game/images/fg").splitlines() if n.endswith(".png"))
+    here = sorted(n for n in os.listdir(os.path.join(root, "game", "images", "fg")) if n.endswith(".png"))
     rc, out = run([tool("art_status.py"), "--root", root, "--check"])
     ok("art_status.py --check passes on a copy of the tree, and with no manifest says every picture is today's",
-       rc == 0 and "none yet" in out and "art_status --check: PASS" in out, out)
+       rc == 0 and "none yet" in out and "art_status --check: PASS" in out
+       and len(held) == len(here) >= 1 and "FOREGROUND FILES: %d ever installed, 0 missing" % len(here) in out,
+       out + "\n" + "\n".join(held))
     os.remove(os.path.join(root, "game", "images", "fg", "fg_cafeteria.png"))
     rc, out = run([tool("art_status.py"), "--root", root, "--check"])
     ok("art_status.py --check reports a deleted foreground file, by name", rc == 1 and "game/images/fg/fg_cafeteria.png" in out

@@ -6,7 +6,7 @@ The check a layout must pass before its picture may be installed.
     python3 tools/check_layout.py some/hot_courtyard.json some/view_courtyard.json
     python3 tools/check_layout.py <folder> --layout-dump shots/art/game_layout.json     # in a worktree
     python3 tools/check_layout.py <folder> --front low_table,desk     # planned foreground objects (see below)
-    python3 tools/check_layout.py --selftest [--layout-dump <file>]
+    python3 tools/check_layout.py --selftest [--layout-dump <file>] [--record <file>]
 
 docs/UI2_DESIGN.md 5.6 (step 4), 7.3 (D60, "The picture is what is clicked"),
 6.3, 4.6, 3.2. It reads a candidate layout AS FILES, before they are in
@@ -1442,7 +1442,13 @@ def pinned(root=None):
     return out
 
 
-def selftest(lay, root=None):
+def selftest(lay, root=None, record=None):
+    """The cases lay test layouts for real places (the Training Yard, the Dormitory Garden) and expect one rule
+    to speak. They are written against the campus record as it stood BEFORE the overhaul installed anything:
+    once such a yard is installed its exits are fixed facts, and a test layout that sets them down elsewhere is
+    refused by [campus] as well. `record` (--record) is the record the cases are read against;
+    tools/test_art_tools.py gives the record of before and a dump whose rows for the installed places are those
+    of before, whatever is installed (its `layout` group, which also runs each case through the command line)."""
     bad = 0
     n = 0
 
@@ -1458,7 +1464,7 @@ def selftest(lay, root=None):
     work = tempfile.mkdtemp(prefix="check_layout_selftest_")
     try:
         for k, (name, files, rule, words, also) in enumerate(cases()):
-            out = check(read_candidate(write_case(files, os.path.join(work, "c%02d" % k)), Out()), lay, root=root)
+            out = check(read_candidate(write_case(files, os.path.join(work, "c%02d" % k)), Out()), lay, root=root, record=record)
             got = out.rules()
             if rule is None:
                 line(name, not got, "; ".join(out.texts()))
@@ -1468,7 +1474,7 @@ def selftest(lay, root=None):
                      "refused: " + ("; ".join(out.texts()) or "nothing"))
         for k, (name, files, patch, want, words) in enumerate(dump_cases()):
             out = check(read_candidate(write_case(files, os.path.join(work, "d%02d" % k)), Out()),
-                        game_layout.Layout(patched(lay.d, patch), lay.path), root=root)
+                        game_layout.Layout(patched(lay.d, patch), lay.path), root=root, record=record)
             lines = ["REFUSED " + t for t in out.texts()] + ["REPORT " + t for t in out.texts("REPORT")]
             line(("REFUSED by name [%s]: %s" % (want, name)) if want and not want.startswith("REPORT") else name,
                  dump_case_ok(want, words, lines, 1 if out.rules() else 0), "; ".join(lines))
@@ -1502,7 +1508,7 @@ def main(argv):
     by_installer = "--layout" in flags
     lay = game_layout.load(dump, root, check_hash=not by_installer)
     if "--selftest" in flags:
-        raise SystemExit(selftest(lay, root))
+        raise SystemExit(selftest(lay, root, record))
     out = Out()
     cand = read_candidate(paths, out)
     if not cand and not out.lines:

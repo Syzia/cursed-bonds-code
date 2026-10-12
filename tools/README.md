@@ -235,12 +235,29 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   was redone in place or relit (76, to the records of 11 Oct): none may be
   REFUSED. **The suite's fixtures are the tree as it was before the
   overhaul installed anything**: whatever an install has written (a picture,
-  its foreground, its light row, a layout with `for_rev`, the manifest, the
-  place's rows of the dump) is put back from git in the scratch copy
-  (`before_overhaul()` in `tools/test_art_tools.py`), so the suite reads the
-  same before and after batch 0: every line the same, but that the six
-  lines on the two staged layouts become two saying the installed files
-  are the staged ones. Each picture is taken from the commit its own
+  its foreground and the outline it is cut by, its light row, a layout with
+  `for_rev`, the manifest, the place's rows of the dump, the facts the
+  picture fixed in the campus record) is put back from git in the scratch copy
+  (`before_overhaul()` and `record_before()` in `tools/test_art_tools.py`),
+  so the suite reads the same before and after an install, whichever places
+  are installed, at whatever revision and for whichever hours: every line
+  the same, but that the six lines on the two staged layouts become two
+  saying the installed files are the staged ones. (465 lines on 12 Oct,
+  on the tree with twenty-eight pictures in and on the tree with the six
+  yards in as well. Three were added that day, in `fixtures`, when a room
+  at revision 3, four rooms the record had not chosen before their install,
+  and the first hour pictures with a foreground of their own showed what
+  the fixtures did not put back: `docs/UI2_PINS.md`, Part 2e.) Where a line
+  asks which pictures, foregrounds or layouts an install into a copy left
+  alone, it compares the copy with itself before the install, never with
+  today's real tree, which holds what was installed since. The
+  cases of `check_layout.py`, and the `--selftest` of `check_campus.py` and
+  of `check_layout.py`, lay test layouts for real yards and are written
+  against the record of before: the suite's `layout` group gives them that
+  record and a dump whose rows for the installed places are those of
+  before (`--selftest --record <file> --layout-dump <file>`); run bare on a
+  tree with yards installed the two selftests fail, so run them through
+  `tools/test_art_tools.sh --only layout`. Each picture is taken from the commit its own
   manifest row names (`rev1_commit`; a relight's first `from_commit`), and
   what goes with it from the tree as it stood just before the picture was
   replaced, so it does not matter how the install was committed. Proved on
