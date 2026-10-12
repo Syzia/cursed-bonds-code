@@ -369,6 +369,10 @@
       "of": "rooftop_night",
       "of_rev": 2
     },
+    "light_school_yard": {
+      "of": "school_yard",
+      "of_rev": 2
+    },
     "rooftop": {
       "batch": "8a",
       "from_commit": "178231531d5bbd15884714ee227a3436652941cc",
@@ -410,6 +414,15 @@
         0,
         0
       ]
+    },
+    "school_yard": {
+      "batch": 1,
+      "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
+      "kind": "composed",
+      "record": "469ee9ae79a9c2533482ab08802f67c40943672c4e7c4f819418d939627e0ac1",
+      "render": "ui2_school_yard_b_fit.png",
+      "rev": 2,
+      "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
     },
     "your_room": {
       "batch": "3a",

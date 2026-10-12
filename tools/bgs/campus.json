@@ -139,6 +139,14 @@
    "batch": "8a",
    "chosen": "2026-10-11",
    "render": "ui2_rooftop_a_00001_.png"
+  },
+  "school_yard": {
+   "place": "school_yard",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "1",
+   "chosen": "2026-10-07",
+   "render": "ui2_school_yard_b_fit.png"
   }
  },
  "fixed": [
@@ -730,6 +738,126 @@
     "picture": "rooftop",
     "rev": 2
    }
+  },
+  {
+   "id": "exit.school_yard.infirmary",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "infirmary",
+   "side": "left",
+   "order": 1,
+   "on": "building",
+   "thing": "infirmary",
+   "words": "its door is the way in",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.library",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "library",
+   "side": "ahead",
+   "order": 2,
+   "on": "building",
+   "thing": "library",
+   "words": "its door, with the pine and its bench in front of it",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.classroom",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "classroom",
+   "side": "right",
+   "order": 3,
+   "on": "building",
+   "thing": "school_building",
+   "words": "a side porch in its west wall, facing this yard",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.cafeteria",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "cafeteria",
+   "side": "bottom",
+   "half": "left",
+   "on": "building",
+   "thing": "cafeteria",
+   "words": "the path to the dining hall's glass doors; the dining hall is behind the camera",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "exit.school_yard.courtyard",
+   "kind": "exit",
+   "place": "school_yard",
+   "to": "courtyard",
+   "side": "bottom",
+   "half": "right",
+   "on": "path",
+   "words": "the passage by the schoolhouse, back to the central courtyard",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.school_yard",
+   "kind": "place",
+   "key": "school_yard",
+   "name": "School Courtyard",
+   "stem": "school_yard",
+   "area": "school",
+   "indoor": false,
+   "building": "school_yard",
+   "how": "composed",
+   "batch": "1",
+   "after": [
+    "courtyard"
+   ],
+   "words": "the school courtyard, the yard west of the schoolhouse that the school's rooms open onto, seen from its south edge, looking north",
+   "camera": [
+    470,
+    840
+   ],
+   "facing": "north",
+   "old_picture": "school",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.school_yard",
+   "kind": "building",
+   "key": "school_yard",
+   "name": "School Courtyard",
+   "as": "the school courtyard",
+   "holds": [
+    "school_yard"
+   ],
+   "at": [
+    470,
+    770
+   ],
+   "ground": true,
+   "look": "packed earth, one pine with a bench under it",
+   "by": {
+    "picture": "school_yard",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -748,22 +876,6 @@
    ],
    "ground": true,
    "look": "a stone torii across a flagstone footpath between cedars and stone lanterns, with no road; beyond the torii a flight of stone steps climbs to an open flagstone court, and nothing is built at the top of the steps"
-  },
-  {
-   "id": "building.school_yard",
-   "kind": "building",
-   "key": "school_yard",
-   "name": "School Courtyard",
-   "as": "the school courtyard",
-   "holds": [
-    "school_yard"
-   ],
-   "at": [
-    470,
-    770
-   ],
-   "ground": true,
-   "look": "packed earth, one pine with a bench under it"
   },
   {
    "id": "building.infirmary",
@@ -1124,28 +1236,6 @@
    "check": [
     "beyond the torii is the open Courtyard, with no hall"
    ]
-  },
-  {
-   "id": "place.school_yard",
-   "kind": "place",
-   "key": "school_yard",
-   "name": "School Courtyard",
-   "stem": "school_yard",
-   "area": "school",
-   "indoor": false,
-   "building": "school_yard",
-   "how": "composed",
-   "batch": "1",
-   "after": [
-    "courtyard"
-   ],
-   "words": "the school courtyard, the yard west of the schoolhouse that the school's rooms open onto, seen from its south edge, looking north",
-   "camera": [
-    470,
-    840
-   ],
-   "facing": "north",
-   "old_picture": "school"
   },
   {
    "id": "place.dorm_yard",
@@ -1640,60 +1730,6 @@
    "a": "staff_yard",
    "b": "training_yard",
    "words": "south, down a walled path"
-  },
-  {
-   "id": "exit.school_yard.infirmary",
-   "kind": "exit",
-   "place": "school_yard",
-   "to": "infirmary",
-   "side": "left",
-   "order": 1,
-   "on": "building",
-   "thing": "infirmary",
-   "words": "its door is the way in"
-  },
-  {
-   "id": "exit.school_yard.library",
-   "kind": "exit",
-   "place": "school_yard",
-   "to": "library",
-   "side": "ahead",
-   "order": 2,
-   "on": "building",
-   "thing": "library",
-   "words": "its door, with the pine and its bench in front of it"
-  },
-  {
-   "id": "exit.school_yard.classroom",
-   "kind": "exit",
-   "place": "school_yard",
-   "to": "classroom",
-   "side": "right",
-   "order": 3,
-   "on": "building",
-   "thing": "school_building",
-   "words": "a side porch in its west wall, facing this yard"
-  },
-  {
-   "id": "exit.school_yard.cafeteria",
-   "kind": "exit",
-   "place": "school_yard",
-   "to": "cafeteria",
-   "side": "bottom",
-   "half": "left",
-   "on": "building",
-   "thing": "cafeteria",
-   "words": "the path to the dining hall's glass doors; the dining hall is behind the camera"
-  },
-  {
-   "id": "exit.school_yard.courtyard",
-   "kind": "exit",
-   "place": "school_yard",
-   "to": "courtyard",
-   "side": "bottom",
-   "half": "right",
-   "on": "path",
-   "words": "the passage by the schoolhouse, back to the central courtyard"
   },
   {
    "id": "exit.dorm_yard.boys_dorm",
