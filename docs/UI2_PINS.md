@@ -271,6 +271,25 @@ Twelve composed places went in with their traced layouts (`hot_`, `view_`, `for_
 
 **Lines that will turn later.** `wp1_world.rpy`, "gojo_office lit by PLACE_LIGHT (Evening)" and Utahime's (Part 2e's table): both offices now have day pictures of their own and pass still; they turn when an office's evening picture goes in.
 
+## Part 2g. Found at the installs of 12 Oct, the 27 evenings, nights and lamp-on pictures (K3)
+
+Twenty-seven relit pictures went in with `tools/install_redo.py --relight`, each the version the owner chose on 11 Oct and each a PASS: the evening, the dark night and the lamp-on night of Yuji's Room, Megumi's Room, Panda and Toge's Room, Nobara's Room and Maki's Room; the evening of the Principal's Office, Utahime's Office and Gojo's Office; the evening and the night of the Teachers' Lounge, the Teachers' Dormitory, the Forest Trail and the Onsen; and the Swimming Pool's evening. The two lines Part 2e named as going to turn, turned.
+
+**`wp1_world.rpy`, section 14**, "utahime_office lit by PLACE_LIGHT (Evening)" and "gojo_office lit by PLACE_LIGHT (Evening)" (154 and 2 where the harness read 156).
+
+| | |
+|---|---|
+| old | the loop showed every office hour as a tinted picture: `config.show("graded", what=graded_bg(_loc, _p))`, then `scene_light == light_for_place(_loc, _p)` |
+| why it failed | an office's Evening is a painted picture now, so `graded_bg` answers its NAME (`"bg utahime_office evening"`), and a name handed over as `what` under the name `graded` carries no light key: the light stayed the Morning's from the turn before. The game is right. Proved with the statement itself in a scratch harness: after `scene expression graded_bg()` in Utahime's Office at Evening, `scene_light` is the evening row of `light_utahime_office.json` (and a bedroom's Night its night row) |
+| new | the room is shown as `scene expression graded_bg()` shows it, by lighting.rpy's own three shapes: `config.show(name)` for a painted hour, which the light is read from, and `config.show("graded", what=d)` for a tinted picture. The check is unchanged |
+| proved | 156 on today's tree. For a tinted hour the line runs the code it ran before, so a tree with no office evening reads as it did. (Part 2e's row suggested `renpy.show(d)` for a name: that goes round `config.show`, sets no light, and fails the same two lines; it is `config.show`.) |
+
+**Read in the game, not only measured.** A scratch harness stood in each room at each hour and asked `bg_variant` what it shows: 27 of 27 answer the installed picture, fresh (`evening`; `night` with nobody up; `lit` with the room's own person up on a Night they are awake). A pin holds for the day and hour it is made in, so a harness that changes the hour pins after it has set the hour: pinned the hour before, Yuji was rightly up in his room on a Thursday Night and the room rightly lit.
+
+**Read by eye** (5.7: a relight is never refused for an added thing). The Teachers' Dormitory's evening and night, which the sitting had read small only, were read at full size beside the day picture, quarter by quarter: nothing added, nothing gone. So were the clothes rack of Nobara's Room at all four hours and the middle of the Teachers' Lounge at three (the fridge, the stool and the bar, which stand behind where people stand in a screenshot).
+
+**One line read wrong once.** `p2_hud.rpy`, "the three two-line toasts as drawn end inside the lane (above y 350), and no tile meets them": 76 px of toast where it wants three toasts' height, on one run; 129 of 129 when run again alone. It reads what is drawn half a second after four toasts are queued, and one had been drawn. Nothing about it touches a picture; if it recurs it wants a wait-until, not a longer sleep.
+
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 
 A scratch copy of the tree was given a crude stub of what wave 0 changes in who

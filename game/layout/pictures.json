@@ -7,6 +7,30 @@
       "render": "ui2_bathhouse_a_00001_.png",
       "rev": 2
     },
+    "bathhouse_evening": {
+      "batch": "19b",
+      "kind": "relight",
+      "of": "bathhouse",
+      "of_rev": 2,
+      "render": "ui2_bathhouse_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "bathhouse_night": {
+      "batch": "19b",
+      "kind": "relight",
+      "of": "bathhouse",
+      "of_rev": 2,
+      "render": "ui2_bathhouse_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "boys_dorm": {
       "batch": "9a",
       "kind": "composed",
@@ -299,6 +323,10 @@
       "of": "utahime_office",
       "of_rev": 2
     },
+    "fg_utahime_office_evening": {
+      "of": "utahime_office_evening",
+      "of_rev": 2
+    },
     "forest": {
       "batch": "17a",
       "from_commit": "178231531d5bbd15884714ee227a3436652941cc",
@@ -307,6 +335,30 @@
       "render": "ui2_forest2a_root_00001_.png",
       "rev": 2,
       "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
+    },
+    "forest_evening": {
+      "batch": "17b",
+      "kind": "relight",
+      "of": "forest",
+      "of_rev": 2,
+      "render": "ui2_forest_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "forest_night": {
+      "batch": "17b",
+      "kind": "relight",
+      "of": "forest",
+      "of_rev": 2,
+      "render": "ui2_forest_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "gate": {
       "batch": 2,
@@ -349,6 +401,18 @@
       "render": "ui2_gojo_office2_b_00001_.png",
       "rev": 2,
       "rev1_commit": "dd3180bb4b8598fe840b8f4e8183b19dcea577ae"
+    },
+    "gojo_office_evening": {
+      "batch": "12b",
+      "kind": "relight",
+      "of": "gojo_office",
+      "of_rev": 2,
+      "render": "ui2_gojo_office_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "infirmary": {
       "batch": "6a",
@@ -438,6 +502,14 @@
     },
     "light_bathhouse": {
       "of": "bathhouse",
+      "of_rev": 2
+    },
+    "light_bathhouse_evening": {
+      "of": "bathhouse_evening",
+      "of_rev": 2
+    },
+    "light_bathhouse_night": {
+      "of": "bathhouse_night",
       "of_rev": 2
     },
     "light_boys_dorm": {
@@ -548,6 +620,14 @@
       "of": "forest",
       "of_rev": 2
     },
+    "light_forest_evening": {
+      "of": "forest_evening",
+      "of_rev": 2
+    },
+    "light_forest_night": {
+      "of": "forest_night",
+      "of_rev": 2
+    },
     "light_gate": {
       "of": "gate",
       "of_rev": 2
@@ -562,6 +642,10 @@
     },
     "light_gojo_office": {
       "of": "gojo_office",
+      "of_rev": 2
+    },
+    "light_gojo_office_evening": {
+      "of": "gojo_office_evening",
       "of_rev": 2
     },
     "light_infirmary": {
@@ -596,20 +680,64 @@
       "of": "maki_room",
       "of_rev": 2
     },
+    "light_maki_room_evening": {
+      "of": "maki_room_evening",
+      "of_rev": 2
+    },
+    "light_maki_room_lit": {
+      "of": "maki_room_lit",
+      "of_rev": 2
+    },
+    "light_maki_room_night": {
+      "of": "maki_room_night",
+      "of_rev": 2
+    },
     "light_megumi_room": {
       "of": "megumi_room",
+      "of_rev": 2
+    },
+    "light_megumi_room_evening": {
+      "of": "megumi_room_evening",
+      "of_rev": 2
+    },
+    "light_megumi_room_lit": {
+      "of": "megumi_room_lit",
+      "of_rev": 2
+    },
+    "light_megumi_room_night": {
+      "of": "megumi_room_night",
       "of_rev": 2
     },
     "light_nobara_room": {
       "of": "nobara_room",
       "of_rev": 2
     },
+    "light_nobara_room_evening": {
+      "of": "nobara_room_evening",
+      "of_rev": 2
+    },
+    "light_nobara_room_lit": {
+      "of": "nobara_room_lit",
+      "of_rev": 2
+    },
+    "light_nobara_room_night": {
+      "of": "nobara_room_night",
+      "of_rev": 2
+    },
     "light_office": {
       "of": "office",
       "of_rev": 2
     },
+    "light_office_evening": {
+      "of": "office_evening",
+      "of_rev": 2
+    },
     "light_pool": {
       "of": "pool",
+      "of_rev": 2
+    },
+    "light_pool_evening": {
+      "of": "pool_evening",
       "of_rev": 2
     },
     "light_rooftop": {
@@ -644,6 +772,18 @@
       "of": "senpai_room",
       "of_rev": 2
     },
+    "light_senpai_room_evening": {
+      "of": "senpai_room_evening",
+      "of_rev": 2
+    },
+    "light_senpai_room_lit": {
+      "of": "senpai_room_lit",
+      "of_rev": 2
+    },
+    "light_senpai_room_night": {
+      "of": "senpai_room_night",
+      "of_rev": 2
+    },
     "light_staff_yard": {
       "of": "staff_yard",
       "of_rev": 2
@@ -668,8 +808,24 @@
       "of": "teachers_dorm",
       "of_rev": 2
     },
+    "light_teachers_dorm_evening": {
+      "of": "teachers_dorm_evening",
+      "of_rev": 2
+    },
+    "light_teachers_dorm_night": {
+      "of": "teachers_dorm_night",
+      "of_rev": 2
+    },
     "light_teachers_lounge": {
       "of": "teachers_lounge",
+      "of_rev": 2
+    },
+    "light_teachers_lounge_evening": {
+      "of": "teachers_lounge_evening",
+      "of_rev": 2
+    },
+    "light_teachers_lounge_night": {
+      "of": "teachers_lounge_night",
       "of_rev": 2
     },
     "light_trailhead": {
@@ -708,8 +864,24 @@
       "of": "utahime_office",
       "of_rev": 2
     },
+    "light_utahime_office_evening": {
+      "of": "utahime_office_evening",
+      "of_rev": 2
+    },
     "light_yuji_room": {
       "of": "yuji_room",
+      "of_rev": 2
+    },
+    "light_yuji_room_evening": {
+      "of": "yuji_room_evening",
+      "of_rev": 2
+    },
+    "light_yuji_room_lit": {
+      "of": "yuji_room_lit",
+      "of_rev": 2
+    },
+    "light_yuji_room_night": {
+      "of": "yuji_room_night",
       "of_rev": 2
     },
     "maki_room": {
@@ -719,6 +891,42 @@
       "render": "ui2_maki_room2_a_00001_.png",
       "rev": 2
     },
+    "maki_room_evening": {
+      "batch": "11b",
+      "kind": "relight",
+      "of": "maki_room",
+      "of_rev": 2,
+      "render": "ui2_maki_room_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "maki_room_lit": {
+      "batch": "11b",
+      "kind": "relight",
+      "of": "maki_room",
+      "of_rev": 2,
+      "render": "ui2_maki_room_lit_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "maki_room_night": {
+      "batch": "11b",
+      "kind": "relight",
+      "of": "maki_room",
+      "of_rev": 2,
+      "render": "ui2_maki_room_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "megumi_room": {
       "batch": "10a",
       "kind": "composed",
@@ -726,12 +934,84 @@
       "render": "ui2_megumi_room_a_00001_.png",
       "rev": 2
     },
+    "megumi_room_evening": {
+      "batch": "10b",
+      "kind": "relight",
+      "of": "megumi_room",
+      "of_rev": 2,
+      "render": "ui2_megumi_room_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "megumi_room_lit": {
+      "batch": "10b",
+      "kind": "relight",
+      "of": "megumi_room",
+      "of_rev": 2,
+      "render": "ui2_megumi_room_lit_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "megumi_room_night": {
+      "batch": "10b",
+      "kind": "relight",
+      "of": "megumi_room",
+      "of_rev": 2,
+      "render": "ui2_megumi_room_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "nobara_room": {
       "batch": "11a",
       "kind": "composed",
       "record": "9840b915d251b1fc914441bb68e4c1bf674a8949c794edcf805d65ed842b4602",
       "render": "ui2_nobara_room2_b_00001_.png",
       "rev": 2
+    },
+    "nobara_room_evening": {
+      "batch": "11b",
+      "kind": "relight",
+      "of": "nobara_room",
+      "of_rev": 2,
+      "render": "ui2_nobara_room_evening_b_00002_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "nobara_room_lit": {
+      "batch": "11b",
+      "kind": "relight",
+      "of": "nobara_room",
+      "of_rev": 2,
+      "render": "ui2_nobara_room_lit_b_00002_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "nobara_room_night": {
+      "batch": "11b",
+      "kind": "relight",
+      "of": "nobara_room",
+      "of_rev": 2,
+      "render": "ui2_nobara_room_night_b_00002_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "office": {
       "batch": "12a",
@@ -742,12 +1022,36 @@
       "rev": 2,
       "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
     },
+    "office_evening": {
+      "batch": "12b",
+      "kind": "relight",
+      "of": "office",
+      "of_rev": 2,
+      "render": "ui2_office_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "pool": {
       "batch": "16a",
       "kind": "composed",
       "record": "a94850941de4ad8cf12d15847355cc34f9edffa0f9c1664d3d2b4e33c0e8838f",
       "render": "ui2_pool_b_00001_.png",
       "rev": 2
+    },
+    "pool_evening": {
+      "batch": "16b",
+      "kind": "relight",
+      "of": "pool",
+      "of_rev": 2,
+      "render": "ui2_pool_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "rooftop": {
       "batch": "8a",
@@ -838,6 +1142,42 @@
       "render": "ui2_senpai_room_a_00001_.png",
       "rev": 2
     },
+    "senpai_room_evening": {
+      "batch": "10b",
+      "kind": "relight",
+      "of": "senpai_room",
+      "of_rev": 2,
+      "render": "ui2_senpai_room_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "senpai_room_lit": {
+      "batch": "10b",
+      "kind": "relight",
+      "of": "senpai_room",
+      "of_rev": 2,
+      "render": "ui2_senpai_room_lit_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "senpai_room_night": {
+      "batch": "10b",
+      "kind": "relight",
+      "of": "senpai_room",
+      "of_rev": 2,
+      "render": "ui2_senpai_room_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "staff_yard": {
       "batch": 2,
       "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
@@ -899,12 +1239,60 @@
       "render": "ui2_teachers_dorm3_a_00001_.png",
       "rev": 2
     },
+    "teachers_dorm_evening": {
+      "batch": "13b",
+      "kind": "relight",
+      "of": "teachers_dorm",
+      "of_rev": 2,
+      "render": "ui2_teachers_dorm_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "teachers_dorm_night": {
+      "batch": "13b",
+      "kind": "relight",
+      "of": "teachers_dorm",
+      "of_rev": 2,
+      "render": "ui2_teachers_dorm_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "teachers_lounge": {
       "batch": "13a",
       "kind": "composed",
       "record": "bd214c49e2c6e9c5e70e3a401a7d28aacc7c1992f1d2cdc3129cb3e7ca365551",
       "render": "ui2_teachers_lounge2_b_00001_.png",
       "rev": 2
+    },
+    "teachers_lounge_evening": {
+      "batch": "13b",
+      "kind": "relight",
+      "of": "teachers_lounge",
+      "of_rev": 2,
+      "render": "ui2_teachers_lounge_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "teachers_lounge_night": {
+      "batch": "13b",
+      "kind": "relight",
+      "of": "teachers_lounge",
+      "of_rev": 2,
+      "render": "ui2_teachers_lounge_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "trailhead": {
       "batch": 2,
@@ -1002,6 +1390,18 @@
       "rev": 2,
       "rev1_commit": "dd3180bb4b8598fe840b8f4e8183b19dcea577ae"
     },
+    "utahime_office_evening": {
+      "batch": "12b",
+      "kind": "relight",
+      "of": "utahime_office",
+      "of_rev": 2,
+      "render": "ui2_utahime_office_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "your_room": {
       "batch": "3a",
       "from_commit": "07e57a960d632262263fdeb1db5874a2bce883f0",
@@ -1061,6 +1461,42 @@
       "record": "f3430397e9a08f8f0b4fe784a6564aec0e1cee8bca3104c09625fa23c2533882",
       "render": "ui2_yuji_room_b_placed_00001_.png",
       "rev": 2
+    },
+    "yuji_room_evening": {
+      "batch": "9b",
+      "kind": "relight",
+      "of": "yuji_room",
+      "of_rev": 2,
+      "render": "ui2_yuji_room_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "yuji_room_lit": {
+      "batch": "9b",
+      "kind": "relight",
+      "of": "yuji_room",
+      "of_rev": 2,
+      "render": "ui2_yuji_room_lit_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "yuji_room_night": {
+      "batch": "9b",
+      "kind": "relight",
+      "of": "yuji_room",
+      "of_rev": 2,
+      "render": "ui2_yuji_room_night_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     }
   }
 }

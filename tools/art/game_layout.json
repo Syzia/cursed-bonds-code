@@ -1839,7 +1839,7 @@
    ]
   }
  },
- "hash": "6d457e4274dc067337c7ab27d82c9c3051644b6e8eafdef69027e9afb9419737",
+ "hash": "b45b8c12a828a6e0c7413735b532be75434e423565751391647f51061d834f79",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -3529,7 +3529,9 @@
    "indoor": true,
    "key": "office",
    "name": "Principal's Office",
-   "variants": {},
+   "variants": {
+    "Evening": "evening"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3541,7 +3543,9 @@
    "indoor": true,
    "key": "utahime_office",
    "name": "Utahime's Office",
-   "variants": {},
+   "variants": {
+    "Evening": "evening"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3553,7 +3557,9 @@
    "indoor": true,
    "key": "gojo_office",
    "name": "Gojo's Office",
-   "variants": {},
+   "variants": {
+    "Evening": "evening"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3580,7 +3586,10 @@
    "indoor": false,
    "key": "forest",
    "name": "Forest Trail",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.5
   },
@@ -3721,7 +3730,10 @@
    "indoor": true,
    "key": "yuji_room",
    "name": "Yuji's Room",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3733,7 +3745,10 @@
    "indoor": true,
    "key": "megumi_room",
    "name": "Megumi's Room",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3745,7 +3760,10 @@
    "indoor": true,
    "key": "senpai_room",
    "name": "Panda and Toge's Room",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3757,7 +3775,10 @@
    "indoor": true,
    "key": "nobara_room",
    "name": "Nobara's Room",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3769,7 +3790,10 @@
    "indoor": true,
    "key": "maki_room",
    "name": "Maki's Room",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3781,7 +3805,10 @@
    "indoor": true,
    "key": "teachers_lounge",
    "name": "Teachers' Lounge",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3793,7 +3820,10 @@
    "indoor": true,
    "key": "teachers_dorm",
    "name": "Teachers' Dormitory",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3805,7 +3835,10 @@
    "indoor": true,
    "key": "bathhouse",
    "name": "Onsen",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3829,7 +3862,9 @@
    "indoor": false,
    "key": "pool",
    "name": "Swimming Pool",
-   "variants": {},
+   "variants": {
+    "Evening": "evening"
+   },
    "y": 0,
    "zoom": 0.52
   }

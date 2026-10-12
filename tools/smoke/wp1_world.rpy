@@ -983,7 +983,16 @@ label zz_smoke:
                 here = _loc
                 period = _p
                 renpy.scene()
-                config.show("graded", what=graded_bg(_loc, _p))     # as `scene expression graded_bg()` does
+                ## As `scene expression graded_bg()` does (lighting.rpy's three
+                ## shapes): a painted hour is an image NAME and reaches
+                ## config.show as that name, which the light is read from; a
+                ## tinted picture is a displayable that carries its own light
+                ## key. (docs/UI2_PINS.md, Part 2e and 2g.)
+                _zz_d = graded_bg(_loc, _p)
+                if isinstance(_zz_d, str):
+                    config.show(_zz_d)
+                else:
+                    config.show("graded", what=_zz_d)
                 renpy.show("utahime neutral" if _loc == "utahime_office" else "gojo happy", at_list=[pos_c])
                 shot("office_%s_%s" % (_loc, _p.lower()))
                 check(scene_light == light_for_place(_loc, _p), "%s lit by PLACE_LIGHT (%s)" % (_loc, _p), scene_light)
