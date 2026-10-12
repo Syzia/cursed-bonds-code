@@ -109,6 +109,16 @@ first level shows his face on the Training marker (272 pixels in a 20 px
 square). **U3**: a pickle difference before L's install
 is a finding; after it, compare with the rewritten file.
 
+**The pictures and the rooms' new pictures.** `place.png` and `person.png`
+are taken in the Classroom, so they are no longer the ones written from
+`d2eb9db`: they were written again on 12 Oct, when the Classroom's new day
+picture went in with a light row measured on it (the ledger's Part 2e), once
+it was seen that with the old picture laid back over the tree both come out
+byte for byte the old baseline's. The same is done whenever a picture one of
+the five shows is installed (the Classroom again, the two maps, the menu):
+see that the shot differs by that picture alone, then write that picture and
+its sum in `shots.json` again, and no other baseline.
+
 ### A3. `tools/art/game_layout.json` (the one file the art tools read the game through)
 
 Written by `tools/smoke.sh u2_dump` (D47, 5.4). Committed only from the owner's
@@ -611,7 +621,15 @@ after wave 0, so it depends on nothing the wave is planned to add):
   `spot_vend` must stay registered there;
 - section A's four gates are read on test rows laid over an empty manifest,
   whatever rows `pictures.json` holds by then, and with `light_classroom.json`
-  taken as absent;
+  taken as absent. Where a check needs a room with one picture, or an Evening
+  or a Night that is only a tint (the Cafeteria in gate 2; the Classroom in
+  gate 4 and in section B's hour tables), it takes that room's hour cells out
+  of `TIME_VARIANT` for the reading and puts them back, so the room's own
+  evening and night pictures change nothing in it; and lint's "a cell with no
+  image" is tried on an attribute no picture has. (These five checks were
+  turned into that on 12 Oct, when both rooms got their hour pictures: the
+  one edit of this file after wave 0, each check with the name and the
+  question it had. `docs/UI2_PINS.md`, Part 2e);
 - **a tree with a manifest of its own** is read with its own rows in both
   states. `tools/smoke.sh` copies an overlay file over the tree's, it does not
   merge, so the overlay's `zz_u2c_gen.rpy` reads the tree's
