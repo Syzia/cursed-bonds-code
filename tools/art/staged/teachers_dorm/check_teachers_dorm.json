@@ -1,0 +1,9 @@
+{
+ "horizon": 530,
+ "doors": [
+  {"name": "the near bedroom door on the left", "box": [215, 150, 215, 800]},
+  {"name": "the far bedroom door on the left", "box": [587, 337, 63, 388]},
+  {"name": "the far bedroom door on the right", "box": [1277, 337, 58, 388]},
+  {"name": "the near bedroom door on the right", "box": [1420, 210, 135, 658]}
+ ]
+}
