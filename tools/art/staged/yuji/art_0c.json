@@ -108,5 +108,22 @@
   },
   "sheets": "shots/art/fx_yuji_blink.png, fx_yuji_talk.png, fx_yuji_blink_faces.png; shots/yuji/old_new_blink_talk.jpg (today's calm, blink and talk above the new ones), blink_talk_staged.jpg",
   "put_to_the_owner": "both fit and can go in; not installed: the owner's game was open, and the set goes in only on their word"
+ },
+ "installed_2026_10_12": {
+  "said": "the owner, in chat, 12 Oct 2026: \"Game is closed, go ahead\"",
+  "by": "python3 tools/install_set.py yuji '~/Desktop/JJK Game images/redo_yuji/staged' (game/*.rpyc backed up first to ~/Desktop/JJK_backup_ui2_20261007/rpyc_before_yuji_set)",
+  "the tool": "cloth 187285 px on each sprite; off the ramp 7.86 -> 0.30; six side portraits made again; cloth_match.py --check --redrawn passes; image yuji = lit_sprite(\"images/char/yuji_neutral.png\", (760, 1400), (382, 1365, 315)); every one of Yuji's 14 image names still resolves",
+  "game_sha256": {
+   "char/yuji_neutral.png": "ec0f61559a730cd3182801ab777ec7e1264fab745c934cbc23670e5a0e5b24e0",
+   "char/yuji_happy.png": "1d259b19663d373fec3fcb4d855205bcdb9f79ff28184042115e093542c6b98f",
+   "char/yuji_serious.png": "efe3c0e4207ca17a4a0ea6d8c7776d796c0ae49f6a9c420afa3fd00a59514757",
+   "char/yuji_angry.png": "b42857154988a163170cfdd409334fbfb641b14c221fe4262fc02763a1a7d866",
+   "char/yuji_surprised.png": "1ba7a9e58e4c69aa06476aca5572762fde5c9a185c462ecaa264a10af8c9cf45",
+   "char/yuji_sad.png": "fe74f6e569332d478dd99f8eeb27cea470e95c06f8ffaa3e4c0d68ac7bad1903",
+   "char/fx/fx_yuji_blink.png": "5c34d83162821ab9a89bfae778c4a9a7491ea8e35d7ee77205012c09c6e67851",
+   "char/fx/fx_yuji_talk.png": "58ad1e8a672bbc7a8b8f1aa5d2343d45bf28a91ba6110cd5b146c24762f16412"
+  },
+  "afterwards": "lint clean (only jjk_sprites.rpyc recompiled); u2_baseline 47 lines and its six differences by design, once baseline_sprite_tree.txt and the map's baseline picture were written again (docs/UI2_PINS.md Part 2d); the thirty saves SAME 27, MOVED 3, RAISED 0; u2_contracts 245 and 242 bare, p2_view 131, p2_rooms 126, p2_contracts 129, core_flow 26, phase1_all 16, phase2_all 35, u2_lit 100; u2_dump 14",
+  "screenshots": "shots/yuji/game_yuji_courtyard.png, game_yuji_common_evening.png (ignored by git)"
  }
 }

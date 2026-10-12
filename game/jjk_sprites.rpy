@@ -99,13 +99,13 @@ image yaga angry = lit_sprite("images/char/yaga_angry.png", (760, 1400), (379, 1
 image yaga surprised = lit_sprite("images/char/yaga_surprised.png", (760, 1400), (379, 1365, 505))
 image yaga sad = lit_sprite("images/char/yaga_sad.png", (760, 1400), (379, 1365, 505))
 
-image yuji = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
-image yuji neutral = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (389, 1365, 313))
-image yuji happy = lit_sprite("images/char/yuji_happy.png", (760, 1400), (389, 1365, 313))
-image yuji serious = lit_sprite("images/char/yuji_serious.png", (760, 1400), (389, 1365, 313))
-image yuji angry = lit_sprite("images/char/yuji_angry.png", (760, 1400), (389, 1365, 313))
-image yuji surprised = lit_sprite("images/char/yuji_surprised.png", (760, 1400), (389, 1365, 313))
-image yuji sad = lit_sprite("images/char/yuji_sad.png", (760, 1400), (389, 1365, 313))
+image yuji = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (382, 1365, 315))
+image yuji neutral = lit_sprite("images/char/yuji_neutral.png", (760, 1400), (382, 1365, 315))
+image yuji happy = lit_sprite("images/char/yuji_happy.png", (760, 1400), (382, 1365, 315))
+image yuji serious = lit_sprite("images/char/yuji_serious.png", (760, 1400), (382, 1365, 315))
+image yuji angry = lit_sprite("images/char/yuji_angry.png", (760, 1400), (382, 1365, 315))
+image yuji surprised = lit_sprite("images/char/yuji_surprised.png", (760, 1400), (382, 1365, 315))
+image yuji sad = lit_sprite("images/char/yuji_sad.png", (760, 1400), (382, 1365, 315))
 
 ## Side portraits for the textbox. Ren'Py resolves `side <key> <attrs>` from the speaker.
 image side gojo = "images/side/gojo_neutral.png"

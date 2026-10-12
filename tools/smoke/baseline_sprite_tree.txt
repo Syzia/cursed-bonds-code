@@ -1,4 +1,4 @@
-# lit_sprite('images/char/yuji_neutral.png', (760, 1400), (389, 1365, 313))
+# lit_sprite('images/char/yuji_neutral.png', (760, 1400), (382, 1365, 315))
 # each node: its class, its function's name, its curried argument names, its file
 # (docs/UI2_DESIGN.md K9; written by tools/smoke/u2_baseline.rpy)
 
@@ -8,7 +8,7 @@ Transform function=_sprite_light
     Transform function=_shadow_light
       Image images/fx/contact_shadow.png
     Image images/char/yuji_neutral.png
-pickle: 1637 bytes, sha256 1926331afade11597e712c4199e4205fd043d921a5af30b45dc41e9940d47bc5
+pickle: 1637 bytes, sha256 f96a2107d0161f6801c6a0b0a95058801b75324cbe7860f73288171a1d2b53ec
 
 ## with the blink and talk pictures
 Transform function=_sprite_light
@@ -20,4 +20,4 @@ Transform function=_sprite_light
       Image images/char/fx/fx_yuji_blink.png
     Transform function=view_talk_fn curried(who)
       Image images/char/fx/fx_yuji_talk.png
-pickle: 2417 bytes, sha256 8d0b0e796a408f004bca9b40f010974bf57a9455e67639e0373576f17a8fb902
+pickle: 2417 bytes, sha256 fb554eb22ed8657f062b09a2bbab4d83af047e5a9b95a14257f49f2a148b584f

@@ -1454,23 +1454,18 @@
    ]
   },
   "yuji": {
-   "blink_also": [
-    "happy",
-    "sad",
-    "serious",
-    "surprised"
-   ],
+   "blink_also": [],
    "eyes": [
-    336,
-    296,
-    88,
-    44
+    326,
+    300,
+    92,
+    40
    ],
    "mouth": [
-    350,
-    345,
-    60,
-    34
+    346,
+    344,
+    52,
+    36
    ]
   }
  },
@@ -1506,6 +1501,7 @@
   "layout/area_mountain.json",
   "layout/area_school.json",
   "layout/area_staff.json",
+  "layout/faces.json",
   "layout/hot_cafeteria.json",
   "layout/hot_classroom.json",
   "layout/hot_courtyard.json",
@@ -1763,7 +1759,7 @@
    ]
   }
  },
- "hash": "b4a799781e2e9f8e66054a4bdc09fe07ad3623bcb2b91c60a06bea808afb1319",
+ "hash": "bb2127a311058fc788fab1ffd6f66e919cd50135788292e24a9be5f92a1f6d2e",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -3266,9 +3262,9 @@
     1400
    ],
    "feet": [
-    389,
+    382,
     1365,
-    313
+    315
    ],
    "file": "images/char/yuji_neutral.png"
   }

@@ -15,7 +15,10 @@
   "batch": 12,
   "file": 10
  },
- "done": [],
+ "done": [
+  "0b",
+  "0c"
+ ],
  "batches": [
   {
    "id": "0",
