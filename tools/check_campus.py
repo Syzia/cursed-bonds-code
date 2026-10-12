@@ -7,7 +7,12 @@ checked against the record.
     python3 tools/check_campus.py --layout hot_training_yard.json [area_grounds.json ...]
                                                                    # a candidate's first-guess layout
     python3 tools/check_campus.py --sidecars <folder>              # every hot_/area_ file there, in full
-    python3 tools/check_campus.py --selftest [--layout-dump <file>]
+    python3 tools/check_campus.py --selftest [--layout-dump <file>] [--record <file>]
+                                                                   # its cases are written against the record
+                                                                   # as it stood before the overhaul installed
+                                                                   # anything: on a tree with yards installed,
+                                                                   # tools/test_art_tools.sh --only layout runs
+                                                                   # it with that record and the dump's rows of then
 
 docs/UI2_DESIGN.md 5.2, K4, D14. The record is tools/bgs/campus.json
 (tools/bgs/CAMPUS2.md is the same data as a page, and explains every key).
@@ -1020,7 +1025,13 @@ def show(out, quiet=False):
     return 1 if fails else 0
 
 
-def selftest(dump_path=None, check_hash=True):
+def selftest(dump_path=None, check_hash=True, record_path=None):
+    """The cases below start from the record and change it: "two exits swapped against a fixed fact", "the Training
+    Yard's sides wait for batch 1". They are written against the record as it stood BEFORE the overhaul installed
+    anything (they read it with an empty manifest), so once a yard they use is installed, and its exits are fixed
+    facts at their new points, the live record is no longer their starting point. `record_path` (--record) gives
+    them the record to start from; tools/test_art_tools.py hands over the record of before, and a dump whose rows
+    for the installed places are those of before, whatever is installed (its `layout` group)."""
     fails = []
 
     def ok(what, cond, detail=None):
@@ -1031,7 +1042,7 @@ def selftest(dump_path=None, check_hash=True):
                 print("          %s" % d)
 
     import tempfile, subprocess
-    record = load_record()
+    record = load_record(record_path)
     dump = load_dump(dump_path, check_hash=check_hash)
     manifest = {"pictures": {}}
     rec0 = Rec(record)
@@ -1313,7 +1324,7 @@ def main(argv):
     quiet = "--quiet" in argv
     if quiet: argv.remove("--quiet")
     if "--selftest" in argv:
-        raise SystemExit(selftest(dump_path, not no_hash))
+        raise SystemExit(selftest(dump_path, not no_hash, record_path))
     if argv:
         print(__doc__); raise SystemExit(2)
     for path in layouts:

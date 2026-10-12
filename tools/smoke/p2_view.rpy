@@ -772,11 +772,22 @@ label zz_smoke:
 
     ## --- 7. the foreground on the place view ----------------------------------------------
     python:
+        ## K3 (docs/UI2_PINS.md, Part 2e): "the room has one picture" is the
+        ## Cafeteria read with its hour cells taken out of TIME_VARIANT (it
+        ## has an evening and a night picture of its own since 12 Oct), and
+        ## "elsewhere" is a room while it has no cut, and a name the game
+        ## does not have: the line reads the same whatever is installed.
+        _zz_cells = TIME_VARIANT.pop("cafeteria", None)
+        _zz_fg_one = view_fg_path("cafeteria", "Night")
+        if _zz_cells is not None:
+            TIME_VARIANT["cafeteria"] = _zz_cells
         check(view_fg_path("dorm_common", "Noon") == "images/fg/fg_dorm_common.png"
               and view_fg_path("dorm_common", "Evening") == "images/fg/fg_dorm_common_evening.png"
               and view_fg_path("dorm_common", "Night") == "images/fg/fg_dorm_common_night.png"
-              and view_fg_path("cafeteria", "Night") == "images/fg/fg_cafeteria.png"
-              and view_fg_path("dorm", "Night") is None and view_fg_path("riverside", "Noon") is None,
+              and _zz_fg_one == "images/fg/fg_cafeteria.png"
+              and (world_fg_room("dorm") or view_fg_path("dorm", "Night") is None)
+              and (world_fg_room("riverside") or view_fg_path("riverside", "Noon") is None)
+              and view_fg_path("zz_no_such_room", "Noon") is None,
               "view_fg picks the variant's file for the hour, the day file where the room has one picture, none elsewhere")
         zzv_put("dorm_common", ["megumi", "nobara", "maki"], "Noon")
         zzv_quiet()
@@ -1233,7 +1244,19 @@ label zz_smoke:
     scene expression graded_bg()
     python:
         period = "Evening"
+        ## K3 (Part 2e): "tinted" is the Cafeteria as a room whose Evening is
+        ## the day picture under a tint: its hour cells are taken out of
+        ## TIME_VARIANT while the picture is built, whatever it has by now
+        ## (and what graded_bg holds for that room and hour is forgotten
+        ## before and after: it is built once for each).
+        _zz_cells = TIME_VARIANT.pop("cafeteria", None)
+        for _zz_k in [k for k in _BG_CACHE if k[:2] == ("cafeteria", "Evening")]:
+            _BG_CACHE.pop(_zz_k)
         _zz_img = view_fg_image(view_fg_path("cafeteria", "Evening"), "cafeteria")
+        if _zz_cells is not None:
+            TIME_VARIANT["cafeteria"] = _zz_cells
+        for _zz_k in [k for k in _BG_CACHE if k[:2] == ("cafeteria", "Evening")]:
+            _BG_CACHE.pop(_zz_k)
         check(isinstance(_zz_img, Transform) and zzv_dumps(_zz_img) and zzv_dumps(view_fg_image(view_fg_path(here), here)),
               "the foreground view_enter shows pickles, tinted (the cafeteria in the Evening) or not")
         check(zzv_dumps(renpy.curry(view_breathe_fn)(phase=0.2)) and zzv_dumps(renpy.curry(view_blink_fn)(who="yuji"))

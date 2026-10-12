@@ -256,6 +256,32 @@ init 999 python:
     def zzh_exits(loc):
         return [r["to"] for r in path_exits(loc)]
 
+    def zzh_exit_points(loc):
+        """[(to, x, y)]: a place's exits where the game draws them now (its
+        hot_ file applied)."""
+        return [(r["to"], r["x"], r["y"]) for r in path_exits(loc)]
+
+    def zzh_code_points(loc):
+        """[(to, x, y)]: a place's exits where the CODE has them (PATH_EXITS):
+        the place read with its hot_ file taken as absent. That is where each
+        exit stands on the picture the game had before the overhaul, which is
+        what K12 fixes ("on the old pictures the old exits stay where they
+        were"). A layout traced on a new picture moves them, rightly, and
+        this does not read it. The file is put back before it returns."""
+        name = "hot_" + loc
+        rule_layout_raw(name)               ## read once, so there is a row to put back
+        keep = RULE_LAYOUT[name]
+        RULE_LAYOUT[name] = builtins.dict()
+        try:
+            return zzh_exit_points(loc)
+        finally:
+            RULE_LAYOUT[name] = keep
+
+    def zzh_traced(loc):
+        """bool: the place's hot_ file carries for_rev: its layout was traced
+        on a new picture, so its exits need not be where the code has them."""
+        return "for_rev" in rule_layout_raw("hot_" + loc)
+
     def zzh_exit_table():
         """A copy of PATH_EXITS, each row list its own."""
         return builtins.dict((k, builtins.list(v)) for k, v in PATH_EXITS.items())
@@ -985,12 +1011,22 @@ label zz_smoke:
               "B: the garden has exactly seven exits, the Boys' Dormitory in my room's old place", zzh_exits("dorm_yard"))
         _zz_old = zzh_old_exits()
         _zz_pt = builtins.dict(yard=builtins.tuple(_zz_old["dorm_yard"][0][1:]), room=builtins.tuple(_zz_old["dorm"][0][1:]))
+        ## K3, K12 (docs/UI2_PINS.md, Part 2e). The points of before the
+        ## overhaul are the points on the pictures of before it, and those are
+        ## the code's own (zzh_code_points: the place read with its hot_ file
+        ## taken as absent). A place keeps them on screen for as long as no
+        ## layout traced on a new picture is installed for it (zzh_traced);
+        ## once one is, the game draws its exits where that layout has them,
+        ## and nothing is asked of that here.
+        _zz_code = builtins.dict((l, zzh_code_points(l)) for l in ("dorm_yard", "dorm"))
+        _zz_drawn = [l for l in ("dorm_yard", "dorm") if not zzh_traced(l) and zzh_exit_points(l) != _zz_code[l]]
         check(_zz_old["dorm_yard"][0][0] == "dorm" and [r[0] for r in _zz_old["dorm"]] == ["dorm_yard"]
-              and [(r["to"], r["x"], r["y"]) for r in path_exits("dorm_yard")][0] == ("boys_dorm",) + _zz_pt["yard"]
-              and [(r["to"], r["x"], r["y"]) for r in path_exits("dorm")] == [("boys_dorm",) + _zz_pt["room"]]
-              and [[r["to"], r["x"], r["y"]] for r in path_exits("dorm_yard")][1:] == _zz_old["dorm_yard"][1:],
+              and _zz_code["dorm_yard"][0] == ("boys_dorm",) + _zz_pt["yard"]
+              and _zz_code["dorm"] == [("boys_dorm",) + _zz_pt["room"]]
+              and [builtins.list(r) for r in _zz_code["dorm_yard"]][1:] == _zz_old["dorm_yard"][1:]
+              and not _zz_drawn,
               "B: both exits keep the points they had before the overhaul (U0a's baseline): the left house's steps in the garden, "
-              "my door in my room; the garden's other six are as they were", (path_exits("dorm_yard")[0], path_exits("dorm")))
+              "my door in my room; the garden's other six are as they were", (_zz_code["dorm_yard"][0], _zz_code["dorm"], _zz_drawn))
         check(zzh_exits("boys_dorm") == ["dorm_yard", "dorm", "yuji_room", "megumi_room", "senpai_room"]
               and all(zzh_exits(r) == ["boys_dorm"] for r in ZZH_ROOMS),
               "B: the corridor leads to the garden, my room and the three rooms; each room leads back to it", zzh_exits("boys_dorm"))
@@ -1021,8 +1057,13 @@ label zz_smoke:
               "the Mountain Path five (D6)", [(y, len(zzh_exits(y))) for y in _zz_yards])
         ## K12: on the old pictures the old exits stay where they were; only
         ## the three new ones (and the two doors in the girls' corridor) are added.
+        ## (K3, Part 2e: "its point" is the code's own, and the point on screen
+        ## too wherever no layout traced on a new picture is installed, as in
+        ## the line on the garden above. The order is PATH_EXITS' own in
+        ## either case: a layout moves points, never the order.)
         _zz_moved = [(l, r) for l in ("staff_yard", "training_yard", "trailhead", "girls_dorm") for r in _zz_old[l]
-                     if builtins.tuple(r) not in [(x["to"], x["x"], x["y"]) for x in path_exits(l)]]
+                     if builtins.tuple(r) not in zzh_code_points(l)
+                     or (not zzh_traced(l) and builtins.tuple(r) not in zzh_exit_points(l))]
         _zz_order = [l for l in ("staff_yard", "training_yard", "trailhead", "girls_dorm")
                      if [x["to"] for x in path_exits(l) if x["to"] not in ZZH_SEVEN] != [r[0] for r in _zz_old[l]]]
         check(not _zz_moved and not _zz_order,

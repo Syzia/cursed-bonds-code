@@ -814,9 +814,18 @@ label zz_smoke:
         check(_zz_before == [(l, p, bg_variant(l, p)) for l in LOC_ORDER for p in PERIODS], "A: (tables put back)")
 
         ## -- gate 2: view_fg_path (a stale foreground is not used)
+        ## (K3, the ledger's Part 2e: "a room with one picture" is the
+        ## Cafeteria read with its hour cells taken out of TIME_VARIANT, and
+        ## "a room with no cut" a name the game does not have, so the line
+        ## reads the same whatever pictures are installed.)
+        _zz_cells = TIME_VARIANT.pop("cafeteria", None)
+        _zz_fg_one = view_fg_path("cafeteria", "Night")
+        if _zz_cells is not None:
+            TIME_VARIANT["cafeteria"] = _zz_cells
         check(view_fg_path("dorm_common", "Noon") == "images/fg/fg_dorm_common.png"
               and view_fg_path("dorm_common", "Night") == "images/fg/fg_dorm_common_night.png"
-              and view_fg_path("cafeteria", "Night") == "images/fg/fg_cafeteria.png" and view_fg_path("dorm", "Noon") is None,
+              and _zz_fg_one == "images/fg/fg_cafeteria.png"
+              and (world_fg_room("dorm") or view_fg_path("dorm", "Noon") is None) and view_fg_path("zz_no_such_room", "Noon") is None,
               "A: gate 2, today: view_fg_path answers the cut for the hour's picture")
         _zz_slots = view_slots("dorm_common", 2)
         zzc_art(dorm_common=dict(rev=2, kind="inplace"))
@@ -879,7 +888,13 @@ label zz_smoke:
               and light_for_place("classroom", "Noon") == ("#f0e8d8", -0.02, 0.96, 0.5)
               and light_for_place("classroom", "Morning") == ("#f0e8d8", -0.02, 0.96, 0.5),
               "A: gate 4: a measured row wins while the day picture shows as painted (a row of four values, or six)")
+        ## (K3, Part 2e: "an hour that is only a tint" is the Classroom read
+        ## with its hour cells taken out of TIME_VARIANT, whatever evening
+        ## and night pictures it has by now.)
+        _zz_cells = TIME_VARIANT.pop("classroom", None)
         _zz_tint = (light_for_place("classroom", "Night"), light_for_place("classroom", "Evening"))
+        if _zz_cells is not None:
+            TIME_VARIANT["classroom"] = _zz_cells
         check(all(light_row_ok(r) and builtins.tuple(r) not in (("#c0c8f0", -0.1, 0.8, 0.4, -6, 1.3), ("#f0e8d8", -0.02, 0.96, 0.5)) for r in _zz_tint)
               if _zz_follow else _zz_tint == (INDOOR_LIGHT["Night"], INDOOR_LIGHT["Evening"]),
               "A: gate 4: at an hour that is only a tint the general row stays (the night row waits for the night picture)", _zz_tint)
@@ -984,9 +999,11 @@ label zz_smoke:
         ## the registration's own rules, on a row whose file is known to exist
         _zz_tv = copy.deepcopy(builtins.dict((k, builtins.dict(v)) for k, v in TIME_VARIANT.items()))
         check(_validate_world() == [], "A: the world's validator is clean", _validate_world())
-        TIME_VARIANT.setdefault("classroom", {})["Night"] = "night"
+        ## (K3, Part 2e: the cell names an attribute no picture has, so it has
+        ## no image whatever hour pictures the Classroom has by now.)
+        TIME_VARIANT.setdefault("classroom", {})["Night"] = "zz_no_picture"
         _zz_f = [f for f in _validate_world() if "TIME_VARIANT" in f]
-        check(len(_zz_f) == 1 and "classroom" in _zz_f[0] and "bg classroom night" in _zz_f[0],
+        check(len(_zz_f) == 1 and "classroom" in _zz_f[0] and "bg classroom zz_no_picture" in _zz_f[0],
               "A: lint reports a TIME_VARIANT cell with no image", _zz_f)
         zzc_back()
 
@@ -1054,6 +1071,10 @@ label zz_smoke:
               and view_floor("classroom", off=True) == [[(400, 950), (600, 950), (500, 1000)]]
               and zzc_sig(view_floor).startswith("(loc") and zzc_owner(view_floor, "view_stage.rpy"),
               "B: view_floor(loc) is the sidecar's floor as a list of polygons; off=True the parts people may not stand on")
+        ## (K3, Part 2e: "while the room has no night picture" is the Classroom
+        ## read with its hour cells taken out of TIME_VARIANT for these two
+        ## checks, whatever evening and night pictures it has by now.)
+        _zz_cells = TIME_VARIANT.pop("classroom", None)
         check(view_slot_light("classroom", 2, 1, "Noon") == ("#ffe8c0", 0.04) and view_slot_light("classroom", 2, 0, "Noon") is None
               and view_slot_light("classroom", 1, 0, "Noon") is None and view_slot_light("classroom", 1, 0, "Evening") == ("#ffd0a0", -0.02)
               and view_slot_light("classroom", 1, 0, "Night") is None and view_slot_light("classroom", 2, 5, "Noon") is None,
@@ -1061,6 +1082,8 @@ label zz_smoke:
         check(view_cast("classroom", "Noon") == (35, 1.4, 0.3) and view_cast("classroom", "Evening") == (70, 2.2, 0.4)
               and view_cast("classroom", "Night") == (35, 1.4, 0.3) and view_talk("classroom") is True,
               "B: view_cast and view_talk read their keys (an hour with no row of its own takes the row of the picture that shows)")
+        if _zz_cells is not None:
+            TIME_VARIANT["classroom"] = _zz_cells
         zzc_layout("view_cafeteria", dict(talk=False, floor=[_zz_sq], cast={"": [1, 2]}, slot_light={"": {"2": [["#fff", 0]]}}))
         check(view_talk("cafeteria") is False and view_floor("cafeteria") is None and view_cast("cafeteria", "Noon") is None
               and view_slot_light("cafeteria", 2, 0, "Noon") is None,
