@@ -290,6 +290,18 @@ Twenty-seven relit pictures went in with `tools/install_redo.py --relight`, each
 
 **One line read wrong once.** `p2_hud.rpy`, "the three two-line toasts as drawn end inside the lane (above y 350), and no tile meets them": 76 px of toast where it wants three toasts' height, on one run; 129 of 129 when run again alone. It reads what is drawn half a second after four toasts are queued, and one had been drawn. Nothing about it touches a picture; if it recurs it wants a wait-until, not a longer sleep.
 
+## Part 2h. The last three places, installed on 12 Oct (the third tracing run)
+
+The Girls' Dormitory, the Riverside and the Mountain Ridge went in with their traced layouts, and then their evenings and nights: nine pictures, 108 in the game. No test line turned. What the installs needed beyond the installer's command:
+
+- **The record's rows.** `how` was set to `composed` for each place just before its own install, as for the seven before them. The Girls' Dormitory's row also gained what its chosen picture fixes and the record did not hold: `spare_doors: 4` and a note (three doors a side; Nobara's room the first on the left, Maki's the first on the right; the four far doors spare, D50; sitting 4's fifth go, chosen on 7 Oct). The early record never had a `pictures` row for that corridor: the installer wrote the game's.
+- **The corridor's keep list.** `tools/bgs/keep/girls_dorm.json` described the old corridor (eight doors and a card reader). It is written again for the new one (six doors, the far window's glass, the floor where people stand, the shoe rack, the plant, the three lights) and went in with the layouts, before the evening and the night were proved against it: both PASS.
+- **The veil's point.** The game's own table still has the look at the veil in the old picture's sky, at (960, 250). Nothing needed changing: the place's `hot_` file carries the point (748, 214, on the dome), and the spot kept clear of people is read from the applied point (`path_keep_clear`), so the dump's `keep_clear` row for the ridge follows it.
+- **The ridge's night is a LOOK**, as it should be: the three parts of the picture along the top right are "drawn differently", which is the full moon and the stars the owner chose.
+- **Read in the game** by a scratch harness that stands people in each place at each hour: the game shows each of the nine (12 of 12 checks, the game's own validators silent), and each was read by eye there. A harness that parks everyone it is not showing must not park them in the place it shoots: the first ridge shots showed the whole roster, four standing and seven in the list.
+
+**Still not in the game, of the pictures chosen:** the Mountain Path's evening (version B), which the proof refuses on one point of one outline, 0.29 of the tiles' middle agreement where a relight needs 0.30, with nothing moved; a rule that forgave such a point was built in a worktree, measured against 530 damaged pictures and dropped, because it also forgave a vending machine slid 30 px and a bed painted out, and a named row of the place's keep list (ground whose light changes with the hour) is being built and measured in its stead. And the look at the veil from the rope, a story picture, for which `tools/install_redo.py` has no path (5.8's package).
+
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 
 A scratch copy of the tree was given a crude stub of what wave 0 changes in who

@@ -393,6 +393,40 @@
         0
       ]
     },
+    "girls_dorm": {
+      "batch": "4a",
+      "from_commit": "e4517ec49a7699d2673100e6d03dccd3d9492dfd",
+      "kind": "composed",
+      "record": "bc871573b51a24a03958fcb7d23991a11ccb814cf0e8e08b4cf3c93c068f4b6e",
+      "render": "ui2_girls_dorm5x_b_00001_.png",
+      "rev": 2,
+      "rev1_commit": "e4517ec49a7699d2673100e6d03dccd3d9492dfd"
+    },
+    "girls_dorm_evening": {
+      "batch": "4b",
+      "kind": "relight",
+      "of": "girls_dorm",
+      "of_rev": 2,
+      "render": "ui2_girls_dorm_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "girls_dorm_night": {
+      "batch": "4b",
+      "from_commit": "6f2c2a95291dc0e113476f19b9eb0b386dd8e0c5",
+      "kind": "relight",
+      "of": "girls_dorm",
+      "of_rev": 2,
+      "render": "ui2_girls_dorm_night_off_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
     "gojo_office": {
       "batch": "12a",
       "from_commit": "dd3180bb4b8598fe840b8f4e8183b19dcea577ae",
@@ -640,6 +674,18 @@
       "of": "gate_night",
       "of_rev": 2
     },
+    "light_girls_dorm": {
+      "of": "girls_dorm",
+      "of_rev": 2
+    },
+    "light_girls_dorm_evening": {
+      "of": "girls_dorm_evening",
+      "of_rev": 2
+    },
+    "light_girls_dorm_night": {
+      "of": "girls_dorm_night",
+      "of_rev": 2
+    },
     "light_gojo_office": {
       "of": "gojo_office",
       "of_rev": 2
@@ -738,6 +784,30 @@
     },
     "light_pool_evening": {
       "of": "pool_evening",
+      "of_rev": 2
+    },
+    "light_ridge": {
+      "of": "ridge",
+      "of_rev": 2
+    },
+    "light_ridge_evening": {
+      "of": "ridge_evening",
+      "of_rev": 2
+    },
+    "light_ridge_night": {
+      "of": "ridge_night",
+      "of_rev": 2
+    },
+    "light_riverside": {
+      "of": "riverside",
+      "of_rev": 2
+    },
+    "light_riverside_evening": {
+      "of": "riverside_evening",
+      "of_rev": 2
+    },
+    "light_riverside_night": {
+      "of": "riverside_night",
       "of_rev": 2
     },
     "light_rooftop": {
@@ -1051,6 +1121,73 @@
       "of": "pool",
       "of_rev": 2,
       "render": "ui2_pool_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "ridge": {
+      "batch": "18a",
+      "from_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8",
+      "kind": "composed",
+      "record": "732f9b645d92664daa025d73ab284dff356b3c7b2948ad2e3a47d2701483b22c",
+      "render": "ui2_ridge2_a_00001_.png",
+      "rev": 2,
+      "rev1_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8"
+    },
+    "ridge_evening": {
+      "batch": "18b",
+      "kind": "relight",
+      "of": "ridge",
+      "of_rev": 2,
+      "render": "ui2_ridge_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "ridge_night": {
+      "batch": "18b",
+      "kind": "relight",
+      "of": "ridge",
+      "of_rev": 2,
+      "render": "ui2_ridge_night_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "riverside": {
+      "batch": "17a",
+      "from_commit": "178231531d5bbd15884714ee227a3436652941cc",
+      "kind": "composed",
+      "record": "4376e8a7a068eab3ba1106aad5b60f3749a77d957dd76bb052061993370207b4",
+      "render": "ui2_riverside2_a_00001_.png",
+      "rev": 2,
+      "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
+    },
+    "riverside_evening": {
+      "batch": "17b",
+      "from_commit": "e4517ec49a7699d2673100e6d03dccd3d9492dfd",
+      "kind": "relight",
+      "of": "riverside",
+      "of_rev": 2,
+      "render": "ui2_riverside_evening_a_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "riverside_night": {
+      "batch": "17b",
+      "kind": "relight",
+      "of": "riverside",
+      "of_rev": 2,
+      "render": "ui2_riverside_night_a_00001_.png",
       "rev": 2,
       "shift": [
         0,

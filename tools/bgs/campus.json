@@ -331,6 +331,30 @@
    "batch": "11a",
    "chosen": "2026-10-11",
    "render": "ui2_maki_room2_a_00001_.png"
+  },
+  "riverside": {
+   "place": "riverside",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "17a",
+   "chosen": "2026-10-11",
+   "render": "ui2_riverside2_a_00001_.png"
+  },
+  "ridge": {
+   "place": "ridge",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "18a",
+   "chosen": "2026-10-11",
+   "render": "ui2_ridge2_a_00001_.png"
+  },
+  "girls_dorm": {
+   "place": "girls_dorm",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "4a",
+   "chosen": "2026-10-07",
+   "render": "ui2_girls_dorm5x_b_00001_.png"
   }
  },
  "fixed": [
@@ -2091,6 +2115,107 @@
     "picture": "maki_room",
     "rev": 2
    }
+  },
+  {
+   "id": "place.riverside",
+   "kind": "place",
+   "key": "riverside",
+   "name": "Riverside",
+   "stem": "riverside",
+   "area": "mountain",
+   "indoor": false,
+   "building": "riverside",
+   "how": "composed",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ],
+   "by": {
+    "picture": "riverside",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.riverside",
+   "kind": "building",
+   "key": "riverside",
+   "name": "Riverside",
+   "as": "the riverside",
+   "holds": [
+    "riverside"
+   ],
+   "at": [
+    1380,
+    170
+   ],
+   "ground": true,
+   "look": "a clear river, a pebble bank, a deep pool",
+   "by": {
+    "picture": "riverside",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.ridge",
+   "kind": "place",
+   "key": "ridge",
+   "name": "Mountain Ridge",
+   "stem": "ridge",
+   "area": "mountain",
+   "indoor": false,
+   "building": "ridge",
+   "how": "composed",
+   "batch": "18",
+   "after": [
+    "trailhead"
+   ],
+   "note": "composed again from words (art_17a.json, O45's four questions) and chosen on 11 Oct 2026 (O55): the veil is the small dome on the rise beyond the rope, never in the sky (O36)",
+   "by": {
+    "picture": "ridge",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.ridge",
+   "kind": "building",
+   "key": "ridge",
+   "name": "Mountain Ridge",
+   "as": "the mountain ridge",
+   "holds": [
+    "ridge"
+   ],
+   "at": [
+    950,
+    110
+   ],
+   "ground": true,
+   "look": "grass and rock above the trees; on its very top sits the veil, a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen",
+   "note": "straight up the stone stairs from the Mountain Path",
+   "by": {
+    "picture": "ridge",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.girls_dorm",
+   "kind": "place",
+   "key": "girls_dorm",
+   "name": "Girls' Dormitory",
+   "stem": "girls_dorm",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "composed",
+   "batch": "4",
+   "after": [
+    "dorm_yard"
+   ],
+   "note": "composed again from words (sitting 4, fifth go: art_4u_early.json) and chosen on 7 Oct 2026: three doors a side; Nobara's room is the first door on the left and Maki's the first on the right; its four far doors are the girls' spare doors (D50)",
+   "spare_doors": 4,
+   "by": {
+    "picture": "girls_dorm",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -2296,86 +2421,6 @@
     240
    ],
    "look": "a tall tiled roof with a steam vent, a stone basin by the door, steam above the fence"
-  },
-  {
-   "id": "building.riverside",
-   "kind": "building",
-   "key": "riverside",
-   "name": "Riverside",
-   "as": "the riverside",
-   "holds": [
-    "riverside"
-   ],
-   "at": [
-    1380,
-    170
-   ],
-   "ground": true,
-   "look": "a clear river, a pebble bank, a deep pool"
-  },
-  {
-   "id": "building.ridge",
-   "kind": "building",
-   "key": "ridge",
-   "name": "Mountain Ridge",
-   "as": "the mountain ridge",
-   "holds": [
-    "ridge"
-   ],
-   "at": [
-    950,
-    110
-   ],
-   "ground": true,
-   "look": "grass and rock above the trees; on its very top sits the veil, a small smooth dome like polished black glass, no bigger than a hut, nearly black with a faint dark-violet sheen",
-   "note": "straight up the stone stairs from the Mountain Path"
-  },
-  {
-   "id": "place.girls_dorm",
-   "kind": "place",
-   "key": "girls_dorm",
-   "name": "Girls' Dormitory",
-   "stem": "girls_dorm",
-   "area": "dorms",
-   "indoor": true,
-   "building": "girls_dorm",
-   "how": "inplace",
-   "batch": "4",
-   "after": [
-    "dorm_yard"
-   ],
-   "note": "its far doors are the girls' spare doors (D50)"
-  },
-  {
-   "id": "place.ridge",
-   "kind": "place",
-   "key": "ridge",
-   "name": "Mountain Ridge",
-   "stem": "ridge",
-   "area": "mountain",
-   "indoor": false,
-   "building": "ridge",
-   "how": "inplace",
-   "batch": "18",
-   "after": [
-    "trailhead"
-   ],
-   "note": "composed again from words (art_17a.json, O45's four questions) and chosen on 11 Oct 2026 (O55): the veil is the small dome on the rise beyond the rope, never in the sky (O36)"
-  },
-  {
-   "id": "place.riverside",
-   "kind": "place",
-   "key": "riverside",
-   "name": "Riverside",
-   "stem": "riverside",
-   "area": "mountain",
-   "indoor": false,
-   "building": "riverside",
-   "how": "inplace",
-   "batch": "17",
-   "after": [
-    "trailhead"
-   ]
   },
   {
    "id": "path.dorm_yard.staff_yard",
