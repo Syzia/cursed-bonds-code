@@ -579,6 +579,22 @@ elif cmd == "nightshift":
     n = np.asarray(a).astype(float) * np.array([0.42, 0.50, 0.78]) + np.array([4, 8, 26])
     n = Image.fromarray(np.clip(n, 0, 255).astype("uint8"), "RGB")
     out = Image.new("RGB", (W, H)); out.paste(n, (9, 0)); out.paste(n.crop((0, 0, 9, H)), (0, 0))
+elif cmd == "nightbars":   # a relight by hand whose light changed on a patch of open floor: the night picture, with
+    # moonlight through a lattice lying in thin bars across a polygon (x,y;x,y;...). Then, if asked, a box of that
+    # picture and what is round it moved right (slide:x,y,w,h,d), or a box of it smeared flat (erase:x,y,w,h)
+    n = np.asarray(a).astype(float) * np.array([0.42, 0.50, 0.78]) + np.array([4, 8, 26])
+    m = Image.new("L", (W, H), 0); ImageDraw.Draw(m).polygon([tuple(int(v) for v in q.split(",")) for q in args[0].split(";")], fill=255)
+    yy, xx = np.mgrid[0:H, 0:W]
+    n[(np.asarray(m) > 0) & (((xx + yy // 2) % 12) < 4)] += np.array([70, 80, 96])
+    out = Image.fromarray(np.clip(n, 0, 255).astype("uint8"), "RGB")
+    for part in args[1:]:
+        v = [int(q) for q in part.split(":")[1].split(",")]
+        if part.startswith("slide:"):
+            x, y, w, h, d = v
+            out.paste(out.crop((x - 24 - d, y - 24, x + w + 24 - d, y + h + 24)), (x - 24, y - 24))
+        else:
+            x, y, w, h = v
+            out.paste(out.crop((x, y, x + w, y + h)).filter(ImageFilter.GaussianBlur(28)), (x, y))
 elif cmd == "slide":   # a box and what is round it, moved 10 px right (or by the number given)
     out = look(a); x, y, w, h = box
     d = int(args[1]) if len(args) > 1 else 10
@@ -1616,6 +1632,59 @@ def group_redo(lab):
     rc, out = run([tool("install_redo.py"), "--relight", "dorm_common", "night", night, "--choose", "a", "--root", root2,
                    "--layout-dump", stamp(lab.dump, root2)], py=True)
     ok("a relight is not installed before its day picture is in the new look (K8)", rc != 0 and "not installed in the new look" in out, out)
+
+    # A relight's open ground (the keep list's `ground` rows, 12 Oct 2026): left out of every registered point's
+    # window in step 2, as glass is, and in a relight only. A shape traced on the boards in front of the cushions,
+    # where the cards are played: its outline crosses the bare boards. A scratch copy of the room's keep list names
+    # those boards as ground. By night, moonlight through a lattice lies in thin bars across them.
+    boards = [[1100, 930], [1560, 930], [1600, 1040], [1060, 1040]]
+    gdump = stamp(lab.dump, root, out=os.path.join(root, "dump_ground.json"), extra={"shapes": {"dorm_common": {"card_table": [boards]}}})
+    gkl = json.load(open(os.path.join(TOOLS, "bgs", "keep", "dorm_common.json"), encoding="utf-8"))
+    named, under = os.path.join(lab.work, "keep_ground"), os.path.join(lab.work, "keep_ground_under")
+    for folder, zone in ((named, [1000, 962, 700, 110]), (under, [1296, 872, 208, 200])):
+        os.makedirs(folder, exist_ok=True)
+        json.dump(dict(gkl, ground=[{"name": "the bare boards in front of the rug", "box": zone}]), open(os.path.join(folder, "dorm_common.json"), "w"))
+    day = os.path.join(root, "game", "images", "bg", "dorm_common.png")
+    pool = "1040,972;1660,972;1690,1064;1010,1064"
+    traced = "the outline of the shape traced for the hotspot card_table"
+    gtail = ["--dry", "--root", root, "--layout-dump", gdump]
+
+    def relit(path, keep=None, hour=True):
+        rc, out = run([tool("install_redo.py")] + (["--relight", "dorm_common", "night"] if hour else ["dorm_common"]) + [path] + gtail
+                      + (["--keep", keep] if keep else []), py=True)
+        v = list(verdicts(out).values())[0] if verdicts(out) else ("?", "")
+        return rc, out, v
+
+    bars = lab.syn("nightbars", day, "syn_bars_a_00001_.png", pool)
+    rc, out, v = relit(bars)
+    ok("a relight whose light changed on a patch of bare floor that a traced outline crosses is REFUSED while the room's "
+       "keep list does not name that floor: the outline no longer lines up (the counter-case of the next line)",
+       v[0] == "REFUSED" and rc == 1 and "%s no longer lines up with the picture in the game" % traced in v[1], out)
+    rc, out, v = relit(bars, named)
+    ok("with the floor named as `ground` in the keep list the same relight is not refused: the ground is left out of "
+       "every point's window, as glass is, and each point is held by what stands round it (every point is still "
+       "held: none is said to lie wholly on ground)",
+       v[0] in ("PASS", "LOOK") and rc == 0 and "card_table" not in v[1] and "no longer lines up" not in v[1]
+       and "cannot be held" not in out, out)
+    rc, out, v = relit(lab.syn("nightbars", day, "syn_bars9_a_00001_.png", pool, "slide:1060,830,540,210,9"), named)
+    ok("with the `ground` row, the same relight with what the shape is traced on and what stands round it shifted 9 px "
+       "is still REFUSED as moved, and the shape is named",
+       v[0] == "REFUSED" and rc == 1 and "%s moved 9 px right" % traced in v[1], out)
+    rc, out, v = relit(lab.syn("nightbars", day, "syn_barsgone_a_00001_.png", pool, "erase:1100,840,480,110"), named)
+    ok("with the `ground` row, the same relight with what stands round the ground painted out (the cushions, the rug's "
+       "edge, the cabinet's foot) is still REFUSED: the outline no longer lines up",
+       v[0] == "REFUSED" and rc == 1 and "%s no longer lines up with the picture in the game" % traced in v[1], out)
+    rc, out, v = relit(bars, named, hour=False)
+    ok("a `ground` row does nothing in a picture redone in place: the first of those pictures, offered in place with "
+       "the row there, is REFUSED for the outline",
+       v[0] == "REFUSED" and rc == 1 and "%s no longer lines up with the picture in the game" % traced in v[1], out)
+    rc, out, v = relit(bars, under)
+    rc2, out2, v2 = relit(bars, under, hour=False)
+    ok("a point whose window is nearly all ground cannot be held, and the report's \"moved\" line says so in words that "
+       "are true of glass and of ground (\"wholly on glass or on open ground\"); in place, where the row is not read, "
+       "nothing is said",
+       re.search(r"moved\s.*lies? wholly on glass or on open ground and cannot be held \(.*the floor where people stand "
+                 r"\(a row of 3, at x 1400\)", out) is not None and "cannot be held" not in out2, out + out2)
 
     # a room lit at Night (U0n, 5.7a): `lit` is a third hour, for a room of the game's lit table only
     lamp = lab.syn("night", os.path.join(root, "game", "images", "bg", "dorm_common.png"), "syn_lit_a_00001_.png")
@@ -2802,6 +2871,109 @@ def real_early(tail):
     return table
 
 
+STAGED = os.path.join(TOOLS, "art", "staged")
+
+
+def staged_layouts(folder=STAGED):
+    """{place: {"hot", "view", "fg"}}: the traced layouts staged in the repository, read from the folder and never
+    from a list of names: every <place>/ that holds hot_<place>.json and view_<place>.json. `fg` is the staged
+    outline of the place's foreground, fg_<place>.json, where one lies beside them (None today for every place)."""
+    out = {}
+    for place in sorted(os.listdir(folder)) if os.path.isdir(folder) else []:
+        files = dict((k, os.path.join(folder, place, "%s_%s.json" % (k, place))) for k in ("hot", "view", "fg"))
+        if os.path.exists(files["hot"]) and os.path.exists(files["view"]):
+            out[place] = dict(files, fg=files["fg"] if os.path.exists(files["fg"]) else None)
+    return out
+
+
+def traced_root(lab, staged, name="r_traced"):
+    """A scratch copy of the tree with every staged traced layout IN FORCE, and its dump: (root, dump).
+
+    The suite's other copies stand before the overhaul, where no place had a traced shape; so the chosen relights
+    were never proved round the points a traced layout adds, and a relight the installer refuses for one (the
+    Mountain Path's evening, 12 Oct) went unseen. Here each staged hot_ and view_ file is laid into the copy's
+    game/layout/ (and a staged fg_ outline into its tools/fg/, as the installer lays one), and the copy's dump
+    is given the rows the game writes from those files: the place's `shapes` as the hot_ file holds them, each
+    exit's and each registered hotspot's point where the file's `spots` puts it (the code's own point where it
+    names none), and the standing rows of the view_ file's `slots`. A planned hotspot's point the tools read
+    from the hot_ file itself. A pose painted on the place's picture of before does not stand on the new one
+    (K7): the place's pose rows are the game's own of today where its traced layout is in force today (the
+    dump's `shaped`), and none where it is not. So tools/install_redo.py holds, for a staged place, the points
+    it holds in the game once that layout is installed: on 12 Oct 2026 the committed dump's rows for all 26
+    installed places were these rows exactly, and 51 of 52 chosen relights read here the verdict, the count of
+    points and the words of the real tree's own run. The 52nd is Utahime's Office: the outline of its new desk
+    is in tools/fg/ alone, which a copy puts back, so its old desk's outline is held here (74 points for the
+    real tree's 81) until that outline is staged beside its layout as fg_utahime_office.json: with it there,
+    tried on 12 Oct, this copy holds the 81. The verdicts do not depend on what is installed: the staged
+    files are the same before and after."""
+    root = mkroot(os.path.join(lab.work, name))
+    today = json.load(open(lab.dump, encoding="utf-8"))
+    plain = json.load(open(stamp(lab.dump, root, out=os.path.join(lab.work, name + "_plain.json")), encoding="utf-8"))
+    rows = dict((key, dict(plain.get(key) or {})) for key in ("shapes", "exits", "hotspots", "slots", "poses"))
+    for place, files in sorted(staged.items()):
+        hot = json.load(open(files["hot"], encoding="utf-8"))
+        view = json.load(open(files["view"], encoding="utf-8"))
+        for kind, data in (("hot", hot), ("view", view)):
+            with open(os.path.join(root, "game", "layout", "%s_%s.json" % (kind, place)), "w", encoding="utf-8") as f:
+                json.dump(data, f)
+        if files["fg"]:
+            shutil.copyfile(files["fg"], os.path.join(root, "tools", "fg", place + ".json"))
+        spots = hot.get("spots") or {}
+        rows["shapes"][place] = hot.get("shapes") or {}
+        for key in ("exits", "hotspots"):
+            if place in (today.get(key) or {}):
+                rows[key][place] = [dict(r, applied=list(spots.get(r["id"], r.get("default", r["applied"])))) for r in today[key][place]]
+        if view.get("slots"):
+            rows["slots"][place] = view["slots"]
+        rows["poses"].pop(place, None)
+        if place in (today.get("shaped") or []) and place in (today.get("poses") or {}):
+            rows["poses"][place] = today["poses"][place]
+    return root, stamp(lab.dump, root, out=os.path.join(lab.work, name + ".json"), extra=rows)
+
+
+def real_traced(lab, folder=STAGED):
+    """Every relight the owner chose, of a place whose traced layout is staged, proved with that layout in force
+    (traced_root) against its chosen day picture, with the place's keep list as it is in the tree. None may be
+    REFUSED. And the Mountain Path's evening, version B, by name: with the ground of its path named, and without."""
+    staged = staged_layouts(folder)
+    root, dump = traced_root(lab, staged)
+    tail = ["--root", root, "--layout-dump", dump, "--dry"]
+    for sitting, place, hour, render, day in EARLY_CHOSEN:
+        if not hour or place not in staged:
+            continue
+        name = "REAL, chosen in sitting %s, against its traced layout: %s at %s (%s)" % (sitting, place, hour, render)
+        got, absent = early_run(place, hour, render, day, tail)
+        if got is None:
+            skipped(name, "%s is not on this machine" % absent)
+            continue
+        rc, out, verdict, said = got
+        ok("%s is %s, not REFUSED" % (name, verdict), verdict in ("PASS", "LOOK") and rc == 0, out)
+    # the Mountain Path: the earth of the way to the river is named in its keep list (tools/bgs/keep/trailhead.json)
+    path_b = "the Mountain Path's chosen evening, version B, against its traced layout"
+    keep_file = os.path.join(TOOLS, "bgs", "keep", "trailhead.json")
+    kl = json.load(open(keep_file, encoding="utf-8")) if os.path.exists(keep_file) else {}
+    got, absent = early_run("trailhead", "evening", "ui2_trailhead_evening_b", "chosen", tail) if "trailhead" in staged else (None, "its staged layout")
+    if got is None:
+        skipped("REAL: %s, with the path's ground named in its keep list, is not refused" % path_b, "%s is not on this machine" % absent)
+        skipped("REAL: %s, with the `ground` row taken out of a scratch copy of its keep list, is REFUSED" % path_b,
+                "%s is not on this machine" % absent)
+        return
+    rc, out, verdict, said = got
+    ok("REAL: %s, with the path's ground named in its keep list, is not refused (%s; one `ground` row, a polygon)"
+       % (path_b, verdict), verdict in ("PASS", "LOOK") and rc == 0 and len(kl.get("ground") or []) == 1
+       and bool(kl["ground"][0].get("poly")) and "Riverside" not in said, out)
+    bare = os.path.join(lab.work, "keep_no_ground")
+    os.makedirs(bare, exist_ok=True)
+    with open(os.path.join(bare, "trailhead.json"), "w", encoding="utf-8") as f:
+        json.dump(dict((k, v) for k, v in kl.items() if k != "ground"), f)
+    rc, out, verdict, said = early_run("trailhead", "evening", "ui2_trailhead_evening_b", "chosen", tail + ["--keep", bare])[0]
+    ok("REAL: %s, with the `ground` row taken out of a scratch copy of its keep list, is REFUSED on the way to "
+       "Riverside's outline, and on nothing else (the counter-case: the row is what lets it in)" % path_b,
+       verdict == "REFUSED" and rc == 1
+       and said == "- the outline of the shape traced for the way to Riverside no longer lines up with the picture in the "
+                   "game (moved further than 24 px, or gone)", out)
+
+
 def figures(out):
     return [json.loads(m) for m in re.findall(r"^\s+figures\s+(\{.*\})$", out, re.M)]
 
@@ -2884,6 +3056,7 @@ def group_real(lab, write=False):
            rc == 0 and fig.get("shift") == [0, 0] and "git, commit" in out, out)
         record["canary_shape"] = {"render": "look3_dorm_common_keep_00001_.png", "figures": fig}
     real_early(tail)
+    real_traced(lab)
     for place, stem, hour in PAIRS:
         # the pairs the game had before the overhaul: read from the scratch copy, which stands there (mkroot)
         day = os.path.join(root, "game", "images", "bg", stem + ".png")
