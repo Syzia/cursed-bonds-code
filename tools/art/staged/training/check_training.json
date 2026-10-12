@@ -1,0 +1,13 @@
+{
+ "horizon": 653,
+ "doors": [
+  {
+   "name": "the open screens onto the yard",
+   "box": [180, 405, 402, 497]
+  },
+  {
+   "name": "the further open screen",
+   "box": [790, 545, 100, 217]
+  }
+ ]
+}

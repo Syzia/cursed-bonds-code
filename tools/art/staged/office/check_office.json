@@ -1,0 +1,6 @@
+{
+ "horizon": 595,
+ "doors": [
+  {"name": "the open double doors", "box": [248, 387, 415, 453]}
+ ]
+}
