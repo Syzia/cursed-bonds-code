@@ -1846,7 +1846,7 @@
    ]
   }
  },
- "hash": "51ce6412c59cb2243c15e675e821122a6c37682c7b4249fdbcbdd40729f59079",
+ "hash": "be4cf2c311ca762e3b62d4aa4939203f04fac9e5c57ed39f73e516b2d0a93254",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -3715,6 +3715,7 @@
    "key": "trailhead",
    "name": "Mountain Path",
    "variants": {
+    "Evening": "evening",
     "Night": "night"
    },
    "y": 0,

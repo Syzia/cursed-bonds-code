@@ -265,7 +265,7 @@ Twelve composed places went in with their traced layouts (`hot_`, `view_`, `for_
 
 **In the game, until a pose is painted on the new picture:** Utahime stands in her office (left of her desk; a second person stands behind it, seen from the hips up). The old pose's file stays where it is (K9). A new pose is a later sitting's, and no pose is painted while the characters are being reworked (the owner's word of 12 Oct).
 
-**Two things the install itself needed, beyond the installer's command.** (1) *Utahime's Office's foreground.* The game draws the desk over the people, and `tools/fg/utahime_office.json` held the old picture's desk: installed as it stood, the cut was a piece of the new floor laid over a person's legs. The traced outline of the new desk was in the staged `check_utahime_office.json` under `fg` (its README said so); it is now the day outline of `tools/fg/utahime_office.json`, and `tools/make_fg.py utahime_office` cut `fg_utahime_office.png` again (5.4% of the frame). A staged layout that changes a room's foreground should carry the outline as a third file, `fg_<place>.json`, which `install_redo.py --layout` copies to `tools/fg/` before it cuts: the next tracing run's brief says so. (2) *The Teachers' Dormitory's row of the campus record* still held the proposal of six doors, three spare; the early record has the owner's four doors, three named and one spare (O69). `words`, `spare_doors` and `note` were brought over before the install, which then passed.
+**Two things the install itself needed, beyond the installer's command.** (1) *Utahime's Office's foreground.* The game draws the desk over the people, and `tools/fg/utahime_office.json` held the old picture's desk: installed as it stood, the cut was a piece of the new floor laid over a person's legs. The traced outline of the new desk was in the staged `check_utahime_office.json` under `fg` (its README said so); it is now the day outline of `tools/fg/utahime_office.json`, and `tools/make_fg.py utahime_office` cut `fg_utahime_office.png` again (5.4% of the frame). (`install_redo.py --layout` takes an `fg_<place>.json` and copies it to `tools/fg/` before it cuts, but `tools/check_layout.py` refuses a staged folder that holds one, "not a layout file name": found on 12 Oct when one was to be staged for this office. Until the two agree, the outline is written to `tools/fg/` by hand before the install, and the tracing's README says so in its last section.) (2) *The Teachers' Dormitory's row of the campus record* still held the proposal of six doors, three spare; the early record has the owner's four doors, three named and one spare (O69). `words`, `spare_doors` and `note` were brought over before the install, which then passed.
 
 **One point moved after a look in the game.** In Panda and Toge's Room the door's name ("To the Boys' Dormitory") opened at the door's middle, where Panda, standing in the left place of two, hid its last third behind his arm (his figure is half as wide again as anyone's, and `check_layout.py` measures a person of the usual width). `go_senpai_room__boys_dorm` moved up its own door from (92, 520) to (92, 340), in the staged and the installed file alike: the name now opens beside Panda's head, clear of him, and just under the arrival caption.
 
@@ -300,7 +300,35 @@ The Girls' Dormitory, the Riverside and the Mountain Ridge went in with their tr
 - **The ridge's night is a LOOK**, as it should be: the three parts of the picture along the top right are "drawn differently", which is the full moon and the stars the owner chose.
 - **Read in the game** by a scratch harness that stands people in each place at each hour: the game shows each of the nine (12 of 12 checks, the game's own validators silent), and each was read by eye there. A harness that parks everyone it is not showing must not park them in the place it shoots: the first ridge shots showed the whole roster, four standing and seven in the list.
 
-**Still not in the game, of the pictures chosen:** the Mountain Path's evening (version B), which the proof refuses on one point of one outline, 0.29 of the tiles' middle agreement where a relight needs 0.30, with nothing moved; a rule that forgave such a point was built in a worktree, measured against 530 damaged pictures and dropped, because it also forgave a vending machine slid 30 px and a bed painted out, and a named row of the place's keep list (ground whose light changes with the hour) is being built and measured in its stead. And the look at the veil from the rope, a story picture, for which `tools/install_redo.py` has no path (5.8's package).
+**Still not in the game at that commit, of the pictures chosen:** the Mountain Path's evening (version B), which went in the same evening (Part 2i), and the look at the veil from the rope, a story picture, for which `tools/install_redo.py` has no path (5.8's package).
+
+## Part 2i. The Mountain Path's evening, and what the proof was taught (12 Oct)
+
+The owner's choice, version B of sitting 14p, was refused by `tools/install_redo.py --relight` once the place's traced layout was installed: "the outline of the shape traced for the way to Riverside no longer lines up with the picture in the game". One of 150 outline points failed, the corner at (1790, 900) on the earth of the path: its 192 px window agreed 0.213, which is 0.29 of the tiles' middle (0.726) where a relight needs 0.30. On the coarse map in the wide window nothing had moved, and by eye nothing had: by day leaf shadow lies on the path there, in the evening low sun.
+
+**A rule that forgave it was built, measured and dropped** (a worker, in a worktree; nothing of it was committed). In a relight, a traced outline's point that was no longer the same drawing was to be held again as a standing point is, and shown, not refused, while at most one in ten of that outline's points failed. Measured on each place's installed evening with one traced outline damaged, 106 outlines and five kinds of damage:
+
+| damage (106 each) | refused as the proof stood | refused with the rule |
+|---|---|---|
+| slid 9 px | 97 | 97 |
+| slid 30 px | 86 | 82 |
+| painted out whole | 82 | 75 |
+| its left half painted out | 54 | 46 |
+| 200 px round one corner painted out | 81 | 45 |
+
+It showed the Courtyard's vending machine slid 30 px and Megumi's bed painted out. Real damage fails one to three points of an outline, exactly what the rule forgave; no narrower variant passed the evening without losing a refusal.
+
+**What was built instead is a named row** (commits `54782b9`, `924ce78`, merged in `0c1c6f9`): the keep list's `ground`, open ground or open water whose light and shadow change with the hour. In a relight, and only in "nothing moved", such a zone is left out of every registered point's window as glass is, so the point is held by what stands round it; in a picture redone in place it does nothing, and it adds no words to a prompt. `tools/bgs/keep/trailhead.json` holds the first: one polygon of 21 corners on the earth of the way to the river, traced inside the path's edges (seen over both pictures at full size: the grass bank, the verge, the bushes and the trunks stay outside it).
+
+| measured | result |
+|---|---|
+| the Mountain Path's evening | A PASS, B PASS; the corner reads 0.391, 0.54 of the middle; 17% of its window is ground |
+| every relit picture installed at the time (65), and this evening | 64 reports the same byte for byte; the Mountain Path's night loses only its "no keep list" note; evening B goes from REFUSED to PASS |
+| 37 damages on the Mountain Path, at each of its three relights | night and evening A: the same 31 refused with and without the row, word for word. Evening B: 34 refused before, 32 with the row. The two lost: the earth inside the polygon painted out (what the row is for), and the standing stone's left half painted out, which the proof had never seen: it was refused only by the corner line that refused the undamaged picture, and on the night and on A it is not refused with or without the row |
+
+**The net that was missing.** The art suite proved every chosen relight (`EARLY_CHOSEN`), but only against the tree of before the overhaul, where no place had a traced shape. It now proves each one against its staged traced layout as well (a scratch root with the staged `hot_` and `view_` files laid in and the dump stamped, `--against` the chosen day picture, the place's keep list as it is in the tree): 58 lines on today's tree, two named lines for the Mountain Path (not refused with the row; refused on the way to Riverside's outline with the row taken out) and six synthetic lines for the row both ways. Each was seen to fail with the row unread, read in place too, or the row removed. One gap is known: Utahime's Office is held at 74 points there, not 81, because its desk's outline is not staged (Part 2f).
+
+Then the evening went in (`--choose b`, sitting 14 whole): 109 pictures.
 
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 

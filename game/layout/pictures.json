@@ -906,6 +906,10 @@
       "of": "trailhead",
       "of_rev": 2
     },
+    "light_trailhead_evening": {
+      "of": "trailhead_evening",
+      "of_rev": 2
+    },
     "light_trailhead_night": {
       "of": "trailhead_night",
       "of_rev": 2
@@ -1455,6 +1459,18 @@
       "render": "ui2_trailhead_sa_b_00001_.png",
       "rev": 2,
       "rev1_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c"
+    },
+    "trailhead_evening": {
+      "batch": 14,
+      "kind": "relight",
+      "of": "trailhead",
+      "of_rev": 2,
+      "render": "ui2_trailhead_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
     },
     "trailhead_night": {
       "batch": 14,
