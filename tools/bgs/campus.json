@@ -92,21 +92,53 @@
   },
   "dorm_common": {
    "place": "dorm_common",
-   "rev": 2,
+   "rev": 3,
    "kind": "inplace",
    "batch": "0",
-   "chosen": "2026-10-06",
-   "render": "look3_dorm_common_keep_00001_.png",
+   "chosen": "2026-10-07",
+   "render": "ui2_dorm_common_a_00001_.png",
    "source": "~/Desktop/JJK Game images/look_test/fit3_dorm_common.png"
   },
   "cafeteria": {
    "place": "cafeteria",
-   "rev": 2,
+   "rev": 3,
    "kind": "inplace",
    "batch": "0",
-   "chosen": "2026-10-06",
-   "render": "look3_cafeteria_keep_00001_.png",
+   "chosen": "2026-10-07",
+   "render": "ui2_cafeteria_a_00001_.png",
    "source": "~/Desktop/JJK Game images/look_test/fit3_cafeteria.png"
+  },
+  "your_room": {
+   "place": "dorm",
+   "rev": 2,
+   "kind": "inplace",
+   "batch": "3a",
+   "chosen": "2026-10-07",
+   "render": "ui2_your_room_b_00001_.png"
+  },
+  "classroom": {
+   "place": "classroom",
+   "rev": 2,
+   "kind": "inplace",
+   "batch": "6a",
+   "chosen": "2026-10-11",
+   "render": "ui2_classroom_b_00001_.png"
+  },
+  "infirmary": {
+   "place": "infirmary",
+   "rev": 2,
+   "kind": "inplace",
+   "batch": "6a",
+   "chosen": "2026-10-11",
+   "render": "ui2_infirmary_a_00001_.png"
+  },
+  "rooftop": {
+   "place": "rooftop",
+   "rev": 2,
+   "kind": "inplace",
+   "batch": "8a",
+   "chosen": "2026-10-11",
+   "render": "ui2_rooftop_a_00001_.png"
   }
  },
  "fixed": [
@@ -327,7 +359,7 @@
    "note": "already made (the third look test); run once more in batch 4, from its revision-1 picture, for its window line; the picture shows its windows along the left wall and no compass, so which way it faces is not a fixed fact (see window.cafeteria.left)",
    "by": {
     "picture": "cafeteria",
-    "rev": 2
+    "rev": 3
    }
   },
   {
@@ -373,7 +405,7 @@
    "note": "already made (the third look test); run once more in batch 3, from its revision-1 picture, for its window line",
    "by": {
     "picture": "dorm_common",
-    "rev": 2
+    "rev": 3
    }
   },
   {
@@ -574,7 +606,7 @@
    "faces": "north",
    "by": {
     "picture": "dorm_common",
-    "rev": 2
+    "rev": 3
    }
   },
   {
@@ -585,7 +617,7 @@
    "faces": "west",
    "by": {
     "picture": "dorm_common",
-    "rev": 2
+    "rev": 3
    }
   },
   {
@@ -605,7 +637,7 @@
    "words": "seen from the sliding glass doors: a sofa along the left wall under a large window; a bookshelf with board games on top in the far left corner; a window in the far wall; a low table on a rug in the middle with two floor cushions; a small fridge, a kettle and a microwave at the far right; a television on a low cabinet on the right; an air conditioner high on the far wall",
    "by": {
     "picture": "dorm_common",
-    "rev": 2
+    "rev": 3
    }
   },
   {
@@ -615,6 +647,87 @@
    "words": "a wall of tall windows with tied-back curtains along the left; a water cooler and potted plants at the far left; the serving counter with a food warmer and stacked trays along the far wall; rows of long wooden tables and chairs on the right; round paper lamps hanging from the ceiling; a clear wooden floor on the left",
    "by": {
     "picture": "cafeteria",
+    "rev": 3
+   }
+  },
+  {
+   "id": "place.dorm",
+   "kind": "place",
+   "key": "dorm",
+   "name": "My Room",
+   "stem": "your_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "inplace",
+   "batch": "3",
+   "after": [
+    "dorm_yard"
+   ],
+   "at": [
+    700,
+    430
+   ],
+   "note": "the room at the end of the boys' corridor; with a closed laptop on the desk as a named addition",
+   "by": {
+    "picture": "your_room",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.classroom",
+   "kind": "place",
+   "key": "classroom",
+   "name": "Classroom",
+   "stem": "classroom",
+   "area": "school",
+   "indoor": true,
+   "building": "school_building",
+   "how": "inplace",
+   "batch": "6",
+   "after": [
+    "school_yard"
+   ],
+   "by": {
+    "picture": "classroom",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.infirmary",
+   "kind": "place",
+   "key": "infirmary",
+   "name": "Infirmary",
+   "stem": "infirmary",
+   "area": "school",
+   "indoor": true,
+   "building": "infirmary",
+   "how": "inplace",
+   "batch": "6",
+   "after": [
+    "school_yard"
+   ],
+   "by": {
+    "picture": "infirmary",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.rooftop",
+   "kind": "place",
+   "key": "rooftop",
+   "name": "Rooftop",
+   "stem": "rooftop",
+   "area": "dorms",
+   "indoor": false,
+   "building": "tower",
+   "how": "inplace",
+   "batch": "8",
+   "after": [
+    "dorm_yard"
+   ],
+   "by": {
+    "picture": "rooftop",
     "rev": 2
    }
   }
@@ -1035,36 +1148,6 @@
    "old_picture": "school"
   },
   {
-   "id": "place.classroom",
-   "kind": "place",
-   "key": "classroom",
-   "name": "Classroom",
-   "stem": "classroom",
-   "area": "school",
-   "indoor": true,
-   "building": "school_building",
-   "how": "inplace",
-   "batch": "6",
-   "after": [
-    "school_yard"
-   ]
-  },
-  {
-   "id": "place.infirmary",
-   "kind": "place",
-   "key": "infirmary",
-   "name": "Infirmary",
-   "stem": "infirmary",
-   "area": "school",
-   "indoor": true,
-   "building": "infirmary",
-   "how": "inplace",
-   "batch": "6",
-   "after": [
-    "school_yard"
-   ]
-  },
-  {
    "id": "place.dorm_yard",
    "kind": "place",
    "key": "dorm_yard",
@@ -1112,26 +1195,6 @@
     "dorm"
    ],
    "spare_doors": 3
-  },
-  {
-   "id": "place.dorm",
-   "kind": "place",
-   "key": "dorm",
-   "name": "My Room",
-   "stem": "your_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "inplace",
-   "batch": "3",
-   "after": [
-    "dorm_yard"
-   ],
-   "at": [
-    700,
-    430
-   ],
-   "note": "the room at the end of the boys' corridor; with a closed laptop on the desk as a named addition"
   },
   {
    "id": "place.yuji_room",
@@ -1192,21 +1255,6 @@
     "dorm"
    ],
    "pinless": true
-  },
-  {
-   "id": "place.rooftop",
-   "kind": "place",
-   "key": "rooftop",
-   "name": "Rooftop",
-   "stem": "rooftop",
-   "area": "dorms",
-   "indoor": false,
-   "building": "tower",
-   "how": "inplace",
-   "batch": "8",
-   "after": [
-    "dorm_yard"
-   ]
   },
   {
    "id": "place.girls_dorm",

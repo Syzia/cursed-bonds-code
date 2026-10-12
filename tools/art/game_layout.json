@@ -1514,9 +1514,13 @@
   "layout/hot_storehouse.json",
   "layout/hot_utahime_office.json",
   "layout/light_cafeteria.json",
+  "layout/light_classroom.json",
   "layout/light_courtyard.json",
+  "layout/light_dorm.json",
   "layout/light_dorm_common.json",
+  "layout/light_infirmary.json",
   "layout/light_library.json",
+  "layout/light_rooftop.json",
   "layout/pictures.json",
   "layout/view_courtyard.json",
   "layout/view_dorm_common.json",
@@ -1766,7 +1770,7 @@
    ]
   }
  },
- "hash": "6297dc94bdac7a8be7252daab903da8dfca7e4a47f3619e4751f65f13b6e60e5",
+ "hash": "0356854bc8c44ead0bbf70d51bedecc27e2da8f25fbc11d4c9c9c333c26dd3a0",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -3304,7 +3308,10 @@
    "indoor": false,
    "key": "courtyard",
    "name": "Courtyard",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3316,7 +3323,10 @@
    "indoor": true,
    "key": "classroom",
    "name": "Classroom",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3328,7 +3338,10 @@
    "indoor": true,
    "key": "cafeteria",
    "name": "Cafeteria",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
@@ -3380,7 +3393,7 @@
    "key": "dorm",
    "name": "My Room",
    "variants": {
-    "Evening": "night",
+    "Evening": "evening",
     "Night": "night"
    },
    "y": 0,
@@ -3424,6 +3437,7 @@
    "key": "infirmary",
    "name": "Infirmary",
    "variants": {
+    "Evening": "evening",
     "Night": "night"
    },
    "y": 0,
@@ -3523,7 +3537,10 @@
    "indoor": true,
    "key": "library",
    "name": "Library",
-   "variants": {},
+   "variants": {
+    "Evening": "evening",
+    "Night": "night"
+   },
    "y": 0,
    "zoom": 0.52
   },
