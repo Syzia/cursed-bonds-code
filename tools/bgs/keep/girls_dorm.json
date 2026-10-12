@@ -1,25 +1,27 @@
 {
  "keep": [
-  {"name": "the shoe rack and the shoes on it", "box": [738, 703, 134, 190]},
-  {"name": "the potted plant at the end of the corridor", "box": [923, 563, 90, 208]},
-  {"name": "the ceiling light, nearest", "box": [973, 3, 128, 62]},
-  {"name": "the ceiling lights further down", "box": [1043, 193, 90, 100]},
-  {"name": "the card reader by the first door", "box": [320, 498, 28, 88]},
-  {"name": "the window at the end of the corridor", "box": [963, 363, 274, 280]}
+  {"name": "the shoe rack and the shoes on it", "box": [486, 678, 190, 252]},
+  {"name": "the potted plant beside the far window", "box": [1020, 496, 112, 190]},
+  {"name": "the ceiling light, nearest", "box": [877, 50, 164, 72]},
+  {"name": "the ceiling light, middle", "box": [907, 210, 104, 44]},
+  {"name": "the ceiling light, furthest", "box": [922, 294, 74, 32]}
  ],
  "empty": [
-  {"name": "the floor", "poly": [[885, 792], [1250, 762], [1430, 1075], [520, 1075], [700, 922], [885, 892]]}
+  {"name": "the floor where people stand", "poly": [[720, 808], [1220, 808], [1400, 900], [1400, 960], [680, 960], [680, 900], [720, 850]]}
  ],
  "allow": [],
  "change": [],
  "doors": [
-  {"name": "the first door on the left", "box": [388, 88, 118, 955]},
-  {"name": "the second door on the left", "box": [673, 298, 58, 605]},
-  {"name": "the third door on the left", "box": [735, 318, 62, 365]},
-  {"name": "the fourth door on the left", "box": [848, 393, 34, 392]},
-  {"name": "the far door on the left", "box": [903, 423, 26, 352]},
-  {"name": "the first door on the right", "box": [1428, 58, 90, 1015]},
-  {"name": "the second door on the right", "box": [1308, 298, 40, 585]},
-  {"name": "the far door on the right", "box": [1263, 398, 28, 405]}
- ]
+  {"name": "the first door on the left (Nobara's Room)", "box": [272, 6, 168, 1070]},
+  {"name": "the second door on the left (spare)", "box": [638, 288, 54, 504]},
+  {"name": "the third door on the left (spare)", "box": [748, 376, 30, 336]},
+  {"name": "the third door on the right (spare)", "box": [1142, 376, 30, 336]},
+  {"name": "the second door on the right (spare)", "box": [1228, 288, 54, 504]},
+  {"name": "the first door on the right (Maki's Room)", "box": [1480, 6, 168, 1070]}
+ ],
+ "windows": [
+  {"name": "the far window, left pane", "box": [870, 440, 84, 136]},
+  {"name": "the far window, right pane", "box": [964, 440, 82, 136]}
+ ],
+ "scale": [407, 118, 968]
 }
