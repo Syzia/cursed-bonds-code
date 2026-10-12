@@ -3149,8 +3149,12 @@ def real_traced(lab, folder=STAGED):
     staged = staged_layouts(folder)
     root, dump = traced_root(lab, staged)
     tail = ["--root", root, "--layout-dump", dump, "--dry"]
+    # the installer is given a place by its picture, the staged folder is named by the place: My Room is
+    # your_room.png and tools/art/staged/dorm/ (12 Oct: its three hours were passed over here, under that name)
+    folder_of = dict((os.path.basename(p.get("file") or "")[:-len(".png")], p.get("key"))
+                     for p in json.load(open(dump, encoding="utf-8")).get("places") or [] if isinstance(p, dict))
     for sitting, place, hour, render, day in EARLY_CHOSEN:
-        if not hour or place not in staged:
+        if not hour or folder_of.get(place, place) not in staged:
             continue
         name = "REAL, chosen in sitting %s, against its traced layout: %s at %s (%s)" % (sitting, place, hour, render)
         got, absent = early_run(place, hour, render, day, tail)

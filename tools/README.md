@@ -255,8 +255,15 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   its foreground and the outline it is cut by, its light row, a layout with
   `for_rev`, the manifest, the place's rows of the dump, the facts the
   picture fixed in the campus record) is put back from git in the scratch copy
-  (`before_overhaul()` and `record_before()` in `tools/test_art_tools.py`),
-  so the suite reads the same before and after an install, whichever places
+  (`before_overhaul()` and `record_before()` in `tools/test_art_tools.py`).
+  So are the layout files of a room redone in place, which carry no
+  `for_rev` and have no manifest row, because the room is traced at a
+  later sitting: for every place whose day picture was installed,
+  `hot_<place>.json` and `view_<place>.json` go with that picture, as the
+  tree held them just before it was first replaced, and a file that was
+  not there then is taken away (`docs/UI2_PINS.md`, Part 2j; a line of
+  `fixtures` holds that in every copy the files and the dump say the same
+  of each place). So the suite reads the same before and after an install, whichever places
   are installed, at whatever revision and for whichever hours: every line
   the same, but that the six lines on the two staged layouts become two
   saying the installed files are the staged ones. (465 lines on 12 Oct,

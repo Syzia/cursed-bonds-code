@@ -330,6 +330,45 @@ It showed the Courtyard's vending machine slid 30 px and Megumi's bed painted ou
 
 Then the evening went in (`--choose b`, sitting 14 whole): 109 pictures.
 
+## Part 2j. The six rooms redone in place take their layouts (12 Oct; the fourth tracing run)
+
+The Classroom, the Cafeteria, the Infirmary, the Common Room, My Room and the Rooftop kept their cameras, so their pictures went in without a layout and their layout sitting came afterwards (plan 10.2, "L · the in-place layout sittings"). The layouts were traced on the installed pictures (staged at `fea42f7`, merged at `5b90ba8`) and put in at `fe4cecc`: each `hot_<place>.json` and `view_<place>.json` copied from `tools/art/staged/<place>/` by hand, since `tools/install_redo.py` lays a layout only with a picture. Two-space indent, sorted keys, no `for_rev`; the Common Room's file keeps its `poses` key. With them the picture is what is clicked in all 35 places. No picture was added: 109 in the game. In the Common Room rows of one and two hide nothing and three hide only the fridge (the audit's F5).
+
+**What the installs needed.**
+
+- **The Cafeteria's row of four stands on the open boards** (x 470, 660, 850, 1040). As traced, its fourth stood a step back behind the near table, with a rectangle that reached x 1460. The game draws the "+N" chip at a fixed place, x 1400 on the bottom line (`RAIL_MORE_POS`), and the Cafeteria at Noon is the one place and hour where five stand together, so the chip stood on that person: `p2_hud`'s line "the +N chip's names stand on no sprite" failed, rightly. The row was laid again; the layout check does not know the chip.
+- **The Cafeteria's keep list names its lit boards as ground** (`tools/bgs/keep/cafeteria.json`, one polygon). The room shows no door, so its way out is a band of open floor along the bottom, under the windows' light: the installed evening and night were refused there. Measured with a damage sweep on both pictures (48 damaged pictures): the near table, the counter, the cooler and the ground's surroundings slid or painted out are all still refused; the one refusal lost is the band itself painted out, at night.
+- **The Cafeteria's foreground outline takes in the near table's left leg and side rail** (`tools/fg/cafeteria.json`, the same six points for its three pictures; the three cuts made again). A wide figure a step back showed a paw in front of that leg.
+- **The hours.** Every installed evening, night and lamp-on picture of the six rooms was proved against the new outlines: 13 pictures, none refused.
+
+**Lines that leaned on these rooms as they were, now rules (K3).**
+
+| where | the line | what it leaned on | what it asks now |
+|---|---|---|---|
+| `p2_view` | a room with no row in the code's table | My Room was its example, and had no `view_` file | the same room, read as `view_slots` reads a room whose own file says nothing (`zzv_plain_slots`) |
+| `p2_view` | nobody stands up on the table when a foreground picture is missing | the foreground rooms' rows came from the code's table | each foreground room read the same way. What a file's own rows do with no foreground is not asked: handed to U3, below |
+| `u2_home` | exits keep their old points until a layout sitting | "has had its sitting" meant `for_rev` | `for_rev`, or the room's own file places one of its exits (`zzh_traced`) |
+| `u2_baseline` | the place picture | it is taken in the Classroom, which had buttons on the picture | written again: the buttons are gone. The other four pictures are byte for byte the baseline's |
+| the art suite | the seven correction cases (`EARLY_CASES`) | the Cafeteria's evening, version A, is a LOOK there | they are run with the keep lists without their `ground` rows, as the proof stood when they were made |
+
+**The art suite's thirteen.** After the install `tools/test_art_tools.sh --strict` read 528 passed, 13 failed. Its scratch copies are the tree of before the overhaul: the suite puts back what the manifest names, and a room redone in place has no manifest row for its layout, so the copies held six traced layouts beside the pictures and the dump rows of before. None of the thirteen was a finding about the tools. Twelve followed from the files (a planned hotspot of the new file under a wall the case slides, under a pose box, on the old night picture; the new file's shapes, rows and `scale` read where the case had set its own), and one had pinned a count (the Cafeteria's floor zone "holds all nine places people stand"; the traced rows stand people in seven).
+
+- **The rule** (a worker, in a worktree; `b37a8d9`, merged at `ade593a`): for every place whose day picture the overhaul has installed, `before_overhaul()` reads `hot_<place>.json` and `view_<place>.json` from the tree as it stood just before that picture was first replaced, the commit the place's rows of the dump are read from, and takes away a file that was not there then. Nothing is asked of the file itself, so it reads the same before the sitting, after it, and after a point is moved by hand. The place is found from the picture by the dump of then (My Room is `dorm`, its picture `your_room.png`). A file with `for_rev` keeps its own rule.
+- **Two lines added in `fixtures`:** the rule on a small git tree at five steps of its history (the picture not committed, committed, the sitting not committed, committed, a point moved and the room redone again); and "in every scratch copy a place's `hot_` and `view_` files and the place's rows of the copy's dump say the same of it" (35 places). Before the rule the copies disagreed in 20 places across the six rooms.
+- **The Cafeteria's floor line is a rule:** every place people stand, whatever their number, in the game as it is (7 of 7) and in the tree of before (9 of 9), with rows of one to four in each.
+- **Seen to fail:** with the rule's line taken out the suite read 529 passed, 14 failed (the twelve and the two new lines, nothing else); read from HEAD, or looked for under the picture's name, both new lines fail. The floor line fails four ways (the zone as it was before review 3; cut so that only the old wall rows fall out; cut so that one of today's places falls out; a dump with no Cafeteria rows).
+- **Read on older trees:** 543 passed, none failed or skipped, on the worktree and on clones laid back to `891d5b2` and to `e26c67b`.
+
+**My Room was missing from the net of Part 2i.** The net proves each chosen relight against its staged layout and found the layout by the installer's name for the place, which is the picture's: My Room is `your_room` there and `tools/art/staged/dorm/` in the folder, so its evening, night and lamp-on picture were passed over without a line. The net now finds the folder from the picture by the dump: three more lines, each a LOOK. Read on the merged tree with `--strict`: 546 passed, none failed, none skipped.
+
+**Handed on.**
+
+- **U4:** the "+N" chip's place is fixed, and nothing but `p2_hud` knows a row can reach under it. It registers the planned things the six layouts already place (the Classroom's notices and front desk, the Cafeteria's water cooler, Shoko's desk, the Common Room's fridge, game boxes and manga shelf, My Room's wardrobe, window and desk, the Rooftop's view and railing) and runs `tools/check_layout.py` again then, so that each name plate is measured.
+- **U3:** `view_slots` reads a room's own file first and does not put its rows aside when the room's foreground picture is missing; the code's rule for that is for the table's rows only.
+- **Not mended, seen by the worker:** every scratch copy reads today's keep lists. `tools/bgs/keep/girls_dorm.json`, written again for the new corridor, is applied to the old night pair and still passes, but its weakest thing ("the third door on the right (spare)") stands at 0.37 agreement and 32% of edge against a refusal under 0.30 and 50%: that line could turn at the next edit of that keep list. The stamped dump's `places` rows keep today's `variants` beside the pictures of before; no line reads it wrongly today.
+
+**For the owner's eye at checkpoint B** (each is in the room's staged README): the Classroom's door is under the icon column, so its exit is the door and the floor at its foot; the Cafeteria and the Infirmary show no door and the Rooftop no stair, so each way out is a band along the bottom edge; people stand larger in the Common Room, at the picture's own scale; which pin board is the Classroom's "notices".
+
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 
 A scratch copy of the tree was given a crude stub of what wave 0 changes in who
