@@ -94,6 +94,18 @@ IN PLACE, the proof is, on the 1920x1080 picture the game shows:
   neither is a fault. It is NOT judged for added things (5.7), and never
   refused for one: A RELIGHT IS READ BY EYE BESIDE ITS DAY PICTURE for a lamp,
   a blanket, a bench.
+  OPEN GROUND, IN A RELIGHT ONLY. The keep list's `ground` rows name open
+  ground or open water whose light and shadow change with the hour: the
+  earth of a path under trees (leaf shadow by day, low sun in the evening),
+  a lawn, a river's surface. In step 2 of a relight each such zone is left
+  out of every registered point's window exactly as glass is, so a point
+  that lies on it is held by what stands round it: the path's banks, a
+  stone, a trunk. A point whose window is nearly all ground cannot be held,
+  and the report's "moved" line says so. A row is traced INSIDE the
+  ground's edges, so that the edges are what holds the points. The rows do
+  nothing in a picture redone in place, nothing in steps 3 and 4, and add
+  no words to any prompt. The Mountain Path has the first
+  (tools/bgs/keep/trailhead.json): the earth of the way to the river.
   THE HOURS are evening, night and lit. `lit` (D61, 5.7a) is the room at Night
   with someone up in it; `night` is the room with nobody up. It is proved and
   installed as any relight is, under its own names: the picture
@@ -207,7 +219,7 @@ def keep_list(stem, place, keep_dir=None):
     for name in (stem, place):
         got = read_json(os.path.join(keep_dir or KEEP_DIR, name + ".json"))
         if got is not None:
-            for key in ("keep", "empty", "allow", "change", "doors", "windows"):
+            for key in ("keep", "empty", "allow", "change", "doors", "windows", "ground"):
                 for row in got.get(key, []):
                     if not row.get("name") or not (row.get("box") or row.get("poly")):
                         raise SystemExit("the keep list of %s: every `%s` row needs a name and a box or a poly" % (stem, key))
@@ -503,7 +515,7 @@ def run_inplace(o):
         try:
             new, note = rm.load(path)
             got = rm.judge(old, new, points, keep, kl.get("empty", []), kl.get("allow", []), kl.get("change", []),
-                           rev1=rev1, relight=relight, windows=kl.get("windows", []))
+                           rev1=rev1, relight=relight, windows=kl.get("windows", []), ground=kl.get("ground", []))
         except rm.Refused as e:
             new, note, got = None, None, refused_fit(e)
         report(letter, path, note, got)

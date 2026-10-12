@@ -219,7 +219,24 @@ Each has a stand-in the game draws by itself; the file drops in by name.
   and between 0.55 and 0.75 nothing is said (a mat 400 px wide across the
   Common Room's boards reads 0.74, and is not seen). The Cafeteria's floor zone (`tools/bgs/keep/cafeteria.json`)
   now runs under all nine places people stand there: the rows by the wall
-  (x 250, x 330) and by the near table (x 1380) lay outside it. **A relight is read by eye beside its day
+  (x 250, x 330) and by the near table (x 1380) lay outside it. **Open
+  ground in a relight** (12 Oct): a traced outline may cross ground whose
+  light changes with the hour, and the Mountain Path's chosen evening was
+  refused at one corner of the way to the river, where leaf shadow lies on
+  the earth by day. A keep list's `ground` row names such ground
+  (`tools/bgs/keep/README.md`); in a relight it is left out of every
+  registered point's window as glass is, and the point is held by the
+  banks and the stones round it. It was measured on the Mountain Path's
+  night and both its evenings, each damaged by hand in 37 ways (every
+  traced outline slid 9 and 30 px, painted out whole, by half and at a
+  corner, and the earth with its banks slid and painted out). On the
+  night and on the evening not chosen every refusal stands with the row,
+  31 of 37 each, word for word. On the chosen evening the way to the
+  river slid or painted out is refused as before, and two damaged
+  pictures are no longer refused: one whose only damage lies wholly
+  inside the named earth, and one the proof had never seen for itself
+  (the standing stone's left half painted out, refused before only at
+  the corner that refused the evening itself). **A relight is read by eye beside its day
   picture for anything added** (a lamp, a blanket, a bench): it is never
   refused for one, and the one case that can be measured without a false
   alarm is shown as a LOOK (a small `empty` row of the keep list that gained

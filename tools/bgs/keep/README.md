@@ -14,6 +14,7 @@ not `dorm`). `docs/UI2_DESIGN.md` 5.4 has the rules. They are data for
 | `change` | a box meant to change inside a fixed outline (5.2's fallback only) | left out of "vanished" and "added"; its outline must still agree within 3 px |
 | `doors` | the room's painted doors: `{"name", "box"}` | kept like a `keep` row ("nothing vanished": a door painted out is REFUSED and named); also read by `tools/check_layout.py` (an indoor exit sits on a door or in the bottom band) |
 | `windows` | the room's glass, pane by pane: `{"name", "box"}` or a `poly`, drawn just INSIDE the frame, so that the frame's own edge stays outside it | left out of every guard window and keep box. A point that lies on glass (an exit on a glass door) is held by the post, the handle and the frame round it, and a view changed on purpose behind it is a LOOK, not a moved door. Only where a registered point's 192 px window reaches glass does a room need them |
+| `ground` | open ground or open water whose light and shadow change with the hour (the earth of a path under trees, a lawn, a river's surface): `{"name", "box"}` or a `poly`, drawn just INSIDE the ground's edges, so that the banks, the stones and the verge stay outside it | in a RELIGHT only, and only in "nothing moved": left out of every registered point's window as glass is, so a point that lies on it is held by what stands round it. A point whose window is nearly all ground cannot be held, and the report says so. It does nothing in a picture redone in place, nothing to "vanished" or "added", and it is not `change` (a named re-skin, whose words go into a prompt) |
 | `scale` | `[x, y top, y bottom]` of one door or post, taken as 200 cm | the height in a pose's prompt, until the room's `view_` file has its own |
 
 All numbers are on the 1920x1080 picture. Besides these rows the installer
@@ -38,3 +39,7 @@ their batches.
   emptied or allowed in a composed picture. They hold the `scale` their poses
   need (the vending machine; the far wall's post) and no door: the Courtyard
   is outdoors, and the chosen Library shows none, because I stand in it.
+- `trailhead` (the Mountain Path), written on 12 Oct 2026 for its evening: one
+  `ground` row, the earth of the way to the river where leaf shadow lies by
+  day and low sun in the evening. A corner of that way's traced outline lies
+  on it, and the evening the owner chose was refused there.
