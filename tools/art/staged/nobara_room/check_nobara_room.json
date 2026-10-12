@@ -1,0 +1,6 @@
+{
+ "horizon": 440,
+ "doors": [
+  {"name": "the door in the left wall", "box": [109, 14, 175, 1066]}
+ ]
+}

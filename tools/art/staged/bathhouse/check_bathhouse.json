@@ -1,0 +1,7 @@
+{
+ "horizon": 495,
+ "doors": [
+  {"name": "the cedar door", "box": [258, 178, 134, 660]},
+  {"name": "the open entrance", "box": [1325, 163, 318, 669]}
+ ]
+}

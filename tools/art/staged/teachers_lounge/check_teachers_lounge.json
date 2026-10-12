@@ -1,0 +1,7 @@
+{
+ "horizon": 480,
+ "doors": [
+  {"name": "the open entrance under the door curtain", "box": [138, 178, 338, 844]},
+  {"name": "the stairs to the floor above", "box": [1200, 246, 210, 422]}
+ ]
+}
