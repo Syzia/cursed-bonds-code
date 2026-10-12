@@ -1,5 +1,12 @@
 {
   "pictures": {
+    "boys_dorm": {
+      "batch": "9a",
+      "kind": "composed",
+      "record": "55e2e6a76fc817986f7bb4f05d9dbfe61df046c4830a208902a0b717b8c663bf",
+      "render": "ui2_boys_dorm_a_00001_.png",
+      "rev": 2
+    },
     "cafeteria": {
       "batch": "4a",
       "from_commit": "e26c67b200a7ec4b374973a2d13730c4ef8b4381",
@@ -331,6 +338,10 @@
         0
       ]
     },
+    "light_boys_dorm": {
+      "of": "boys_dorm",
+      "of_rev": 2
+    },
     "light_cafeteria": {
       "of": "cafeteria",
       "of_rev": 3
@@ -447,6 +458,10 @@
       "of": "library_night",
       "of_rev": 2
     },
+    "light_pool": {
+      "of": "pool",
+      "of_rev": 2
+    },
     "light_rooftop": {
       "of": "rooftop",
       "of_rev": 2
@@ -498,6 +513,13 @@
     "light_training_yard_night": {
       "of": "training_yard_night",
       "of_rev": 2
+    },
+    "pool": {
+      "batch": "16a",
+      "kind": "composed",
+      "record": "a94850941de4ad8cf12d15847355cc34f9edffa0f9c1664d3d2b4e33c0e8838f",
+      "render": "ui2_pool_b_00001_.png",
+      "rev": 2
     },
     "rooftop": {
       "batch": "8a",

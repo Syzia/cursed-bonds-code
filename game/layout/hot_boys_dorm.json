@@ -1,0 +1,206 @@
+{
+  "for_rev": 2,
+  "shapes": {
+    "go_boys_dorm__dorm": [
+      [
+        [
+          846,
+          427
+        ],
+        [
+          974,
+          427
+        ],
+        [
+          974,
+          676
+        ],
+        [
+          846,
+          676
+        ]
+      ]
+    ],
+    "go_boys_dorm__dorm_yard": [
+      [
+        [
+          432,
+          966
+        ],
+        [
+          1488,
+          966
+        ],
+        [
+          1640,
+          1080
+        ],
+        [
+          280,
+          1080
+        ]
+      ]
+    ],
+    "go_boys_dorm__megumi_room": [
+      [
+        [
+          282,
+          42
+        ],
+        [
+          426,
+          126
+        ],
+        [
+          426,
+          966
+        ],
+        [
+          282,
+          1074
+        ]
+      ]
+    ],
+    "go_boys_dorm__senpai_room": [
+      [
+        [
+          1232,
+          330
+        ],
+        [
+          1280,
+          298
+        ],
+        [
+          1280,
+          795
+        ],
+        [
+          1232,
+          762
+        ]
+      ]
+    ],
+    "go_boys_dorm__yuji_room": [
+      [
+        [
+          1494,
+          128
+        ],
+        [
+          1640,
+          42
+        ],
+        [
+          1640,
+          1076
+        ],
+        [
+          1494,
+          962
+        ]
+      ]
+    ],
+    "notice_board": [
+      [
+        [
+          983,
+          463
+        ],
+        [
+          1097,
+          463
+        ],
+        [
+          1097,
+          548
+        ],
+        [
+          983,
+          548
+        ]
+      ]
+    ],
+    "shoe_rack": [
+      [
+        [
+          488,
+          670
+        ],
+        [
+          588,
+          646
+        ],
+        [
+          672,
+          644
+        ],
+        [
+          672,
+          840
+        ],
+        [
+          583,
+          922
+        ],
+        [
+          488,
+          922
+        ]
+      ]
+    ]
+  },
+  "spare": [
+    [
+      664,
+      480
+    ],
+    [
+      765,
+      560
+    ],
+    [
+      1154,
+      520
+    ]
+  ],
+  "spots": {
+    "go_boys_dorm__dorm": [
+      966,
+      600
+    ],
+    "go_boys_dorm__dorm_yard": [
+      960,
+      1000
+    ],
+    "go_boys_dorm__megumi_room": [
+      352,
+      580
+    ],
+    "go_boys_dorm__senpai_room": [
+      1262,
+      600
+    ],
+    "go_boys_dorm__yuji_room": [
+      1570,
+      580
+    ],
+    "notice_board": [
+      1044,
+      484
+    ],
+    "shoe_rack": [
+      526,
+      800
+    ]
+  },
+  "tips": {
+    "go_boys_dorm__dorm": "bottom",
+    "go_boys_dorm__dorm_yard": "top",
+    "go_boys_dorm__megumi_room": "top",
+    "go_boys_dorm__senpai_room": "bottom",
+    "go_boys_dorm__yuji_room": "top",
+    "notice_board": "top",
+    "shoe_rack": "left"
+  }
+}

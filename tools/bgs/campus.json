@@ -187,6 +187,22 @@
    "batch": "2",
    "chosen": "2026-10-07",
    "render": "ui2_gate3_b_00001_.png"
+  },
+  "boys_dorm": {
+   "place": "boys_dorm",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "9a",
+   "chosen": "2026-10-11",
+   "render": "ui2_boys_dorm_a_00001_.png"
+  },
+  "pool": {
+   "place": "pool",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "16a",
+   "chosen": "2026-10-11",
+   "render": "ui2_pool_b_00001_.png"
   }
  },
  "fixed": [
@@ -1497,6 +1513,75 @@
     "picture": "gate",
     "rev": 2
    }
+  },
+  {
+   "id": "place.boys_dorm",
+   "kind": "place",
+   "key": "boys_dorm",
+   "name": "Boys' Dormitory",
+   "stem": "boys_dorm",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "9",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the upstairs corridor of the boys' dormitory, a two-storey house of dark timber: a shoe rack at the head of the stairs in the near corner, three sliding doors along each side, a window seat, and one more door at the far end of the corridor; the side doors are plain and shut",
+   "refs_also": [
+    "dorm"
+   ],
+   "spare_doors": 3,
+   "by": {
+    "picture": "boys_dorm",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.pool",
+   "kind": "place",
+   "key": "pool",
+   "name": "Swimming Pool",
+   "stem": "pool",
+   "area": "grounds",
+   "indoor": false,
+   "building": "pool",
+   "how": "composed",
+   "batch": "16",
+   "after": [
+    "training_yard"
+   ],
+   "words": "the school's open-air swimming pool, seen from its timber deck: a pool of twenty-five metres set into a stone terrace on the slope behind a long low hall, edged in the same grey stone as the school's yards, with a low wooden fence, a small changing hut under a grey tiled roof, a lane board on the fence with no lettering, cedars close round it and mountains beyond; the water is still",
+   "check": [
+    "the pool looks as if it was built with the school, not added to it",
+    "nobody is in the picture"
+   ],
+   "by": {
+    "picture": "pool",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.pool",
+   "kind": "building",
+   "key": "pool",
+   "name": "Swimming Pool",
+   "as": "the swimming pool",
+   "holds": [
+    "pool"
+   ],
+   "at": [
+    1740,
+    900
+   ],
+   "ground": true,
+   "look": "an open-air pool set into a stone terrace behind the dojo, edged in the yards' grey stone, a timber deck and a low wooden fence, a small changing hut under the school's grey tiled roof",
+   "note": "built with the school, not added to it (the owner's ruling, O17)",
+   "by": {
+    "picture": "pool",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -1559,23 +1644,6 @@
     760
    ],
    "look": "a long low hall with one unbroken band of windows"
-  },
-  {
-   "id": "building.pool",
-   "kind": "building",
-   "key": "pool",
-   "name": "Swimming Pool",
-   "as": "the swimming pool",
-   "holds": [
-    "pool"
-   ],
-   "at": [
-    1740,
-    900
-   ],
-   "ground": true,
-   "look": "an open-air pool set into a stone terrace behind the dojo, edged in the yards' grey stone, a timber deck and a low wooden fence, a small changing hut under the school's grey tiled roof",
-   "note": "built with the school, not added to it (the owner's ruling, O17)"
   },
   {
    "id": "building.boys_dorm",
@@ -1768,26 +1836,6 @@
    "ground": true,
    "look": "grass and rock above the trees; a faint dark curtain standing in the sky beyond the far mountains",
    "note": "straight up the stone stairs from the Mountain Path"
-  },
-  {
-   "id": "place.boys_dorm",
-   "kind": "place",
-   "key": "boys_dorm",
-   "name": "Boys' Dormitory",
-   "stem": "boys_dorm",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "9",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "the upstairs corridor of the boys' dormitory, a two-storey house of dark timber: a shoe rack at the head of the stairs in the near corner, three sliding doors along each side, a window seat, and one more door at the far end of the corridor; the side doors are plain and shut",
-   "refs_also": [
-    "dorm"
-   ],
-   "spare_doors": 3
   },
   {
    "id": "place.yuji_room",
@@ -2031,26 +2079,6 @@
    "batch": "15",
    "after": [
     "training_yard"
-   ]
-  },
-  {
-   "id": "place.pool",
-   "kind": "place",
-   "key": "pool",
-   "name": "Swimming Pool",
-   "stem": "pool",
-   "area": "grounds",
-   "indoor": false,
-   "building": "pool",
-   "how": "composed",
-   "batch": "16",
-   "after": [
-    "training_yard"
-   ],
-   "words": "the school's open-air swimming pool, seen from its timber deck: a pool of twenty-five metres set into a stone terrace on the slope behind a long low hall, edged in the same grey stone as the school's yards, with a low wooden fence, a small changing hut under a grey tiled roof, a lane board on the fence with no lettering, cedars close round it and mountains beyond; the water is still",
-   "check": [
-    "the pool looks as if it was built with the school, not added to it",
-    "nobody is in the picture"
    ]
   },
   {

@@ -430,8 +430,8 @@
   "boys_dorm": [
    {
     "applied": [
-     860,
-     960
+     960,
+     1000
     ],
     "default": [
      860,
@@ -442,8 +442,8 @@
    },
    {
     "applied": [
-     830,
-     500
+     966,
+     600
     ],
     "default": [
      830,
@@ -454,8 +454,8 @@
    },
    {
     "applied": [
-     435,
-     600
+     1570,
+     580
     ],
     "default": [
      435,
@@ -466,8 +466,8 @@
    },
    {
     "applied": [
-     1478,
-     600
+     352,
+     580
     ],
     "default": [
      1478,
@@ -478,8 +478,8 @@
    },
    {
     "applied": [
-     1200,
-     520
+     1262,
+     600
     ],
     "default": [
      1200,
@@ -862,8 +862,8 @@
   "pool": [
    {
     "applied": [
-     160,
-     820
+     400,
+     620
     ],
     "default": [
      160,
@@ -1502,6 +1502,7 @@
   "layout/area_school.json",
   "layout/area_staff.json",
   "layout/faces.json",
+  "layout/hot_boys_dorm.json",
   "layout/hot_cafeteria.json",
   "layout/hot_classroom.json",
   "layout/hot_courtyard.json",
@@ -1511,6 +1512,7 @@
   "layout/hot_gate.json",
   "layout/hot_infirmary.json",
   "layout/hot_library.json",
+  "layout/hot_pool.json",
   "layout/hot_ridge.json",
   "layout/hot_riverside.json",
   "layout/hot_school_yard.json",
@@ -1519,6 +1521,7 @@
   "layout/hot_trailhead.json",
   "layout/hot_training_yard.json",
   "layout/hot_utahime_office.json",
+  "layout/light_boys_dorm.json",
   "layout/light_cafeteria.json",
   "layout/light_classroom.json",
   "layout/light_courtyard.json",
@@ -1528,17 +1531,20 @@
   "layout/light_gate.json",
   "layout/light_infirmary.json",
   "layout/light_library.json",
+  "layout/light_pool.json",
   "layout/light_rooftop.json",
   "layout/light_school_yard.json",
   "layout/light_staff_yard.json",
   "layout/light_trailhead.json",
   "layout/light_training_yard.json",
   "layout/pictures.json",
+  "layout/view_boys_dorm.json",
   "layout/view_courtyard.json",
   "layout/view_dorm_common.json",
   "layout/view_dorm_yard.json",
   "layout/view_gate.json",
   "layout/view_library.json",
+  "layout/view_pool.json",
   "layout/view_school_yard.json",
   "layout/view_staff_yard.json",
   "layout/view_trailhead.json",
@@ -1788,7 +1794,7 @@
    ]
   }
  },
- "hash": "7ec55f94b17a729258b0ba01e8c11aecbad78b8f7703fc9a31a105e2fd7edce3",
+ "hash": "b2d1ef2f1983fd73e75a185d18fbe97314d302ef2a350ac276cc93d74091043d",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -2574,32 +2580,32 @@
   },
   "boys_dorm": {
    "go_boys_dorm__dorm": [
-    794,
-    435,
+    930,
+    636,
     105,
     29
    ],
    "go_boys_dorm__dorm_yard": [
-    824,
-    895,
+    924,
+    935,
     194,
     29
    ],
    "go_boys_dorm__megumi_room": [
-    1442,
-    535,
+    316,
+    515,
     149,
     29
    ],
    "go_boys_dorm__senpai_room": [
-    1164,
-    455,
+    1226,
+    636,
     212,
     29
    ],
    "go_boys_dorm__yuji_room": [
-    399,
-    535,
+    1534,
+    515,
     119,
     29
    ]
@@ -2868,8 +2874,8 @@
   },
   "pool": {
    "go_pool__training_yard": [
-    124,
-    755,
+    364,
+    555,
     159,
     29
    ]
@@ -3880,9 +3886,161 @@
   "dorm_yard",
   "staff_yard",
   "training_yard",
-  "trailhead"
+  "trailhead",
+  "boys_dorm",
+  "pool"
  ],
  "shapes": {
+  "boys_dorm": {
+   "go_boys_dorm__dorm": [
+    [
+     [
+      846,
+      427
+     ],
+     [
+      974,
+      427
+     ],
+     [
+      974,
+      676
+     ],
+     [
+      846,
+      676
+     ]
+    ]
+   ],
+   "go_boys_dorm__dorm_yard": [
+    [
+     [
+      432,
+      966
+     ],
+     [
+      1488,
+      966
+     ],
+     [
+      1640,
+      1080
+     ],
+     [
+      280,
+      1080
+     ]
+    ]
+   ],
+   "go_boys_dorm__megumi_room": [
+    [
+     [
+      282,
+      42
+     ],
+     [
+      426,
+      126
+     ],
+     [
+      426,
+      966
+     ],
+     [
+      282,
+      1074
+     ]
+    ]
+   ],
+   "go_boys_dorm__senpai_room": [
+    [
+     [
+      1232,
+      330
+     ],
+     [
+      1280,
+      298
+     ],
+     [
+      1280,
+      795
+     ],
+     [
+      1232,
+      762
+     ]
+    ]
+   ],
+   "go_boys_dorm__yuji_room": [
+    [
+     [
+      1494,
+      128
+     ],
+     [
+      1640,
+      42
+     ],
+     [
+      1640,
+      1076
+     ],
+     [
+      1494,
+      962
+     ]
+    ]
+   ],
+   "notice_board": [
+    [
+     [
+      983,
+      463
+     ],
+     [
+      1097,
+      463
+     ],
+     [
+      1097,
+      548
+     ],
+     [
+      983,
+      548
+     ]
+    ]
+   ],
+   "shoe_rack": [
+    [
+     [
+      488,
+      670
+     ],
+     [
+      588,
+      646
+     ],
+     [
+      672,
+      644
+     ],
+     [
+      672,
+      840
+     ],
+     [
+      583,
+      922
+     ],
+     [
+      488,
+      922
+     ]
+    ]
+   ]
+  },
   "courtyard": {
    "gateway": [
     [
@@ -5715,6 +5873,188 @@
      [
       510,
       790
+     ]
+    ]
+   ]
+  },
+  "pool": {
+   "go_pool__training_yard": [
+    [
+     [
+      298,
+      228
+     ],
+     [
+      312,
+      232
+     ],
+     [
+      322,
+      242
+     ],
+     [
+      462,
+      308
+     ],
+     [
+      470,
+      304
+     ],
+     [
+      480,
+      312
+     ],
+     [
+      484,
+      326
+     ],
+     [
+      586,
+      414
+     ],
+     [
+      582,
+      434
+     ],
+     [
+      516,
+      424
+     ],
+     [
+      480,
+      412
+     ],
+     [
+      480,
+      452
+     ],
+     [
+      560,
+      490
+     ],
+     [
+      560,
+      499
+     ],
+     [
+      522,
+      499
+     ],
+     [
+      522,
+      668
+     ],
+     [
+      522,
+      678
+     ],
+     [
+      538,
+      685
+     ],
+     [
+      412,
+      722
+     ],
+     [
+      345,
+      712
+     ],
+     [
+      345,
+      726
+     ],
+     [
+      253,
+      726
+     ],
+     [
+      253,
+      356
+     ],
+     [
+      220,
+      326
+     ]
+    ]
+   ],
+   "lane_board": [
+    [
+     [
+      1545,
+      508
+     ],
+     [
+      1704,
+      500
+     ],
+     [
+      1710,
+      502
+     ],
+     [
+      1710,
+      598
+     ],
+     [
+      1704,
+      600
+     ],
+     [
+      1704,
+      664
+     ],
+     [
+      1696,
+      664
+     ],
+     [
+      1696,
+      598
+     ],
+     [
+      1562,
+      588
+     ],
+     [
+      1562,
+      640
+     ],
+     [
+      1554,
+      640
+     ],
+     [
+      1554,
+      587
+     ],
+     [
+      1545,
+      585
+     ]
+    ]
+   ],
+   "pool_swim": [
+    [
+     [
+      862,
+      612
+     ],
+     [
+      1228,
+      612
+     ],
+     [
+      1920,
+      806
+     ],
+     [
+      1920,
+      845
+     ],
+     [
+      590,
+      845
      ]
     ]
    ]
@@ -7866,69 +8206,69 @@
   "boys_dorm": {
    "1": [
     [
-     700,
-     -40,
-     0.52,
+     746,
+     -200,
+     0.48,
      0
     ]
    ],
    "2": [
     [
-     470,
-     -40,
-     0.52,
+     746,
+     -200,
+     0.48,
      0
     ],
     [
-     930,
-     -40,
-     0.52,
+     1265,
+     -200,
+     0.48,
      0
     ]
    ],
    "3": [
     [
-     330,
-     -40,
-     0.52,
+     746,
+     -200,
+     0.48,
      0
     ],
     [
-     700,
-     -50,
-     0.4992,
+     1005,
+     -242,
+     0.42,
      1
     ],
     [
-     1070,
-     -40,
-     0.52,
+     1265,
+     -200,
+     0.48,
      0
     ]
    ],
    "4": [
     [
-     240,
-     -40,
-     0.52,
+     746,
+     -200,
+     0.48,
      0
     ],
     [
-     540,
-     -50,
-     0.4992,
+     918,
+     -242,
+     0.42,
      1
     ],
     [
-     860,
-     -50,
-     0.4992,
+     1092,
+     -242,
+     0.42,
      1
     ],
     [
-     1160,
-     -40,
-     0.52,
+     1265,
+     -200,
+     0.48,
      0
     ]
    ]
@@ -9126,68 +9466,68 @@
   "pool": {
    "1": [
     [
-     700,
-     -40,
+     960,
+     -78,
      0.52,
      0
     ]
    ],
    "2": [
     [
-     470,
-     -40,
+     760,
+     -78,
      0.52,
      0
     ],
     [
-     930,
-     -40,
+     1160,
+     -78,
      0.52,
      0
     ]
    ],
    "3": [
     [
-     330,
-     -40,
+     640,
+     -78,
      0.52,
      0
     ],
     [
-     700,
-     -50,
-     0.4992,
+     980,
+     -121,
+     0.47,
      1
     ],
     [
-     1070,
-     -40,
+     1320,
+     -78,
      0.52,
      0
     ]
    ],
    "4": [
     [
-     240,
-     -40,
+     636,
+     -78,
      0.52,
      0
     ],
     [
-     540,
-     -50,
-     0.4992,
+     866,
+     -121,
+     0.47,
      1
     ],
     [
-     860,
-     -50,
-     0.4992,
+     1096,
+     -121,
+     0.47,
      1
     ],
     [
-     1160,
-     -40,
+     1326,
+     -78,
      0.52,
      0
     ]
@@ -11137,6 +11477,15 @@
   ]
  },
  "tips": {
+  "boys_dorm": {
+   "go_boys_dorm__dorm": "bottom",
+   "go_boys_dorm__dorm_yard": "top",
+   "go_boys_dorm__megumi_room": "top",
+   "go_boys_dorm__senpai_room": "bottom",
+   "go_boys_dorm__yuji_room": "top",
+   "notice_board": "top",
+   "shoe_rack": "left"
+  },
   "courtyard": {
    "gateway": "left",
    "go_courtyard__dorm_yard": "top",
@@ -11166,6 +11515,11 @@
    "locked_shelf": "left",
    "reading_table": "left",
    "stacks": "right"
+  },
+  "pool": {
+   "go_pool__training_yard": "top",
+   "lane_board": "top",
+   "pool_swim": "top"
   },
   "school_yard": {
    "go_school_yard__cafeteria": "top",
