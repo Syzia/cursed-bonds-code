@@ -120,6 +120,15 @@
         0
       ]
     },
+    "dojo": {
+      "batch": "15a",
+      "from_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8",
+      "kind": "composed",
+      "record": "6c7695ef8a638bd718462e5b844608b9d6518a4c5cc3bc9297d27d47865bfdb1",
+      "render": "ui2_dojo2_a_00001_.png",
+      "rev": 2,
+      "rev1_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8"
+    },
     "dorm_common": {
       "batch": "3a",
       "from_commit": "e26c67b200a7ec4b374973a2d13730c4ef8b4381",
@@ -378,6 +387,10 @@
       "of": "courtyard_night",
       "of_rev": 2
     },
+    "light_dojo": {
+      "of": "dojo",
+      "of_rev": 2
+    },
     "light_dorm": {
       "of": "your_room",
       "of_rev": 2
@@ -458,6 +471,10 @@
       "of": "library_night",
       "of_rev": 2
     },
+    "light_office": {
+      "of": "office",
+      "of_rev": 2
+    },
     "light_pool": {
       "of": "pool",
       "of_rev": 2
@@ -494,12 +511,20 @@
       "of": "staff_yard_evening",
       "of_rev": 2
     },
+    "light_storehouse": {
+      "of": "storehouse",
+      "of_rev": 2
+    },
     "light_trailhead": {
       "of": "trailhead",
       "of_rev": 2
     },
     "light_trailhead_night": {
       "of": "trailhead_night",
+      "of_rev": 2
+    },
+    "light_training": {
+      "of": "training",
       "of_rev": 2
     },
     "light_training_yard": {
@@ -513,6 +538,15 @@
     "light_training_yard_night": {
       "of": "training_yard_night",
       "of_rev": 2
+    },
+    "office": {
+      "batch": "12a",
+      "from_commit": "178231531d5bbd15884714ee227a3436652941cc",
+      "kind": "composed",
+      "record": "159a655ea7aa63e9c63ab0f3bcaa1dcf68350f2de6cc81748516824ef51a3244",
+      "render": "ui2_office2_b_00001_.png",
+      "rev": 2,
+      "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
     },
     "pool": {
       "batch": "16a",
@@ -617,6 +651,15 @@
         0
       ]
     },
+    "storehouse": {
+      "batch": "16a",
+      "from_commit": "178231531d5bbd15884714ee227a3436652941cc",
+      "kind": "composed",
+      "record": "405462f3909fc3c7b04c7e4b3c8e179b4adb8f12a99bd7c8c8be3d8171380762",
+      "render": "ui2_storehouse2b_doorview_00001_.png",
+      "rev": 2,
+      "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
+    },
     "trailhead": {
       "batch": 2,
       "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
@@ -637,6 +680,15 @@
         0,
         0
       ]
+    },
+    "training": {
+      "batch": "15a",
+      "from_commit": "178231531d5bbd15884714ee227a3436652941cc",
+      "kind": "composed",
+      "record": "a2b5d9dc685410361c9f362f1ff0a8e22b15ef041b384896ca9b7092b2c46e5c",
+      "render": "ui2_training2a_view_a_00001_.png",
+      "rev": 2,
+      "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
     },
     "training_yard": {
       "batch": 1,

@@ -203,6 +203,38 @@
    "batch": "16a",
    "chosen": "2026-10-11",
    "render": "ui2_pool_b_00001_.png"
+  },
+  "training": {
+   "place": "training",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "15a",
+   "chosen": "2026-10-11",
+   "render": "ui2_training2a_view_a_00001_.png"
+  },
+  "dojo": {
+   "place": "dojo",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "15a",
+   "chosen": "2026-10-11",
+   "render": "ui2_dojo2_a_00001_.png"
+  },
+  "storehouse": {
+   "place": "storehouse",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "16a",
+   "chosen": "2026-10-11",
+   "render": "ui2_storehouse2b_doorview_00001_.png"
+  },
+  "office": {
+   "place": "office",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "12a",
+   "chosen": "2026-10-11",
+   "render": "ui2_office2_b_00001_.png"
   }
  },
  "fixed": [
@@ -1582,6 +1614,83 @@
     "picture": "pool",
     "rev": 2
    }
+  },
+  {
+   "id": "place.training",
+   "kind": "place",
+   "key": "training",
+   "name": "Training Hall",
+   "stem": "training",
+   "area": "grounds",
+   "indoor": true,
+   "building": "training_hall",
+   "how": "composed",
+   "batch": "15",
+   "after": [
+    "training_yard"
+   ],
+   "by": {
+    "picture": "training",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.dojo",
+   "kind": "place",
+   "key": "dojo",
+   "name": "Dojo",
+   "stem": "dojo",
+   "area": "grounds",
+   "indoor": true,
+   "building": "dojo",
+   "how": "composed",
+   "batch": "15",
+   "after": [
+    "training_yard"
+   ],
+   "by": {
+    "picture": "dojo",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.storehouse",
+   "kind": "place",
+   "key": "storehouse",
+   "name": "Storehouse",
+   "stem": "storehouse",
+   "area": "grounds",
+   "indoor": true,
+   "building": "storehouse",
+   "how": "composed",
+   "batch": "16",
+   "after": [
+    "training_yard"
+   ],
+   "by": {
+    "picture": "storehouse",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.office",
+   "kind": "place",
+   "key": "office",
+   "name": "Principal's Office",
+   "stem": "office",
+   "area": "staff",
+   "indoor": true,
+   "building": "principal_hall",
+   "how": "composed",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "note": "with a low writing desk and a framed photograph on it as a named addition",
+   "by": {
+    "picture": "office",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -1954,22 +2063,6 @@
    "pinless": true
   },
   {
-   "id": "place.office",
-   "kind": "place",
-   "key": "office",
-   "name": "Principal's Office",
-   "stem": "office",
-   "area": "staff",
-   "indoor": true,
-   "building": "principal_hall",
-   "how": "inplace",
-   "batch": "12",
-   "after": [
-    "staff_yard"
-   ],
-   "note": "with a low writing desk and a framed photograph on it as a named addition"
-  },
-  {
    "id": "place.gojo_office",
    "kind": "place",
    "key": "gojo_office",
@@ -2035,51 +2128,6 @@
    ],
    "pinless": true,
    "spare_doors": 3
-  },
-  {
-   "id": "place.training",
-   "kind": "place",
-   "key": "training",
-   "name": "Training Hall",
-   "stem": "training",
-   "area": "grounds",
-   "indoor": true,
-   "building": "training_hall",
-   "how": "inplace",
-   "batch": "15",
-   "after": [
-    "training_yard"
-   ]
-  },
-  {
-   "id": "place.storehouse",
-   "kind": "place",
-   "key": "storehouse",
-   "name": "Storehouse",
-   "stem": "storehouse",
-   "area": "grounds",
-   "indoor": true,
-   "building": "storehouse",
-   "how": "inplace",
-   "batch": "16",
-   "after": [
-    "training_yard"
-   ]
-  },
-  {
-   "id": "place.dojo",
-   "kind": "place",
-   "key": "dojo",
-   "name": "Dojo",
-   "stem": "dojo",
-   "area": "grounds",
-   "indoor": true,
-   "building": "dojo",
-   "how": "inplace",
-   "batch": "15",
-   "after": [
-    "training_yard"
-   ]
   },
   {
    "id": "place.forest",
