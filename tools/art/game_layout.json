@@ -1839,7 +1839,7 @@
    ]
   }
  },
- "hash": "b45b8c12a828a6e0c7413735b532be75434e423565751391647f51061d834f79",
+ "hash": "21e72c07d7d3d701167bb0e7d71d94ecc9657a2da015204e6c466c02387a94e2",
  "hot_look": {
   "color": "#fff0cc",
   "dim": 0.4,
@@ -3673,7 +3673,8 @@
    "key": "staff_yard",
    "name": "Staff Building Steps",
    "variants": {
-    "Evening": "evening"
+    "Evening": "evening",
+    "Night": "night"
    },
    "y": 0,
    "zoom": 0.52

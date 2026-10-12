@@ -792,6 +792,10 @@
       "of": "staff_yard_evening",
       "of_rev": 2
     },
+    "light_staff_yard_night": {
+      "of": "staff_yard_night",
+      "of_rev": 2
+    },
     "light_storehouse": {
       "of": "storehouse",
       "of_rev": 2
@@ -1193,6 +1197,18 @@
       "of": "staff_yard",
       "of_rev": 2,
       "render": "ui2_staff_yard_evening_b_00001_.png",
+      "rev": 2,
+      "shift": [
+        0,
+        0
+      ]
+    },
+    "staff_yard_night": {
+      "batch": 14,
+      "kind": "relight",
+      "of": "staff_yard",
+      "of_rev": 2,
+      "render": "ui2_staff_yard_night_lounge_00001_.png",
       "rev": 2,
       "shift": [
         0,
