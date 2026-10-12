@@ -1,5 +1,12 @@
 {
   "pictures": {
+    "bathhouse": {
+      "batch": "19a",
+      "kind": "composed",
+      "record": "9fed2d0f1f88cc951bb5c4acd35ab8f1fb0b2c7ccaad794e8357c6e36d6fc43c",
+      "render": "ui2_bathhouse_a_00001_.png",
+      "rev": 2
+    },
     "boys_dorm": {
       "batch": "9a",
       "kind": "composed",
@@ -288,6 +295,19 @@
       "of": "dorm_common_night",
       "of_rev": 2
     },
+    "fg_utahime_office": {
+      "of": "utahime_office",
+      "of_rev": 2
+    },
+    "forest": {
+      "batch": "17a",
+      "from_commit": "178231531d5bbd15884714ee227a3436652941cc",
+      "kind": "composed",
+      "record": "b010cc54c15c62bdcddab1d11ad5eab2d33ee9c74513dd113b53be05bfa1051c",
+      "render": "ui2_forest2a_root_00001_.png",
+      "rev": 2,
+      "rev1_commit": "178231531d5bbd15884714ee227a3436652941cc"
+    },
     "gate": {
       "batch": 2,
       "from_commit": "11f35c7a4d3c838723f77a21f0041b42c5ab58c8",
@@ -320,6 +340,15 @@
         0,
         0
       ]
+    },
+    "gojo_office": {
+      "batch": "12a",
+      "from_commit": "dd3180bb4b8598fe840b8f4e8183b19dcea577ae",
+      "kind": "composed",
+      "record": "3d928dbd9e063539ffe7f3f566bc9d2e924ecbd2bbee8f99d9844770e3e0b1de",
+      "render": "ui2_gojo_office2_b_00001_.png",
+      "rev": 2,
+      "rev1_commit": "dd3180bb4b8598fe840b8f4e8183b19dcea577ae"
     },
     "infirmary": {
       "batch": "6a",
@@ -406,6 +435,10 @@
         0,
         0
       ]
+    },
+    "light_bathhouse": {
+      "of": "bathhouse",
+      "of_rev": 2
     },
     "light_boys_dorm": {
       "of": "boys_dorm",
@@ -511,6 +544,10 @@
       "of": "dorm_yard_night",
       "of_rev": 2
     },
+    "light_forest": {
+      "of": "forest",
+      "of_rev": 2
+    },
     "light_gate": {
       "of": "gate",
       "of_rev": 2
@@ -521,6 +558,10 @@
     },
     "light_gate_night": {
       "of": "gate_night",
+      "of_rev": 2
+    },
+    "light_gojo_office": {
+      "of": "gojo_office",
       "of_rev": 2
     },
     "light_infirmary": {
@@ -551,6 +592,18 @@
       "of": "library_night",
       "of_rev": 2
     },
+    "light_maki_room": {
+      "of": "maki_room",
+      "of_rev": 2
+    },
+    "light_megumi_room": {
+      "of": "megumi_room",
+      "of_rev": 2
+    },
+    "light_nobara_room": {
+      "of": "nobara_room",
+      "of_rev": 2
+    },
     "light_office": {
       "of": "office",
       "of_rev": 2
@@ -571,6 +624,10 @@
       "of": "rooftop_night",
       "of_rev": 2
     },
+    "light_sauna": {
+      "of": "sauna",
+      "of_rev": 2
+    },
     "light_school_yard": {
       "of": "school_yard",
       "of_rev": 2
@@ -581,6 +638,10 @@
     },
     "light_school_yard_night": {
       "of": "school_yard_night",
+      "of_rev": 2
+    },
+    "light_senpai_room": {
+      "of": "senpai_room",
       "of_rev": 2
     },
     "light_staff_yard": {
@@ -601,6 +662,14 @@
     },
     "light_storehouse_night": {
       "of": "storehouse_night",
+      "of_rev": 2
+    },
+    "light_teachers_dorm": {
+      "of": "teachers_dorm",
+      "of_rev": 2
+    },
+    "light_teachers_lounge": {
+      "of": "teachers_lounge",
       "of_rev": 2
     },
     "light_trailhead": {
@@ -634,6 +703,35 @@
     "light_training_yard_night": {
       "of": "training_yard_night",
       "of_rev": 2
+    },
+    "light_utahime_office": {
+      "of": "utahime_office",
+      "of_rev": 2
+    },
+    "light_yuji_room": {
+      "of": "yuji_room",
+      "of_rev": 2
+    },
+    "maki_room": {
+      "batch": "11a",
+      "kind": "composed",
+      "record": "5fb9fa26583ae378f56ad53e460ab39d23362083be1be43e600e5ede76f98323",
+      "render": "ui2_maki_room2_a_00001_.png",
+      "rev": 2
+    },
+    "megumi_room": {
+      "batch": "10a",
+      "kind": "composed",
+      "record": "04bff14c30b075b77d959752171f46ea3ea52e8a0970cb6e47ff0b47461a4988",
+      "render": "ui2_megumi_room_a_00001_.png",
+      "rev": 2
+    },
+    "nobara_room": {
+      "batch": "11a",
+      "kind": "composed",
+      "record": "9840b915d251b1fc914441bb68e4c1bf674a8949c794edcf805d65ed842b4602",
+      "render": "ui2_nobara_room2_b_00001_.png",
+      "rev": 2
     },
     "office": {
       "batch": "12a",
@@ -693,6 +791,13 @@
         0
       ]
     },
+    "sauna": {
+      "batch": "19a",
+      "kind": "composed",
+      "record": "4a18cec444324a54e4937722992b70ba8127a0af4679e7c8cad2ec67384ace4e",
+      "render": "ui2_sauna_b_00001_.png",
+      "rev": 2
+    },
     "school_yard": {
       "batch": 1,
       "from_commit": "acfaf664b31dc1e9e18424f9e83d1d7cc920236c",
@@ -725,6 +830,13 @@
         0,
         0
       ]
+    },
+    "senpai_room": {
+      "batch": "10a",
+      "kind": "composed",
+      "record": "e10f0945c8a47ff5d58eb6169c4f450aa04bbf74e020325a40cf05e8cad5b1d2",
+      "render": "ui2_senpai_room_a_00001_.png",
+      "rev": 2
     },
     "staff_yard": {
       "batch": 2,
@@ -779,6 +891,20 @@
         0,
         0
       ]
+    },
+    "teachers_dorm": {
+      "batch": "13a",
+      "kind": "composed",
+      "record": "c155e3bc73e6ebd99f2347af42c53eedaac7bbe2313ffa204dea039fd939304f",
+      "render": "ui2_teachers_dorm3_a_00001_.png",
+      "rev": 2
+    },
+    "teachers_lounge": {
+      "batch": "13a",
+      "kind": "composed",
+      "record": "bd214c49e2c6e9c5e70e3a401a7d28aacc7c1992f1d2cdc3129cb3e7ca365551",
+      "render": "ui2_teachers_lounge2_b_00001_.png",
+      "rev": 2
     },
     "trailhead": {
       "batch": 2,
@@ -867,6 +993,15 @@
         0
       ]
     },
+    "utahime_office": {
+      "batch": "12a",
+      "from_commit": "dd3180bb4b8598fe840b8f4e8183b19dcea577ae",
+      "kind": "composed",
+      "record": "ff26958a3ca4230c201c1d8ce76a3479f1163586a63ff0e740d788c6c8e1f220",
+      "render": "ui2_utahime_office2_b_00001_.png",
+      "rev": 2,
+      "rev1_commit": "dd3180bb4b8598fe840b8f4e8183b19dcea577ae"
+    },
     "your_room": {
       "batch": "3a",
       "from_commit": "07e57a960d632262263fdeb1db5874a2bce883f0",
@@ -919,6 +1054,13 @@
         0,
         0
       ]
+    },
+    "yuji_room": {
+      "batch": "9a",
+      "kind": "composed",
+      "record": "f3430397e9a08f8f0b4fe784a6564aec0e1cee8bca3104c09625fa23c2533882",
+      "render": "ui2_yuji_room_b_placed_00001_.png",
+      "rev": 2
     }
   }
 }

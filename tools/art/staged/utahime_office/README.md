@@ -35,6 +35,10 @@ desk, the vase and the cabinet are not clickable.
 
 ## The desk is the room's foreground
 
+*Done at the install, 12 Oct 2026: the outline below is the day outline of
+`tools/fg/utahime_office.json`, and the foreground was cut again from the
+installed picture (5.4% of the frame).*
+
 The game draws this room's desk over the people (`VIEW_FG_ROOMS`), and
 `tools/fg/utahime_office.json` still holds the OLD picture's desk. The new
 desk's outline (the desk, with the brush stand, the pen cup and the lamp on

@@ -250,6 +250,27 @@ Three lines are new, in `fixtures`: the record's facts on small git trees (an in
 | `p2_view.rpy`, the pose plan's check | Part 2c's third row, still owed to U3 | the first pose painted on a `lit` picture |
 | `tools/test_art_tools.py`, `layout`: "batch 0's courtyard layout is installed, and game/layout/hot_courtyard.json and view_courtyard.json are the staged files (tools/art/staged/courtyard/) apart from for_rev", and the Library's | the Courtyard and the Library being installed with the layouts staged for batch 0 | either is composed again, or a point of its installed layout is moved by hand: the staged copy is then the record of batch 0 alone, and the line has to say so |
 
+## Part 2f. Found at the installs of 12 Oct, the second traced twelve (K3)
+
+Twelve composed places went in with their traced layouts (`hot_`, `view_`, `for_rev` 2): Yuji's Room, Megumi's Room, Panda and Toge's Room, Nobara's Room, Maki's Room, the Teachers' Lounge, the Teachers' Dormitory, Utahime's Office, Gojo's Office, the Onsen, the Sauna and the Forest Trail. One harness section took a real room's state as its fixture, and turned.
+
+**`u2_contracts.rpy`, section G** (the test that settled D31: a pose kept in place by the person view's screen is screen-only). Two checks failed, with the overlay and bare: "G: (fixture) Utahime is painted into her office" and "G: (control) the kept pose is drawn by the screen; ...".
+
+| | |
+|---|---|
+| old | the section laid a pose box (`zzc_layout("pose_utahime_office", ...)`) and read `view_pose("utahime", "utahime_office")` on the manifest as it stands |
+| why it failed | Utahime's Office is at revision 2, and `images/place/pose_utahime_office__utahime.png` was painted on revision 1. `view_pose` rightly steps round it (K7, 5.5: `art_fresh`), which section A proves on an empty manifest. So the fixture, not the game, was out of date: nobody was painted into the room |
+| new | one line after the box: `zzc_art(pose_utahime_office__utahime=dict(of="utahime_office", of_rev=art_rev("utahime_office")))`. The pose is laid as one painted for the office's picture as it is installed, whatever its revision; `zzc_back()` at the section's end takes the row out again. The three checks are unchanged |
+| proved | 245 with the overlay and 242 bare on today's tree, where both read 243 and 240 before the line. The fixture check still fails when it should: with the row's `of_rev` one less than the office's revision, `view_pose` is None and the first two checks fail |
+
+**In the game, until a pose is painted on the new picture:** Utahime stands in her office (left of her desk; a second person stands behind it, seen from the hips up). The old pose's file stays where it is (K9). A new pose is a later sitting's, and no pose is painted while the characters are being reworked (the owner's word of 12 Oct).
+
+**Two things the install itself needed, beyond the installer's command.** (1) *Utahime's Office's foreground.* The game draws the desk over the people, and `tools/fg/utahime_office.json` held the old picture's desk: installed as it stood, the cut was a piece of the new floor laid over a person's legs. The traced outline of the new desk was in the staged `check_utahime_office.json` under `fg` (its README said so); it is now the day outline of `tools/fg/utahime_office.json`, and `tools/make_fg.py utahime_office` cut `fg_utahime_office.png` again (5.4% of the frame). A staged layout that changes a room's foreground should carry the outline as a third file, `fg_<place>.json`, which `install_redo.py --layout` copies to `tools/fg/` before it cuts: the next tracing run's brief says so. (2) *The Teachers' Dormitory's row of the campus record* still held the proposal of six doors, three spare; the early record has the owner's four doors, three named and one spare (O69). `words`, `spare_doors` and `note` were brought over before the install, which then passed.
+
+**One point moved after a look in the game.** In Panda and Toge's Room the door's name ("To the Boys' Dormitory") opened at the door's middle, where Panda, standing in the left place of two, hid its last third behind his arm (his figure is half as wide again as anyone's, and `check_layout.py` measures a person of the usual width). `go_senpai_room__boys_dorm` moved up its own door from (92, 520) to (92, 340), in the staged and the installed file alike: the name now opens beside Panda's head, clear of him, and just under the arrival caption.
+
+**Lines that will turn later.** `wp1_world.rpy`, "gojo_office lit by PLACE_LIGHT (Evening)" and Utahime's (Part 2e's table): both offices now have day pictures of their own and pass still; they turn when an office's evening picture goes in.
+
 ## Part 3. The scratch-tree confirmation: what a stub of wave 0 breaks
 
 A scratch copy of the tree was given a crude stub of what wave 0 changes in who

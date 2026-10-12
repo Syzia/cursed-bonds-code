@@ -1856,6 +1856,11 @@ label zz_smoke:
         pin("utahime", "utahime_office")
         zzc_hold()
         zzc_layout("pose_utahime_office", dict(poses=dict(utahime=[200, 300, 500, 700])))
+        ## The pose is laid as one painted for the office's picture as it is
+        ## installed, whatever its revision: a pose of an older picture is
+        ## stepped round (K7, section A), and this section is about a pose
+        ## that is drawn.
+        zzc_art(pose_utahime_office__utahime=dict(of="utahime_office", of_rev=art_rev("utahime_office")))
         _zz_pose = view_pose("utahime", "utahime_office")
         _zz_path = "images/place/pose_utahime_office__utahime.png"
         check(_zz_pose is not None and _zz_pose["image"] == _zz_path and stage_people("utahime_office")[0] == ["utahime"],

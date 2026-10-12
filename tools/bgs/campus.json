@@ -235,6 +235,102 @@
    "batch": "12a",
    "chosen": "2026-10-11",
    "render": "ui2_office2_b_00001_.png"
+  },
+  "yuji_room": {
+   "place": "yuji_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "9a",
+   "chosen": "2026-10-11",
+   "render": "ui2_yuji_room_b_placed_00001_.png"
+  },
+  "megumi_room": {
+   "place": "megumi_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "10a",
+   "chosen": "2026-10-11",
+   "render": "ui2_megumi_room_a_00001_.png"
+  },
+  "senpai_room": {
+   "place": "senpai_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "10a",
+   "chosen": "2026-10-11",
+   "render": "ui2_senpai_room_a_00001_.png"
+  },
+  "teachers_lounge": {
+   "place": "teachers_lounge",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "13a",
+   "chosen": "2026-10-11",
+   "render": "ui2_teachers_lounge2_b_00001_.png"
+  },
+  "teachers_dorm": {
+   "place": "teachers_dorm",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "13a",
+   "chosen": "2026-10-11",
+   "render": "ui2_teachers_dorm3_a_00001_.png"
+  },
+  "bathhouse": {
+   "place": "bathhouse",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "19a",
+   "chosen": "2026-10-11",
+   "render": "ui2_bathhouse_a_00001_.png"
+  },
+  "sauna": {
+   "place": "sauna",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "19a",
+   "chosen": "2026-10-11",
+   "render": "ui2_sauna_b_00001_.png"
+  },
+  "utahime_office": {
+   "place": "utahime_office",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "12a",
+   "chosen": "2026-10-11",
+   "render": "ui2_utahime_office2_b_00001_.png"
+  },
+  "gojo_office": {
+   "place": "gojo_office",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "12a",
+   "chosen": "2026-10-11",
+   "render": "ui2_gojo_office2_b_00001_.png"
+  },
+  "forest": {
+   "place": "forest",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "17a",
+   "chosen": "2026-10-11",
+   "render": "ui2_forest2a_root_00001_.png"
+  },
+  "nobara_room": {
+   "place": "nobara_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "11a",
+   "chosen": "2026-10-11",
+   "render": "ui2_nobara_room2_b_00001_.png"
+  },
+  "maki_room": {
+   "place": "maki_room",
+   "rev": 2,
+   "kind": "composed",
+   "batch": "11a",
+   "chosen": "2026-10-11",
+   "render": "ui2_maki_room2_a_00001_.png"
   }
  },
  "fixed": [
@@ -1691,6 +1787,300 @@
     "picture": "office",
     "rev": 2
    }
+  },
+  {
+   "id": "place.yuji_room",
+   "kind": "place",
+   "key": "yuji_room",
+   "name": "Yuji's Room",
+   "stem": "yuji_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "9",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the boys' dormitory, a house of dark timber: a low bed along one wall, film posters without lettering, a shelf of films, a floor cushion and a small television",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "yuji_room",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.megumi_room",
+   "kind": "place",
+   "key": "megumi_room",
+   "name": "Megumi's Room",
+   "stem": "megumi_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "10",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the boys' dormitory, a house of dark timber, spare and tidy: a bed made square, a full bookshelf, shoes in a line by the door",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "megumi_room",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.senpai_room",
+   "kind": "place",
+   "key": "senpai_room",
+   "name": "Panda and Toge's Room",
+   "stem": "senpai_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "boys_dorm",
+   "how": "composed",
+   "batch": "10",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "the big corner bedroom of the boys' dormitory, a house of dark timber, a room for two: a very large futon and a neat small one laid on the floor, and a shogi board on the floor between them",
+   "refs_also": [
+    "dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "senpai_room",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.teachers_lounge",
+   "kind": "place",
+   "key": "teachers_lounge",
+   "name": "Teachers' Lounge",
+   "stem": "teachers_lounge",
+   "area": "staff",
+   "indoor": true,
+   "building": "teachers_house",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "words": "the ground-floor sitting room of the teachers' house: sofas round a low table, a kitchenette with a kettle, a television, a duty board on the wall with no lettering, and stairs going up at the back",
+   "by": {
+    "picture": "teachers_lounge",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.teachers_dorm",
+   "kind": "place",
+   "key": "teachers_dorm",
+   "name": "Teachers' Dormitory",
+   "stem": "teachers_dorm",
+   "area": "staff",
+   "indoor": true,
+   "building": "teachers_house",
+   "how": "composed",
+   "batch": "13",
+   "after": [
+    "staff_yard"
+   ],
+   "words": "the upstairs sitting room of the teachers' house: cushions round a sunken hearth, a workbench under the end window, and four sliding bedroom doors, each with a small blank wooden plate beside it",
+   "refs_also": [
+    "teachers_lounge"
+   ],
+   "pinless": true,
+   "spare_doors": 1,
+   "note": "four bedroom doors, three named and one spare, by the owner's word of 11 Oct 2026 (O69); the plan had six",
+   "by": {
+    "picture": "teachers_dorm",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.bathhouse",
+   "kind": "place",
+   "key": "bathhouse",
+   "name": "Onsen",
+   "stem": "bathhouse",
+   "area": "mountain",
+   "indoor": true,
+   "building": "bathhouse",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "words": "the rest hall of a timber mountain hot-spring house at the edge of the trees: benches, a standing fan, a small glass-fronted fridge of milk bottles, a cedar door in one wall, and through open screens the stone-edged hot spring outside, its water steaming and still, with the forest behind it",
+   "check": [
+    "nobody is in the picture, and the spring has nobody in it"
+   ],
+   "by": {
+    "picture": "bathhouse",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.sauna",
+   "kind": "place",
+   "key": "sauna",
+   "name": "Sauna",
+   "stem": "sauna",
+   "area": "mountain",
+   "indoor": true,
+   "building": "bathhouse",
+   "how": "composed",
+   "batch": "19",
+   "after": [
+    "trailhead"
+   ],
+   "words": "a small windowless room lined with cedar boards, lit only by its own stove: the stove with its stones, a wooden bucket and ladle, a bench along the wall, and beside the door a stone cold-plunge tub fed by a bamboo spout, its water still",
+   "refs_also": [
+    "bathhouse"
+   ],
+   "pinless": true,
+   "check": [
+    "nobody is in the picture",
+    "the room has no window"
+   ],
+   "by": {
+    "picture": "sauna",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.utahime_office",
+   "kind": "place",
+   "key": "utahime_office",
+   "name": "Utahime's Office",
+   "stem": "utahime_office",
+   "area": "staff",
+   "indoor": true,
+   "building": "utahime_office",
+   "how": "composed",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "by": {
+    "picture": "utahime_office",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.gojo_office",
+   "kind": "place",
+   "key": "gojo_office",
+   "name": "Gojo's Office",
+   "stem": "gojo_office",
+   "area": "staff",
+   "indoor": true,
+   "building": "gojo_office",
+   "how": "composed",
+   "batch": "12",
+   "after": [
+    "staff_yard"
+   ],
+   "by": {
+    "picture": "gojo_office",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.forest",
+   "kind": "place",
+   "key": "forest",
+   "name": "Forest Trail",
+   "stem": "forest",
+   "area": "mountain",
+   "indoor": false,
+   "building": "forest",
+   "how": "composed",
+   "batch": "17",
+   "after": [
+    "trailhead"
+   ],
+   "by": {
+    "picture": "forest",
+    "rev": 2
+   }
+  },
+  {
+   "id": "building.forest",
+   "kind": "building",
+   "key": "forest",
+   "name": "Forest Trail",
+   "as": "the forest trail",
+   "holds": [
+    "forest"
+   ],
+   "at": [
+    330,
+    230
+   ],
+   "ground": true,
+   "look": "tall cedars, nothing built",
+   "by": {
+    "picture": "forest",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.nobara_room",
+   "kind": "place",
+   "key": "nobara_room",
+   "name": "Nobara's Room",
+   "stem": "nobara_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "composed",
+   "batch": "11",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber: a bed, a tall dressing mirror, shopping bags in a row, a roll of tools on the desk",
+   "refs_also": [
+    "girls_dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "nobara_room",
+    "rev": 2
+   }
+  },
+  {
+   "id": "place.maki_room",
+   "kind": "place",
+   "key": "maki_room",
+   "name": "Maki's Room",
+   "stem": "maki_room",
+   "area": "dorms",
+   "indoor": true,
+   "building": "girls_dorm",
+   "how": "composed",
+   "batch": "11",
+   "after": [
+    "dorm_yard"
+   ],
+   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber, kept plain: a bed, a long weapon case against the wall, a pull-up bar fixed in the door frame",
+   "refs_also": [
+    "girls_dorm"
+   ],
+   "pinless": true,
+   "by": {
+    "picture": "maki_room",
+    "rev": 2
+   }
   }
  ],
  "proposed": [
@@ -1898,22 +2288,6 @@
    "look": "a tall tiled roof with a steam vent, a stone basin by the door, steam above the fence"
   },
   {
-   "id": "building.forest",
-   "kind": "building",
-   "key": "forest",
-   "name": "Forest Trail",
-   "as": "the forest trail",
-   "holds": [
-    "forest"
-   ],
-   "at": [
-    330,
-    230
-   ],
-   "ground": true,
-   "look": "tall cedars, nothing built"
-  },
-  {
    "id": "building.riverside",
    "kind": "building",
    "key": "riverside",
@@ -1947,66 +2321,6 @@
    "note": "straight up the stone stairs from the Mountain Path"
   },
   {
-   "id": "place.yuji_room",
-   "kind": "place",
-   "key": "yuji_room",
-   "name": "Yuji's Room",
-   "stem": "yuji_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "9",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the boys' dormitory, a house of dark timber: a low bed along one wall, film posters without lettering, a shelf of films, a floor cushion and a small television",
-   "refs_also": [
-    "dorm"
-   ],
-   "pinless": true
-  },
-  {
-   "id": "place.megumi_room",
-   "kind": "place",
-   "key": "megumi_room",
-   "name": "Megumi's Room",
-   "stem": "megumi_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "10",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the boys' dormitory, a house of dark timber, spare and tidy: a bed made square, a full bookshelf, shoes in a line by the door",
-   "refs_also": [
-    "dorm"
-   ],
-   "pinless": true
-  },
-  {
-   "id": "place.senpai_room",
-   "kind": "place",
-   "key": "senpai_room",
-   "name": "Panda and Toge's Room",
-   "stem": "senpai_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "boys_dorm",
-   "how": "composed",
-   "batch": "10",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "the big corner bedroom of the boys' dormitory, a house of dark timber, a room for two: a very large futon and a neat small one laid on the floor, and a shogi board on the floor between them",
-   "refs_also": [
-    "dorm"
-   ],
-   "pinless": true
-  },
-  {
    "id": "place.girls_dorm",
    "kind": "place",
    "key": "girls_dorm",
@@ -2023,128 +2337,6 @@
    "note": "its far doors are the girls' spare doors (D50)"
   },
   {
-   "id": "place.nobara_room",
-   "kind": "place",
-   "key": "nobara_room",
-   "name": "Nobara's Room",
-   "stem": "nobara_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "girls_dorm",
-   "how": "composed",
-   "batch": "11",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber: a bed, a tall dressing mirror, shopping bags in a row, a roll of tools on the desk",
-   "refs_also": [
-    "girls_dorm"
-   ],
-   "pinless": true
-  },
-  {
-   "id": "place.maki_room",
-   "kind": "place",
-   "key": "maki_room",
-   "name": "Maki's Room",
-   "stem": "maki_room",
-   "area": "dorms",
-   "indoor": true,
-   "building": "girls_dorm",
-   "how": "composed",
-   "batch": "11",
-   "after": [
-    "dorm_yard"
-   ],
-   "words": "a student's bedroom in the girls' dormitory, a house of white plaster and timber, kept plain: a bed, a long weapon case against the wall, a pull-up bar fixed in the door frame",
-   "refs_also": [
-    "girls_dorm"
-   ],
-   "pinless": true
-  },
-  {
-   "id": "place.gojo_office",
-   "kind": "place",
-   "key": "gojo_office",
-   "name": "Gojo's Office",
-   "stem": "gojo_office",
-   "area": "staff",
-   "indoor": true,
-   "building": "gojo_office",
-   "how": "inplace",
-   "batch": "12",
-   "after": [
-    "staff_yard"
-   ]
-  },
-  {
-   "id": "place.utahime_office",
-   "kind": "place",
-   "key": "utahime_office",
-   "name": "Utahime's Office",
-   "stem": "utahime_office",
-   "area": "staff",
-   "indoor": true,
-   "building": "utahime_office",
-   "how": "inplace",
-   "batch": "12",
-   "after": [
-    "staff_yard"
-   ]
-  },
-  {
-   "id": "place.teachers_lounge",
-   "kind": "place",
-   "key": "teachers_lounge",
-   "name": "Teachers' Lounge",
-   "stem": "teachers_lounge",
-   "area": "staff",
-   "indoor": true,
-   "building": "teachers_house",
-   "how": "composed",
-   "batch": "13",
-   "after": [
-    "staff_yard"
-   ],
-   "words": "the ground-floor sitting room of the teachers' house: sofas round a low table, a kitchenette with a kettle, a television, a duty board on the wall with no lettering, and stairs going up at the back"
-  },
-  {
-   "id": "place.teachers_dorm",
-   "kind": "place",
-   "key": "teachers_dorm",
-   "name": "Teachers' Dormitory",
-   "stem": "teachers_dorm",
-   "area": "staff",
-   "indoor": true,
-   "building": "teachers_house",
-   "how": "composed",
-   "batch": "13",
-   "after": [
-    "staff_yard"
-   ],
-   "words": "the upstairs sitting room of the teachers' house: cushions round a sunken hearth, a workbench under the end window, and six sliding bedroom doors, each with a small blank wooden plate beside it",
-   "refs_also": [
-    "teachers_lounge"
-   ],
-   "pinless": true,
-   "spare_doors": 3
-  },
-  {
-   "id": "place.forest",
-   "kind": "place",
-   "key": "forest",
-   "name": "Forest Trail",
-   "stem": "forest",
-   "area": "mountain",
-   "indoor": false,
-   "building": "forest",
-   "how": "inplace",
-   "batch": "17",
-   "after": [
-    "trailhead"
-   ]
-  },
-  {
    "id": "place.ridge",
    "kind": "place",
    "key": "ridge",
@@ -2159,49 +2351,6 @@
     "trailhead"
    ],
    "note": "with the veil in the sky as a named addition"
-  },
-  {
-   "id": "place.bathhouse",
-   "kind": "place",
-   "key": "bathhouse",
-   "name": "Onsen",
-   "stem": "bathhouse",
-   "area": "mountain",
-   "indoor": true,
-   "building": "bathhouse",
-   "how": "composed",
-   "batch": "19",
-   "after": [
-    "trailhead"
-   ],
-   "words": "the rest hall of a timber mountain hot-spring house at the edge of the trees: benches, a standing fan, a small glass-fronted fridge of milk bottles, a cedar door in one wall, and through open screens the stone-edged hot spring outside, its water steaming and still, with the forest behind it",
-   "check": [
-    "nobody is in the picture, and the spring has nobody in it"
-   ]
-  },
-  {
-   "id": "place.sauna",
-   "kind": "place",
-   "key": "sauna",
-   "name": "Sauna",
-   "stem": "sauna",
-   "area": "mountain",
-   "indoor": true,
-   "building": "bathhouse",
-   "how": "composed",
-   "batch": "19",
-   "after": [
-    "trailhead"
-   ],
-   "words": "a small windowless room lined with cedar boards, lit only by its own stove: the stove with its stones, a wooden bucket and ladle, a bench along the wall, and beside the door a stone cold-plunge tub fed by a bamboo spout, its water still",
-   "refs_also": [
-    "bathhouse"
-   ],
-   "pinless": true,
-   "check": [
-    "nobody is in the picture",
-    "the room has no window"
-   ]
   },
   {
    "id": "place.riverside",

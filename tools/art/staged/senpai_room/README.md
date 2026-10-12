@@ -18,7 +18,7 @@ drawn over all three and sit on the same things.
 
 | id | the thing on the picture | point | name opens |
 |---|---|---|---|
-| `go_senpai_room__boys_dorm` | the sliding door of dark boards in the left wall, with its lintel and sill, as far as the picture's left edge shows it | (92, 520), beside its handle | above |
+| `go_senpai_room__boys_dorm` | the sliding door of dark boards in the left wall, with its lintel and sill, as far as the picture's left edge shows it | (92, 340), on the upper boards (moved up from (92, 520) at the install, 12 Oct: there Panda, in the left place of two, hid the end of the name) | above |
 | `bed_panda` (planned, a look) | the very large futon at the far left, with the two pillows at its head | (882, 705), at its right-hand end | above |
 | `shogi_board` (planned, a look) | the shogi board on its four legs, and the two cushions beside it (three polygons that do not touch) | (985, 850), on the board's front face | below |
 | `bed_toge` (planned, a look) | the small futon on the right, with its pillow | (1500, 850), on its near half | above |
