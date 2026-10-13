@@ -7,6 +7,8 @@ to spend your time.
 
 Jujutsu Kaisen is created by Gege Akutami. This is a fan work.
 
+> **Code only.** This public copy leaves out the art, fonts and save files, from its history too, so the game won't run from it as-is. Everything else, including the commit history since September 2026, is the real project.
+
 > **Version 0.4, Arc One, phase 2.** Phase 1 laid the Arc One foundation:
 > first-person narration, grades, missions, Utahime's board, items, memories,
 > Tokyo trips and a new HUD, map and journal (`docs/PHASE1_DESIGN.md`;
